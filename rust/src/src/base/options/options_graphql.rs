@@ -13,9 +13,9 @@ pub struct OptionsQuery;
 impl OptionsQuery {
   
   /// 获取系统选项
-  async fn get_options_by_lbl<'a>(
+  async fn get_options_by_lbl(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     lbl: String,
   ) -> Result<Vec<OptionsModel>> {
     

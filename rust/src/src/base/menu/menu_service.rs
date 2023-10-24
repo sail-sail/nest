@@ -5,8 +5,8 @@ use super::menu_dao;
 use super::menu_model::GetMenus;
 
 /// 首页获取菜单列表
-pub async fn get_menus<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_menus(
+  ctx: &Ctx,
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
   

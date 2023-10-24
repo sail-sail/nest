@@ -58,9 +58,9 @@ pub struct <#=tableUP#>GenQuery;
 impl <#=tableUP#>GenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_<#=table#><'a>(
+  async fn find_all_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<<#=tableUP#>Search>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -81,9 +81,9 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_<#=table#><'a>(
+  async fn find_count_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<<#=tableUP#>Search>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -100,9 +100,9 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_<#=table#><'a>(
+  async fn find_one_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<<#=tableUP#>Search>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
@@ -121,9 +121,9 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_<#=table#><'a>(
+  async fn find_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<<#=tableUP#>Model>> {
     let ctx = Ctx::builder(ctx)
@@ -143,9 +143,9 @@ impl <#=tableUP#>GenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  async fn get_is_enabled_by_id_<#=table#><'a>(
+  async fn get_is_enabled_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -168,9 +168,9 @@ impl <#=tableUP#>GenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_<#=table#><'a>(
+  async fn get_is_locked_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -189,9 +189,9 @@ impl <#=tableUP#>GenQuery {
   #>
   
   /// 获取字段对应的名称
-  async fn get_field_comments_<#=table#><'a>(
+  async fn get_field_comments_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<<#=tableUP#>FieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -208,9 +208,9 @@ impl <#=tableUP#>GenQuery {
   #>
   
   /// 查找 order_by 字段的最大值
-  async fn find_last_order_by_<#=table#><'a>(
+  async fn find_last_order_by_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<u32> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -237,14 +237,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 创建数据
-  async fn create_<#=table#><'a>(
+  async fn create_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let mut options = Options::new();
@@ -266,14 +267,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_<#=table#><'a>(
+  async fn update_tenant_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::update_tenant_by_id(
@@ -291,14 +293,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改部门id
-  async fn update_org_by_id_<#=table#><'a>(
+  async fn update_org_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     org_id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::update_org_by_id(
@@ -316,14 +319,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改数据
-  async fn update_by_id_<#=table#><'a>(
+  async fn update_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: <#=tableUP#>Input,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::update_by_id(
@@ -341,13 +345,14 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_<#=table#><'a>(
+  async fn delete_by_ids_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::delete_by_ids(
@@ -364,13 +369,14 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 id 设置默认记录
-  async fn default_by_id_<#=table#><'a>(
+  async fn default_by_id_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::default_by_id(
@@ -387,14 +393,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 启用或禁用数据
-  async fn enable_by_ids_<#=table#><'a>(
+  async fn enable_by_ids_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::enable_by_ids(
@@ -412,14 +419,15 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_<#=table#><'a>(
+  async fn lock_by_ids_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::lock_by_ids(
@@ -437,13 +445,14 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_<#=table#><'a>(
+  async fn revert_by_ids_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::revert_by_ids(
@@ -456,13 +465,14 @@ impl <#=tableUP#>GenMutation {<#
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_<#=table#><'a>(
+  async fn force_delete_by_ids_<#=table#>(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = <#=table#>_resolver::force_delete_by_ids(

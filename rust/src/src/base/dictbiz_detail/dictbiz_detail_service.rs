@@ -4,8 +4,8 @@ use crate::common::context::Ctx;
 use super::dictbiz_detail_model::GetDictbiz;
 use super::dictbiz_detail_dao;
 
-pub async fn get_dictbiz<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_dictbiz(
+  ctx: &Ctx,
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<GetDictbiz>>> {
   

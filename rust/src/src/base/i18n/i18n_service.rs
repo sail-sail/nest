@@ -10,8 +10,8 @@ use super::i18n_dao::{
 };
 
 #[allow(dead_code)]
-pub async fn n<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n(
+  ctx: &Ctx,
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
@@ -21,8 +21,8 @@ pub async fn n<'a>(
 }
 
 #[allow(dead_code)]
-pub async fn ns<'a>(
-  ctx: &Ctx<'a>,
+pub async fn ns(
+  ctx: &Ctx,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
@@ -30,8 +30,8 @@ pub async fn ns<'a>(
   Ok(res)
 }
 
-pub async fn n_lang<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n_lang(
+  ctx: &Ctx,
   lang_code: String,
   route_path: Option<String>,
   code: String,

@@ -26,8 +26,8 @@ use super::usr_model::{
 use crate::src::base::i18n::i18n_dao::NRoute;
 
 /// 登录, 获得token
-pub async fn login<'a>(
-  ctx: &Ctx<'a>,
+pub async fn login(
+  ctx: &Ctx,
   input: LoginInput,
 ) -> Result<Login> {
   let LoginInput {
@@ -101,8 +101,8 @@ pub async fn login<'a>(
 }
 
 /// 选择语言
-pub async fn select_lang<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn select_lang(
+  ctx: &mut Ctx,
   lang: String,
 ) -> Result<String> {
   
@@ -121,8 +121,8 @@ pub async fn select_lang<'a>(
 }
 
 /// 修改密码
-pub async fn change_password<'a>(
-  ctx: &Ctx<'a>,
+pub async fn change_password(
+  ctx: &Ctx,
   input: ChangePasswordInput,
 ) -> Result<bool> {
   
@@ -209,8 +209,8 @@ pub async fn change_password<'a>(
   Ok(true)
 }
 
-pub async fn get_login_info<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_login_info(
+  ctx: &Ctx,
 ) -> Result<GetLoginInfo> {
   
   let auth_model = ctx.get_auth_model_err()?;

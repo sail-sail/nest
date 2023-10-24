@@ -24,9 +24,9 @@ pub struct DictGenQuery;
 impl DictGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_dict<'a>(
+  async fn find_all_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DictSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl DictGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_dict<'a>(
+  async fn find_count_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DictSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl DictGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_dict<'a>(
+  async fn find_one_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DictSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DictModel>> {
@@ -87,9 +87,9 @@ impl DictGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_dict<'a>(
+  async fn find_by_id_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<DictModel>> {
     let ctx = Ctx::builder(ctx)
@@ -107,9 +107,9 @@ impl DictGenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  async fn get_is_enabled_by_id_dict<'a>(
+  async fn get_is_enabled_by_id_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -128,9 +128,9 @@ impl DictGenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_dict<'a>(
+  async fn get_is_locked_by_id_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -147,9 +147,9 @@ impl DictGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_dict<'a>(
+  async fn get_field_comments_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<DictFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -164,9 +164,9 @@ impl DictGenQuery {
   }
   
   /// 查找 order_by 字段的最大值
-  async fn find_last_order_by_dict<'a>(
+  async fn find_last_order_by_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<u32> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -189,14 +189,15 @@ pub struct DictGenMutation;
 impl DictGenMutation {
   
   /// 创建数据
-  async fn create_dict<'a>(
+  async fn create_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: DictInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let mut options = Options::new();
@@ -214,14 +215,15 @@ impl DictGenMutation {
   }
   
   /// 根据id修改数据
-  async fn update_by_id_dict<'a>(
+  async fn update_by_id_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: DictInput,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::update_by_id(
@@ -235,13 +237,14 @@ impl DictGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_dict<'a>(
+  async fn delete_by_ids_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::delete_by_ids(
@@ -254,14 +257,15 @@ impl DictGenMutation {
   }
   
   /// 根据 ids 启用或禁用数据
-  async fn enable_by_ids_dict<'a>(
+  async fn enable_by_ids_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::enable_by_ids(
@@ -275,14 +279,15 @@ impl DictGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_dict<'a>(
+  async fn lock_by_ids_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::lock_by_ids(
@@ -296,13 +301,14 @@ impl DictGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_dict<'a>(
+  async fn revert_by_ids_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::revert_by_ids(
@@ -315,13 +321,14 @@ impl DictGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_dict<'a>(
+  async fn force_delete_by_ids_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = dict_resolver::force_delete_by_ids(

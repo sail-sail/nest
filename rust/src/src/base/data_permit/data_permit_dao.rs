@@ -13,8 +13,8 @@ use crate::gen::base::data_permit::data_permit_model::{
 
 /// 获取数据权限列表
 #[allow(dead_code)]
-pub async fn get_data_permits<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_data_permits(
+  ctx: &Ctx,
   route_path: String,
 ) -> Result<Vec<DataPermitModel>> {
   

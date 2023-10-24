@@ -13,9 +13,9 @@ pub struct PermitQuery;
 impl PermitQuery {
   
   /// 根据当前用户获取权限列表
-  async fn get_usr_permits<'a>(
+  async fn get_usr_permits(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<Vec<GetUsrPermits>> {
     
     let ctx = Ctx::builder(ctx)

@@ -13,9 +13,9 @@ pub struct MenuQuery;
 impl MenuQuery {
   
   /// 首页获取菜单列表
-  async fn get_menus<'a>(
+  async fn get_menus(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
     

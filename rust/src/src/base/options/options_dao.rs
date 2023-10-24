@@ -8,8 +8,8 @@ use crate::gen::base::options::options_model::{
   OptionsInput,
 };
 
-pub async fn get_options_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_options_by_lbl(
+  ctx: &Ctx,
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   
@@ -28,8 +28,8 @@ pub async fn get_options_by_lbl<'a>(
 }
 
 /// 更新国际化版本号
-pub async fn update_i18n_version<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_i18n_version(
+  ctx: &Ctx,
 ) -> Result<String> {
   
   let lbl = "国际化版本号".to_owned();

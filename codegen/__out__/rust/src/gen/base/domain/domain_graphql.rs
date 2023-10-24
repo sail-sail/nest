@@ -24,9 +24,9 @@ pub struct DomainGenQuery;
 impl DomainGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_domain<'a>(
+  async fn find_all_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DomainSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl DomainGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_domain<'a>(
+  async fn find_count_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DomainSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl DomainGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_domain<'a>(
+  async fn find_one_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<DomainSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DomainModel>> {
@@ -87,9 +87,9 @@ impl DomainGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_domain<'a>(
+  async fn find_by_id_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<DomainModel>> {
     let ctx = Ctx::builder(ctx)
@@ -107,9 +107,9 @@ impl DomainGenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  async fn get_is_enabled_by_id_domain<'a>(
+  async fn get_is_enabled_by_id_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -128,9 +128,9 @@ impl DomainGenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_domain<'a>(
+  async fn get_is_locked_by_id_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -147,9 +147,9 @@ impl DomainGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_domain<'a>(
+  async fn get_field_comments_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<DomainFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -164,9 +164,9 @@ impl DomainGenQuery {
   }
   
   /// 查找 order_by 字段的最大值
-  async fn find_last_order_by_domain<'a>(
+  async fn find_last_order_by_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<u32> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -189,14 +189,15 @@ pub struct DomainGenMutation;
 impl DomainGenMutation {
   
   /// 创建数据
-  async fn create_domain<'a>(
+  async fn create_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: DomainInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let mut options = Options::new();
@@ -214,14 +215,15 @@ impl DomainGenMutation {
   }
   
   /// 根据id修改数据
-  async fn update_by_id_domain<'a>(
+  async fn update_by_id_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: DomainInput,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::update_by_id(
@@ -235,13 +237,14 @@ impl DomainGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_domain<'a>(
+  async fn delete_by_ids_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::delete_by_ids(
@@ -254,13 +257,14 @@ impl DomainGenMutation {
   }
   
   /// 根据 id 设置默认记录
-  async fn default_by_id_domain<'a>(
+  async fn default_by_id_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::default_by_id(
@@ -273,14 +277,15 @@ impl DomainGenMutation {
   }
   
   /// 根据 ids 启用或禁用数据
-  async fn enable_by_ids_domain<'a>(
+  async fn enable_by_ids_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::enable_by_ids(
@@ -294,14 +299,15 @@ impl DomainGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_domain<'a>(
+  async fn lock_by_ids_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::lock_by_ids(
@@ -315,13 +321,14 @@ impl DomainGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_domain<'a>(
+  async fn revert_by_ids_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::revert_by_ids(
@@ -334,13 +341,14 @@ impl DomainGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_domain<'a>(
+  async fn force_delete_by_ids_domain(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = domain_resolver::force_delete_by_ids(

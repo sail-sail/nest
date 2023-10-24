@@ -13,9 +13,9 @@ pub struct TenantQuery;
 impl TenantQuery {
   
   /// 根据 当前网址的域名+端口 获取 租户列表
-  async fn get_login_tenants<'a>(
+  async fn get_login_tenants(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     domain: String,
   ) -> Result<Vec<TenantModel>> {
     
