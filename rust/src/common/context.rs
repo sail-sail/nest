@@ -18,7 +18,8 @@ use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
-use sqlx::{Pool, MySql, Transaction, Executor, FromRow};
+use sqlx::{Pool, MySql, Executor, FromRow, Row};
+use sqlx::pool::PoolConnection;
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -36,6 +37,10 @@ lazy_static! {
   static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
   static ref IS_DEBUG: bool = init_debug();
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
+}
+
+tokio::task_local! {
+  pub static CTX: Arc<Ctx>;
 }
 
 fn init_debug() -> bool {
@@ -76,9 +81,9 @@ fn init_db_pool() -> Result<Pool<MySql>> {
   Ok(pool)
 }
 
-impl<'a> Ctx<'a> {
+impl Ctx {
   
-  pub fn builder(
+  pub fn builder<'a>(
     ctx: &'a async_graphql::Context<'a>,
   ) -> CtxBuilder<'a> {
     CtxBuilder::new(ctx)
@@ -157,6 +162,18 @@ impl<'a> Ctx<'a> {
     }
   }
   
+  /// 查找当前数据库连接的连接ID, 如果数据库事务尚未开启则返回0
+  pub async fn query_conn_id(&self) -> Result<u64> {
+    let mut tran = self.tran.lock().await;
+    if tran.is_none() {
+      return Ok(0);
+    }
+    let tran = tran.as_mut().unwrap();
+    let row = tran.fetch_one("select connection_id()").await?;
+    let connection_id: u64 = row.try_get(0)?;
+    Ok(connection_id)
+  }
+  
   /// 开启事务
   async fn begin(&self) -> Result<()> {
     {
@@ -165,8 +182,15 @@ impl<'a> Ctx<'a> {
         return Ok(());
       }
     }
-    info!("{} begin;", self.get_req_id());
-    let tran = DB_POOL.clone().begin().await?;
+    let mut tran = DB_POOL.clone().acquire().await?;
+    tran.execute("begin").await?;
+    let connection_id: u64 = tran
+      .fetch_one("select connection_id()").await?
+      .try_get(0)?;
+    info!(
+      "{req_id} begin; -- {connection_id}",
+      req_id = self.get_req_id(),
+    );
     let mut tran0 = self.tran.lock().await;
     *tran0 = Some(tran);
     Ok(())
@@ -178,16 +202,23 @@ impl<'a> Ctx<'a> {
   {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
-    if let Err(err) = &res {
-      if let Some(tran) = tran {
-        info!("{} rollback;", self.get_req_id());
-        tran.rollback().await?;
+    if let Some(mut tran) = tran {
+      let connection_id: u64 = tran
+        .fetch_one("select connection_id()").await?
+        .try_get(0)?;
+      if res.is_err() {
+        info!(
+          "{req_id} rollback; -- {connection_id}",
+          req_id = self.get_req_id(),
+        );
+        tran.execute("rollback").await?;
+      } else {
+        info!(
+          "{req_id} commit; -- {connection_id}",
+          req_id = self.get_req_id(),
+        );
+        tran.execute("commit").await?;
       }
-      let req_id = self.get_req_id();
-      error!("{} {}", req_id, err);
-    } else if let Some(tran) = tran {
-      info!("{} commit;", self.get_req_id());
-      tran.commit().await?;
     }
     res
   }
@@ -199,7 +230,6 @@ impl<'a> Ctx<'a> {
     args: Vec<ArgType>,
     options: Option<Options>,
   ) -> Result<u64> {
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.is_tran;
@@ -217,7 +247,7 @@ impl<'a> Ctx<'a> {
     }
     
     if is_tran {
-      let mut query = sqlx::query(sql);
+      let mut query = sqlx::query(&sql);
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
@@ -378,7 +408,7 @@ impl<'a> Ctx<'a> {
       }
       return Ok(rows_affected);
     }
-    let mut query = sqlx::query(sql);
+    let mut query = sqlx::query(&sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
@@ -559,8 +589,6 @@ impl<'a> Ctx<'a> {
       }
     }
     
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
-    
     let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.is_tran;
     if let Some(options) = options.as_ref() {
@@ -571,7 +599,7 @@ impl<'a> Ctx<'a> {
     }
     
     if is_tran {
-      let mut query = sqlx::query_as::<_, R>(sql);
+      let mut query = sqlx::query_as::<_, R>(&sql);
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
@@ -733,7 +761,7 @@ impl<'a> Ctx<'a> {
       }
       return Ok(res);
     }
-    let mut query = sqlx::query_as::<_, R>(sql);
+    let mut query = sqlx::query_as::<_, R>(&sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
@@ -913,8 +941,6 @@ impl<'a> Ctx<'a> {
       }
     }
     
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
-    
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
     if let Some(options) = &options {
@@ -925,7 +951,7 @@ impl<'a> Ctx<'a> {
     }
     
     if is_tran {
-      let mut query = sqlx::query_as::<_, R>(sql);
+      let mut query = sqlx::query_as::<_, R>(&sql);
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
@@ -1088,7 +1114,7 @@ impl<'a> Ctx<'a> {
       }
       return Ok(res);
     }
-    let mut query = sqlx::query_as::<_, R>(sql);
+    let mut query = sqlx::query_as::<_, R>(&sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
@@ -1244,18 +1270,39 @@ impl<'a> Ctx<'a> {
   
 }
 
-pub struct Ctx<'a> {
+pub struct Ctx {
   
   is_tran: bool,
   
   req_id: String,
   
-  tran: Arc<Mutex<Option<Transaction<'a, MySql>>>>,
+  tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
   
   auth_model: Option<AuthModel>,
   
   now: NaiveDateTime,
   
+}
+
+impl Ctx {
+  
+  pub async fn scope<F, T>(self, f: F) -> Result<T>
+    where
+      F: core::future::Future<Output = Result<T>>,
+      T: Send,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let res = f.await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      ctx.ok(res).await
+    }).await
+  }
+  
+}
+
+pub fn use_ctx() -> Arc<Ctx> {
+  CTX.with(|ctx| ctx.clone())
 }
 
 #[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
@@ -1303,7 +1350,7 @@ impl std::fmt::Display for SrvErr {
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum ArgType {
   Bool(bool),
   I8(i8),
@@ -1384,7 +1431,7 @@ impl Display for ArgType {
   }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Default, Clone)]
 pub struct QueryArgs {
   
   pub value: Vec<ArgType>,
@@ -1648,7 +1695,7 @@ impl Options {
   
 }
 
-// impl<'a> Drop for Ctx<'a> {
+// impl Drop for Ctx {
   
 //   fn drop(&mut self) {
 //     if (&(self.tran)).is_some() {
@@ -1752,7 +1799,7 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
-  pub fn build(self) -> Ctx<'a> {
+  pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: self.req_id,

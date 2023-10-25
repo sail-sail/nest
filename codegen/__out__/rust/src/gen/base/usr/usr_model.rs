@@ -29,6 +29,10 @@ pub struct UsrModel {
   pub username: String,
   /// 密码
   pub password: String,
+  /// 所属组织
+  pub org_ids: Vec<String>,
+  /// 所属组织
+  pub org_ids_lbl: Vec<String>,
   /// 默认组织
   pub default_org_id: String,
   /// 默认组织
@@ -41,10 +45,6 @@ pub struct UsrModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 所属组织
-  pub org_ids: Vec<String>,
-  /// 所属组织
-  pub org_ids_lbl: Vec<String>,
   /// 所属部门
   pub dept_ids: Vec<String>,
   /// 所属部门
@@ -89,16 +89,6 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let username: String = row.try_get("username")?;
     // 密码
     let password: String = row.try_get("password")?;
-    // 默认组织
-    let default_org_id: String = row.try_get("default_org_id")?;
-    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
-    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
     // 所属组织
     let org_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
@@ -134,6 +124,16 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         )
         .collect::<Vec<String>>()
     };
+    // 默认组织
+    let default_org_id: String = row.try_get("default_org_id")?;
+    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
+    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
+    // 锁定
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
     // 所属部门
     let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
@@ -236,14 +236,14 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       lbl,
       username,
       password,
+      org_ids,
+      org_ids_lbl,
       default_org_id,
       default_org_id_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
-      org_ids,
-      org_ids_lbl,
       dept_ids,
       dept_ids_lbl,
       role_ids,
@@ -275,6 +275,10 @@ pub struct UsrFieldComment {
   pub lbl: String,
   /// 用户名
   pub username: String,
+  /// 所属组织
+  pub org_ids: String,
+  /// 所属组织
+  pub org_ids_lbl: String,
   /// 默认组织
   pub default_org_id: String,
   /// 默认组织
@@ -287,10 +291,6 @@ pub struct UsrFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 所属组织
-  pub org_ids: String,
-  /// 所属组织
-  pub org_ids_lbl: String,
   /// 所属部门
   pub dept_ids: String,
   /// 所属部门
@@ -343,6 +343,10 @@ pub struct UsrSearch {
   pub password: Option<String>,
   /// 密码
   pub password_like: Option<String>,
+  /// 所属组织
+  pub org_ids: Option<Vec<String>>,
+  /// 所属组织
+  pub org_ids_is_null: Option<bool>,
   /// 默认组织
   pub default_org_id: Option<Vec<String>>,
   /// 默认组织
@@ -351,10 +355,6 @@ pub struct UsrSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
-  /// 所属组织
-  pub org_ids: Option<Vec<String>>,
-  /// 所属组织
-  pub org_ids_is_null: Option<bool>,
   /// 所属部门
   pub dept_ids: Option<Vec<String>>,
   /// 所属部门
@@ -397,6 +397,10 @@ pub struct UsrInput {
   pub username: Option<String>,
   /// 密码
   pub password: Option<String>,
+  /// 所属组织
+  pub org_ids: Option<Vec<String>>,
+  /// 所属组织
+  pub org_ids_lbl: Option<Vec<String>>,
   /// 默认组织
   pub default_org_id: Option<String>,
   /// 默认组织
@@ -409,10 +413,6 @@ pub struct UsrInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 所属组织
-  pub org_ids: Option<Vec<String>>,
-  /// 所属组织
-  pub org_ids_lbl: Option<Vec<String>>,
   /// 所属部门
   pub dept_ids: Option<Vec<String>>,
   /// 所属部门
@@ -457,14 +457,14 @@ impl From<UsrInput> for UsrSearch {
       username: input.username,
       // 密码
       password: input.password,
+      // 所属组织
+      org_ids: input.org_ids,
       // 默认组织
       default_org_id: input.default_org_id.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
-      // 所属组织
-      org_ids: input.org_ids,
       // 所属部门
       dept_ids: input.dept_ids,
       // 拥有角色

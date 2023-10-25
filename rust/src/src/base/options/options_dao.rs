@@ -1,5 +1,4 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
 
 use crate::gen::base::options::options_dao;
 use crate::gen::base::options::options_model::{
@@ -8,13 +7,11 @@ use crate::gen::base::options::options_model::{
   OptionsInput,
 };
 
-pub async fn get_options_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_options_by_lbl(
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   
   let res = options_dao::find_all(
-    ctx,
     OptionsSearch {
       lbl: lbl.into(),
       ..Default::default()
@@ -28,12 +25,10 @@ pub async fn get_options_by_lbl<'a>(
 }
 
 /// 更新国际化版本号
-pub async fn update_i18n_version<'a>(
-  ctx: &Ctx<'a>,
-) -> Result<String> {
+pub async fn update_i18n_version() -> Result<String> {
   
   let lbl = "国际化版本号".to_owned();
-  let models = get_options_by_lbl(ctx, lbl).await?;
+  let models = get_options_by_lbl(lbl).await?;
   let options_model = models.into_iter().find(|item| item.ky == "i18n_version");
   if options_model.is_none() {
     let i18n_version = "1".to_owned();
@@ -47,7 +42,6 @@ pub async fn update_i18n_version<'a>(
       ..Default::default()
     };
     options_dao::create(
-      ctx,
       input,
       None,
     ).await?;
@@ -59,7 +53,6 @@ pub async fn update_i18n_version<'a>(
   let i18n_version = i18n_version.to_string();
   
   options_dao::update_by_id(
-    ctx,
     options_model.id,
     OptionsInput {
       val: i18n_version.clone().into(),

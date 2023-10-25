@@ -1,13 +1,11 @@
 use anyhow::Result;
 use fast_chemail::is_valid_email;
 
-use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
-pub async fn email<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn email(
   value: Option<String>,
   label: &str,
 ) -> Result<()> {
@@ -22,7 +20,6 @@ pub async fn email<'a>(
   }
   
   let msg = ns(
-    ctx,
     "邮件格式不正确".to_owned(),
     None,
   ).await?;

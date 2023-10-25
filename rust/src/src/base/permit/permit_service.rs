@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::src::base::i18n::i18n_dao::ns;
 
@@ -26,9 +26,8 @@ use crate::gen::base::permit::permit_model::PermitSearch;
 use crate::gen::base::permit::permit_model::PermitModel;
 
 /// 根据当前用户获取权限列表
-pub async fn get_usr_permits<'a>(
-  ctx: &Ctx<'a>,
-) -> Result<Vec<GetUsrPermits>> {
+pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
+  let ctx = &use_ctx();
   let auth_model = ctx.get_auth_model();
   if auth_model.is_none() {
     return Ok(Vec::new());
@@ -36,7 +35,6 @@ pub async fn get_usr_permits<'a>(
   let auth_model = auth_model.unwrap();
   
   let usr_model = usr_dao::find_by_id(
-    ctx,
     auth_model.id,
     None,
   ).await?;
@@ -51,7 +49,6 @@ pub async fn get_usr_permits<'a>(
   }
   
   let role_models = find_all_role(
-    ctx,
     RoleSearch {
       ids: role_ids.into(),
       is_enabled: vec![1].into(),
@@ -96,7 +93,6 @@ pub async fn get_usr_permits<'a>(
   let mut permit_models: Vec<PermitModel> = Vec::with_capacity(permit_len);
   for permit_ids in permit_ids_arr {
     let mut permit_models_tmp = find_all_permit(
-      ctx,
       PermitSearch {
         ids: permit_ids.into(),
         ..Default::default()
@@ -121,7 +117,6 @@ pub async fn get_usr_permits<'a>(
     }
     
     let menu_model = find_by_id_menu(
-      ctx,
       menu_id.clone(),
       None,
     ).await?;
@@ -159,13 +154,11 @@ pub async fn get_usr_permits<'a>(
 }
 
 /// 后端按钮权限校验
-pub async fn use_permit<'a>(
-  ctx: &Ctx<'a>,
+pub async fn use_permit(
   route_path: String,
   code: String,
 ) -> Result<()> {
   let menu_model = find_one_menu(
-    ctx,
     MenuSearch {
       route_path: route_path.clone().into(),
       is_enabled: vec![1].into(),
@@ -179,13 +172,14 @@ pub async fn use_permit<'a>(
     return Ok(());
   }
   
+  let ctx = &use_ctx();
+  
   let menu_model = menu_model.unwrap();
   
   let auth_model = ctx.get_auth_model();
   
   if auth_model.is_none() {
     let err_msg = ns(
-      ctx,
       "无权限".to_owned(),
       None,
     ).await?;
@@ -197,14 +191,12 @@ pub async fn use_permit<'a>(
   let usr_id = auth_model.id;
   
   let usr_model = usr_dao::find_by_id(
-    ctx,
     usr_id,
     None,
   ).await?;
   
   if usr_model.is_none() {
     let err_msg = ns(
-      ctx,
       "无权限".to_owned(),
       None,
     ).await?;
@@ -221,7 +213,6 @@ pub async fn use_permit<'a>(
   
   if role_ids.is_empty() {
     let err_msg = ns(
-      ctx,
       "无权限".to_owned(),
       None,
     ).await?;
@@ -229,7 +220,6 @@ pub async fn use_permit<'a>(
   }
   
   let role_models = find_all_role(
-    ctx,
     RoleSearch {
       ids: role_ids.into(),
       is_enabled: vec![1].into(),
@@ -265,7 +255,6 @@ pub async fn use_permit<'a>(
   let menu_id = menu_model.id;
   for permit_ids in permit_ids_arr.into_iter() {
     let permit_model = find_one_permit(
-      ctx,
       PermitSearch {
         ids: permit_ids.into(),
         menu_id: vec![menu_id.clone()].into(),
@@ -285,7 +274,6 @@ pub async fn use_permit<'a>(
   map.insert("1".to_owned(), code);
   
   let err_msg = ns(
-    ctx,
     "{0} {1} 无权限".to_owned(),
     Some(map),
   ).await?;

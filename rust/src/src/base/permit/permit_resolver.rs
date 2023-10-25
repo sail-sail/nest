@@ -1,17 +1,12 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
 
 use super::permit_service;
 use super::permit_model::GetUsrPermits;
 
 /// 根据当前用户获取权限列表
-pub async fn get_usr_permits<'a>(
-  ctx: &Ctx<'a>,
-) -> Result<Vec<GetUsrPermits>> {
+pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   
-  let permits = permit_service::get_usr_permits(
-    ctx,
-  ).await?;
+  let permits = permit_service::get_usr_permits().await?;
   
   Ok(permits)
 }

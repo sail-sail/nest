@@ -4,7 +4,7 @@ use crate::common::util::string::*;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
+  use_ctx,
   QueryArgs,
   Options,
   CountModel,
@@ -25,11 +25,11 @@ use crate::common::gql::model::{
 use super::i18n_model::*;
 
 #[allow(unused_variables)]
-async fn get_where_query<'a>(
-  ctx: &Ctx<'a>,
+async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<I18nSearch>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -284,8 +284,7 @@ async fn get_from_query() -> Result<String> {
 
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<I18nSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -299,7 +298,7 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "create_time") {
@@ -335,6 +334,7 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let mut res: Vec<I18nModel> = ctx.query(
     sql,
     args,
@@ -349,8 +349,7 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查询数据总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<I18nSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -362,7 +361,7 @@ pub async fn find_count<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let sql = format!(r#"
     select
@@ -387,6 +386,7 @@ pub async fn find_count<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let res: Option<CountModel> = ctx.query_one(
     sql,
     args,
@@ -414,8 +414,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 
 /// 获取字段对应的国家化后的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<I18nFieldComment> {
   
@@ -441,7 +440,6 @@ pub async fn get_field_comments<'a>(
   ];
   
   let map = n_route.n_batch(
-    ctx,
     i18n_code_maps.clone(),
   ).await?;
   
@@ -475,8 +473,7 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<I18nSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -488,7 +485,6 @@ pub async fn find_one<'a>(
   }.into();
   
   let res = find_all(
-    ctx,
     search,
     page,
     sort,
@@ -501,8 +497,7 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
@@ -513,7 +508,6 @@ pub async fn find_by_id<'a>(
   }.into();
   
   let res = find_one(
-    ctx,
     search,
     None,
     options,
@@ -523,14 +517,12 @@ pub async fn find_by_id<'a>(
 }
 
 /// 根据搜索条件判断数据是否存在
-pub async fn exists<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists(
   search: Option<I18nSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let total = find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -539,8 +531,7 @@ pub async fn exists<'a>(
 }
 
 /// 根据ID判断数据是否存在
-pub async fn exists_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -551,7 +542,6 @@ pub async fn exists_by_id<'a>(
   }.into();
   
   let res = exists(
-    ctx,
     search,
     options,
   ).await?;
@@ -561,8 +551,7 @@ pub async fn exists_by_id<'a>(
 
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_unique(
   search: I18nSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -570,7 +559,6 @@ pub async fn find_by_unique<'a>(
   
   if let Some(id) = search.id {
     let model = find_by_id(
-      ctx,
       id,
       None,
     ).await?;
@@ -596,7 +584,6 @@ pub async fn find_by_unique<'a>(
     };
     
     find_all(
-      ctx,
       search.into(),
       None,
       None,
@@ -630,8 +617,7 @@ fn equals_by_unique(
 
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn check_by_unique(
   input: I18nInput,
   model: I18nModel,
   unique_type: UniqueType,
@@ -649,7 +635,6 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Update {
     let options = Options::new();
     let id = update_by_id(
-      ctx,
       model.id.clone(),
       input,
       Some(options),
@@ -658,7 +643,6 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let err_msg = i18n_dao::ns(
-      ctx,
       "记录已经存在".to_owned(),
       None,
     ).await?;
@@ -669,8 +653,7 @@ pub async fn check_by_unique<'a>(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
-pub async fn set_id_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn set_id_by_lbl(
   input: I18nInput,
 ) -> Result<I18nInput> {
   
@@ -686,7 +669,6 @@ pub async fn set_id_by_lbl<'a>(
       item.trim().to_owned()
     );
     let model = crate::gen::base::lang::lang_dao::find_one(
-      ctx,
       crate::gen::base::lang::lang_model::LangSearch {
         lbl: input.lang_id_lbl.clone(),
         ..Default::default()
@@ -708,7 +690,6 @@ pub async fn set_id_by_lbl<'a>(
       item.trim().to_owned()
     );
     let model = crate::gen::base::menu::menu_dao::find_one(
-      ctx,
       crate::gen::base::menu::menu_model::MenuSearch {
         lbl: input.menu_id_lbl.clone(),
         ..Default::default()
@@ -726,8 +707,7 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 #[allow(unused_mut)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   mut input: I18nInput,
   options: Option<Options>,
 ) -> Result<String> {
@@ -741,10 +721,10 @@ pub async fn create<'a>(
     ).into());
   }
   
+  let ctx = &use_ctx();
   let now = ctx.get_now();
   
   let old_models = find_by_unique(
-    ctx,
     input.clone().into(),
     None,
     None,
@@ -763,7 +743,6 @@ pub async fn create<'a>(
     for old_model in old_models {
       
       id = check_by_unique(
-        ctx,
         input.clone(),
         old_model,
         unique_type,
@@ -783,7 +762,6 @@ pub async fn create<'a>(
   loop {
     id = get_short_uuid();
     let is_exist = exists_by_id(
-      ctx,
       id.clone(),
       None,
     ).await?;
@@ -881,22 +859,20 @@ pub async fn create<'a>(
 
 /// 根据id修改数据
 #[allow(unused_mut)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   mut input: I18nInput,
   options: Option<Options>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   
   let old_model = find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
   
   if old_model.is_none() {
     let err_msg = i18n_dao::ns(
-      ctx,
       "数据已删除".to_owned(),
       None,
     ).await?;
@@ -908,7 +884,6 @@ pub async fn update_by_id<'a>(
     input.id = None;
     
     let models = find_by_unique(
-      ctx,
       input.into(),
       None,
       None,
@@ -931,7 +906,6 @@ pub async fn update_by_id<'a>(
       };
       if unique_type == UniqueType::Throw {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1018,7 +992,7 @@ pub async fn update_by_id<'a>(
     
   }
   
-  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;
+  crate::src::base::options::options_dao::update_i18n_version().await?;
   
   Ok(id)
 }
@@ -1036,14 +1010,15 @@ fn get_foreign_tables() -> Vec<&'static str> {
 }
 
 /// 根据 ids 删除数据
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_i18n";
   let _method = "delete_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1074,20 +1049,21 @@ pub async fn delete_by_ids<'a>(
     ).await?;
   }
   
-  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;
+  crate::src::base::options::options_dao::update_i18n_version().await?;
   
   Ok(num)
 }
 
 /// 根据 ids 还原数据
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_i18n";
   let _method = "revert_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1119,7 +1095,6 @@ pub async fn revert_by_ids<'a>(
     // 检查数据的唯一索引
     {
       let old_model = find_by_id(
-        ctx,
         id.clone(),
         None,
       ).await?;
@@ -1133,7 +1108,6 @@ pub async fn revert_by_ids<'a>(
       input.id = None;
       
       let models = find_by_unique(
-        ctx,
         input.into(),
         None,
         None,
@@ -1147,7 +1121,6 @@ pub async fn revert_by_ids<'a>(
       
       if !models.is_empty() {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1161,8 +1134,7 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1170,13 +1142,14 @@ pub async fn force_delete_by_ids<'a>(
   let table = "base_i18n";
   let _method = "force_delete_by_ids";
   
+  let ctx = &use_ctx();
+  
   let options = Options::from(options);
   
   let mut num = 0;
   for id in ids {
     
     let model = find_all(
-      ctx,
       I18nSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -1223,17 +1196,14 @@ pub async fn force_delete_by_ids<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
     let msg0 = i18n_dao::ns(
-      ctx,
       "国际化".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      ctx,
       "不存在".to_owned(),
       None,
     ).await?;

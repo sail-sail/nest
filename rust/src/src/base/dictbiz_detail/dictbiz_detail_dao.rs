@@ -1,17 +1,22 @@
 use anyhow::Result;
 
-use crate::common::context::{Ctx, QueryArgs, Options};
+use crate::common::context::{
+  use_ctx,
+  QueryArgs,
+  Options,
+};
 
 use super::dictbiz_detail_model::GetDictbiz;
 
 /// 获取业务字典
-pub async fn get_dictbiz<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_dictbiz(
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<GetDictbiz>>> {
   if codes.is_empty() {
     return Ok(vec![]);
   }
+  
+  let ctx = &use_ctx();
   
   let table = "base_dict";
   

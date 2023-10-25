@@ -93,11 +93,12 @@ export type MenuModelTree = MenuModel & {
  * @returns 
  */
 export async function findTree(
+  search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const res = await findAll(
-    undefined,
+    search,
     undefined,
     sort,
     opt,
@@ -517,6 +518,7 @@ export async function getUsrList() {
 
 export async function getMenuTree() {
   const data = await findMenuTree(
+    undefined,
     [
       {
         prop: "order_by",

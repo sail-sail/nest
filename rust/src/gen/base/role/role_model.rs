@@ -23,6 +23,8 @@ pub struct RoleModel {
   pub id: String,
   /// 名称
   pub lbl: String,
+  /// 首页
+  pub home_url: String,
   /// 菜单权限
   pub menu_ids: Vec<String>,
   /// 菜单权限
@@ -73,6 +75,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 首页
+    let home_url: String = row.try_get("home_url")?;
     // 菜单权限
     let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
@@ -213,6 +217,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       tenant_id,
       id,
       lbl,
+      home_url,
       menu_ids,
       menu_ids_lbl,
       permit_ids,
@@ -246,6 +251,8 @@ pub struct RoleFieldComment {
   pub id: String,
   /// 名称
   pub lbl: String,
+  /// 首页
+  pub home_url: String,
   /// 菜单权限
   pub menu_ids: String,
   /// 菜单权限
@@ -298,6 +305,10 @@ pub struct RoleSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
+  /// 首页
+  pub home_url: Option<String>,
+  /// 首页
+  pub home_url_like: Option<String>,
   /// 菜单权限
   pub menu_ids: Option<Vec<String>>,
   /// 菜单权限
@@ -342,6 +353,8 @@ pub struct RoleInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 首页
+  pub home_url: Option<String>,
   /// 菜单权限
   pub menu_ids: Option<Vec<String>>,
   /// 菜单权限
@@ -392,6 +405,8 @@ impl From<RoleInput> for RoleSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
+      // 首页
+      home_url: input.home_url,
       // 菜单权限
       menu_ids: input.menu_ids,
       // 按钮权限

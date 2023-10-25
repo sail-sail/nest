@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::common::context::{Ctx, Options};
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
@@ -8,8 +8,7 @@ use super::domain_model::*;
 use super::domain_service;
 
 /// 根据搜索条件和分页查找数据
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<DomainSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -17,7 +16,6 @@ pub async fn find_all<'a>(
 ) -> Result<Vec<DomainModel>> {
   
   let res = domain_service::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -28,14 +26,12 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查找总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<DomainSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let num = domain_service::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -44,15 +40,13 @@ pub async fn find_count<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<DomainSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
   
   let model = domain_service::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -62,14 +56,12 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
   
   let model = domain_service::find_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -79,25 +71,21 @@ pub async fn find_by_id<'a>(
 
 /// 创建数据
 #[allow(dead_code)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   input: DomainInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = domain_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "add".to_owned(),
   ).await?;
   
   let id = domain_service::create(
-    ctx,
     input,
     options,
   ).await?;
@@ -107,26 +95,22 @@ pub async fn create<'a>(
 
 /// 根据id修改数据
 #[allow(dead_code)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   input: DomainInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = domain_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "edit".to_owned(),
   ).await?;
   
   let res = domain_service::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -137,20 +121,17 @@ pub async fn update_by_id<'a>(
 
 /// 根据 ids 删除数据
 #[allow(dead_code)]
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "delete".to_owned(),
   ).await?;
   
   let num = domain_service::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -160,20 +141,17 @@ pub async fn delete_by_ids<'a>(
 
 /// 根据 id 设置默认记录
 #[allow(dead_code)]
-pub async fn default_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn default_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "default".to_owned(),
   ).await?;
   
   let num = domain_service::default_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -184,14 +162,12 @@ pub async fn default_by_id<'a>(
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_enabled_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = domain_service::get_is_enabled_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -201,21 +177,18 @@ pub async fn get_is_enabled_by_id<'a>(
 
 /// 根据 ids 启用或禁用数据
 #[allow(dead_code)]
-pub async fn enable_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn enable_by_ids(
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "enable".to_owned(),
   ).await?;
   
   let num = domain_service::enable_by_ids(
-    ctx,
     ids,
     is_enabled,
     options,
@@ -228,14 +201,12 @@ pub async fn enable_by_ids<'a>(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_locked_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = domain_service::get_is_locked_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -245,21 +216,18 @@ pub async fn get_is_locked_by_id<'a>(
 
 /// 根据 ids 锁定或解锁数据
 #[allow(dead_code)]
-pub async fn lock_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn lock_by_ids(
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "lock".to_owned(),
   ).await?;
   
   let num = domain_service::lock_by_ids(
-    ctx,
     ids,
     is_locked,
     options,
@@ -269,13 +237,11 @@ pub async fn lock_by_ids<'a>(
 }
 
 /// 获取字段对应的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<DomainFieldComment> {
   
   let comments = domain_service::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -284,20 +250,17 @@ pub async fn get_field_comments<'a>(
 
 /// 根据 ids 还原数据
 #[allow(dead_code)]
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "delete".to_owned(),
   ).await?;
   
   let num = domain_service::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -307,20 +270,17 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/domain".to_owned(),
     "force_delete".to_owned(),
   ).await?;
   
   let num = domain_service::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -329,13 +289,11 @@ pub async fn force_delete_by_ids<'a>(
 }
 
 /// 查找 order_by 字段的最大值
-pub async fn find_last_order_by<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let res = domain_service::find_last_order_by(
-    ctx,
     options,
   ).await?;
   

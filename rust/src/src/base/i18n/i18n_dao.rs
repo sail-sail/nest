@@ -2,7 +2,10 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::{Ctx, Options};
+use crate::common::context::{
+  use_ctx,
+  Options,
+};
 
 use regex::{Regex, Captures};
 
@@ -24,34 +27,32 @@ pub struct NRoute {
 impl NRoute {
   
   #[allow(dead_code)]
-  pub async fn n<'a>(
+  pub async fn n(
     &self,
-    ctx: &Ctx<'a>,
     code: String,
     map: Option<HashMap<String, String>>,
   ) -> Result<String> {
-    let res = n(ctx, self.route_path.clone(), code, map).await?;
+    let res = n(self.route_path.clone(), code, map).await?;
     Ok(res)
   }
   
-  pub async fn n_batch<'a>(
+  pub async fn n_batch(
     &self,
-    ctx: &Ctx<'a>,
     i18n_code_maps: Vec<I18nCodeMap>,
   ) -> Result<HashMap<String, String>> {
-    let res = n_batch(ctx, self.route_path.clone(), i18n_code_maps).await?;
+    let res = n_batch(self.route_path.clone(), i18n_code_maps).await?;
     Ok(res)
   }
   
 }
 
 #[allow(dead_code)]
-pub async fn n<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n(
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -60,7 +61,7 @@ pub async fn n<'a>(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, route_path, code, map).await?;
+  let i18n_lbl = n_lang(lang_code, route_path, code, map).await?;
   Ok(i18n_lbl)
 }
 
@@ -98,11 +99,11 @@ impl From<(String, HashMap<String, String>)> for I18nCodeMap {
 }
 
 #[allow(dead_code)]
-pub async fn n_batch<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n_batch(
   route_path: Option<String>,
   i18n_code_maps: Vec<I18nCodeMap>,
 ) -> Result<HashMap<String, String>> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(
@@ -126,7 +127,6 @@ pub async fn n_batch<'a>(
   let mut i18n_lbls: HashMap<String, String> = HashMap::new();
   for i18n_code_map in i18n_code_maps {
     let i18n_lbl = n_lang(
-      ctx,
       lang_code.clone(),
       route_path.clone(),
       i18n_code_map.code.clone(),
@@ -138,11 +138,11 @@ pub async fn n_batch<'a>(
 }
 
 #[allow(dead_code)]
-pub async fn ns<'a>(
-  ctx: &Ctx<'a>,
+pub async fn ns(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -151,12 +151,11 @@ pub async fn ns<'a>(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, None, code, map).await?;
+  let i18n_lbl = n_lang(lang_code, None, code, map).await?;
   Ok(i18n_lbl)
 }
 
-pub async fn n_lang<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n_lang(
   lang_code: String,
   route_path: Option<String>,
   code: String,
@@ -170,7 +169,6 @@ pub async fn n_lang<'a>(
   
   let mut i18n_lbl = code.clone();
   let lang_model = find_one_lang(
-    ctx,
     LangSearch {
       code: lang_code.into(),
       is_enabled: vec![1].into(),
@@ -182,7 +180,6 @@ pub async fn n_lang<'a>(
   let mut menu_id: Option<String> = None;
   if let Some(route_path) = route_path {
     let menu_model = find_one_menu(
-      ctx,
       MenuSearch {
         route_path: route_path.into(),
         is_enabled: vec![1].into(),
@@ -200,7 +197,6 @@ pub async fn n_lang<'a>(
     let mut i18n_model: Option<I18nModel> = None;
     if let Some(menu_id) = menu_id {
       i18n_model = find_one_i18n(
-        ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
           menu_id: vec![menu_id].into(),
@@ -212,7 +208,6 @@ pub async fn n_lang<'a>(
       ).await?;
       if i18n_model.is_none() {
         i18n_model = find_one_i18n(
-          ctx,
           I18nSearch {
             lang_id: vec![lang_model.id.to_string()].into(),
             menu_id_is_null: true.into(),
@@ -225,7 +220,6 @@ pub async fn n_lang<'a>(
       }
     } else {
       i18n_model = find_one_i18n(
-        ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
           menu_id_is_null: true.into(),

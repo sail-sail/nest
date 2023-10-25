@@ -36,7 +36,9 @@
     "pinia-plugin-persistedstate": "3.2.0",
     "pinyin-pro": "3.17.0",
     "sortablejs": "1.15.0",
+    "swiper": "10.3.1",
     "vue": "3.3.4",
+    "vue-countup-v3": "1.4.0",
     "vue-demi": "0.14.6",
     "vue-router": "4.2.5",
     "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
+// use crate::common::context::use_ctx;
 
 use crate::gen::base::tenant::tenant_dao;
 use crate::gen::base::tenant::tenant_model::{
@@ -14,9 +14,9 @@ use crate::gen::base::domain::domain_model::{
 };
 
 // 获取当前租户绑定的网址
-// pub async fn get_host_tenant<'a>(
-//   ctx: &Ctx<'a>,
-// ) -> Result<String> {
+// pub async fn get_host_tenant() -> Result<String> {
+  
+//   let ctx = &use_ctx();
   
 //   let tenant_id = ctx.get_auth_tenant_id();
   
@@ -27,7 +27,6 @@ use crate::gen::base::domain::domain_model::{
 //   let tenant_id = tenant_id.unwrap();
   
 //   let model = tenant_dao::find_one(
-//     ctx,
 //     TenantSearch {
 //       id: tenant_id.into(),
 //       ..Default::default()
@@ -49,13 +48,11 @@ use crate::gen::base::domain::domain_model::{
 
 /// 根据 当前网址的域名+端口 获取 租户列表
 #[allow(unused_variables)]
-pub async fn get_login_tenants<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_login_tenants(
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   
   let domain_models: Vec<DomainModel> = domain_dao::find_all(
-    ctx,
     DomainSearch {
       lbl: domain.into(),
       is_enabled: vec![1].into(),
@@ -73,7 +70,6 @@ pub async fn get_login_tenants<'a>(
       .map(|x| x.id)
       .collect();
     tenant_dao::find_all(
-      ctx,
       TenantSearch {
         domain_ids: domain_ids.into(),
         is_enabled: vec![1].into(),

@@ -24,123 +24,110 @@ pub struct PayslipGenQuery;
 impl PayslipGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_payslip<'a>(
+  async fn find_all_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<PayslipSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<PayslipModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::find_all(
-      &ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        payslip_resolver::find_all(
+          search,
+          page,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_payslip<'a>(
+  async fn find_count_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<PayslipSearch>,
   ) -> Result<i64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::find_count(
-      &ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        payslip_resolver::find_count(
+          search,
+          None,
+        )
+      }).await
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_payslip<'a>(
+  async fn find_one_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<PayslipSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<PayslipModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::find_one(
-      &ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        payslip_resolver::find_one(
+          search,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_payslip<'a>(
+  async fn find_by_id_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<PayslipModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::find_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        payslip_resolver::find_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_payslip<'a>(
+  async fn get_is_locked_by_id_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::get_is_locked_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        payslip_resolver::get_is_locked_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_payslip<'a>(
+  async fn get_field_comments_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<PayslipFieldComment> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::get_field_comments(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        payslip_resolver::get_field_comments(
+          None,
+        )
+      }).await
   }
   
 }
@@ -152,148 +139,140 @@ pub struct PayslipGenMutation;
 impl PayslipGenMutation {
   
   /// 创建数据
-  async fn create_payslip<'a>(
+  async fn create_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: PayslipInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
-    
-    let id = payslip_resolver::create(
-      &ctx,
-      model,
-      options.into(),
-    ).await;
-    
-    ctx.ok(id).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::create(
+          model,
+          options.into(),
+        )
+      }).await
   }
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_payslip<'a>(
+  async fn update_tenant_by_id_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::update_tenant_by_id(
-      &ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::update_tenant_by_id(
+          id,
+          tenant_id,
+          None,
+        )
+      }).await
   }
   
   /// 根据id修改数据
-  async fn update_by_id_payslip<'a>(
+  async fn update_by_id_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: PayslipInput,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::update_by_id(
-      &ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::update_by_id(
+          id,
+          model,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_payslip<'a>(
+  async fn delete_by_ids_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_payslip<'a>(
+  async fn lock_by_ids_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::lock_by_ids(
-      &ctx,
-      ids,
-      is_locked,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::lock_by_ids(
+          ids,
+          is_locked,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_payslip<'a>(
+  async fn revert_by_ids_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::revert_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::revert_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_payslip<'a>(
+  async fn force_delete_by_ids_payslip(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = payslip_resolver::force_delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        payslip_resolver::force_delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
 }

@@ -1,13 +1,16 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
 
 use super::menu_dao;
 use super::menu_model::GetMenus;
 
-pub async fn get_menus<'a>(
-  ctx: &Ctx<'a>,
+/// 首页获取菜单列表
+pub async fn get_menus(
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
-  let res = menu_dao::get_menus(ctx, r#type).await?;
+  
+  let res = menu_dao::get_menus(
+    r#type,
+  ).await?;
+  
   Ok(res)
 }

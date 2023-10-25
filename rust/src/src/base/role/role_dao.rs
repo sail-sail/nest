@@ -1,13 +1,13 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 /// 获取当前用户拥有的角色id列表
 #[allow(dead_code)]
-async fn get_auth_role_ids<'a>(
-  ctx: &Ctx<'a>,
-) -> Result<Vec<String>> {
+async fn get_auth_role_ids() -> Result<Vec<String>> {
+  
+  let ctx = &use_ctx();
   
   let aut_model = ctx.get_auth_model();
   if aut_model.is_none() {
@@ -17,7 +17,6 @@ async fn get_auth_role_ids<'a>(
   let aut_model = aut_model.unwrap();
   
   let usr_model = find_by_id_usr(
-    ctx,
     aut_model.id,
     None,
   ).await?;
