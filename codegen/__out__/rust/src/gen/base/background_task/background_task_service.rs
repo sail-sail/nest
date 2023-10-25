@@ -2,7 +2,6 @@ use anyhow::Result;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
   SrvErr,
   Options,
 };
@@ -17,7 +16,6 @@ use super::background_task_dao;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -25,7 +23,6 @@ pub async fn find_all(
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let res = background_task_dao::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -37,13 +34,11 @@ pub async fn find_all(
 
 /// 根据搜索条件查找总数
 pub async fn find_count(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let res = background_task_dao::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -53,14 +48,12 @@ pub async fn find_count(
 
 /// 根据条件查找第一条数据
 pub async fn find_one(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let model = background_task_dao::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -71,13 +64,11 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let model = background_task_dao::find_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -87,12 +78,10 @@ pub async fn find_by_id(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 pub async fn set_id_by_lbl(
-  ctx: &Ctx,
   input: BackgroundTaskInput,
 ) -> Result<BackgroundTaskInput> {
   
   let input = background_task_dao::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
@@ -102,13 +91,11 @@ pub async fn set_id_by_lbl(
 /// 创建数据
 #[allow(dead_code)]
 pub async fn create(
-  ctx: &Ctx,
   input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let id = background_task_dao::create(
-    ctx,
     input,
     options,
   ).await?;
@@ -119,14 +106,12 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  ctx: &Ctx,
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::update_tenant_by_id(
-    ctx,
     id,
     tenant_id,
     options,
@@ -139,14 +124,12 @@ pub async fn update_tenant_by_id(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  ctx: &Ctx,
   id: String,
   mut input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let res = background_task_dao::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -158,13 +141,11 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -174,12 +155,10 @@ pub async fn delete_by_ids(
 
 /// 获取字段对应的名称
 pub async fn get_field_comments(
-  ctx: &Ctx,
   options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
   
   let comments = background_task_dao::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -189,13 +168,11 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -206,13 +183,11 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;

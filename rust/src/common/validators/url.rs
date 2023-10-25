@@ -2,13 +2,11 @@ use std::str::FromStr;
 use anyhow::Result;
 use http::uri::Uri;
 
-use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn url(
-  ctx: &mut Ctx,
   value: Option<String>,
   label: &str,
 ) -> Result<()> {
@@ -26,7 +24,6 @@ pub async fn url(
   }
   
   let msg = ns(
-    ctx,
     "网址格式不正确".to_owned(),
     None,
   ).await?;

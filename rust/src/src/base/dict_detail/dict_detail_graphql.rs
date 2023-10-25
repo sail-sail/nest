@@ -17,16 +17,11 @@ impl DictDetailQuery {
     ctx: &Context<'_>,
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDict>>> {
-    
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = dict_detail_resolver::get_dict(
-      &ctx,
-      &codes,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        dict_detail_resolver::get_dict(&codes)
+      }).await
   }
   
 }

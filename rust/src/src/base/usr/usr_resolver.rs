@@ -13,12 +13,10 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login(
-  ctx: &Ctx,
   input: LoginInput,
 ) -> Result<Login> {
   
   let res = usr_service::login(
-    ctx,
     input,
   ).await?;
   
@@ -41,25 +39,19 @@ pub async fn select_lang(
 
 /// 修改密码
 pub async fn change_password(
-  ctx: &Ctx,
   input: ChangePasswordInput,
 ) -> Result<bool> {
   
   let res = usr_service::change_password(
-    ctx,
     input,
   ).await?;
   
   Ok(res)
 }
 
-pub async fn get_login_info(
-  ctx: &Ctx,
-) -> Result<GetLoginInfo> {
+pub async fn get_login_info() -> Result<GetLoginInfo> {
   
-  let res = usr_service::get_login_info(
-    ctx,
-  ).await?;
+  let res = usr_service::get_login_info().await?;
   
   Ok(res)
 }

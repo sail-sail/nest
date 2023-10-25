@@ -65,19 +65,17 @@ impl <#=tableUP#>GenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::find_all(
-      &ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::find_all(
+          search,
+          page,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据搜索条件查询数据总数
@@ -86,17 +84,15 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'_>,
     search: Option<<#=tableUP#>Search>,
   ) -> Result<i64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::find_count(
-      &ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::find_count(
+          search,
+          None,
+        )
+      }).await
   }
   
   /// 根据条件查找第一条数据
@@ -106,18 +102,16 @@ impl <#=tableUP#>GenQuery {
     search: Option<<#=tableUP#>Search>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::find_one(
-      &ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::find_one(
+          search,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据ID查找第一条数据
@@ -126,17 +120,15 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::find_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::find_by_id(
+          id,
+          None,
+        )
+      }).await
   }<#
   if (hasEnabled) {
   #>
@@ -148,17 +140,15 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::get_is_enabled_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::get_is_enabled_by_id(
+          id,
+          None,
+        )
+      }).await
   }<#
   }
   #><#
@@ -173,17 +163,15 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::get_is_locked_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::get_is_locked_by_id(
+          id,
+          None,
+        )
+      }).await
   }<#
   }
   #>
@@ -193,16 +181,13 @@ impl <#=tableUP#>GenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<<#=tableUP#>FieldComment> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::get_field_comments(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        <#=table#>_resolver::get_field_comments(
+          None,
+        )
+      }).await
   }<#
   if (hasOrderBy) {
   #>
@@ -212,16 +197,14 @@ impl <#=tableUP#>GenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<u32> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = <#=table#>_resolver::find_last_order_by(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::find_last_order_by(
+          None,
+        )
+      }).await
   }<#
   }
   #>
@@ -243,23 +226,20 @@ impl <#=tableUP#>GenMutation {<#
     model: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build();
-    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
-    
-    let id = <#=table#>_resolver::create(
-      &ctx,
-      model,
-      options.into(),
-    ).await;
-    
-    ctx.ok(id).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::create(
+          model,
+          options.into(),
+        )
+      }).await
   }<#
     }
   #><#
@@ -273,19 +253,17 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::update_tenant_by_id(
-      &ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::update_tenant_by_id(
+          id,
+          tenant_id,
+          None,
+        )
+      }).await
   }<#
   }
   #><#
@@ -299,19 +277,17 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     org_id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::update_org_by_id(
-      &ctx,
-      id,
-      org_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::update_org_by_id(
+          id,
+          org_id,
+          None,
+        )
+      }).await
   }<#
   }
   #><#
@@ -325,19 +301,17 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     model: <#=tableUP#>Input,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::update_by_id(
-      &ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::update_by_id(
+          id,
+          model,
+          None,
+        )
+      }).await
   }<#
     }
   #><#
@@ -350,18 +324,16 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }<#
     }
   #><#
@@ -374,18 +346,16 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::default_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::default_by_id(
+          id,
+          None,
+        )
+      }).await
   }<#
     }
   #><#
@@ -399,19 +369,17 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::enable_by_ids(
-      &ctx,
-      ids,
-      is_enabled,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::enable_by_ids(
+          ids,
+          is_enabled,
+          None,
+        )
+      }).await
   }<#
     }
   #><#
@@ -425,19 +393,17 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::lock_by_ids(
-      &ctx,
-      ids,
-      is_locked,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::lock_by_ids(
+          ids,
+          is_locked,
+          None,
+        )
+      }).await
   }<#
     }
   #><#
@@ -450,18 +416,16 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::revert_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::revert_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 彻底删除数据
@@ -470,18 +434,16 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = <#=table#>_resolver::force_delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        <#=table#>_resolver::force_delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }<#
     }
   #>

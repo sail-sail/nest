@@ -18,16 +18,13 @@ impl TenantQuery {
     ctx: &Context<'_>,
     domain: String,
   ) -> Result<Vec<TenantModel>> {
-    
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = tenant_resolver::get_login_tenants(
-      &ctx,
-      domain,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        tenant_resolver::get_login_tenants(
+          domain,
+        )
+      }).await
   }
   
 }

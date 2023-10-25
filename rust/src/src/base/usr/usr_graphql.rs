@@ -24,16 +24,12 @@ impl UsrMutation {
     ctx: &Context<'_>,
     input: LoginInput,
   ) -> Result<Login> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_tran()?
-      .build();
-    
-    let res = usr_resolver::login(
-      &ctx,
-      input
-    ).await?;
-    
-    Ok(res)
+      .build()
+      .scope({
+        usr_resolver::login(input)
+      }).await
   }
   
   /// 选择语言
@@ -49,9 +45,9 @@ impl UsrMutation {
     let res = usr_resolver::select_lang(
       &mut ctx,
       lang,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
   /// 修改密码
@@ -60,16 +56,15 @@ impl UsrMutation {
     ctx: &Context<'_>,
     input: ChangePasswordInput,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = usr_resolver::change_password(
-      &ctx,
-      input,
-    ).await?;
-    
-    Ok(res)
+      .with_tran()?
+      .build()
+      .scope({
+        usr_resolver::change_password(
+          input,
+        )
+      }).await
   }
   
 }
@@ -85,15 +80,12 @@ impl UsrQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<GetLoginInfo> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = usr_resolver::get_login_info(
-      &ctx,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        usr_resolver::get_login_info()
+      }).await
   }
   
 }

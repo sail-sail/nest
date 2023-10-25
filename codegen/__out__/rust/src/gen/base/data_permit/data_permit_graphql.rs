@@ -31,19 +31,17 @@ impl DataPermitGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DataPermitModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = data_permit_resolver::find_all(
-      &ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::find_all(
+          search,
+          page,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据搜索条件查询数据总数
@@ -52,17 +50,15 @@ impl DataPermitGenQuery {
     ctx: &Context<'_>,
     search: Option<DataPermitSearch>,
   ) -> Result<i64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = data_permit_resolver::find_count(
-      &ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::find_count(
+          search,
+          None,
+        )
+      }).await
   }
   
   /// 根据条件查找第一条数据
@@ -72,18 +68,16 @@ impl DataPermitGenQuery {
     search: Option<DataPermitSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DataPermitModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = data_permit_resolver::find_one(
-      &ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::find_one(
+          search,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据ID查找第一条数据
@@ -92,17 +86,15 @@ impl DataPermitGenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<DataPermitModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = data_permit_resolver::find_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::find_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 获取字段对应的名称
@@ -110,16 +102,13 @@ impl DataPermitGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DataPermitFieldComment> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = data_permit_resolver::get_field_comments(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        data_permit_resolver::get_field_comments(
+          None,
+        )
+      }).await
   }
   
 }
@@ -137,23 +126,20 @@ impl DataPermitGenMutation {
     model: DataPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build();
-    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
-    
-    let id = data_permit_resolver::create(
-      &ctx,
-      model,
-      options.into(),
-    ).await;
-    
-    ctx.ok(id).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        data_permit_resolver::create(
+          model,
+          options.into(),
+        )
+      }).await
   }
   
   /// 根据id修改数据
@@ -163,19 +149,17 @@ impl DataPermitGenMutation {
     id: String,
     model: DataPermitInput,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = data_permit_resolver::update_by_id(
-      &ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::update_by_id(
+          id,
+          model,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 删除数据
@@ -184,18 +168,16 @@ impl DataPermitGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = data_permit_resolver::delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 还原数据
@@ -204,18 +186,16 @@ impl DataPermitGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = data_permit_resolver::revert_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::revert_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 彻底删除数据
@@ -224,18 +204,16 @@ impl DataPermitGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = data_permit_resolver::force_delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        data_permit_resolver::force_delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
 }

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
+use crate::common::context::{use_ctx, Ctx};
 
 use super::usr_model::Login;
 
@@ -27,7 +27,6 @@ use crate::src::base::i18n::i18n_dao::NRoute;
 
 /// 登录, 获得token
 pub async fn login(
-  ctx: &Ctx,
   input: LoginInput,
 ) -> Result<Login> {
   let LoginInput {
@@ -44,7 +43,6 @@ pub async fn login(
     return Err(anyhow::anyhow!("请选择租户"));
   }
   let usr_model = usr_dao::find_one(
-    ctx,
     UsrSearch {
       username: username.into(),
       tenant_id: tenant_id.clone().into(),
@@ -58,7 +56,6 @@ pub async fn login(
   }
   let usr_model = usr_model.unwrap();
   usr_dao::validate_is_enabled(
-    ctx,
     &usr_model,
   ).await?;
   
@@ -80,6 +77,8 @@ pub async fn login(
   }
   
   let org_id: String = org_id.unwrap();
+  
+  let ctx = &use_ctx();
   
   let now = ctx.get_now();
   let server_tokentimeout = ctx.get_server_tokentimeout();
@@ -122,7 +121,6 @@ pub async fn select_lang(
 
 /// 修改密码
 pub async fn change_password(
-  ctx: &Ctx,
   input: ChangePasswordInput,
 ) -> Result<bool> {
   
@@ -136,7 +134,6 @@ pub async fn change_password(
   
   if old_password.is_empty() {
     let err_msg = n_route.n(
-      ctx,
       "旧密码不能为空".to_owned(),
       None,
     ).await?;
@@ -144,7 +141,6 @@ pub async fn change_password(
   }
   if password.is_empty() {
     let err_msg = n_route.n(
-      ctx,
       "新密码不能为空".to_owned(),
       None,
     ).await?;
@@ -152,7 +148,6 @@ pub async fn change_password(
   }
   if confirm_password.is_empty() {
     let err_msg = n_route.n(
-      ctx,
       "确认密码不能为空".to_owned(),
       None,
     ).await?;
@@ -160,28 +155,26 @@ pub async fn change_password(
   }
   if password != confirm_password {
     let err_msg = n_route.n(
-      ctx,
       "两次输入的密码不一致".to_owned(),
       None,
     ).await?;
     return Err(anyhow::anyhow!(err_msg));
   }
   
+  let ctx = &use_ctx();
+  
   let auth_model = ctx.get_auth_model_err()?;
   
   let usr_id = auth_model.id;
   
   let usr_model = usr_dao::find_by_id(
-    ctx,
     usr_id.clone(),
     None,
   ).await?;
   let usr_model = usr_dao::validate_option(
-    ctx,
     usr_model
   ).await?;
   usr_dao::validate_is_enabled(
-    ctx,
     &usr_model,
   ).await?;
   
@@ -189,7 +182,6 @@ pub async fn change_password(
   
   if usr_model.password != old_password {
     let err_msg = n_route.n(
-      ctx,
       "旧密码错误".to_owned(),
       None,
     ).await?;
@@ -197,7 +189,6 @@ pub async fn change_password(
   }
   
   usr_dao::update_by_id(
-    ctx,
     usr_id,
     UsrInput {
       password: password.into(),
@@ -209,19 +200,17 @@ pub async fn change_password(
   Ok(true)
 }
 
-pub async fn get_login_info(
-  ctx: &Ctx,
-) -> Result<GetLoginInfo> {
+pub async fn get_login_info() -> Result<GetLoginInfo> {
+  
+  let ctx = &use_ctx();
   
   let auth_model = ctx.get_auth_model_err()?;
   
   let usr_model = usr_dao::find_by_id(
-    ctx,
     auth_model.id,
     None,
   ).await?;
   let usr_model = usr_dao::validate_option(
-    ctx,
     usr_model
   ).await?;
   

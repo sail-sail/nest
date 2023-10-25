@@ -16,16 +16,12 @@ impl RoleQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<Vec<String>> {
-    
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::get_home_urls(
-      &ctx,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::get_home_urls()
+      }).await
   }
   
 }

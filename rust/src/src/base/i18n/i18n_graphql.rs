@@ -18,18 +18,16 @@ impl I18nQuery {
     route_path: Option<String>,
     code: String,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = i18n_resolver::n_lang(
-      &ctx,
-      lang_code,
-      route_path,
-      code,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        i18n_resolver::n_lang(
+          lang_code,
+          route_path,
+          code,
+          None,
+        )
+      }).await
   }
   
 }   
