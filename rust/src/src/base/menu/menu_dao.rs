@@ -1,12 +1,17 @@
 use anyhow::Result;
-use crate::common::context::{Ctx, QueryArgs, Options};
+use crate::common::context::{
+  use_ctx,
+  QueryArgs,
+  Options,
+};
 
 use super::menu_model::GetMenus;
 
-async fn find_menus<'a>(
-  ctx: &Ctx<'a>,
+async fn find_menus(
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
+  
+  let ctx = &use_ctx();
   
   let table = "base_menu";
   
@@ -119,11 +124,11 @@ async fn find_menus<'a>(
 //   }
 // }
 
-pub async fn get_menus<'a>(
-  ctx: &Ctx<'a>,
+/// 首页获取菜单列表
+pub async fn get_menus(
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
-  let all_models: Vec<GetMenus> = find_menus(ctx, r#type).await?;
+  let all_models: Vec<GetMenus> = find_menus(r#type).await?;
   // let mut menus: Vec<GetMenus> = vec![];
   // tmp_fn(None, all_models, &mut menus);
   // Ok(menus)

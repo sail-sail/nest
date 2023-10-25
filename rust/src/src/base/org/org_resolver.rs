@@ -3,8 +3,8 @@ use crate::common::context::Ctx;
 
 use super::org_service;
 
-pub async fn org_login_select<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn org_login_select(
+  ctx: &mut Ctx,
   org_id: String,
 ) -> Result<String> {
   

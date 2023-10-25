@@ -1,35 +1,22 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
-use async_graphql::{Context, Object};
 
-use crate::common::context::Ctx;
+use super::i18n_service;
 
-use super::i18n_service::n_lang as service_n_lang;
-
-#[derive(Default)]
-pub struct I18nQuery;
-
-#[Object]
-impl I18nQuery {
+pub async fn n_lang(
+  lang_code: String,
+  route_path: Option<String>,
+  code: String,
+  args: Option<HashMap<String, String>>,
+) -> Result<String> {
   
-  async fn n<'a>(
-    &self,
-    ctx: &Context<'a>,
-    lang_code: String,
-    route_path: Option<String>,
-    code: String,
-  ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = service_n_lang(
-      &ctx,
-      lang_code,
-      route_path,
-      code,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let res = i18n_service::n_lang(
+    lang_code,
+    route_path,
+    code,
+    args,
+  ).await?;
   
-}   
+  Ok(res)
+}

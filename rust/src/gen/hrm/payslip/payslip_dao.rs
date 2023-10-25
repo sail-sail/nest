@@ -7,7 +7,7 @@ use crate::common::util::dao::encrypt;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
+  use_ctx,
   QueryArgs,
   Options,
   CountModel,
@@ -30,11 +30,11 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::payslip_model::*;
 
 #[allow(unused_variables)]
-async fn get_where_query<'a>(
-  ctx: &Ctx<'a>,
+async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<PayslipSearch>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -421,8 +421,7 @@ async fn get_from_query() -> Result<String> {
 
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<PayslipSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -436,7 +435,7 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "create_time") {
@@ -468,13 +467,14 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let mut res: Vec<PayslipModel> = ctx.query(
     sql,
     args,
     options,
   ).await?;
   
-  let dict_vec = get_dict(ctx, &vec![
+  let dict_vec = get_dict(&vec![
     "yes_no",
     "yes_no",
     "is_locked",
@@ -516,8 +516,7 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查询数据总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<PayslipSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -529,7 +528,7 @@ pub async fn find_count<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let sql = format!(r#"
     select
@@ -552,6 +551,7 @@ pub async fn find_count<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let res: Option<CountModel> = ctx.query_one(
     sql,
     args,
@@ -579,8 +579,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 
 /// 获取字段对应的国家化后的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<PayslipFieldComment> {
   
@@ -616,7 +615,6 @@ pub async fn get_field_comments<'a>(
   ];
   
   let map = n_route.n_batch(
-    ctx,
     i18n_code_maps.clone(),
   ).await?;
   
@@ -660,8 +658,7 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<PayslipSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -673,7 +670,6 @@ pub async fn find_one<'a>(
   }.into();
   
   let res = find_all(
-    ctx,
     search,
     page,
     sort,
@@ -686,8 +682,7 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<PayslipModel>> {
@@ -698,7 +693,6 @@ pub async fn find_by_id<'a>(
   }.into();
   
   let res = find_one(
-    ctx,
     search,
     None,
     options,
@@ -708,14 +702,12 @@ pub async fn find_by_id<'a>(
 }
 
 /// 根据搜索条件判断数据是否存在
-pub async fn exists<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists(
   search: Option<PayslipSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let total = find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -724,8 +716,7 @@ pub async fn exists<'a>(
 }
 
 /// 根据ID判断数据是否存在
-pub async fn exists_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -736,7 +727,6 @@ pub async fn exists_by_id<'a>(
   }.into();
   
   let res = exists(
-    ctx,
     search,
     options,
   ).await?;
@@ -746,8 +736,7 @@ pub async fn exists_by_id<'a>(
 
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_unique(
   search: PayslipSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -755,7 +744,6 @@ pub async fn find_by_unique<'a>(
   
   if let Some(id) = search.id {
     let model = find_by_id(
-      ctx,
       id,
       None,
     ).await?;
@@ -779,7 +767,6 @@ pub async fn find_by_unique<'a>(
     };
     
     find_all(
-      ctx,
       search.into(),
       None,
       None,
@@ -812,8 +799,7 @@ fn equals_by_unique(
 
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn check_by_unique(
   input: PayslipInput,
   model: PayslipModel,
   unique_type: UniqueType,
@@ -832,7 +818,6 @@ pub async fn check_by_unique<'a>(
     let options = Options::new();
     let options = options.set_is_encrypt(false);
     let id = update_by_id(
-      ctx,
       model.id.clone(),
       input,
       Some(options),
@@ -841,7 +826,6 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let err_msg = i18n_dao::ns(
-      ctx,
       "记录已经存在".to_owned(),
       None,
     ).await?;
@@ -852,8 +836,7 @@ pub async fn check_by_unique<'a>(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
-pub async fn set_id_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn set_id_by_lbl(
   input: PayslipInput,
 ) -> Result<PayslipInput> {
   
@@ -865,13 +848,11 @@ pub async fn set_id_by_lbl<'a>(
       input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
       if input.pay_month.is_none() {
         let field_comments = get_field_comments(
-          ctx,
           None,
         ).await?;
         let column_comment = field_comments.pay_month;
         
         let err_msg = i18n_dao::ns(
-          ctx,
           "日期格式错误".to_owned(),
           None,
         ).await?;
@@ -883,7 +864,7 @@ pub async fn set_id_by_lbl<'a>(
     input.pay_month = pay_month.with_day(1);
   }
   
-  let dict_vec = get_dict(ctx, &vec![
+  let dict_vec = get_dict(&vec![
     "yes_no",
     "yes_no",
     "is_locked",
@@ -936,8 +917,7 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 #[allow(unused_mut)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   mut input: PayslipInput,
   options: Option<Options>,
 ) -> Result<String> {
@@ -989,10 +969,10 @@ pub async fn create<'a>(
     }
   };
   
+  let ctx = &use_ctx();
   let now = ctx.get_now();
   
   let old_models = find_by_unique(
-    ctx,
     input.clone().into(),
     None,
     None,
@@ -1011,7 +991,6 @@ pub async fn create<'a>(
     for old_model in old_models {
       
       id = check_by_unique(
-        ctx,
         input.clone(),
         old_model,
         unique_type,
@@ -1031,7 +1010,6 @@ pub async fn create<'a>(
   loop {
     id = get_short_uuid();
     let is_exist = exists_by_id(
-      ctx,
       id.clone(),
       None,
     ).await?;
@@ -1184,14 +1162,15 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改租户id
-pub async fn update_tenant_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_tenant_by_id(
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "hrm_payslip";
   let _method = "update_tenant_by_id";
+  
+  let ctx = &use_ctx();
   
   let mut args = QueryArgs::new();
   
@@ -1226,12 +1205,12 @@ pub async fn update_tenant_by_id<'a>(
 
 /// 根据id修改数据
 #[allow(unused_mut)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   mut input: PayslipInput,
   options: Option<Options>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   
   let is_encrypt = options.as_ref()
     .map(|item|
@@ -1272,14 +1251,12 @@ pub async fn update_by_id<'a>(
   };
   
   let old_model = find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
   
   if old_model.is_none() {
     let err_msg = i18n_dao::ns(
-      ctx,
       "数据已删除".to_owned(),
       None,
     ).await?;
@@ -1291,7 +1268,6 @@ pub async fn update_by_id<'a>(
     input.id = None;
     
     let models = find_by_unique(
-      ctx,
       input.into(),
       None,
       None,
@@ -1314,7 +1290,6 @@ pub async fn update_by_id<'a>(
       };
       if unique_type == UniqueType::Throw {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1467,14 +1442,15 @@ fn get_foreign_tables() -> Vec<&'static str> {
 }
 
 /// 根据 ids 删除数据
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "hrm_payslip";
   let _method = "delete_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1509,13 +1485,12 @@ pub async fn delete_by_ids<'a>(
 /// 根据 ID 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_locked_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(ctx, id, options).await?;
+  let model = find_by_id(id, options).await?;
   
   let is_locked = {
     if let Some(model) = model {
@@ -1529,8 +1504,7 @@ pub async fn get_is_locked_by_id<'a>(
 }
 
 /// 根据 ids 锁定或者解锁数据
-pub async fn lock_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn lock_by_ids(
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
@@ -1538,6 +1512,8 @@ pub async fn lock_by_ids<'a>(
   
   let table = "hrm_payslip";
   let _method = "lock_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1570,14 +1546,15 @@ pub async fn lock_by_ids<'a>(
 }
 
 /// 根据 ids 还原数据
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "hrm_payslip";
   let _method = "revert_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1607,7 +1584,6 @@ pub async fn revert_by_ids<'a>(
     // 检查数据的唯一索引
     {
       let old_model = find_by_id(
-        ctx,
         id.clone(),
         None,
       ).await?;
@@ -1621,7 +1597,6 @@ pub async fn revert_by_ids<'a>(
       input.id = None;
       
       let models = find_by_unique(
-        ctx,
         input.into(),
         None,
         None,
@@ -1635,7 +1610,6 @@ pub async fn revert_by_ids<'a>(
       
       if !models.is_empty() {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1649,8 +1623,7 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1658,13 +1631,14 @@ pub async fn force_delete_by_ids<'a>(
   let table = "hrm_payslip";
   let _method = "force_delete_by_ids";
   
+  let ctx = &use_ctx();
+  
   let options = Options::from(options);
   
   let mut num = 0;
   for id in ids {
     
     let model = find_all(
-      ctx,
       PayslipSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -1709,17 +1683,14 @@ pub async fn force_delete_by_ids<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
     let msg0 = i18n_dao::ns(
-      ctx,
       "工资条".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      ctx,
       "不存在".to_owned(),
       None,
     ).await?;

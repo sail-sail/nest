@@ -2,13 +2,11 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use anyhow::Result;
 
-use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn minimum<T>(
-  ctx: &mut Ctx<'_>,
   value: Option<T>,
   n: T,
   label: &str,
@@ -30,7 +28,6 @@ where
   map.insert("0".to_owned(), n.to_string());
   
   let msg = i18n_dao::ns(
-    ctx,
     "不能小于 {0}".to_owned(),
     map.into(),
   ).await?;

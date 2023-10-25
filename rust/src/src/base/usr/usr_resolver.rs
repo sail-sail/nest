@@ -12,13 +12,11 @@ use super::usr_model::{
 };
 
 /// 登录, 获得token
-pub async fn login<'a>(
-  ctx: &Ctx<'a>,
+pub async fn login(
   input: LoginInput,
 ) -> Result<Login> {
   
   let res = usr_service::login(
-    ctx,
     input,
   ).await?;
   
@@ -26,8 +24,8 @@ pub async fn login<'a>(
 }
 
 /// 选择语言
-pub async fn select_lang<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn select_lang(
+  ctx: &mut Ctx,
   lang: String,
 ) -> Result<String> {
   
@@ -40,26 +38,20 @@ pub async fn select_lang<'a>(
 }
 
 /// 修改密码
-pub async fn change_password<'a>(
-  ctx: &Ctx<'a>,
+pub async fn change_password(
   input: ChangePasswordInput,
 ) -> Result<bool> {
   
   let res = usr_service::change_password(
-    ctx,
     input,
   ).await?;
   
   Ok(res)
 }
 
-pub async fn get_login_info<'a>(
-  ctx: &Ctx<'a>,
-) -> Result<GetLoginInfo> {
+pub async fn get_login_info() -> Result<GetLoginInfo> {
   
-  let res = usr_service::get_login_info(
-    ctx,
-  ).await?;
+  let res = usr_service::get_login_info().await?;
   
   Ok(res)
 }

@@ -61,7 +61,7 @@ const hasDictbiz = columns.some((column) => {
 });
 #>use anyhow::Result;
 
-use crate::common::context::{Ctx, Options};
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
@@ -77,8 +77,7 @@ use crate::gen::base::operation_record::operation_record_model::OperationRecordI
 #>
 
 /// 根据搜索条件和分页查找数据
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -86,7 +85,6 @@ pub async fn find_all<'a>(
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
   let res = <#=table#>_service::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -131,14 +129,12 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查找总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let num = <#=table#>_service::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -147,15 +143,13 @@ pub async fn find_count<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
   let model = <#=table#>_service::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -200,14 +194,12 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
   let model = <#=table#>_service::find_by_id(
-    ctx,
     id,
     options,
   ).await?;<#
@@ -252,25 +244,21 @@ pub async fn find_by_id<'a>(
 
 /// 创建数据
 #[allow(dead_code)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = <#=table#>_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
   ).await?;
   
   let id = <#=table#>_service::create(
-    ctx,
     input,
     options,
   ).await?;<#
@@ -278,16 +266,14 @@ pub async fn create<'a>(
   #>
   
   let new_data = <#=table#>_service::find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
   
-  let method_lbl = ns(ctx, "新增".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("新增".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -309,15 +295,13 @@ if (hasTenant_id) {
 
 /// 根据id修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_tenant_by_id(
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = <#=table#>_service::update_tenant_by_id(
-    ctx,
     id,
     tenant_id,
     options,
@@ -332,15 +316,13 @@ if (hasOrgId) {
 
 /// 根据id修改部门id
 #[allow(dead_code)]
-pub async fn update_org_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_org_by_id(
   id: String,
   org_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = <#=table#>_service::update_org_by_id(
-    ctx,
     id,
     org_id,
     options,
@@ -353,20 +335,17 @@ pub async fn update_org_by_id<'a>(
 
 /// 根据id修改数据
 #[allow(dead_code)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = <#=table#>_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "edit".to_owned(),
   ).await?;<#
@@ -374,7 +353,6 @@ pub async fn update_by_id<'a>(
   #>
   
   let old_data = <#=table#>_service::find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;<#
@@ -382,7 +360,6 @@ pub async fn update_by_id<'a>(
   #>
   
   let res = <#=table#>_service::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -391,16 +368,14 @@ pub async fn update_by_id<'a>(
   #>
   
   let new_data = <#=table#>_service::find_by_id(
-    ctx,
     res.clone(),
     None,
   ).await?;
   
-  let method_lbl = ns(ctx, "修改".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("修改".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -420,14 +395,12 @@ pub async fn update_by_id<'a>(
 
 /// 根据 ids 删除数据
 #[allow(dead_code)]
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "delete".to_owned(),
   ).await?;<#
@@ -435,7 +408,6 @@ pub async fn delete_by_ids<'a>(
   #>
   
   let old_data = <#=table#>_service::find_all(
-    ctx,
     <#=Table_Up#>Search {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -448,18 +420,16 @@ pub async fn delete_by_ids<'a>(
   #>
   
   let num = <#=table#>_service::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "删除".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("删除".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -481,14 +451,12 @@ if (hasDefault) {
 
 /// 根据 id 设置默认记录
 #[allow(dead_code)]
-pub async fn default_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn default_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "default".to_owned(),
   ).await?;<#
@@ -500,18 +468,16 @@ pub async fn default_by_id<'a>(
   #>
   
   let num = <#=table#>_service::default_by_id(
-    ctx,
     id,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "默认".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("默认".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -536,14 +502,12 @@ if (hasEnabled) {
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_enabled_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = <#=table#>_service::get_is_enabled_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -553,15 +517,13 @@ pub async fn get_is_enabled_by_id<'a>(
 
 /// 根据 ids 启用或禁用数据
 #[allow(dead_code)]
-pub async fn enable_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn enable_by_ids(
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "enable".to_owned(),
   ).await?;<#
@@ -573,7 +535,6 @@ pub async fn enable_by_ids<'a>(
   #>
   
   let num = <#=table#>_service::enable_by_ids(
-    ctx,
     ids,
     is_enabled,
     options,
@@ -581,11 +542,10 @@ pub async fn enable_by_ids<'a>(
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "启用".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("启用".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -611,14 +571,12 @@ if (hasLocked) {
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_locked_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = <#=table#>_service::get_is_locked_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -628,15 +586,13 @@ pub async fn get_is_locked_by_id<'a>(
 
 /// 根据 ids 锁定或解锁数据
 #[allow(dead_code)]
-pub async fn lock_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn lock_by_ids(
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "lock".to_owned(),
   ).await?;<#
@@ -651,7 +607,6 @@ pub async fn lock_by_ids<'a>(
   #>
   
   let num = <#=table#>_service::lock_by_ids(
-    ctx,
     ids,
     is_locked,
     options,
@@ -660,14 +615,13 @@ pub async fn lock_by_ids<'a>(
   #>
   
   let method_lbl: String = if is_locked == 0 {
-    ns(ctx, "解锁".to_owned(), None).await?
+    ns("解锁".to_owned(), None).await?
   } else {
-    ns(ctx, "锁定".to_owned(), None).await?
+    ns("锁定".to_owned(), None).await?
   };
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.into(),
@@ -688,13 +642,11 @@ pub async fn lock_by_ids<'a>(
 #>
 
 /// 获取字段对应的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {
   
   let comments = <#=table#>_service::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -703,14 +655,12 @@ pub async fn get_field_comments<'a>(
 
 /// 根据 ids 还原数据
 #[allow(dead_code)]
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "delete".to_owned(),
   ).await?;<#
@@ -722,18 +672,16 @@ pub async fn revert_by_ids<'a>(
   #>
   
   let num = <#=table#>_service::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "还原".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("还原".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -753,14 +701,12 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "force_delete".to_owned(),
   ).await?;<#
@@ -772,18 +718,16 @@ pub async fn force_delete_by_ids<'a>(
   #>
   
   let num = <#=table#>_service::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "彻底删除".to_owned(), None).await?;
-  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  let method_lbl = ns("彻底删除".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
   log(
-    ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
@@ -804,13 +748,11 @@ if (hasOrderBy) {
 #>
 
 /// 查找 order_by 字段的最大值
-pub async fn find_last_order_by<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let res = <#=table#>_service::find_last_order_by(
-    ctx,
     options,
   ).await?;
   

@@ -24,102 +24,91 @@ pub struct WxwAppTokenGenQuery;
 impl WxwAppTokenGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_wxw_app_token<'a>(
+  async fn find_all_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<WxwAppTokenSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwAppTokenModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::find_all(
-      &ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        wxw_app_token_resolver::find_all(
+          search,
+          page,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_wxw_app_token<'a>(
+  async fn find_count_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<WxwAppTokenSearch>,
   ) -> Result<i64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::find_count(
-      &ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        wxw_app_token_resolver::find_count(
+          search,
+          None,
+        )
+      }).await
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_wxw_app_token<'a>(
+  async fn find_one_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<WxwAppTokenSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwAppTokenModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::find_one(
-      &ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        wxw_app_token_resolver::find_one(
+          search,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_wxw_app_token<'a>(
+  async fn find_by_id_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<WxwAppTokenModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::find_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        wxw_app_token_resolver::find_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_wxw_app_token<'a>(
+  async fn get_field_comments_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<WxwAppTokenFieldComment> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::get_field_comments(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        wxw_app_token_resolver::get_field_comments(
+          None,
+        )
+      }).await
   }
   
 }
@@ -131,127 +120,120 @@ pub struct WxwAppTokenGenMutation;
 impl WxwAppTokenGenMutation {
   
   /// 创建数据
-  async fn create_wxw_app_token<'a>(
+  async fn create_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: WxwAppTokenInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
-    
-    let id = wxw_app_token_resolver::create(
-      &ctx,
-      model,
-      options.into(),
-    ).await;
-    
-    ctx.ok(id).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::create(
+          model,
+          options.into(),
+        )
+      }).await
   }
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_wxw_app_token<'a>(
+  async fn update_tenant_by_id_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::update_tenant_by_id(
-      &ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::update_tenant_by_id(
+          id,
+          tenant_id,
+          None,
+        )
+      }).await
   }
   
   /// 根据id修改数据
-  async fn update_by_id_wxw_app_token<'a>(
+  async fn update_by_id_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: WxwAppTokenInput,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::update_by_id(
-      &ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::update_by_id(
+          id,
+          model,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_wxw_app_token<'a>(
+  async fn delete_by_ids_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_wxw_app_token<'a>(
+  async fn revert_by_ids_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::revert_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::revert_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_wxw_app_token<'a>(
+  async fn force_delete_by_ids_wxw_app_token(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = wxw_app_token_resolver::force_delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .with_tran()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::force_delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
 }

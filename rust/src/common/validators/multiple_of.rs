@@ -5,13 +5,11 @@ use std::ops::Rem;
 
 use num_traits::{AsPrimitive, Zero};
 
-use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn multiple_of<T, N>(
-  ctx: &mut Ctx<'_>,
   value: Option<T>,
   n: N,
   label: &str,
@@ -33,7 +31,6 @@ where
   map.insert("0".to_owned(), n.to_string());
   
   let msg = i18n_dao::ns(
-    ctx,
     "必须为 {0} 的整数倍".to_owned(),
     map.into(),
   ).await?;

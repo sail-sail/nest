@@ -10,7 +10,7 @@ use crate::common::util::dao::{
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
+  use_ctx,
   QueryArgs,
   Options,
   CountModel,
@@ -33,11 +33,11 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 #[allow(unused_variables)]
-async fn get_where_query<'a>(
-  ctx: &Ctx<'a>,
+async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -149,6 +149,32 @@ async fn get_where_query<'a>(
     }
   }
   {
+    let org_ids: Vec<String> = match &search {
+      Some(item) => item.org_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !org_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(org_ids.len());
+        for item in org_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_org.id in ({})", arg);
+    }
+  }
+  {
+    let org_ids_is_null: bool = match &search {
+      Some(item) => item.org_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if org_ids_is_null {
+      where_query += " and org_ids_lbl.id is null";
+    }
+  }
+  {
     let default_org_id: Vec<String> = match &search {
       Some(item) => item.default_org_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -206,32 +232,6 @@ async fn get_where_query<'a>(
         items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
-    let org_ids: Vec<String> = match &search {
-      Some(item) => item.org_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !org_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(org_ids.len());
-        for item in org_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_org.id in ({})", arg);
-    }
-  }
-  {
-    let org_ids_is_null: bool = match &search {
-      Some(item) => item.org_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if org_ids_is_null {
-      where_query += " and org_ids_lbl.id is null";
     }
   }
   {
@@ -401,8 +401,6 @@ async fn get_where_query<'a>(
 
 async fn get_from_query() -> Result<String> {
   let from_query = r#"base_usr t
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = 0
@@ -425,6 +423,8 @@ async fn get_from_query() -> Result<String> {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -478,8 +478,7 @@ async fn get_from_query() -> Result<String> {
 
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<UsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -493,7 +492,7 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "create_time") {
@@ -510,9 +509,9 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
@@ -534,13 +533,14 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let mut res: Vec<UsrModel> = ctx.query(
     sql,
     args,
     options,
   ).await?;
   
-  let dict_vec = get_dict(ctx, &vec![
+  let dict_vec = get_dict(&vec![
     "is_locked",
     "is_enabled",
   ]).await?;
@@ -572,8 +572,7 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查询数据总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -585,7 +584,7 @@ pub async fn find_count<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(&mut args, search).await?;
   
   let sql = format!(r#"
     select
@@ -610,6 +609,7 @@ pub async fn find_count<'a>(
   
   let options = options.into();
   
+  let ctx = &use_ctx();
   let res: Option<CountModel> = ctx.query_one(
     sql,
     args,
@@ -637,8 +637,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 
 /// 获取字段对应的国家化后的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<UsrFieldComment> {
   
@@ -649,14 +648,14 @@ pub async fn get_field_comments<'a>(
     "头像".into(),
     "名称".into(),
     "用户名".into(),
+    "所属组织".into(),
+    "所属组织".into(),
     "默认组织".into(),
     "默认组织".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
     "启用".into(),
-    "所属组织".into(),
-    "所属组织".into(),
     "所属部门".into(),
     "所属部门".into(),
     "拥有角色".into(),
@@ -673,7 +672,6 @@ pub async fn get_field_comments<'a>(
   ];
   
   let map = n_route.n_batch(
-    ctx,
     i18n_code_maps.clone(),
   ).await?;
   
@@ -690,14 +688,14 @@ pub async fn get_field_comments<'a>(
     img: vec[1].to_owned(),
     lbl: vec[2].to_owned(),
     username: vec[3].to_owned(),
-    default_org_id: vec[4].to_owned(),
-    default_org_id_lbl: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    org_ids: vec[10].to_owned(),
-    org_ids_lbl: vec[11].to_owned(),
+    org_ids: vec[4].to_owned(),
+    org_ids_lbl: vec[5].to_owned(),
+    default_org_id: vec[6].to_owned(),
+    default_org_id_lbl: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
     dept_ids: vec[12].to_owned(),
     dept_ids_lbl: vec[13].to_owned(),
     role_ids: vec[14].to_owned(),
@@ -716,8 +714,7 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<UsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -729,7 +726,6 @@ pub async fn find_one<'a>(
   }.into();
   
   let res = find_all(
-    ctx,
     search,
     page,
     sort,
@@ -742,8 +738,7 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
@@ -754,7 +749,6 @@ pub async fn find_by_id<'a>(
   }.into();
   
   let res = find_one(
-    ctx,
     search,
     None,
     options,
@@ -764,14 +758,12 @@ pub async fn find_by_id<'a>(
 }
 
 /// 根据搜索条件判断数据是否存在
-pub async fn exists<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists(
   search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let total = find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -780,8 +772,7 @@ pub async fn exists<'a>(
 }
 
 /// 根据ID判断数据是否存在
-pub async fn exists_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -792,7 +783,6 @@ pub async fn exists_by_id<'a>(
   }.into();
   
   let res = exists(
-    ctx,
     search,
     options,
   ).await?;
@@ -802,8 +792,7 @@ pub async fn exists_by_id<'a>(
 
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_unique(
   search: UsrSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -811,7 +800,6 @@ pub async fn find_by_unique<'a>(
   
   if let Some(id) = search.id {
     let model = find_by_id(
-      ctx,
       id,
       None,
     ).await?;
@@ -833,7 +821,6 @@ pub async fn find_by_unique<'a>(
     };
     
     find_all(
-      ctx,
       search.into(),
       None,
       None,
@@ -865,8 +852,7 @@ fn equals_by_unique(
 
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn check_by_unique(
   input: UsrInput,
   model: UsrModel,
   unique_type: UniqueType,
@@ -884,7 +870,6 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Update {
     let options = Options::new();
     let id = update_by_id(
-      ctx,
       model.id.clone(),
       input,
       Some(options),
@@ -893,7 +878,6 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let err_msg = i18n_dao::ns(
-      ctx,
       "记录已经存在".to_owned(),
       None,
     ).await?;
@@ -904,15 +888,14 @@ pub async fn check_by_unique<'a>(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
-pub async fn set_id_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn set_id_by_lbl(
   input: UsrInput,
 ) -> Result<UsrInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(ctx, &vec![
+  let dict_vec = get_dict(&vec![
     "is_locked",
     "is_enabled",
   ]).await?;
@@ -945,28 +928,6 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 默认组织
-  if input.default_org_id_lbl.is_some()
-    && !input.default_org_id_lbl.as_ref().unwrap().is_empty()
-    && input.default_org_id.is_none()
-  {
-    input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = crate::gen::base::org::org_dao::find_one(
-      ctx,
-      crate::gen::base::org::org_model::OrgSearch {
-        lbl: input.default_org_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.default_org_id = model.id.into();
-    }
-  }
-  
   // 所属组织
   if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
@@ -977,7 +938,6 @@ pub async fn set_id_by_lbl<'a>(
     let mut models = vec![];
     for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::org::org_dao::find_one(
-        ctx,
         crate::gen::base::org::org_model::OrgSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -997,6 +957,27 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 默认组织
+  if input.default_org_id_lbl.is_some()
+    && !input.default_org_id_lbl.as_ref().unwrap().is_empty()
+    && input.default_org_id.is_none()
+  {
+    input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::org::org_dao::find_one(
+      crate::gen::base::org::org_model::OrgSearch {
+        lbl: input.default_org_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.default_org_id = model.id.into();
+    }
+  }
+  
   // 所属部门
   if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
@@ -1007,7 +988,6 @@ pub async fn set_id_by_lbl<'a>(
     let mut models = vec![];
     for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::dept::dept_dao::find_one(
-        ctx,
         crate::gen::base::dept::dept_model::DeptSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1037,7 +1017,6 @@ pub async fn set_id_by_lbl<'a>(
     let mut models = vec![];
     for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::role::role_dao::find_one(
-        ctx,
         crate::gen::base::role::role_model::RoleSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1062,8 +1041,7 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 #[allow(unused_mut)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   mut input: UsrInput,
   options: Option<Options>,
 ) -> Result<String> {
@@ -1077,10 +1055,10 @@ pub async fn create<'a>(
     ).into());
   }
   
+  let ctx = &use_ctx();
   let now = ctx.get_now();
   
   let old_models = find_by_unique(
-    ctx,
     input.clone().into(),
     None,
     None,
@@ -1099,7 +1077,6 @@ pub async fn create<'a>(
     for old_model in old_models {
       
       id = check_by_unique(
-        ctx,
         input.clone(),
         old_model,
         unique_type,
@@ -1119,7 +1096,6 @@ pub async fn create<'a>(
   loop {
     id = get_short_uuid();
     let is_exist = exists_by_id(
-      ctx,
       id.clone(),
       None,
     ).await?;
@@ -1245,7 +1221,6 @@ pub async fn create<'a>(
   // 所属组织
   if let Some(org_ids) = input.org_ids {
     many2many_update(
-      ctx,
       id.clone(),
       org_ids.clone(),
       ManyOpts {
@@ -1260,7 +1235,6 @@ pub async fn create<'a>(
   // 所属部门
   if let Some(dept_ids) = input.dept_ids {
     many2many_update(
-      ctx,
       id.clone(),
       dept_ids.clone(),
       ManyOpts {
@@ -1275,7 +1249,6 @@ pub async fn create<'a>(
   // 拥有角色
   if let Some(role_ids) = input.role_ids {
     many2many_update(
-      ctx,
       id.clone(),
       role_ids.clone(),
       ManyOpts {
@@ -1291,14 +1264,15 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改租户id
-pub async fn update_tenant_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_tenant_by_id(
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_usr";
   let _method = "update_tenant_by_id";
+  
+  let ctx = &use_ctx();
   
   let mut args = QueryArgs::new();
   
@@ -1333,22 +1307,20 @@ pub async fn update_tenant_by_id<'a>(
 
 /// 根据id修改数据
 #[allow(unused_mut)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   mut input: UsrInput,
   options: Option<Options>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   
   let old_model = find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
   
   if old_model.is_none() {
     let err_msg = i18n_dao::ns(
-      ctx,
       "数据已删除".to_owned(),
       None,
     ).await?;
@@ -1360,7 +1332,6 @@ pub async fn update_by_id<'a>(
     input.id = None;
     
     let models = find_by_unique(
-      ctx,
       input.into(),
       None,
       None,
@@ -1383,7 +1354,6 @@ pub async fn update_by_id<'a>(
       };
       if unique_type == UniqueType::Throw {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1501,7 +1471,6 @@ pub async fn update_by_id<'a>(
   // 所属组织
   if let Some(org_ids) = input.org_ids {
     many2many_update(
-      ctx,
       id.clone(),
       org_ids.clone(),
       ManyOpts {
@@ -1518,7 +1487,6 @@ pub async fn update_by_id<'a>(
   // 所属部门
   if let Some(dept_ids) = input.dept_ids {
     many2many_update(
-      ctx,
       id.clone(),
       dept_ids.clone(),
       ManyOpts {
@@ -1535,7 +1503,6 @@ pub async fn update_by_id<'a>(
   // 拥有角色
   if let Some(role_ids) = input.role_ids {
     many2many_update(
-      ctx,
       id.clone(),
       role_ids.clone(),
       ManyOpts {
@@ -1566,6 +1533,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_usr";
   vec![
     table,
+    "base_usr_org",
     "base_org",
     "base_usr_dept",
     "base_dept",
@@ -1576,14 +1544,15 @@ fn get_foreign_tables() -> Vec<&'static str> {
 }
 
 /// 根据 ids 删除数据
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_usr";
   let _method = "delete_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1619,13 +1588,12 @@ pub async fn delete_by_ids<'a>(
 
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_enabled_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(ctx, id, options).await?;
+  let model = find_by_id(id, options).await?;
   
   let is_enabled = {
     if let Some(model) = model {
@@ -1639,8 +1607,7 @@ pub async fn get_is_enabled_by_id<'a>(
 }
 
 /// 根据 ids 启用或禁用数据
-pub async fn enable_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn enable_by_ids(
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
@@ -1648,6 +1615,8 @@ pub async fn enable_by_ids<'a>(
   
   let table = "base_usr";
   let _method = "enable_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1682,13 +1651,12 @@ pub async fn enable_by_ids<'a>(
 /// 根据 ID 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_is_locked_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(ctx, id, options).await?;
+  let model = find_by_id(id, options).await?;
   
   let is_locked = {
     if let Some(model) = model {
@@ -1702,8 +1670,7 @@ pub async fn get_is_locked_by_id<'a>(
 }
 
 /// 根据 ids 锁定或者解锁数据
-pub async fn lock_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn lock_by_ids(
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
@@ -1711,6 +1678,8 @@ pub async fn lock_by_ids<'a>(
   
   let table = "base_usr";
   let _method = "lock_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1743,14 +1712,15 @@ pub async fn lock_by_ids<'a>(
 }
 
 /// 根据 ids 还原数据
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_usr";
   let _method = "revert_by_ids";
+  
+  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1782,7 +1752,6 @@ pub async fn revert_by_ids<'a>(
     // 检查数据的唯一索引
     {
       let old_model = find_by_id(
-        ctx,
         id.clone(),
         None,
       ).await?;
@@ -1796,7 +1765,6 @@ pub async fn revert_by_ids<'a>(
       input.id = None;
       
       let models = find_by_unique(
-        ctx,
         input.into(),
         None,
         None,
@@ -1810,7 +1778,6 @@ pub async fn revert_by_ids<'a>(
       
       if !models.is_empty() {
         let err_msg = i18n_dao::ns(
-          ctx,
           "数据已经存在".to_owned(),
           None,
         ).await?;
@@ -1824,8 +1791,7 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1833,13 +1799,14 @@ pub async fn force_delete_by_ids<'a>(
   let table = "base_usr";
   let _method = "force_delete_by_ids";
   
+  let ctx = &use_ctx();
+  
   let options = Options::from(options);
   
   let mut num = 0;
   for id in ids {
     
     let model = find_all(
-      ctx,
       UsrSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -1885,18 +1852,15 @@ pub async fn force_delete_by_ids<'a>(
 /// 校验记录是否启用
 #[function_name::named]
 #[allow(dead_code)]
-pub async fn validate_is_enabled<'a>(
-  ctx: &Ctx<'a>,
+pub async fn validate_is_enabled(
   model: &UsrModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
     let msg0 = i18n_dao::ns(
-      ctx,
       "用户".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      ctx,
       "已禁用".to_owned(),
       None,
     ).await?;
@@ -1910,17 +1874,14 @@ pub async fn validate_is_enabled<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
     let msg0 = i18n_dao::ns(
-      ctx,
       "用户".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      ctx,
       "不存在".to_owned(),
       None,
     ).await?;

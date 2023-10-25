@@ -18,7 +18,7 @@ type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
 type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
 use crate::common::context::{
-  Ctx,
+  use_ctx,
   QueryArgs,
   escape_id, get_short_uuid,
 };
@@ -146,12 +146,12 @@ struct ManyModel {
   order_by: u32,
 }
 
-pub async fn many2many_update<'a>(
-  ctx: &Ctx<'a>,
+pub async fn many2many_update(
   id: String,
   foreign_ids: Vec<String>,
   many_opts: ManyOpts,
 ) -> Result<bool> {
+  let ctx = &use_ctx();
   let tenant_id = ctx.get_auth_tenant_id();
   let auth_model = ctx.get_auth_model();
   

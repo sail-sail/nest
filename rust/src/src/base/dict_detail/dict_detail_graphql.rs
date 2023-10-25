@@ -12,21 +12,16 @@ pub struct DictDetailQuery;
 #[Object(rename_args = "snake_case")]
 impl DictDetailQuery {
   
-  async fn get_dict<'a>(
+  async fn get_dict(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDict>>> {
-    
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = dict_detail_resolver::get_dict(
-      &ctx,
-      &codes,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        dict_detail_resolver::get_dict(&codes)
+      }).await
   }
   
 }

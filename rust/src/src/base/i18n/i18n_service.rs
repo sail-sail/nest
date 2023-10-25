@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::Ctx;
 
 use super::i18n_dao::{
   n as dao_n,
@@ -10,33 +9,30 @@ use super::i18n_dao::{
 };
 
 #[allow(dead_code)]
-pub async fn n<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n(
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = dao_n(ctx, route_path, code, map).await?;
+  let res = dao_n(route_path, code, map).await?;
   Ok(res)
 }
 
 #[allow(dead_code)]
-pub async fn ns<'a>(
-  ctx: &Ctx<'a>,
+pub async fn ns(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = dao_ns(ctx, code, map).await?;
+  let res = dao_ns(code, map).await?;
   Ok(res)
 }
 
-pub async fn n_lang<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n_lang(
   lang_code: String,
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = dao_n_lang(ctx, lang_code, route_path, code, map).await?;
+  let res = dao_n_lang(lang_code, route_path, code, map).await?;
   Ok(res)
 }

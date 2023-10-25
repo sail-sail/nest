@@ -108,6 +108,15 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.home_url !== undefined) {
+    whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
+  }
+  if (search?.home_url === null) {
+    whereQuery += ` and t.home_url is null`;
+  }
+  if (isNotEmpty(search?.home_url_like)) {
+    whereQuery += ` and t.home_url like ${ args.push(sqlLike(search?.home_url_like) + "%") }`;
+  }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
@@ -629,6 +638,7 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
   const fieldComments: RoleFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
+    home_url: await n("首页"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
     permit_ids: await n("按钮权限"),
@@ -880,6 +890,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 首页
+  await validators.chars_max_length(
+    input.home_url,
+    200,
+    fieldComments.home_url,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -1001,6 +1018,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (input.home_url !== undefined) {
+    sql += `,home_url`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -1038,6 +1058,9 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.home_url !== undefined) {
+    sql += `,${ args.push(input.home_url) }`;
   }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
@@ -1231,6 +1254,12 @@ export async function updateById(
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.home_url !== undefined) {
+    if (input.home_url != oldModel.home_url) {
+      sql += `home_url = ${ args.push(input.home_url) },`;
       updateFldNum++;
     }
   }

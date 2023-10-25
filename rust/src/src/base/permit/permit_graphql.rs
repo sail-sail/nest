@@ -13,20 +13,16 @@ pub struct PermitQuery;
 impl PermitQuery {
   
   /// 根据当前用户获取权限列表
-  async fn get_usr_permits<'a>(
+  async fn get_usr_permits(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<Vec<GetUsrPermits>> {
-    
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = permit_resolver::get_usr_permits(
-      &ctx,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        permit_resolver::get_usr_permits()
+      }).await
   }
   
 }

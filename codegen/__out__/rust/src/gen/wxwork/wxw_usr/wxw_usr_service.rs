@@ -2,7 +2,6 @@ use anyhow::Result;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
   SrvErr,
   Options,
 };
@@ -16,8 +15,7 @@ use super::wxw_usr_model::*;
 use super::wxw_usr_dao;
 
 /// 根据搜索条件和分页查找数据
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
   search: Option<WxwUsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -25,7 +23,6 @@ pub async fn find_all<'a>(
 ) -> Result<Vec<WxwUsrModel>> {
   
   let res = wxw_usr_dao::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -36,14 +33,12 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查找总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
   search: Option<WxwUsrSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let res = wxw_usr_dao::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -52,15 +47,13 @@ pub async fn find_count<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
   search: Option<WxwUsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<WxwUsrModel>> {
   
   let model = wxw_usr_dao::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -70,14 +63,12 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
   id: String,
   options: Option<Options>,
 ) -> Result<Option<WxwUsrModel>> {
   
   let model = wxw_usr_dao::find_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -86,13 +77,11 @@ pub async fn find_by_id<'a>(
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
-pub async fn set_id_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn set_id_by_lbl(
   input: WxwUsrInput,
 ) -> Result<WxwUsrInput> {
   
   let input = wxw_usr_dao::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
@@ -101,14 +90,12 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 #[allow(dead_code)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
   input: WxwUsrInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let id = wxw_usr_dao::create(
-    ctx,
     input,
     options,
   ).await?;
@@ -118,15 +105,13 @@ pub async fn create<'a>(
 
 /// 根据id修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_tenant_by_id(
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = wxw_usr_dao::update_tenant_by_id(
-    ctx,
     id,
     tenant_id,
     options,
@@ -138,15 +123,13 @@ pub async fn update_tenant_by_id<'a>(
 /// 根据id修改数据
 #[allow(dead_code)]
 #[allow(unused_mut)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
   id: String,
   mut input: WxwUsrInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let res = wxw_usr_dao::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -157,14 +140,12 @@ pub async fn update_by_id<'a>(
 
 /// 根据 ids 删除数据
 #[allow(dead_code)]
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = wxw_usr_dao::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -173,13 +154,11 @@ pub async fn delete_by_ids<'a>(
 }
 
 /// 获取字段对应的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<WxwUsrFieldComment> {
   
   let comments = wxw_usr_dao::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -188,14 +167,12 @@ pub async fn get_field_comments<'a>(
 
 /// 根据 ids 还原数据
 #[allow(dead_code)]
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = wxw_usr_dao::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -205,14 +182,12 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = wxw_usr_dao::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
