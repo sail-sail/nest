@@ -3,7 +3,7 @@ use serde_json::json;
 use tracing::{info, error};
 
 use anyhow::{Result, anyhow};
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
 
@@ -32,14 +32,12 @@ struct SendRes {
 }
 
 #[allow(dead_code)]
-async fn fetch_send_card_msg<'a>(
-  ctx: &Ctx<'a>,
+async fn fetch_send_card_msg(
   input: SendCardMsgInput,
   force: bool,
 ) -> Result<SendRes> {
   let wxw_app_id = input.wxw_app_id.clone();
   let access_token = get_access_token(
-    ctx,
     wxw_app_id.clone(),
     force.into(),
   ).await?;
@@ -56,16 +54,13 @@ async fn fetch_send_card_msg<'a>(
     return Err(anyhow!("description 不能为空"));
   }
   let wxw_app_model = find_by_id_wxw_app(
-    ctx,
     wxw_app_id.clone(),
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model,
   ).await?;
   let agentid = wxw_app_model.agentid;
@@ -88,22 +83,19 @@ async fn fetch_send_card_msg<'a>(
 
 /// 发送卡片消息
 #[allow(dead_code)]
-pub async fn send_card_msg<'a>(
-  ctx: &Ctx<'a>,
+pub async fn send_card_msg(
   input: SendCardMsgInput,
 ) -> Result<bool> {
+  let ctx = &use_ctx();
   let wxw_app_id = input.wxw_app_id.clone();
   let wxw_app_model = find_by_id_wxw_app(
-    ctx,
     wxw_app_id.clone(),
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model,
   ).await?;
   let tenant_id = wxw_app_model.tenant_id;
@@ -113,13 +105,11 @@ pub async fn send_card_msg<'a>(
     msg = serde_json::to_string(&input)?,
   );
   let mut data = fetch_send_card_msg(
-    ctx,
     input.clone(),
     false,
   ).await?;
   if data.errcode == 42001 {
     data = fetch_send_card_msg(
-      ctx,
       input.clone(),
       true,
     ).await?;
@@ -145,7 +135,6 @@ pub async fn send_card_msg<'a>(
     errmsg.chars().take(256).collect()
   };
   create_wxw_msg(
-    ctx,
     WxwMsgInput {
       wxw_app_id: wxw_app_id.into(),
       errcode: errcode.to_string().into(),

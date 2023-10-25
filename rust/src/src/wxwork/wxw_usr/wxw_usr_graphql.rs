@@ -23,15 +23,11 @@ impl WxwUsrQuery {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<WxwGetAppid> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = wxw_usr_resolver::wxw_get_appid(
-      &ctx,
-      host,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        wxw_usr_resolver::wxw_get_appid(host)
+      }).await
   }
   
 }
@@ -48,15 +44,11 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     input: WxwLoginByCodeInput,
   ) -> Result<WxwLoginByCode> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = wxw_usr_resolver::wxw_login_by_code(
-      &ctx,
-      input
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        wxw_usr_resolver::wxw_login_by_code(input)
+      }).await
   }
   
   /// 同步企业微信用户
@@ -65,16 +57,11 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<i32> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = wxw_usr_resolver::wxw_sync_usr(
-      &ctx,
-      host,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        wxw_usr_resolver::wxw_sync_usr(host)
+      }).await
   }
   
 }

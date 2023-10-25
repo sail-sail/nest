@@ -3,7 +3,7 @@ use tokio::sync::Mutex;
 
 use anyhow::{Result, anyhow};
 use crate::common::context::{
-  Ctx,
+  use_ctx,
   get_short_uuid,
 };
 
@@ -65,14 +65,12 @@ use crate::gen::base::domain::domain_dao::{
 use crate::gen::base::domain::domain_model::DomainSearch;
 
 /// 通过host获取appid, agentid
-pub async fn wxw_get_appid<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_get_appid(
   host: String,
 ) -> Result<WxwGetAppid> {
   
   // 获取域名
   let domain_model = find_one_domain(
-    ctx,
     DomainSearch {
       lbl: host.clone().into(),
       ..Default::default()
@@ -81,18 +79,15 @@ pub async fn wxw_get_appid<'a>(
     None,
   ).await?;
   let domain_model = validate_option_domain(
-    ctx,
     domain_model
   ).await?;
   validate_is_enabled_domain(
-    ctx,
     &domain_model,
   ).await?;
   
   let domain_id = domain_model.id;
   
   let wxw_app_model = find_one_wxw_app(
-    ctx,
     WxwAppSearch {
       domain_id: vec![domain_id].into(),
       ..Default::default()
@@ -101,11 +96,9 @@ pub async fn wxw_get_appid<'a>(
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model
   ).await?;
   
@@ -118,17 +111,17 @@ pub async fn wxw_get_appid<'a>(
 }
 
 /// 企微单点登录
-pub async fn wxw_login_by_code<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_login_by_code(
   input: WxwLoginByCodeInput,
 ) -> Result<WxwLoginByCode> {
+  let ctx = &use_ctx();
+  
   let host = input.host;
   let code = input.code;
   let lang = input.lang.unwrap_or("zh_cn".to_string());
   
   // 获取域名
   let domain_model = find_one_domain(
-    ctx,
     DomainSearch {
       lbl: host.clone().into(),
       ..Default::default()
@@ -137,18 +130,15 @@ pub async fn wxw_login_by_code<'a>(
     None,
   ).await?;
   let domain_model = validate_option_domain(
-    ctx,
     domain_model
   ).await?;
   validate_is_enabled_domain(
-    ctx,
     &domain_model,
   ).await?;
   
   let domain_id = domain_model.id;
   
   let wxw_app_model = find_one_wxw_app(
-    ctx,
     WxwAppSearch {
       domain_id: vec![domain_id].into(),
       ..Default::default()
@@ -157,11 +147,9 @@ pub async fn wxw_login_by_code<'a>(
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model
   ).await?;
   
@@ -173,13 +161,11 @@ pub async fn wxw_login_by_code<'a>(
     userid,
     ..
   } = getuserinfo_by_code(
-    ctx,
     wxw_app_id.clone(),
     code,
   ).await?;
   
   let get_user_res = getuser(
-    ctx,
     wxw_app_id.clone(),
     userid.clone(),
   ).await?;
@@ -196,7 +182,6 @@ pub async fn wxw_login_by_code<'a>(
   
   // 企微用户
   let wxw_usr_model = find_one_wxw_usr(
-    ctx,
     WxwUsrSearch {
       lbl: name.clone().into(),
       ..Default::default()
@@ -212,7 +197,6 @@ pub async fn wxw_login_by_code<'a>(
       wxw_usr_model.tenant_id != tenant_id.as_str()
     {
       update_by_id_wxw_usr(
-        ctx,
         id.clone(),
         WxwUsrInput {
           userid: userid.clone().into(),
@@ -226,7 +210,6 @@ pub async fn wxw_login_by_code<'a>(
     }
   } else {
     create_wxw_usr(
-      ctx,
       WxwUsrInput {
         userid: userid.clone().into(),
         lbl: name.clone().into(),
@@ -238,7 +221,6 @@ pub async fn wxw_login_by_code<'a>(
     ).await?;
   }
   let usr_model = find_one_usr(
-    ctx,
     UsrSearch {
       lbl: name.clone().into(),
       ..Default::default()
@@ -249,7 +231,6 @@ pub async fn wxw_login_by_code<'a>(
   let id;
   if let Some(usr_model) = usr_model {
     validate_is_enabled_usr(
-      ctx,
       &usr_model,
     ).await?;
     id = usr_model.id;
@@ -258,7 +239,6 @@ pub async fn wxw_login_by_code<'a>(
       usr_model.tenant_id != tenant_id.as_str()
     {
       update_usr_by_id(
-        ctx,
         id.clone(),
         UsrInput {
           username: name.clone().into(),
@@ -271,7 +251,6 @@ pub async fn wxw_login_by_code<'a>(
     }
   } else {
     id = create_usr(
-      ctx,
       UsrInput {
         username: name.clone().into(),
         lbl: name.clone().into(),
@@ -282,16 +261,13 @@ pub async fn wxw_login_by_code<'a>(
     ).await?;
   }
   let usr_model = find_by_id_usr(
-    ctx,
     id.clone(),
     None,
   ).await?;
   let usr_model = validate_option_usr(
-    ctx,
     usr_model,
   ).await?;
   validate_is_enabled_usr(
-    ctx,
     &usr_model,
   ).await?;
   
@@ -333,8 +309,7 @@ lazy_static! {
 }
 
 /// 同步企微用户
-pub async fn wxw_sync_usr<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_sync_usr(
   host: String,
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = WXW_SYNC_USR_LOCK.lock().await;
@@ -344,7 +319,6 @@ pub async fn wxw_sync_usr<'a>(
   *wxw_sync_usr_lock = true;
   
   let res = _wxw_sync_usr(
-    ctx,
     host,
   ).await;
   
@@ -353,14 +327,12 @@ pub async fn wxw_sync_usr<'a>(
 }
 
 /// 同步企微用户
-async fn _wxw_sync_usr<'a>(
-  ctx: &Ctx<'a>,
+async fn _wxw_sync_usr(
   host: String,
 ) -> Result<i32> {
   
   // 获取域名
   let domain_model = find_one_domain(
-    ctx,
     DomainSearch {
       lbl: host.into(),
       ..Default::default()
@@ -369,18 +341,15 @@ async fn _wxw_sync_usr<'a>(
     None,
   ).await?;
   let domain_model = validate_option_domain(
-    ctx,
     domain_model
   ).await?;
   validate_is_enabled_domain(
-    ctx,
     &domain_model,
   ).await?;
   
   let domain_id = domain_model.id;
   
   let wxw_app_model = find_one_wxw_app(
-    ctx,
     WxwAppSearch {
       domain_id: vec![domain_id].into(),
       ..Default::default()
@@ -389,21 +358,17 @@ async fn _wxw_sync_usr<'a>(
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model,
   ).await?;
   
   let wxw_app_id = wxw_app_model.id;
   let userids: Vec<String> = getuseridlist(
-    ctx,
     wxw_app_id.clone(),
   ).await?;
   let wxw_usr_models = find_all_wxw_usr(
-    ctx,
     None,
     None,
     None,
@@ -420,7 +385,6 @@ async fn _wxw_sync_usr<'a>(
   let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
   for userid in userids4add {
     let get_user_res = getuser(
-      ctx,
       wxw_app_id.clone(),
       userid.clone(),
     ).await?;
@@ -445,7 +409,6 @@ async fn _wxw_sync_usr<'a>(
   let mut num = 0;
   for wxw_usr_model4add in wxw_usr_models4add {
     create_wxw_usr(
-      ctx,
       wxw_usr_model4add,
       None,
     ).await?;

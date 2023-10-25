@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use tracing::{info, error};
 
 use anyhow::{Result, anyhow};
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::gen::wxwork::wxw_app_token::wxw_app_token_dao::{
   find_one as find_one_wxw_app_token,
@@ -54,10 +54,10 @@ struct Userlist {
 
 /// 从企业微信获取 access_token
 async fn fetch_access_token(
-  ctx: &Ctx<'_>,
   corpid: &str,
   corpsecret: &str,
 ) -> Result<(String, u32)> {
+  let ctx = &use_ctx();
   let url = format!(
     "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&corpsecret={corpsecret}",
     corpid = urlencoding::encode(corpid),
@@ -99,22 +99,19 @@ async fn fetch_access_token(
 
 /// 获取企业微信应用的 access_token。
 pub async fn get_access_token<'a>(
-  ctx: &Ctx<'a>,
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let force = force.unwrap_or(false);
   let wxw_app_model = find_by_id_wxw_app(
-    ctx,
     wxw_app_id.clone(),
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
-    ctx,
     wxw_app_model,
   ).await?;
   validate_is_enabled_wxw_app(
-    ctx,
     &wxw_app_model,
   ).await?;
   let corpid = wxw_app_model.corpid;
@@ -126,7 +123,6 @@ pub async fn get_access_token<'a>(
     return Err(anyhow!(msg));
   }
   let wxw_app_token_model = find_one_wxw_app_token(
-    ctx,
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id.clone()].into(),
       r#type: "corp".to_owned().into(),
@@ -143,12 +139,10 @@ pub async fn get_access_token<'a>(
       access_token,
       expires_in,
     ) = fetch_access_token(
-      ctx,
       &corpid,
       &corpsecret,
     ).await?;
     create_wxw_app_token(
-      ctx,
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
         r#type: "corp".to_owned().into(),
@@ -181,13 +175,11 @@ pub async fn get_access_token<'a>(
       access_token,
       expires_in,
     ) = fetch_access_token(
-      ctx,
       &corpid,
       &corpsecret,
     ).await?;
     let id = wxw_app_token_model.id;
     update_by_id_wxw_app_token(
-      ctx,
       id,
       WxwAppTokenInput {
         access_token: access_token.clone().into(),
@@ -205,13 +197,12 @@ pub async fn get_access_token<'a>(
 
 /// 获取企微通讯录token
 pub async fn get_contact_access_token<'a>(
-  ctx: &Ctx<'a>,
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let force = force.unwrap_or(false);
   let wxw_app_model = find_by_id_wxw_app(
-    ctx,
     wxw_app_id.clone(),
     None,
   ).await?;
@@ -236,7 +227,6 @@ pub async fn get_contact_access_token<'a>(
     return Err(anyhow!(msg));
   }
   let wxw_app_token_model = find_one_wxw_app_token(
-    ctx,
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id.clone()].into(),
       r#type: "contact".to_owned().into(),
@@ -253,12 +243,10 @@ pub async fn get_contact_access_token<'a>(
       access_token,
       expires_in,
     ) = fetch_access_token(
-      ctx,
       &corpid,
       &contactsecret,
     ).await?;
     create_wxw_app_token(
-      ctx,
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
         r#type: "contact".to_owned().into(),
@@ -291,13 +279,11 @@ pub async fn get_contact_access_token<'a>(
       access_token,
       expires_in,
     ) = fetch_access_token(
-      ctx,
       &corpid,
       &contactsecret,
     ).await?;
     let id = wxw_app_token_model.id;
     update_by_id_wxw_app_token(
-      ctx,
       id,
       WxwAppTokenInput {
         access_token: access_token.clone().into(),
@@ -314,13 +300,12 @@ pub async fn get_contact_access_token<'a>(
 }
 
 async fn fetch_getuserinfo_by_code<'a>(
-  ctx: &Ctx<'a>,
   wxw_app_id: String,
   code: String,
   force: bool,
 ) -> Result<GetuserinfoRes> {
+  let ctx = &use_ctx();
   let access_token = get_access_token(
-    ctx,
     wxw_app_id,
     force.into(),
   ).await?;
@@ -347,7 +332,6 @@ async fn fetch_getuserinfo_by_code<'a>(
 /// https://developer.work.weixin.qq.com/document/path/91023
 /// #### 参数
 /// 
-/// - `ctx` - 上下文。
 /// - `corpid` - 企业ID
 /// - `code` - 临时授权码
 /// - `force` - 是否强制刷新 access_token, 默认为 false
@@ -356,19 +340,17 @@ async fn fetch_getuserinfo_by_code<'a>(
 /// 
 /// 返回用户身份信息 `userid`, `user_ticket`
 pub async fn getuserinfo_by_code<'a>(
-  ctx: &Ctx<'a>,
   wxw_app_id: String,
   code: String,
 ) -> Result<GetuserinfoModel> {
+  let ctx = &use_ctx();
   let mut data: GetuserinfoRes = fetch_getuserinfo_by_code(
-    ctx,
     wxw_app_id.clone(),
     code.clone(),
     false,
   ).await?;
   if data.errcode == 42001 {
     data = fetch_getuserinfo_by_code(
-      ctx,
       wxw_app_id.clone(),
       code.clone(),
       true,
@@ -399,13 +381,12 @@ pub async fn getuserinfo_by_code<'a>(
   })
 }
 
-async fn fetch_getuseridlist<'a>(
-  ctx: &Ctx<'a>,
+async fn fetch_getuseridlist(
   wxw_app_id: String,
   force: bool,
 ) -> Result<GetuseridlistRes> {
+  let ctx = &use_ctx();
   let access_token = get_contact_access_token(
-    ctx,
     wxw_app_id.clone(),
     force.into(),
   ).await?;
@@ -429,17 +410,15 @@ async fn fetch_getuseridlist<'a>(
 
 /// 获取成员ID列表
 pub async fn getuseridlist<'a>(
-  ctx: &Ctx<'a>,
   wxw_app_id: String,
 ) -> Result<Vec<String>> {
+  let ctx = &use_ctx();
   let mut data: GetuseridlistRes = fetch_getuseridlist(
-    ctx,
     wxw_app_id.clone(),
     false,
   ).await?;
   if data.errcode == 42001 {
     data = fetch_getuseridlist(
-      ctx,
       wxw_app_id.clone(),
       true,
     ).await?;
@@ -466,14 +445,13 @@ pub async fn getuseridlist<'a>(
   Ok(userids)
 }
 
-async fn fetch_getuser<'a>(
-  ctx: &Ctx<'a>,
+async fn fetch_getuser(
   wxw_app_id: String,
   userid: String,
   force: Option<bool>,
 ) -> Result<GetuserRes> {
+  let ctx = &use_ctx();
   let access_token = get_access_token(
-    ctx,
     wxw_app_id.clone(),
     force,
   ).await?;
@@ -500,7 +478,6 @@ async fn fetch_getuser<'a>(
 ///
 /// # 参数
 ///
-/// - `ctx`：上下文对象
 /// - `corpid`：企业 ID
 /// - `userid`：用户 ID
 /// - `force`：是否强制刷新 access_token, 默认为 false
@@ -512,13 +489,12 @@ async fn fetch_getuser<'a>(
 /// #### 异常
 ///
 /// 如果获取用户信息失败，则返回 `Err`，其中包含错误信息。
-pub async fn getuser<'a>(
-  ctx: &Ctx<'a>,
+pub async fn getuser(
   wxw_app_id: String,
   userid: String,
 ) -> Result<Option<GetuserRes>> {
+  let ctx = &use_ctx();
   let data: GetuserRes = fetch_getuser(
-    ctx,
     wxw_app_id.clone(),
     userid.clone(),
     false.into(),
@@ -532,7 +508,6 @@ pub async fn getuser<'a>(
   }
   if errcode == 42001 {
     let data: GetuserRes = fetch_getuser(
-      ctx,
       wxw_app_id.clone(),
       userid.clone(),
       true.into(),

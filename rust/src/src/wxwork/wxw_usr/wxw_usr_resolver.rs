@@ -1,7 +1,5 @@
 use anyhow::Result;
 
-use crate::common::context::Ctx;
-
 use super::wxw_usr_service;
 
 use super::wxw_usr_model::{
@@ -11,13 +9,11 @@ use super::wxw_usr_model::{
 };
 
 /// 通过host获取appid, agentid
-pub async fn wxw_get_appid<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_get_appid(
   host: String,
 ) -> Result<WxwGetAppid> {
   
   let res = wxw_usr_service::wxw_get_appid(
-    ctx,
     host,
   ).await?;
   
@@ -25,13 +21,11 @@ pub async fn wxw_get_appid<'a>(
 }
 
 /// 微信企业号登录
-pub async fn wxw_login_by_code<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_login_by_code(
   input: WxwLoginByCodeInput,
 ) -> Result<WxwLoginByCode> {
   
   let res = wxw_usr_service::wxw_login_by_code(
-    ctx,
     input,
   ).await?;
   
@@ -39,13 +33,11 @@ pub async fn wxw_login_by_code<'a>(
 }
 
 /// 同步企业微信用户
-pub async fn wxw_sync_usr<'a>(
-  ctx: &Ctx<'a>,
+pub async fn wxw_sync_usr(
   host: String,
 ) -> Result<i32> {
   
   let res = wxw_usr_service::wxw_sync_usr(
-    ctx,
     host,
   ).await?;
   
