@@ -502,6 +502,15 @@ export function getAuthorization() {
   return authorization;
 }
 
+/** 获取当前时间 */
+export function getNow() {
+  const context = useMaybeContext();
+  if (!context) {
+    throw new ServiceException("context is empty!");
+  }
+  return context.reqDate;
+}
+
 export async function getCache(
   cacheKey1: string | undefined,
   cacheKey2: string | undefined,
