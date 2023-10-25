@@ -128,6 +128,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.username_like)) {
     whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
   }
+  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
+    search.org_ids = [ search.org_ids ];
+  }
+  if (search?.org_ids && search?.org_ids.length > 0) {
+    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
+  }
+  if (search?.org_ids === null) {
+    whereQuery += ` and base_org.id is null`;
+  }
+  if (search?.org_ids_is_null) {
+    whereQuery += ` and base_org.id is null`;
+  }
   if (search?.default_org_id && !Array.isArray(search?.default_org_id)) {
     search.default_org_id = [ search.default_org_id ];
   }
@@ -151,18 +163,6 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
-    search.org_ids = [ search.org_ids ];
-  }
-  if (search?.org_ids && search?.org_ids.length > 0) {
-    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
-  }
-  if (search?.org_ids === null) {
-    whereQuery += ` and base_org.id is null`;
-  }
-  if (search?.org_ids_is_null) {
-    whereQuery += ` and base_org.id is null`;
   }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
@@ -253,8 +253,6 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     base_usr t
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = 0
@@ -277,6 +275,8 @@ async function getFromQuery() {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -388,9 +388,9 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
@@ -582,6 +582,28 @@ export async function setIdByLbl(
     "is_enabled",
   ]);
   
+  // 所属组织
+  if (!input.org_ids && input.org_ids_lbl) {
+    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
+      input.org_ids_lbl = input.org_ids_lbl.split(",");
+    }
+    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_org t
+      where
+        t.lbl in ${ args.push(input.org_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.org_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 默认组织
   if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
     input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
@@ -605,28 +627,6 @@ export async function setIdByLbl(
     if (val !== undefined) {
       input.is_enabled = Number(val);
     }
-  }
-  
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 所属部门
@@ -684,14 +684,14 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     img: await n("头像"),
     lbl: await n("名称"),
     username: await n("用户名"),
+    org_ids: await n("所属组织"),
+    org_ids_lbl: await n("所属组织"),
     default_org_id: await n("默认组织"),
     default_org_id_lbl: await n("默认组织"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    org_ids: await n("所属组织"),
-    org_ids_lbl: await n("所属组织"),
     dept_ids: await n("所属部门"),
     dept_ids_lbl: await n("所属部门"),
     role_ids: await n("拥有角色"),
@@ -1196,6 +1196,7 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "base_usr_org",
     "base_org",
     "base_usr_dept",
     "base_dept",

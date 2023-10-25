@@ -34,14 +34,14 @@ export interface UsrFieldComment {
   img: string;
   lbl: string;
   username: string;
+  org_ids: string;
+  org_ids_lbl: string;
   default_org_id: string;
   default_org_id_lbl: string;
   is_locked: string;
   is_locked_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
-  org_ids: string;
-  org_ids_lbl: string;
   dept_ids: string;
   dept_ids_lbl: string;
   role_ids: string;

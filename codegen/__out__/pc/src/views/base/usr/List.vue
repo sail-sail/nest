@@ -515,6 +515,20 @@
             </el-table-column>
           </template>
           
+          <!-- 所属组织 -->
+          <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 默认组织 -->
           <template v-else-if="'default_org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_org_id == null)">
             <el-table-column
@@ -552,20 +566,6 @@
                   v-model="row.is_enabled"
                   @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 所属组织 -->
-          <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
               </template>
             </el-table-column>
           </template>
@@ -846,12 +846,12 @@ const props = defineProps<{
   username_like?: string; // 用户名
   password?: string; // 密码
   password_like?: string; // 密码
+  org_ids?: string|string[]; // 所属组织
+  org_ids_lbl?: string|string[]; // 所属组织
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string|string[]; // 默认组织
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  org_ids?: string|string[]; // 所属组织
-  org_ids_lbl?: string|string[]; // 所属组织
   dept_ids?: string|string[]; // 所属部门
   dept_ids_lbl?: string|string[]; // 所属部门
   role_ids?: string|string[]; // 拥有角色
@@ -872,14 +872,14 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
+  org_ids: "string[]",
+  org_ids_lbl: "string[]",
   default_org_id: "string[]",
   default_org_id_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  org_ids: "string[]",
-  org_ids_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
   role_ids: "string[]",
@@ -1031,6 +1031,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "所属组织",
+      prop: "org_ids_lbl",
+      sortBy: "org_ids",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "默认组织",
       prop: "default_org_id_lbl",
       sortBy: "default_org_id",
@@ -1054,15 +1063,6 @@ function getTableColumns(): ColumnType[] {
       sortBy: "is_enabled",
       width: 60,
       align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "所属组织",
-      prop: "org_ids_lbl",
-      sortBy: "org_ids",
-      width: 280,
-      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1390,10 +1390,10 @@ async function onImportExcel() {
     [ await nAsync("头像") ]: "img",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("用户名") ]: "username",
+    [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1421,10 +1421,10 @@ async function onImportExcel() {
           "img": "string",
           "lbl": "string",
           "username": "string",
+          "org_ids_lbl": "string",
           "default_org_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
-          "org_ids_lbl": "string",
           "dept_ids_lbl": "string",
           "role_ids_lbl": "string",
           "rem": "string",
@@ -1727,10 +1727,10 @@ async function initI18nsEfc() {
     "头像",
     "名称",
     "用户名",
+    "所属组织",
     "默认组织",
     "锁定",
     "启用",
-    "所属组织",
     "所属部门",
     "拥有角色",
     "备注",
