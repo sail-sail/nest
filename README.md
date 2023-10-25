@@ -7,15 +7,15 @@ git config --global core.autocrlf false
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS xh4hrm CHARSET utf8mb4;
+CREATE DATABASE IF NOT EXISTS deno4wxwork CHARSET utf8mb4;
 -- 创建用户
-create user 'xh4hrm'@'%' identified by 'l1zx6Cfo2k1Z95SO';
+create user 'deno4wxwork'@'%' identified by 'iJGVDdqsHW0vCfut';
 -- 设置用户密码不过期
-ALTER USER 'xh4hrm'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
+ALTER USER 'deno4wxwork'@'%' IDENTIFIED BY 'iJGVDdqsHW0vCfut' PASSWORD EXPIRE NEVER;
 -- 修改密码策略
-ALTER USER 'xh4hrm'@'%' IDENTIFIED WITH mysql_native_password BY 'l1zx6Cfo2k1Z95SO';
+ALTER USER 'deno4wxwork'@'%' IDENTIFIED WITH mysql_native_password BY 'iJGVDdqsHW0vCfut';
 -- 给用户授权
-grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on xh4hrm.* to 'xh4hrm'@'%';
+grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on deno4wxwork.* to 'deno4wxwork'@'%';
 -- 刷新权限
 flush privileges;
 ```
@@ -35,12 +35,12 @@ yum install nginx -y
 
 4. CentOS压缩文件夹
 ```
-tar zcfv /data/xh4hrm.tar.gz /data/xh4hrm
+tar zcfv /data/deno4wxwork.tar.gz /data/deno4wxwork
 ```
 
 5. CentOS解压文件夹
 ```
-tar -xzvf /data/software/xh4hrm.tar.gz /data/
+tar -xzvf /data/software/deno4wxwork.tar.gz /data/
 ```
 
 6. CentOS通过yum安装nodejs
@@ -145,7 +145,7 @@ show variables like 'datadir';
 
 ```
 mysql导出数据:
-mysqldump --defaults-file="/etc/my.cnf" --user=xh4hrm -p --host=localhost --protocol=tcp --port=3306 --default-character-set=utf8 --skip-triggers "xh4hrm" > xh4hrm.sql
+mysqldump --defaults-file="/etc/my.cnf" --user=deno4wxwork -p --host=localhost --protocol=tcp --port=3306 --default-character-set=utf8 --skip-triggers "deno4wxwork" > deno4wxwork.sql
 ```
 
 10. PM2设置开机自启动
@@ -197,7 +197,7 @@ npm run codeapply
 npm run build:pc
 
 自动编译和发布后端:
-npm run build:xh4hrm
+npm run build:deno4wxwork
 
 自动编译和发布前后端:
 npm run build

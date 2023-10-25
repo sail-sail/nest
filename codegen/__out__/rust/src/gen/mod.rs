@@ -1,5 +1,4 @@
 pub mod base;
-pub mod hrm;
 pub mod wxwork;
 
 
@@ -27,7 +26,6 @@ pub struct GenQuery(
   crate::gen::base::role::role_graphql::RoleGenQuery,
   crate::gen::base::tenant::tenant_graphql::TenantGenQuery,
   crate::gen::base::usr::usr_graphql::UsrGenQuery,
-  crate::gen::hrm::payslip::payslip_graphql::PayslipGenQuery,
   crate::gen::wxwork::wxw_app::wxw_app_graphql::WxwAppGenQuery,
   crate::gen::wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenQuery,
   crate::gen::wxwork::wxw_msg::wxw_msg_graphql::WxwMsgGenQuery,
@@ -56,7 +54,6 @@ pub struct GenMutation(
   crate::gen::base::role::role_graphql::RoleGenMutation,
   crate::gen::base::tenant::tenant_graphql::TenantGenMutation,
   crate::gen::base::usr::usr_graphql::UsrGenMutation,
-  crate::gen::hrm::payslip::payslip_graphql::PayslipGenMutation,
   crate::gen::wxwork::wxw_app::wxw_app_graphql::WxwAppGenMutation,
   crate::gen::wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenMutation,
   crate::gen::wxwork::wxw_msg::wxw_msg_graphql::WxwMsgGenMutation,
