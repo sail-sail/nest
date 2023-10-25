@@ -1,7 +1,6 @@
 import { defineConfig } from "../config";
 
 import wxwork from "./wxwork";
-import hrm from "./hrm";
 
 export default defineConfig({
   // 角色
@@ -1283,5 +1282,4 @@ export default defineConfig({
   },
   
   ...wxwork,
-  ...hrm,
 });

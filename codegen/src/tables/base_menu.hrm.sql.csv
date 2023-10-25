@@ -1,3 +1,0 @@
-id,type,parent_id,lbl,route_path,route_query,is_enabled,order_by
-EBcgtcmBQkeU1yLhi7fRww,pc,,人力资源,,NULL,1,9000
-Zqxun39FTAukPqgxUsuK6w,pc,EBcgtcmBQkeU1yLhi7fRww,工资条,/hrm/payslip,NULL,1,9001
