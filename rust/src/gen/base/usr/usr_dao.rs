@@ -149,6 +149,32 @@ async fn get_where_query(
     }
   }
   {
+    let org_ids: Vec<String> = match &search {
+      Some(item) => item.org_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !org_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(org_ids.len());
+        for item in org_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_org.id in ({})", arg);
+    }
+  }
+  {
+    let org_ids_is_null: bool = match &search {
+      Some(item) => item.org_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if org_ids_is_null {
+      where_query += " and org_ids_lbl.id is null";
+    }
+  }
+  {
     let default_org_id: Vec<String> = match &search {
       Some(item) => item.default_org_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -206,32 +232,6 @@ async fn get_where_query(
         items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
-    let org_ids: Vec<String> = match &search {
-      Some(item) => item.org_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !org_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(org_ids.len());
-        for item in org_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_org.id in ({})", arg);
-    }
-  }
-  {
-    let org_ids_is_null: bool = match &search {
-      Some(item) => item.org_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if org_ids_is_null {
-      where_query += " and org_ids_lbl.id is null";
     }
   }
   {
@@ -401,8 +401,6 @@ async fn get_where_query(
 
 async fn get_from_query() -> Result<String> {
   let from_query = r#"base_usr t
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = 0
@@ -425,6 +423,8 @@ async fn get_from_query() -> Result<String> {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -509,9 +509,9 @@ pub async fn find_all(
   let sql = format!(r#"
     select
       t.*
-      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
@@ -648,14 +648,14 @@ pub async fn get_field_comments(
     "头像".into(),
     "名称".into(),
     "用户名".into(),
+    "所属组织".into(),
+    "所属组织".into(),
     "默认组织".into(),
     "默认组织".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
     "启用".into(),
-    "所属组织".into(),
-    "所属组织".into(),
     "所属部门".into(),
     "所属部门".into(),
     "拥有角色".into(),
@@ -688,14 +688,14 @@ pub async fn get_field_comments(
     img: vec[1].to_owned(),
     lbl: vec[2].to_owned(),
     username: vec[3].to_owned(),
-    default_org_id: vec[4].to_owned(),
-    default_org_id_lbl: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    org_ids: vec[10].to_owned(),
-    org_ids_lbl: vec[11].to_owned(),
+    org_ids: vec[4].to_owned(),
+    org_ids_lbl: vec[5].to_owned(),
+    default_org_id: vec[6].to_owned(),
+    default_org_id_lbl: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
     dept_ids: vec[12].to_owned(),
     dept_ids_lbl: vec[13].to_owned(),
     role_ids: vec[14].to_owned(),
@@ -928,27 +928,6 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 默认组织
-  if input.default_org_id_lbl.is_some()
-    && !input.default_org_id_lbl.as_ref().unwrap().is_empty()
-    && input.default_org_id.is_none()
-  {
-    input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = crate::gen::base::org::org_dao::find_one(
-      crate::gen::base::org::org_model::OrgSearch {
-        lbl: input.default_org_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.default_org_id = model.id.into();
-    }
-  }
-  
   // 所属组织
   if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
@@ -975,6 +954,27 @@ pub async fn set_id_by_lbl(
         .map(|item| item.id)
         .collect::<Vec<String>>()
         .into();
+    }
+  }
+  
+  // 默认组织
+  if input.default_org_id_lbl.is_some()
+    && !input.default_org_id_lbl.as_ref().unwrap().is_empty()
+    && input.default_org_id.is_none()
+  {
+    input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::org::org_dao::find_one(
+      crate::gen::base::org::org_model::OrgSearch {
+        lbl: input.default_org_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.default_org_id = model.id.into();
     }
   }
   
@@ -1533,6 +1533,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_usr";
   vec![
     table,
+    "base_usr_org",
     "base_org",
     "base_usr_dept",
     "base_dept",
