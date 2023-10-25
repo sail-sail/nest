@@ -19,7 +19,6 @@ pub async fn org_login_select(
       anyhow::anyhow!("auth_model.is_none()")
     )?;
   let usr_model = usr_dao::find_by_id(
-    ctx,
     auth_model.id.clone(),
     None,
   ).await?;

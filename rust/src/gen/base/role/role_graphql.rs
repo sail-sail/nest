@@ -31,19 +31,17 @@ impl RoleGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<RoleModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::find_all(
-      &ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::find_all(
+          search,
+          page,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据搜索条件查询数据总数
@@ -52,17 +50,15 @@ impl RoleGenQuery {
     ctx: &Context<'_>,
     search: Option<RoleSearch>,
   ) -> Result<i64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::find_count(
-      &ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::find_count(
+          search,
+          None,
+        )
+      }).await
   }
   
   /// 根据条件查找第一条数据
@@ -72,18 +68,16 @@ impl RoleGenQuery {
     search: Option<RoleSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<RoleModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::find_one(
-      &ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::find_one(
+          search,
+          sort,
+          None,
+        )
+      }).await
   }
   
   /// 根据ID查找第一条数据
@@ -92,17 +86,15 @@ impl RoleGenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<RoleModel>> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::find_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::find_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ID 查找是否已启用
@@ -112,17 +104,15 @@ impl RoleGenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::get_is_enabled_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::get_is_enabled_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ID 查找是否已锁定
@@ -133,17 +123,15 @@ impl RoleGenQuery {
     ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = role_resolver::get_is_locked_by_id(
-      &ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::get_is_locked_by_id(
+          id,
+          None,
+        )
+      }).await
   }
   
   /// 获取字段对应的名称
@@ -151,16 +139,13 @@ impl RoleGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<RoleFieldComment> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .build();
-    
-    let res = role_resolver::get_field_comments(
-      &ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        role_resolver::get_field_comments(
+          None,
+        )
+      }).await
   }
   
 }
@@ -178,23 +163,20 @@ impl RoleGenMutation {
     model: RoleInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build();
-    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
-    
-    let id = role_resolver::create(
-      &ctx,
-      model,
-      options.into(),
-    ).await;
-    
-    ctx.ok(id).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        role_resolver::create(
+          model,
+          options.into(),
+        )
+      }).await
   }
   
   /// 根据id修改租户id
@@ -204,19 +186,17 @@ impl RoleGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::update_tenant_by_id(
-      &ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::update_tenant_by_id(
+          id,
+          tenant_id,
+          None,
+        )
+      }).await
   }
   
   /// 根据id修改数据
@@ -226,19 +206,17 @@ impl RoleGenMutation {
     id: String,
     model: RoleInput,
   ) -> Result<String> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::update_by_id(
-      &ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::update_by_id(
+          id,
+          model,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 删除数据
@@ -247,18 +225,16 @@ impl RoleGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 启用或禁用数据
@@ -268,19 +244,17 @@ impl RoleGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::enable_by_ids(
-      &ctx,
-      ids,
-      is_enabled,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::enable_by_ids(
+          ids,
+          is_enabled,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 锁定或解锁数据
@@ -290,19 +264,17 @@ impl RoleGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::lock_by_ids(
-      &ctx,
-      ids,
-      is_locked,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::lock_by_ids(
+          ids,
+          is_locked,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 还原数据
@@ -311,18 +283,16 @@ impl RoleGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::revert_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::revert_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
   /// 根据 ids 彻底删除数据
@@ -331,18 +301,16 @@ impl RoleGenMutation {
     ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
-      .build();
-    
-    let res = role_resolver::force_delete_by_ids(
-      &ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        role_resolver::force_delete_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }
   
 }

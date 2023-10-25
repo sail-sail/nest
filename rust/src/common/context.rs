@@ -39,6 +39,10 @@ lazy_static! {
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
 
+tokio::task_local! {
+  pub static CTX: Arc<Ctx>;
+}
+
 fn init_debug() -> bool {
   let is_debug = event_enabled!(Level::INFO);
   is_debug
@@ -1278,6 +1282,27 @@ pub struct Ctx {
   
   now: NaiveDateTime,
   
+}
+
+impl Ctx {
+  
+  pub async fn scope<F, T>(self, f: F) -> Result<T>
+    where
+      F: core::future::Future<Output = Result<T>>,
+      T: Send,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let res = f.await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      ctx.ok(res).await
+    }).await
+  }
+  
+}
+
+pub fn use_ctx() -> Arc<Ctx> {
+  CTX.with(|ctx| ctx.clone())
 }
 
 #[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]

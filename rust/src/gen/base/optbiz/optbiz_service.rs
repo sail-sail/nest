@@ -2,7 +2,6 @@ use anyhow::Result;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Ctx,
   SrvErr,
   Options,
 };
@@ -17,7 +16,6 @@ use super::optbiz_dao;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
-  ctx: &Ctx,
   search: Option<OptbizSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -25,7 +23,6 @@ pub async fn find_all(
 ) -> Result<Vec<OptbizModel>> {
   
   let res = optbiz_dao::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -37,13 +34,11 @@ pub async fn find_all(
 
 /// 根据搜索条件查找总数
 pub async fn find_count(
-  ctx: &Ctx,
   search: Option<OptbizSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let res = optbiz_dao::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -53,14 +48,12 @@ pub async fn find_count(
 
 /// 根据条件查找第一条数据
 pub async fn find_one(
-  ctx: &Ctx,
   search: Option<OptbizSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<OptbizModel>> {
   
   let model = optbiz_dao::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -71,13 +64,11 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<OptbizModel>> {
   
   let model = optbiz_dao::find_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -87,12 +78,10 @@ pub async fn find_by_id(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 pub async fn set_id_by_lbl(
-  ctx: &Ctx,
   input: OptbizInput,
 ) -> Result<OptbizInput> {
   
   let input = optbiz_dao::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
@@ -102,13 +91,11 @@ pub async fn set_id_by_lbl(
 /// 创建数据
 #[allow(dead_code)]
 pub async fn create(
-  ctx: &Ctx,
   input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let id = optbiz_dao::create(
-    ctx,
     input,
     options,
   ).await?;
@@ -119,14 +106,12 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  ctx: &Ctx,
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = optbiz_dao::update_tenant_by_id(
-    ctx,
     id,
     tenant_id,
     options,
@@ -139,26 +124,23 @@ pub async fn update_tenant_by_id(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  ctx: &Ctx,
   id: String,
   mut input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let is_locked = optbiz_dao::get_is_locked_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
   
   if is_locked {
-    let err_msg = i18n_dao::ns(ctx, "不能修改已经锁定的数据".to_owned(), None).await?;
+    let err_msg = i18n_dao::ns("不能修改已经锁定的数据".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
   
   // 不能修改系统记录的系统字段
   let model = optbiz_dao::find_by_id(
-    ctx,
     id.clone(),
     None,
   ).await?;
@@ -173,7 +155,6 @@ pub async fn update_by_id(
   }
   
   let res = optbiz_dao::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -185,7 +166,6 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -195,7 +175,6 @@ pub async fn delete_by_ids(
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
     let is_locked = optbiz_dao::get_is_locked_by_id(
-      ctx,
       id.clone(),
       None,
     ).await?;
@@ -208,7 +187,6 @@ pub async fn delete_by_ids(
   }
   if ids.is_empty() && len > 0 {
     let err_msg = i18n_dao::ns(
-      ctx,
       "不能删除已经锁定的数据".to_owned(),
       None,
     ).await?;
@@ -221,7 +199,6 @@ pub async fn delete_by_ids(
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
     let model = optbiz_dao::find_by_id(
-      ctx,
       id.clone(),
       None,
     ).await?;
@@ -235,12 +212,11 @@ pub async fn delete_by_ids(
     ids.push(id);
   }
   if ids.is_empty() && len > 0 {
-    let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
+    let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
   
   let num = optbiz_dao::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -252,13 +228,11 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = optbiz_dao::get_is_enabled_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -269,14 +243,12 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用数据
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = optbiz_dao::enable_by_ids(
-    ctx,
     ids,
     is_locked,
     options,
@@ -290,13 +262,11 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = optbiz_dao::get_is_locked_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -307,14 +277,12 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁数据
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = optbiz_dao::lock_by_ids(
-    ctx,
     ids,
     is_locked,
     options,
@@ -325,12 +293,10 @@ pub async fn lock_by_ids(
 
 /// 获取字段对应的名称
 pub async fn get_field_comments(
-  ctx: &Ctx,
   options: Option<Options>,
 ) -> Result<OptbizFieldComment> {
   
   let comments = optbiz_dao::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -340,13 +306,11 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = optbiz_dao::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -357,13 +321,11 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = optbiz_dao::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -373,12 +335,10 @@ pub async fn force_delete_by_ids(
 
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by(
-  ctx: &Ctx,
   options: Option<Options>,
 ) -> Result<u32> {
   
   let res = optbiz_dao::find_last_order_by(
-    ctx,
     options,
   ).await?;
   

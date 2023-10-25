@@ -18,17 +18,14 @@ impl OptionsQuery {
     ctx: &Context<'_>,
     lbl: String,
   ) -> Result<Vec<OptionsModel>> {
-    
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = options_resolver::get_options_by_lbl(
-      &ctx,
-      lbl,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        options_resolver::get_options_by_lbl(
+          lbl,
+        )
+      }).await
   }
   
 }

@@ -2,13 +2,11 @@ use std::net::IpAddr;
 use std::str::FromStr;
 use anyhow::Result;
 
-use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn ip(
-  ctx: &mut Ctx,
   value: Option<String>,
   label: &str,
 ) -> Result<()> {
@@ -23,7 +21,6 @@ pub async fn ip(
   }
   
   let msg = ns(
-    ctx,
     "IP地址格式不正确".to_owned(),
     None,
   ).await?;

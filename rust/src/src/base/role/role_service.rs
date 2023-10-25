@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::gen::base::role::role_dao::find_all as find_all_role;
 
@@ -11,31 +11,27 @@ use crate::gen::base::usr::usr_dao::{
 };
 
 /// 获取当前角色的首页轮播图路由
-pub async fn get_home_urls(
-  ctx: &Ctx,
-) -> Result<Vec<String>> {
+pub async fn get_home_urls() -> Result<Vec<String>> {
+  
+  let ctx = &use_ctx();
   
   let usr_id = ctx.get_auth_model_err()?.id;
   
   // 获取当前登录用户
   let usr_model = find_usr_by_id(
-    ctx,
     usr_id,
     None,
   ).await?;
   let usr_model = validate_option_usr(
-    ctx,
     usr_model,
   ).await?;
   validate_is_enabled_usr(
-    ctx,
     &usr_model,
   ).await?;
   
   let role_ids = usr_model.role_ids;
   
   let role_models = find_all_role(
-    ctx,
     RoleSearch {
       ids: Some(role_ids),
       ..Default::default()

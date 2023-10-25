@@ -2,7 +2,10 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::{Ctx, Options};
+use crate::common::context::{
+  use_ctx,
+  Options,
+};
 
 use regex::{Regex, Captures};
 
@@ -26,20 +29,18 @@ impl NRoute {
   #[allow(dead_code)]
   pub async fn n(
     &self,
-    ctx: &Ctx,
     code: String,
     map: Option<HashMap<String, String>>,
   ) -> Result<String> {
-    let res = n(ctx, self.route_path.clone(), code, map).await?;
+    let res = n(self.route_path.clone(), code, map).await?;
     Ok(res)
   }
   
   pub async fn n_batch(
     &self,
-    ctx: &Ctx,
     i18n_code_maps: Vec<I18nCodeMap>,
   ) -> Result<HashMap<String, String>> {
-    let res = n_batch(ctx, self.route_path.clone(), i18n_code_maps).await?;
+    let res = n_batch(self.route_path.clone(), i18n_code_maps).await?;
     Ok(res)
   }
   
@@ -47,11 +48,11 @@ impl NRoute {
 
 #[allow(dead_code)]
 pub async fn n(
-  ctx: &Ctx,
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -60,7 +61,7 @@ pub async fn n(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, route_path, code, map).await?;
+  let i18n_lbl = n_lang(lang_code, route_path, code, map).await?;
   Ok(i18n_lbl)
 }
 
@@ -99,10 +100,10 @@ impl From<(String, HashMap<String, String>)> for I18nCodeMap {
 
 #[allow(dead_code)]
 pub async fn n_batch(
-  ctx: &Ctx,
   route_path: Option<String>,
   i18n_code_maps: Vec<I18nCodeMap>,
 ) -> Result<HashMap<String, String>> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(
@@ -126,7 +127,6 @@ pub async fn n_batch(
   let mut i18n_lbls: HashMap<String, String> = HashMap::new();
   for i18n_code_map in i18n_code_maps {
     let i18n_lbl = n_lang(
-      ctx,
       lang_code.clone(),
       route_path.clone(),
       i18n_code_map.code.clone(),
@@ -139,10 +139,10 @@ pub async fn n_batch(
 
 #[allow(dead_code)]
 pub async fn ns(
-  ctx: &Ctx,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let ctx = &use_ctx();
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -151,12 +151,11 @@ pub async fn ns(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, None, code, map).await?;
+  let i18n_lbl = n_lang(lang_code, None, code, map).await?;
   Ok(i18n_lbl)
 }
 
 pub async fn n_lang(
-  ctx: &Ctx,
   lang_code: String,
   route_path: Option<String>,
   code: String,
@@ -170,7 +169,6 @@ pub async fn n_lang(
   
   let mut i18n_lbl = code.clone();
   let lang_model = find_one_lang(
-    ctx,
     LangSearch {
       code: lang_code.into(),
       is_enabled: vec![1].into(),
@@ -182,7 +180,6 @@ pub async fn n_lang(
   let mut menu_id: Option<String> = None;
   if let Some(route_path) = route_path {
     let menu_model = find_one_menu(
-      ctx,
       MenuSearch {
         route_path: route_path.into(),
         is_enabled: vec![1].into(),
@@ -200,7 +197,6 @@ pub async fn n_lang(
     let mut i18n_model: Option<I18nModel> = None;
     if let Some(menu_id) = menu_id {
       i18n_model = find_one_i18n(
-        ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
           menu_id: vec![menu_id].into(),
@@ -212,7 +208,6 @@ pub async fn n_lang(
       ).await?;
       if i18n_model.is_none() {
         i18n_model = find_one_i18n(
-          ctx,
           I18nSearch {
             lang_id: vec![lang_model.id.to_string()].into(),
             menu_id_is_null: true.into(),
@@ -225,7 +220,6 @@ pub async fn n_lang(
       }
     } else {
       i18n_model = find_one_i18n(
-        ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
           menu_id_is_null: true.into(),

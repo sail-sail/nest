@@ -18,17 +18,14 @@ impl MenuQuery {
     ctx: &Context<'_>,
     r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
-    
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = menu_resolver::get_menus(
-      &ctx,
-      r#type,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        menu_resolver::get_menus(
+          r#type,
+        )
+      }).await
   }
   
 }

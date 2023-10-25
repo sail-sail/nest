@@ -17,16 +17,12 @@ impl PermitQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<Vec<GetUsrPermits>> {
-    
-    let ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    
-    let res = permit_resolver::get_usr_permits(
-      &ctx,
-    ).await;
-    
-    ctx.ok(res).await
+      .build()
+      .scope({
+        permit_resolver::get_usr_permits()
+      }).await
   }
   
 }

@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::common::context::{Ctx, Options};
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
@@ -9,7 +9,6 @@ use super::background_task_service;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -17,7 +16,6 @@ pub async fn find_all(
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let res = background_task_service::find_all(
-    ctx,
     search,
     page,
     sort,
@@ -29,13 +27,11 @@ pub async fn find_all(
 
 /// 根据搜索条件查找总数
 pub async fn find_count(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   let num = background_task_service::find_count(
-    ctx,
     search,
     options,
   ).await?;
@@ -45,14 +41,12 @@ pub async fn find_count(
 
 /// 根据条件查找第一条数据
 pub async fn find_one(
-  ctx: &Ctx,
   search: Option<BackgroundTaskSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let model = background_task_service::find_one(
-    ctx,
     search,
     sort,
     options,
@@ -63,13 +57,11 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let model = background_task_service::find_by_id(
-    ctx,
     id,
     options,
   ).await?;
@@ -80,24 +72,20 @@ pub async fn find_by_id(
 /// 创建数据
 #[allow(dead_code)]
 pub async fn create(
-  ctx: &Ctx,
   input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = background_task_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/base/background_task".to_owned(),
     "add".to_owned(),
   ).await?;
   
   let id = background_task_service::create(
-    ctx,
     input,
     options,
   ).await?;
@@ -108,14 +96,12 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  ctx: &Ctx,
   id: String,
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_service::update_tenant_by_id(
-    ctx,
     id,
     tenant_id,
     options,
@@ -127,25 +113,21 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  ctx: &Ctx,
   id: String,
   input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let input = background_task_service::set_id_by_lbl(
-    ctx,
     input,
   ).await?;
   
   use_permit(
-    ctx,
     "/base/background_task".to_owned(),
     "edit".to_owned(),
   ).await?;
   
   let res = background_task_service::update_by_id(
-    ctx,
     id,
     input,
     options,
@@ -157,19 +139,16 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/background_task".to_owned(),
     "delete".to_owned(),
   ).await?;
   
   let num = background_task_service::delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -179,12 +158,10 @@ pub async fn delete_by_ids(
 
 /// 获取字段对应的名称
 pub async fn get_field_comments(
-  ctx: &Ctx,
   options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
   
   let comments = background_task_service::get_field_comments(
-    ctx,
     options,
   ).await?;
   
@@ -194,19 +171,16 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/background_task".to_owned(),
     "delete".to_owned(),
   ).await?;
   
   let num = background_task_service::revert_by_ids(
-    ctx,
     ids,
     options,
   ).await?;
@@ -217,19 +191,16 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   use_permit(
-    ctx,
     "/base/background_task".to_owned(),
     "force_delete".to_owned(),
   ).await?;
   
   let num = background_task_service::force_delete_by_ids(
-    ctx,
     ids,
     options,
   ).await?;

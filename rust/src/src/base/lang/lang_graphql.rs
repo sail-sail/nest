@@ -16,14 +16,11 @@ impl LangQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<Vec<LangModel>> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = lang_resolver::get_login_langs(
-      &ctx,
-    ).await;
-    
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        lang_resolver::get_login_langs()
+      }).await
   }
   
 }

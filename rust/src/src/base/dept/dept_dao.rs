@@ -2,7 +2,7 @@ use std::pin::Pin;
 
 use anyhow::{Result, Error};
 use futures_util::Future;
-use crate::common::context::Ctx;
+use crate::common::context::use_ctx;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -13,9 +13,9 @@ use crate::common::auth::auth_model::AuthModel;
 
 /// 获取当前登录用户的部门id列表
 #[allow(dead_code)]
-pub async fn get_auth_dept_ids(
-  ctx: &Ctx,
-) -> Result<Vec<String>> {
+pub async fn get_auth_dept_ids() -> Result<Vec<String>> {
+  
+  let ctx = &use_ctx();
   
   let aut_model: Option<AuthModel> = ctx.get_auth_model();
   if aut_model.is_none() {
@@ -26,7 +26,6 @@ pub async fn get_auth_dept_ids(
   let usr_id = aut_model.id;
   
   let usr_model = find_by_id_usr(
-    ctx,
     usr_id,
     None,
   ).await?;
@@ -47,7 +46,6 @@ pub async fn get_auth_dept_ids(
 
 #[allow(dead_code)]
 async fn get_parents_by_id(
-  ctx: &Ctx,
   ids: Vec<String>,
   parent_ids: &mut Vec<String>,
 ) -> Result<()> {
@@ -57,7 +55,6 @@ async fn get_parents_by_id(
   }
   
   let dept_models = find_all_dept(
-    ctx,
     DeptSearch {
       ids: ids.into(),
       is_enabled: vec![1].into(),
@@ -77,7 +74,6 @@ async fn get_parents_by_id(
   
   let future: Pin<Box<dyn Future<Output = Result<(), Error>>>> = Box::pin(
     get_parents_by_id(
-      ctx,
       ids2,
       parent_ids,
     )
@@ -90,20 +86,15 @@ async fn get_parents_by_id(
 
 /// 获取当前用户及其所有父部门的id
 #[allow(dead_code)]
-pub async fn get_auth_and_parents_dept_ids(
-  ctx: &Ctx,
-) -> Result<Vec<String>> {
+pub async fn get_auth_and_parents_dept_ids() -> Result<Vec<String>> {
   
-  let dept_ids = get_auth_dept_ids(
-    ctx,
-  ).await?;
+  let dept_ids = get_auth_dept_ids().await?;
   
   let mut parent_ids: Vec<String> = vec![];
   
   parent_ids.extend(dept_ids.clone());
   
   get_parents_by_id(
-    ctx,
     dept_ids,
     &mut parent_ids,
   ).await?;
