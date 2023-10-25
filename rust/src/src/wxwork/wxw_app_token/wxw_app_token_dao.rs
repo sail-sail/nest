@@ -98,7 +98,7 @@ async fn fetch_access_token(
 }
 
 /// 获取企业微信应用的 access_token。
-pub async fn get_access_token<'a>(
+pub async fn get_access_token(
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
@@ -196,7 +196,7 @@ pub async fn get_access_token<'a>(
 }
 
 /// 获取企微通讯录token
-pub async fn get_contact_access_token<'a>(
+pub async fn get_contact_access_token(
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
@@ -299,7 +299,7 @@ pub async fn get_contact_access_token<'a>(
   Ok(access_token)
 }
 
-async fn fetch_getuserinfo_by_code<'a>(
+async fn fetch_getuserinfo_by_code(
   wxw_app_id: String,
   code: String,
   force: bool,
@@ -339,7 +339,7 @@ async fn fetch_getuserinfo_by_code<'a>(
 /// #### 返回值
 /// 
 /// 返回用户身份信息 `userid`, `user_ticket`
-pub async fn getuserinfo_by_code<'a>(
+pub async fn getuserinfo_by_code(
   wxw_app_id: String,
   code: String,
 ) -> Result<GetuserinfoModel> {
@@ -409,7 +409,7 @@ async fn fetch_getuseridlist(
 }
 
 /// 获取成员ID列表
-pub async fn getuseridlist<'a>(
+pub async fn getuseridlist(
   wxw_app_id: String,
 ) -> Result<Vec<String>> {
   let ctx = &use_ctx();
