@@ -2,7 +2,7 @@ use std::pin::Pin;
 
 use anyhow::{Result, Error};
 use futures_util::Future;
-use crate::common::context::use_ctx;
+use crate::common::context::get_auth_model;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -15,9 +15,7 @@ use crate::common::auth::auth_model::AuthModel;
 #[allow(dead_code)]
 pub async fn get_auth_dept_ids() -> Result<Vec<String>> {
   
-  let ctx = &use_ctx();
-  
-  let aut_model: Option<AuthModel> = ctx.get_auth_model();
+  let aut_model: Option<AuthModel> = get_auth_model();
   if aut_model.is_none() {
     return Ok(vec![]);
   }

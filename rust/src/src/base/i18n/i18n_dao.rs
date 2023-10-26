@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use crate::common::context::{
-  use_ctx,
+  get_auth_lang,
   Options,
 };
 
@@ -52,8 +52,7 @@ pub async fn n(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let ctx = &use_ctx();
-  let lang_code = ctx.get_auth_lang();
+  let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
   }
@@ -103,8 +102,7 @@ pub async fn n_batch(
   route_path: Option<String>,
   i18n_code_maps: Vec<I18nCodeMap>,
 ) -> Result<HashMap<String, String>> {
-  let ctx = &use_ctx();
-  let lang_code = ctx.get_auth_lang();
+  let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(
       i18n_code_maps.iter()
@@ -142,8 +140,7 @@ pub async fn ns(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let ctx = &use_ctx();
-  let lang_code = ctx.get_auth_lang();
+  let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
   }

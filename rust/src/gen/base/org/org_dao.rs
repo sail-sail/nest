@@ -4,7 +4,15 @@ use crate::common::util::string::*;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  use_ctx,
+  get_auth_model,
+  get_auth_id,
+  get_auth_tenant_id,
+  get_auth_org_id,
+  execute,
+  query,
+  query_one,
+  get_now,
+  get_req_id,
   QueryArgs,
   Options,
   CountModel,
@@ -32,7 +40,6 @@ async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<OrgSearch>,
 ) -> Result<String> {
-  let ctx = &use_ctx();
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -82,7 +89,7 @@ async fn get_where_query(
         None => &None,
       };
       let tenant_id = match trim_opt(tenant_id.as_ref()) {
-        None => ctx.get_auth_tenant_id(),
+        None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
           _ => item.into(),
@@ -338,8 +345,7 @@ pub async fn find_all(
   
   let options = options.into();
   
-  let ctx = &use_ctx();
-  let mut res: Vec<OrgModel> = ctx.query(
+  let mut res: Vec<OrgModel> = query(
     sql,
     args,
     options,
@@ -414,8 +420,7 @@ pub async fn find_count(
   
   let options = options.into();
   
-  let ctx = &use_ctx();
-  let res: Option<CountModel> = ctx.query_one(
+  let res: Option<CountModel> = query_one(
     sql,
     args,
     options,
@@ -734,8 +739,7 @@ pub async fn create(
     ).into());
   }
   
-  let ctx = &use_ctx();
-  let now = ctx.get_now();
+  let now = get_now();
   
   let old_models = find_by_unique(
     input.clone().into(),
@@ -783,7 +787,7 @@ pub async fn create(
     }
     error!(
       "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = ctx.get_req_id(),
+      req_id = get_req_id(),
     );
   }
   let id = id;
@@ -801,13 +805,13 @@ pub async fn create(
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());
-  } else if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+  } else if let Some(tenant_id) = get_auth_tenant_id() {
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());
   }
   
-  if let Some(auth_model) = ctx.get_auth_model() {
+  if let Some(auth_model) = get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
     sql_values += ",?";
@@ -871,7 +875,7 @@ pub async fn create(
   
   let options = options.into();
   
-  ctx.execute(
+  execute(
     sql,
     args,
     options,
@@ -889,13 +893,11 @@ pub async fn update_tenant_by_id(
   let table = "base_org";
   let _method = "update_tenant_by_id";
   
-  let ctx = &use_ctx();
-  
   let mut args = QueryArgs::new();
   
   let sql_fields = "tenant_id = ?,update_time = ?";
   args.push(tenant_id.into());
-  args.push(ctx.get_now().into());
+  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -913,7 +915,7 @@ pub async fn update_tenant_by_id(
   
   let options = options.into();
   
-  let num = ctx.execute(
+  let num = execute(
     sql,
     args,
     options,
@@ -929,7 +931,6 @@ pub async fn update_by_id(
   mut input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
-  let ctx = &use_ctx();
   
   let old_model = find_by_id(
     id.clone(),
@@ -984,7 +985,7 @@ pub async fn update_by_id(
   let table = "base_org";
   let _method = "update_by_id";
   
-  let now = ctx.get_now();
+  let now = get_now();
   
   let mut args = QueryArgs::new();
   
@@ -1031,7 +1032,7 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     
-    if let Some(auth_model) = ctx.get_auth_model() {
+    if let Some(auth_model) = get_auth_model() {
       let usr_id = auth_model.id;
       sql_fields += ",update_usr_id = ?";
       args.push(usr_id.into());
@@ -1055,7 +1056,7 @@ pub async fn update_by_id(
     
     let options = options.into();
     
-    ctx.execute(
+    execute(
       sql,
       args,
       options,
@@ -1085,8 +1086,6 @@ pub async fn delete_by_ids(
   let table = "base_org";
   let _method = "delete_by_ids";
   
-  let ctx = &use_ctx();
-  
   let options = Options::from(options);
   
   let mut num = 0;
@@ -1098,7 +1097,7 @@ pub async fn delete_by_ids(
       table,
     );
     
-    args.push(ctx.get_now().into());
+    args.push(get_now().into());
     args.push(id.into());
     
     let args = args.into();
@@ -1109,7 +1108,7 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    num += ctx.execute(
+    num += execute(
       sql,
       args,
       options,
@@ -1149,8 +1148,6 @@ pub async fn enable_by_ids(
   let table = "base_org";
   let _method = "enable_by_ids";
   
-  let ctx = &use_ctx();
-  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
@@ -1171,7 +1168,7 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    num += ctx.execute(
+    num += execute(
       sql,
       args,
       options,
@@ -1212,8 +1209,6 @@ pub async fn lock_by_ids(
   let table = "base_org";
   let _method = "lock_by_ids";
   
-  let ctx = &use_ctx();
-  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
@@ -1234,7 +1229,7 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    num += ctx.execute(
+    num += execute(
       sql,
       args,
       options,
@@ -1252,8 +1247,6 @@ pub async fn revert_by_ids(
   
   let table = "base_org";
   let _method = "revert_by_ids";
-  
-  let ctx = &use_ctx();
   
   let options = Options::from(options);
   
@@ -1276,7 +1269,7 @@ pub async fn revert_by_ids(
     
     let options = options.into();
     
-    num += ctx.execute(
+    num += execute(
       sql,
       args,
       options,
@@ -1332,8 +1325,6 @@ pub async fn force_delete_by_ids(
   let table = "base_org";
   let _method = "force_delete_by_ids";
   
-  let ctx = &use_ctx();
-  
   let options = Options::from(options);
   
   let mut num = 0;
@@ -1372,7 +1363,7 @@ pub async fn force_delete_by_ids(
     
     let options = options.into();
     
-    num += ctx.execute(
+    num += execute(
       sql,
       args,
       options,
@@ -1390,15 +1381,13 @@ pub async fn find_last_order_by(
   let table = "base_org";
   let _method = "find_last_order_by";
   
-  let ctx = &use_ctx();
-  
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
   let mut sql_where = "".to_owned();
   
   sql_where += "t.is_deleted = 0";
   
-  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+  if let Some(tenant_id) = get_auth_tenant_id() {
     sql_where += " and t.tenant_id = ?";
     args.push(tenant_id.into());
   }
@@ -1417,7 +1406,7 @@ pub async fn find_last_order_by(
   
   let options = options.into();
   
-  let model = ctx.query_one::<OrderByModel>(
+  let model = query_one::<OrderByModel>(
     sql,
     args,
     options,
