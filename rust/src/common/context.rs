@@ -81,12 +81,156 @@ fn init_db_pool() -> Result<Pool<MySql>> {
   Ok(pool)
 }
 
+pub fn get_server_tokentimeout() -> i64 {
+  SERVER_TOKEN_TIMEOUT.to_owned()
+}
+
+/// 获取当前请求id, 不保证唯一, 仅用于日志
+pub fn get_req_id() -> Arc<String> {
+  CTX.with(|ctx| {
+    ctx.req_id.clone()
+  })
+}
+
+/// 获取当前请求的时间点
+pub fn get_now() -> NaiveDateTime {
+  CTX.with(|ctx| {
+    ctx.now
+  })
+}
+
+/// 获取当前登录用户
+#[allow(dead_code)]
+pub fn get_auth_model() -> Option<AuthModel> {
+  CTX.with(|ctx| {
+    ctx.auth_model.clone()
+  })
+}
+
+#[allow(dead_code)]
+pub fn has_auth_model() -> bool {
+  CTX.with(|ctx| {
+    ctx.auth_model.is_some()
+  })
+}
+
+/// 获取当前登录用户, 如果不存在则返回错误
+#[allow(dead_code)]
+pub fn get_auth_model_err() -> Result<AuthModel> {
+  CTX.with(|ctx| {
+    if ctx.auth_model.is_some() {
+      return Ok(ctx.auth_model.clone().unwrap());
+    }
+    error!(
+      "{req_id} Not login! - validate_auth_model is none",
+      req_id = ctx.req_id,
+    );
+    Err(anyhow::anyhow!("Not login!"))
+  })
+}
+
+/// 获取当前登录用户的id
+pub fn get_auth_id() -> Option<String> {
+  CTX.with(|ctx| {
+    match ctx.auth_model.clone() {
+      Some(item) => item.id.into(),
+      None => None,
+    }
+  })
+}
+
+/// 获取当前登录用户的id
+pub fn get_auth_id_err() -> Result<String> {
+  get_auth_id()
+    .ok_or(anyhow!("Not login!"))
+}
+
+/// 获取当前登录用户的租户id
+pub fn get_auth_tenant_id() -> Option<String> {
+  CTX.with(|ctx| {
+    match ctx.auth_model.clone() {
+      Some(item) => item.tenant_id.into(),
+      None => None,
+    }
+  })
+}
+
+/// 获取当前登录用户的组织id
+pub fn get_auth_org_id() -> Option<String> {
+  CTX.with(|ctx| {
+    match ctx.auth_model.clone() {
+      Some(item) => item.org_id,
+      None => None,
+    }
+  })
+}
+
+/// 获取当前登录用户的组织id, 如果不存在则返回错误
+#[allow(dead_code)]
+pub fn get_auth_org_id_err() -> Result<String> {
+  get_auth_org_id()
+    .ok_or(anyhow!("Not login!"))
+}
+
+/// 获取当前登录用户的语言
+pub fn get_auth_lang() -> Option<String> {
+  CTX.with(|ctx| {
+    match ctx.auth_model.clone() {
+      Some(item) => item.lang.into(),
+      None => None,
+    }
+  })
+}
+
+/// 查找当前数据库连接的连接ID, 如果数据库事务尚未开启则返回0
+#[allow(dead_code)]
+pub async fn query_conn_id() -> Result<u64> {
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.query_conn_id().await
+}
+
+/// 执行sql
+pub async fn execute(
+  sql: String,
+  args: Vec<ArgType>,
+  options: Option<Options>,
+) -> Result<u64> {
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.execute(sql, args, options).await
+}
+
+/// 查询多条记录
+pub async fn query<R>(
+  sql: String,
+  args: Vec<ArgType>,
+  options: Option<Options>,
+) -> Result<Vec<R>>
+where
+  R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
+{
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.query(sql, args, options).await
+}
+
+/// 查询一条记录
+pub async fn query_one<R>(
+  sql: String,
+  args: Vec<ArgType>,
+  options: Option<Options>,
+) -> Result<Option<R>>
+where
+  R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
+{
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.query_one(sql, args, options).await
+}
+
 impl Ctx {
   
   pub fn builder<'a>(
     ctx: &'a async_graphql::Context<'a>,
   ) -> CtxBuilder<'a> {
-    CtxBuilder::new(ctx)
+    CtxBuilder::new(ctx.into())
   }
   
   pub fn set_auth_model(
@@ -96,74 +240,8 @@ impl Ctx {
     self.auth_model = Some(auth_model);
   }
   
-  pub fn get_req_id(&self) -> &str {
-    &self.req_id
-  }
-  
-  pub fn get_now(&self) -> NaiveDateTime {
-    self.now
-  }
-  
-  pub fn get_server_tokentimeout(&self) -> i64 {
-    SERVER_TOKEN_TIMEOUT.to_owned()
-  }
-  
-  /// 获取当前登录用户
-  #[allow(dead_code)]
-  pub fn get_auth_model(
-    &self,
-  ) -> Option<AuthModel> {
-    self.auth_model.clone()
-  }
-  
-  #[allow(dead_code)]
-  pub fn has_auth_model(&self) -> bool {
-    self.auth_model.is_some()
-  }
-  
-  #[allow(dead_code)]
-  pub fn get_auth_model_err(&self) -> Result<AuthModel> {
-    if self.auth_model.is_some() {
-      return Ok(self.auth_model.clone().unwrap());
-    }
-    error!(
-      "{req_id} Not login! - validate_auth_model is none",
-      req_id = self.get_req_id(),
-    );
-    Err(anyhow::anyhow!("Not login!"))
-  }
-  
-  #[allow(dead_code)]
-  pub fn get_auth_id(&self) -> Option<String> {
-    match self.get_auth_model() {
-      Some(item) => item.id.into(),
-      None => None,
-    }
-  }
-  
-  pub fn get_auth_tenant_id(&self) -> Option<String> {
-    match self.get_auth_model() {
-      Some(item) => item.tenant_id.into(),
-      None => None,
-    }
-  }
-  
-  pub fn get_auth_org_id(&self) -> Option<String> {
-    match self.get_auth_model() {
-      Some(item) => item.org_id,
-      None => None,
-    }
-  }
-  
-  pub fn get_auth_lang(&self) -> Option<String> {
-    match self.get_auth_model() {
-      Some(item) => item.lang.into(),
-      None => None,
-    }
-  }
-  
   /// 查找当前数据库连接的连接ID, 如果数据库事务尚未开启则返回0
-  pub async fn query_conn_id(&self) -> Result<u64> {
+  async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
     if tran.is_none() {
       return Ok(0);
@@ -189,7 +267,7 @@ impl Ctx {
       .try_get(0)?;
     info!(
       "{req_id} begin; -- {connection_id}",
-      req_id = self.get_req_id(),
+      req_id = self.req_id,
     );
     let mut tran0 = self.tran.lock().await;
     *tran0 = Some(tran);
@@ -209,13 +287,13 @@ impl Ctx {
       if res.is_err() {
         info!(
           "{req_id} rollback; -- {connection_id}",
-          req_id = self.get_req_id(),
+          req_id = self.req_id,
         );
         tran.execute("rollback").await?;
       } else {
         info!(
           "{req_id} commit; -- {connection_id}",
-          req_id = self.get_req_id(),
+          req_id = self.req_id,
         );
         tran.execute("commit").await?;
       }
@@ -223,8 +301,8 @@ impl Ctx {
     res
   }
   
-  /// 带参数执行查询
-  pub async fn execute(
+  /// 执行sql
+  async fn execute(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -320,7 +398,7 @@ impl Ctx {
         for arg in debug_args {
           debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
-        info!("{} {}", self.get_req_id(), debug_sql);
+        info!("{} {}", self.req_id, debug_sql);
       } else {
         for arg in args {
           match arg {
@@ -393,7 +471,7 @@ impl Ctx {
         let tran = tran.as_mut().unwrap();
         tran.execute(query).await
           .map_err(|e| {
-            let err_msg = format!("{} {}", self.get_req_id(), e);
+            let err_msg = format!("{} {}", self.req_id, e);
             error!("{}", err_msg);
             anyhow::anyhow!(err_msg)
           })?
@@ -481,7 +559,7 @@ impl Ctx {
       for arg in debug_args {
         debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
-      info!("{} {}", self.get_req_id(), debug_sql);
+      info!("{} {}", self.req_id, debug_sql);
     } else {
       for arg in args {
         match arg {
@@ -560,8 +638,8 @@ impl Ctx {
     Ok(rows_affected)
   }
   
-  /// 带参数执行查询
-  pub async fn query<R>(
+  /// 查询多条记录
+  async fn query<R>(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -672,7 +750,7 @@ impl Ctx {
         for arg in debug_args {
           debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
-        info!("{} {}", self.get_req_id(), debug_sql);
+        info!("{} {}", self.req_id, debug_sql);
       } else {
         for arg in args {
           match arg {
@@ -745,7 +823,7 @@ impl Ctx {
         let tran = tran.as_mut().unwrap();
         query.fetch_all((*tran).as_mut()).await
           .map_err(|e| {
-            let err_msg = format!("{} {}", self.get_req_id(), e);
+            let err_msg = format!("{} {}", self.req_id, e);
             error!("{}", err_msg);
             anyhow::anyhow!(err_msg)
           })?
@@ -834,7 +912,7 @@ impl Ctx {
       for arg in debug_args {
         debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
-      info!("{} {}", self.get_req_id(), debug_sql);
+      info!("{} {}", self.req_id, debug_sql);
     } else {
       for arg in args {
         match arg {
@@ -913,8 +991,8 @@ impl Ctx {
     Ok(res)
   }
   
-  /// 带参数查询一条数据
-  pub async fn query_one<R>(
+  /// 查询一条记录
+  async fn query_one<R>(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -1024,7 +1102,7 @@ impl Ctx {
         for arg in debug_args {
           debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
-        info!("{} {}", self.get_req_id(), debug_sql);
+        info!("{} {}", self.req_id, debug_sql);
       } else {
         for arg in args {
           match arg {
@@ -1097,7 +1175,7 @@ impl Ctx {
         let tran = tran.as_mut().unwrap();
         query.fetch_optional((*tran).as_mut()).await
           .map_err(|e| {
-            let err_msg = format!("{} {}", self.get_req_id(), e);
+            let err_msg = format!("{} {}", self.req_id, e);
             error!("{}", err_msg);
             anyhow::anyhow!(err_msg)
           })?
@@ -1187,7 +1265,7 @@ impl Ctx {
       for arg in debug_args {
         debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
-      info!("{} {}", self.get_req_id(), debug_sql);
+      info!("{} {}", self.req_id, debug_sql);
     } else {
       for arg in args {
         match arg {
@@ -1274,7 +1352,7 @@ pub struct Ctx {
   
   is_tran: bool,
   
-  req_id: String,
+  req_id: Arc<String>,
   
   tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
   
@@ -1295,15 +1373,16 @@ impl Ctx {
     CTX.scope(ctx, async move {
       let res = f.await;
       let ctx = CTX.with(|ctx| ctx.clone());
+      // info!("{} {}", ctx.req_id, serde_json::to_string(&res).unwrap_or_default());
       ctx.ok(res).await
     }).await
   }
   
 }
 
-pub fn use_ctx() -> Arc<Ctx> {
-  CTX.with(|ctx| ctx.clone())
-}
+// pub fn use_ctx() -> Arc<Ctx> {
+//   CTX.with(|ctx| ctx.clone())
+// }
 
 #[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
 pub struct CountModel {
@@ -1707,7 +1786,7 @@ impl Options {
 
 pub struct CtxBuilder<'a> {
   
-  gql_ctx: &'a async_graphql::Context<'a>,
+  gql_ctx: Option<&'a async_graphql::Context<'a>>,
   
   is_tran: Option<bool>,
   
@@ -1721,8 +1800,8 @@ pub struct CtxBuilder<'a> {
 
 impl <'a> CtxBuilder<'a> {
   
-  pub fn new(
-    gql_ctx: &'a async_graphql::Context<'a>,
+  fn new(
+    gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
     let now = Local::now();
     let now = NaiveDateTime::from_timestamp_opt(
@@ -1745,14 +1824,34 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  /// 获取token, graphql跟restful的获取方式不一样
+  fn get_auth_token(&self) -> Option<String> {
+    if let Some(gql_ctx) = self.gql_ctx {
+      gql_ctx.data_opt
+        ::<super::auth::auth_model::AuthToken>()
+        .map(ToString::to_string)
+    } else {
+      None
+    }
+  }
+  
+  /// 设置token, graphql跟restful的设置方式不一样
+  fn set_auth_token(&self, auth_token: &str) -> Result<()> {
+    if let Some(gql_ctx) = self.gql_ctx {
+      gql_ctx.insert_http_header(
+        AUTHORIZATION.parse::<HeaderName>()?,
+        auth_token.parse::<HeaderValue>()?,
+      );
+    }
+    Ok(())
+  }
+  
   /// 校验token是否已经过期
   pub fn with_auth(mut self) -> Result<CtxBuilder<'a>> {
     if self.auth_model.is_some() {
       return Err(anyhow!("auth_model_not_none"));
     }
-    let auth_token = self.gql_ctx.data_opt
-      ::<super::auth::auth_model::AuthToken>()
-      .map(ToString::to_string);
+    let auth_token = self.get_auth_token();
     if auth_token.is_none() {
       return Err(anyhow!("token_empty"));
     }
@@ -1773,10 +1872,7 @@ impl <'a> CtxBuilder<'a> {
       }
       auth_model.exp = now_sec + server_tokentimeout;
       let auth_token = get_token_by_auth_model(&auth_model)?;
-      self.gql_ctx.insert_http_header(
-        AUTHORIZATION.parse::<HeaderName>()?,
-        auth_token.parse::<HeaderValue>()?,
-      );
+      self.set_auth_token(&auth_token)?;
     }
     self.auth_model = Some(auth_model);
     Ok(self)
@@ -1788,9 +1884,7 @@ impl <'a> CtxBuilder<'a> {
     if self.auth_model.is_some() {
       return Err(anyhow!("auth_model_not_none"));
     }
-    let auth_token = self.gql_ctx.data_opt
-      ::<super::auth::auth_model::AuthToken>()
-      .map(ToString::to_string);
+    let auth_token = self.get_auth_token();
     if auth_token.is_none() {
       return Ok(self);
     }
@@ -1802,7 +1896,7 @@ impl <'a> CtxBuilder<'a> {
   pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
-      req_id: self.req_id,
+      req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
       auth_model: self.auth_model,
       now: self.now,

@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::common::context::{
-  use_ctx,
+  query,
   QueryArgs,
   Options,
 };
@@ -15,8 +15,6 @@ pub async fn get_dict(
   if codes.is_empty() {
     return Ok(vec![]);
   }
-  
-  let ctx = &use_ctx();
   
   let table = "base_dict";
   
@@ -62,7 +60,7 @@ pub async fn get_dict(
   
   let options = options.into();
   
-  let res: Vec<GetDict> = ctx.query(
+  let res: Vec<GetDict> = query(
     sql,
     args,
     options,

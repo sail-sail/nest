@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::use_ctx;
+use crate::common::context::get_auth_model;
 
 use crate::src::base::i18n::i18n_dao::ns;
 
@@ -27,8 +27,7 @@ use crate::gen::base::permit::permit_model::PermitModel;
 
 /// 根据当前用户获取权限列表
 pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
-  let ctx = &use_ctx();
-  let auth_model = ctx.get_auth_model();
+  let auth_model = get_auth_model();
   if auth_model.is_none() {
     return Ok(Vec::new());
   }
@@ -158,6 +157,7 @@ pub async fn use_permit(
   route_path: String,
   code: String,
 ) -> Result<()> {
+  
   let menu_model = find_one_menu(
     MenuSearch {
       route_path: route_path.clone().into(),
@@ -167,16 +167,12 @@ pub async fn use_permit(
     None,
     None,
   ).await?;
-  
   if menu_model.is_none() {
     return Ok(());
   }
-  
-  let ctx = &use_ctx();
-  
   let menu_model = menu_model.unwrap();
   
-  let auth_model = ctx.get_auth_model();
+  let auth_model = get_auth_model();
   
   if auth_model.is_none() {
     let err_msg = ns(

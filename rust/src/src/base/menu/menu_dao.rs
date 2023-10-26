@@ -1,6 +1,8 @@
 use anyhow::Result;
 use crate::common::context::{
-  use_ctx,
+  query,
+  get_auth_model,
+  get_auth_tenant_id,
   QueryArgs,
   Options,
 };
@@ -10,8 +12,6 @@ use super::menu_model::GetMenus;
 async fn find_menus(
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
-  
-  let ctx = &use_ctx();
   
   let table = "base_menu";
   
@@ -26,13 +26,13 @@ async fn find_menus(
     where_query.push_str(" and type = 'pc'");
   }
   
-  let tenant_id = ctx.get_auth_tenant_id();
+  let tenant_id = get_auth_tenant_id();
   if let Some(tenant_id) = tenant_id {
     where_query.push_str(" and base_tenant_menu.tenant_id = ?");
     args.push(tenant_id.into());
   }
   
-  let auth_model = ctx.get_auth_model();
+  let auth_model = get_auth_model();
   if let Some(auth_model) = auth_model {
     where_query.push_str(" and base_usr_role.usr_id = ?");
     args.push(auth_model.id.into());
@@ -77,7 +77,7 @@ async fn find_menus(
   
   let options = options.into();
   
-  let res: Vec<GetMenus> = ctx.query(
+  let res: Vec<GetMenus> = query(
     sql,
     args,
     options,
