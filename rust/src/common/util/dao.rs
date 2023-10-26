@@ -18,9 +18,14 @@ type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
 type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
 use crate::common::context::{
-  use_ctx,
+  get_auth_model,
+  get_auth_tenant_id,
+  get_now,
+  execute,
+  query,
   QueryArgs,
-  escape_id, get_short_uuid,
+  escape_id,
+  get_short_uuid,
 };
 
 lazy_static! {
@@ -151,9 +156,8 @@ pub async fn many2many_update(
   foreign_ids: Vec<String>,
   many_opts: ManyOpts,
 ) -> Result<bool> {
-  let ctx = &use_ctx();
-  let tenant_id = ctx.get_auth_tenant_id();
-  let auth_model = ctx.get_auth_model();
+  let tenant_id = get_auth_tenant_id();
+  let auth_model = get_auth_model();
   
   let column1 = escape_id(many_opts.column1);
   let column2 = escape_id(many_opts.column2);
@@ -178,7 +182,7 @@ pub async fn many2many_update(
   
   let args = args.into();
   
-  let models: Vec<ManyModel> = ctx.query(
+  let models: Vec<ManyModel> = query(
     sql,
     args,
     None,
@@ -202,11 +206,11 @@ pub async fn many2many_update(
         where
           id = ?
       "#);
-      args.push(ctx.get_now().into());
+      args.push(get_now().into());
       args.push(id.clone().into());
       let args = args.into();
       has_change = true;
-      ctx.execute(sql, args, None).await?;
+      execute(sql, args, None).await?;
       continue;
     }
     let idx = idx.unwrap();
@@ -229,7 +233,7 @@ pub async fn many2many_update(
       args.push(id.into());
       let args = args.into();
       has_change = true;
-      ctx.execute(
+      execute(
         sql,
         args,
         None,
@@ -253,7 +257,7 @@ pub async fn many2many_update(
     
     sql_fields += ",create_time";
     sql_values += ",?";
-    args.push(ctx.get_now().into());
+    args.push(get_now().into());
     
     let idx: usize = foreign_ids.iter()
       .position(|x| 
@@ -295,7 +299,7 @@ pub async fn many2many_update(
     
     let sql = format!("insert into {mod_table} ({sql_fields}) values ({sql_values})");
     let args = args.into();
-    ctx.execute(
+    execute(
       sql,
       args,
       None,

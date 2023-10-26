@@ -16,11 +16,12 @@ impl AppQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<String> {
-    let mut ctx = Ctx::builder(ctx)
+    Ctx::builder(ctx)
       .with_auth()?
-      .build();
-    let res = app_service::generate_id(&mut ctx).await;
-    ctx.ok(res).await
+      .build()
+      .scope({
+        app_service::generate_id()
+      }).await
   }
   
   /// 检查是否已经登录
@@ -28,10 +29,12 @@ impl AppQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<bool> {
-    let mut ctx = Ctx::builder(ctx)
-      .build();
-    let res = app_service::check_login(&mut ctx).await;
-    ctx.ok(res).await
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        app_service::check_login()
+      }).await
   }
   
 }

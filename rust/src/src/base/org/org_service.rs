@@ -1,6 +1,11 @@
 use anyhow::Result;
+
 use crate::common::auth::auth_dao;
-use crate::common::context::Ctx;
+use crate::common::context::{
+  Ctx,
+  get_auth_model,
+  get_auth_org_id,
+};
 
 use crate::gen::base::usr::usr_dao;
 
@@ -8,13 +13,13 @@ pub async fn org_login_select(
   ctx: &mut Ctx,
   org_id: String,
 ) -> Result<String> {
-  let org_id2 = ctx.get_auth_org_id();
+  let org_id2 = get_auth_org_id();
   if let Some(org_id2) = org_id2 {
     if org_id == org_id2 {
       return Ok("".to_owned());
     }
   }
-  let mut auth_model = ctx.get_auth_model()
+  let mut auth_model = get_auth_model()
     .ok_or_else(|| 
       anyhow::anyhow!("auth_model.is_none()")
     )?;
