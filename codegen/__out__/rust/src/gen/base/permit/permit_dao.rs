@@ -337,8 +337,8 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(&vec![
-    "is_sys",
+  let dict_vec = get_dict(vec![
+    "is_sys".to_owned(),
   ]).await?;
   
   let is_sys_dict = &dict_vec[0];
@@ -666,8 +666,8 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(&vec![
-    "is_sys",
+  let dict_vec = get_dict(vec![
+    "is_sys".to_owned(),
   ]).await?;
   
   // 系统字段

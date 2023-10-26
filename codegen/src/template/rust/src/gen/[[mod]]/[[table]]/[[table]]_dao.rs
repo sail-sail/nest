@@ -670,7 +670,7 @@ pub async fn find_all(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(&vec![<#
+  let dict_vec = get_dict(vec![<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -687,7 +687,7 @@ pub async fn find_all(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>",<#
+    "<#=column.dict#>".to_owned(),<#
   }
   #>
   ]).await?;
@@ -717,7 +717,7 @@ pub async fn find_all(
   #><#
     if (hasDictbiz) {
   #>
-  let dictbiz_vec = get_dictbiz(&vec![<#
+  let dictbiz_vec = get_dictbiz(vec![<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -734,7 +734,7 @@ pub async fn find_all(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>",<#
+    "<#=column.dictbiz#>".to_owned(),<#
   }
   #>
   ]).await?;
@@ -1268,7 +1268,7 @@ pub async fn set_id_by_lbl(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(&vec![<#
+  let dict_vec = get_dict(vec![<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1285,7 +1285,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>",<#
+    "<#=column.dict#>".to_owned(),<#
   }
   #>
   ]).await?;<#
@@ -1329,7 +1329,7 @@ pub async fn set_id_by_lbl(
   #><#
     if (hasDictbiz) {
   #>
-  let dictbiz_vec = get_dictbiz(&vec![<#
+  let dictbiz_vec = get_dictbiz(vec![<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1347,7 +1347,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>",<#
+    "<#=column.dictbiz#>".to_owned(),<#
   }
   #>
   ]).await?;<#
