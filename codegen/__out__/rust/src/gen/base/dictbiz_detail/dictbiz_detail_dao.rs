@@ -303,10 +303,10 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(&vec![
-    "is_locked",
-    "is_enabled",
-    "is_sys",
+  let dict_vec = get_dict(vec![
+    "is_locked".to_owned(),
+    "is_enabled".to_owned(),
+    "is_sys".to_owned(),
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
@@ -646,10 +646,10 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(&vec![
-    "is_locked",
-    "is_enabled",
-    "is_sys",
+  let dict_vec = get_dict(vec![
+    "is_locked".to_owned(),
+    "is_enabled".to_owned(),
+    "is_sys".to_owned(),
   ]).await?;
   
   // 锁定

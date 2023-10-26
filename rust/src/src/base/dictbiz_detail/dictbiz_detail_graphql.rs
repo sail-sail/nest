@@ -20,7 +20,7 @@ impl DictbizDetailQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        dictbiz_detail_resolver::get_dictbiz(&codes)
+        dictbiz_detail_resolver::get_dictbiz(codes)
       }).await
   }
   

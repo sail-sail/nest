@@ -10,7 +10,7 @@ use super::dict_detail_model::GetDict;
 
 /// 获取业务字典
 pub async fn get_dict(
-  codes: &Vec<impl AsRef<str>>,
+  codes: Vec<String>,
 ) -> Result<Vec<Vec<GetDict>>> {
   if codes.is_empty() {
     return Ok(vec![]);
@@ -22,8 +22,8 @@ pub async fn get_dict(
   
   let code = {
     let mut code = "".to_owned();
-    for item in codes {
-      code += &format!("{},", args.push(item.as_ref().to_string().into()));
+    for item in codes.clone() {
+      code += &format!("{},", args.push(item.into()));
     }
     code = code.trim_end_matches(',').to_owned();
     code
@@ -66,13 +66,15 @@ pub async fn get_dict(
     options,
   ).await?;
   
-  let mut data: Vec<Vec<GetDict>> = vec![];
+  let res_len = res.len();
+  
+  let mut data: Vec<Vec<GetDict>> = Vec::with_capacity(res_len);
   
   for code in codes {
-    let mut item: Vec<GetDict> = vec![];
-    for d in &res {
-      if d.code == code.as_ref() {
-        item.push(d.clone());
+    let mut item: Vec<GetDict> = Vec::with_capacity(res_len);
+    for d in res.clone() {
+      if d.code == code {
+        item.push(d);
       }
     }
     data.push(item);
