@@ -10,7 +10,7 @@ type database = {
   database?: string,
 };
 
-const buf = readFileSync(`../deno/.env.dev`);
+const buf = readFileSync(`../rust/.env`);
 const conf = dotenv.parse(buf);
 
 const config = {
