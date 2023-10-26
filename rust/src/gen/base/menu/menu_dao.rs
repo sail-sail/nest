@@ -457,10 +457,10 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(&vec![
-    "menu_type",
-    "is_locked",
-    "is_enabled",
+  let dict_vec = get_dict(vec![
+    "menu_type".to_owned(),
+    "is_locked".to_owned(),
+    "is_enabled".to_owned(),
   ]).await?;
   
   let type_dict = &dict_vec[0];
@@ -822,10 +822,10 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(&vec![
-    "menu_type",
-    "is_locked",
-    "is_enabled",
+  let dict_vec = get_dict(vec![
+    "menu_type".to_owned(),
+    "is_locked".to_owned(),
+    "is_enabled".to_owned(),
   ]).await?;
   
   // 类型
