@@ -3,7 +3,7 @@ use serde_json::json;
 use tracing::{info, error};
 
 use anyhow::{Result, anyhow};
-use crate::common::context::use_ctx;
+use crate::common::context::get_req_id;
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
 
@@ -86,7 +86,7 @@ async fn fetch_send_card_msg(
 pub async fn send_card_msg(
   input: SendCardMsgInput,
 ) -> Result<bool> {
-  let ctx = &use_ctx();
+  let req_id = get_req_id();
   let wxw_app_id = input.wxw_app_id.clone();
   let wxw_app_model = find_by_id_wxw_app(
     wxw_app_id.clone(),
@@ -101,7 +101,6 @@ pub async fn send_card_msg(
   let tenant_id = wxw_app_model.tenant_id;
   info!(
     "{req_id} 发送卡片消息: {msg}",
-    req_id = ctx.get_req_id(),
     msg = serde_json::to_string(&input)?,
   );
   let mut data = fetch_send_card_msg(
@@ -126,7 +125,6 @@ pub async fn send_card_msg(
   );
   info!(
     "{req_id} 发送卡片消息结果: {msg}",
-    req_id = ctx.get_req_id(),
     msg = &data_str,
   );
   let errmsg: String = if errcode == 0 {
@@ -157,7 +155,6 @@ pub async fn send_card_msg(
   if errcode != 0 {
     error!(
       "{req_id} 发送卡片消息失败: {msg}",
-      req_id = ctx.get_req_id(),
       msg = &data_str,
     );
     return Ok(false);

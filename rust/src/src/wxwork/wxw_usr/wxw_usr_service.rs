@@ -2,8 +2,10 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 
 use anyhow::{Result, anyhow};
+
 use crate::common::context::{
-  use_ctx,
+  get_now,
+  get_server_tokentimeout,
   get_short_uuid,
 };
 
@@ -114,7 +116,6 @@ pub async fn wxw_get_appid(
 pub async fn wxw_login_by_code(
   input: WxwLoginByCodeInput,
 ) -> Result<WxwLoginByCode> {
-  let ctx = &use_ctx();
   
   let host = input.host;
   let code = input.code;
@@ -279,8 +280,8 @@ pub async fn wxw_login_by_code(
   if !org_id.is_empty() && !org_ids.contains(&org_id) {
     org_id = "".to_string();
   }
-  let now = ctx.get_now();
-  let server_tokentimeout = ctx.get_server_tokentimeout();
+  let now = get_now();
+  let server_tokentimeout = get_server_tokentimeout();
   let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
