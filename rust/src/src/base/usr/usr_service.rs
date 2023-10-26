@@ -1,5 +1,11 @@
 use anyhow::Result;
-use crate::common::context::{use_ctx, Ctx};
+use crate::common::context::{
+  Ctx,
+  get_auth_model_err,
+  get_auth_org_id,
+  get_now,
+  get_server_tokentimeout,
+};
 
 use super::usr_model::Login;
 
@@ -78,10 +84,8 @@ pub async fn login(
   
   let org_id: String = org_id.unwrap();
   
-  let ctx = &use_ctx();
-  
-  let now = ctx.get_now();
-  let server_tokentimeout = ctx.get_server_tokentimeout();
+  let now = get_now();
+  let server_tokentimeout = get_server_tokentimeout();
   let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
@@ -109,7 +113,7 @@ pub async fn select_lang(
     return Err(anyhow::anyhow!("语言编码不能为空"));
   }
   
-  let mut auth_model = ctx.get_auth_model_err()?;
+  let mut auth_model = get_auth_model_err()?;
   
   auth_model.lang = lang;
   
@@ -161,9 +165,7 @@ pub async fn change_password(
     return Err(anyhow::anyhow!(err_msg));
   }
   
-  let ctx = &use_ctx();
-  
-  let auth_model = ctx.get_auth_model_err()?;
+  let auth_model = get_auth_model_err()?;
   
   let usr_id = auth_model.id;
   
@@ -202,9 +204,7 @@ pub async fn change_password(
 
 pub async fn get_login_info() -> Result<GetLoginInfo> {
   
-  let ctx = &use_ctx();
-  
-  let auth_model = ctx.get_auth_model_err()?;
+  let auth_model = get_auth_model_err()?;
   
   let usr_model = usr_dao::find_by_id(
     auth_model.id,
@@ -217,10 +217,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   let org_ids = usr_model.org_ids;
   let org_ids_lbl = usr_model.org_ids_lbl;
   
-  let org_id = ctx.get_auth_org_id();
-  if org_id.is_none() {
-    return Err(anyhow::anyhow!("未登录"));
-  }
+  let org_id = get_auth_org_id();
   
   let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
     .iter()

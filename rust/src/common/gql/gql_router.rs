@@ -114,6 +114,10 @@ pub async fn graphql_handler(
       gql_req = gql_req.data::<AuthToken>(auth_token);
     },
   }
+  // info!(
+  //   "{query}",
+  //   query = gql_req.query,
+  // );
   // let query = gql_req.query.clone();
   let gql_res = schema.execute(gql_req).await;
   // if gql_res.is_err() {

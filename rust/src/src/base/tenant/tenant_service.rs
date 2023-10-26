@@ -1,5 +1,5 @@
 use anyhow::Result;
-// use crate::common::context::use_ctx;
+// use crate::common::context::get_auth_tenant_id;
 
 use crate::gen::base::tenant::tenant_dao;
 use crate::gen::base::tenant::tenant_model::{
@@ -16,9 +16,7 @@ use crate::gen::base::domain::domain_model::{
 // 获取当前租户绑定的网址
 // pub async fn get_host_tenant() -> Result<String> {
   
-//   let ctx = &use_ctx();
-  
-//   let tenant_id = ctx.get_auth_tenant_id();
+//   let tenant_id = get_auth_tenant_id();
   
 //   if tenant_id.is_none() {
 //     return Err(anyhow::anyhow!("tenant_id is none"));
