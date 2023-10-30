@@ -1198,10 +1198,10 @@ export default defineConfig({
         width: 60,
       },
       {
-        COLUMN_NAME: "rem",
+        COLUMN_NAME: "order_by",
       },
       {
-        COLUMN_NAME: "order_by",
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",

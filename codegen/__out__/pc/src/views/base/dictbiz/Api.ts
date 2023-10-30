@@ -43,8 +43,8 @@ export async function findAll(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          rem
           order_by
+          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -179,8 +179,8 @@ export async function findById(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          rem
           order_by
+          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -404,8 +404,8 @@ export function useDownloadImportTemplate(routePath: string) {
             type_lbl
             is_locked_lbl
             is_enabled_lbl
-            rem
             order_by
+            rem
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl
@@ -474,8 +474,8 @@ export function useExportExcel(routePath: string) {
             is_locked_lbl
             is_enabled
             is_enabled_lbl
-            rem
             order_by
+            rem
             create_usr_id
             create_usr_id_lbl
             create_time
@@ -491,8 +491,8 @@ export function useExportExcel(routePath: string) {
             type_lbl
             is_locked_lbl
             is_enabled_lbl
-            rem
             order_by
+            rem
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl

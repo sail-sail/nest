@@ -131,6 +131,14 @@ async function getWhereQuery(
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -139,14 +147,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
-  }
-  if (search?.order_by && search?.order_by?.length > 0) {
-    if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
-    }
-    if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
-    }
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -478,8 +478,8 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
     order_by: await n("排序"),
+    rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -861,11 +861,11 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
-  if (input.rem !== undefined) {
-    sql += `,rem`;
-  }
   if (input.order_by !== undefined) {
     sql += `,order_by`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,rem`;
   }
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
@@ -911,11 +911,11 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (input.rem !== undefined) {
-    sql += `,${ args.push(input.rem) }`;
-  }
   if (input.order_by !== undefined) {
     sql += `,${ args.push(input.order_by) }`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
   if (input.is_sys !== undefined) {
     sql += `,${ args.push(input.is_sys) }`;
@@ -1080,15 +1080,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
-    if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
-      updateFldNum++;
-    }
-  }
   if (input.order_by !== undefined) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
