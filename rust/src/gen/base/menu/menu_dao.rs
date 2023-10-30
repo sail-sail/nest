@@ -2,11 +2,6 @@ use anyhow::Result;
 use tracing::{info, error};
 use crate::common::util::string::*;
 
-use crate::common::util::dao::{
-  many2many_update,
-  ManyOpts,
-};
-
 #[allow(unused_imports)]
 use crate::common::context::{
   get_auth_model,
@@ -189,32 +184,6 @@ async fn get_where_query(
     }
   }
   {
-    let tenant_ids: Vec<String> = match &search {
-      Some(item) => item.tenant_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !tenant_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(tenant_ids.len());
-        for item in tenant_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_tenant.id in ({})", arg);
-    }
-  }
-  {
-    let tenant_ids_is_null: bool = match &search {
-      Some(item) => item.tenant_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if tenant_ids_is_null {
-      where_query += " and tenant_ids_lbl.id is null";
-    }
-  }
-  {
     let is_enabled: Vec<u8> = match &search {
       Some(item) => item.is_enabled.clone().unwrap_or_default(),
       None => Default::default(),
@@ -369,28 +338,6 @@ async fn get_from_query() -> Result<String> {
   let from_query = r#"base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
-    left join base_tenant_menu
-      on base_tenant_menu.menu_id = t.id
-      and base_tenant_menu.is_deleted = 0
-    left join base_tenant
-      on base_tenant_menu.tenant_id = base_tenant.id
-      and base_tenant.is_deleted = 0
-    left join (
-      select
-        json_objectagg(base_tenant_menu.order_by, base_tenant.id) tenant_ids,
-        json_objectagg(base_tenant_menu.order_by, base_tenant.lbl) tenant_ids_lbl,
-        base_menu.id menu_id
-      from base_tenant_menu
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-        and base_tenant.is_deleted = 0
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      where
-        base_tenant_menu.is_deleted = 0
-      group by menu_id
-    ) _tenant
-      on _tenant.menu_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -432,8 +379,6 @@ pub async fn find_all(
     select
       t.*
       ,parent_id_lbl.lbl parent_id_lbl
-      ,max(tenant_ids) tenant_ids
-      ,max(tenant_ids_lbl) tenant_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -580,8 +525,6 @@ pub async fn get_field_comments(
     "参数".into(),
     "锁定".into(),
     "锁定".into(),
-    "所在租户".into(),
-    "所在租户".into(),
     "启用".into(),
     "启用".into(),
     "排序".into(),
@@ -619,20 +562,18 @@ pub async fn get_field_comments(
     route_query: vec[7].to_owned(),
     is_locked: vec[8].to_owned(),
     is_locked_lbl: vec[9].to_owned(),
-    tenant_ids: vec[10].to_owned(),
-    tenant_ids_lbl: vec[11].to_owned(),
-    is_enabled: vec[12].to_owned(),
-    is_enabled_lbl: vec[13].to_owned(),
-    order_by: vec[14].to_owned(),
-    rem: vec[15].to_owned(),
-    create_usr_id: vec[16].to_owned(),
-    create_usr_id_lbl: vec[17].to_owned(),
-    create_time: vec[18].to_owned(),
-    create_time_lbl: vec[19].to_owned(),
-    update_usr_id: vec[20].to_owned(),
-    update_usr_id_lbl: vec[21].to_owned(),
-    update_time: vec[22].to_owned(),
-    update_time_lbl: vec[23].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    order_by: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -891,35 +832,6 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 所在租户
-  if input.tenant_ids_lbl.is_some() && input.tenant_ids.is_none() {
-    input.tenant_ids_lbl = input.tenant_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .collect::<Vec<String>>()
-    );
-    let mut models = vec![];
-    for lbl in input.tenant_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::tenant::tenant_dao::find_one(
-        crate::gen::base::tenant::tenant_model::TenantSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    if !models.is_empty() {
-      input.tenant_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<String>>()
-        .into();
-    }
-  }
-  
   Ok(input)
 }
 
@@ -1095,20 +1007,6 @@ pub async fn create(
     options,
   ).await?;
   
-  // 所在租户
-  if let Some(tenant_ids) = input.tenant_ids {
-    many2many_update(
-      id.clone(),
-      tenant_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_menu",
-        column1: "menu_id",
-        column2: "tenant_id",
-      },
-    ).await?;
-  }
-  
   Ok(id)
 }
 
@@ -1270,32 +1168,6 @@ pub async fn update_by_id(
     
   }
   
-  let mut field_num = 0;
-  
-  // 所在租户
-  if let Some(tenant_ids) = input.tenant_ids {
-    many2many_update(
-      id.clone(),
-      tenant_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_menu",
-        column1: "menu_id",
-        column2: "tenant_id",
-      },
-    ).await?;
-    
-    field_num += 1;
-  }
-  
-  if field_num > 0 {
-    let options = Options::from(None);
-    let options = options.set_del_cache_key1s(get_foreign_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
-    }
-  }
-  
   Ok(id)
 }
 
@@ -1306,8 +1178,6 @@ fn get_foreign_tables() -> Vec<&'static str> {
   vec![
     table,
     "base_menu",
-    "base_tenant_menu",
-    "base_tenant",
     "base_usr",
   ]
 }
