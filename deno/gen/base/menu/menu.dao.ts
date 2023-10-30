@@ -47,10 +47,6 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  many2manyUpdate,
-} from "/lib/util/dao_util.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -137,18 +133,6 @@ async function getWhereQuery(
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.tenant_ids && !Array.isArray(search?.tenant_ids)) {
-    search.tenant_ids = [ search.tenant_ids ];
-  }
-  if (search?.tenant_ids && search?.tenant_ids.length > 0) {
-    whereQuery += ` and base_tenant.id in ${ args.push(search.tenant_ids) }`;
-  }
-  if (search?.tenant_ids === null) {
-    whereQuery += ` and base_tenant.id is null`;
-  }
-  if (search?.tenant_ids_is_null) {
-    whereQuery += ` and base_tenant.id is null`;
-  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
@@ -230,28 +214,6 @@ async function getFromQuery() {
     base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
-    left join base_tenant_menu
-      on base_tenant_menu.menu_id = t.id
-      and base_tenant_menu.is_deleted = 0
-    left join base_tenant
-      on base_tenant_menu.tenant_id = base_tenant.id
-      and base_tenant.is_deleted = 0
-    left join (
-      select
-        json_objectagg(base_tenant_menu.order_by, base_tenant.id) tenant_ids,
-        json_objectagg(base_tenant_menu.order_by, base_tenant.lbl) tenant_ids_lbl,
-        base_menu.id menu_id
-      from base_tenant_menu
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-        and base_tenant.is_deleted = 0
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      where
-        base_tenant_menu.is_deleted = 0
-      group by menu_id
-    ) _tenant
-      on _tenant.menu_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -320,8 +282,6 @@ export async function findAll(
   let sql = `
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
-      ,max(tenant_ids) tenant_ids
-      ,max(tenant_ids_lbl) tenant_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -374,28 +334,6 @@ export async function findAll(
       cacheKey2,
     },
   );
-  for (const item of result) {
-    
-    // 所在租户
-    if (item.tenant_ids) {
-      const obj = item.tenant_ids as unknown as {[key: string]: string};
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.tenant_ids = keys.map((key) => obj[key]);
-    }
-    if (item.tenant_ids_lbl) {
-      const obj = item.tenant_ids_lbl as unknown as {[key: string]: string};
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.tenant_ids_lbl = keys.map((key) => obj[key]);
-    }
-  }
   
   const [
     typeDict, // 类型
@@ -508,28 +446,6 @@ export async function setIdByLbl(
     }
   }
   
-  // 所在租户
-  if (!input.tenant_ids && input.tenant_ids_lbl) {
-    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
-      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
-    }
-    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_tenant t
-      where
-        t.lbl in ${ args.push(input.tenant_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.tenant_ids = models.map((item: { id: string }) => item.id);
-  }
-  
   // 启用
   if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
@@ -555,8 +471,6 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
     route_query: await n("参数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
-    tenant_ids: await n("所在租户"),
-    tenant_ids_lbl: await n("所在租户"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
@@ -1009,18 +923,6 @@ export async function create(
   
   const result = await execute(sql, args);
   
-  // 所在租户
-  await many2manyUpdate(
-    input,
-    "tenant_ids",
-    {
-      mod: "base",
-      table: "tenant_menu",
-      column1: "menu_id",
-      column2: "tenant_id",
-    },
-  );
-  
   await delCache();
   
   return input.id;
@@ -1036,8 +938,6 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
     "base_menu",
-    "base_tenant_menu",
-    "base_tenant",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -1176,23 +1076,6 @@ export async function updateById(
     
     const result = await execute(sql, args);
   }
-  
-  updateFldNum++;
-  
-  // 所在租户
-  await many2manyUpdate(
-    {
-      ...input,
-      id,
-    },
-    "tenant_ids",
-    {
-      mod: "base",
-      table: "tenant_menu",
-      column1: "menu_id",
-      column2: "tenant_id",
-    },
-  );
   
   if (updateFldNum > 0) {
     await delCache();

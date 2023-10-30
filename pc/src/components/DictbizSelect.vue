@@ -13,10 +13,10 @@
   @clear="clearClk"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue === '' ? modelValue : undefined"
+  :model-value="modelValue !== '' ? modelValue : undefined"
   @update:model-value="modelValue = $event"
   :loading="!inited"
-  class="dict_select"
+  class="dictbiz_select"
   :multiple="props.multiple"
   :clearable="!props.disabled"
   :disabled="props.disabled"
@@ -81,12 +81,13 @@
 <script lang="ts" setup>
 import { pinyin } from "pinyin-pro";
 
-import {
-  type OptionType,
+import type {
+  OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
-export type DictModel = {
+export type DictbizModel = {
   id: string;
+  code: string;
   lbl: string;
   type: string;
   val: string;
@@ -95,7 +96,7 @@ export type DictModel = {
 
 const t = getCurrentInstance();
 
-type OptionsMap = (item: DictModel) => OptionType;
+type OptionsMap = (item: DictbizModel) => OptionType;
 
 const props = withDefaults(
   defineProps<{
@@ -111,7 +112,7 @@ const props = withDefaults(
     readonly?: boolean;
   }>(),
   {
-    optionsMap: function(item: DictModel) {
+    optionsMap: function(item: DictbizModel) {
       if ([ "number", "time", "boolean" ].includes(item.type)) {
         return {
           label: item.lbl,
@@ -123,7 +124,7 @@ const props = withDefaults(
         value: item.val,
       };
     },
-    pinyinFilterable: true,
+    pinyinFilterable: false,
     height: 300,
     modelValue: undefined,
     autoWidth: true,
@@ -148,11 +149,11 @@ watch(
 function valueChg() {
   emit("update:modelValue", modelValue);
   if (!props.multiple) {
-    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
+    const model = dictbizModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
     emit("change", model);
     return;
   }
-  let models: DictModel[] = [ ];
+  let models: DictbizModel[] = [ ];
   let modelValues: string[] = [ ];
   if (Array.isArray(modelValue)) {
     modelValues = modelValue;
@@ -160,7 +161,7 @@ function valueChg() {
     modelValues = modelValue?.split(",") || [ ];
   }
   for (const value of modelValues) {
-    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value))!;
+    const model = dictbizModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value))!;
     models.push(model);
   }
   emit("change", models);
@@ -211,7 +212,7 @@ async function refreshDropdownWidth() {
   }
 }
 
-let dictModels = $ref<DictModel[]>([ ]);
+let dictbizModels = $ref<DictbizModel[]>([ ]);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
@@ -224,7 +225,7 @@ const modelLabels = $computed(() => {
     return "";
   }
   if (!props.multiple) {
-    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) === String(modelValue));
+    const model = dictbizModels.find((item) => modelValue != null && String(props.optionsMap(item).value) === String(modelValue));
     if (!model) {
       return "";
     }
@@ -233,7 +234,7 @@ const modelLabels = $computed(() => {
   let labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
-    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) === String(value));
+    const model = dictbizModels.find((item) => value != null && String(props.optionsMap(item).value) === String(value));
     if (!model) {
       continue;
     }
@@ -250,7 +251,7 @@ function clearClk() {
 }
 
 function filterMethod(value: string) {
-  options4SelectV2 = dictModels.map((item) => {
+  options4SelectV2 = dictbizModels.map((item) => {
     const item2 = props.optionsMap(item);
     item2.__pinyin_label = item.__pinyin_label;
     return item2;
@@ -279,17 +280,17 @@ async function refreshEfc() {
   const code = props.code;
   if (!code) {
     inited = false;
-    dictModels = [ ];
+    dictbizModels = [ ];
     return;
   }
   inited = false;
-  [ dictModels ] = await getDictbiz([ code ]);
-  options4SelectV2 = dictModels.map(props.optionsMap);
+  [ dictbizModels ] = await getDictbiz([ code ]);
+  options4SelectV2 = dictbizModels.map(props.optionsMap);
   if (props.pinyinFilterable) {
     for (let i = 0; i < options4SelectV2.length; i++) {
       const item = options4SelectV2[i];
       if (item.label) {
-        dictModels[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
+        dictbizModels[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
       }
     }
   }

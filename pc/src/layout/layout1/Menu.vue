@@ -24,8 +24,8 @@ import useUsrStore from "@/store/usr";
 
 import { getMenus } from "./Api";
 
-import {
-  type LocationQueryRaw,
+import type {
+  LocationQueryRaw,
 } from "vue-router";
 
 const menuStore = useMenuStore();
@@ -96,9 +96,7 @@ async function menuSelect(id: string) {
 
 async function getMenusEfc() {
   const result = await getMenus({ type: "pc" });
-  if(result && result.length > 0) {
-    menuStore.setMenus(result);
-  }
+  menuStore.setMenus(result);
   setDefaultActiveByRouter(route.path, route.query);
 }
 

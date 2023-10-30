@@ -116,28 +116,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.tenant_ids == null)">
-          <el-form-item
-            :label="n('所在租户')"
-            prop="tenant_ids"
-          >
-            <CustomSelect
-              :set="dialogModel.tenant_ids = dialogModel.tenant_ids ?? [ ]"
-              v-model="dialogModel.tenant_ids"
-              :method="getTenantList"
-              :options-map="((item: TenantModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('所在租户') }`"
-              multiple
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -252,12 +230,7 @@ import {
 
 import type {
   MenuInput,
-  TenantModel,
 } from "#/types";
-
-import {
-  getTenantList,
-} from "./Api";
 
 import {
   getMenuTree,
@@ -293,7 +266,6 @@ let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel = $ref({
-  tenant_ids: [ ],
 } as MenuInput);
 
 let ids = $ref<string[]>([ ]);
@@ -676,7 +648,6 @@ async function onInitI18ns() {
     "路由",
     "参数",
     "锁定",
-    "所在租户",
     "启用",
     "排序",
     "备注",

@@ -68,6 +68,9 @@ async function getSchema0(
   context: Context,
   table_name: string,
 ): Promise<TableCloumn[]> {
+  if (!table_name) {
+    return [ ];
+  }
   if (!allTableSchemaRecords) {
     let sql = `
       select
@@ -412,6 +415,19 @@ export async function getSchema(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
     column.ORDINAL_POSITION = i + 1;
+    
+    // 检查是否有重复的列
+    let isDuplicate = false;
+    for (let j = i + 1; j < tables[table_name].columns.length; j++) {
+      const item = tables[table_name].columns[j];
+      if (item.COLUMN_NAME === column.COLUMN_NAME) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (isDuplicate) {
+      throw new Error(`表: ${ table_name }, 列: ${ column.COLUMN_NAME } 重复了!`);
+    }
   }
   
   for (let k = 0; k < records.length; k++) {
@@ -472,6 +488,9 @@ export async function getSchema(
       });
       if (!record.foreignKey.lbl) {
         const records = await getSchema0(context, record.foreignKey.table);
+        if (records.length === 0) {
+          throw new Error(`表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 对应的外键关联表不存在: foreignKey: ${ JSON.stringify(record.foreignKey) }`);
+        }
         if (records.some((item) => item.COLUMN_NAME === "lbl")) {
           record.foreignKey.lbl = "lbl";
         }

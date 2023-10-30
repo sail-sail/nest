@@ -13,7 +13,7 @@
   @clear="onClear"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue ? modelValue : undefined"
+  :model-value="modelValue !== '' ? modelValue : undefined"
   @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="custom_select"

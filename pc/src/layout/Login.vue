@@ -26,7 +26,7 @@
       :validate-on-rule-change="false"
       class="login_form"
       size="large"
-      @keyup.enter="loginClk"
+      @keyup.enter="onLogin"
     >
       <el-form-item prop="tenant_id">
         <el-select
@@ -124,7 +124,7 @@
         size="large"
         type="primary"
         style="width: 100%;margin-top: 20px;"
-        @click="loginClk"
+        @click="onLogin"
         :disabled="!usrStore.isLogining"
       >
         <span
@@ -232,7 +232,7 @@ let oldLoginModelKey = "oldLoginModelPc";
 /**
  * 登录
  */
-async function loginClk() {
+async function onLogin() {
   if (!formRef) {
     return;
   }
@@ -253,6 +253,9 @@ async function loginClk() {
       org_id: model.org_id,
     }),
   );
+  if (usrStore.username !== model.username) {
+    tabsStore.closeOtherTabs();
+  }
   usrStore.authorization = loginModel.authorization;
   usrStore.username = model.username;
   usrStore.tenant_id = model.tenant_id;

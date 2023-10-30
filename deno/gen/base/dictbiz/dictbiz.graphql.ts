@@ -23,10 +23,10 @@ type DictbizModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "备注"
-  rem: String!
   "排序"
   order_by: Int!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -67,10 +67,10 @@ type DictbizFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "排序"
   order_by: String!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -107,10 +107,10 @@ input DictbizInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "备注"
-  rem: String
   "排序"
   order_by: Int
+  "备注"
+  rem: String
   "创建人"
   create_usr_id: String
   "创建人"
@@ -151,11 +151,11 @@ input DictbizSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "排序"
-  order_by: [Int!]
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean
