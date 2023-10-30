@@ -484,15 +484,6 @@
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
@@ -507,6 +498,15 @@
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
                 ></CustomInputNumber>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -739,9 +739,9 @@ const props = defineProps<{
   type?: string|string[]; // 数据类型
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  order_by?: string; // 排序
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间
@@ -929,14 +929,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "备注",
-      prop: "rem",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "排序",
       prop: "order_by",
       width: 100,
@@ -944,6 +936,14 @@ function getTableColumns(): ColumnType[] {
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "创建人",
@@ -1245,8 +1245,8 @@ async function onImportExcel() {
     [ await nAsync("数据类型") ]: "type_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("备注") ]: "rem",
     [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1273,8 +1273,8 @@ async function onImportExcel() {
           "type_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
-          "rem": "string",
           "order_by": "number",
+          "rem": "string",
         },
       },
     );
@@ -1591,8 +1591,8 @@ async function initI18nsEfc() {
     "数据类型",
     "锁定",
     "启用",
-    "备注",
     "排序",
+    "备注",
     "创建人",
     "创建时间",
     "更新人",

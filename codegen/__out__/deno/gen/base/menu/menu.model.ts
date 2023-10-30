@@ -37,8 +37,6 @@ export interface MenuFieldComment {
   route_query: string;
   is_locked: string;
   is_locked_lbl: string;
-  tenant_ids: string;
-  tenant_ids_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
   order_by: string;

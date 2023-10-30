@@ -89,6 +89,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+          <el-form-item
+            :label="n('排序')"
+            prop="order_by"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.order_by"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -103,19 +116,6 @@
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
-          <el-form-item
-            :label="n('排序')"
-            prop="order_by"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.order_by"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInputNumber>
           </el-form-item>
         </template>
         
@@ -635,8 +635,8 @@ async function onInitI18ns() {
     "数据类型",
     "锁定",
     "启用",
-    "备注",
     "排序",
+    "备注",
     "创建人",
     "创建时间",
     "更新人",

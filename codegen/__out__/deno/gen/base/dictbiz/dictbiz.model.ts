@@ -43,8 +43,8 @@ export interface DictbizFieldComment {
   is_locked_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
-  rem: string;
   order_by: string;
+  rem: string;
   create_usr_id: string;
   create_usr_id_lbl: string;
   create_time: string;

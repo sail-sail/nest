@@ -348,16 +348,6 @@ export default defineConfig({
         COLUMN_NAME: "is_locked",
       },
       {
-        COLUMN_NAME: "tenant_ids",
-        COLUMN_COMMENT: "所在租户",
-        width: 180,
-        align: "left",
-        many2many: {
-          mod: "base",
-          table: "tenant_menu",
-        },
-      },
-      {
         COLUMN_NAME: "is_enabled",
       },
       {
@@ -1211,10 +1201,10 @@ export default defineConfig({
         width: 60,
       },
       {
-        COLUMN_NAME: "rem",
+        COLUMN_NAME: "order_by",
       },
       {
-        COLUMN_NAME: "order_by",
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",
