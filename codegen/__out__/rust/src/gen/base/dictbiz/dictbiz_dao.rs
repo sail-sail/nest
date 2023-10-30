@@ -186,22 +186,6 @@ async fn get_where_query(
     }
   }
   {
-    let rem = match &search {
-      Some(item) => item.rem.clone(),
-      None => None,
-    };
-    if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
-    }
-    let rem_like = match &search {
-      Some(item) => item.rem_like.clone(),
-      None => None,
-    };
-    if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
-    }
-  }
-  {
     let order_by: Vec<u32> = match &search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
@@ -220,6 +204,22 @@ async fn get_where_query(
     }
     if let Some(order_by_lt) = order_by_lt {
       where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
+    }
+  }
+  {
+    let rem = match &search {
+      Some(item) => item.rem.clone(),
+      None => None,
+    };
+    if let Some(rem) = rem {
+      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+    }
+    let rem_like = match &search {
+      Some(item) => item.rem_like.clone(),
+      None => None,
+    };
+    if let Some(rem_like) = rem_like {
+      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
     }
   }
   {
@@ -533,8 +533,8 @@ pub async fn get_field_comments(
     "锁定".into(),
     "启用".into(),
     "启用".into(),
-    "备注".into(),
     "排序".into(),
+    "备注".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
@@ -569,8 +569,8 @@ pub async fn get_field_comments(
     is_locked_lbl: vec[6].to_owned(),
     is_enabled: vec[7].to_owned(),
     is_enabled_lbl: vec[8].to_owned(),
-    rem: vec[9].to_owned(),
-    order_by: vec[10].to_owned(),
+    order_by: vec[9].to_owned(),
+    rem: vec[10].to_owned(),
     create_usr_id: vec[11].to_owned(),
     create_usr_id_lbl: vec[12].to_owned(),
     create_time: vec[13].to_owned(),
@@ -957,17 +957,17 @@ pub async fn create(
     sql_values += ",?";
     args.push(is_enabled.into());
   }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
   // 排序
   if let Some(order_by) = input.order_by {
     sql_fields += ",order_by";
     sql_values += ",?";
     args.push(order_by.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    sql_fields += ",rem";
+    sql_values += ",?";
+    args.push(rem.into());
   }
   // 更新人
   if let Some(update_usr_id) = input.update_usr_id {
@@ -1157,17 +1157,17 @@ pub async fn update_by_id(
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
   }
-  // 备注
-  if let Some(rem) = input.rem {
-    field_num += 1;
-    sql_fields += ",rem = ?";
-    args.push(rem.into());
-  }
   // 排序
   if let Some(order_by) = input.order_by {
     field_num += 1;
     sql_fields += ",order_by = ?";
     args.push(order_by.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    field_num += 1;
+    sql_fields += ",rem = ?";
+    args.push(rem.into());
   }
   // 系统字段
   if let Some(is_sys) = input.is_sys {

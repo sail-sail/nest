@@ -37,10 +37,10 @@ pub struct DictbizModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 排序
   pub order_by: u32,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -84,10 +84,10 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
+    // 备注
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -125,8 +125,8 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
-      rem,
       order_by,
+      rem,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -165,10 +165,10 @@ pub struct DictbizFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 排序
   pub order_by: String,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -213,12 +213,12 @@ pub struct DictbizSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 排序
-  pub order_by: Option<Vec<u32>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   /// 创建人
@@ -259,10 +259,10 @@ pub struct DictbizInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 排序
   pub order_by: Option<u32>,
+  /// 备注
+  pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<String>,
   /// 创建人
@@ -303,10 +303,10 @@ impl From<DictbizInput> for DictbizSearch {
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
-      // 备注
-      rem: input.rem,
       // 排序
       order_by: input.order_by.map(|x| vec![x, x]),
+      // 备注
+      rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间

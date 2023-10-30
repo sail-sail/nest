@@ -37,10 +37,6 @@ pub struct MenuModel {
   pub is_locked: u8,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 所在租户
-  pub tenant_ids: Vec<String>,
-  /// 所在租户
-  pub tenant_ids_lbl: Vec<String>,
   /// 启用
   pub is_enabled: u8,
   /// 启用
@@ -89,41 +85,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
-    // 所在租户
-    let tenant_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids")?;
-    let tenant_ids = tenant_ids.unwrap_or_default().0;
-    let tenant_ids = {
-      let mut keys: Vec<u32> = tenant_ids.keys()
-        .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
-        )
-        .collect();
-      keys.sort();
-      keys.into_iter()
-        .map(|x| 
-          tenant_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
-        )
-        .collect::<Vec<String>>()
-    };
-    let tenant_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids_lbl")?;
-    let tenant_ids_lbl = tenant_ids_lbl.unwrap_or_default().0;
-    let tenant_ids_lbl = {
-      let mut keys: Vec<u32> = tenant_ids_lbl.keys()
-        .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
-        )
-        .collect();
-      keys.sort();
-      keys.into_iter()
-        .map(|x| 
-          tenant_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
-        )
-        .collect::<Vec<String>>()
-    };
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -165,8 +126,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       route_query,
       is_locked,
       is_locked_lbl,
-      tenant_ids,
-      tenant_ids_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -209,10 +168,6 @@ pub struct MenuFieldComment {
   pub is_locked: String,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 所在租户
-  pub tenant_ids: String,
-  /// 所在租户
-  pub tenant_ids_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
@@ -263,10 +218,6 @@ pub struct MenuSearch {
   pub route_query: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
-  /// 所在租户
-  pub tenant_ids: Option<Vec<String>>,
-  /// 所在租户
-  pub tenant_ids_is_null: Option<bool>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
@@ -312,10 +263,6 @@ pub struct MenuInput {
   pub is_locked: Option<u8>,
   /// 锁定
   pub is_locked_lbl: Option<String>,
-  /// 所在租户
-  pub tenant_ids: Option<Vec<String>>,
-  /// 所在租户
-  pub tenant_ids_lbl: Option<Vec<String>>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
@@ -360,8 +307,6 @@ impl From<MenuInput> for MenuSearch {
       route_query: input.route_query,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
-      // 所在租户
-      tenant_ids: input.tenant_ids,
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
