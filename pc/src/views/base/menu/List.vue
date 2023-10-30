@@ -502,20 +502,6 @@
             </el-table-column>
           </template>
           
-          <!-- 所在租户 -->
-          <template v-else-if="'tenant_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.tenant_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -789,8 +775,6 @@ const props = defineProps<{
   route_query?: string; // 参数
   route_query_like?: string; // 参数
   is_locked?: string|string[]; // 锁定
-  tenant_ids?: string|string[]; // 所在租户
-  tenant_ids_lbl?: string|string[]; // 所在租户
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   rem?: string; // 备注
@@ -815,8 +799,6 @@ const builtInSearchType: { [key: string]: string } = {
   parent_id_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
-  tenant_ids: "string[]",
-  tenant_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
@@ -992,15 +974,6 @@ function getTableColumns(): ColumnType[] {
       sortBy: "is_locked",
       width: 60,
       align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "所在租户",
-      prop: "tenant_ids_lbl",
-      sortBy: "tenant_ids",
-      width: 180,
-      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1331,7 +1304,6 @@ async function onImportExcel() {
     [ await nAsync("路由") ]: "route_path",
     [ await nAsync("参数") ]: "route_query",
     [ await nAsync("锁定") ]: "is_locked_lbl",
-    [ await nAsync("所在租户") ]: "tenant_ids_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
@@ -1362,7 +1334,6 @@ async function onImportExcel() {
           "route_path": "string",
           "route_query": "string",
           "is_locked_lbl": "string",
-          "tenant_ids_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
@@ -1668,7 +1639,6 @@ async function initI18nsEfc() {
     "路由",
     "参数",
     "锁定",
-    "所在租户",
     "启用",
     "排序",
     "备注",

@@ -12,7 +12,6 @@ import type {
 } from "#/types";
 
 import type {
-  TenantSearch,
   UsrSearch,
 } from "#/types";
 
@@ -50,8 +49,6 @@ export async function findAll(
           route_query
           is_locked
           is_locked_lbl
-          tenant_ids
-          tenant_ids_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -217,8 +214,6 @@ export async function findById(
           route_query
           is_locked
           is_locked_lbl
-          tenant_ids
-          tenant_ids_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -426,51 +421,6 @@ export async function getMenuList() {
   return data;
 }
 
-export async function findAllTenant(
-  search?: TenantSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllTenant: Query["findAllTenant"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllTenant(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllTenant;
-  return res;
-}
-
-export async function getTenantList() {
-  const data = await findAllTenant(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -556,7 +506,6 @@ export function useDownloadImportTemplate(routePath: string) {
             route_path
             route_query
             is_locked_lbl
-            tenant_ids_lbl
             is_enabled_lbl
             order_by
             rem
@@ -566,10 +515,6 @@ export function useDownloadImportTemplate(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
-            id
-            lbl
-          }
-          findAllTenant {
             id
             lbl
           }
@@ -637,8 +582,6 @@ export function useExportExcel(routePath: string) {
             route_query
             is_locked
             is_locked_lbl
-            tenant_ids
-            tenant_ids_lbl
             is_enabled
             is_enabled_lbl
             order_by
@@ -659,7 +602,6 @@ export function useExportExcel(routePath: string) {
             route_path
             route_query
             is_locked_lbl
-            tenant_ids_lbl
             is_enabled_lbl
             order_by
             rem
@@ -669,9 +611,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
-            lbl
-          }
-          findAllTenant {
             lbl
           }
           findAllUsr {
