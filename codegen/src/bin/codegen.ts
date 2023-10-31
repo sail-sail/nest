@@ -1,5 +1,4 @@
 import {
-  getAllTables,
   getSchema,
   initContext,
   type Context,
@@ -15,7 +14,8 @@ import tables from "../tables/tables";
 import { gitDiffOut } from "../lib/codegen";
 
 async function exec(context: Context, table_names0: string[]) {
-  let table_names: string[] = (await getAllTables(context)).map((item: any) => item.TABLE_NAME);
+  const table_names: string[] = Object.keys(tables).filter((item) => item);
+  
   if (!table_names0) {
     table_names0 = table_names;
   }

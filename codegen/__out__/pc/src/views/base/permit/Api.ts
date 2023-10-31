@@ -352,8 +352,8 @@ export async function getUsrList() {
     },
     [
       {
-        prop: "",
-        order: "ascending",
+        prop: "create_time",
+        order: "descending",
       },
     ],
     {

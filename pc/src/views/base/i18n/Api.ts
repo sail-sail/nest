@@ -312,7 +312,7 @@ export async function getLangList() {
     },
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -402,8 +402,8 @@ export async function getUsrList() {
     },
     [
       {
-        prop: "",
-        order: "ascending",
+        prop: "create_time",
+        order: "descending",
       },
     ],
     {

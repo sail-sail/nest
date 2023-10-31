@@ -423,7 +423,7 @@ export async function getMenuList() {
     },
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -484,7 +484,7 @@ export async function getMenuTree() {
     undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],

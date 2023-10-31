@@ -479,7 +479,7 @@ export async function getRoleList() {
     },
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],

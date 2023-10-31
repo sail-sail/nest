@@ -1177,7 +1177,7 @@ async function useFindCount(
 }
 
 const defaultSort: Sort = {
-  prop: "",
+  prop: "order_by",
   order: "ascending",
 };
 

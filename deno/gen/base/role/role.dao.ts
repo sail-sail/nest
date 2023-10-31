@@ -380,11 +380,20 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {

@@ -392,6 +392,15 @@ async function getSchema0(
       prop: "create_time",
       order: "descending",
     };
+  } else if (
+    hasOrderBy
+    && (!tables[table_name]?.opts?.defaultSort)
+  ) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.defaultSort = {
+      prop: "order_by",
+      order: "ascending",
+    };
   }
   return records2;
 }
@@ -665,6 +674,27 @@ export async function getSchema(
   if (tables[table_name] && defaultSort)  {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.defaultSort = defaultSort;
+  }
+  // 外键关联表的默认排序
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const item = tables[table_name].columns[i];
+    if (item.foreignKey && !item.foreignKey.defaultSort) {
+      let defaultSort = tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.opts?.defaultSort;
+      for (const columnTmp of tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.columns || []) {
+        if (columnTmp.COLUMN_NAME === "order_by") {
+          if (!defaultSort) {
+            defaultSort = {
+              prop: "order_by",
+              order: "ascending",
+            };
+          }
+          break;
+        }
+      }
+      item.foreignKey.defaultSort = {
+        ...defaultSort,
+      };
+    }
   }
   return tables[table_name];
 }
