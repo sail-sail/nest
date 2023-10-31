@@ -349,9 +349,10 @@ export async function findAllDictbiz(
 
 export async function getDictbizList() {
   const data = await findAllDictbiz(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",

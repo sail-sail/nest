@@ -658,6 +658,8 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #>
 
 export async function findAll<#=Foreign_Table_Up#>(
@@ -688,10 +690,18 @@ export async function findAll<#=Foreign_Table_Up#>(
 }
 
 export async function get<#=Foreign_Table_Up#>List() {
-  const data = await findAll<#=Foreign_Table_Up#>(
-    undefined,
+  const data = await findAll<#=Foreign_Table_Up#>(<#
+    if (foreignHasEnabled && foreignTable !== table) {
+    #>
     {
-    },
+      is_enabled: [ 1 ],
+    },<#
+    } else {
+    #>
+    undefined,<#
+    }
+    #>
+    undefined,
     [
       {
         prop: "<#=defaultSort && defaultSort.prop || ""#>",

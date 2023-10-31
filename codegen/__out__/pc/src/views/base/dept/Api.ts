@@ -398,8 +398,7 @@ export async function findAllDept(
 export async function getDeptList() {
   const data = await findAllDept(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "order_by",
@@ -442,9 +441,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "create_time",

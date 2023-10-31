@@ -307,9 +307,10 @@ export async function findAllLang(
 
 export async function getLangList() {
   const data = await findAllLang(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -352,9 +353,10 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -397,9 +399,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "create_time",

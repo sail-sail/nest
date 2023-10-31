@@ -349,9 +349,10 @@ export async function findAllDict(
 
 export async function getDictList() {
   const data = await findAllDict(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",

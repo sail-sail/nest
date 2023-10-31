@@ -384,9 +384,10 @@ export async function findAllOrg(
 
 export async function getOrgList() {
   const data = await findAllOrg(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -429,9 +430,10 @@ export async function findAllDept(
 
 export async function getDeptList() {
   const data = await findAllDept(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -474,9 +476,10 @@ export async function findAllRole(
 
 export async function getRoleList() {
   const data = await findAllRole(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -520,8 +523,7 @@ export async function findAllUsr(
 export async function getUsrList() {
   const data = await findAllUsr(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "create_time",
