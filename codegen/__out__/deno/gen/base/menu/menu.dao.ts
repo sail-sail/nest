@@ -107,7 +107,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.route_path !== undefined) {
     whereQuery += ` and t.route_path = ${ args.push(search.route_path) }`;
@@ -116,7 +116,7 @@ async function getWhereQuery(
     whereQuery += ` and t.route_path is null`;
   }
   if (isNotEmpty(search?.route_path_like)) {
-    whereQuery += ` and t.route_path like ${ args.push(sqlLike(search?.route_path_like) + "%") }`;
+    whereQuery += ` and t.route_path like ${ args.push("%" + sqlLike(search?.route_path_like) + "%") }`;
   }
   if (search?.route_query !== undefined) {
     whereQuery += ` and t.route_query = ${ args.push(search.route_query) }`;
@@ -125,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.route_query is null`;
   }
   if (isNotEmpty(search?.route_query_like)) {
-    whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_query_like) + "%") }`;
+    whereQuery += ` and t.route_query like ${ args.push("%" + sqlLike(search?.route_query_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -154,7 +154,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];

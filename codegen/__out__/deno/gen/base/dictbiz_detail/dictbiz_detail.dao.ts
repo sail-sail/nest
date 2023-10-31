@@ -116,7 +116,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.val !== undefined) {
     whereQuery += ` and t.val = ${ args.push(search.val) }`;
@@ -125,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.val is null`;
   }
   if (isNotEmpty(search?.val_like)) {
-    whereQuery += ` and t.val like ${ args.push(sqlLike(search?.val_like) + "%") }`;
+    whereQuery += ` and t.val like ${ args.push("%" + sqlLike(search?.val_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -154,7 +154,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.is_sys && !Array.isArray(search?.is_sys)) {
     search.is_sys = [ search.is_sys ];

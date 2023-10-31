@@ -99,7 +99,7 @@ async function getWhereQuery(
     whereQuery += ` and t.module is null`;
   }
   if (isNotEmpty(search?.module_like)) {
-    whereQuery += ` and t.module like ${ args.push(sqlLike(search?.module_like) + "%") }`;
+    whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
   if (search?.module_lbl !== undefined) {
     whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
@@ -108,7 +108,7 @@ async function getWhereQuery(
     whereQuery += ` and t.module_lbl is null`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
-    whereQuery += ` and t.module_lbl like ${ args.push(sqlLike(search?.module_lbl_like) + "%") }`;
+    whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
   if (search?.method !== undefined) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
@@ -117,7 +117,7 @@ async function getWhereQuery(
     whereQuery += ` and t.method is null`;
   }
   if (isNotEmpty(search?.method_like)) {
-    whereQuery += ` and t.method like ${ args.push(sqlLike(search?.method_like) + "%") }`;
+    whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
   if (search?.method_lbl !== undefined) {
     whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
@@ -126,7 +126,7 @@ async function getWhereQuery(
     whereQuery += ` and t.method_lbl is null`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
-    whereQuery += ` and t.method_lbl like ${ args.push(sqlLike(search?.method_lbl_like) + "%") }`;
+    whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -135,7 +135,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.old_data !== undefined) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
@@ -144,7 +144,7 @@ async function getWhereQuery(
     whereQuery += ` and t.old_data is null`;
   }
   if (isNotEmpty(search?.old_data_like)) {
-    whereQuery += ` and t.old_data like ${ args.push(sqlLike(search?.old_data_like) + "%") }`;
+    whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
   if (search?.new_data !== undefined) {
     whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
@@ -153,7 +153,7 @@ async function getWhereQuery(
     whereQuery += ` and t.new_data is null`;
   }
   if (isNotEmpty(search?.new_data_like)) {
-    whereQuery += ` and t.new_data like ${ args.push(sqlLike(search?.new_data_like) + "%") }`;
+    whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -162,7 +162,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];

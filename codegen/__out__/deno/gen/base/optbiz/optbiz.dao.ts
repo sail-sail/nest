@@ -102,7 +102,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.ky !== undefined) {
     whereQuery += ` and t.ky = ${ args.push(search.ky) }`;
@@ -111,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.ky is null`;
   }
   if (isNotEmpty(search?.ky_like)) {
-    whereQuery += ` and t.ky like ${ args.push(sqlLike(search?.ky_like) + "%") }`;
+    whereQuery += ` and t.ky like ${ args.push("%" + sqlLike(search?.ky_like) + "%") }`;
   }
   if (search?.val !== undefined) {
     whereQuery += ` and t.val = ${ args.push(search.val) }`;
@@ -120,7 +120,7 @@ async function getWhereQuery(
     whereQuery += ` and t.val is null`;
   }
   if (isNotEmpty(search?.val_like)) {
-    whereQuery += ` and t.val like ${ args.push(sqlLike(search?.val_like) + "%") }`;
+    whereQuery += ` and t.val like ${ args.push("%" + sqlLike(search?.val_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -149,7 +149,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.version && search?.version?.length > 0) {
     if (search.version[0] != null) {
