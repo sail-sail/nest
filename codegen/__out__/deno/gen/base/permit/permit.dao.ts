@@ -362,7 +362,6 @@ export async function setIdByLbl(
   
   const [
   ] = await dictSrcDao.getDict([
-    "is_sys",
   ]);
   
   // 菜单

@@ -502,7 +502,6 @@ export async function setIdByLbl(
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   // 所属域名

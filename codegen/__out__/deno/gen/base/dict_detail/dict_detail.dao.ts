@@ -336,7 +336,6 @@ export async function setIdByLbl(
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   // 系统字典

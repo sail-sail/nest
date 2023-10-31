@@ -393,7 +393,6 @@ export async function setIdByLbl(
   ] = await dictSrcDao.getDict([
     "data_permit_scope",
     "data_permit_type",
-    "is_sys",
   ]);
   
   // 菜单

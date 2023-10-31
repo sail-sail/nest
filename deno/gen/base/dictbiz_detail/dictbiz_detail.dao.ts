@@ -349,7 +349,6 @@ export async function setIdByLbl(
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   // 业务字典

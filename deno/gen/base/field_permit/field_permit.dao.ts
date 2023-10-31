@@ -382,7 +382,6 @@ export async function setIdByLbl(
     typeDict, // 类型
   ] = await dictSrcDao.getDict([
     "field_permit_type",
-    "is_sys",
   ]);
   
   // 菜单

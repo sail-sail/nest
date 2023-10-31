@@ -373,7 +373,6 @@ export async function setIdByLbl(
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
     "is_enabled",
-    "is_sys",
   ]);
   
   // 启用
