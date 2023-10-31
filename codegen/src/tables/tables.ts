@@ -1040,6 +1040,14 @@ export default defineConfig({
         "type",
         "is_enabled",
       ],
+      inlineForeignTabs: [
+        {
+          mod: "base",
+          table: "dict_detail",
+          label: "系统字典",
+          column: "dict_id",
+        },
+      ],
     },
     columns: [
       {

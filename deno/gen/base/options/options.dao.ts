@@ -407,7 +407,6 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
@@ -427,14 +426,6 @@ export async function setIdByLbl(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
       input.is_enabled = Number(val);
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
     }
   }
 }

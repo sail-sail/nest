@@ -361,7 +361,6 @@ export async function setIdByLbl(
 ) {
   
   const [
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_sys",
   ]);
@@ -372,14 +371,6 @@ export async function setIdByLbl(
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
     }
   }
 }

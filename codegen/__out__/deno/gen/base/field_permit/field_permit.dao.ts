@@ -380,7 +380,6 @@ export async function setIdByLbl(
   
   const [
     typeDict, // 类型
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "field_permit_type",
     "is_sys",
@@ -400,14 +399,6 @@ export async function setIdByLbl(
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
       input.type = val;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
     }
   }
 }

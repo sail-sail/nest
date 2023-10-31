@@ -390,7 +390,6 @@ export async function setIdByLbl(
   const [
     scopeDict, // 范围
     typeDict, // 类型
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "data_permit_scope",
     "data_permit_type",
@@ -419,14 +418,6 @@ export async function setIdByLbl(
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
       input.type = val;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
     }
   }
 }

@@ -127,10 +127,6 @@ input OptbizInput {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
 }
 input OptbizSearch {
   "是否已删除"

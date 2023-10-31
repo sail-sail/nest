@@ -755,6 +755,17 @@ export interface TablesConfigItem {
      */
     dataPermit?: boolean;
     
+    /**
+     * 增加和修改时的内联外键关联可编辑表格
+     */
+    inlineForeignTabs?: {
+      mod: string;
+      mod_slash_table?: string;
+      table: string;
+      label: string;
+      column: string;
+    }[],
+    
   },
   columns?: TableCloumn[];
 }

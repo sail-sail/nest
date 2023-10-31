@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");

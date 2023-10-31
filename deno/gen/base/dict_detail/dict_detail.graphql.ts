@@ -79,10 +79,6 @@ input DictDetailInput {
   order_by: Int
   "备注"
   rem: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
 }
 input DictDetailSearch {
   "是否已删除"

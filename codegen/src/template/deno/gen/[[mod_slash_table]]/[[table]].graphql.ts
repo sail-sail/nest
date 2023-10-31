@@ -180,6 +180,9 @@ input <#=inputName#> {<#
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
+    if (column_name === "is_sys") {
+      continue;
+    }
     let _data_type = "String";
     if (column_name === 'id') {
       data_type = 'String';

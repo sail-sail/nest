@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -1118,7 +1119,7 @@ async function showDialog(
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({<#
-    if (columnNum > 20) {
+    if (columnNum > 20 || hasInlineForeignTabs) {
     #>
     type: "default",<#
     } else {
