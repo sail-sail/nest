@@ -120,7 +120,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(img_like) = img_like {
-      where_query += &format!(" and t.img like {}", args.push((sql_like(&img_like) + "%").into()));
+      where_query += &format!(
+        " and t.img like {}",
+        args.push(
+          format!("%{}%", sql_like(&img_like)).into()
+        ),
+      );
     }
   }
   {
@@ -136,7 +141,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+      where_query += &format!(
+        " and t.lbl like {}",
+        args.push(
+          format!("%{}%", sql_like(&lbl_like)).into()
+        ),
+      );
     }
   }
   {
@@ -152,7 +162,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(username_like) = username_like {
-      where_query += &format!(" and t.username like {}", args.push((sql_like(&username_like) + "%").into()));
+      where_query += &format!(
+        " and t.username like {}",
+        args.push(
+          format!("%{}%", sql_like(&username_like)).into()
+        ),
+      );
     }
   }
   {
@@ -306,7 +321,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+      where_query += &format!(
+        " and t.rem like {}",
+        args.push(
+          format!("%{}%", sql_like(&rem_like)).into()
+        ),
+      );
     }
   }
   {

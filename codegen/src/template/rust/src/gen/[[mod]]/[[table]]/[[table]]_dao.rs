@@ -467,7 +467,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name#>_like) = <#=column_name#>_like {
-      where_query += &format!(" and t.<#=column_name#> like {}", args.push((sql_like(&<#=column_name#>_like) + "%").into()));
+      where_query += &format!(
+        " and t.<#=column_name#> like {}",
+        args.push(
+          format!("%{}%", sql_like(&<#=column_name#>_like)).into()
+        ),
+      );
     }
   }<#
     } else {
