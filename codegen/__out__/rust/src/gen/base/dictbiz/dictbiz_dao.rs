@@ -115,7 +115,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(code_like) = code_like {
-      where_query += &format!(" and t.code like {}", args.push((sql_like(&code_like) + "%").into()));
+      where_query += &format!(
+        " and t.code like {}",
+        args.push(
+          format!("%{}%", sql_like(&code_like)).into()
+        ),
+      );
     }
   }
   {
@@ -131,7 +136,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+      where_query += &format!(
+        " and t.lbl like {}",
+        args.push(
+          format!("%{}%", sql_like(&lbl_like)).into()
+        ),
+      );
     }
   }
   {
@@ -219,7 +229,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+      where_query += &format!(
+        " and t.rem like {}",
+        args.push(
+          format!("%{}%", sql_like(&rem_like)).into()
+        ),
+      );
     }
   }
   {
