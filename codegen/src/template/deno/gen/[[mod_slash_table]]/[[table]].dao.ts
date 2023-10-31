@@ -462,7 +462,7 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=column_name#> is null`;
   }
   if (isNotEmpty(search?.<#=column_name#>_like)) {
-    whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>_like) + "%") }`;
+    whereQuery += ` and t.<#=column_name#> like %${ args.push(sqlLike(search?.<#=column_name#>_like)) }%`;
   }<#
   }
   #><#
