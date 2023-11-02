@@ -1017,8 +1017,12 @@ import {<#
   #>
 } from "./Api";
 
-import type {
+import type {<#
+  if (opts?.noAdd !== true || opts?.noEdit !== true) {
+  #>
   <#=inputName#>,<#
+  }
+  #><#
   const foreignTableArr = [];
   for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1055,6 +1059,12 @@ import type {
 }
 #>
 } from "#/types";<#
+if (opts?.noAdd === true && opts?.noEdit === true) {
+#>
+
+type <#=inputName#> = any;<#
+}
+#><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
