@@ -11,6 +11,8 @@ const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -291,6 +293,89 @@ import {
   getAuthRoleIds,
 } from "/src/base/role/role.dao.ts";<#
 }
+#><#
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+#>
+
+import {<#
+  if (!hasFindAllTableUps) {
+  #>
+  findAll as findAll<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  deleteByIds as deleteByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revertByIds as revertByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  updateById as updateById<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
+  }
+  #>
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
+}
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
@@ -367,6 +452,7 @@ async function getWhereQuery(
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
+    if (column_name === "is_sys") continue;
     const isPassword = column.isPassword;
     if (isPassword) {
       continue;
@@ -846,6 +932,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -869,6 +957,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -886,8 +976,7 @@ export async function findAll(
     #><#
     }
     #>
-  ]);
-  <#
+  ]);<#
   }
   #><#
   if (hasDictbiz) {
@@ -899,6 +988,7 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -922,6 +1012,7 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -942,7 +1033,29 @@ export async function findAll(
   ]);
   <#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });<#
+  }
+  #>
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
     for (let i = 0; i < columns.length; i++) {
@@ -950,6 +1063,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -986,8 +1101,7 @@ export async function findAll(
       } else if (selectList.length > 0) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>_lbl = "";
-    <#
+    let <#=column_name#>_lbl = "";<#
     for (let i = 0; i < selectList.length; i++) {
       const item = selectList[i];
       let value = item.value;
@@ -1073,6 +1187,25 @@ export async function findAll(
     }<#
       }
     #><#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      if (!inlineForeignSchema) {
+        throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+        process.exit(1);
+      }
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=table#>_models = <#=table#>_models
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)<#
     }
     #>
   }
@@ -1529,6 +1662,9 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
+      if (column_name === "is_sys") {
+        continue;
+      }
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
       if (selectStr) {
@@ -1564,10 +1700,10 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {<#=searchName#> | PartialNull<<#=modelName#>>} search0
+ * @param {<#=inputName#>} search0
  */
 export async function findByUnique(
-  search0: <#=searchName#> | PartialNull<<#=modelName#>>,
+  search0: <#=inputName#>,
   options?: {
   },
 ): Promise<<#=modelName#>[]> {
@@ -1644,14 +1780,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {<#=modelName#>} oldModel
- * @param {PartialNull<<#=modelName#>>} model
+ * @param {<#=inputName#>} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: <#=modelName#>,
-  model: PartialNull<<#=modelName#>>,
+  input: <#=inputName#>,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }<#
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
@@ -1668,16 +1804,16 @@ export function equalsByUnique(
     #><#
       if (data_type === "date" && !column.isMonth) {
     #>
-    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>)<#
+    dayjs(oldModel.<#=unique#>).isSame(input.<#=unique#>)<#
       } else if (data_type === "date" && column.isMonth) {
     #>
-    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>, "month")<#
+    dayjs(oldModel.<#=unique#>).isSame(input.<#=unique#>, "month")<#
       } else if (data_type === "decimal") {
     #>
-    String(oldModel.<#=unique#>) === String(model.<#=unique#>)<#
+    String(oldModel.<#=unique#>) === String(input.<#=unique#>)<#
       } else {
     #>
-    oldModel.<#=unique#> === model.<#=unique#><#
+    oldModel.<#=unique#> === input.<#=unique#><#
       }
     #><#=(k === uniques.length - 1) ? "" : " &&" #><#
     }
@@ -1801,11 +1937,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -2434,7 +2568,9 @@ export async function create(
   #>
   sql += `)`;
   
-  const result = await execute(sql, args);<#
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2474,6 +2610,30 @@ export async function create(
   #><#
     }
   #><#
+  }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if (input.<#=table#>_models && input.<#=table#>_models.length > 0) {
+    for (let i = 0; i < input.<#=table#>_models.length; i++) {
+      const <#=table#>_model = input.<#=table#>_models[i];
+      <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(<#=table#>_model);
+    }
+  }<#
   }
   #><#
   if (cache) {
@@ -2906,8 +3066,56 @@ export async function updateById(
     }
     #>
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if (input.<#=table#>_models) {
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=inlineForeignTab.column#>: input.<#=table#>_models
+        .filter((item) => item.id)
+        .map((item) => item.id!),
+    });
+    if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < <#=table#>_models.length; i++) {
+      const <#=table#>_model = <#=table#>_models[i];
+      if (input.<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+        continue;
+      }
+      await deleteByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+    }
+    for (let i = 0; i < input.<#=table#>_models.length; i++) {
+      const <#=table#>_model = input.<#=table#>_models[i];
+      if (!<#=table#>_model.id) {
+        <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
+        await create<#=Table_Up#>(<#=table#>_model);
+        continue;
+      }
+      if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+        await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
+        continue;
+      }
+      await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+    }
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3032,6 +3240,23 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 0,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3334,6 +3559,23 @@ export async function revertByIds(
       }
     }
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3397,6 +3639,23 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   

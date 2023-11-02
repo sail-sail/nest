@@ -71,6 +71,53 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {PermitSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: PermitSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOnePermit: Query["findOnePermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: PermitSearch, $sort: [SortInput!]) {
+        findOnePermit(search: $search, sort: $sort) {
+          id
+          menu_id
+          menu_id_lbl
+          code
+          lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOnePermit;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {PermitSearch} search?

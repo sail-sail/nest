@@ -63,6 +63,15 @@ import type {
   DictFieldComment,
 } from "./dict.model.ts";
 
+import {
+  findAll as findAllDictDetail,
+  create as createDictDetail,
+  deleteByIds as deleteByIdsDictDetail,
+  revertByIds as revertByIdsDictDetail,
+  updateById as updateByIdDictDetail,
+  forceDeleteByIds as forceDeleteByIdsDictDetail,
+} from "/gen/base/dict_detail/dict_detail.dao.ts";
+
 const route_path = "/base/dict";
 
 async function getWhereQuery(
@@ -174,12 +183,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -321,13 +324,17 @@ export async function findAll(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
+  
+  // 系统字典明细
+  const dict_detail_models = await findAllDictDetail({
+    dict_id: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -386,15 +393,9 @@ export async function findAll(
       model.update_time_lbl = "";
     }
     
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
+    // 系统字典明细
+    model.dict_detail_models = dict_detail_models
+      .filter((item) => item.dict_id === model.id)
   }
   
   return result;
@@ -409,10 +410,12 @@ export async function setIdByLbl(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
+    "is_deleted",
   ]);
   
   // 数据类型
@@ -465,18 +468,18 @@ export async function getFieldComments(): Promise<DictFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
+    is_deleted: await n("删除"),
+    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DictSearch | PartialNull<DictModel>} search0
+ * @param {DictInput} search0
  */
 export async function findByUnique(
-  search0: DictSearch | PartialNull<DictModel>,
+  search0: DictInput,
   options?: {
   },
 ): Promise<DictModel[]> {
@@ -516,23 +519,23 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DictModel} oldModel
- * @param {PartialNull<DictModel>} model
+ * @param {DictInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DictModel,
-  model: PartialNull<DictModel>,
+  input: DictInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.code === model.code
+    oldModel.code === input.code
   ) {
     return true;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -594,11 +597,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -896,7 +897,18 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
+  
+  // 系统字典明细
+  if (input.dict_detail_models && input.dict_detail_models.length > 0) {
+    for (let i = 0; i < input.dict_detail_models.length; i++) {
+      const dict_detail_model = input.dict_detail_models[i];
+      dict_detail_model.dict_id = input.id;
+      await createDictDetail(dict_detail_model);
+    }
+  }
   
   await delCache();
   
@@ -1042,7 +1054,40 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
+  }
+  
+  // 系统字典明细
+  if (input.dict_detail_models) {
+    const dict_detail_models = await findAllDictDetail({
+      dict_id: input.dict_detail_models
+        .filter((item) => item.id)
+        .map((item) => item.id!),
+    });
+    if (dict_detail_models.length > 0 && input.dict_detail_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < dict_detail_models.length; i++) {
+      const dict_detail_model = dict_detail_models[i];
+      if (input.dict_detail_models.some((item) => item.id === dict_detail_model.id)) {
+        continue;
+      }
+      await deleteByIdsDictDetail([ dict_detail_model.id ]);
+    }
+    for (let i = 0; i < input.dict_detail_models.length; i++) {
+      const dict_detail_model = input.dict_detail_models[i];
+      if (!dict_detail_model.id) {
+        dict_detail_model.dict_id = input.id;
+        await createDictDetail(dict_detail_model);
+        continue;
+      }
+      if (dict_detail_models.some((item) => item.id === dict_detail_model.id)) {
+        await updateByIdDictDetail(dict_detail_model.id, dict_detail_model);
+        continue;
+      }
+      await revertByIdsDictDetail([ dict_detail_model.id ]);
+    }
   }
   
   if (updateFldNum > 0) {
@@ -1100,6 +1145,13 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  // 系统字典明细
+  const dict_detail_models = await findAllDictDetail({
+    dict_id: ids,
+    is_deleted: 0,
+  });
+  await deleteByIdsDictDetail(dict_detail_models.map((item) => item.id));
   
   await delCache();
   
@@ -1299,6 +1351,13 @@ export async function revertByIds(
     }
   }
   
+  // 系统字典明细
+  const dict_detail_models = await findAllDictDetail({
+    dict_id: ids,
+    is_deleted: 1,
+  });
+  await revertByIdsDictDetail(dict_detail_models.map((item) => item.id));
+  
   await delCache();
   
   return num;
@@ -1353,6 +1412,13 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  // 系统字典明细
+  const dict_detail_models = await findAllDictDetail({
+    dict_id: ids,
+    is_deleted: 1,
+  });
+  await forceDeleteByIdsDictDetail(dict_detail_models.map((item) => item.id));
   
   await delCache();
   

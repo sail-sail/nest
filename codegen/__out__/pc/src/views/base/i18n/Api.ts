@@ -74,6 +74,55 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {I18Nsearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: I18Nsearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneI18N: Query["findOneI18N"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: I18Nsearch, $sort: [SortInput!]) {
+        findOneI18N(search: $search, sort: $sort) {
+          id
+          lang_id
+          lang_id_lbl
+          menu_id
+          menu_id_lbl
+          code
+          lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneI18N;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {I18Nsearch} search?

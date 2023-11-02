@@ -3,6 +3,8 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -41,6 +43,12 @@ type <#=modelName#> {<#
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
+      continue;
+    }
     let _data_type = "String";
     if (column_name === 'id') {
       data_type = 'String';
@@ -123,7 +131,42 @@ type <#=modelName#> {<#
   }
   #>
   "是否已删除"
-  is_deleted: Int!
+  is_deleted: Int!<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=table#>_models: [<#=modelName#>!]<#
+  }
+  #>
 }
 type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
@@ -143,6 +186,12 @@ type <#=fieldCommentName#> {<#
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     if (column_name === 'id') {
+      continue;
+    }
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "is_deleted") {
       continue;
     }
     const isPassword = column.isPassword;
@@ -178,6 +227,7 @@ input <#=inputName#> {<#
     if (column.ignoreCodegen) continue;
     // if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "is_deleted") continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
@@ -258,6 +308,41 @@ input <#=inputName#> {<#
     }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=table#>_models: [<#=inputName#>!]<#
+  }
   #>
 }
 input <#=searchName#> {
@@ -278,6 +363,12 @@ input <#=searchName#> {
     if (isPassword) continue;
     const search = column.search;
     if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'is_sys') {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
       continue;
     }
     if (column_name === 'id') {

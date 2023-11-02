@@ -228,7 +228,8 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   create_usr_id?: string;
   create_time?: string | null;
   update_usr_id?: string;
-  update_time?: string | null;<#
+  update_time?: string | null;
+  is_deleted?: number | null;<#
   if (hasTenant_id && tenant_id_column.ignoreCodegen) {
   #>
   tenant_id?: string | null;<#
@@ -249,6 +250,9 @@ export interface <#=fieldCommentName#> {<#
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
+    if (column_name === "is_sys") {
+      continue;
+    }
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
     if (selectStr) {

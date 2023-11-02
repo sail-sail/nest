@@ -28,6 +28,7 @@ export interface PermitInput extends PermitInputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface PermitFieldComment {
@@ -45,6 +46,4 @@ export interface PermitFieldComment {
   update_usr_id_lbl: string;
   update_time: string;
   update_time_lbl: string;
-  is_sys: string;
-  is_sys_lbl: string;
 }

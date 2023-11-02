@@ -67,6 +67,15 @@ import type {
   DictbizFieldComment,
 } from "./dictbiz.model.ts";
 
+import {
+  findAll as findAllDictbizDetail,
+  create as createDictbizDetail,
+  deleteByIds as deleteByIdsDictbizDetail,
+  revertByIds as revertByIdsDictbizDetail,
+  updateById as updateByIdDictbizDetail,
+  forceDeleteByIds as forceDeleteByIdsDictbizDetail,
+} from "/gen/base/dictbiz_detail/dictbiz_detail.dao.ts";
+
 const route_path = "/base/dictbiz";
 
 async function getWhereQuery(
@@ -187,12 +196,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -334,13 +337,17 @@ export async function findAll(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
+  
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -399,15 +406,9 @@ export async function findAll(
       model.update_time_lbl = "";
     }
     
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
+    // 业务字典明细
+    model.dictbiz_detail_models = dictbiz_detail_models
+      .filter((item) => item.dictbiz_id === model.id)
   }
   
   return result;
@@ -422,10 +423,12 @@ export async function setIdByLbl(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
+    "is_deleted",
   ]);
   
   // 数据类型
@@ -476,20 +479,22 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
     create_time_lbl: await n("创建时间"),
     update_usr_id: await n("更新人"),
     update_usr_id_lbl: await n("更新人"),
+    tenant_id: await n("租户"),
+    tenant_id_lbl: await n("租户"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
+    is_deleted: await n("删除"),
+    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DictbizSearch | PartialNull<DictbizModel>} search0
+ * @param {DictbizInput} search0
  */
 export async function findByUnique(
-  search0: DictbizSearch | PartialNull<DictbizModel>,
+  search0: DictbizInput,
   options?: {
   },
 ): Promise<DictbizModel[]> {
@@ -519,18 +524,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DictbizModel} oldModel
- * @param {PartialNull<DictbizModel>} model
+ * @param {DictbizInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DictbizModel,
-  model: PartialNull<DictbizModel>,
+  input: DictbizInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.code === model.code
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -592,11 +597,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -912,7 +915,18 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
+  
+  // 业务字典明细
+  if (input.dictbiz_detail_models && input.dictbiz_detail_models.length > 0) {
+    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = input.dictbiz_detail_models[i];
+      dictbiz_detail_model.dictbiz_id = input.id;
+      await createDictbizDetail(dictbiz_detail_model);
+    }
+  }
   
   await delCache();
   
@@ -1102,7 +1116,40 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
+  }
+  
+  // 业务字典明细
+  if (input.dictbiz_detail_models) {
+    const dictbiz_detail_models = await findAllDictbizDetail({
+      dictbiz_id: input.dictbiz_detail_models
+        .filter((item) => item.id)
+        .map((item) => item.id!),
+    });
+    if (dictbiz_detail_models.length > 0 && input.dictbiz_detail_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = dictbiz_detail_models[i];
+      if (input.dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
+        continue;
+      }
+      await deleteByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+    }
+    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = input.dictbiz_detail_models[i];
+      if (!dictbiz_detail_model.id) {
+        dictbiz_detail_model.dictbiz_id = input.id;
+        await createDictbizDetail(dictbiz_detail_model);
+        continue;
+      }
+      if (dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
+        await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
+        continue;
+      }
+      await revertByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+    }
   }
   
   if (updateFldNum > 0) {
@@ -1160,6 +1207,13 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 0,
+  });
+  await deleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
   
   await delCache();
   
@@ -1359,6 +1413,13 @@ export async function revertByIds(
     }
   }
   
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 1,
+  });
+  await revertByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
+  
   await delCache();
   
   return num;
@@ -1413,6 +1474,13 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 1,
+  });
+  await forceDeleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
   
   await delCache();
   

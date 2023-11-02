@@ -30,6 +30,7 @@ export interface OptbizInput extends OptbizInputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
+  is_deleted?: number | null;
   tenant_id?: string | null;
 }
 
@@ -53,6 +54,4 @@ export interface OptbizFieldComment {
   update_usr_id_lbl: string;
   update_time: string;
   update_time_lbl: string;
-  is_sys: string;
-  is_sys_lbl: string;
 }

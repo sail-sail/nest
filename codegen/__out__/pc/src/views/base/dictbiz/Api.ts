@@ -54,6 +54,25 @@ export async function findAll(
           update_time
           update_time_lbl
           is_deleted
+          dictbiz_detail_models {
+            id
+            lbl
+            val
+            is_locked
+            is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
+          }
         }
       }
     `,
@@ -68,6 +87,77 @@ export async function findAll(
     const item = res[i];
   }
   return res;
+}
+
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {DictbizSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: DictbizSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneDictbiz: Query["findOneDictbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictbizSearch, $sort: [SortInput!]) {
+        findOneDictbiz(search: $search, sort: $sort) {
+          id
+          code
+          lbl
+          type
+          type_lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+          dictbiz_detail_models {
+            id
+            lbl
+            val
+            is_locked
+            is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
+          }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneDictbiz;
+  if (model) {
+  }
+  return model;
 }
 
 /**
@@ -189,6 +279,25 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          dictbiz_detail_models {
+            id
+            lbl
+            val
+            is_locked
+            is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
+          }
         }
       }
     `,
@@ -373,6 +482,52 @@ export async function getUsrList() {
       {
         prop: "create_time",
         order: "descending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllDictbiz(
+  search?: DictbizSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDictbiz: Query["findAllDictbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDictbiz(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDictbiz;
+  return res;
+}
+
+export async function getDictbizList() {
+  const data = await findAllDictbiz(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
       },
     ],
     {

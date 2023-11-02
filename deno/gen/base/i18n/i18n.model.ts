@@ -24,6 +24,7 @@ export interface I18Ninput extends I18NinputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface I18NfieldComment {

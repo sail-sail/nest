@@ -39,16 +39,18 @@ type DictbizModel {
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
+  "租户"
+  tenant_id: String!
+  "租户"
+  tenant_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
+  "业务字典明细"
+  dictbiz_detail_models: [DictbizDetailModel!]
 }
 type DictbizFieldComment {
   "编码"
@@ -83,6 +85,10 @@ type DictbizFieldComment {
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
+  "租户"
+  tenant_id: String!
+  "租户"
+  tenant_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -123,10 +129,16 @@ input DictbizInput {
   update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
+  "租户"
+  tenant_id: String
+  "租户"
+  tenant_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
+  "业务字典明细"
+  dictbiz_detail_models: [DictbizDetailInput!]
 }
 input DictbizSearch {
   "是否已删除"
@@ -160,10 +172,11 @@ input DictbizSearch {
   "更新人"
   update_usr_id: [String!]
   update_usr_id_is_null: Boolean
+  "租户"
+  tenant_id: [String!]
+  tenant_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  "系统字段"
-  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

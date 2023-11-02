@@ -143,11 +143,45 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id === null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -167,6 +201,10 @@ async function getFromQuery() {
     base_dict_detail t
     left join base_dict dict_id_lbl
       on dict_id_lbl.id = t.dict_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -231,6 +269,8 @@ export async function findAll(
   let sql = `
     select t.*
       ,dict_id_lbl.lbl dict_id_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
     where
@@ -250,6 +290,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -281,11 +325,9 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -311,15 +353,29 @@ export async function findAll(
     }
     model.is_enabled_lbl = is_enabled_lbl;
     
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.create_time_lbl = "";
     }
-    model.is_sys_lbl = is_sys_lbl;
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -381,18 +437,24 @@ export async function getFieldComments(): Promise<DictDetailFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DictDetailSearch | PartialNull<DictDetailModel>} search0
+ * @param {DictDetailInput} search0
  */
 export async function findByUnique(
-  search0: DictDetailSearch | PartialNull<DictDetailModel>,
+  search0: DictDetailInput,
   options?: {
   },
 ): Promise<DictDetailModel[]> {
@@ -432,19 +494,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DictDetailModel} oldModel
- * @param {PartialNull<DictDetailModel>} model
+ * @param {DictDetailInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DictDetailModel,
-  model: PartialNull<DictDetailModel>,
+  input: DictDetailInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.dict_id === model.dict_id &&
-    oldModel.lbl === model.lbl
+    oldModel.dict_id === input.dict_id &&
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -506,11 +568,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -645,6 +705,20 @@ export async function validate(
     input.rem,
     100,
     fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
   );
   
 }
@@ -794,7 +868,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -811,6 +887,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
     "base_dict",
+    "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -940,7 +1017,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

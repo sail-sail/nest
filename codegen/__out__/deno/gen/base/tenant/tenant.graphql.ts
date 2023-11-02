@@ -45,10 +45,6 @@ type TenantModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
 }
@@ -169,8 +165,6 @@ input TenantSearch {
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  "系统字段"
-  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

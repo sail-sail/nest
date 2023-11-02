@@ -7,18 +7,34 @@
   @keydown.insert="onInsert"
 >
   <template #extra_header>
-    <template v-if="!isLocked">
-      <ElIconUnlock
+    <div
+      :title="ns('重置')"
+    >
+      <ElIconRefresh
+        class="reset_but"
+        @click="onReset"
+      ></ElIconRefresh>
+    </div>
+    <template v-if="!isLocked && !is_deleted">
+      <div
         v-if="!isReadonly"
-        class="unlock_but"
-        @click="isReadonly = true"
+        :title="ns('锁定')"
       >
-      </ElIconUnlock>
-      <ElIconLock
+        <ElIconUnlock
+          class="unlock_but"
+          @click="isReadonly = true"
+        >
+        </ElIconUnlock>
+      </div>
+      <div
         v-else
-        class="lock_but"
-        @click="isReadonly = false"
-      ></ElIconLock>
+        :title="ns('解锁')"
+      >
+        <ElIconLock
+          class="lock_but"
+          @click="isReadonly = false"
+        ></ElIconLock>
+      </div>
     </template>
   </template>
   <div
@@ -29,6 +45,7 @@
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
       un-p="5"
+      un-gap="4"
       un-justify-start
       un-items-center
     >
@@ -168,7 +185,7 @@ import type {
 
 import {
   create,
-  findById,
+  findOne,
   updateById,
 } from "./Api";
 
@@ -205,13 +222,14 @@ let dialogTitle = $ref("");
 let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
-let dialogModel = $ref({
+let dialogModel: RoleInput = $ref({
   menu_ids: [ ],
   permit_ids: [ ],
   data_permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<string[]>([ ]);
+let is_deleted = $ref<number>(0);
 let changedIds = $ref<string[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
@@ -298,6 +316,7 @@ async function showDialog(
     model?: {
       id?: string;
       ids?: string[];
+      is_deleted?: number | null;
     };
     action: DialogAction;
   },
@@ -318,6 +337,7 @@ async function showDialog(
   showBuildIn = false;
   isReadonly = false;
   isLocked = false;
+  is_deleted = model?.is_deleted ?? 0;
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
@@ -356,7 +376,10 @@ async function showDialog(
     const [
       data,
     ] = await Promise.all([
-      findById(model.id),
+      findOne({
+        id: model.id,
+        is_deleted,
+      }),
     ]);
     if (data) {
       dialogModel = {
@@ -391,8 +414,12 @@ async function showDialog(
 }
 
 watch(
-  () => isLocked,
+  () => [ isLocked, is_deleted ],
   async () => {
+    if (is_deleted) {
+      dialogNotice = await nsAsync("(已删除)");
+      return;
+    }
     if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
     } else {
@@ -406,12 +433,54 @@ function onInsert() {
   isReadonly = !isReadonly;
 }
 
+/** 重置 */
+async function onReset() {
+  if (!formRef) {
+    return;
+  }
+  if (!isReadonly && !isLocked) {
+    try {
+      await ElMessageBox.confirm(
+        await nsAsync("确定要重置表单吗"),
+        {
+          confirmButtonText: await nsAsync("确定"),
+          cancelButtonText: await nsAsync("取消"),
+          type: "warning",
+        },
+      );
+    } catch (err) {
+      return;
+    }
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    const [
+      defaultModel,
+    ] = await Promise.all([
+      getDefaultInput(),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+    };
+    nextTick(() => nextTick(() => formRef?.clearValidate()));
+  } else if (dialogAction === "edit" || dialogAction === "view") {
+    await onRefresh();
+  }
+  ElMessage({
+    message: await nsAsync("表单重置完毕"),
+    type: "success",
+  });
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findById(dialogModel.id);
+  const data = await findOne({
+    id: dialogModel.id,
+    is_deleted,
+  });
   if (data) {
     dialogModel = {
       ...data,
@@ -525,10 +594,10 @@ async function onSave() {
     }
     const dialogModel2 = {
       ...dialogModel,
-        ...builtInModel,
+      id: undefined,
     };
     if (!showBuildIn) {
-      Object.assign(dialogModel2, builtInModel);
+      Object.assign(dialogModel2, builtInModel, { is_deleted: undefined });
     }
     id = await updateById(
       dialogModel.id,

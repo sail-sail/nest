@@ -109,7 +109,7 @@ async function getSchema0(
     }
   }
   const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
-  if (tenant_idColumn) {
+  if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
   }
   const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
@@ -117,7 +117,7 @@ async function getSchema0(
     records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
-  if (is_deletedColumn) {
+  if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
     records2.push(is_deletedColumn);
   }
   if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
@@ -405,11 +405,18 @@ async function getSchema0(
   return records2;
 }
 
+let tablesConfigItemMap: {
+  [key: string]: TablesConfigItem;
+} = { };
+
 export async function getSchema(
   context: Context,
   table_name: string,
   table_names: string[],
 ): Promise<TablesConfigItem> {
+  if (tablesConfigItemMap[table_name]) {
+    return tablesConfigItemMap[table_name];
+  }
   const records = await getSchema0(context, table_name);
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
@@ -636,8 +643,12 @@ export async function getSchema(
         column.foreignKey.multiple = false;
       }
     }
+    // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+    }
+    if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
+      column.foreignKey.isDeleteCascade = false;
     }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {
@@ -696,6 +707,23 @@ export async function getSchema(
       };
     }
   }
+  // 聚合关联表里面的isDeleteCascade默认为true
+  if (tables[table_name].opts?.inlineForeignTabs) {
+    const inlineForeignTabs = tables[table_name].opts.inlineForeignTabs;
+    for (const inlineForeignTab of inlineForeignTabs) {
+      if (inlineForeignTab.isDeleteCascade == null) {
+        inlineForeignTab.isDeleteCascade = true;
+      }
+      const mod = inlineForeignTab.mod;
+      const table = inlineForeignTab.table;
+      const columns = tables[`${ mod }_${ table }`]?.columns || [ ];
+      const column = columns.find((item) => item.COLUMN_NAME === inlineForeignTab.column);
+      if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
+        column.foreignKey.isDeleteCascade = inlineForeignTab.isDeleteCascade;
+      }
+    }
+  }
+  tablesConfigItemMap[table_name] = tables[table_name];
   return tables[table_name];
 }
 

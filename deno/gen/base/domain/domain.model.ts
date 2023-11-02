@@ -24,6 +24,7 @@ export interface DomainInput extends DomainInputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface DomainFieldComment {

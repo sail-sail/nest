@@ -68,6 +68,55 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {OrgSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: OrgSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneOrg: Query["findOneOrg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $sort: [SortInput!]) {
+        findOneOrg(search: $search, sort: $sort) {
+          id
+          lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneOrg;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {OrgSearch} search?

@@ -517,10 +517,10 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {BackgroundTaskSearch | PartialNull<BackgroundTaskModel>} search0
+ * @param {BackgroundTaskInput} search0
  */
 export async function findByUnique(
-  search0: BackgroundTaskSearch | PartialNull<BackgroundTaskModel>,
+  search0: BackgroundTaskInput,
   options?: {
   },
 ): Promise<BackgroundTaskModel[]> {
@@ -540,14 +540,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {BackgroundTaskModel} oldModel
- * @param {PartialNull<BackgroundTaskModel>} model
+ * @param {BackgroundTaskInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: BackgroundTaskModel,
-  model: PartialNull<BackgroundTaskModel>,
+  input: BackgroundTaskInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -608,11 +608,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -930,7 +928,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -1096,7 +1096,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

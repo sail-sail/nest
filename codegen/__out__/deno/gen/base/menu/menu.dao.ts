@@ -415,10 +415,12 @@ export async function setIdByLbl(
     typeDict, // 类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "menu_type",
     "is_locked",
     "is_enabled",
+    "is_deleted",
   ]);
   
   // 类型
@@ -483,16 +485,18 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_deleted: await n("删除"),
+    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {MenuSearch | PartialNull<MenuModel>} search0
+ * @param {MenuInput} search0
  */
 export async function findByUnique(
-  search0: MenuSearch | PartialNull<MenuModel>,
+  search0: MenuInput,
   options?: {
   },
 ): Promise<MenuModel[]> {
@@ -532,19 +536,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {MenuModel} oldModel
- * @param {PartialNull<MenuModel>} model
+ * @param {MenuInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: MenuModel,
-  model: PartialNull<MenuModel>,
+  input: MenuInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.parent_id === model.parent_id &&
-    oldModel.lbl === model.lbl
+    oldModel.parent_id === input.parent_id &&
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -606,11 +610,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -921,7 +923,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -1074,7 +1078,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

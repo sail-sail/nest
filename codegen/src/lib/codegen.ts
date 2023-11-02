@@ -152,10 +152,15 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             (
               [
                 "create_usr_id", "create_time", "update_usr_id", "update_time",
-                "is_default",
+                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
               ].includes(column_name)
               || column.readonly
             )
+          ) continue;
+          if (
+            [
+              "is_deleted", "is_sys",
+            ].includes(column_name)
           ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
@@ -306,6 +311,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           });
         }
       } catch(err) {
+        console.error(`${out}/${dir2}`);
         await writeFile(`${ projectPh }/error.js`, htmlStr);
         throw err;
       }

@@ -24,6 +24,7 @@ export interface MenuInput extends MenuInputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface MenuFieldComment {
@@ -49,4 +50,6 @@ export interface MenuFieldComment {
   update_usr_id_lbl: string;
   update_time: string;
   update_time_lbl: string;
+  is_deleted: string;
+  is_deleted_lbl: string;
 }

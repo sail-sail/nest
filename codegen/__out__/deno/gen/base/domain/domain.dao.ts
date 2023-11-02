@@ -453,10 +453,10 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DomainSearch | PartialNull<DomainModel>} search0
+ * @param {DomainInput} search0
  */
 export async function findByUnique(
-  search0: DomainSearch | PartialNull<DomainModel>,
+  search0: DomainInput,
   options?: {
   },
 ): Promise<DomainModel[]> {
@@ -486,18 +486,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DomainModel} oldModel
- * @param {PartialNull<DomainModel>} model
+ * @param {DomainInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DomainModel,
-  model: PartialNull<DomainModel>,
+  input: DomainInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -559,11 +559,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -848,7 +846,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -988,7 +988,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

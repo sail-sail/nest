@@ -79,6 +79,62 @@ export async function findAll(
   return res;
 }
 
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {MenuSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneMenu: Query["findOneMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch, $sort: [SortInput!]) {
+        findOneMenu(search: $search, sort: $sort) {
+          id
+          type
+          type_lbl
+          parent_id
+          parent_id_lbl
+          lbl
+          route_path
+          route_query
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneMenu;
+  if (model) {
+      model.route_query = model.route_query && JSON.stringify(model.route_query) || "";
+  }
+  return model;
+}
+
 export type MenuModelTree = MenuModel & {
   children?: MenuModelTree[];
 }

@@ -25,11 +25,13 @@
         
         <el-tab-pane
           lazy
-          :label="'系统字典' + (dict_detailTotal != null ? ` (${ dict_detailTotal })` : '')"
-          name="系统字典"
+          :label="'系统字典明细' + (dict_detailTotal != null ? ` (${ dict_detailTotal })` : '')"
+          name="系统字典明细"
         >
           <Dict_detailList
             :dict_id="dialogModel.id"
+            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+            :is-locked="dialogModel.is_deleted ? '1' : '0'"
             @add="useAllFindDebounce"
             @remove="useAllFindDebounce"
             @revert="useAllFindDebounce"
@@ -79,9 +81,10 @@ let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
   id?: string,
+  is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("系统字典");
+let tabName = $ref("系统字典明细");
 
 let dict_detailTotal = $ref<number>();
 
@@ -89,6 +92,7 @@ async function useFindCountDict_detail() {
   const dict_id = [ dialogModel.id! ];
   dict_detailTotal = await findCountDict_detail(
     {
+      is_deleted: dialogModel.is_deleted,
       dict_id,
     },
   );
@@ -121,6 +125,7 @@ async function showDialog(
     title?: string;
     model?: {
       id?: string;
+      is_deleted?: number | null;
     };
     action?: typeof dialogAction;
   },
@@ -134,6 +139,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
     dialogModel.id = model?.id;

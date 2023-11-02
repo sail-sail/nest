@@ -22,6 +22,11 @@ async function exec(context: Context, table_names0: string[]) {
   for (let i = 0; i < table_names0.length; i++) {
     const table_name = table_names0[i];
     if (!tables[table_name]) continue;
+    await getSchema(context, table_name, table_names);
+  }
+  for (let i = 0; i < table_names0.length; i++) {
+    const table_name = table_names0[i];
+    if (!tables[table_name]) continue;
     const schema = await getSchema(context, table_name, table_names);
     if (schema.opts.ignoreCodegen) continue;
     await codegen(context, schema, table_names);

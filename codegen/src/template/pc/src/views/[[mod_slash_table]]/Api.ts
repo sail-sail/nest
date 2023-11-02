@@ -5,6 +5,8 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasDict = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -78,6 +80,8 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -133,6 +137,53 @@ import {
   findTree as find<#=Foreign_Table_Up#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns;
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const foreignKey = column.foreignKey;
+    const data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    if (importForeignTablesTree.includes(Foreign_Table_Up)) {
+      continue;
+    }
+    importForeignTablesTree.push(Foreign_Table_Up);
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    }
+    if (!foreignSchema) {
+      continue;
+    }
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+      continue;
+    }
+    if (foreignSchema.opts?.list_tree !== true) {
+      continue;
+    }
+#>
+
+import {
+  findTree as find<#=Foreign_Table_Up#>Tree,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+  }
+}
 #>
 
 /**
@@ -160,6 +211,8 @@ export async function findAll(
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -187,7 +240,75 @@ export async function findAll(
             }
           }
           #>
-          is_deleted
+          is_deleted<#
+          for (const inlineForeignTab of inlineForeignTabs) {
+            const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            if (!inlineForeignSchema) {
+              throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+              process.exit(1);
+            }
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let modelName = "";
+            let fieldCommentName = "";
+            let inputName = "";
+            let searchName = "";
+            if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+              && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+            ) {
+              Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+              modelName = Table_Up + "model";
+              fieldCommentName = Table_Up + "fieldComment";
+              inputName = Table_Up + "input";
+              searchName = Table_Up + "search";
+            } else {
+              modelName = Table_Up + "Model";
+              fieldCommentName = Table_Up + "FieldComment";
+              inputName = Table_Up + "Input";
+              searchName = Table_Up + "Search";
+            }
+          #>
+          <#=table#>_models {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #>
         }
       }
     `,
@@ -222,6 +343,161 @@ export async function findAll(
   #>
   }
   return res;
+}
+
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {<#=searchName#>} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: <#=searchName#>,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOne<#=Table_Up#>: Query["findOne<#=Table_Up#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>, $sort: [SortInput!]) {
+        findOne<#=Table_Up#>(search: $search, sort: $sort) {<#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
+            let column_type = column.COLUMN_TYPE;
+            let data_type = column.DATA_TYPE;
+            let column_comment = column.COLUMN_COMMENT;
+            let selectList = [ ];
+            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+            if (selectStr) {
+              selectList = eval(`(${ selectStr })`);
+            }
+            if (column_comment.includes("[")) {
+              column_comment = column_comment.substring(0, column_comment.indexOf("["));
+            }
+            const foreignKey = column.foreignKey;
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+          #><#
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "datetime" || data_type === "date"
+            ) {
+          #>
+          <#=column_name#>
+          <#=column_name#>_lbl<#
+            } else {
+          #>
+          <#=column_name#><#
+            }
+          }
+          #>
+          is_deleted<#
+          for (const inlineForeignTab of inlineForeignTabs) {
+            const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            if (!inlineForeignSchema) {
+              throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+              process.exit(1);
+            }
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let modelName = "";
+            let fieldCommentName = "";
+            let inputName = "";
+            let searchName = "";
+            if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+              && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+            ) {
+              Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+              modelName = Table_Up + "model";
+              fieldCommentName = Table_Up + "fieldComment";
+              inputName = Table_Up + "input";
+              searchName = Table_Up + "search";
+            } else {
+              modelName = Table_Up + "Model";
+              fieldCommentName = Table_Up + "FieldComment";
+              inputName = Table_Up + "Input";
+              searchName = Table_Up + "Search";
+            }
+          #>
+          <#=table#>_models {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOne<#=Table_Up#>;
+  if (model) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let formatter = column.formatter;
+      if (!formatter) {
+        if (data_type === "json") {
+          formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
+        }
+      }
+      if (formatter) {
+    #>
+      <#=formatter#><#
+      }
+    #><#
+    }
+    #>
+  }
+  return model;
 }<#
 if (list_tree === true) {
 #>
@@ -410,6 +686,8 @@ export async function findById(
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -433,6 +711,74 @@ export async function findById(
           #>
           <#=column_name#><#
             }
+          }
+          #><#
+          for (const inlineForeignTab of inlineForeignTabs) {
+            const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            if (!inlineForeignSchema) {
+              throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+              process.exit(1);
+            }
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let modelName = "";
+            let fieldCommentName = "";
+            let inputName = "";
+            let searchName = "";
+            if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+              && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+            ) {
+              Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+              modelName = Table_Up + "model";
+              fieldCommentName = Table_Up + "fieldComment";
+              inputName = Table_Up + "input";
+              searchName = Table_Up + "search";
+            } else {
+              modelName = Table_Up + "Model";
+              fieldCommentName = Table_Up + "FieldComment";
+              inputName = Table_Up + "Input";
+              searchName = Table_Up + "Search";
+            }
+          #>
+          <#=table#>_models {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
           }
           #>
         }
@@ -647,6 +993,8 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -777,6 +1125,161 @@ export async function get<#=Foreign_Table_Up#>Tree() {
   return data;
 }<#
 }
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns;
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const foreignKey = column.foreignKey;
+    const data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    if (foreignTableArr.includes(foreignTable)) continue;
+    foreignTableArr.push(foreignTable);
+    const defaultSort = foreignKey && foreignKey.defaultSort;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
+#>
+
+export async function findAll<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
+        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
+          <#=foreignKey.column#>
+          <#=foreignKey.lbl#>
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAll<#=Foreign_Table_Up#>;
+  return res;
+}
+
+export async function get<#=Foreign_Table_Up#>List() {
+  const data = await findAll<#=Foreign_Table_Up#>(<#
+    if (foreignHasEnabled && foreignTable !== table) {
+    #>
+    {
+      is_enabled: [ 1 ],
+    },<#
+    } else {
+    #>
+    undefined,<#
+    }
+    #>
+    undefined,
+    [
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}<#
+  }
+}
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns;
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const foreignKey = column.foreignKey;
+    const data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    if (foreignTableTreeArr.includes(foreignTable)) continue;
+    foreignTableTreeArr.push(foreignTable);
+    const defaultSort = foreignKey && foreignKey.defaultSort;
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    }
+    if (!foreignSchema) {
+      continue;
+    }
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+      continue;
+    }
+    if (foreignSchema.opts?.list_tree !== true) {
+      continue;
+    }
+    let list_treeForeignTable = undefined;
+    if (typeof list_tree === "string") {
+      list_treeForeignTable = optTables[foreignKey.mod + "_" + foreignKey.table];
+    }
+#>
+
+export async function get<#=Foreign_Table_Up#>Tree() {
+  const data = await find<#=Foreign_Table_Up#>Tree(<#
+    if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
+    #>
+    {
+      is_enabled: [ 1 ],
+    },<#
+    } else {
+    #>
+    undefined,<#
+    }
+    #>
+    [
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}<#
+  }
+}
 #>
 
 /**
@@ -802,6 +1305,8 @@ export function useDownloadImportTemplate(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -838,6 +1343,8 @@ export function useDownloadImportTemplate(routePath: string) {
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -878,6 +1385,8 @@ export function useDownloadImportTemplate(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -917,6 +1426,8 @@ export function useDownloadImportTemplate(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -995,6 +1506,8 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1027,6 +1540,8 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1063,6 +1578,8 @@ export function useExportExcel(routePath: string) {
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -1102,6 +1619,8 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1141,6 +1660,8 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;

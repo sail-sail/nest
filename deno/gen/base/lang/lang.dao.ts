@@ -163,12 +163,6 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
-  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -307,10 +301,8 @@ export async function findAll(
   
   const [
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_enabled",
-    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -349,16 +341,6 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
-    
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -371,8 +353,10 @@ export async function setIdByLbl(
   
   const [
     is_enabledDict, // 启用
+    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "is_enabled",
+    "is_deleted",
   ]);
   
   // 启用
@@ -405,18 +389,18 @@ export async function getFieldComments(): Promise<LangFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
+    is_deleted: await n("删除"),
+    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {LangSearch | PartialNull<LangModel>} search0
+ * @param {LangInput} search0
  */
 export async function findByUnique(
-  search0: LangSearch | PartialNull<LangModel>,
+  search0: LangInput,
   options?: {
   },
 ): Promise<LangModel[]> {
@@ -446,18 +430,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {LangModel} oldModel
- * @param {PartialNull<LangModel>} model
+ * @param {LangInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: LangModel,
-  model: PartialNull<LangModel>,
+  input: LangInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.code === model.code
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -519,11 +503,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -802,7 +784,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -936,7 +920,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

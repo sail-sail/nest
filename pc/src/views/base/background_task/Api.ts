@@ -72,6 +72,60 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {BackgroundTaskSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: BackgroundTaskSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneBackgroundTask: Query["findOneBackgroundTask"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
+        findOneBackgroundTask(search: $search, sort: $sort) {
+          id
+          lbl
+          state
+          state_lbl
+          type
+          type_lbl
+          result
+          err_msg
+          begin_time
+          begin_time_lbl
+          end_time
+          end_time_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneBackgroundTask;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {BackgroundTaskSearch} search?
