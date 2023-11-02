@@ -20,9 +20,9 @@ export interface I18Nmodel extends I18NmodelType {
 }
 
 export interface I18Ninput extends I18NinputType {
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
   is_deleted?: number | null;
 }

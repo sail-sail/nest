@@ -2566,9 +2566,13 @@ export async function create(
   #><#
   }
   #>
-  sql += `)`;
+  sql += `)`;<#
+  if (cache) {
+  #>
   
-  await delCache();
+  await delCache();<#
+  }
+  #>
   const res = await execute(sql, args);
   log(JSON.stringify(res));<#
   for (let i = 0; i < columns.length; i++) {

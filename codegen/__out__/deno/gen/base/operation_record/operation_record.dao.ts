@@ -819,8 +819,6 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  
-  await delCache();
   const res = await execute(sql, args);
   log(JSON.stringify(res));
   
