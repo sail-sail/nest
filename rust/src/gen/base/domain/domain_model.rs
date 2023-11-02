@@ -104,6 +104,7 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_deleted,
       id,
       protocol,
       lbl,
@@ -123,7 +124,6 @@ impl FromRow<'_, MySqlRow> for DomainModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -216,6 +216,8 @@ pub struct DomainSearch {
 #[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DomainInput {
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 协议

@@ -336,23 +336,6 @@ async fn get_where_query(
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
-  {
-    let is_sys: Vec<u8> = match &search {
-      Some(item) => item.is_sys.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_sys.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_sys.len());
-        for item in is_sys {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_sys in ({})", arg);
-    }
-  }
   Ok(where_query)
 }
 
@@ -447,14 +430,6 @@ pub async fn find_all(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
-    };
-    
-    // 系统字段
-    model.is_sys_lbl = {
-      is_sys_dict.iter()
-        .find(|item| item.val == model.is_sys.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -553,8 +528,6 @@ pub async fn get_field_comments(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
-    "系统字段".into(),
-    "系统字段".into(),
   ];
   
   let map = n_route.n_batch(
@@ -589,8 +562,6 @@ pub async fn get_field_comments(
     update_usr_id_lbl: vec[16].to_owned(),
     update_time: vec[17].to_owned(),
     update_time_lbl: vec[18].to_owned(),
-    is_sys: vec[19].to_owned(),
-    is_sys_lbl: vec[20].to_owned(),
   };
   Ok(field_comments)
 }
@@ -783,7 +754,6 @@ pub async fn set_id_by_lbl(
   let dict_vec = get_dict(vec![
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
-    "is_sys".to_owned(),
   ]).await?;
   
   // 锁定
@@ -807,20 +777,6 @@ pub async fn set_id_by_lbl(
       input.is_enabled = is_enabled_dict.iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
-  // 系统字段
-  if input.is_sys.is_none() {
-    let is_sys_dict = &dict_vec[2];
-    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
-      input.is_sys = is_sys_dict.iter()
-        .find(|item| {
-          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()

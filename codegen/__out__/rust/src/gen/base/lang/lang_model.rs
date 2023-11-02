@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangModel {
+  /// 系统字段
+  pub is_sys: u8,
   /// ID
   pub id: String,
   /// 编码
@@ -47,16 +49,14 @@ pub struct LangModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: u8,
-  /// 系统字段
-  pub is_sys_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for LangModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;
     // ID
     let id: String = row.try_get("id")?;
     // 编码
@@ -90,13 +90,12 @@ impl FromRow<'_, MySqlRow> for LangModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 系统字段
-    let is_sys: u8 = row.try_get("is_sys")?;
-    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_sys,
+      is_deleted,
       id,
       code,
       lbl,
@@ -112,9 +111,6 @@ impl FromRow<'_, MySqlRow> for LangModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_sys,
-      is_sys_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -154,10 +150,6 @@ pub struct LangFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: String,
-  /// 系统字段
-  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Default)]
@@ -194,13 +186,16 @@ pub struct LangSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 系统字段
-  pub is_sys: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangInput {
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 编码
@@ -231,10 +226,6 @@ pub struct LangInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<u8>,
-  /// 系统字段
-  pub is_sys_lbl: Option<String>,
 }
 
 impl From<LangInput> for LangSearch {
@@ -261,8 +252,6 @@ impl From<LangInput> for LangSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
-      // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

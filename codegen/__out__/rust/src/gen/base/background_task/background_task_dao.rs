@@ -563,7 +563,7 @@ pub async fn get_field_comments(
     state: vec[2].to_owned(),
     state_lbl: vec[3].to_owned(),
     r#type: vec[4].to_owned(),
-    r#type_lbl: vec[5].to_owned(),
+    type_lbl: vec[5].to_owned(),
     result: vec[6].to_owned(),
     err_msg: vec[7].to_owned(),
     begin_time: vec[8].to_owned(),

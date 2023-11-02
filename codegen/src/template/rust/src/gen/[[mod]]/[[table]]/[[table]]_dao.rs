@@ -284,8 +284,14 @@ async fn get_where_query(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -680,6 +686,11 @@ pub async fn find_all(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "is_deleted",
+      ].includes(column_name)
+    ) continue;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -703,6 +714,11 @@ pub async fn find_all(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      [
+        "is_deleted",
+      ].includes(column_name)
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -728,6 +744,11 @@ pub async fn find_all(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      [
+        "is_deleted",
+      ].includes(column_name)
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -750,6 +771,11 @@ pub async fn find_all(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      [
+        "is_deleted",
+      ].includes(column_name)
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -774,6 +800,12 @@ pub async fn find_all(
       if (column.ignoreCodegen) continue;
       const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
+      if (
+        [
+          "is_deleted",
+          "is_sys",
+        ].includes(column_name)
+      ) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -900,7 +932,14 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -952,7 +991,14 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -973,7 +1019,7 @@ pub async fn get_field_comments(
       ) {
         num++;
     #>
-    <#=column_name#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
         if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
           num++;
     #>
@@ -983,7 +1029,7 @@ pub async fn get_field_comments(
       } else {
         num++;
     #>
-    <#=column_name#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
       }
     #><#
     }
@@ -1236,6 +1282,8 @@ pub async fn set_id_by_lbl(
         "create_time",
         "update_usr_id",
         "update_time",
+        "is_deleted",
+        "is_sys",
       ].includes(column_name)
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
@@ -1279,6 +1327,12 @@ pub async fn set_id_by_lbl(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1301,6 +1355,12 @@ pub async fn set_id_by_lbl(
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1339,8 +1399,14 @@ pub async fn set_id_by_lbl(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1361,8 +1427,14 @@ pub async fn set_id_by_lbl(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1399,8 +1471,14 @@ pub async fn set_id_by_lbl(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column_name);
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";

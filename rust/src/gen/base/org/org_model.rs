@@ -98,6 +98,7 @@ impl FromRow<'_, MySqlRow> for OrgModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       lbl,
       is_locked,
@@ -114,7 +115,6 @@ impl FromRow<'_, MySqlRow> for OrgModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -200,6 +200,8 @@ pub struct OrgInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 名称
@@ -239,7 +241,7 @@ impl From<OrgInput> for OrgSearch {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 名称

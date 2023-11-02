@@ -150,6 +150,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     let model = Self {
       tenant_id,
       org_id,
+      is_deleted,
       id,
       parent_id,
       parent_id_lbl,
@@ -170,7 +171,6 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -277,6 +277,8 @@ pub struct DeptInput {
   /// 组织ID
   #[graphql(skip)]
   pub org_id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 父部门
@@ -324,8 +326,10 @@ impl From<DeptInput> for DeptSearch {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
+      // 组织ID
+      org_id: input.org_id,
       is_deleted: None,
       // 父部门
       parent_id: input.parent_id.map(|x| vec![x]),
