@@ -22,7 +22,7 @@ pub struct MenuModel {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 父菜单
   pub parent_id: String,
   /// 父菜单
@@ -116,6 +116,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_deleted,
       id,
       r#type,
       type_lbl,
@@ -138,7 +139,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -153,7 +153,7 @@ pub struct MenuFieldComment {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 父菜单
   pub parent_id: String,
   /// 父菜单
@@ -243,6 +243,8 @@ pub struct MenuSearch {
 #[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 类型

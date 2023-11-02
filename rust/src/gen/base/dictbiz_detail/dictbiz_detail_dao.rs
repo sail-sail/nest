@@ -247,20 +247,97 @@ async fn get_where_query(
     }
   }
   {
-    let is_sys: Vec<u8> = match &search {
-      Some(item) => item.is_sys.clone().unwrap_or_default(),
+    let create_usr_id: Vec<String> = match &search {
+      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !is_sys.is_empty() {
+    if !create_usr_id.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(is_sys.len());
-        for item in is_sys {
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and t.is_sys in ({})", arg);
+      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let create_usr_id_is_null: bool = match &search {
+      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if create_usr_id_is_null {
+      where_query += " and create_usr_id_lbl.id is null";
+    }
+  }
+  {
+    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
+    let update_usr_id: Vec<String> = match &search {
+      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !update_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += " and update_usr_id_lbl.id is null";
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
   Ok(where_query)
@@ -269,7 +346,11 @@ async fn get_where_query(
 async fn get_from_query() -> Result<String> {
   let from_query = r#"base_dictbiz_detail t
     left join base_dictbiz dictbiz_id_lbl
-      on dictbiz_id_lbl.id = t.dictbiz_id"#.to_owned();
+      on dictbiz_id_lbl.id = t.dictbiz_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -290,6 +371,16 @@ pub async fn find_all(
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
+  
+  let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "asc".into(),
+    });
+  }
+  let sort = sort.into();
+  
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -297,6 +388,8 @@ pub async fn find_all(
     select
       t.*
       ,dictbiz_id_lbl.lbl dictbiz_id_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -344,14 +437,6 @@ pub async fn find_all(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
-    };
-    
-    // 系统字段
-    model.is_sys_lbl = {
-      is_sys_dict.iter()
-        .find(|item| item.val == model.is_sys.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -442,8 +527,14 @@ pub async fn get_field_comments(
     "启用".into(),
     "排序".into(),
     "备注".into(),
-    "系统字段".into(),
-    "系统字段".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
   ];
   
   let map = n_route.n_batch(
@@ -470,8 +561,14 @@ pub async fn get_field_comments(
     is_enabled_lbl: vec[8].to_owned(),
     order_by: vec[9].to_owned(),
     rem: vec[10].to_owned(),
-    is_sys: vec[11].to_owned(),
-    is_sys_lbl: vec[12].to_owned(),
+    create_usr_id: vec[11].to_owned(),
+    create_usr_id_lbl: vec[12].to_owned(),
+    create_time: vec[13].to_owned(),
+    create_time_lbl: vec[14].to_owned(),
+    update_usr_id: vec[15].to_owned(),
+    update_usr_id_lbl: vec[16].to_owned(),
+    update_time: vec[17].to_owned(),
+    update_time_lbl: vec[18].to_owned(),
   };
   Ok(field_comments)
 }
@@ -664,7 +761,6 @@ pub async fn set_id_by_lbl(
   let dict_vec = get_dict(vec![
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
-    "is_sys".to_owned(),
   ]).await?;
   
   // 锁定
@@ -688,20 +784,6 @@ pub async fn set_id_by_lbl(
       input.is_enabled = is_enabled_dict.iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
-  // 系统字段
-  if input.is_sys.is_none() {
-    let is_sys_dict = &dict_vec[2];
-    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
-      input.is_sys = is_sys_dict.iter()
-        .find(|item| {
-          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -868,6 +950,18 @@ pub async fn create(
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
+  }
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
+    sql_values += ",?";
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   // 系统字段
   if let Some(is_sys) = input.is_sys {
@@ -1108,6 +1202,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   vec![
     table,
     "base_dictbiz",
+    "base_usr",
   ]
 }
 

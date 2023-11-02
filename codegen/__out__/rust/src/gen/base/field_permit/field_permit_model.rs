@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitModel {
+  /// 系统字段
+  pub is_sys: u8,
   /// ID
   pub id: String,
   /// 菜单
@@ -30,7 +32,7 @@ pub struct FieldPermitModel {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -49,16 +51,14 @@ pub struct FieldPermitModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: u8,
-  /// 系统字段
-  pub is_sys_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for FieldPermitModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;
     // ID
     let id: String = row.try_get("id")?;
     // 菜单
@@ -94,13 +94,12 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 系统字段
-    let is_sys: u8 = row.try_get("is_sys")?;
-    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_sys,
+      is_deleted,
       id,
       menu_id,
       menu_id_lbl,
@@ -117,9 +116,6 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_sys,
-      is_sys_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -142,7 +138,7 @@ pub struct FieldPermitFieldComment {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -161,10 +157,6 @@ pub struct FieldPermitFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: String,
-  /// 系统字段
-  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Default)]
@@ -203,13 +195,16 @@ pub struct FieldPermitSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 系统字段
-  pub is_sys: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitInput {
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 菜单
@@ -242,10 +237,6 @@ pub struct FieldPermitInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<u8>,
-  /// 系统字段
-  pub is_sys_lbl: Option<String>,
 }
 
 impl From<FieldPermitInput> for FieldPermitSearch {
@@ -272,8 +263,6 @@ impl From<FieldPermitInput> for FieldPermitSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
-      // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

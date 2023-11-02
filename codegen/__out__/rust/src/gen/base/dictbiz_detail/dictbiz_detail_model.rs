@@ -19,6 +19,8 @@ use async_graphql::{
 pub struct DictbizDetailModel {
   /// 租户ID
   pub tenant_id: String,
+  /// 系统字段
+  pub is_sys: u8,
   /// ID
   pub id: String,
   /// 业务字典
@@ -41,10 +43,22 @@ pub struct DictbizDetailModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
-  /// 系统字段
-  pub is_sys: u8,
-  /// 系统字段
-  pub is_sys_lbl: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
@@ -53,6 +67,8 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;
     // ID
     let id: String = row.try_get("id")?;
     // 业务字典
@@ -73,14 +89,33 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    // 系统字段
-    let is_sys: u8 = row.try_get("is_sys")?;
-    let is_sys_lbl: String = is_sys.to_string();
+    // 创建人
+    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       tenant_id,
+      is_sys,
+      is_deleted,
       id,
       dictbiz_id,
       dictbiz_id_lbl,
@@ -92,9 +127,14 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
       is_enabled_lbl,
       order_by,
       rem,
-      is_sys,
-      is_sys_lbl,
-      is_deleted,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -126,10 +166,22 @@ pub struct DictbizDetailFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
-  /// 系统字段
-  pub is_sys: String,
-  /// 系统字段
-  pub is_sys_lbl: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: String,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: String,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]
@@ -162,8 +214,18 @@ pub struct DictbizDetailSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<Vec<u8>>,
+  /// 创建人
+  pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  pub update_usr_id: Option<Vec<String>>,
+  /// 更新人
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(FromModel, InputObject, Default, Clone)]
@@ -172,6 +234,11 @@ pub struct DictbizDetailInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 业务字典
@@ -194,10 +261,22 @@ pub struct DictbizDetailInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<u8>,
-  /// 系统字段
-  pub is_sys_lbl: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<String>,
+  /// 创建人
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  pub update_usr_id: Option<String>,
+  /// 更新人
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<DictbizDetailInput> for DictbizDetailSearch {
@@ -205,7 +284,7 @@ impl From<DictbizDetailInput> for DictbizDetailSearch {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 业务字典
@@ -222,8 +301,14 @@ impl From<DictbizDetailInput> for DictbizDetailSearch {
       order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
-      // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x]),
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x, x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

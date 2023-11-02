@@ -569,7 +569,7 @@ pub async fn get_field_comments(
   let field_comments = MenuFieldComment {
     id: vec[0].to_owned(),
     r#type: vec[1].to_owned(),
-    r#type_lbl: vec[2].to_owned(),
+    type_lbl: vec[2].to_owned(),
     parent_id: vec[3].to_owned(),
     parent_id_lbl: vec[4].to_owned(),
     lbl: vec[5].to_owned(),

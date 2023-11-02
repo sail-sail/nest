@@ -231,6 +231,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       img,
       lbl,
@@ -257,7 +258,6 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -387,6 +387,8 @@ pub struct UsrInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 头像
@@ -446,7 +448,7 @@ impl From<UsrInput> for UsrSearch {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 头像

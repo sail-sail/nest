@@ -95,6 +95,7 @@ impl FromRow<'_, MySqlRow> for I18nModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_deleted,
       id,
       lang_id,
       lang_id_lbl,
@@ -111,7 +112,6 @@ impl FromRow<'_, MySqlRow> for I18nModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -198,6 +198,8 @@ pub struct I18nSearch {
 #[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct I18nInput {
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 语言

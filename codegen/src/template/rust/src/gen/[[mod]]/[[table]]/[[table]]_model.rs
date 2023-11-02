@@ -4,6 +4,7 @@ const tableUP = tableUp.split("_").map(function(item) {
 }).join("");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -46,10 +47,23 @@ pub struct <#=tableUP#>Model {<#
   pub org_id: String,<#
   }
   #><#
+  if (hasIsSys) {
+  #>
+  /// 系统字段
+  pub is_sys: u8,<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -104,13 +118,13 @@ pub struct <#=tableUP#>Model {<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: <#=_data_type#>,<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: <#=_data_type#>,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz
@@ -118,13 +132,13 @@ pub struct <#=tableUP#>Model {<#
     ) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,<#
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
     }
   #><#
   }
@@ -147,10 +161,22 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let org_id = row.try_get("org_id")?;<#
     }
     #><#
+    if (hasIsSys) {
+    #>
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -325,10 +351,22 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       org_id,<#
       }
       #><#
+      if (hasIsSys) {
+      #>
+      is_sys,<#
+      }
+      #>
+      is_deleted,<#
       for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted"
+      ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -362,7 +400,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #><#
       }
       #>
-      is_deleted,
     };
     
     Ok(model)
@@ -375,7 +412,14 @@ pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -397,13 +441,13 @@ pub struct <#=tableUP#>FieldComment {<#
     ) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: String,
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: String,<#
+  pub <#=column_name_rust#>: String,<#
     }
   #><#
   }
@@ -429,6 +473,12 @@ pub struct <#=tableUP#>Search {
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -537,7 +587,16 @@ pub struct <#=tableUP#>Input {<#
   #[graphql(skip)]
   pub org_id: Option<String>,<#
   }
+  #><#
+  if (hasIsSys) {
   #>
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,<#
+  }
+  #>
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,<#
   for (let i = 0; i < columns.length; i++) {
@@ -545,6 +604,12 @@ pub struct <#=tableUP#>Input {<#
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
@@ -627,8 +692,14 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       ids: None,<#
       if (hasTenantId) {
       #>
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      // 组织ID
+      org_id: input.org_id,<#
       }
       #>
       is_deleted: None,<#
@@ -637,6 +708,12 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         if (column.ignoreCodegen) continue;
         if (column.isVirtual) continue;
         const column_name = rustKeyEscape(column.COLUMN_NAME);
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted"
+        ) continue;
         if (column_name === 'id') continue;
         let data_type = column.DATA_TYPE;
         let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -702,10 +779,17 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        const column_name = rustKeyEscape(column.COLUMN_NAME);
+        const column_name = column.COLUMN_NAME;
         if (column_name === "id") {
           continue;
         }
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted"
+        ) continue;
+        const column_name_rust = rustKeyEscape(column_name);
         let data_type = column.DATA_TYPE;
         let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
         let column_comment = column.COLUMN_COMMENT || "";

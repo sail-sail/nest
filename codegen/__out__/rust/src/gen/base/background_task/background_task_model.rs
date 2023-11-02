@@ -30,7 +30,7 @@ pub struct BackgroundTaskModel {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 执行结果
   pub result: String,
   /// 错误信息
@@ -122,6 +122,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       lbl,
       state,
@@ -143,7 +144,6 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
@@ -164,7 +164,7 @@ pub struct BackgroundTaskFieldComment {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 执行结果
   pub result: String,
   /// 错误信息
@@ -249,6 +249,8 @@ pub struct BackgroundTaskInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
   /// 名称
@@ -298,7 +300,7 @@ impl From<BackgroundTaskInput> for BackgroundTaskSearch {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 名称
