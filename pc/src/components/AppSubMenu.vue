@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type MenuModel as MenuModel0,
+import type {
+  MenuModel as MenuModel0,
 } from "#/types";
 
 type MenuModel = MenuModel0 & {

@@ -235,7 +235,7 @@ html,body {
     .full_but:hover {
       color: var(--el-color-primary);
     }
-    .unlock_but,.lock_but {
+    .unlock_but,.lock_but,.reset_but {
       position: relative;
       top: 1px;
       cursor: pointer;
@@ -246,7 +246,7 @@ html,body {
     .unlock_but:hover,.lock_but:hover {
       color: var(--el-color-primary);
     }
-    .notice_span {
+    .notice_span,.reset_but:hover {
       color: red;
       margin-left: 8px;
       font-size: 12px;
@@ -524,5 +524,8 @@ body .el-input-number.is-without-controls .el-input__inner {
 // Excel预览
 .hide-input {
   display: none;
+}
+.tr_border_none.el-table:not(.el-table--border) .el-table__cell {
+  border-bottom: 0;
 }
 </style>

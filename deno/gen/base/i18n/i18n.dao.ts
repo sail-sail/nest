@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -115,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.code is null`;
   }
   if (isNotEmpty(search?.code_like)) {
-    whereQuery += ` and t.code like ${ args.push(sqlLike(search?.code_like) + "%") }`;
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -124,7 +120,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -133,7 +129,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -316,6 +312,7 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -399,10 +396,10 @@ export async function getFieldComments(): Promise<I18NfieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {I18Nsearch | PartialNull<I18Nmodel>} search0
+ * @param {I18Ninput} search0
  */
 export async function findByUnique(
-  search0: I18Nsearch | PartialNull<I18Nmodel>,
+  search0: I18Ninput,
   options?: {
   },
 ): Promise<I18Nmodel[]> {
@@ -452,20 +449,20 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {I18Nmodel} oldModel
- * @param {PartialNull<I18Nmodel>} model
+ * @param {I18Ninput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: I18Nmodel,
-  model: PartialNull<I18Nmodel>,
+  input: I18Ninput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lang_id === model.lang_id &&
-    oldModel.menu_id === model.menu_id &&
-    oldModel.code === model.code
+    oldModel.lang_id === input.lang_id &&
+    oldModel.menu_id === input.menu_id &&
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -527,11 +524,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -809,7 +804,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -939,7 +936,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {
