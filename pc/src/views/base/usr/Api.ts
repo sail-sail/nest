@@ -83,6 +83,64 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {UsrSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: UsrSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneUsr: Query["findOneUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $sort: [SortInput!]) {
+        findOneUsr(search: $search, sort: $sort) {
+          id
+          img
+          lbl
+          username
+          org_ids
+          org_ids_lbl
+          default_org_id
+          default_org_id_lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          dept_ids
+          dept_ids_lbl
+          role_ids
+          role_ids_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneUsr;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {UsrSearch} search?
@@ -384,9 +442,10 @@ export async function findAllOrg(
 
 export async function getOrgList() {
   const data = await findAllOrg(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -429,9 +488,10 @@ export async function findAllDept(
 
 export async function getDeptList() {
   const data = await findAllDept(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -474,12 +534,13 @@ export async function findAllRole(
 
 export async function getRoleList() {
   const data = await findAllRole(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -520,8 +581,7 @@ export async function findAllUsr(
 export async function getUsrList() {
   const data = await findAllUsr(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "create_time",

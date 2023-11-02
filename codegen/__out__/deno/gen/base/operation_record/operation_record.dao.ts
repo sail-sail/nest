@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -99,7 +95,7 @@ async function getWhereQuery(
     whereQuery += ` and t.module is null`;
   }
   if (isNotEmpty(search?.module_like)) {
-    whereQuery += ` and t.module like ${ args.push(sqlLike(search?.module_like) + "%") }`;
+    whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
   if (search?.module_lbl !== undefined) {
     whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
@@ -108,7 +104,7 @@ async function getWhereQuery(
     whereQuery += ` and t.module_lbl is null`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
-    whereQuery += ` and t.module_lbl like ${ args.push(sqlLike(search?.module_lbl_like) + "%") }`;
+    whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
   if (search?.method !== undefined) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
@@ -117,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.method is null`;
   }
   if (isNotEmpty(search?.method_like)) {
-    whereQuery += ` and t.method like ${ args.push(sqlLike(search?.method_like) + "%") }`;
+    whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
   if (search?.method_lbl !== undefined) {
     whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
@@ -126,7 +122,7 @@ async function getWhereQuery(
     whereQuery += ` and t.method_lbl is null`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
-    whereQuery += ` and t.method_lbl like ${ args.push(sqlLike(search?.method_lbl_like) + "%") }`;
+    whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -135,7 +131,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.old_data !== undefined) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
@@ -144,7 +140,7 @@ async function getWhereQuery(
     whereQuery += ` and t.old_data is null`;
   }
   if (isNotEmpty(search?.old_data_like)) {
-    whereQuery += ` and t.old_data like ${ args.push(sqlLike(search?.old_data_like) + "%") }`;
+    whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
   if (search?.new_data !== undefined) {
     whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
@@ -153,7 +149,7 @@ async function getWhereQuery(
     whereQuery += ` and t.new_data is null`;
   }
   if (isNotEmpty(search?.new_data_like)) {
-    whereQuery += ` and t.new_data like ${ args.push(sqlLike(search?.new_data_like) + "%") }`;
+    whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -162,7 +158,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -328,6 +324,7 @@ export async function findAll(
     sql,
     args,
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -394,10 +391,10 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {OperationRecordSearch | PartialNull<OperationRecordModel>} search0
+ * @param {OperationRecordInput} search0
  */
 export async function findByUnique(
-  search0: OperationRecordSearch | PartialNull<OperationRecordModel>,
+  search0: OperationRecordInput,
   options?: {
   },
 ): Promise<OperationRecordModel[]> {
@@ -417,14 +414,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {OperationRecordModel} oldModel
- * @param {PartialNull<OperationRecordModel>} model
+ * @param {OperationRecordInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: OperationRecordModel,
-  model: PartialNull<OperationRecordModel>,
+  input: OperationRecordInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -485,11 +482,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -820,8 +815,8 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -987,7 +982,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -129,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.usr_ids && !Array.isArray(search?.usr_ids)) {
     search.usr_ids = [ search.usr_ids ];
@@ -170,7 +166,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -549,10 +545,10 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DeptSearch | PartialNull<DeptModel>} search0
+ * @param {DeptInput} search0
  */
 export async function findByUnique(
-  search0: DeptSearch | PartialNull<DeptModel>,
+  search0: DeptInput,
   options?: {
   },
 ): Promise<DeptModel[]> {
@@ -592,19 +588,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DeptModel} oldModel
- * @param {PartialNull<DeptModel>} model
+ * @param {DeptInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DeptModel,
-  model: PartialNull<DeptModel>,
+  input: DeptInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.parent_id === model.parent_id &&
-    oldModel.lbl === model.lbl
+    oldModel.parent_id === input.parent_id &&
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -666,11 +662,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -983,7 +977,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 部门负责人
   await many2manyUpdate(
@@ -1222,7 +1218,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -101,7 +97,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.state && !Array.isArray(search?.state)) {
     search.state = [ search.state ];
@@ -122,7 +118,7 @@ async function getWhereQuery(
     whereQuery += ` and t.result is null`;
   }
   if (isNotEmpty(search?.result_like)) {
-    whereQuery += ` and t.result like ${ args.push(sqlLike(search?.result_like) + "%") }`;
+    whereQuery += ` and t.result like ${ args.push("%" + sqlLike(search?.result_like) + "%") }`;
   }
   if (search?.err_msg !== undefined) {
     whereQuery += ` and t.err_msg = ${ args.push(search.err_msg) }`;
@@ -131,7 +127,7 @@ async function getWhereQuery(
     whereQuery += ` and t.err_msg is null`;
   }
   if (isNotEmpty(search?.err_msg_like)) {
-    whereQuery += ` and t.err_msg like ${ args.push(sqlLike(search?.err_msg_like) + "%") }`;
+    whereQuery += ` and t.err_msg like ${ args.push("%" + sqlLike(search?.err_msg_like) + "%") }`;
   }
   if (search?.begin_time && search?.begin_time?.length > 0) {
     if (search.begin_time[0] != null) {
@@ -156,7 +152,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -517,10 +513,10 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {BackgroundTaskSearch | PartialNull<BackgroundTaskModel>} search0
+ * @param {BackgroundTaskInput} search0
  */
 export async function findByUnique(
-  search0: BackgroundTaskSearch | PartialNull<BackgroundTaskModel>,
+  search0: BackgroundTaskInput,
   options?: {
   },
 ): Promise<BackgroundTaskModel[]> {
@@ -540,14 +536,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {BackgroundTaskModel} oldModel
- * @param {PartialNull<BackgroundTaskModel>} model
+ * @param {BackgroundTaskInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: BackgroundTaskModel,
-  model: PartialNull<BackgroundTaskModel>,
+  input: BackgroundTaskInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -608,11 +604,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -929,8 +923,8 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -1096,7 +1090,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);
