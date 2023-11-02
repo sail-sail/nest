@@ -250,8 +250,9 @@ import {
 } from "./Api";
 
 import type {
-  BackgroundTaskInput,
 } from "#/types";
+
+type BackgroundTaskInput = any;
 
 const emit = defineEmits<{
   nextId: [
