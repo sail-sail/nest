@@ -240,8 +240,9 @@ import {
 } from "./Api";
 
 import type {
-  OperationRecordInput,
 } from "#/types";
+
+type OperationRecordInput = any;
 
 const emit = defineEmits<{
   nextId: [
