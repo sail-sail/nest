@@ -284,8 +284,7 @@ impl Ctx {
       let connection_id: u64 = tran
         .fetch_one("select connection_id()").await?
         .try_get(0)?;
-      if res.is_err() {
-        let err = res.unwrap_err();
+      if let Err(err) = res {
         error!(
           "{req_id} {err_msg}",
           req_id = self.req_id,
@@ -305,8 +304,7 @@ impl Ctx {
       tran.execute("commit").await?;
       return res;
     }
-    if res.is_err() {
-      let err = res.unwrap_err();
+    if let Err(err) = res {
       error!(
         "{req_id} {err_msg}",
         req_id = self.req_id,
