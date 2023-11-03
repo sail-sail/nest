@@ -1853,8 +1853,12 @@ export async function checkByUnique(
   input: <#=inputName#>,
   oldModel: <#=modelName#>,
   uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-    isEncrypt?: boolean;
+  options?: {<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -1870,8 +1874,12 @@ export async function checkByUnique(
           id: undefined,
         },
         {
-          ...options,
-          isEncrypt: false,
+          ...options,<#
+          if (hasEncrypt) {
+          #>
+          isEncrypt: false,<#
+          }
+          #>
         },
       );
       return result;
@@ -2242,8 +2250,12 @@ export async function validate(
 export async function create(
   input: <#=inputName#>,
   options?: {
-    uniqueType?: UniqueType;
-    isEncrypt?: boolean;
+    uniqueType?: UniqueType;<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
@@ -2850,8 +2862,12 @@ export async function updateById(
   id: string,
   input: <#=inputName#>,
   options?: {
-    uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
+    uniqueType?: "ignore" | "throw";<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
