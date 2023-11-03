@@ -296,6 +296,10 @@ export async function findAll(
   }
   sort = sort.filter((item) => item.prop);
   sort.push({
+    prop: "begin_time",
+    order: SortOrderEnum.Desc,
+  });
+  sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });

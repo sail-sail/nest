@@ -285,6 +285,10 @@ export async function findAll(
   }
   sort = sort.filter((item) => item.prop);
   sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
@@ -1057,9 +1061,7 @@ export async function updateById(
   // 系统字典明细
   if (input.dict_detail_models) {
     const dict_detail_models = await findAllDictDetail({
-      dict_id: input.dict_detail_models
-        .filter((item) => item.id)
-        .map((item) => item.id!),
+      dict_id: id,
     });
     if (dict_detail_models.length > 0 && input.dict_detail_models.length > 0) {
       updateFldNum++;
@@ -1074,15 +1076,14 @@ export async function updateById(
     for (let i = 0; i < input.dict_detail_models.length; i++) {
       const dict_detail_model = input.dict_detail_models[i];
       if (!dict_detail_model.id) {
-        dict_detail_model.dict_id = input.id;
+        dict_detail_model.dict_id = id;
         await createDictDetail(dict_detail_model);
         continue;
       }
       if (dict_detail_models.some((item) => item.id === dict_detail_model.id)) {
-        await updateByIdDictDetail(dict_detail_model.id, dict_detail_model);
-        continue;
+        await revertByIdsDictDetail([ dict_detail_model.id ]);
       }
-      await revertByIdsDictDetail([ dict_detail_model.id ]);
+      await updateByIdDictDetail(dict_detail_model.id, dict_detail_model);
     }
   }
   
