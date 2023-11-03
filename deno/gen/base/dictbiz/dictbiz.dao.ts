@@ -298,6 +298,10 @@ export async function findAll(
   }
   sort = sort.filter((item) => item.prop);
   sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
@@ -1119,9 +1123,7 @@ export async function updateById(
   // 业务字典明细
   if (input.dictbiz_detail_models) {
     const dictbiz_detail_models = await findAllDictbizDetail({
-      dictbiz_id: input.dictbiz_detail_models
-        .filter((item) => item.id)
-        .map((item) => item.id!),
+      dictbiz_id: id,
     });
     if (dictbiz_detail_models.length > 0 && input.dictbiz_detail_models.length > 0) {
       updateFldNum++;
@@ -1136,15 +1138,14 @@ export async function updateById(
     for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
       const dictbiz_detail_model = input.dictbiz_detail_models[i];
       if (!dictbiz_detail_model.id) {
-        dictbiz_detail_model.dictbiz_id = input.id;
+        dictbiz_detail_model.dictbiz_id = id;
         await createDictbizDetail(dictbiz_detail_model);
         continue;
       }
       if (dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
-        await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
-        continue;
+        await revertByIdsDictbizDetail([ dictbiz_detail_model.id ]);
       }
-      await revertByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+      await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
     }
   }
   
