@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::tenant_model::*;
 use super::tenant_resolver;
 
-
 #[derive(Default)]
 pub struct TenantGenQuery;
 

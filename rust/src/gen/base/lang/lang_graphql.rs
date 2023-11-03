@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::lang_model::*;
 use super::lang_resolver;
 
-
 #[derive(Default)]
 pub struct LangGenQuery;
 

@@ -14,7 +14,12 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::gen::base::dict_detail::dict_detail_model::{
+  DictDetailModel,
+  DictDetailInput,
+};
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictModel {
   /// 系统字段
@@ -59,6 +64,9 @@ pub struct DictModel {
   pub update_time_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 系统字典明细
+  pub dict_detail_models: Vec<DictDetailModel>,
+  
 }
 
 impl FromRow<'_, MySqlRow> for DictModel {
@@ -129,13 +137,15 @@ impl FromRow<'_, MySqlRow> for DictModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      dict_detail_models: vec![],
+      
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictFieldComment {
   /// ID
@@ -178,7 +188,7 @@ pub struct DictFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictSearch {
   pub id: Option<String>,
@@ -218,16 +228,16 @@ pub struct DictSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictInput {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,
   /// 编码
   pub code: Option<String>,
   /// 名称
@@ -264,6 +274,53 @@ pub struct DictInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 系统字典明细
+  pub dict_detail_models: Option<Vec<DictDetailInput>>,
+}
+
+impl From<DictModel> for DictInput {
+  fn from(model: DictModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      is_sys: model.is_sys.into(),
+      // 编码
+      code: model.code.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 数据类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+      // 系统字典明细
+      dict_detail_models: model.dict_detail_models
+        .into_iter()
+        .map(|x| x.into())
+        .collect::<Vec<DictDetailInput>>()
+        .into(),
+    }
+  }
 }
 
 impl From<DictInput> for DictSearch {

@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// 租户ID
@@ -150,7 +150,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskFieldComment {
   /// ID
@@ -197,7 +197,7 @@ pub struct BackgroundTaskFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskSearch {
   pub id: Option<String>,
@@ -243,16 +243,16 @@ pub struct BackgroundTaskSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 状态
@@ -293,6 +293,48 @@ pub struct BackgroundTaskInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<BackgroundTaskModel> for BackgroundTaskInput {
+  fn from(model: BackgroundTaskModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 状态
+      state: model.state.into(),
+      state_lbl: model.state_lbl.into(),
+      // 类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
+      // 执行结果
+      result: model.result.into(),
+      // 错误信息
+      err_msg: model.err_msg.into(),
+      // 开始时间
+      begin_time: model.begin_time,
+      begin_time_lbl: model.begin_time_lbl.into(),
+      // 结束时间
+      end_time: model.end_time,
+      end_time_lbl: model.end_time_lbl.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<BackgroundTaskInput> for BackgroundTaskSearch {

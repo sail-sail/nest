@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DomainModel {
   /// ID
@@ -130,7 +130,7 @@ impl FromRow<'_, MySqlRow> for DomainModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DomainFieldComment {
   /// ID
@@ -173,7 +173,7 @@ pub struct DomainFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DomainSearch {
   pub id: Option<String>,
@@ -213,13 +213,13 @@ pub struct DomainSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DomainInput {
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 协议
   pub protocol: Option<String>,
   /// 名称
@@ -256,6 +256,44 @@ pub struct DomainInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<DomainModel> for DomainInput {
+  fn from(model: DomainModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      // 协议
+      protocol: model.protocol.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 默认
+      is_default: model.is_default.into(),
+      is_default_lbl: model.is_default_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<DomainInput> for DomainSearch {

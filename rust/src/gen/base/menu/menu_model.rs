@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuModel {
   /// ID
@@ -145,7 +145,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuFieldComment {
   /// ID
@@ -194,7 +194,7 @@ pub struct MenuFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuSearch {
   pub id: Option<String>,
@@ -240,13 +240,13 @@ pub struct MenuSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
   /// ID
   pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 类型
   pub r#type: Option<String>,
   /// 类型
@@ -289,6 +289,49 @@ pub struct MenuInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<MenuModel> for MenuInput {
+  fn from(model: MenuModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      // 类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
+      // 父菜单
+      parent_id: model.parent_id.into(),
+      parent_id_lbl: model.parent_id_lbl.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 路由
+      route_path: model.route_path.into(),
+      // 参数
+      route_query: model.route_query,
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<MenuInput> for MenuSearch {

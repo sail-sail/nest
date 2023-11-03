@@ -10,6 +10,8 @@ const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -127,7 +129,115 @@ use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
 #>
 
-use super::<#=table#>_model::*;
+use super::<#=table#>_model::*;<#
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+#>
+
+// <#=inlineForeignTab.label#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+  if (!hasFindAllTableUps) {
+  #>
+  find_all as find_all_<#=table#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create_<#=table#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  delete_by_ids as delete_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revert_by_ids as revert_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  update_by_id as update_by_id_<#=table#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  force_delete_by_ids as force_delete_by_ids_<#=table#>,<#
+  }
+  #>
+};<#
+}
+#><#
+const modelTableUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const hasModelTableUps = modelTableUps.includes(Table_Up);
+  if (hasModelTableUps) {
+    continue;
+  }
+  modelTableUps.push(Table_Up);
+#>
+
+// <#=inlineForeignTab.label#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
+}
+#>
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -607,20 +717,44 @@ pub async fn find_all(
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;<#
-  if (hasCreateTime) {
+  if (hasCreateTime || opts?.defaultSort) {
   #>
   
-  let mut sort = sort.unwrap_or_default();
+  let mut sort = sort.unwrap_or_default();<#
+    if (opts?.defaultSort) {
+      const prop = opts?.defaultSort.prop;
+      let order = "asc";
+      if (opts?.defaultSort.order === "ascending") {
+        order = "asc";
+      } else if (opts?.defaultSort.order === "descending") {
+        order = "desc";
+      }
+  #>
+  if !sort.iter().any(|item| item.prop == "<#=prop#>") {
+    sort.push(SortInput {
+      prop: "<#=prop#>".into(),
+      order: "<#=order#>".into(),
+    });
+  }<#
+    }
+  #><#
+    if (hasCreateTime) {
+  #>
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "asc".into(),
     });
-  }
+  }<#
+    }
+  #>
   let sort = sort.into();
   <#
   }
@@ -689,6 +823,7 @@ pub async fn find_all(
     if (
       [
         "is_deleted",
+        "is_sys",
       ].includes(column_name)
     ) continue;
     if (column_name === "id") continue;
@@ -717,6 +852,7 @@ pub async fn find_all(
     if (
       [
         "is_deleted",
+        "is_sys",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -738,6 +874,7 @@ pub async fn find_all(
   #><#
     if (hasDictbiz) {
   #>
+  
   let dictbiz_vec = get_dictbiz(vec![<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -747,6 +884,7 @@ pub async fn find_all(
     if (
       [
         "is_deleted",
+        "is_sys",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -774,6 +912,7 @@ pub async fn find_all(
     if (
       [
         "is_deleted",
+        "is_sys",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -792,6 +931,32 @@ pub async fn find_all(
   }
   #><#
     }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: res.iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<String>>()
+        .into(),
+      is_deleted,
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;<#
+  }
   #>
   
   for model in &mut res {<#
@@ -845,6 +1010,26 @@ pub async fn find_all(
     };<#
     }
     #><#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=table#>_models = <#=table#>_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=inlineForeignTab.column#> == model.id
+      )
+      .collect();<#
     }
     #>
     
@@ -1169,8 +1354,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);<#
@@ -2012,6 +2197,28 @@ pub async fn create(
   }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(<#=table#>_models) = input.<#=table#>_models {
+    for mut <#=table#>_model in <#=table#>_models {
+      <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+      create_<#=table#>(
+        <#=table#>_model,
+        None,
+      ).await?;
+    }
+  }<#
+  }
   #>
   
   Ok(id)
@@ -2338,6 +2545,73 @@ pub async fn update_by_id(
     }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(input_<#=table#>_models) = input.<#=table#>_models {
+    let <#=table#>_models = find_all_<#=table#>(
+      <#=Table_Up#>Search {
+        <#=inlineForeignTab.column#>: vec![id.clone()].into(),
+        is_deleted: 0.into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    if !<#=table#>_models.is_empty() && !input_<#=table#>_models.is_empty() {
+      field_num += 1;
+    }
+    for <#=table#>_model in <#=table#>_models.clone() {
+      if input_<#=table#>_models
+        .iter()
+        .filter(|item| item.id.is_some())
+        .any(|item| item.id == Some(<#=table#>_model.id.clone()))
+      {
+        continue;
+      }
+      delete_by_ids_<#=table#>(
+        vec![<#=table#>_model.id],
+        None,
+      ).await?;
+    }
+    for <#=table#>_model in input_<#=table#>_models {
+      if <#=table#>_model.id.is_none() {
+        let mut <#=table#>_model = <#=table#>_model;
+        <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+        create_<#=table#>(
+          <#=table#>_model,
+          None,
+        ).await?;
+        continue;
+      }
+      let id = <#=table#>_model.id.clone().unwrap();
+      if !<#=table#>_models
+        .iter()
+        .any(|item| item.id == id)
+      {
+        revert_by_ids_<#=table#>(
+          vec![id.clone()],
+          None,
+        ).await?;
+      }
+      update_by_id_<#=table#>(
+        id.clone(),
+        <#=table#>_model,
+        None,
+      ).await?;
+    }
+  }<#
+  }
   #>
   
   if field_num > 0 {<#
@@ -2555,7 +2829,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -2584,7 +2858,36 @@ pub async fn delete_by_ids(
       options,
     ).await?;
   }<#
-    if (table === "i18n") {
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  delete_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;<#
+  }
+  #><#
+    if (table === "i18n" && mod === "base") {
   #>
   
   crate::src::base::options::options_dao::update_i18n_version().await?;<#
@@ -2797,7 +3100,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -2861,7 +3164,42 @@ pub async fn revert_by_ids(
       }
     }
     
+  }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;<#
   }
+  #><#
+    if (table === "i18n" && mod === "base") {
+  #>
+  
+  crate::src::base::options::options_dao::update_i18n_version().await?;<#
+    }
+  #>
   
   Ok(num)
 }
@@ -2878,7 +3216,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       <#=tableUP#>Search {
@@ -2922,7 +3260,36 @@ pub async fn force_delete_by_ids(
       args,
       options,
     ).await?;
+  }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  force_delete_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;<#
   }
+  #>
   
   Ok(num)
 }<#

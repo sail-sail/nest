@@ -50,7 +50,6 @@ use crate::common::gql::model::{
 use super::<#=table#>_model::*;
 use super::<#=table#>_resolver;
 
-
 #[derive(Default)]
 pub struct <#=tableUP#>GenQuery;
 

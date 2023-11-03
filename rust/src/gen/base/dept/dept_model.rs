@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptModel {
   /// 租户ID
@@ -177,7 +177,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptFieldComment {
   /// ID
@@ -222,7 +222,7 @@ pub struct DeptFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptSearch {
   pub id: Option<String>,
@@ -268,19 +268,19 @@ pub struct DeptSearch {
   pub org_id: Option<String>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptInput {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
   /// 组织ID
   #[graphql(skip)]
   pub org_id: Option<String>,
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,
   /// 父部门
   pub parent_id: Option<String>,
   /// 父部门
@@ -319,6 +319,47 @@ pub struct DeptInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<DeptModel> for DeptInput {
+  fn from(model: DeptModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      org_id: model.org_id.into(),
+      // 父部门
+      parent_id: model.parent_id.into(),
+      parent_id_lbl: model.parent_id_lbl.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 部门负责人
+      usr_ids: model.usr_ids.into(),
+      usr_ids_lbl: model.usr_ids_lbl.into(),
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<DeptInput> for DeptSearch {

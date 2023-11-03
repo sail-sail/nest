@@ -5,6 +5,8 @@ const tableUP = tableUp.split("_").map(function(item) {
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -30,9 +32,32 @@ if (hasEncrypt) {
 #>
 use crate::common::util::dao::decrypt;<#
 }
+#><#
+const foreignTableArr = [];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr.includes(table)) continue;
+  foreignTableArr.push(table);
 #>
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Input,
+};<#
+}
+#>
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
@@ -144,7 +169,25 @@ pub struct <#=tableUP#>Model {<#
   }
   #>
   /// 是否已删除
-  pub is_deleted: u8,
+  pub is_deleted: u8,<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=table#>_models: Vec<<#=Table_Up#>Model>,
+  <#
+  }
+  #>
 }
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
@@ -399,6 +442,23 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
       #><#
       }
+      #><#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=table#>_models: vec![],
+      <#
+      }
       #>
     };
     
@@ -406,7 +466,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
@@ -454,7 +514,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
   pub id: Option<String>,
@@ -571,9 +631,13 @@ pub struct <#=tableUP#>Search {
   #>
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
-pub struct <#=tableUP#>Input {<#
+pub struct <#=tableUP#>Input {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,<#
   if (hasTenantId) {
   #>
   /// 租户ID
@@ -594,11 +658,7 @@ pub struct <#=tableUP#>Input {<#
   #[graphql(skip)]
   pub is_sys: Option<u8>,<#
   }
-  #>
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,<#
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -682,7 +742,125 @@ pub struct <#=tableUP#>Input {<#
   }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
+  }
+  #>
+}
+
+impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
+  fn from(model: <#=tableUP#>Model) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),<#
+      if (hasTenantId) {
+      #>
+      tenant_id: model.tenant_id.into(),<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      org_id: model.org_id.into(),<#
+      }
+      #><#
+      if (hasIsSys) {
+      #>
+      is_sys: model.is_sys.into(),<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
+        const column_name = column.COLUMN_NAME;
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted"
+        ) continue;
+        const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+        if (column_name === 'id') continue;
+        let data_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        let column_comment = column.COLUMN_COMMENT || "";
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        let is_nullable = column.IS_NULLABLE === "YES";
+        if (foreignKey && foreignKey.multiple) {
+          is_nullable = false;
+        }
+      #><#
+        if (
+          (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+          || (data_type === "date" || data_type === "datetime")
+        ) {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,<#
+        }
+      #><#
+      }
+      #><#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=table#>_models: model.<#=table#>_models
+        .into_iter()
+        .map(|x| x.into())
+        .collect::<Vec<<#=Table_Up#>Input>>()
+        .into(),<#
+      }
+      #>
+    }
+  }
 }
 
 impl From<<#=tableUP#>Input> for <#=tableUP#>Search {

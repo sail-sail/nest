@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::dept_model::*;
 use super::dept_resolver;
 
-
 #[derive(Default)]
 pub struct DeptGenQuery;
 

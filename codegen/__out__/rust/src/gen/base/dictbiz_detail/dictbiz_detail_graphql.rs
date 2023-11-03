@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::dictbiz_detail_model::*;
 use super::dictbiz_detail_resolver;
 
-
 #[derive(Default)]
 pub struct DictbizDetailGenQuery;
 

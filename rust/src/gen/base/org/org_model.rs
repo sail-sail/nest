@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OrgModel {
   /// 租户ID
@@ -121,7 +121,7 @@ impl FromRow<'_, MySqlRow> for OrgModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OrgFieldComment {
   /// ID
@@ -158,7 +158,7 @@ pub struct OrgFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OrgSearch {
   pub id: Option<String>,
@@ -194,16 +194,16 @@ pub struct OrgSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OrgInput {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 锁定
@@ -234,6 +234,40 @@ pub struct OrgInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<OrgModel> for OrgInput {
+  fn from(model: OrgModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<OrgInput> for OrgSearch {

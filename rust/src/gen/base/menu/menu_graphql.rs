@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::menu_model::*;
 use super::menu_resolver;
 
-
 #[derive(Default)]
 pub struct MenuGenQuery;
 
