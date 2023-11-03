@@ -1564,7 +1564,7 @@ pub async fn revert_by_ids(
   let dictbiz_detail_models = find_all_dictbiz_detail(
     DictbizDetailSearch {
       dictbiz_id: ids.clone().into(),
-      is_deleted: 0.into(),
+      is_deleted: 1.into(),
       ..Default::default()
     }.into(),
     None,
