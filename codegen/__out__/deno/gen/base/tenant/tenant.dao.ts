@@ -337,6 +337,10 @@ export async function findAll(
   }
   sort = sort.filter((item) => item.prop);
   sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });

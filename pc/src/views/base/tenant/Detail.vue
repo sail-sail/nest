@@ -455,7 +455,7 @@ async function showDialog(
 }
 
 watch(
-  () => [ isLocked, is_deleted ],
+  () => [ isLocked, is_deleted, dialogNotice ],
   async () => {
     if (is_deleted) {
       dialogNotice = await nsAsync("(已删除)");

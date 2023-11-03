@@ -754,6 +754,26 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);<#
+  if (opts?.defaultSort) {
+    const prop = opts?.defaultSort.prop;
+    let order = "asc";
+    if (opts?.defaultSort.order === "ascending") {
+      order = "asc";
+    } else if (opts?.defaultSort.order === "descending") {
+      order = "desc";
+    }
+    if (order === "asc") {
+      order = "SortOrderEnum.Asc";
+    } else {
+      order = "SortOrderEnum.Desc";
+    }
+  #>
+  sort.push({
+    prop: "<#=prop#>",
+    order: <#=order#>,
+  });<#
+  }
+  #><#
   if (hasCreateTime) {
   #>
   sort.push({
@@ -3071,10 +3091,6 @@ export async function updateById(
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-    if (!inlineForeignSchema) {
-      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-      process.exit(1);
-    }
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
@@ -3086,9 +3102,7 @@ export async function updateById(
   // <#=inlineForeignTab.label#>
   if (input.<#=table#>_models) {
     const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=inlineForeignTab.column#>: input.<#=table#>_models
-        .filter((item) => item.id)
-        .map((item) => item.id!),
+      <#=inlineForeignTab.column#>: id,
     });
     if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
       updateFldNum++;
@@ -3103,15 +3117,14 @@ export async function updateById(
     for (let i = 0; i < input.<#=table#>_models.length; i++) {
       const <#=table#>_model = input.<#=table#>_models[i];
       if (!<#=table#>_model.id) {
-        <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
+        <#=table#>_model.<#=inlineForeignTab.column#> = id;
         await create<#=Table_Up#>(<#=table#>_model);
         continue;
       }
       if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
-        await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
-        continue;
+        await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
       }
-      await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
     }
   }<#
   }
