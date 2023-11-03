@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::options_model::*;
 use super::options_resolver;
 
-
 #[derive(Default)]
 pub struct OptionsGenQuery;
 

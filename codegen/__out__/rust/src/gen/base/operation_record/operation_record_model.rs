@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordModel {
   /// 租户ID
@@ -128,7 +128,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordFieldComment {
   /// ID
@@ -167,7 +167,7 @@ pub struct OperationRecordFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordSearch {
   pub id: Option<String>,
@@ -221,16 +221,16 @@ pub struct OperationRecordSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordInput {
+  /// ID
+  pub id: Option<String>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
-  /// ID
-  pub id: Option<String>,
   /// 模块
   pub module: Option<String>,
   /// 模块名称
@@ -263,6 +263,44 @@ pub struct OperationRecordInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<OperationRecordModel> for OperationRecordInput {
+  fn from(model: OperationRecordModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 模块
+      module: model.module.into(),
+      // 模块名称
+      module_lbl: model.module_lbl.into(),
+      // 方法
+      method: model.method.into(),
+      // 方法名称
+      method_lbl: model.method_lbl.into(),
+      // 操作
+      lbl: model.lbl.into(),
+      // 操作前数据
+      old_data: model.old_data.into(),
+      // 操作后数据
+      new_data: model.new_data.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<OperationRecordInput> for OperationRecordSearch {

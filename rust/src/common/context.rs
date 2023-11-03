@@ -276,7 +276,7 @@ impl Ctx {
   
   pub async fn ok<T>(&self, res: Result<T>) -> Result<T>
   where
-    T: Send + Sized,
+    T: Send + Sized + Debug,
   {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
@@ -285,18 +285,34 @@ impl Ctx {
         .fetch_one("select connection_id()").await?
         .try_get(0)?;
       if res.is_err() {
+        let err = res.unwrap_err();
+        error!(
+          "{req_id} {err_msg}",
+          req_id = self.req_id,
+          err_msg = err.to_string(),
+        );
         info!(
           "{req_id} rollback; -- {connection_id}",
           req_id = self.req_id,
         );
         tran.execute("rollback").await?;
-      } else {
-        info!(
-          "{req_id} commit; -- {connection_id}",
-          req_id = self.req_id,
-        );
-        tran.execute("commit").await?;
+        return Err(err);
       }
+      info!(
+        "{req_id} commit; -- {connection_id}",
+        req_id = self.req_id,
+      );
+      tran.execute("commit").await?;
+      return res;
+    }
+    if res.is_err() {
+      let err = res.unwrap_err();
+      error!(
+        "{req_id} {err_msg}",
+        req_id = self.req_id,
+        err_msg = err.to_string(),
+      );
+      return Err(err);
     }
     res
   }
@@ -1367,7 +1383,7 @@ impl Ctx {
   pub async fn scope<F, T>(self, f: F) -> Result<T>
     where
       F: core::future::Future<Output = Result<T>>,
-      T: Send,
+      T: Send + Debug,
   {
     let ctx = Arc::new(self);
     CTX.scope(ctx, async move {

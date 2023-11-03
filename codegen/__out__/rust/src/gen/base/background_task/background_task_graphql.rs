@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::background_task_model::*;
 use super::background_task_resolver;
 
-
 #[derive(Default)]
 pub struct BackgroundTaskGenQuery;
 

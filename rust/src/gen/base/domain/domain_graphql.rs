@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::domain_model::*;
 use super::domain_resolver;
 
-
 #[derive(Default)]
 pub struct DomainGenQuery;
 

@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::org_model::*;
 use super::org_resolver;
 
-
 #[derive(Default)]
 pub struct OrgGenQuery;
 

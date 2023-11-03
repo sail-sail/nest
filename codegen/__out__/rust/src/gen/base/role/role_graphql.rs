@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::role_model::*;
 use super::role_resolver;
 
-
 #[derive(Default)]
 pub struct RoleGenQuery;
 

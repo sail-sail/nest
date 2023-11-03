@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::field_permit_model::*;
 use super::field_permit_resolver;
 
-
 #[derive(Default)]
 pub struct FieldPermitGenQuery;
 

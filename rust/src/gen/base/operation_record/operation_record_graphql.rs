@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::operation_record_model::*;
 use super::operation_record_resolver;
 
-
 #[derive(Default)]
 pub struct OperationRecordGenQuery;
 

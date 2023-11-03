@@ -336,12 +336,21 @@ pub async fn find_all(
   let table = "base_domain";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "order_by") {
+    sort.push(SortInput {
+      prop: "order_by".into(),
+      order: "asc".into(),
+    });
+  }
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
@@ -659,8 +668,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1116,7 +1125,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1336,7 +1345,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1413,7 +1422,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       DomainSearch {

@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::permit_model::*;
 use super::permit_resolver;
 
-
 #[derive(Default)]
 pub struct PermitGenQuery;
 

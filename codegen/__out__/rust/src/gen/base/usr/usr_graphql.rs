@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::usr_model::*;
 use super::usr_resolver;
 
-
 #[derive(Default)]
 pub struct UsrGenQuery;
 

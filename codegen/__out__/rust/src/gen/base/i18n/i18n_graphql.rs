@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::i18n_model::*;
 use super::i18n_resolver;
 
-
 #[derive(Default)]
 pub struct I18nGenQuery;
 

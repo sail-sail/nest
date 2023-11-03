@@ -35,6 +35,19 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::dict_model::*;
 
+// 系统字典明细
+use crate::gen::base::dict_detail::dict_detail_dao::{
+  find_all as find_all_dict_detail,
+  create as create_dict_detail,
+  delete_by_ids as delete_by_ids_dict_detail,
+  revert_by_ids as revert_by_ids_dict_detail,
+  update_by_id as update_by_id_dict_detail,
+  force_delete_by_ids as force_delete_by_ids_dict_detail,
+};
+
+// 系统字典明细
+use crate::gen::base::dict_detail::dict_detail_model::*;
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -336,12 +349,21 @@ pub async fn find_all(
   let table = "base_dict";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "order_by") {
+    sort.push(SortInput {
+      prop: "order_by".into(),
+      order: "asc".into(),
+    });
+  }
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
@@ -383,13 +405,26 @@ pub async fn find_all(
     "dict_type".to_owned(),
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
-    "is_sys".to_owned(),
   ]).await?;
   
   let type_dict = &dict_vec[0];
   let is_locked_dict = &dict_vec[1];
   let is_enabled_dict = &dict_vec[2];
-  let is_sys_dict = &dict_vec[3];
+  
+  // 系统字典明细
+  let dict_detail_models = find_all_dict_detail(
+    DictDetailSearch {
+      dict_id: res.iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<String>>()
+        .into(),
+      is_deleted,
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
   
   for model in &mut res {
     
@@ -416,6 +451,15 @@ pub async fn find_all(
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
     };
+    
+    // 系统字典明细
+    model.dict_detail_models = dict_detail_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.dict_id == model.id
+      )
+      .collect();
     
   }
   
@@ -661,8 +705,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -682,8 +726,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -977,6 +1021,17 @@ pub async fn create(
     options,
   ).await?;
   
+  // 系统字典明细
+  if let Some(dict_detail_models) = input.dict_detail_models {
+    for mut dict_detail_model in dict_detail_models {
+      dict_detail_model.dict_id = id.clone().into();
+      create_dict_detail(
+        dict_detail_model,
+        None,
+      ).await?;
+    }
+  }
+  
   Ok(id)
 }
 
@@ -1098,6 +1153,62 @@ pub async fn update_by_id(
     args.push(is_sys.into());
   }
   
+  // 系统字典明细
+  if let Some(input_dict_detail_models) = input.dict_detail_models {
+    let dict_detail_models = find_all_dict_detail(
+      DictDetailSearch {
+        dict_id: vec![id.clone()].into(),
+        is_deleted: 0.into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    if !dict_detail_models.is_empty() && !input_dict_detail_models.is_empty() {
+      field_num += 1;
+    }
+    for dict_detail_model in dict_detail_models.clone() {
+      if input_dict_detail_models
+        .iter()
+        .filter(|item| item.id.is_some())
+        .any(|item| item.id == Some(dict_detail_model.id.clone()))
+      {
+        continue;
+      }
+      delete_by_ids_dict_detail(
+        vec![dict_detail_model.id],
+        None,
+      ).await?;
+    }
+    for dict_detail_model in input_dict_detail_models {
+      if dict_detail_model.id.is_none() {
+        let mut dict_detail_model = dict_detail_model;
+        dict_detail_model.dict_id = id.clone().into();
+        create_dict_detail(
+          dict_detail_model,
+          None,
+        ).await?;
+        continue;
+      }
+      let id = dict_detail_model.id.clone().unwrap();
+      if !dict_detail_models
+        .iter()
+        .any(|item| item.id == id)
+      {
+        revert_by_ids_dict_detail(
+          vec![id.clone()],
+          None,
+        ).await?;
+      }
+      update_by_id_dict_detail(
+        id.clone(),
+        dict_detail_model,
+        None,
+      ).await?;
+    }
+  }
+  
   if field_num > 0 {
     
     if let Some(auth_model) = get_auth_model() {
@@ -1157,7 +1268,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1182,6 +1293,25 @@ pub async fn delete_by_ids(
       options,
     ).await?;
   }
+  
+  // 系统字典明细
+  let dict_detail_models = find_all_dict_detail(
+    DictDetailSearch {
+      dict_id: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  delete_by_ids_dict_detail(
+    dict_detail_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;
   
   Ok(num)
 }
@@ -1319,7 +1449,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1381,6 +1511,25 @@ pub async fn revert_by_ids(
     
   }
   
+  // 系统字典明细
+  let dict_detail_models = find_all_dict_detail(
+    DictDetailSearch {
+      dict_id: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_dict_detail(
+    dict_detail_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;
+  
   Ok(num)
 }
 
@@ -1396,7 +1545,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       DictSearch {
@@ -1437,6 +1586,25 @@ pub async fn force_delete_by_ids(
       options,
     ).await?;
   }
+  
+  // 系统字典明细
+  let dict_detail_models = find_all_dict_detail(
+    DictDetailSearch {
+      dict_id: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  force_delete_by_ids_dict_detail(
+    dict_detail_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<String>>(),
+    None,
+  ).await?;
   
   Ok(num)
 }

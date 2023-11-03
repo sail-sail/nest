@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::optbiz_model::*;
 use super::optbiz_resolver;
 
-
 #[derive(Default)]
 pub struct OptbizGenQuery;
 
