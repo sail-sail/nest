@@ -8,12 +8,10 @@ default-run = "rust"
 
 [workspace]
 members = [
-  ".",
-  "./app_macro"
+  "."
 ]
 
 [dependencies]
-# app_macro = { path = "./app_macro" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 mime = "0.3"
