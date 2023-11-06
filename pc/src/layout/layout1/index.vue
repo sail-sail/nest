@@ -262,7 +262,7 @@
       <div
         ref="tab_active_lineRef"
         
-        un-display-none
+        un-hidden
         un-pos-absolute
         un-bottom-0
         un-left="[23px]"
