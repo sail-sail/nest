@@ -567,7 +567,6 @@ export async function checkByUnique(
   oldModel: MenuModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -584,7 +583,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -787,7 +785,6 @@ export async function create(
   input: MenuInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_menu";
@@ -968,7 +965,6 @@ export async function updateById(
   input: MenuInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_menu";

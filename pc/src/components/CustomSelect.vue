@@ -22,6 +22,7 @@
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  :placeholder="props.placeholder"
   @keyup.enter.stop
 >
   <template
@@ -48,15 +49,31 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :class="{
+      'custom_select_placeholder': shouldShowPlaceholder
+    }"
     v-bind="$attrs"
   >
-    <el-tag
-      v-for="label in modelLabels"
-      :key="label"
-      type="info"
+    <template
+      v-if="modelLabels.length === 0"
     >
-      {{ label }}
-    </el-tag>
+      <span
+        class="custom_select_placeholder"
+      >
+        {{ placeholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <el-tag
+        v-for="label in modelLabels"
+        :key="label"
+        type="info"
+      >
+        {{ label }}
+      </el-tag>
+    </template>
   </div>
   <div
     v-else
@@ -70,9 +87,29 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :class="{
+      'custom_select_placeholder': shouldShowPlaceholder
+    }"
     v-bind="$attrs"
   >
-    {{ modelLabels[0] || "" }}
+    <template
+      v-if="!modelLabels[0]"
+    >
+      <span
+        class="custom_select_placeholder"
+      >
+        {{ placeholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        class="custom_select_readonly"
+      >
+        {{ modelLabels[0] || "" }}
+      </span>
+    </template>
   </div>
 </template>
 </template>
@@ -114,6 +151,7 @@ const props = withDefaults(
     init?: boolean;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -133,6 +171,7 @@ const props = withDefaults(
     init: true,
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
   },
 );
 
@@ -144,6 +183,13 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+let shouldShowPlaceholder = $computed(() => {
+  if (props.multiple) {
+    return modelValue == null || modelValue.length === 0;
+  }
+  return modelValue == null || modelValue === "";
+});
 
 function modelValueUpdate(value?: string | string[] | null) {
   modelValue = value;

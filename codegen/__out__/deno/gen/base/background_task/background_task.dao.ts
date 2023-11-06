@@ -565,7 +565,6 @@ export async function checkByUnique(
   oldModel: BackgroundTaskModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -582,7 +581,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -780,7 +778,6 @@ export async function create(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_background_task";
@@ -987,7 +984,6 @@ export async function updateById(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_background_task";

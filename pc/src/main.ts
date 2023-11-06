@@ -6,8 +6,9 @@ import "element-plus/theme-chalk/dark/css-vars.css";
 import "element-plus/dist/index.css";
 import "uno.css";
 
-import App from "./App.vue";
+import "@/assets/style/common.scss";
 
+import App from "./App.vue";
 
 import router from "./router/index";
 import "./utils/DateUtil";
