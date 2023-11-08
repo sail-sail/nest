@@ -477,8 +477,6 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
     create_time_lbl: await n("创建时间"),
     update_usr_id: await n("更新人"),
     update_usr_id_lbl: await n("更新人"),
-    tenant_id: await n("租户"),
-    tenant_id_lbl: await n("租户"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
   };
@@ -1115,7 +1113,7 @@ export async function updateById(
   // 业务字典明细
   if (input.dictbiz_detail_models) {
     const dictbiz_detail_models = await findAllDictbizDetail({
-      dictbiz_id: id,
+      dictbiz_id: [ id ],
     });
     if (dictbiz_detail_models.length > 0 && input.dictbiz_detail_models.length > 0) {
       updateFldNum++;

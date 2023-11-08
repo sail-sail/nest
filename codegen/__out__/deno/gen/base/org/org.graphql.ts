@@ -29,10 +29,6 @@ type OrgModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "租户"
-  tenant_id: String!
-  "租户"
-  tenant_id_lbl: String
   "更新人"
   update_usr_id: String!
   "更新人"
@@ -67,10 +63,6 @@ type OrgFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "租户"
-  tenant_id: String!
-  "租户"
-  tenant_id_lbl: String!
   "更新人"
   update_usr_id: String!
   "更新人"
@@ -105,10 +97,6 @@ input OrgInput {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
-  "租户"
-  tenant_id: String
-  "租户"
-  tenant_id_lbl: String
   "更新人"
   update_usr_id: String
   "更新人"
@@ -142,9 +130,6 @@ input OrgSearch {
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
-  "租户"
-  tenant_id: [String!]
-  tenant_id_is_null: Boolean
   "更新人"
   update_usr_id: [String!]
   update_usr_id_is_null: Boolean

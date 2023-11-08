@@ -397,8 +397,6 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
-    tenant_id: await n("租户"),
-    tenant_id_lbl: await n("租户"),
   };
   return fieldComments;
 }

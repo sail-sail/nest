@@ -1053,7 +1053,7 @@ export async function updateById(
   // 系统字典明细
   if (input.dict_detail_models) {
     const dict_detail_models = await findAllDictDetail({
-      dict_id: id,
+      dict_id: [ id ],
     });
     if (dict_detail_models.length > 0 && input.dict_detail_models.length > 0) {
       updateFldNum++;

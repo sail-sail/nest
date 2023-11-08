@@ -39,10 +39,6 @@ type DictbizModel {
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
-  "租户"
-  tenant_id: String!
-  "租户"
-  tenant_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -85,10 +81,6 @@ type DictbizFieldComment {
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
-  "租户"
-  tenant_id: String!
-  "租户"
-  tenant_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -129,10 +121,6 @@ input DictbizInput {
   update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
-  "租户"
-  tenant_id: String
-  "租户"
-  tenant_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -172,9 +160,6 @@ input DictbizSearch {
   "更新人"
   update_usr_id: [String!]
   update_usr_id_is_null: Boolean
-  "租户"
-  tenant_id: [String!]
-  tenant_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
 }
