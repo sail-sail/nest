@@ -81,6 +81,61 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {RoleSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: RoleSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneRole: Query["findOneRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch, $sort: [SortInput!]) {
+        findOneRole(search: $search, sort: $sort) {
+          id
+          lbl
+          home_url
+          menu_ids
+          menu_ids_lbl
+          permit_ids
+          permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneRole;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {RoleSearch} search?
@@ -378,12 +433,13 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -424,8 +480,7 @@ export async function findAllPermit(
 export async function getPermitList() {
   const data = await findAllPermit(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "",
@@ -469,8 +524,7 @@ export async function findAllDataPermit(
 export async function getDataPermitList() {
   const data = await findAllDataPermit(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "",
@@ -513,9 +567,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "",
@@ -534,7 +589,7 @@ export async function getMenuTree() {
     undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],

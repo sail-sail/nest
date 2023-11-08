@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -45,10 +41,6 @@ import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
-
-import {
-  many2manyUpdate,
-} from "/lib/util/dao_util.ts";
 
 import {
   UniqueType,
@@ -111,7 +103,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.route_path !== undefined) {
     whereQuery += ` and t.route_path = ${ args.push(search.route_path) }`;
@@ -120,7 +112,7 @@ async function getWhereQuery(
     whereQuery += ` and t.route_path is null`;
   }
   if (isNotEmpty(search?.route_path_like)) {
-    whereQuery += ` and t.route_path like ${ args.push(sqlLike(search?.route_path_like) + "%") }`;
+    whereQuery += ` and t.route_path like ${ args.push("%" + sqlLike(search?.route_path_like) + "%") }`;
   }
   if (search?.route_query !== undefined) {
     whereQuery += ` and t.route_query = ${ args.push(search.route_query) }`;
@@ -129,25 +121,13 @@ async function getWhereQuery(
     whereQuery += ` and t.route_query is null`;
   }
   if (isNotEmpty(search?.route_query_like)) {
-    whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_query_like) + "%") }`;
+    whereQuery += ` and t.route_query like ${ args.push("%" + sqlLike(search?.route_query_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.tenant_ids && !Array.isArray(search?.tenant_ids)) {
-    search.tenant_ids = [ search.tenant_ids ];
-  }
-  if (search?.tenant_ids && search?.tenant_ids.length > 0) {
-    whereQuery += ` and base_tenant.id in ${ args.push(search.tenant_ids) }`;
-  }
-  if (search?.tenant_ids === null) {
-    whereQuery += ` and base_tenant.id is null`;
-  }
-  if (search?.tenant_ids_is_null) {
-    whereQuery += ` and base_tenant.id is null`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -170,7 +150,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -230,28 +210,6 @@ async function getFromQuery() {
     base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
-    left join base_tenant_menu
-      on base_tenant_menu.menu_id = t.id
-      and base_tenant_menu.is_deleted = 0
-    left join base_tenant
-      on base_tenant_menu.tenant_id = base_tenant.id
-      and base_tenant.is_deleted = 0
-    left join (
-      select
-        json_objectagg(base_tenant_menu.order_by, base_tenant.id) tenant_ids,
-        json_objectagg(base_tenant_menu.order_by, base_tenant.lbl) tenant_ids_lbl,
-        base_menu.id menu_id
-      from base_tenant_menu
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-        and base_tenant.is_deleted = 0
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      where
-        base_tenant_menu.is_deleted = 0
-      group by menu_id
-    ) _tenant
-      on _tenant.menu_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -320,8 +278,6 @@ export async function findAll(
   let sql = `
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
-      ,max(tenant_ids) tenant_ids
-      ,max(tenant_ids_lbl) tenant_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -343,6 +299,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -374,28 +334,6 @@ export async function findAll(
       cacheKey2,
     },
   );
-  for (const item of result) {
-    
-    // 所在租户
-    if (item.tenant_ids) {
-      const obj = item.tenant_ids as unknown as {[key: string]: string};
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.tenant_ids = keys.map((key) => obj[key]);
-    }
-    if (item.tenant_ids_lbl) {
-      const obj = item.tenant_ids_lbl as unknown as {[key: string]: string};
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.tenant_ids_lbl = keys.map((key) => obj[key]);
-    }
-  }
   
   const [
     typeDict, // 类型
@@ -508,28 +446,6 @@ export async function setIdByLbl(
     }
   }
   
-  // 所在租户
-  if (!input.tenant_ids && input.tenant_ids_lbl) {
-    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
-      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
-    }
-    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_tenant t
-      where
-        t.lbl in ${ args.push(input.tenant_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.tenant_ids = models.map((item: { id: string }) => item.id);
-  }
-  
   // 启用
   if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
@@ -555,8 +471,6 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
     route_query: await n("参数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
-    tenant_ids: await n("所在租户"),
-    tenant_ids_lbl: await n("所在租户"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
@@ -575,10 +489,10 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {MenuSearch | PartialNull<MenuModel>} search0
+ * @param {MenuInput} search0
  */
 export async function findByUnique(
-  search0: MenuSearch | PartialNull<MenuModel>,
+  search0: MenuInput,
   options?: {
   },
 ): Promise<MenuModel[]> {
@@ -618,19 +532,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {MenuModel} oldModel
- * @param {PartialNull<MenuModel>} model
+ * @param {MenuInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: MenuModel,
-  model: PartialNull<MenuModel>,
+  input: MenuInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.parent_id === model.parent_id &&
-    oldModel.lbl === model.lbl
+    oldModel.parent_id === input.parent_id &&
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -649,7 +563,6 @@ export async function checkByUnique(
   oldModel: MenuModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -666,7 +579,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -692,11 +604,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -871,7 +781,6 @@ export async function create(
   input: MenuInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_menu";
@@ -1007,19 +916,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
-  
-  // 所在租户
-  await many2manyUpdate(
-    input,
-    "tenant_ids",
-    {
-      mod: "base",
-      table: "tenant_menu",
-      column1: "menu_id",
-      column2: "tenant_id",
-    },
-  );
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -1036,8 +935,6 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
     "base_menu",
-    "base_tenant_menu",
-    "base_tenant",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -1064,7 +961,6 @@ export async function updateById(
   input: MenuInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_menu";
@@ -1174,25 +1070,9 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
-  
-  updateFldNum++;
-  
-  // 所在租户
-  await many2manyUpdate(
-    {
-      ...input,
-      id,
-    },
-    "tenant_ids",
-    {
-      mod: "base",
-      table: "tenant_menu",
-      column1: "menu_id",
-      column2: "tenant_id",
-    },
-  );
   
   if (updateFldNum > 0) {
     await delCache();

@@ -68,6 +68,9 @@ async function getSchema0(
   context: Context,
   table_name: string,
 ): Promise<TableCloumn[]> {
+  if (!table_name) {
+    return [ ];
+  }
   if (!allTableSchemaRecords) {
     let sql = `
       select
@@ -106,7 +109,7 @@ async function getSchema0(
     }
   }
   const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
-  if (tenant_idColumn) {
+  if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
   }
   const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
@@ -114,7 +117,7 @@ async function getSchema0(
     records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
-  if (is_deletedColumn) {
+  if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
     records2.push(is_deletedColumn);
   }
   if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
@@ -389,15 +392,31 @@ async function getSchema0(
       prop: "create_time",
       order: "descending",
     };
+  } else if (
+    hasOrderBy
+    && (!tables[table_name]?.opts?.defaultSort)
+  ) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.defaultSort = {
+      prop: "order_by",
+      order: "ascending",
+    };
   }
   return records2;
 }
+
+let tablesConfigItemMap: {
+  [key: string]: TablesConfigItem;
+} = { };
 
 export async function getSchema(
   context: Context,
   table_name: string,
   table_names: string[],
 ): Promise<TablesConfigItem> {
+  if (tablesConfigItemMap[table_name]) {
+    return tablesConfigItemMap[table_name];
+  }
   const records = await getSchema0(context, table_name);
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
@@ -412,6 +431,19 @@ export async function getSchema(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
     column.ORDINAL_POSITION = i + 1;
+    
+    // 检查是否有重复的列
+    let isDuplicate = false;
+    for (let j = i + 1; j < tables[table_name].columns.length; j++) {
+      const item = tables[table_name].columns[j];
+      if (item.COLUMN_NAME === column.COLUMN_NAME) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (isDuplicate) {
+      throw new Error(`表: ${ table_name }, 列: ${ column.COLUMN_NAME } 重复了!`);
+    }
   }
   
   for (let k = 0; k < records.length; k++) {
@@ -472,6 +504,9 @@ export async function getSchema(
       });
       if (!record.foreignKey.lbl) {
         const records = await getSchema0(context, record.foreignKey.table);
+        if (records.length === 0) {
+          throw new Error(`表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 对应的外键关联表不存在: foreignKey: ${ JSON.stringify(record.foreignKey) }`);
+        }
         if (records.some((item) => item.COLUMN_NAME === "lbl")) {
           record.foreignKey.lbl = "lbl";
         }
@@ -608,8 +643,12 @@ export async function getSchema(
         column.foreignKey.multiple = false;
       }
     }
+    // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+    }
+    if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
+      column.foreignKey.isDeleteCascade = false;
     }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {
@@ -647,6 +686,44 @@ export async function getSchema(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.defaultSort = defaultSort;
   }
+  // 外键关联表的默认排序
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const item = tables[table_name].columns[i];
+    if (item.foreignKey && !item.foreignKey.defaultSort) {
+      let defaultSort = tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.opts?.defaultSort;
+      for (const columnTmp of tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.columns || []) {
+        if (columnTmp.COLUMN_NAME === "order_by") {
+          if (!defaultSort) {
+            defaultSort = {
+              prop: "order_by",
+              order: "ascending",
+            };
+          }
+          break;
+        }
+      }
+      item.foreignKey.defaultSort = {
+        ...defaultSort,
+      };
+    }
+  }
+  // 聚合关联表里面的isDeleteCascade默认为true
+  if (tables[table_name].opts?.inlineForeignTabs) {
+    const inlineForeignTabs = tables[table_name].opts.inlineForeignTabs;
+    for (const inlineForeignTab of inlineForeignTabs) {
+      if (inlineForeignTab.isDeleteCascade == null) {
+        inlineForeignTab.isDeleteCascade = true;
+      }
+      const mod = inlineForeignTab.mod;
+      const table = inlineForeignTab.table;
+      const columns = tables[`${ mod }_${ table }`]?.columns || [ ];
+      const column = columns.find((item) => item.COLUMN_NAME === inlineForeignTab.column);
+      if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
+        column.foreignKey.isDeleteCascade = inlineForeignTab.isDeleteCascade;
+      }
+    }
+  }
+  tablesConfigItemMap[table_name] = tables[table_name];
   return tables[table_name];
 }
 

@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -114,7 +110,7 @@ async function getWhereQuery(
     whereQuery += ` and t.type is null`;
   }
   if (isNotEmpty(search?.type_like)) {
-    whereQuery += ` and t.type like ${ args.push(sqlLike(search?.type_like) + "%") }`;
+    whereQuery += ` and t.type like ${ args.push("%" + sqlLike(search?.type_like) + "%") }`;
   }
   if (search?.access_token !== undefined) {
     whereQuery += ` and t.access_token = ${ args.push(search.access_token) }`;
@@ -123,7 +119,7 @@ async function getWhereQuery(
     whereQuery += ` and t.access_token is null`;
   }
   if (isNotEmpty(search?.access_token_like)) {
-    whereQuery += ` and t.access_token like ${ args.push(sqlLike(search?.access_token_like) + "%") }`;
+    whereQuery += ` and t.access_token like ${ args.push("%" + sqlLike(search?.access_token_like) + "%") }`;
   }
   if (search?.token_time && search?.token_time?.length > 0) {
     if (search.token_time[0] != null) {
@@ -242,6 +238,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -269,6 +269,7 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -347,10 +348,10 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxwAppTokenSearch | PartialNull<WxwAppTokenModel>} search0
+ * @param {WxwAppTokenInput} search0
  */
 export async function findByUnique(
-  search0: WxwAppTokenSearch | PartialNull<WxwAppTokenModel>,
+  search0: WxwAppTokenInput,
   options?: {
   },
 ): Promise<WxwAppTokenModel[]> {
@@ -400,24 +401,24 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxwAppTokenModel} oldModel
- * @param {PartialNull<WxwAppTokenModel>} model
+ * @param {WxwAppTokenInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxwAppTokenModel,
-  model: PartialNull<WxwAppTokenModel>,
+  input: WxwAppTokenInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.wxw_app_id === model.wxw_app_id &&
-    oldModel.type === model.type
+    oldModel.wxw_app_id === input.wxw_app_id &&
+    oldModel.type === input.type
   ) {
     return true;
   }
   if (
-    oldModel.access_token === model.access_token
+    oldModel.access_token === input.access_token
   ) {
     return true;
   }
@@ -436,7 +437,6 @@ export async function checkByUnique(
   oldModel: WxwAppTokenModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -453,7 +453,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -479,11 +478,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -621,7 +618,6 @@ export async function create(
   input: WxwAppTokenInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_app_token";
@@ -751,7 +747,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -832,7 +830,6 @@ export async function updateById(
   input: WxwAppTokenInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_app_token";
@@ -923,7 +920,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

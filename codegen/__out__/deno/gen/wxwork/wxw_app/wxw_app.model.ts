@@ -18,15 +18,14 @@ export interface WxwAppModel extends WxwAppModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
 }
 
 export interface WxwAppInput extends WxwAppInputType {
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
-  tenant_id?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface WxwAppFieldComment {
@@ -44,4 +43,8 @@ export interface WxwAppFieldComment {
   is_enabled_lbl: string;
   order_by: string;
   rem: string;
+  tenant_id: string;
+  tenant_id_lbl: string;
+  is_deleted: string;
+  is_deleted_lbl: string;
 }

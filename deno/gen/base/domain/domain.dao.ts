@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -89,7 +85,7 @@ async function getWhereQuery(
     whereQuery += ` and t.protocol is null`;
   }
   if (isNotEmpty(search?.protocol_like)) {
-    whereQuery += ` and t.protocol like ${ args.push(sqlLike(search?.protocol_like) + "%") }`;
+    whereQuery += ` and t.protocol like ${ args.push("%" + sqlLike(search?.protocol_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -98,7 +94,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -133,7 +129,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -279,6 +275,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -453,10 +453,10 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DomainSearch | PartialNull<DomainModel>} search0
+ * @param {DomainInput} search0
  */
 export async function findByUnique(
-  search0: DomainSearch | PartialNull<DomainModel>,
+  search0: DomainInput,
   options?: {
   },
 ): Promise<DomainModel[]> {
@@ -486,18 +486,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DomainModel} oldModel
- * @param {PartialNull<DomainModel>} model
+ * @param {DomainInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DomainModel,
-  model: PartialNull<DomainModel>,
+  input: DomainInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -516,7 +516,6 @@ export async function checkByUnique(
   oldModel: DomainModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -533,7 +532,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -559,11 +557,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -724,7 +720,6 @@ export async function create(
   input: DomainInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_domain";
@@ -848,7 +843,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -890,7 +887,6 @@ export async function updateById(
   input: DomainInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_domain";
@@ -988,7 +984,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {
