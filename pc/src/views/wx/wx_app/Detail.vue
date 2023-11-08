@@ -300,8 +300,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 32,
-        message: `${ n("appsecret") } ${ await nsAsync("长度不能超过 {0}", 32) }`,
+        max: 200,
+        message: `${ n("appsecret") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
       },
     ],
     // 锁定

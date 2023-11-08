@@ -25,7 +25,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "appsecret",
         require: true,
-        search: true,
+        isEncrypt: true,
         width: 260,
       },
       {
