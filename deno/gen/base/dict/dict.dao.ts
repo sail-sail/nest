@@ -410,12 +410,10 @@ export async function setIdByLbl(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
-    "is_deleted",
   ]);
   
   // 数据类型
@@ -468,8 +466,6 @@ export async function getFieldComments(): Promise<DictFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_deleted: await n("删除"),
-    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }
@@ -1057,7 +1053,7 @@ export async function updateById(
   // 系统字典明细
   if (input.dict_detail_models) {
     const dict_detail_models = await findAllDictDetail({
-      dict_id: id,
+      dict_id: [ id ],
     });
     if (dict_detail_models.length > 0 && input.dict_detail_models.length > 0) {
       updateFldNum++;

@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -47,6 +48,12 @@ type <#=modelName#> {<#
       continue;
     }
     if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
       continue;
     }
     let _data_type = "String";
@@ -194,6 +201,12 @@ type <#=fieldCommentName#> {<#
     if (column_name === "is_deleted") {
       continue;
     }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
@@ -231,6 +244,12 @@ input <#=inputName#> {<#
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
       continue;
     }
     let _data_type = "String";
@@ -363,6 +382,9 @@ input <#=searchName#> {
     if (isPassword) continue;
     const search = column.search;
     if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
       continue;
     }
     if (column_name === 'is_sys') {

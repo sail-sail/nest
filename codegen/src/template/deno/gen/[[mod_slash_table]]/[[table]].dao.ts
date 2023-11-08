@@ -1327,6 +1327,7 @@ export async function setIdByLbl(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1351,6 +1352,7 @@ export async function setIdByLbl(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1679,6 +1681,15 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
       if (column_name === "is_sys") {
+        continue;
+      }
+      if (column_name === "is_deleted") {
+        continue;
+      }
+      if (column_name === "org_id") {
+        continue;
+      }
+      if (column_name === "tenant_id") {
         continue;
       }
       let selectList = [ ];
@@ -3118,7 +3129,7 @@ export async function updateById(
   // <#=inlineForeignTab.label#>
   if (input.<#=table#>_models) {
     const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=inlineForeignTab.column#>: id,
+      <#=inlineForeignTab.column#>: [ id ],
     });
     if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
       updateFldNum++;
