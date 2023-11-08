@@ -1136,7 +1136,6 @@ async function openEdit() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
-      is_deleted,
     },
   });
   tableFocus();
@@ -1180,6 +1179,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
