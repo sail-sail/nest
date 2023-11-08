@@ -23,10 +23,10 @@ type DictbizModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "备注"
-  rem: String!
   "排序"
   order_by: Int!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -43,12 +43,10 @@ type DictbizModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
+  "业务字典明细"
+  dictbiz_detail_models: [DictbizDetailModel!]
 }
 type DictbizFieldComment {
   "编码"
@@ -67,10 +65,10 @@ type DictbizFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "排序"
   order_by: String!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -107,10 +105,10 @@ input DictbizInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "备注"
-  rem: String
   "排序"
   order_by: Int
+  "备注"
+  rem: String
   "创建人"
   create_usr_id: String
   "创建人"
@@ -127,10 +125,8 @@ input DictbizInput {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
+  "业务字典明细"
+  dictbiz_detail_models: [DictbizDetailInput!]
 }
 input DictbizSearch {
   "是否已删除"
@@ -151,11 +147,11 @@ input DictbizSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "排序"
-  order_by: [Int!]
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean
@@ -166,8 +162,6 @@ input DictbizSearch {
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  "系统字段"
-  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

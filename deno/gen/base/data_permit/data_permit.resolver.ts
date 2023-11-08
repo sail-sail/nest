@@ -89,12 +89,15 @@ export async function createDataPermit(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./data_permit.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +117,22 @@ export async function updateByIdDataPermit(
   id: string,
   input: DataPermitInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./data_permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/data_permit",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./data_permit.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +143,11 @@ export async function updateByIdDataPermit(
 export async function deleteByIdsDataPermit(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./data_permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +156,6 @@ export async function deleteByIdsDataPermit(
     "/base/data_permit",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./data_permit.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -158,6 +166,11 @@ export async function deleteByIdsDataPermit(
 export async function revertByIdsDataPermit(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./data_permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -166,10 +179,6 @@ export async function revertByIdsDataPermit(
     "/base/data_permit",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./data_permit.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

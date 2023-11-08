@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -133,14 +134,14 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;<#
-  if (hasTenant_id && tenant_id_column.ignoreCodegen) {
+  if (hasTenant_id) {
   #>
-  tenant_id?: string | null;<#
+  tenant_id: string;<#
   }
   #><#
-  if (hasOrgId && org_id_column.ignoreCodegen) {
+  if (hasOrgId) {
   #>
-  org_id?: string | null;<#
+  org_id: string;<#
   }
   #>
 }
@@ -224,16 +225,17 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   #><#
   }
   #>
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
-  update_time?: string | null;<#
-  if (hasTenant_id && tenant_id_column.ignoreCodegen) {
+  update_usr_id?: string | null;
+  update_time?: string | null;
+  is_deleted?: number | null;<#
+  if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasOrgId && org_id_column.ignoreCodegen) {
+  if (hasOrgId) {
   #>
   org_id?: string | null;<#
   }
@@ -248,6 +250,18 @@ export interface <#=fieldCommentName#> {<#
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "is_deleted") {
+      continue;
+    }
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
     if (selectStr) {

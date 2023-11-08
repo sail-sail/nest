@@ -89,12 +89,15 @@ export async function createOrg(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./org.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +117,22 @@ export async function updateByIdOrg(
   id: string,
   input: OrgInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./org.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/org",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./org.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +143,11 @@ export async function updateByIdOrg(
 export async function deleteByIdsOrg(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./org.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +156,6 @@ export async function deleteByIdsOrg(
     "/base/org",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./org.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -159,6 +167,11 @@ export async function enableByIdsOrg(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./org.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -170,10 +183,6 @@ export async function enableByIdsOrg(
     "/base/org",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./org.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -185,6 +194,11 @@ export async function lockByIdsOrg(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./org.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -196,10 +210,6 @@ export async function lockByIdsOrg(
     "/base/org",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./org.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -210,6 +220,11 @@ export async function lockByIdsOrg(
 export async function revertByIdsOrg(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./org.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -218,10 +233,6 @@ export async function revertByIdsOrg(
     "/base/org",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./org.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

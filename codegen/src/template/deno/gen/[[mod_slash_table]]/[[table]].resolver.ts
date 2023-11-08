@@ -3,7 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasIsMonth = columns.some((column) => column.isMonth);
+const hasPassword = columns.some((column) => column.isPassword);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -54,12 +54,6 @@ if (hasDecimal) {
 #>
 
 import Decimal from "decimal.js";<#
-}
-#><#
-if (hasIsMonth) {
-#>
-
-import dayjs from "dayjs";<#
 }
 #>
 
@@ -112,7 +106,38 @@ export async function findAll<#=Table_Up#>(
   sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
   const { findAll } = await import("./<#=table#>.service.ts");
-  const res = await findAll(search, page, sort);
+  const res = await findAll(search, page, sort);<#
+  if (hasPassword) {
+  #>
+  
+  for (const model of res) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = "";<#
+      }
+    #><#
+    }
+    #>
+  }<#
+  }
+  #>
   return res;
 }
 
@@ -148,7 +173,34 @@ export async function findOne<#=Table_Up#>(
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   const { findOne } = await import("./<#=table#>.service.ts");
-  const res = await findOne(search, sort);
+  const res = await findOne(search, sort);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+  #><#
+    if (isPassword) {
+  #>
+  
+  if (res) {
+    // <#=column_comment#>
+    res.<#=column_name#> = "";
+  }<#
+    }
+  #><#
+  }
+  #>
   return res;
 }
 
@@ -159,7 +211,34 @@ export async function findById<#=Table_Up#>(
   id: string,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
-  const res = await findById(id);
+  const res = await findById(id);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+  #><#
+    if (isPassword) {
+  #>
+  
+  if (res) {
+    // <#=column_comment#>
+    res.<#=column_name#> = "";
+  }<#
+    }
+  #><#
+  }
+  #>
   return res;
 }<#
 if (opts.noAdd !== true) {
@@ -172,35 +251,6 @@ export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<string> {<#
-  if (hasIsMonth) {
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if (input.<#=column_name#>) {
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  }<#
-    }
-  #><#
-  }
-  #><#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -243,12 +293,15 @@ export async function create<#=Table_Up#>(
     }
     #>
     validate,
+    setIdByLbl,
     create,
   } = await import("./<#=table#>.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -294,35 +347,6 @@ export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
 ): Promise<string> {<#
-  if (hasIsMonth) {
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if (input.<#=column_name#>) {
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  }<#
-    }
-  #><#
-  }
-  #><#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -357,14 +381,6 @@ export async function updateById<#=Table_Up#>(
   }<#
   }
   #>
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "edit",
-  );
   
   const {<#
     if (log) {
@@ -372,8 +388,20 @@ export async function updateById<#=Table_Up#>(
     findById,<#
     }
     #>
+    setIdByLbl,
     updateById,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await setIdByLbl(input);
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "edit",
+  );<#
   if (log) {
   #>
   
@@ -411,14 +439,6 @@ if (opts.noDelete !== true) {
 export async function deleteByIds<#=Table_Up#>(
   ids: string[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "delete",
-  );
   
   const {<#
     if (log) {
@@ -427,7 +447,16 @@ export async function deleteByIds<#=Table_Up#>(
     }
     #>
     deleteByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "delete",
+  );<#
   if (log) {
   #>
   
@@ -465,6 +494,11 @@ export async function deleteByIds<#=Table_Up#>(
 export async function defaultById<#=Table_Up#>(
   id: string,
 ): Promise<number> {
+  
+  const {
+    defaultById,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -472,11 +506,7 @@ export async function defaultById<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "default",
-  );
-  
-  const {
-    defaultById,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -512,6 +542,11 @@ export async function enableByIds<#=Table_Up#>(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -522,11 +557,7 @@ export async function enableByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "enable",
-  );
-  
-  const {
-    enableByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -562,6 +593,11 @@ export async function lockByIds<#=Table_Up#>(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -572,11 +608,7 @@ export async function lockByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "lock",
-  );
-  
-  const {
-    lockByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -614,6 +646,11 @@ if (opts.noDelete !== true) {
 export async function revertByIds<#=Table_Up#>(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -621,11 +658,7 @@ export async function revertByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "delete",
-  );
-  
-  const {
-    revertByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   

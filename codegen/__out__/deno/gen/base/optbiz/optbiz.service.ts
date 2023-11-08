@@ -47,6 +47,14 @@ export async function findAll(
   return models;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: OptbizInput,
+) {
+  const data = await optbizDao.setIdByLbl(input);
+  return data;
+}
+
 /**
  * 根据条件查找第一条数据
  * @param {OptbizSearch} search? 搜索条件
@@ -147,6 +155,10 @@ export async function updateById(
   // 不能修改系统记录的系统字段
   const model = await optbizDao.findById(id);
   if (model && model.is_sys === 1) {
+    // 名称
+    input.lbl = undefined;
+    // 键
+    input.ky = undefined;
   }
   
   const data = await optbizDao.updateById(id, input);

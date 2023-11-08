@@ -88,22 +88,20 @@
         </el-icon>
       </el-form-item>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
+      <el-form-item
+        label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
         >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template>
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item>
       
       <el-form-item
         label=" "
@@ -331,6 +329,16 @@
       
       <el-button
         plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconReading />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="onSearch"
       >
         <template #icon>
@@ -339,15 +347,53 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-button
-        plain
-        @click="onExport"
+      <el-dropdown
+        trigger="click"
+        un-m="x-3"
       >
-        <template #icon>
-          <ElIconDownload />
+        
+        <el-button
+          plain
+        >
+          <span
+            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+          >
+            {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else
+          >
+            {{ ns('更多操作') }}
+          </span>
+          <el-icon>
+            <ElIconArrowDown />
+          </el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu
+            un-min="w-20"
+            un-whitespace-nowrap
+          >
+            
+            <el-dropdown-item
+              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              un-justify-center
+              @click="onExport"
+            >
+              <span>{{ ns('导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-else
+              un-justify-center
+              @click="onCancelExport"
+            >
+              <span un-text="red">{{ ns('取消导出') }}</span>
+            </el-dropdown-item>
+            
+          </el-dropdown-menu>
         </template>
-        <span>{{ ns('导出') }}</span>
-      </el-button>
+      </el-dropdown>
       
     </template>
     
@@ -385,7 +431,6 @@
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
@@ -484,15 +529,6 @@
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
@@ -507,6 +543,15 @@
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
                 ></CustomInputNumber>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -739,9 +784,9 @@ const props = defineProps<{
   type?: string|string[]; // 数据类型
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  order_by?: string; // 排序
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间
@@ -929,14 +974,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "备注",
-      prop: "rem",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "排序",
       prop: "order_by",
       width: 100,
@@ -944,6 +981,14 @@ function getTableColumns(): ColumnType[] {
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "创建人",
@@ -1034,13 +1079,18 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  const is_deleted = search.is_deleted;
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
+  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1088,15 +1138,39 @@ async function useFindCount(
   );
 }
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "order_by",
   order: "ascending",
+};
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
 });
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<DictbizModel> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];
@@ -1218,8 +1292,8 @@ async function onImportExcel() {
     [ await nAsync("数据类型") ]: "type_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("备注") ]: "rem",
     [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1231,10 +1305,11 @@ async function onImportExcel() {
   }
   isStopImport = false;
   isImporting = true;
+  importPercentage = 0;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
   try {
-    ElMessage.info(await nsAsync("正在导入..."));
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
     const models = await getExcelData<DictbizInput>(
       file,
       header,
@@ -1243,13 +1318,14 @@ async function onImportExcel() {
           "code": "string",
           "lbl": "string",
           "type_lbl": "string",
-          "is_locked_lbl": "number",
-          "is_enabled_lbl": "number",
-          "rem": "string",
+          "is_locked_lbl": "string",
+          "is_enabled_lbl": "string",
           "order_by": "number",
+          "rem": "string",
         },
       },
     );
+    messageHandler.close();
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1259,7 +1335,6 @@ async function onImportExcel() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
-    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1274,7 +1349,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-  importPercentage = 0;
 }
 
 /** 锁定 */
@@ -1375,6 +1449,8 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
+  const search = getDataSearch();
+  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1385,6 +1461,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
@@ -1551,6 +1628,7 @@ async function openForeignTabs(id: string, title: string) {
     title,
     model: {
       id,
+      is_deleted: search.is_deleted,
     },
   });
   tableFocus();
@@ -1564,8 +1642,8 @@ async function initI18nsEfc() {
     "数据类型",
     "锁定",
     "启用",
-    "备注",
     "排序",
+    "备注",
     "创建人",
     "创建时间",
     "更新人",
@@ -1595,17 +1673,15 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    const search2 = {
-      ...search,
-      ...builtInSearch,
-    };
-    if (deepCompare(search, search2)) {
+    search.is_deleted = builtInSearch.is_deleted;
+    if (deepCompare(builtInSearch, search)) {
       return;
     }
     await dataGrid(true);
   },
   {
     deep: true,
+    immediate: true,
   },
 );
 

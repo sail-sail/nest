@@ -12,6 +12,7 @@ import type {
 
 import type {
   DictbizSearch,
+  UsrSearch,
 } from "#/types";
 
 /**
@@ -45,6 +46,14 @@ export async function findAll(
           is_enabled_lbl
           order_by
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -60,6 +69,58 @@ export async function findAll(
     const item = res[i];
   }
   return res;
+}
+
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {DictbizDetailSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: DictbizDetailSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneDictbizDetail: Query["findOneDictbizDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictbizDetailSearch, $sort: [SortInput!]) {
+        findOneDictbizDetail(search: $search, sort: $sort) {
+          id
+          dictbiz_id
+          dictbiz_id_lbl
+          lbl
+          val
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneDictbizDetail;
+  if (model) {
+  }
+  return model;
 }
 
 /**
@@ -173,6 +234,14 @@ export async function findById(
           is_enabled_lbl
           order_by
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
         }
       }
     `,
@@ -349,13 +418,60 @@ export async function findAllDictbiz(
 
 export async function getDictbizList() {
   const data = await findAllDictbiz(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
         order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllUsr;
+  return res;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "create_time",
+        order: "descending",
       },
     ],
     {
@@ -390,8 +506,16 @@ export function useDownloadImportTemplate(routePath: string) {
             is_enabled_lbl
             order_by
             rem
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
           }
           findAllDictbiz {
+            id
+            lbl
+          }
+          findAllUsr {
             id
             lbl
           }
@@ -455,6 +579,14 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
           getFieldCommentsDictbizDetail {
             dictbiz_id_lbl
@@ -464,8 +596,15 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             rem
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
           }
           findAllDictbiz {
+            lbl
+          }
+          findAllUsr {
             lbl
           }
           getDict(codes: [
@@ -527,6 +666,8 @@ export async function importModels(
       break;
     }
     
+    percentage.value = Math.floor((i + 1) / models.length * 100);
+    
     const item = models[i];
     
     opt = opt || { };
@@ -545,7 +686,6 @@ export async function importModels(
       failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);

@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -129,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.usr_ids && !Array.isArray(search?.usr_ids)) {
     search.usr_ids = [ search.usr_ids ];
@@ -170,7 +166,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -343,6 +339,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -452,6 +456,67 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: DeptInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 父部门
+  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
+    input.parent_id_lbl = String(input.parent_id_lbl).trim();
+    const deptModel = await findOne({ lbl: input.parent_id_lbl });
+    if (deptModel) {
+      input.parent_id = deptModel.id;
+    }
+  }
+  
+  // 部门负责人
+  if (!input.usr_ids && input.usr_ids_lbl) {
+    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
+      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
+    }
+    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_usr t
+      where
+        t.lbl in ${ args.push(input.usr_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.usr_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -484,10 +549,10 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DeptSearch | PartialNull<DeptModel>} search0
+ * @param {DeptInput} search0
  */
 export async function findByUnique(
-  search0: DeptSearch | PartialNull<DeptModel>,
+  search0: DeptInput,
   options?: {
   },
 ): Promise<DeptModel[]> {
@@ -507,7 +572,7 @@ export async function findByUnique(
     }
     let parent_id: string[] = [ ];
     if (!Array.isArray(search0.parent_id)) {
-      parent_id.push(search0.parent_id);
+      parent_id.push(search0.parent_id, search0.parent_id);
     } else {
       parent_id = search0.parent_id;
     }
@@ -527,19 +592,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DeptModel} oldModel
- * @param {PartialNull<DeptModel>} model
+ * @param {DeptInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DeptModel,
-  model: PartialNull<DeptModel>,
+  input: DeptInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.parent_id === model.parent_id &&
-    oldModel.lbl === model.lbl
+    oldModel.parent_id === input.parent_id &&
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -558,7 +623,6 @@ export async function checkByUnique(
   oldModel: DeptModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -575,7 +639,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -601,11 +664,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -679,6 +740,25 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: DeptModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("部门") } ${ await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: DeptModel,
+) {
+  if (!model) {
+    throw `${ await ns("部门") } ${ await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
@@ -747,66 +827,16 @@ export async function create(
   input: DeptInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_dept";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 父部门
-  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
-    input.parent_id_lbl = String(input.parent_id_lbl).trim();
-    const deptModel = await findOne({ lbl: input.parent_id_lbl });
-    if (deptModel) {
-      input.parent_id = deptModel.id;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 部门负责人
-  if (!input.usr_ids && input.usr_ids_lbl) {
-    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
-      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
-    }
-    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_usr t
-      where
-        t.lbl in ${ args.push(input.usr_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.usr_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -827,8 +857,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -943,7 +978,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 部门负责人
   await many2manyUpdate(
@@ -1080,7 +1117,6 @@ export async function updateById(
   input: DeptInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_dept";
@@ -1093,14 +1129,6 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
@@ -1111,52 +1139,7 @@ export async function updateById(
     await updateOrgById(id, input.org_id);
   }
   
-  // 父部门
-  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
-    input.parent_id_lbl = String(input.parent_id_lbl).trim();
-    const deptModel = await findOne({ lbl: input.parent_id_lbl });
-    if (deptModel) {
-      input.parent_id = deptModel.id;
-    }
-  }
-
-  // 部门负责人
-  if (!input.usr_ids && input.usr_ids_lbl) {
-    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
-      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
-    }
-    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_usr t
-      where
-        t.lbl in ${ args.push(input.usr_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.usr_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1235,7 +1218,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

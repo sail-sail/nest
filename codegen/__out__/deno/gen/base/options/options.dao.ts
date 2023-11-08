@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -89,7 +85,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.ky !== undefined) {
     whereQuery += ` and t.ky = ${ args.push(search.ky) }`;
@@ -98,7 +94,7 @@ async function getWhereQuery(
     whereQuery += ` and t.ky is null`;
   }
   if (isNotEmpty(search?.ky_like)) {
-    whereQuery += ` and t.ky like ${ args.push(sqlLike(search?.ky_like) + "%") }`;
+    whereQuery += ` and t.ky like ${ args.push("%" + sqlLike(search?.ky_like) + "%") }`;
   }
   if (search?.val !== undefined) {
     whereQuery += ` and t.val = ${ args.push(search.val) }`;
@@ -107,7 +103,7 @@ async function getWhereQuery(
     whereQuery += ` and t.val is null`;
   }
   if (isNotEmpty(search?.val_like)) {
-    whereQuery += ` and t.val like ${ args.push(sqlLike(search?.val_like) + "%") }`;
+    whereQuery += ` and t.val like ${ args.push("%" + sqlLike(search?.val_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -136,7 +132,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.version && search?.version?.length > 0) {
     if (search.version[0] != null) {
@@ -185,12 +181,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -296,6 +286,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -327,11 +325,9 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -380,19 +376,39 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
-    
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: OptionsInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
 }
 
 /**
@@ -420,18 +436,16 @@ export async function getFieldComments(): Promise<OptionsFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {OptionsSearch | PartialNull<OptionsModel>} search0
+ * @param {OptionsInput} search0
  */
 export async function findByUnique(
-  search0: OptionsSearch | PartialNull<OptionsModel>,
+  search0: OptionsInput,
   options?: {
   },
 ): Promise<OptionsModel[]> {
@@ -446,11 +460,16 @@ export async function findByUnique(
   }
   const models: OptionsModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
+    const lbl = search0.lbl;
     if (search0.ky == null) {
       return [ ];
     }
     const ky = search0.ky;
     const modelTmps = await findAll({
+      lbl,
       ky,
     });
     models.push(...modelTmps);
@@ -461,18 +480,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {OptionsModel} oldModel
- * @param {PartialNull<OptionsModel>} model
+ * @param {OptionsInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: OptionsModel,
-  model: PartialNull<OptionsModel>,
+  input: OptionsInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.ky === model.ky
+    oldModel.lbl === input.lbl &&
+    oldModel.ky === input.ky
   ) {
     return true;
   }
@@ -491,7 +511,6 @@ export async function checkByUnique(
   oldModel: OptionsModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -508,7 +527,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -534,11 +552,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -610,6 +626,25 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: OptionsModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("系统选项") } ${ await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: OptionsModel,
+) {
+  if (!model) {
+    throw `${ await ns("系统选项") } ${ await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
@@ -687,45 +722,16 @@ export async function create(
   input: OptionsInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_options";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-    "is_sys",
-  ]);
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -746,8 +752,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -846,7 +857,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -902,7 +915,6 @@ export async function updateById(
   input: OptionsInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_options";
@@ -915,39 +927,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-    "is_sys",
-  ]);
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1051,7 +1031,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

@@ -4,9 +4,15 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsMonth = columns.some((column) => column.isMonth);
+const hasDate = columns.some((column) => column.DATA_TYPE === "date");
+const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
+const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -79,7 +85,6 @@ const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";<#
@@ -113,6 +118,7 @@ import Decimal from "decimal.js";<#
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -126,10 +132,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -287,6 +289,89 @@ import {
   getAuthRoleIds,
 } from "/src/base/role/role.dao.ts";<#
 }
+#><#
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+#>
+
+import {<#
+  if (!hasFindAllTableUps) {
+  #>
+  findAll as findAll<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  deleteByIds as deleteByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revertByIds as revertByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  updateById as updateById<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
+  }
+  #>
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
+}
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
@@ -363,6 +448,7 @@ async function getWhereQuery(
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
+    if (column_name === "is_sys") continue;
     const isPassword = column.isPassword;
     if (isPassword) {
       continue;
@@ -458,7 +544,7 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=column_name#> is null`;
   }
   if (isNotEmpty(search?.<#=column_name#>_like)) {
-    whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>_like) + "%") }`;
+    whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
   }<#
   }
   #><#
@@ -667,7 +753,35 @@ export async function findAll(
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item.prop);
+  sort = sort.filter((item) => item.prop);<#
+  if (opts?.defaultSort) {
+    const prop = opts?.defaultSort.prop;
+    let order = "asc";
+    if (opts?.defaultSort.order === "ascending") {
+      order = "asc";
+    } else if (opts?.defaultSort.order === "descending") {
+      order = "desc";
+    }
+    if (order === "asc") {
+      order = "SortOrderEnum.Asc";
+    } else {
+      order = "SortOrderEnum.Desc";
+    }
+  #>
+  sort.push({
+    prop: "<#=prop#>",
+    order: <#=order#>,
+  });<#
+  }
+  #><#
+  if (hasCreateTime) {
+  #>
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });<#
+  }
+  #>
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -834,6 +948,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -857,6 +973,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -874,8 +992,7 @@ export async function findAll(
     #><#
     }
     #>
-  ]);
-  <#
+  ]);<#
   }
   #><#
   if (hasDictbiz) {
@@ -887,6 +1004,7 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -910,6 +1028,7 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -930,7 +1049,29 @@ export async function findAll(
   ]);
   <#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });<#
+  }
+  #>
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
     for (let i = 0; i < columns.length; i++) {
@@ -938,6 +1079,8 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -967,10 +1110,6 @@ export async function findAll(
     #><#
       if (foreignKey && foreignKey.type === "json") {
     #><#
-      } else if (isPassword) {
-    #>
-    // <#=column_comment#>
-    model.<#=column_name#> = "";<#
       } else if (isEncrypt) {
     #>
     // <#=column_comment#>
@@ -978,8 +1117,7 @@ export async function findAll(
       } else if (selectList.length > 0) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>_lbl = "";
-    <#
+    let <#=column_name#>_lbl = "";<#
     for (let i = 0; i < selectList.length; i++) {
       const item = selectList[i];
       let value = item.value;
@@ -1055,7 +1193,7 @@ export async function findAll(
     // <#=column_comment#>
     if (model.<#=column_name#>) {
       const <#=column_name#> = dayjs(model.<#=column_name#>);
-      if (isNaN(<#=column_name#>.toDate().getTime())) {
+      if (!<#=column_name#>.isValid()) {
         model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       } else {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM");
@@ -1066,605 +1204,117 @@ export async function findAll(
       }
     #><#
     }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      if (!inlineForeignSchema) {
+        throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+        process.exit(1);
+      }
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=table#>_models = <#=table#>_models
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)<#
+    }
     #>
   }
   
   return result;
 }
 
-/**
- * 获取字段对应的名称
- */
-export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
-  const n = initN(route_path);
-  const fieldComments: <#=fieldCommentName#> = {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const isPassword = column.isPassword;
-      if (isPassword) continue;
-      const foreignKey = column.foreignKey;
-    #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
-    #>
-    <#=column_name#>: await n("<#=column_comment#>"),<#
-        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
-    #>
-    <#=column_name#>_lbl: await n("<#=column_comment#>"),<#
-        }
-    #><#
-      } else {
-    #>
-    <#=column_name#>: await n("<#=column_comment#>"),<#
-      }
-    #><#
-    }
-    #>
-  };
-  return fieldComments;
-}
-
-/**
- * 通过唯一约束获得数据列表
- * @param {<#=searchName#> | PartialNull<<#=modelName#>>} search0
- */
-export async function findByUnique(
-  search0: <#=searchName#> | PartialNull<<#=modelName#>>,
-  options?: {
-  },
-): Promise<<#=modelName#>[]> {
-  if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    });
-    if (!model) {
-      return [ ];
-    }
-    return [ model ];
-  }
-  const models: <#=modelName#>[] = [ ];<#
-  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
-    const uniques = opts.uniques[i];
-  #>
-  {<#
-    for (let k = 0; k < uniques.length; k++) {
-      const unique = uniques[k];
-      const column = columns.find((item) => item.COLUMN_NAME === unique);
-      if (!column) {
-        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
-      }
-      const data_type = column.DATA_TYPE;
-      const foreignKey = column.foreignKey;
-    #>
-    if (search0.<#=unique#> == null) {
-      return [ ];
-    }<#
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: <#=inputName#>,
+) {<#
+  if (hasIsMonth || hasDate || hasDatetime) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
     if (
-      foreignKey
-      || data_type === "datetime"
-      || data_type === "date"
-      || data_type === "int"
-      || data_type === "decimal"
-      || column.dict
-      || column.dictbiz
-    ) {
-      let _data_type = "string";
-      if (column.dict || column.dictbiz) {
-        if (data_type === "tinyint" || data_type === "int") {
-          _data_type = "number";
-        }
-      }
-    #>
-    let <#=unique#>: <#=_data_type#>[] = [ ];
-    if (!Array.isArray(search0.<#=unique#>)) {
-      <#=unique#>.push(search0.<#=unique#>);
-    } else {
-      <#=unique#> = search0.<#=unique#>;
-    }<#
-    } else {
-    #>
-    const <#=unique#> = search0.<#=unique#>;<#
-    }
-    #><#
-    }
-    #>
-    const modelTmps = await findAll({<#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-      #>
-      <#=unique#>,<#
-      }
-      #>
-    });
-    models.push(...modelTmps);
-  }<#
-  }
-  #>
-  return models;
-}
-
-/**
- * 根据唯一约束对比对象是否相等
- * @param {<#=modelName#>} oldModel
- * @param {PartialNull<<#=modelName#>>} model
- * @return {boolean}
- */
-export function equalsByUnique(
-  oldModel: <#=modelName#>,
-  model: PartialNull<<#=modelName#>>,
-): boolean {
-  if (!oldModel || !model) {
-    return false;
-  }<#
-  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
-    const uniques = opts.uniques[i];
-  #>
-  if (<#
-    for (let k = 0; k < uniques.length; k++) {
-      const unique = uniques[k];
-      const column = columns.find((item) => item.COLUMN_NAME === unique);
-      if (!column) {
-        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
-      }
-      const data_type = column.DATA_TYPE;
-    #><#
-      if (data_type === "date" && !column.isMonth) {
-    #>
-    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>)<#
-      } else if (data_type === "date" && column.isMonth) {
-    #>
-    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>, "month")<#
-      } else if (data_type === "decimal") {
-    #>
-    String(oldModel.<#=unique#>) === String(model.<#=unique#>)<#
-      } else {
-    #>
-    oldModel.<#=unique#> === model.<#=unique#><#
-      }
-    #><#=(k === uniques.length - 1) ? "" : " &&" #><#
-    }
-    #>
-  ) {
-    return true;
-  }<#
-  }
-  #>
-  return false;
-}
-
-/**
- * 通过唯一约束检查数据是否已经存在
- * @param {<#=inputName#>} input
- * @param {<#=modelName#>} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<string>}
- */
-export async function checkByUnique(
-  input: <#=inputName#>,
-  oldModel: <#=modelName#>,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-    isEncrypt?: boolean;
-  },
-): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, input);
-  if (isEquals) {
-    if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
-    }
-    if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
-        oldModel.id,
-        {
-          ...input,
-          id: undefined,
-        },
-        {
-          ...options,
-          isEncrypt: false,
-        },
-      );
-      return result;
-    }
-    if (uniqueType === UniqueType.Ignore) {
-      return;
-    }
-  }
-  return;
-}<#
-if (hasSummary) {
-#>
-
-/**
- * 根据搜索条件查找合计
- * @param {<#=searchName#>} search? 搜索条件
- * @return {Promise<<#=Table_Up#>Summary>}
- */
-export async function findSummary(
-  search?: <#=searchName#>,
-  options?: {
-  },
-): Promise<<#=Table_Up#>Summary> {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "findSummary";<#
-  const findSummaryColumns = [ ];
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column.showSummary) {
-      findSummaryColumns.push(column);
-    }
-  }
-  #>
-  
-  const args = new QueryArgs();
-  let sql = `
-    select<#
-      for (let i = 0; i < findSummaryColumns.length; i++) {
-        const column = findSummaryColumns[i];
-        const column_name = column.COLUMN_NAME;
-      #>
-      sum(t.<#=column_name#>) <#=column_name#><#
-        if (i !== findSummaryColumns.length - 1) {
-      #>,<#
-        }
-      #><#
-      }
-      #>
-    from
-      ${ await getFromQuery() }
-    where
-      ${ await getWhereQuery(args, search, options) }
-  `;
-  
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
-  
-  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
-  
-  return model;
-}<#
-}
-#>
-
-/**
- * 根据条件查找第一条数据
- * @param {<#=searchName#>} search?
- */
-export async function findOne(
-  search?: <#=searchName#>,
-  sort?: SortInput | SortInput[],
-  options?: {
-  },
-): Promise<<#=modelName#> | undefined> {
-  const page: PageInput = {
-    pgOffset: 0,
-    pgSize: 1,
-  };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
-}
-
-/**
- * 根据id查找数据
- * @param {string} id
- */
-export async function findById(
-  id?: string | null,
-  options?: {
-  },
-): Promise<<#=modelName#> | undefined> {
-  if (isEmpty(id)) {
-    return;
-  }
-  const model = await findOne({ id });
-  return model;
-}
-
-/**
- * 根据搜索条件判断数据是否存在
- * @param {<#=searchName#>} search?
- */
-export async function exist(
-  search?: <#=searchName#>,
-  options?: {
-  },
-): Promise<boolean> {
-  const model = await findOne(search);
-  const exist = !!model;
-  return exist;
-}
-
-/**
- * 根据id判断数据是否存在
- * @param {string} id
- */
-export async function existById(
-  id?: string | null,
-) {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "existById";
-  
-  if (isEmpty(id)) {
-    return false;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      <#=mod#>_<#=table#> t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;<#
-  if (cache) {
-  #>
-  
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
-  }
-  #>
-  
-  interface Result {
-    e: number,
-  }
-  let model = await queryOne<Result>(
-    sql,
-    args,<#
-    if (cache) {
-    #>{ cacheKey1, cacheKey2 },<#
-    }
-    #>
-  );
-  let result = !!model?.e;
-  
-  return result;
-}
-
-/**
- * 增加和修改时校验输入
- * @param input 
- */
-export async function validate(
-  input: <#=inputName#>,
-) {
-  const fieldComments = await getFieldComments();<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+        "is_sys",
+      ].includes(column_name)
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const isPassword = column.isPassword;
-    if (isPassword) continue;
-    const foreignKey = column.foreignKey;
-    const validators = column.validators || [ ];
   #><#
-    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
-  #><#
-    for (let j = 0; j < validators.length; j++) {
-      const validator = validators[j];
+    if (column.isMonth) {
   #>
-  
-  // <#=column_comment#><#
-    if (validator.max_items != null) {
-  #>
-  await validators.max_items(
-    input.<#=column_name#>,
-    <#=validator.max_items#>,
-    fieldComments.<#=column_name#>,
-  );
-  await validators.max_items(
-    input.<#=column_name#>_lbl,
-    <#=validator.max_items#>,
-    fieldComments.<#=column_name#>_lbl,
-  );<#
-    } else if (validator.min_items != null) {
-  #>
-  await validators.min_items(
-    input.<#=column_name#>,
-    <#=validator.min_items#>,
-    fieldComments.<#=column_name#>,
-  );
-  await validators.min_items(
-    input.<#=column_name#>_lbl,
-    <#=validator.min_items#>,
-    fieldComments.<#=column_name#>_lbl,
-  );<#
-    }
-  #><#
-    }
-  #><#
-    } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
-  #><#
-    for (let j = 0; j < validators.length; j++) {
-      const validator = validators[j];
-  #>
-  
-  // <#=column_comment#><#
-    if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.maximum(
-    input.<#=column_name#>,
-    <#=validator.maximum#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.minimum(
-    input.<#=column_name#>,
-    <#=validator.minimum#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.multiple_of(
-    input.<#=column_name#>,
-    <#=validator.multiple_of#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.chars_max_length(
-    input.<#=column_name#>,
-    <#=validator.chars_max_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.chars_min_length(
-    input.<#=column_name#>,
-    <#=validator.chars_min_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.regex(
-    input.<#=column_name#>,
-    "<#=validator.regex#>",
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.email != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.email(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.url != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.url(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.ip != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.ip(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    }
-  #><#
-    }
-  #><#
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-  #><#
-    for (let j = 0; j < validators.length; j++) {
-      const validator = validators[j];
-  #>
-  
-  // <#=column_comment#><#
-    if (validator.chars_max_length != null) {
-  #>
-  await validators.chars_max_length(
-    input.<#=column_name#>,
-    <#=validator.chars_max_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.chars_min_length != null) {
-  #>
-  await validators.chars_min_length(
-    input.<#=column_name#>,
-    <#=validator.chars_min_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
-  #><#
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
-  #><#
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }<#
+    } else if (column.DATA_TYPE === "date") {
+  #>
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+    }
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
+  }<#
+    } else if (column.DATA_TYPE === "datetime") {
+  #>
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+    }
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
+  }<#
     }
   #><#
   }
-  #>
-  
-}
-
-/**
- * 创建数据
- * @param {<#=inputName#>} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<string>} 
- */
-export async function create(
-  input: <#=inputName#>,
-  options?: {
-    uniqueType?: UniqueType;
-    isEncrypt?: boolean;
-  },
-): Promise<string> {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "create";<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
+  #><#
   }
   #><#
   if (hasDict) {
@@ -1676,6 +1326,8 @@ export async function create(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1699,6 +1351,8 @@ export async function create(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1775,7 +1429,14 @@ export async function create(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    if ([
+      "id",
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+      "is_sys",
+    ].includes(column_name)) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2004,6 +1665,654 @@ export async function create(
   }<#
   }
   #>
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
+  const n = initN(route_path);
+  const fieldComments: <#=fieldCommentName#> = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_name === "is_sys") {
+        continue;
+      }
+      if (column_name === "is_deleted") {
+        continue;
+      }
+      if (column_name === "org_id") {
+        continue;
+      }
+      if (column_name === "tenant_id") {
+        continue;
+      }
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      const foreignKey = column.foreignKey;
+    #><#
+      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    <#=column_name#>: await n("<#=column_comment#>"),<#
+        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+    #>
+    <#=column_name#>_lbl: await n("<#=column_comment#>"),<#
+        }
+    #><#
+      } else {
+    #>
+    <#=column_name#>: await n("<#=column_comment#>"),<#
+      }
+    #><#
+    }
+    #>
+  };
+  return fieldComments;
+}
+
+/**
+ * 通过唯一约束获得数据列表
+ * @param {<#=inputName#>} search0
+ */
+export async function findByUnique(
+  search0: <#=inputName#>,
+  options?: {
+  },
+): Promise<<#=modelName#>[]> {
+  if (search0.id) {
+    const model = await findOne({
+      id: search0.id,
+    });
+    if (!model) {
+      return [ ];
+    }
+    return [ model ];
+  }
+  const models: <#=modelName#>[] = [ ];<#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
+  #>
+  {<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) {
+        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+      }
+      const data_type = column.DATA_TYPE;
+      const foreignKey = column.foreignKey;
+    #>
+    if (search0.<#=unique#> == null) {
+      return [ ];
+    }<#
+    if (
+      foreignKey
+      || data_type === "datetime"
+      || data_type === "date"
+      || data_type === "int"
+      || data_type === "decimal"
+      || column.dict
+      || column.dictbiz
+    ) {
+      let _data_type = "string";
+      if (column.dict || column.dictbiz) {
+        if (data_type === "tinyint" || data_type === "int") {
+          _data_type = "number";
+        }
+      }
+    #>
+    let <#=unique#>: <#=_data_type#>[] = [ ];
+    if (!Array.isArray(search0.<#=unique#>)) {
+      <#=unique#>.push(search0.<#=unique#>, search0.<#=unique#>);
+    } else {
+      <#=unique#> = search0.<#=unique#>;
+    }<#
+    } else {
+    #>
+    const <#=unique#> = search0.<#=unique#>;<#
+    }
+    #><#
+    }
+    #>
+    const modelTmps = await findAll({<#
+      for (let k = 0; k < uniques.length; k++) {
+        const unique = uniques[k];
+      #>
+      <#=unique#>,<#
+      }
+      #>
+    });
+    models.push(...modelTmps);
+  }<#
+  }
+  #>
+  return models;
+}
+
+/**
+ * 根据唯一约束对比对象是否相等
+ * @param {<#=modelName#>} oldModel
+ * @param {<#=inputName#>} input
+ * @return {boolean}
+ */
+export function equalsByUnique(
+  oldModel: <#=modelName#>,
+  input: <#=inputName#>,
+): boolean {
+  if (!oldModel || !input) {
+    return false;
+  }<#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
+  #>
+  if (<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) {
+        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+      }
+      const data_type = column.DATA_TYPE;
+    #><#
+      if (data_type === "date" && !column.isMonth) {
+    #>
+    dayjs(oldModel.<#=unique#>).isSame(input.<#=unique#>)<#
+      } else if (data_type === "date" && column.isMonth) {
+    #>
+    dayjs(oldModel.<#=unique#>).isSame(input.<#=unique#>, "month")<#
+      } else if (data_type === "decimal") {
+    #>
+    String(oldModel.<#=unique#>) === String(input.<#=unique#>)<#
+      } else {
+    #>
+    oldModel.<#=unique#> === input.<#=unique#><#
+      }
+    #><#=(k === uniques.length - 1) ? "" : " &&" #><#
+    }
+    #>
+  ) {
+    return true;
+  }<#
+  }
+  #>
+  return false;
+}
+
+/**
+ * 通过唯一约束检查数据是否已经存在
+ * @param {<#=inputName#>} input
+ * @param {<#=modelName#>} oldModel
+ * @param {UniqueType} uniqueType
+ * @return {Promise<string>}
+ */
+export async function checkByUnique(
+  input: <#=inputName#>,
+  oldModel: <#=modelName#>,
+  uniqueType: UniqueType = UniqueType.Throw,
+  options?: {<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
+  },
+): Promise<string | undefined> {
+  const isEquals = equalsByUnique(oldModel, input);
+  if (isEquals) {
+    if (uniqueType === UniqueType.Throw) {
+      throw new UniqueException(await ns("数据已经存在"));
+    }
+    if (uniqueType === UniqueType.Update) {
+      const result = await updateById(
+        oldModel.id,
+        {
+          ...input,
+          id: undefined,
+        },
+        {
+          ...options,<#
+          if (hasEncrypt) {
+          #>
+          isEncrypt: false,<#
+          }
+          #>
+        },
+      );
+      return result;
+    }
+    if (uniqueType === UniqueType.Ignore) {
+      return;
+    }
+  }
+  return;
+}<#
+if (hasSummary) {
+#>
+
+/**
+ * 根据搜索条件查找合计
+ * @param {<#=searchName#>} search? 搜索条件
+ * @return {Promise<<#=Table_Up#>Summary>}
+ */
+export async function findSummary(
+  search?: <#=searchName#>,
+  options?: {
+  },
+): Promise<<#=Table_Up#>Summary> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findSummary";<#
+  const findSummaryColumns = [ ];
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column.showSummary) {
+      findSummaryColumns.push(column);
+    }
+  }
+  #>
+  
+  const args = new QueryArgs();
+  let sql = `
+    select<#
+      for (let i = 0; i < findSummaryColumns.length; i++) {
+        const column = findSummaryColumns[i];
+        const column_name = column.COLUMN_NAME;
+      #>
+      sum(t.<#=column_name#>) <#=column_name#><#
+        if (i !== findSummaryColumns.length - 1) {
+      #>,<#
+        }
+      #><#
+      }
+      #>
+    from
+      ${ await getFromQuery() }
+    where
+      ${ await getWhereQuery(args, search, options) }
+  `;
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = JSON.stringify({ sql, args });
+  
+  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  
+  return model;
+}<#
+}
+#>
+
+/**
+ * 根据条件查找第一条数据
+ * @param {<#=searchName#>} search?
+ */
+export async function findOne(
+  search?: <#=searchName#>,
+  sort?: SortInput | SortInput[],
+  options?: {
+  },
+): Promise<<#=modelName#> | undefined> {
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
+}
+
+/**
+ * 根据id查找数据
+ * @param {string} id
+ */
+export async function findById(
+  id?: string | null,
+  options?: {
+  },
+): Promise<<#=modelName#> | undefined> {
+  if (isEmpty(id)) {
+    return;
+  }
+  const model = await findOne({ id });
+  return model;
+}
+
+/**
+ * 根据搜索条件判断数据是否存在
+ * @param {<#=searchName#>} search?
+ */
+export async function exist(
+  search?: <#=searchName#>,
+  options?: {
+  },
+): Promise<boolean> {
+  const model = await findOne(search);
+  const exist = !!model;
+  return exist;
+}
+
+/**
+ * 根据id判断数据是否存在
+ * @param {string} id
+ */
+export async function existById(
+  id?: string | null,
+) {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "existById";
+  
+  if (isEmpty(id)) {
+    return false;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `
+    select
+      1 e
+    from
+      <#=mod#>_<#=table#> t
+    where
+      t.id = ${ args.push(id) }
+      and t.is_deleted = 0
+    limit 1
+  `;<#
+  if (cache) {
+  #>
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
+  }
+  #>
+  
+  interface Result {
+    e: number,
+  }
+  let model = await queryOne<Result>(
+    sql,
+    args,<#
+    if (cache) {
+    #>{ cacheKey1, cacheKey2 },<#
+    }
+    #>
+  );
+  let result = !!model?.e;
+  
+  return result;
+}<#
+if (hasEnabled) {
+#>
+
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: <#=modelName#>,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("已禁用") }`;
+  }
+}<#
+}
+#>
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: <#=modelName#>,
+) {
+  if (!model) {
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
+  }
+  return model;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: <#=inputName#>,
+) {
+  const fieldComments = await getFieldComments();<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    const foreignKey = column.foreignKey;
+    const validators = column.validators || [ ];
+  #><#
+    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+  #><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+  #>
+  
+  // <#=column_comment#><#
+    if (validator.max_items != null) {
+  #>
+  await validators.max_items(
+    input.<#=column_name#>,
+    <#=validator.max_items#>,
+    fieldComments.<#=column_name#>,
+  );
+  await validators.max_items(
+    input.<#=column_name#>_lbl,
+    <#=validator.max_items#>,
+    fieldComments.<#=column_name#>_lbl,
+  );<#
+    } else if (validator.min_items != null) {
+  #>
+  await validators.min_items(
+    input.<#=column_name#>,
+    <#=validator.min_items#>,
+    fieldComments.<#=column_name#>,
+  );
+  await validators.min_items(
+    input.<#=column_name#>_lbl,
+    <#=validator.min_items#>,
+    fieldComments.<#=column_name#>_lbl,
+  );<#
+    }
+  #><#
+    }
+  #><#
+    } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  #><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+  #>
+  
+  // <#=column_comment#><#
+    if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  await validators.maximum(
+    input.<#=column_name#>,
+    <#=validator.maximum#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  await validators.minimum(
+    input.<#=column_name#>,
+    <#=validator.minimum#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  await validators.multiple_of(
+    input.<#=column_name#>,
+    <#=validator.multiple_of#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.chars_max_length(
+    input.<#=column_name#>,
+    <#=validator.chars_max_length#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.chars_min_length(
+    input.<#=column_name#>,
+    <#=validator.chars_min_length#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.regex(
+    input.<#=column_name#>,
+    "<#=validator.regex#>",
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.email != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.email(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.url != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.url(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.ip != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.ip(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+  #><#
+    }
+  #><#
+    } else {
+  #><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+  #>
+  
+  // <#=column_comment#><#
+    if (validator.chars_max_length != null) {
+  #>
+  await validators.chars_max_length(
+    input.<#=column_name#>,
+    <#=validator.chars_max_length#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.chars_min_length != null) {
+  #>
+  await validators.chars_min_length(
+    input.<#=column_name#>,
+    <#=validator.chars_min_length#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+  #><#
+    }
+  #><#
+    }
+  #><#
+  }
+  #>
+  
+}
+
+/**
+ * 创建数据
+ * @param {<#=inputName#>} input
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<string>} 
+ */
+export async function create(
+  input: <#=inputName#>,
+  options?: {
+    uniqueType?: UniqueType;<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
+  },
+): Promise<string> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "create";
+  
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
+  }<#
+  if (hasEncrypt) {
+  #>
+  if (options?.isEncrypt !== false) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (!column.isEncrypt) {
+        continue;
+      }
+      const column_name = column.COLUMN_NAME;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === 'id') column_comment = 'ID';
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
+    }<#
+    }
+    #>
+  }<#
+  }
+  #>
+  
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -2036,8 +2345,13 @@ export async function create(
   }
   #>
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -2291,9 +2605,15 @@ export async function create(
   #><#
   }
   #>
-  sql += `)`;
+  sql += `)`;<#
+  if (cache) {
+  #>
   
-  const result = await execute(sql, args);<#
+  await delCache();<#
+  }
+  #>
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2333,6 +2653,30 @@ export async function create(
   #><#
     }
   #><#
+  }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if (input.<#=table#>_models && input.<#=table#>_models.length > 0) {
+    for (let i = 0; i < input.<#=table#>_models.length; i++) {
+      const <#=table#>_model = input.<#=table#>_models[i];
+      <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(<#=table#>_model);
+    }
+  }<#
   }
   #><#
   if (cache) {
@@ -2529,8 +2873,12 @@ export async function updateById(
   id: string,
   input: <#=inputName#>,
   options?: {
-    uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
+    uniqueType?: "ignore" | "throw";<#
+    if (hasEncrypt) {
+    #>
+    isEncrypt?: boolean;<#
+    }
+    #>
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
@@ -2578,110 +2926,6 @@ export async function updateById(
   }<#
   }
   #><#
-  if (hasDict) {
-  #>
-  
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictSrcDao.getDict([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    "<#=column.dict#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
-  if (hasDictbiz) {
-  #>
-  
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictbizSrcDao.getDictbiz([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    "<#=column.dictbiz#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   
@@ -2699,225 +2943,9 @@ export async function updateById(
     await updateOrgById(id, input.org_id);
   }<#
   }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    const isPassword = column.isPassword;
-    const isVirtual = column.isVirtual;
-    if (isVirtual) continue;
-  #><#
-    if (selectList.length > 0) {
   #>
   
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        let value = item.value;
-        let label = item.label;
-        if (typeof(value) === "string") {
-          value = `"${ value }"`;
-        } else if (typeof(value) === "number") {
-          value = value.toString();
-        }
-    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
-      input.<#=column_name#> = <#=value#>;
-    }<#
-      }
-    #>
-  }<#
-    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = val;
-    }
-  }<#
-    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = Number(val);
-    }
-  }<#
-    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
-      let daoStr = "";
-      if (foreignTable !== table) {
-        daoStr = `${ foreignTable }Dao.`;
-      }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
-    if (<#=foreignTable#>Model) {
-      input.<#=column_name#> = <#=foreignTable#>Model.id;
-    }
-  }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
-  #>
-
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
-      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
-    }
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        <#=foreignKey.mod#>_<#=foreignTable#> t
-      where
-        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (foreignTable) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-    if (column.dict) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    } else if (column.dictbiz) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictbizModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (!foreignTable) {
-      continue;
-    }
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>)) {
-    const {
-      findById: findById<#=foreignTableUp#>,
-    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
-    
-    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
-    if (<#=foreignTable#>Model) {<#
-      for (const key of redundLblKeys) {
-        const val = redundLbl[key];
-      #>
-      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
-      }
-      #>
-    }
-  }<#
-  }
-  #>
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -3085,8 +3113,49 @@ export async function updateById(
     }
     #>
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if (input.<#=table#>_models) {
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=inlineForeignTab.column#>: [ id ],
+    });
+    if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < <#=table#>_models.length; i++) {
+      const <#=table#>_model = <#=table#>_models[i];
+      if (input.<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+        continue;
+      }
+      await deleteByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+    }
+    for (let i = 0; i < input.<#=table#>_models.length; i++) {
+      const <#=table#>_model = input.<#=table#>_models[i];
+      if (!<#=table#>_model.id) {
+        <#=table#>_model.<#=inlineForeignTab.column#> = id;
+        await create<#=Table_Up#>(<#=table#>_model);
+        continue;
+      }
+      if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+        await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      }
+      await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
+    }
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3211,6 +3280,23 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 0,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3513,6 +3599,23 @@ export async function revertByIds(
       }
     }
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3576,6 +3679,23 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
   if (cache) {
   #>
   

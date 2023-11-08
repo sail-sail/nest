@@ -285,7 +285,7 @@
     ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
-    un-display-none
+    un-hidden
     @change="inputChg"
   />
 </CustomDialog>

@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -108,7 +104,7 @@ async function getWhereQuery(
     whereQuery += ` and t.img is null`;
   }
   if (isNotEmpty(search?.img_like)) {
-    whereQuery += ` and t.img like ${ args.push(sqlLike(search?.img_like) + "%") }`;
+    whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -117,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.username !== undefined) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
@@ -126,7 +122,19 @@ async function getWhereQuery(
     whereQuery += ` and t.username is null`;
   }
   if (isNotEmpty(search?.username_like)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
+    whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
+  }
+  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
+    search.org_ids = [ search.org_ids ];
+  }
+  if (search?.org_ids && search?.org_ids.length > 0) {
+    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
+  }
+  if (search?.org_ids === null) {
+    whereQuery += ` and base_org.id is null`;
+  }
+  if (search?.org_ids_is_null) {
+    whereQuery += ` and base_org.id is null`;
   }
   if (search?.default_org_id && !Array.isArray(search?.default_org_id)) {
     search.default_org_id = [ search.default_org_id ];
@@ -151,18 +159,6 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
-    search.org_ids = [ search.org_ids ];
-  }
-  if (search?.org_ids && search?.org_ids.length > 0) {
-    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
-  }
-  if (search?.org_ids === null) {
-    whereQuery += ` and base_org.id is null`;
-  }
-  if (search?.org_ids_is_null) {
-    whereQuery += ` and base_org.id is null`;
   }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
@@ -195,7 +191,47 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id === null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -213,8 +249,6 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     base_usr t
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = 0
@@ -237,6 +271,8 @@ async function getFromQuery() {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -281,6 +317,10 @@ async function getFromQuery() {
       group by usr_id
     ) _role
       on _role.usr_id = t.id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -344,13 +384,15 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
     where
@@ -370,6 +412,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -470,8 +520,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    // 密码
-    model.password = "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -492,9 +540,138 @@ export async function findAll(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl;
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: UsrInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 所属组织
+  if (!input.org_ids && input.org_ids_lbl) {
+    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
+      input.org_ids_lbl = input.org_ids_lbl.split(",");
+    }
+    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_org t
+      where
+        t.lbl in ${ args.push(input.org_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.org_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 默认组织
+  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
+    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
+    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
+    if (orgModel) {
+      input.default_org_id = orgModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+  
+  // 所属部门
+  if (!input.dept_ids && input.dept_ids_lbl) {
+    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
+      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
+    }
+    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(input.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.dept_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 拥有角色
+  if (!input.role_ids && input.role_ids_lbl) {
+    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
+      input.role_ids_lbl = input.role_ids_lbl.split(",");
+    }
+    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_role t
+      where
+        t.lbl in ${ args.push(input.role_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.role_ids = models.map((item: { id: string }) => item.id);
+  }
 }
 
 /**
@@ -507,29 +684,37 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     img: await n("头像"),
     lbl: await n("名称"),
     username: await n("用户名"),
+    org_ids: await n("所属组织"),
+    org_ids_lbl: await n("所属组织"),
     default_org_id: await n("默认组织"),
     default_org_id_lbl: await n("默认组织"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    org_ids: await n("所属组织"),
-    org_ids_lbl: await n("所属组织"),
     dept_ids: await n("所属部门"),
     dept_ids_lbl: await n("所属部门"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {UsrSearch | PartialNull<UsrModel>} search0
+ * @param {UsrInput} search0
  */
 export async function findByUnique(
-  search0: UsrSearch | PartialNull<UsrModel>,
+  search0: UsrInput,
   options?: {
   },
 ): Promise<UsrModel[]> {
@@ -559,18 +744,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {UsrModel} oldModel
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: UsrModel,
-  model: PartialNull<UsrModel>,
+  input: UsrInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -589,7 +774,6 @@ export async function checkByUnique(
   oldModel: UsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -606,7 +790,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -632,11 +815,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -710,6 +891,25 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: UsrModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("用户") } ${ await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: UsrModel,
+) {
+  if (!model) {
+    throw `${ await ns("用户") } ${ await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
@@ -761,6 +961,20 @@ export async function validate(
     fieldComments.rem,
   );
   
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 /**
@@ -778,110 +992,16 @@ export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 默认组织
-  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
-    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
-    if (orgModel) {
-      input.default_org_id = orgModel.id;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl) {
-    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
-      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
-    }
-    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(input.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl) {
-    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
-      input.role_ids_lbl = input.role_ids_lbl.split(",");
-    }
-    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_role t
-      where
-        t.lbl in ${ args.push(input.role_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: string }) => item.id);
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -902,8 +1022,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -1014,7 +1139,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 所属组织
   await many2manyUpdate(
@@ -1066,11 +1193,13 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "base_usr_org",
     "base_org",
     "base_usr_dept",
     "base_dept",
     "base_usr_role",
     "base_role",
+    "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -1135,7 +1264,6 @@ export async function updateById(
   input: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1148,109 +1276,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 默认组织
-  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
-    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
-    if (orgModel) {
-      input.default_org_id = orgModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl) {
-    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
-      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
-    }
-    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(input.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl) {
-    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
-      input.role_ids_lbl = input.role_ids_lbl.split(",");
-    }
-    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_role t
-      where
-        t.lbl in ${ args.push(input.role_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: string }) => item.id);
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1340,7 +1371,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

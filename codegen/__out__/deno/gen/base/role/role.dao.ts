@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -106,7 +102,16 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.home_url !== undefined) {
+    whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
+  }
+  if (search?.home_url === null) {
+    whereQuery += ` and t.home_url is null`;
+  }
+  if (isNotEmpty(search?.home_url_like)) {
+    whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
@@ -163,7 +168,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -371,11 +376,24 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -525,289 +543,10 @@ export async function findAll(
   return result;
 }
 
-/**
- * 获取字段对应的名称
- */
-export async function getFieldComments(): Promise<RoleFieldComment> {
-  const n = initN(route_path);
-  const fieldComments: RoleFieldComment = {
-    id: await n("ID"),
-    lbl: await n("名称"),
-    menu_ids: await n("菜单权限"),
-    menu_ids_lbl: await n("菜单权限"),
-    permit_ids: await n("按钮权限"),
-    permit_ids_lbl: await n("按钮权限"),
-    data_permit_ids: await n("数据权限"),
-    data_permit_ids_lbl: await n("数据权限"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
-  };
-  return fieldComments;
-}
-
-/**
- * 通过唯一约束获得数据列表
- * @param {RoleSearch | PartialNull<RoleModel>} search0
- */
-export async function findByUnique(
-  search0: RoleSearch | PartialNull<RoleModel>,
-  options?: {
-  },
-): Promise<RoleModel[]> {
-  if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    });
-    if (!model) {
-      return [ ];
-    }
-    return [ model ];
-  }
-  const models: RoleModel[] = [ ];
-  {
-    if (search0.lbl == null) {
-      return [ ];
-    }
-    const lbl = search0.lbl;
-    const modelTmps = await findAll({
-      lbl,
-    });
-    models.push(...modelTmps);
-  }
-  return models;
-}
-
-/**
- * 根据唯一约束对比对象是否相等
- * @param {RoleModel} oldModel
- * @param {PartialNull<RoleModel>} model
- * @return {boolean}
- */
-export function equalsByUnique(
-  oldModel: RoleModel,
-  model: PartialNull<RoleModel>,
-): boolean {
-  if (!oldModel || !model) {
-    return false;
-  }
-  if (
-    oldModel.lbl === model.lbl
-  ) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * 通过唯一约束检查数据是否已经存在
- * @param {RoleInput} input
- * @param {RoleModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<string>}
- */
-export async function checkByUnique(
-  input: RoleInput,
-  oldModel: RoleModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-    isEncrypt?: boolean;
-  },
-): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, input);
-  if (isEquals) {
-    if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
-    }
-    if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
-        oldModel.id,
-        {
-          ...input,
-          id: undefined,
-        },
-        {
-          ...options,
-          isEncrypt: false,
-        },
-      );
-      return result;
-    }
-    if (uniqueType === UniqueType.Ignore) {
-      return;
-    }
-  }
-  return;
-}
-
-/**
- * 根据条件查找第一条数据
- * @param {RoleSearch} search?
- */
-export async function findOne(
-  search?: RoleSearch,
-  sort?: SortInput | SortInput[],
-  options?: {
-  },
-): Promise<RoleModel | undefined> {
-  const page: PageInput = {
-    pgOffset: 0,
-    pgSize: 1,
-  };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
-}
-
-/**
- * 根据id查找数据
- * @param {string} id
- */
-export async function findById(
-  id?: string | null,
-  options?: {
-  },
-): Promise<RoleModel | undefined> {
-  if (isEmpty(id)) {
-    return;
-  }
-  const model = await findOne({ id });
-  return model;
-}
-
-/**
- * 根据搜索条件判断数据是否存在
- * @param {RoleSearch} search?
- */
-export async function exist(
-  search?: RoleSearch,
-  options?: {
-  },
-): Promise<boolean> {
-  const model = await findOne(search);
-  const exist = !!model;
-  return exist;
-}
-
-/**
- * 根据id判断数据是否存在
- * @param {string} id
- */
-export async function existById(
-  id?: string | null,
-) {
-  const table = "base_role";
-  const method = "existById";
-  
-  if (isEmpty(id)) {
-    return false;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      base_role t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
-  
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
-  
-  interface Result {
-    e: number,
-  }
-  let model = await queryOne<Result>(
-    sql,
-    args,{ cacheKey1, cacheKey2 },
-  );
-  let result = !!model?.e;
-  
-  return result;
-}
-
-/**
- * 增加和修改时校验输入
- * @param input 
- */
-export async function validate(
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
   input: RoleInput,
 ) {
-  const fieldComments = await getFieldComments();
-  
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
-  );
-  
-}
-
-/**
- * 创建数据
- * @param {RoleInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<string>} 
- */
-export async function create(
-  input: RoleInput,
-  options?: {
-    uniqueType?: UniqueType;
-    isEncrypt?: boolean;
-  },
-): Promise<string> {
-  const table = "base_role";
-  const method = "create";
   
   const [
     is_lockedDict, // 锁定
@@ -898,6 +637,319 @@ export async function create(
       input.is_enabled = Number(val);
     }
   }
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments(): Promise<RoleFieldComment> {
+  const n = initN(route_path);
+  const fieldComments: RoleFieldComment = {
+    id: await n("ID"),
+    lbl: await n("名称"),
+    home_url: await n("首页"),
+    menu_ids: await n("菜单权限"),
+    menu_ids_lbl: await n("菜单权限"),
+    permit_ids: await n("按钮权限"),
+    permit_ids_lbl: await n("按钮权限"),
+    data_permit_ids: await n("数据权限"),
+    data_permit_ids_lbl: await n("数据权限"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
+    is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
+    rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
+  };
+  return fieldComments;
+}
+
+/**
+ * 通过唯一约束获得数据列表
+ * @param {RoleInput} search0
+ */
+export async function findByUnique(
+  search0: RoleInput,
+  options?: {
+  },
+): Promise<RoleModel[]> {
+  if (search0.id) {
+    const model = await findOne({
+      id: search0.id,
+    });
+    if (!model) {
+      return [ ];
+    }
+    return [ model ];
+  }
+  const models: RoleModel[] = [ ];
+  {
+    if (search0.lbl == null) {
+      return [ ];
+    }
+    const lbl = search0.lbl;
+    const modelTmps = await findAll({
+      lbl,
+    });
+    models.push(...modelTmps);
+  }
+  return models;
+}
+
+/**
+ * 根据唯一约束对比对象是否相等
+ * @param {RoleModel} oldModel
+ * @param {RoleInput} input
+ * @return {boolean}
+ */
+export function equalsByUnique(
+  oldModel: RoleModel,
+  input: RoleInput,
+): boolean {
+  if (!oldModel || !input) {
+    return false;
+  }
+  if (
+    oldModel.lbl === input.lbl
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 通过唯一约束检查数据是否已经存在
+ * @param {RoleInput} input
+ * @param {RoleModel} oldModel
+ * @param {UniqueType} uniqueType
+ * @return {Promise<string>}
+ */
+export async function checkByUnique(
+  input: RoleInput,
+  oldModel: RoleModel,
+  uniqueType: UniqueType = UniqueType.Throw,
+  options?: {
+  },
+): Promise<string | undefined> {
+  const isEquals = equalsByUnique(oldModel, input);
+  if (isEquals) {
+    if (uniqueType === UniqueType.Throw) {
+      throw new UniqueException(await ns("数据已经存在"));
+    }
+    if (uniqueType === UniqueType.Update) {
+      const result = await updateById(
+        oldModel.id,
+        {
+          ...input,
+          id: undefined,
+        },
+        {
+          ...options,
+        },
+      );
+      return result;
+    }
+    if (uniqueType === UniqueType.Ignore) {
+      return;
+    }
+  }
+  return;
+}
+
+/**
+ * 根据条件查找第一条数据
+ * @param {RoleSearch} search?
+ */
+export async function findOne(
+  search?: RoleSearch,
+  sort?: SortInput | SortInput[],
+  options?: {
+  },
+): Promise<RoleModel | undefined> {
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
+}
+
+/**
+ * 根据id查找数据
+ * @param {string} id
+ */
+export async function findById(
+  id?: string | null,
+  options?: {
+  },
+): Promise<RoleModel | undefined> {
+  if (isEmpty(id)) {
+    return;
+  }
+  const model = await findOne({ id });
+  return model;
+}
+
+/**
+ * 根据搜索条件判断数据是否存在
+ * @param {RoleSearch} search?
+ */
+export async function exist(
+  search?: RoleSearch,
+  options?: {
+  },
+): Promise<boolean> {
+  const model = await findOne(search);
+  const exist = !!model;
+  return exist;
+}
+
+/**
+ * 根据id判断数据是否存在
+ * @param {string} id
+ */
+export async function existById(
+  id?: string | null,
+) {
+  const table = "base_role";
+  const method = "existById";
+  
+  if (isEmpty(id)) {
+    return false;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `
+    select
+      1 e
+    from
+      base_role t
+    where
+      t.id = ${ args.push(id) }
+      and t.is_deleted = 0
+    limit 1
+  `;
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
+  interface Result {
+    e: number,
+  }
+  let model = await queryOne<Result>(
+    sql,
+    args,{ cacheKey1, cacheKey2 },
+  );
+  let result = !!model?.e;
+  
+  return result;
+}
+
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: RoleModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("角色") } ${ await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: RoleModel,
+) {
+  if (!model) {
+    throw `${ await ns("角色") } ${ await ns("不存在") }`;
+  }
+  return model;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: RoleInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 首页
+  await validators.chars_max_length(
+    input.home_url,
+    200,
+    fieldComments.home_url,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    100,
+    fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
+}
+
+/**
+ * 创建数据
+ * @param {RoleInput} input
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<string>} 
+ */
+export async function create(
+  input: RoleInput,
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<string> {
+  const table = "base_role";
+  const method = "create";
+  
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
+  }
+  
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -926,8 +978,13 @@ export async function create(
     input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -964,6 +1021,9 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
+  }
+  if (input.home_url !== undefined) {
+    sql += `,home_url`;
   }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
@@ -1003,6 +1063,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
+  if (input.home_url !== undefined) {
+    sql += `,${ args.push(input.home_url) }`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
   }
@@ -1014,7 +1077,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 菜单权限
   await many2manyUpdate(
@@ -1137,7 +1202,6 @@ export async function updateById(
   input: RoleInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_role";
@@ -1150,100 +1214,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
-
-  // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl) {
-    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
-      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
-    }
-    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_menu t
-      where
-        t.lbl in ${ args.push(input.menu_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 按钮权限
-  if (!input.permit_ids && input.permit_ids_lbl) {
-    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
-      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
-    }
-    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_permit t
-      where
-        t.lbl in ${ args.push(input.permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.permit_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 数据权限
-  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
-    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
-      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
-    }
-    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_data_permit t
-      where
-        t.scope in ${ args.push(input.data_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.data_permit_ids = models.map((item: { id: string }) => item.id);
-  }
   
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1286,6 +1262,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.home_url !== undefined) {
+    if (input.home_url != oldModel.home_url) {
+      sql += `home_url = ${ args.push(input.home_url) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_locked !== undefined) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
@@ -1318,7 +1300,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

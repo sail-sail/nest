@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -115,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.code is null`;
   }
   if (isNotEmpty(search?.code_like)) {
-    whereQuery += ` and t.code like ${ args.push(sqlLike(search?.code_like) + "%") }`;
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -124,7 +120,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -133,7 +129,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -285,6 +281,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -312,6 +316,7 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -343,6 +348,30 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: I18Ninput,
+) {
+  
+  // 语言
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
+    input.lang_id_lbl = String(input.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
+    if (langModel) {
+      input.lang_id = langModel.id;
+    }
+  }
+  
+  // 菜单
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    if (menuModel) {
+      input.menu_id = menuModel.id;
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -371,10 +400,10 @@ export async function getFieldComments(): Promise<I18NfieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {I18Nsearch | PartialNull<I18Nmodel>} search0
+ * @param {I18Ninput} search0
  */
 export async function findByUnique(
-  search0: I18Nsearch | PartialNull<I18Nmodel>,
+  search0: I18Ninput,
   options?: {
   },
 ): Promise<I18Nmodel[]> {
@@ -394,7 +423,7 @@ export async function findByUnique(
     }
     let lang_id: string[] = [ ];
     if (!Array.isArray(search0.lang_id)) {
-      lang_id.push(search0.lang_id);
+      lang_id.push(search0.lang_id, search0.lang_id);
     } else {
       lang_id = search0.lang_id;
     }
@@ -403,7 +432,7 @@ export async function findByUnique(
     }
     let menu_id: string[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id);
+      menu_id.push(search0.menu_id, search0.menu_id);
     } else {
       menu_id = search0.menu_id;
     }
@@ -424,20 +453,20 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {I18Nmodel} oldModel
- * @param {PartialNull<I18Nmodel>} model
+ * @param {I18Ninput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: I18Nmodel,
-  model: PartialNull<I18Nmodel>,
+  input: I18Ninput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lang_id === model.lang_id &&
-    oldModel.menu_id === model.menu_id &&
-    oldModel.code === model.code
+    oldModel.lang_id === input.lang_id &&
+    oldModel.menu_id === input.menu_id &&
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -456,7 +485,6 @@ export async function checkByUnique(
   oldModel: I18Nmodel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -473,7 +501,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -499,11 +526,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -575,6 +600,16 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: I18Nmodel,
+) {
+  if (!model) {
+    throw `${ await ns("国际化") } ${ await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
@@ -659,29 +694,16 @@ export async function create(
   input: I18Ninput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_i18n";
   const method = "create";
   
-  // 语言
-  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
-    input.lang_id_lbl = String(input.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
-    if (langModel) {
-      input.lang_id = langModel.id;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -702,8 +724,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -778,7 +805,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -822,7 +851,6 @@ export async function updateById(
   input: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_i18n";
@@ -835,23 +863,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  // 语言
-  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
-    input.lang_id_lbl = String(input.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
-    if (langModel) {
-      input.lang_id = langModel.id;
-    }
-  }
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -924,7 +936,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

@@ -6,6 +6,7 @@ let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
 let appid = "wxd4b24c53a1813485";
+let agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
@@ -71,6 +72,7 @@ const config = {
   homePage,
   domain,
   appid,
+  agentid,
   pinia: undefined,
 };
 

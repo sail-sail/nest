@@ -48,6 +48,24 @@ export async function login(
   return data;
 }
 
+export async function checkLogin(
+  opt?: GqlOpt,
+) {
+  opt = opt || { };
+  opt.showErrMsg = false;
+  const res: {
+    checkLogin: Query["checkLogin"],
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        checkLogin
+      }
+    `,
+  }, opt);
+  const data = res?.checkLogin || false;
+  return data;
+}
+
 // 清空缓存
 export async function clearCache(
   variables?: { [key: string]: any; },

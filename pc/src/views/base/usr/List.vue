@@ -154,22 +154,20 @@
         </el-icon>
       </el-form-item>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
+      <el-form-item
+        label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
         >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template>
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item>
       
       <el-form-item
         label=" "
@@ -397,6 +395,16 @@
       
       <el-button
         plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconReading />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="onSearch"
       >
         <template #icon>
@@ -405,15 +413,53 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-button
-        plain
-        @click="onExport"
+      <el-dropdown
+        trigger="click"
+        un-m="x-3"
       >
-        <template #icon>
-          <ElIconDownload />
+        
+        <el-button
+          plain
+        >
+          <span
+            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+          >
+            {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else
+          >
+            {{ ns('更多操作') }}
+          </span>
+          <el-icon>
+            <ElIconArrowDown />
+          </el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu
+            un-min="w-20"
+            un-whitespace-nowrap
+          >
+            
+            <el-dropdown-item
+              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              un-justify-center
+              @click="onExport"
+            >
+              <span>{{ ns('导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-else
+              un-justify-center
+              @click="onCancelExport"
+            >
+              <span un-text="red">{{ ns('取消导出') }}</span>
+            </el-dropdown-item>
+            
+          </el-dropdown-menu>
         </template>
-        <span>{{ ns('导出') }}</span>
-      </el-button>
+      </el-dropdown>
       
     </template>
     
@@ -451,7 +497,6 @@
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
@@ -515,6 +560,20 @@
             </el-table-column>
           </template>
           
+          <!-- 所属组织 -->
+          <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 默认组织 -->
           <template v-else-if="'default_org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_org_id == null)">
             <el-table-column
@@ -556,20 +615,6 @@
             </el-table-column>
           </template>
           
-          <!-- 所属组织 -->
-          <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 所属部门 -->
           <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
             <el-table-column
@@ -600,6 +645,42 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -810,18 +891,24 @@ const props = defineProps<{
   username_like?: string; // 用户名
   password?: string; // 密码
   password_like?: string; // 密码
+  org_ids?: string|string[]; // 所属组织
+  org_ids_lbl?: string|string[]; // 所属组织
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string|string[]; // 默认组织
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  org_ids?: string|string[]; // 所属组织
-  org_ids_lbl?: string|string[]; // 所属组织
   dept_ids?: string|string[]; // 所属部门
   dept_ids_lbl?: string|string[]; // 所属部门
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
   rem?: string; // 备注
   rem_like?: string; // 备注
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -830,18 +917,22 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
+  org_ids: "string[]",
+  org_ids_lbl: "string[]",
   default_org_id: "string[]",
   default_org_id_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  org_ids: "string[]",
-  org_ids_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -970,7 +1061,7 @@ function getTableColumns(): ColumnType[] {
       label: "名称",
       prop: "lbl",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -980,9 +1071,18 @@ function getTableColumns(): ColumnType[] {
       prop: "username",
       width: 140,
       sortable: "custom",
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
+    },
+    {
+      label: "所属组织",
+      prop: "org_ids_lbl",
+      sortBy: "org_ids",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "默认组织",
@@ -1012,15 +1112,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "所属组织",
-      prop: "org_ids_lbl",
-      sortBy: "org_ids",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
       label: "所属部门",
       prop: "dept_ids_lbl",
       sortBy: "dept_ids",
@@ -1043,6 +1134,44 @@ function getTableColumns(): ColumnType[] {
       prop: "rem",
       width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      sortBy: "create_time",
+      width: 150,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      sortBy: "update_time",
+      width: 150,
+      sortable: "custom",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1097,13 +1226,18 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  const is_deleted = search.is_deleted;
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
+  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1151,15 +1285,39 @@ async function useFindCount(
   );
 }
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "create_time",
   order: "descending",
+};
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
 });
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<UsrModel> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];
@@ -1279,10 +1437,10 @@ async function onImportExcel() {
     [ await nAsync("头像") ]: "img",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("用户名") ]: "username",
+    [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1297,10 +1455,11 @@ async function onImportExcel() {
   }
   isStopImport = false;
   isImporting = true;
+  importPercentage = 0;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
   try {
-    ElMessage.info(await nsAsync("正在导入..."));
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
     const models = await getExcelData<UsrInput>(
       file,
       header,
@@ -1309,16 +1468,17 @@ async function onImportExcel() {
           "img": "string",
           "lbl": "string",
           "username": "string",
-          "default_org_id_lbl": "string",
-          "is_locked_lbl": "number",
-          "is_enabled_lbl": "number",
           "org_ids_lbl": "string",
+          "default_org_id_lbl": "string",
+          "is_locked_lbl": "string",
+          "is_enabled_lbl": "string",
           "dept_ids_lbl": "string",
           "role_ids_lbl": "string",
           "rem": "string",
         },
       },
     );
+    messageHandler.close();
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1328,7 +1488,6 @@ async function onImportExcel() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
-    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1343,7 +1502,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-  importPercentage = 0;
 }
 
 /** 锁定 */
@@ -1444,6 +1602,8 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
+  const search = getDataSearch();
+  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1454,6 +1614,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
@@ -1616,13 +1777,17 @@ async function initI18nsEfc() {
     "头像",
     "名称",
     "用户名",
+    "所属组织",
     "默认组织",
     "锁定",
     "启用",
-    "所属组织",
     "所属部门",
     "拥有角色",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),
@@ -1648,17 +1813,15 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    const search2 = {
-      ...search,
-      ...builtInSearch,
-    };
-    if (deepCompare(search, search2)) {
+    search.is_deleted = builtInSearch.is_deleted;
+    if (deepCompare(builtInSearch, search)) {
       return;
     }
     await dataGrid(true);
   },
   {
     deep: true,
+    immediate: true,
   },
 );
 

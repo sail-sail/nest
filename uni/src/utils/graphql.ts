@@ -308,7 +308,11 @@ export async function gqlQuery(
     exception = errors?.[0];
   }
   if (exception) {
-    if (exception.code === "token_empty" || exception.code === "refresh_token_expired") {
+    let code = exception.code;
+    if (!code) {
+      code = exception.message;
+    }
+    if (code === "token_empty" || code === "refresh_token_expired") {
       const usrStore = useUsrStore();
       await usrStore.setAuthorization("");
       if (!config.notLogin) {
@@ -329,13 +333,15 @@ export async function gqlQuery(
         errMsg += "\n";
       }
     }
-    uni.showToast({
-      title: errMsg,
-      icon: "none",
-      duration: config?.duration || 3000,
-      mask: true,
-      position: "center",
-    });
+    if (errMsg) {
+      uni.showToast({
+        title: errMsg,
+        icon: "none",
+        duration: config?.duration || 3000,
+        mask: true,
+        position: "center",
+      });
+    }
     throw new Error(errMsg, { cause: errors });
   }
   return data;

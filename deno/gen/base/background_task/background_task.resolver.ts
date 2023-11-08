@@ -85,6 +85,11 @@ export async function findByIdBackgroundTask(
 export async function deleteByIdsBackgroundTask(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./background_task.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -93,10 +98,6 @@ export async function deleteByIdsBackgroundTask(
     "/base/background_task",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./background_task.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -107,6 +108,11 @@ export async function deleteByIdsBackgroundTask(
 export async function revertByIdsBackgroundTask(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./background_task.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -115,10 +121,6 @@ export async function revertByIdsBackgroundTask(
     "/base/background_task",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./background_task.service.ts");
   const res = await revertByIds(ids);
   return res;
 }
