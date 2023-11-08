@@ -27,7 +27,9 @@ use sqlx::{
 use async_graphql::{
   SimpleObject,
   InputObject,
-};<#
+};
+
+use crate::common::id::ID;<#
 if (hasEncrypt) {
 #>
 use crate::common::util::dao::decrypt;<#
@@ -63,13 +65,13 @@ pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
   #>
   /// 租户ID
-  pub tenant_id: String,<#
+  pub tenant_id: ID,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
-  pub org_id: String,<#
+  pub org_id: ID,<#
   }
   #><#
   if (hasIsSys) {
@@ -139,7 +141,7 @@ pub struct <#=tableUP#>Model {<#
     if (column_name === "id") {
   #>
   /// ID
-  pub id: String,<#
+  pub id: ID,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#>
@@ -271,7 +273,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (column_name === "id") {
     #>
     // ID
-    let id: String = row.try_get("id")?;<#
+    let id: ID = row.try_get("id")?;<#
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>

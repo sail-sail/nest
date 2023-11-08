@@ -26,8 +26,9 @@ use super::auth::auth_model::{AuthModel, AUTHORIZATION};
 use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
 use super::gql::model::{SortInput, PageInput};
 
-pub use super::gql::model::UniqueType;
+use super::id::ID;
 
+pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
 
 lazy_static! {
@@ -405,6 +406,9 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
+            ArgType::ID(s) => {
+              query = query.bind(s);
+            }
           };
         }
         let mut debug_sql = sql.to_owned();
@@ -474,6 +478,9 @@ impl Ctx {
               query = query.bind(s);
             }
             ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+            ArgType::ID(s) => {
               query = query.bind(s);
             }
           };
@@ -566,6 +573,9 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
+          ArgType::ID(s) => {
+            query = query.bind(s);
+          }
         };
       }
       let mut debug_sql = sql.to_owned();
@@ -635,6 +645,9 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::ID(s) => {
             query = query.bind(s);
           }
         };
@@ -757,6 +770,9 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
+            ArgType::ID(s) => {
+              query = query.bind(s);
+            }
           };
         }
         let mut debug_sql = sql.to_owned();
@@ -826,6 +842,9 @@ impl Ctx {
               query = query.bind(s);
             }
             ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+            ArgType::ID(s) => {
               query = query.bind(s);
             }
           };
@@ -919,6 +938,9 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
+          ArgType::ID(s) => {
+            query = query.bind(s);
+          }
         };
       }
       let mut debug_sql = sql.to_owned();
@@ -988,6 +1010,9 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::ID(s) => {
             query = query.bind(s);
           }
         };
@@ -1109,6 +1134,9 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
+            ArgType::ID(s) => {
+              query = query.bind(s);
+            }
           };
         }
         let mut debug_sql = sql.to_owned();
@@ -1178,6 +1206,9 @@ impl Ctx {
               query = query.bind(s);
             }
             ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+            ArgType::ID(s) => {
               query = query.bind(s);
             }
           };
@@ -1272,6 +1303,9 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
+          ArgType::ID(s) => {
+            query = query.bind(s);
+          }
         };
       }
       let mut debug_sql = sql.to_owned();
@@ -1341,6 +1375,9 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::ID(s) => {
             query = query.bind(s);
           }
         };
@@ -1465,6 +1502,7 @@ pub enum ArgType {
   Time(NaiveTime),
   Json(serde_json::Value),
   Uuid(Uuid),
+  ID(ID),
 }
 
 impl Serialize for ArgType {
@@ -1493,6 +1531,7 @@ impl Serialize for ArgType {
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
       ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
       ArgType::Uuid(value) => serializer.serialize_str(&value.to_string()),
+      ArgType::ID(value) => serializer.serialize_str(&value.to_string()),
     }
   }
 }
@@ -1520,6 +1559,7 @@ impl Display for ArgType {
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
       ArgType::Json(value) => write!(f, "{}", value),
       ArgType::Uuid(value) => write!(f, "{}", value),
+      ArgType::ID(value) => write!(f, "{}", value),
     }
   }
 }
