@@ -47,6 +47,11 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
+  encrypt,
+  decrypt,
+} from "/lib/util/dao_util.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -108,15 +113,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.appid_like)) {
     whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
-  }
-  if (search?.appsecret !== undefined) {
-    whereQuery += ` and t.appsecret = ${ args.push(search.appsecret) }`;
-  }
-  if (search?.appsecret === null) {
-    whereQuery += ` and t.appsecret is null`;
-  }
-  if (isNotEmpty(search?.appsecret_like)) {
-    whereQuery += ` and t.appsecret like ${ args.push("%" + sqlLike(search?.appsecret_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -337,6 +333,8 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    // appsecret
+    model.appsecret = await decrypt(model.appsecret);
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -509,6 +507,7 @@ export async function checkByUnique(
   oldModel: WxAppModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -525,6 +524,7 @@ export async function checkByUnique(
         },
         {
           ...options,
+          isEncrypt: false,
         },
       );
       return result;
@@ -678,7 +678,7 @@ export async function validate(
   // appsecret
   await validators.chars_max_length(
     input.appsecret,
-    32,
+    200,
     fieldComments.appsecret,
   );
   
@@ -720,6 +720,7 @@ export async function create(
   input: WxAppInput,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_app";
@@ -727,6 +728,12 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
+  }
+  if (options?.isEncrypt !== false) {
+    // appsecret
+    if (input.appsecret != null) {
+      input.appsecret = await encrypt(input.appsecret);
+    }
   }
   
   await setIdByLbl(input);
@@ -944,6 +951,7 @@ export async function updateById(
   input: WxAppInput,
   options?: {
     uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_app";
@@ -954,6 +962,12 @@ export async function updateById(
   }
   if (!input) {
     throw new Error("updateById: input cannot be null");
+  }
+  if (options?.isEncrypt !== false) {
+    // appsecret
+    if (input.appsecret != null) {
+      input.appsecret = await encrypt(input.appsecret);
+    }
   }
   
   // 修改租户id

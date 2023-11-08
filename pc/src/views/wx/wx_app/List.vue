@@ -56,21 +56,6 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.appsecret == null && (showBuildIn || builtInSearch?.appsecret_like == null)">
-        <el-form-item
-          :label="n('appsecret')"
-          prop="appsecret_like"
-        >
-          <el-input
-            v-model="search.appsecret_like"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('appsecret') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -496,7 +481,7 @@
           </template>
           
           <!-- appsecret -->
-          <template v-else-if="'appsecret' === col.prop && (showBuildIn || builtInSearch?.appsecret == null)">
+          <template v-else-if="'appsecret' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -782,8 +767,6 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   appid?: string; // appid
   appid_like?: string; // appid
-  appsecret?: string; // appsecret
-  appsecret_like?: string; // appsecret
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序

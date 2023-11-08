@@ -4,7 +4,7 @@ CREATE TABLE `wx_wx_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
   `appid` varchar(22) NOT NULL DEFAULT '' COMMENT 'appid',
-  `appsecret` varchar(32) NOT NULL DEFAULT '' COMMENT 'appsecret',
+  `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT 'appsecret',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -25,7 +25,7 @@ drop table if exists `wx_wx_app_token`;
 CREATE TABLE `wx_wx_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wx_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '微信小程序',
-  `access_token` varchar(512) NOT NULL DEFAULT '' COMMENT '令牌',
+  `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 0 COMMENT '令牌超时时间',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',

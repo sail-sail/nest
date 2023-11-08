@@ -2,13 +2,27 @@ import {
   error,
 } from "/lib/context.ts";
 
-import * as wx_usrDao from "/gen/wx/wx_usr/wx_usr.dao.ts";
+import {
+  findOne as findOneWxUsr,
+  create as createWxUsr,
+  updateTenantById as updateTenantByIdWxUsr,
+  findById as findByIdWxUsr,
+  updateById as updateByIdWxUsr,
+} from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
-import * as wx_appDao from "/gen/wx/wx_app/wx_app.dao.ts";
+import {
+  findOne as findOneWxApp,
+  validateOption as validateOptionWxApp,
+} from "/gen/wx/wx_app/wx_app.dao.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  createToken as createTokenAuth,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
+import {
+  create as createUsr,
+  updateTenantById as updateTenantByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
 
 import {
   ns,
@@ -29,14 +43,13 @@ export async function code2Session(
     lang: string;
   },
 ) {
-  const wx_appModel = await wx_appDao.findOne(
-    {
-      appid: model.appid,
-    },
+  const wx_appModel = await validateOptionWxApp(
+    await findOneWxApp(
+      {
+        appid: model.appid,
+      },
+    ),
   );
-  if (!wx_appModel) {
-    throw `wx_app.appid: ${ model.appid } 未设置!`;
-  }
   const params = new URLSearchParams();
   params.set("appid", wx_appModel.appid);
   params.set("secret", wx_appModel.appsecret);
@@ -59,14 +72,14 @@ export async function code2Session(
     throw `WxappService.code2Session: ${ JSON.stringify(data) }`;
   }
   data.unionid = data.unionid || "";
-  let wx_usrModel = await wx_usrDao.findOne(
+  let wx_usrModel = await findOneWxUsr(
     {
       openid: data.openid,
     },
   );
   // 用户初次登录, 设置租户
   if (!wx_usrModel) {
-    const id = (await wx_usrDao.create(
+    const id = (await createWxUsr(
       {
         openid: data.openid,
         lbl: data.openid,
@@ -74,16 +87,16 @@ export async function code2Session(
         unionid: data.unionid,
       },
     ))!;
-    await wx_usrDao.updateTenantById(id, wx_appModel.tenant_id!);
-    wx_usrModel = (await wx_usrDao.findById(
+    await updateTenantByIdWxUsr(id, wx_appModel.tenant_id!);
+    wx_usrModel = (await findByIdWxUsr(
       id,
     ))!;
   }
   if (wx_usrModel.tenant_id !== wx_appModel.tenant_id) {
-    await wx_usrDao.updateTenantById(wx_usrModel.id, wx_appModel.tenant_id!);
+    await updateTenantByIdWxUsr(wx_usrModel.id, wx_appModel.tenant_id!);
   }
   if (wx_usrModel.session_key !== data.session_key || wx_usrModel.unionid !== data.unionid) {
-    await wx_usrDao.updateById(
+    await updateByIdWxUsr(
       wx_usrModel.id,
       {
         session_key: data.session_key,
@@ -92,7 +105,7 @@ export async function code2Session(
     );
   }
   if (!wx_usrModel.usr_id) {
-    const id = await usrDao.create(
+    const id = await createUsr(
       {
         lbl: wx_usrModel.openid,
         rem: await ns("微信用户"),
@@ -101,10 +114,10 @@ export async function code2Session(
         uniqueType: UniqueType.Update,
       },
     );
-    await usrDao.updateTenantById(id, wx_appModel.tenant_id!);
+    await updateTenantByIdUsr(id, wx_appModel.tenant_id!);
     wx_usrModel.usr_id = id;
   }
-  const tokenInfo = await authDao.createToken({
+  const tokenInfo = await createTokenAuth({
     id: wx_usrModel.usr_id,
     wx_usr_id: wx_usrModel.id,
     tenant_id: wx_appModel.tenant_id,

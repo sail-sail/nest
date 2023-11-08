@@ -559,7 +559,7 @@ export async function validate(
   // 令牌
   await validators.chars_max_length(
     input.access_token,
-    512,
+    600,
     fieldComments.access_token,
   );
   

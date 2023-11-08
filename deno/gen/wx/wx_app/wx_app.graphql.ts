@@ -131,9 +131,6 @@ input WxAppSearch {
   "appid"
   appid: String
   appid_like: String
-  "appsecret"
-  appsecret: String
-  appsecret_like: String
   "锁定"
   is_locked: [Int!]
   "启用"
