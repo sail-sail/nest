@@ -7,3 +7,4 @@ pub mod tmpfile;
 pub mod cache;
 pub mod util;
 pub mod app;
+pub mod id;

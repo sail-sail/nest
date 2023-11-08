@@ -8,6 +8,8 @@ use async_graphql::{
   SimpleObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
@@ -19,7 +21,7 @@ pub struct LoginInput {
   pub password: String,
   
   /// 租户ID
-  pub tenant_id: String,
+  pub tenant_id: ID,
   
   /// 组织ID
   pub org_id: Option<String>,
