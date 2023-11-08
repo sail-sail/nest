@@ -134,14 +134,14 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;<#
-  if (hasTenant_id && tenant_id_column.ignoreCodegen) {
+  if (hasTenant_id) {
   #>
-  tenant_id?: string | null;<#
+  tenant_id: string;<#
   }
   #><#
-  if (hasOrgId && org_id_column.ignoreCodegen) {
+  if (hasOrgId) {
   #>
-  org_id?: string | null;<#
+  org_id: string;<#
   }
   #>
 }
@@ -230,12 +230,12 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   update_usr_id?: string | null;
   update_time?: string | null;
   is_deleted?: number | null;<#
-  if (hasTenant_id && tenant_id_column.ignoreCodegen) {
+  if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasOrgId && org_id_column.ignoreCodegen) {
+  if (hasOrgId) {
   #>
   org_id?: string | null;<#
   }
@@ -251,6 +251,15 @@ export interface <#=fieldCommentName#> {<#
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "is_deleted") {
       continue;
     }
     let selectList = [ ];

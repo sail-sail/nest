@@ -416,8 +416,6 @@ export async function getFieldComments(): Promise<OrgFieldComment> {
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     create_time_lbl: await n("创建时间"),
-    tenant_id: await n("租户"),
-    tenant_id_lbl: await n("租户"),
     update_usr_id: await n("更新人"),
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),

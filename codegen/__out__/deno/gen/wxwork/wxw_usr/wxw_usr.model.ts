@@ -36,7 +36,7 @@ export interface WxwUsrModel extends WxwUsrModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
+  tenant_id: string;
 }
 
 export interface WxwUsrInput extends WxwUsrInputType {

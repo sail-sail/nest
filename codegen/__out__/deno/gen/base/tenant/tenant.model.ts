@@ -52,6 +52,4 @@ export interface TenantFieldComment {
   update_usr_id_lbl: string;
   update_time: string;
   update_time_lbl: string;
-  is_deleted: string;
-  is_deleted_lbl: string;
 }
