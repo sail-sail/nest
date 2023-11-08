@@ -8,6 +8,7 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  :placeholder="props.placeholder"
   @change="onChange"
   @clear="onClear"
 >

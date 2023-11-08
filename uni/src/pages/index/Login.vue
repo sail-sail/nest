@@ -3,10 +3,14 @@
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
-  <CustomForm
+  <tm-form
     ref="formRef"
     v-model="model"
-    :label-width="200"
+    :label-width="120"
+    :margin="[0, 0]"
+    :padding="[0, 0]"
+    un-flex="~ [1_0_0] col"
+    un-overflow-auto
   >
       
     <tm-form-item
@@ -81,7 +85,7 @@
       </CustomInput>
     </tm-form-item>
       
-  </CustomForm>
+  </tm-form>
   
   <view
     un-m="x-2"
@@ -94,6 +98,10 @@
   </view>
   
   <AppLoading></AppLoading>
+  <tm-message
+    ref="msgRef"
+    :lines="2"
+  ></tm-message>
 </tm-app>
 </template>
 
