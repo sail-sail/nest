@@ -25,10 +25,6 @@ type MenuModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
-  "所在租户"
-  tenant_ids: [String!]
-  "所在租户"
-  tenant_ids_lbl: [String!]
   "启用"
   is_enabled: Int!
   "启用"
@@ -75,10 +71,6 @@ type MenuFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
-  "所在租户"
-  tenant_ids: String!
-  "所在租户"
-  tenant_ids_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -125,10 +117,6 @@ input MenuInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
-  "所在租户"
-  tenant_ids: [String!]
-  "所在租户"
-  tenant_ids_lbl: [String!]
   "启用"
   is_enabled: Int
   "启用"
@@ -177,9 +165,6 @@ input MenuSearch {
   route_query_like: String
   "锁定"
   is_locked: [Int!]
-  "所在租户"
-  tenant_ids: [String!]
-  tenant_ids_is_null: Boolean
   "启用"
   is_enabled: [Int!]
   "排序"

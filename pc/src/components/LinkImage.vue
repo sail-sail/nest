@@ -5,6 +5,8 @@
   un-box-border
   un-rounded
   un-cursor-pointer
+  un-justify-center
+  un-items-center
 >
   <template
     v-if="urlList.length > 0"
@@ -63,6 +65,11 @@
   <div
     v-else
     un-text="[light-gray]"
+    un-flex="~ [1_0_0]"
+    un-overflow-hidden
+    un-justify-center
+    un-items-center
+    un-cursor-default
   >
     (无)
   </div>
@@ -80,8 +87,8 @@ const props = withDefaults(
   {
     modelValue: "",
     format: "webp",
-    width: 46,
-    height: 46,
+    width: 32,
+    height: 32,
     quality: 60,
   },
 );

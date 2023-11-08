@@ -126,22 +126,20 @@
         </el-icon>
       </el-form-item>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
+      <el-form-item
+        label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
         >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template>
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item>
       
       <el-form-item
         label=" "
@@ -270,6 +268,16 @@
       
       <el-button
         plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconReading />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="onSearch"
       >
         <template #icon>
@@ -314,7 +322,6 @@
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
@@ -926,13 +933,18 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  const is_deleted = search.is_deleted;
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
+  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -980,15 +992,39 @@ async function useFindCount(
   );
 }
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "begin_time",
   order: "descending",
+};
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
 });
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<BackgroundTaskModel> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];
@@ -1018,6 +1054,8 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
+  const search = getDataSearch();
+  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1028,6 +1066,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
@@ -1164,17 +1203,15 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    const search2 = {
-      ...search,
-      ...builtInSearch,
-    };
-    if (deepCompare(search, search2)) {
+    search.is_deleted = builtInSearch.is_deleted;
+    if (deepCompare(builtInSearch, search)) {
       return;
     }
     await dataGrid(true);
   },
   {
     deep: true,
+    immediate: true,
   },
 );
 

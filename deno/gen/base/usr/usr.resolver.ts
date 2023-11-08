@@ -44,6 +44,11 @@ export async function findAllUsr(
 ): Promise<UsrModel[]> {
   const { findAll } = await import("./usr.service.ts");
   const res = await findAll(search, page, sort);
+  
+  for (const model of res) {
+    // 密码
+    model.password = "";
+  }
   return res;
 }
 
@@ -65,6 +70,11 @@ export async function findOneUsr(
 ): Promise<UsrModel | undefined> {
   const { findOne } = await import("./usr.service.ts");
   const res = await findOne(search, sort);
+  
+  if (res) {
+    // 密码
+    res.password = "";
+  }
   return res;
 }
 
@@ -76,6 +86,11 @@ export async function findByIdUsr(
 ): Promise<UsrModel | undefined> {
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
+  
+  if (res) {
+    // 密码
+    res.password = "";
+  }
   return res;
 }
 
@@ -89,12 +104,15 @@ export async function createUsr(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./usr.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +132,22 @@ export async function updateByIdUsr(
   id: string,
   input: UsrInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./usr.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/usr",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./usr.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +158,11 @@ export async function updateByIdUsr(
 export async function deleteByIdsUsr(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./usr.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +171,6 @@ export async function deleteByIdsUsr(
     "/base/usr",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./usr.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -159,6 +182,11 @@ export async function enableByIdsUsr(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./usr.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -170,10 +198,6 @@ export async function enableByIdsUsr(
     "/base/usr",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./usr.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -185,6 +209,11 @@ export async function lockByIdsUsr(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./usr.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -196,10 +225,6 @@ export async function lockByIdsUsr(
     "/base/usr",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./usr.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -210,6 +235,11 @@ export async function lockByIdsUsr(
 export async function revertByIdsUsr(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./usr.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -218,10 +248,6 @@ export async function revertByIdsUsr(
     "/base/usr",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./usr.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

@@ -352,5 +352,36 @@ export async function uniLogin() {
     }
     return false;
   }
+  // #ifdef H5
+  const indexStore = useIndexStore(cfg.pinia);
+  const userAgent = indexStore.getUserAgent();
+  if (userAgent.isWxwork || userAgent.isWechat) {
+    const url = new URL(location.href);
+    const code = url.searchParams.get("code");
+    if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
+      const redirect_uri = location.href;
+      if (cfg.appid && cfg.agentid) {
+        const url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+          encodeURIComponent(cfg.appid)
+        }&redirect_uri=${
+          encodeURIComponent(redirect_uri)
+        }&response_type=code&scope=snsapi_base&state=STATE&agentid=${
+          encodeURIComponent(cfg.agentid)
+        }#wechat_redirect`;
+        location.replace(url);
+        return false;
+      }
+    }
+  } else {
+    const redirect_uri = location.hash.substring(1);
+    let url = `/pages/index/Login`;
+    if (redirect_uri) {
+      url += `?redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+    }
+    await uni.redirectTo({
+      url,
+    });
+  }
+  // #endif
   return false;
 }

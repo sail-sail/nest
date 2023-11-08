@@ -131,6 +131,7 @@
           </el-dropdown>
         </template>
         <div
+          v-if="locales.length > 1"
           un-flex="~"
           un-items-center
           un-h="full"
@@ -229,6 +230,16 @@
                 
                 <el-dropdown-item
                   divided
+                  @click="onChangePassword"
+                >
+                  <ElIcon>
+                    <ElIconLock />
+                  </ElIcon>
+                  <span>{{ ns('修改密码') }}</span>
+                </el-dropdown-item>
+                
+                <el-dropdown-item
+                  divided
                   @click="logoutClk"
                 >
                   <ElIcon>
@@ -251,7 +262,7 @@
       <div
         ref="tab_active_lineRef"
         
-        un-display-none
+        un-hidden
         un-pos-absolute
         un-bottom-0
         un-left="[23px]"
@@ -278,6 +289,11 @@
       </router-view>
     </div>
   </div>
+  
+  <!-- 修改密码 -->
+  <ChangePassword
+    ref="changePasswordRef"
+  ></ChangePassword>
 </div>
 </template>
 
@@ -285,6 +301,8 @@
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
+
+import ChangePassword from "../change_password/ChangePassword.vue";
 
 import {
   getLoginInfo,
@@ -294,9 +312,14 @@ import {
   getUsrPermits,
 } from "./Api";
 
+import {
+  getLoginLangs,
+} from "../Api";
+
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n();
@@ -336,12 +359,16 @@ watch(
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
     const lbl = menuLbl || (route.meta?.name as string) || name || "";
+    const closeable = route.meta?.closeable as boolean ?? true;
+    const icon = route.meta?.icon as string | undefined;
     tabsStore.activeTab({
       name,
       lbl,
       active: true,
       path: route.path,
       query: route.query,
+      closeable,
+      icon,
     });
   },
   {
@@ -499,6 +526,23 @@ async function deptSelectClk(org_id: string) {
   }
 }
 
+let changePasswordRef = $ref<InstanceType<typeof ChangePassword>>();
+
+/** 修改密码 */
+async function onChangePassword() {
+  if (!changePasswordRef) {
+    return;
+  }
+  const {
+    type,
+  } = await changePasswordRef.showDialog({
+    action: "edit",
+  });
+  if (type === "cancel") {
+    return;
+  }
+}
+
 /** 获取当前用户的权限列表 */
 async function getUsrPermitsEfc() {
   const permits = await getUsrPermits();
@@ -509,12 +553,19 @@ async function initFrame() {
   if (usrStore.authorization) {
     const [
       loginInfoTmp,
+      _,
+      langModels,
     ] = await Promise.all([
       getLoginInfo({ notLoading: true }),
       getUsrPermitsEfc(),
+      getLoginLangs(),
     ]);
     loginInfo = loginInfoTmp;
     usrStore.loginInfo = loginInfo;
+    locales = langModels.map(item => ({
+      code: item.code,
+      lbl: item.lbl,
+    }));
   }
   inited = true;
 }

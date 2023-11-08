@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -101,7 +97,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.state && !Array.isArray(search?.state)) {
     search.state = [ search.state ];
@@ -122,7 +118,7 @@ async function getWhereQuery(
     whereQuery += ` and t.result is null`;
   }
   if (isNotEmpty(search?.result_like)) {
-    whereQuery += ` and t.result like ${ args.push(sqlLike(search?.result_like) + "%") }`;
+    whereQuery += ` and t.result like ${ args.push("%" + sqlLike(search?.result_like) + "%") }`;
   }
   if (search?.err_msg !== undefined) {
     whereQuery += ` and t.err_msg = ${ args.push(search.err_msg) }`;
@@ -131,7 +127,7 @@ async function getWhereQuery(
     whereQuery += ` and t.err_msg is null`;
   }
   if (isNotEmpty(search?.err_msg_like)) {
-    whereQuery += ` and t.err_msg like ${ args.push(sqlLike(search?.err_msg_like) + "%") }`;
+    whereQuery += ` and t.err_msg like ${ args.push("%" + sqlLike(search?.err_msg_like) + "%") }`;
   }
   if (search?.begin_time && search?.begin_time?.length > 0) {
     if (search.begin_time[0] != null) {
@@ -156,7 +152,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -299,6 +295,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "begin_time",
+    order: SortOrderEnum.Desc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -402,6 +406,84 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: BackgroundTaskInput,
+) {
+  // 开始时间
+  if (!input.begin_time && input.begin_time_lbl) {
+    const begin_time_lbl = dayjs(input.begin_time_lbl);
+    if (begin_time_lbl.isValid()) {
+      input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.begin_time) {
+    const begin_time = dayjs(input.begin_time);
+    if (!begin_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+    }
+    input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  // 结束时间
+  if (!input.end_time && input.end_time_lbl) {
+    const end_time_lbl = dayjs(input.end_time_lbl);
+    if (end_time_lbl.isValid()) {
+      input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.end_time) {
+    const end_time = dayjs(input.end_time);
+    if (!end_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+    }
+    input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  
+  const [
+    stateDict, // 状态
+    typeDict, // 类型
+  ] = await dictSrcDao.getDict([
+    "background_task_state",
+    "background_task_type",
+  ]);
+  
+  // 状态
+  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
+    if (val !== undefined) {
+      input.state = val;
+    }
+  }
+  
+  // 类型
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
+    if (val !== undefined) {
+      input.type = val;
+    }
+  }
+  
+  // 开始时间
+  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
+    input.begin_time_lbl = String(input.begin_time_lbl).trim();
+    input.begin_time = input.begin_time_lbl;
+  }
+  
+  // 结束时间
+  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
+    input.end_time_lbl = String(input.end_time_lbl).trim();
+    input.end_time = input.end_time_lbl;
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -435,10 +517,10 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {BackgroundTaskSearch | PartialNull<BackgroundTaskModel>} search0
+ * @param {BackgroundTaskInput} search0
  */
 export async function findByUnique(
-  search0: BackgroundTaskSearch | PartialNull<BackgroundTaskModel>,
+  search0: BackgroundTaskInput,
   options?: {
   },
 ): Promise<BackgroundTaskModel[]> {
@@ -458,14 +540,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {BackgroundTaskModel} oldModel
- * @param {PartialNull<BackgroundTaskModel>} model
+ * @param {BackgroundTaskInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: BackgroundTaskModel,
-  model: PartialNull<BackgroundTaskModel>,
+  input: BackgroundTaskInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -483,7 +565,6 @@ export async function checkByUnique(
   oldModel: BackgroundTaskModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -500,7 +581,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -526,11 +606,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -599,6 +677,16 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: BackgroundTaskModel,
+) {
+  if (!model) {
+    throw `${ await ns("后台任务") } ${ await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
@@ -690,47 +778,16 @@ export async function create(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_background_task";
   const method = "create";
   
-  const [
-    stateDict, // 状态
-    typeDict, // 类型
-  ] = await dictSrcDao.getDict([
-    "background_task_state",
-    "background_task_type",
-  ]);
-  
-  // 状态
-  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
-    if (val !== undefined) {
-      input.state = val;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 开始时间
-  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
-    input.begin_time_lbl = String(input.begin_time_lbl).trim();
-    input.begin_time = input.begin_time_lbl;
-  }
-  
-  // 结束时间
-  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
-    input.end_time_lbl = String(input.end_time_lbl).trim();
-    input.end_time = input.end_time_lbl;
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -751,8 +808,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -862,8 +924,8 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -922,7 +984,6 @@ export async function updateById(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_background_task";
@@ -935,34 +996,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    stateDict, // 状态
-    typeDict, // 类型
-  ] = await dictSrcDao.getDict([
-    "background_task_state",
-    "background_task_type",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 状态
-  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
-    if (val !== undefined) {
-      input.state = val;
-    }
-  }
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1051,7 +1090,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

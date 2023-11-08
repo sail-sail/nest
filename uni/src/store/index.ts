@@ -1,3 +1,7 @@
+import {
+  UserAgent,
+} from "@/utils/UserAgent";
+
 import { defineStore } from "pinia";
 
 export default defineStore("index", function() {
@@ -13,6 +17,25 @@ export default defineStore("index", function() {
     if(loading < 0) {
       loading = 0;
     }
+  }
+  
+  let systemInfo: UniApp.GetSystemInfoResult | undefined;
+  
+  function setSystemInfo(sys: UniApp.GetSystemInfoResult) {
+    systemInfo = sys;
+  }
+  
+  let userAgent: UserAgent | undefined;
+  
+  function getUserAgent() {
+    if (userAgent) {
+      return userAgent;
+    }
+    if (!systemInfo) {
+      throw new Error("systemInfo is not set!");
+    }
+    userAgent = new UserAgent((systemInfo as any).ua);
+    return userAgent;
   }
   
   let launchOptions = $ref<{[key: string]: any}>({ });
@@ -35,5 +58,7 @@ export default defineStore("index", function() {
     minusLoading,
     setLaunchOptions,
     setUid,
+    setSystemInfo,
+    getUserAgent,
   });
 });

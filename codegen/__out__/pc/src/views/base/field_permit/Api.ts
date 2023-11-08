@@ -73,6 +73,55 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {FieldPermitSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: FieldPermitSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneFieldPermit: Query["findOneFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: FieldPermitSearch, $sort: [SortInput!]) {
+        findOneFieldPermit(search: $search, sort: $sort) {
+          id
+          menu_id
+          menu_id_lbl
+          code
+          lbl
+          type
+          type_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneFieldPermit;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {FieldPermitSearch} search?
@@ -306,9 +355,10 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -351,13 +401,14 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
-        prop: "",
-        order: "ascending",
+        prop: "create_time",
+        order: "descending",
       },
     ],
     {
@@ -369,6 +420,9 @@ export async function getUsrList() {
 
 export async function getMenuTree() {
   const data = await findMenuTree(
+    {
+      is_enabled: [ 1 ],
+    },
     [
       {
         prop: "order_by",
@@ -558,6 +612,8 @@ export async function importModels(
       break;
     }
     
+    percentage.value = Math.floor((i + 1) / models.length * 100);
+    
     const item = models[i];
     
     opt = opt || { };
@@ -576,7 +632,6 @@ export async function importModels(
       failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);

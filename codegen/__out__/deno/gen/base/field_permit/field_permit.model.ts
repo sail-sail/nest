@@ -24,10 +24,11 @@ export interface FieldPermitModel extends FieldPermitModelType {
 export interface FieldPermitInput extends FieldPermitInputType {
   /** 系统字段 */
   is_sys?: number;
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface FieldPermitFieldComment {
@@ -47,6 +48,4 @@ export interface FieldPermitFieldComment {
   update_usr_id_lbl: string;
   update_time: string;
   update_time_lbl: string;
-  is_sys: string;
-  is_sys_lbl: string;
 }

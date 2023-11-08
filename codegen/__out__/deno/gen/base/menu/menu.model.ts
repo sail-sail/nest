@@ -20,10 +20,11 @@ export interface MenuModel extends MenuModelType {
 }
 
 export interface MenuInput extends MenuInputType {
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
 export interface MenuFieldComment {
@@ -37,8 +38,6 @@ export interface MenuFieldComment {
   route_query: string;
   is_locked: string;
   is_locked_lbl: string;
-  tenant_ids: string;
-  tenant_ids_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
   order_by: string;

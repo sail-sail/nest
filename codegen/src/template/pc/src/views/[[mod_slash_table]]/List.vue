@@ -83,6 +83,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column.onlyCodegenDeno) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
+        if (column_name === "version") continue;
+        if (column_name === "is_deleted") continue;
+        if (column_name === "tenant_id") continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
         let column_comment = column.COLUMN_COMMENT || "";
@@ -112,10 +115,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       <#
       if (column.isImg) {
       #><#
-      } else if (foreignSchema && foreignSchema.opts.list_tree
-        && !foreignSchema.opts.ignoreCodegen
-        && !foreignSchema.opts.onlyCodegenDeno
-        && typeof opts.list_tree !== "string"
+      } else if (foreignSchema && foreignSchema.opts?.list_tree
+        && !foreignSchema.opts?.ignoreCodegen
+        && !foreignSchema.opts?.onlyCodegenDeno
+        && typeof opts?.list_tree !== "string"
       ) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -139,10 +142,10 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
-      } else if (foreignSchema && foreignSchema.opts.list_tree
-        && !foreignSchema.opts.ignoreCodegen
-        && !foreignSchema.opts.onlyCodegenDeno
-        && typeof opts.list_tree === "string"
+      } else if (foreignSchema && foreignSchema.opts?.list_tree
+        && !foreignSchema.opts?.ignoreCodegen
+        && !foreignSchema.opts?.onlyCodegenDeno
+        && typeof opts?.list_tree === "string"
       ) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -196,7 +199,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
-        >
+        ><#
+          if (column.searchMultiple !== false) {
+          #>
           <DictSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
@@ -205,7 +210,19 @@ const hasAtt = columns.some((item) => item.isAtt);
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
             @change="onSearch"
-          ></DictSelect>
+          ></DictSelect><#
+          } else {
+          #>
+          <DictSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            :model-value="search.<#=column_name#>[0]"
+            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            code="<#=column.dict#>"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            @change="onSearch"
+          ></DictSelect><#
+          }
+          #>
         </el-form-item>
       </template><#
       } else if (column.dictbiz) {
@@ -214,7 +231,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
-        >
+        ><#
+          if (column.searchMultiple !== false) {
+          #>
           <DictbizSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
@@ -224,7 +243,20 @@ const hasAtt = columns.some((item) => item.isAtt);
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
             @change="onSearch"
-          ></DictbizSelect>
+          ></DictbizSelect><#
+          } else {
+          #>
+          <DictbizSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            :model-value="search.<#=column_name#>[0]"
+            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            code="<#=column.dictbiz#>"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            multiple
+            @change="onSearch"
+          ></DictbizSelect><#
+          }
+          #>
         </el-form-item>
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
@@ -292,22 +324,6 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></el-input-number>
         </el-form-item>
       </template><#
-      } else if (column.isEncrypt) {
-      #>
-      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
-          prop="<#=column_name#>"
-        >
-          <el-input
-            v-model="search.<#=column_name#>"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template><#
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
@@ -364,22 +380,20 @@ const hasAtt = columns.some((item) => item.isAtt);
       if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
+      <el-form-item
+        label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
         >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template><#
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item><#
       }
       #>
       
@@ -715,6 +729,16 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       <el-button
         plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconReading />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="onSearch"
       >
         <template #icon>
@@ -725,15 +749,53 @@ const hasAtt = columns.some((item) => item.isAtt);
       if (opts.noExport !== true) {
       #>
       
-      <el-button
-        plain
-        @click="onExport"
+      <el-dropdown
+        trigger="click"
+        un-m="x-3"
       >
-        <template #icon>
-          <ElIconDownload />
+        
+        <el-button
+          plain
+        >
+          <span
+            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+          >
+            {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else
+          >
+            {{ ns('更多操作') }}
+          </span>
+          <el-icon>
+            <ElIconArrowDown />
+          </el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu
+            un-min="w-20"
+            un-whitespace-nowrap
+          >
+            
+            <el-dropdown-item
+              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              un-justify-center
+              @click="onExport"
+            >
+              <span>{{ ns('导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-else
+              un-justify-center
+              @click="onCancelExport"
+            >
+              <span un-text="red">{{ ns('取消导出') }}</span>
+            </el-dropdown-item>
+            
+          </el-dropdown-menu>
         </template>
-        <span>{{ ns('导出') }}</span>
-      </el-button><#
+      </el-dropdown><#
       }
       #>
       
@@ -772,8 +834,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         size="small"
         height="100%"
         row-key="id"
-        :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"<#
+        :empty-text="inited ? undefined : ns('加载中...')"<#
         if (hasSummary) {
         #>
         show-summary
@@ -823,6 +884,8 @@ const hasAtt = columns.some((item) => item.isAtt);
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
             if (column_name === "version") continue;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             const foreignKey = column.foreignKey;
             let data_type = column.DATA_TYPE;
             let column_type = column.COLUMN_TYPE;
@@ -853,6 +916,29 @@ const hasAtt = columns.some((item) => item.isAtt);
                   v-model="row[column.property]"
                 ></LinkImage>
               </template>
+            </el-table-column>
+          </template><#
+            } else if (column.isEncrypt) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            ><#
+              if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, row[column.property])"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
           } else if (column.isAtt) {
@@ -1112,6 +1198,9 @@ const hasAtt = columns.some((item) => item.isAtt);
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1135,7 +1224,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     let foreignSchema = undefined;
     if (foreignKey) {
       foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-      if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+      if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
         continue;
       }
     }
@@ -1143,7 +1232,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
       && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
-      && !(foreignSchema && foreignSchema.opts.list_tree)
+      && !(foreignSchema && foreignSchema.opts?.list_tree)
     ) {
   #>
   
@@ -1158,13 +1247,18 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       :tenant_ids="[ usrStore.tenant_id ]"<#
       }
+      #><#
+      if (hasEnabled) {
+      #>
+      is_enabled="1"<#
+      }
       #>
       v-bind="listSelectProps"
     ></<#=Foreign_Table_Up#>List>
   </ListSelectDialog><#
     } else if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-      && (foreignSchema && foreignSchema.opts.list_tree)
+      && (foreignSchema && foreignSchema.opts?.list_tree)
     ) {
   #>
   
@@ -1178,6 +1272,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
       #>
       :tenant_ids="[ usrStore.tenant_id ]"<#
+      }
+      #><#
+      if (hasEnabled) {
+      #>
+      is_enabled="1"<#
       }
       #>
       v-bind="listSelectProps"
@@ -1263,7 +1362,7 @@ for (let i = 0; i < columns.length; i++) {
   let foreignSchema = undefined;
   if (foreignKey) {
     foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
   }
@@ -1271,14 +1370,14 @@ for (let i = 0; i < columns.length; i++) {
   if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
     && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
-    && !(foreignSchema && foreignSchema.opts.list_tree)
+    && !(foreignSchema && foreignSchema.opts?.list_tree)
   ) {
 #>
 
 import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
   } else if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-    && (foreignSchema && foreignSchema.opts.list_tree && foreignSchema.opts.list_tree)
+    && (foreignSchema && foreignSchema.opts?.list_tree && foreignSchema.opts?.list_tree)
   ) {
 #>
 
@@ -1418,7 +1517,7 @@ if (
     const foreignKey = item.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       return false;
     }
     return true;
@@ -1437,7 +1536,7 @@ import {<#
     const column = foreignKeyArrColumns[i];
     const foreignKey = column.foreignKey;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       continue;
     }
   #>
@@ -1476,10 +1575,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignSchema) {
     continue;
   }
-  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+  if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts.list_tree) {
+  if (!foreignSchema.opts?.list_tree) {
     continue;
   }
   if (!column.search) {
@@ -1644,6 +1743,9 @@ const props = defineProps<{
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1697,7 +1799,6 @@ const props = defineProps<{
     } else {
       column_comment = ' // ' + column_comment;
     }
-    /* if (!search) continue; */
   #><#
     if (foreignKey) {
   #>
@@ -1716,10 +1817,10 @@ const props = defineProps<{
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else {
-  #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+  #><#
     if (!column.isEncrypt) {
   #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
   <#=column_name#>_like?: <#=data_type#>;<#=column_comment#><#
     }
   #><#
@@ -1740,6 +1841,9 @@ const builtInSearchType: { [key: string]: string } = {
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1908,6 +2012,8 @@ function getTableColumns(): ColumnType[] {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -2162,13 +2268,18 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  const is_deleted = search.is_deleted;
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
+  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -2238,24 +2349,48 @@ async function useFindCount(
 if (defaultSort && defaultSort.prop) {
 #>
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
-});<#
+};<#
 } else {
 #>
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "",
   order: "ascending",
-});<#
+};<#
 }
 #>
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
+});
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];
@@ -2427,6 +2562,8 @@ async function onImportExcel() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     const data_type = column.DATA_TYPE;
     const isPassword = column.isPassword;
     if (isPassword) continue;
@@ -2470,10 +2607,11 @@ async function onImportExcel() {
   }
   isStopImport = false;
   isImporting = true;
+  importPercentage = 0;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
   try {
-    ElMessage.info(await nsAsync("正在导入..."));
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
     const models = await getExcelData<<#=inputName#>>(
       file,
       header,
@@ -2487,6 +2625,8 @@ async function onImportExcel() {
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
             if (column_name === "version") continue;
+            if (column_name === "is_deleted") continue;
+            if (column_name === "tenant_id") continue;
             const data_type = column.DATA_TYPE;
             const isPassword = column.isPassword;
             if (isPassword) continue;
@@ -2516,7 +2656,9 @@ async function onImportExcel() {
               column_name2 = `${column_name}_lbl`;
             }
             let data_type2 = "string";
-            if ([ "datetime", "date" ].includes(data_type)) {
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+              data_type2 = "string";
+            } else if ([ "datetime", "date" ].includes(data_type)) {
               data_type2 = "date";
             } else if (data_type === "int" || data_type === "tinyint" || data_type === "double") {
               data_type2 = "number";
@@ -2530,6 +2672,7 @@ async function onImportExcel() {
         },
       },
     );
+    messageHandler.close();
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -2539,7 +2682,6 @@ async function onImportExcel() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
-    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -2554,7 +2696,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-  importPercentage = 0;
 }<#
   }
 #><#
@@ -2570,6 +2711,8 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "version") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
   const foreignKey = column.foreignKey;
   let data_type = column.DATA_TYPE;
   let column_type = column.COLUMN_TYPE;
@@ -2752,6 +2895,8 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
+  const search = getDataSearch();
+  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -2762,6 +2907,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
@@ -2964,6 +3110,7 @@ async function openForeignTabs(id: string, title: string) {
     title,
     model: {
       id,
+      is_deleted: search.is_deleted,
     },
   });
   tableFocus();
@@ -2982,6 +3129,8 @@ async function initI18nsEfc() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -3022,17 +3171,15 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    const search2 = {
-      ...search,
-      ...builtInSearch,
-    };
-    if (deepCompare(search, search2)) {
+    search.is_deleted = builtInSearch.is_deleted;
+    if (deepCompare(builtInSearch, search)) {
       return;
     }
     await dataGrid(true);
   },
   {
     deep: true,
+    immediate: true,
   },
 );
 
@@ -3045,6 +3192,9 @@ for (let i = 0; i < columns.length; i++) {
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
   const data_type = column.DATA_TYPE;
   const column_type = column.COLUMN_TYPE;
   let column_comment = column.COLUMN_COMMENT || "";
@@ -3129,6 +3279,7 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
     isLocked: $$(isLocked),
     model: {
       id,
+      is_deleted: search.is_deleted,
     },
   });
 }<#
