@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -112,7 +108,7 @@ async function getWhereQuery(
     whereQuery += ` and t.appid is null`;
   }
   if (isNotEmpty(search?.appid_like)) {
-    whereQuery += ` and t.appid like ${ args.push(sqlLike(search?.appid_like) + "%") }`;
+    whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
   }
   if (search?.mchid !== undefined) {
     whereQuery += ` and t.mchid = ${ args.push(search.mchid) }`;
@@ -121,7 +117,7 @@ async function getWhereQuery(
     whereQuery += ` and t.mchid is null`;
   }
   if (isNotEmpty(search?.mchid_like)) {
-    whereQuery += ` and t.mchid like ${ args.push(sqlLike(search?.mchid_like) + "%") }`;
+    whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
   if (search?.openid !== undefined) {
     whereQuery += ` and t.openid = ${ args.push(search.openid) }`;
@@ -130,7 +126,7 @@ async function getWhereQuery(
     whereQuery += ` and t.openid is null`;
   }
   if (isNotEmpty(search?.openid_like)) {
-    whereQuery += ` and t.openid like ${ args.push(sqlLike(search?.openid_like) + "%") }`;
+    whereQuery += ` and t.openid like ${ args.push("%" + sqlLike(search?.openid_like) + "%") }`;
   }
   if (search?.out_trade_no !== undefined) {
     whereQuery += ` and t.out_trade_no = ${ args.push(search.out_trade_no) }`;
@@ -139,7 +135,7 @@ async function getWhereQuery(
     whereQuery += ` and t.out_trade_no is null`;
   }
   if (isNotEmpty(search?.out_trade_no_like)) {
-    whereQuery += ` and t.out_trade_no like ${ args.push(sqlLike(search?.out_trade_no_like) + "%") }`;
+    whereQuery += ` and t.out_trade_no like ${ args.push("%" + sqlLike(search?.out_trade_no_like) + "%") }`;
   }
   if (search?.transaction_id !== undefined) {
     whereQuery += ` and t.transaction_id = ${ args.push(search.transaction_id) }`;
@@ -148,7 +144,7 @@ async function getWhereQuery(
     whereQuery += ` and t.transaction_id is null`;
   }
   if (isNotEmpty(search?.transaction_id_like)) {
-    whereQuery += ` and t.transaction_id like ${ args.push(sqlLike(search?.transaction_id_like) + "%") }`;
+    whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
   if (search?.trade_type && !Array.isArray(search?.trade_type)) {
     search.trade_type = [ search.trade_type ];
@@ -169,7 +165,7 @@ async function getWhereQuery(
     whereQuery += ` and t.trade_state_desc is null`;
   }
   if (isNotEmpty(search?.trade_state_desc_like)) {
-    whereQuery += ` and t.trade_state_desc like ${ args.push(sqlLike(search?.trade_state_desc_like) + "%") }`;
+    whereQuery += ` and t.trade_state_desc like ${ args.push("%" + sqlLike(search?.trade_state_desc_like) + "%") }`;
   }
   if (search?.bank_type !== undefined) {
     whereQuery += ` and t.bank_type = ${ args.push(search.bank_type) }`;
@@ -178,7 +174,7 @@ async function getWhereQuery(
     whereQuery += ` and t.bank_type is null`;
   }
   if (isNotEmpty(search?.bank_type_like)) {
-    whereQuery += ` and t.bank_type like ${ args.push(sqlLike(search?.bank_type_like) + "%") }`;
+    whereQuery += ` and t.bank_type like ${ args.push("%" + sqlLike(search?.bank_type_like) + "%") }`;
   }
   if (search?.attach !== undefined) {
     whereQuery += ` and t.attach = ${ args.push(search.attach) }`;
@@ -187,7 +183,7 @@ async function getWhereQuery(
     whereQuery += ` and t.attach is null`;
   }
   if (isNotEmpty(search?.attach_like)) {
-    whereQuery += ` and t.attach like ${ args.push(sqlLike(search?.attach_like) + "%") }`;
+    whereQuery += ` and t.attach like ${ args.push("%" + sqlLike(search?.attach_like) + "%") }`;
   }
   if (search?.success_time && search?.success_time?.length > 0) {
     if (search.success_time[0] != null) {
@@ -232,7 +228,7 @@ async function getWhereQuery(
     whereQuery += ` and t.device_id is null`;
   }
   if (isNotEmpty(search?.device_id_like)) {
-    whereQuery += ` and t.device_id like ${ args.push(sqlLike(search?.device_id_like) + "%") }`;
+    whereQuery += ` and t.device_id like ${ args.push("%" + sqlLike(search?.device_id_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -241,7 +237,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.raw !== undefined) {
     whereQuery += ` and t.raw = ${ args.push(search.raw) }`;
@@ -250,7 +246,7 @@ async function getWhereQuery(
     whereQuery += ` and t.raw is null`;
   }
   if (isNotEmpty(search?.raw_like)) {
-    whereQuery += ` and t.raw like ${ args.push(sqlLike(search?.raw_like) + "%") }`;
+    whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -393,6 +389,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "transaction_id",
+    order: SortOrderEnum.Desc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -424,6 +428,7 @@ export async function findAll(
     "wx_pay_notice_currency",
     "wx_pay_notice_currency",
   ]);
+  
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -508,6 +513,80 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: WxPayNoticeInput,
+) {
+  // 支付完成时间
+  if (!input.success_time && input.success_time_lbl) {
+    const success_time_lbl = dayjs(input.success_time_lbl);
+    if (success_time_lbl.isValid()) {
+      input.success_time = success_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.success_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.success_time) {
+    const success_time = dayjs(input.success_time);
+    if (!success_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.success_time } ${ await ns("日期格式错误") }`;
+    }
+    input.success_time = dayjs(input.success_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  
+  const [
+    trade_typeDict, // 交易类型
+    trade_stateDict, // 交易状态
+    currencyDict, // 货币类型
+    payer_currencyDict, // 用户支付币种
+  ] = await dictbizSrcDao.getDictbiz([
+    "wx_unified_order_trade_type",
+    "wx_pay_notice_trade_state",
+    "wx_pay_notice_currency",
+    "wx_pay_notice_currency",
+  ]);
+  
+  // 交易类型
+  if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
+    const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
+    if (val !== undefined) {
+      input.trade_type = val;
+    }
+  }
+  
+  // 交易状态
+  if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
+    const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
+    if (val !== undefined) {
+      input.trade_state = val;
+    }
+  }
+  
+  // 支付完成时间
+  if (isNotEmpty(input.success_time_lbl) && input.success_time === undefined) {
+    input.success_time_lbl = String(input.success_time_lbl).trim();
+    input.success_time = input.success_time_lbl;
+  }
+  
+  // 货币类型
+  if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
+    const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
+    if (val !== undefined) {
+      input.currency = val;
+    }
+  }
+  
+  // 用户支付币种
+  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
+    const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
+    if (val !== undefined) {
+      input.payer_currency = val;
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -552,10 +631,10 @@ export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxPayNoticeSearch | PartialNull<WxPayNoticeModel>} search0
+ * @param {WxPayNoticeInput} search0
  */
 export async function findByUnique(
-  search0: WxPayNoticeSearch | PartialNull<WxPayNoticeModel>,
+  search0: WxPayNoticeInput,
   options?: {
   },
 ): Promise<WxPayNoticeModel[]> {
@@ -575,14 +654,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxPayNoticeModel} oldModel
- * @param {PartialNull<WxPayNoticeModel>} model
+ * @param {WxPayNoticeInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxPayNoticeModel,
-  model: PartialNull<WxPayNoticeModel>,
+  input: WxPayNoticeInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -600,7 +679,6 @@ export async function checkByUnique(
   oldModel: WxPayNoticeModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -617,7 +695,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -643,11 +720,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -716,6 +791,16 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: WxPayNoticeModel,
+) {
+  if (!model) {
+    throw `${ await ns("微信支付通知") } ${ await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
@@ -863,61 +948,16 @@ export async function create(
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_pay_notice";
   const method = "create";
   
-  const [
-    trade_typeDict, // 交易类型
-    trade_stateDict, // 交易状态
-    currencyDict, // 货币类型
-    payer_currencyDict, // 用户支付币种
-  ] = await dictbizSrcDao.getDictbiz([
-    "wx_unified_order_trade_type",
-    "wx_pay_notice_trade_state",
-    "wx_pay_notice_currency",
-    "wx_pay_notice_currency",
-  ]);
-  
-  // 交易类型
-  if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
-    const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
-    if (val !== undefined) {
-      input.trade_type = val;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 交易状态
-  if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
-    const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
-    if (val !== undefined) {
-      input.trade_state = val;
-    }
-  }
-  
-  // 支付完成时间
-  if (isNotEmpty(input.success_time_lbl) && input.success_time === undefined) {
-    input.success_time_lbl = String(input.success_time_lbl).trim();
-    input.success_time = input.success_time_lbl;
-  }
-  
-  // 货币类型
-  if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
-    const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
-    if (val !== undefined) {
-      input.currency = val;
-    }
-  }
-  
-  // 用户支付币种
-  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
-    const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
-    if (val !== undefined) {
-      input.payer_currency = val;
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -938,8 +978,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -1125,8 +1170,8 @@ export async function create(
     sql += `,${ args.push(input.raw) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -1223,7 +1268,6 @@ export async function updateById(
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_pay_notice";
@@ -1236,18 +1280,6 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    trade_typeDict, // 交易类型
-    trade_stateDict, // 交易状态
-    currencyDict, // 货币类型
-    payer_currencyDict, // 用户支付币种
-  ] = await dictbizSrcDao.getDictbiz([
-    "wx_unified_order_trade_type",
-    "wx_pay_notice_trade_state",
-    "wx_pay_notice_currency",
-    "wx_pay_notice_currency",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
@@ -1258,37 +1290,7 @@ export async function updateById(
     await updateOrgById(id, input.org_id);
   }
   
-  // 交易类型
-  if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
-    const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
-    if (val !== undefined) {
-      input.trade_type = val;
-    }
-  }
-  
-  // 交易状态
-  if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
-    const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
-    if (val !== undefined) {
-      input.trade_state = val;
-    }
-  }
-  
-  // 货币类型
-  if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
-    const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
-    if (val !== undefined) {
-      input.currency = val;
-    }
-  }
-  
-  // 用户支付币种
-  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
-    const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
-    if (val !== undefined) {
-      input.payer_currency = val;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1437,7 +1439,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

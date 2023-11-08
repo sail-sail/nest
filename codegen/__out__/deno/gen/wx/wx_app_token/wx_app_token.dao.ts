@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -114,7 +110,7 @@ async function getWhereQuery(
     whereQuery += ` and t.access_token is null`;
   }
   if (isNotEmpty(search?.access_token_like)) {
-    whereQuery += ` and t.access_token like ${ args.push(sqlLike(search?.access_token_like) + "%") }`;
+    whereQuery += ` and t.access_token like ${ args.push("%" + sqlLike(search?.access_token_like) + "%") }`;
   }
   if (search?.token_time && search?.token_time?.length > 0) {
     if (search.token_time[0] != null) {
@@ -233,6 +229,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -260,6 +260,7 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -277,6 +278,45 @@ export async function findAll(
   }
   
   return result;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: WxAppTokenInput,
+) {
+  // 令牌创建时间
+  if (!input.token_time && input.token_time_lbl) {
+    const token_time_lbl = dayjs(input.token_time_lbl);
+    if (token_time_lbl.isValid()) {
+      input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.token_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.token_time) {
+    const token_time = dayjs(input.token_time);
+    if (!token_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.token_time } ${ await ns("日期格式错误") }`;
+    }
+    input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  
+  // 微信小程序
+  if (isNotEmpty(input.wx_app_id_lbl) && input.wx_app_id === undefined) {
+    input.wx_app_id_lbl = String(input.wx_app_id_lbl).trim();
+    const wx_appModel = await wx_appDao.findOne({ lbl: input.wx_app_id_lbl });
+    if (wx_appModel) {
+      input.wx_app_id = wx_appModel.id;
+    }
+  }
+  
+  // 令牌创建时间
+  if (isNotEmpty(input.token_time_lbl) && input.token_time === undefined) {
+    input.token_time_lbl = String(input.token_time_lbl).trim();
+    input.token_time = input.token_time_lbl;
+  }
 }
 
 /**
@@ -298,10 +338,10 @@ export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxAppTokenSearch | PartialNull<WxAppTokenModel>} search0
+ * @param {WxAppTokenInput} search0
  */
 export async function findByUnique(
-  search0: WxAppTokenSearch | PartialNull<WxAppTokenModel>,
+  search0: WxAppTokenInput,
   options?: {
   },
 ): Promise<WxAppTokenModel[]> {
@@ -321,7 +361,7 @@ export async function findByUnique(
     }
     let wx_app_id: string[] = [ ];
     if (!Array.isArray(search0.wx_app_id)) {
-      wx_app_id.push(search0.wx_app_id);
+      wx_app_id.push(search0.wx_app_id, search0.wx_app_id);
     } else {
       wx_app_id = search0.wx_app_id;
     }
@@ -336,18 +376,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxAppTokenModel} oldModel
- * @param {PartialNull<WxAppTokenModel>} model
+ * @param {WxAppTokenInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxAppTokenModel,
-  model: PartialNull<WxAppTokenModel>,
+  input: WxAppTokenInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.wx_app_id === model.wx_app_id
+    oldModel.wx_app_id === input.wx_app_id
   ) {
     return true;
   }
@@ -366,7 +406,6 @@ export async function checkByUnique(
   oldModel: WxAppTokenModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -383,7 +422,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -409,11 +447,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -487,6 +523,16 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: WxAppTokenModel,
+) {
+  if (!model) {
+    throw `${ await ns("小程序接口凭据") } ${ await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
@@ -534,26 +580,16 @@ export async function create(
   input: WxAppTokenInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_app_token";
   const method = "create";
   
-  // 微信小程序
-  if (isNotEmpty(input.wx_app_id_lbl) && input.wx_app_id === undefined) {
-    input.wx_app_id_lbl = String(input.wx_app_id_lbl).trim();
-    const wx_appModel = await wx_appDao.findOne({ lbl: input.wx_app_id_lbl });
-    if (wx_appModel) {
-      input.wx_app_id = wx_appModel.id;
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 令牌创建时间
-  if (isNotEmpty(input.token_time_lbl) && input.token_time === undefined) {
-    input.token_time_lbl = String(input.token_time_lbl).trim();
-    input.token_time = input.token_time_lbl;
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -574,8 +610,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -662,7 +703,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -743,7 +786,6 @@ export async function updateById(
   input: WxAppTokenInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_app_token";
@@ -761,14 +803,7 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 微信小程序
-  if (isNotEmpty(input.wx_app_id_lbl) && input.wx_app_id === undefined) {
-    input.wx_app_id_lbl = String(input.wx_app_id_lbl).trim();
-    const wx_appModel = await wx_appDao.findOne({ lbl: input.wx_app_id_lbl });
-    if (wx_appModel) {
-      input.wx_app_id = wx_appModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -835,7 +870,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

@@ -83,6 +83,71 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {WxPayNoticeSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: WxPayNoticeSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneWxPayNotice: Query["findOneWxPayNotice"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
+        findOneWxPayNotice(search: $search, sort: $sort) {
+          id
+          appid
+          mchid
+          openid
+          out_trade_no
+          transaction_id
+          trade_type
+          trade_type_lbl
+          trade_state
+          trade_state_lbl
+          trade_state_desc
+          bank_type
+          attach
+          success_time
+          success_time_lbl
+          total
+          payer_total
+          currency
+          currency_lbl
+          payer_currency
+          payer_currency_lbl
+          device_id
+          rem
+          raw
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneWxPayNotice;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {WxPayNoticeSearch} search?
@@ -196,9 +261,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "create_time",
