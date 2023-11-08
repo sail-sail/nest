@@ -701,7 +701,6 @@ async function onInitI18ns() {
     "创建时间",
     "更新人",
     "更新时间",
-    "删除",
   ];
   await Promise.all([
     initDetailI18ns(),
