@@ -33,6 +33,10 @@ type WxwAppModel {
   order_by: Int!
   "备注"
   rem: String!
+  "租户"
+  tenant_id: String!
+  "租户"
+  tenant_id_lbl: String
   "是否已删除"
   is_deleted: Int!
 }
@@ -63,6 +67,10 @@ type WxwAppFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "租户"
+  tenant_id: String!
+  "租户"
+  tenant_id_lbl: String!
 }
 input WxwAppInput {
   ""
@@ -93,6 +101,10 @@ input WxwAppInput {
   order_by: Int
   "备注"
   rem: String
+  "租户"
+  tenant_id: String
+  "租户"
+  tenant_id_lbl: String
 }
 input WxwAppSearch {
   "是否已删除"
@@ -122,6 +134,9 @@ input WxwAppSearch {
   "备注"
   rem: String
   rem_like: String
+  "租户"
+  tenant_id: [String!]
+  tenant_id_is_null: Boolean
 }
 type Query {
   "根据条件查找据数总数"

@@ -131,6 +131,7 @@
           </el-dropdown>
         </template>
         <div
+          v-if="locales.length > 1"
           un-flex="~"
           un-items-center
           un-h="full"
@@ -261,7 +262,7 @@
       <div
         ref="tab_active_lineRef"
         
-        un-display-none
+        un-hidden
         un-pos-absolute
         un-bottom-0
         un-left="[23px]"
@@ -310,6 +311,10 @@ import {
   selectLang,
   getUsrPermits,
 } from "./Api";
+
+import {
+  getLoginLangs,
+} from "../Api";
 
 const {
   n,
@@ -548,12 +553,19 @@ async function initFrame() {
   if (usrStore.authorization) {
     const [
       loginInfoTmp,
+      _,
+      langModels,
     ] = await Promise.all([
       getLoginInfo({ notLoading: true }),
       getUsrPermitsEfc(),
+      getLoginLangs(),
     ]);
     loginInfo = loginInfoTmp;
     usrStore.loginInfo = loginInfo;
+    locales = langModels.map(item => ({
+      code: item.code,
+      lbl: item.lbl,
+    }));
   }
   inited = true;
 }

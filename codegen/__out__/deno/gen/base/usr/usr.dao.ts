@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -108,7 +104,7 @@ async function getWhereQuery(
     whereQuery += ` and t.img is null`;
   }
   if (isNotEmpty(search?.img_like)) {
-    whereQuery += ` and t.img like ${ args.push(sqlLike(search?.img_like) + "%") }`;
+    whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -117,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.username !== undefined) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
@@ -126,7 +122,7 @@ async function getWhereQuery(
     whereQuery += ` and t.username is null`;
   }
   if (isNotEmpty(search?.username_like)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
+    whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
   }
   if (search?.org_ids && !Array.isArray(search?.org_ids)) {
     search.org_ids = [ search.org_ids ];
@@ -195,7 +191,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -416,6 +412,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -711,10 +711,10 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {UsrSearch | PartialNull<UsrModel>} search0
+ * @param {UsrInput} search0
  */
 export async function findByUnique(
-  search0: UsrSearch | PartialNull<UsrModel>,
+  search0: UsrInput,
   options?: {
   },
 ): Promise<UsrModel[]> {
@@ -744,18 +744,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {UsrModel} oldModel
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: UsrModel,
-  model: PartialNull<UsrModel>,
+  input: UsrInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -774,7 +774,6 @@ export async function checkByUnique(
   oldModel: UsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -791,7 +790,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -817,11 +815,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -996,7 +992,6 @@ export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1144,7 +1139,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 所属组织
   await many2manyUpdate(
@@ -1267,7 +1264,6 @@ export async function updateById(
   input: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1375,7 +1371,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -121,7 +117,7 @@ async function getWhereQuery(
     whereQuery += ` and t.touser is null`;
   }
   if (isNotEmpty(search?.touser_like)) {
-    whereQuery += ` and t.touser like ${ args.push(sqlLike(search?.touser_like) + "%") }`;
+    whereQuery += ` and t.touser like ${ args.push("%" + sqlLike(search?.touser_like) + "%") }`;
   }
   if (search?.title !== undefined) {
     whereQuery += ` and t.title = ${ args.push(search.title) }`;
@@ -130,7 +126,7 @@ async function getWhereQuery(
     whereQuery += ` and t.title is null`;
   }
   if (isNotEmpty(search?.title_like)) {
-    whereQuery += ` and t.title like ${ args.push(sqlLike(search?.title_like) + "%") }`;
+    whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
   }
   if (search?.description !== undefined) {
     whereQuery += ` and t.description = ${ args.push(search.description) }`;
@@ -139,7 +135,7 @@ async function getWhereQuery(
     whereQuery += ` and t.description is null`;
   }
   if (isNotEmpty(search?.description_like)) {
-    whereQuery += ` and t.description like ${ args.push(sqlLike(search?.description_like) + "%") }`;
+    whereQuery += ` and t.description like ${ args.push("%" + sqlLike(search?.description_like) + "%") }`;
   }
   if (search?.url !== undefined) {
     whereQuery += ` and t.url = ${ args.push(search.url) }`;
@@ -148,7 +144,7 @@ async function getWhereQuery(
     whereQuery += ` and t.url is null`;
   }
   if (isNotEmpty(search?.url_like)) {
-    whereQuery += ` and t.url like ${ args.push(sqlLike(search?.url_like) + "%") }`;
+    whereQuery += ` and t.url like ${ args.push("%" + sqlLike(search?.url_like) + "%") }`;
   }
   if (search?.btntxt !== undefined) {
     whereQuery += ` and t.btntxt = ${ args.push(search.btntxt) }`;
@@ -157,7 +153,7 @@ async function getWhereQuery(
     whereQuery += ` and t.btntxt is null`;
   }
   if (isNotEmpty(search?.btntxt_like)) {
-    whereQuery += ` and t.btntxt like ${ args.push(sqlLike(search?.btntxt_like) + "%") }`;
+    whereQuery += ` and t.btntxt like ${ args.push("%" + sqlLike(search?.btntxt_like) + "%") }`;
   }
   if (search?.create_time && search?.create_time?.length > 0) {
     if (search.create_time[0] != null) {
@@ -174,7 +170,7 @@ async function getWhereQuery(
     whereQuery += ` and t.errmsg is null`;
   }
   if (isNotEmpty(search?.errmsg_like)) {
-    whereQuery += ` and t.errmsg like ${ args.push(sqlLike(search?.errmsg_like) + "%") }`;
+    whereQuery += ` and t.errmsg like ${ args.push("%" + sqlLike(search?.errmsg_like) + "%") }`;
   }
   if (search?.msgid !== undefined) {
     whereQuery += ` and t.msgid = ${ args.push(search.msgid) }`;
@@ -183,7 +179,7 @@ async function getWhereQuery(
     whereQuery += ` and t.msgid is null`;
   }
   if (isNotEmpty(search?.msgid_like)) {
-    whereQuery += ` and t.msgid like ${ args.push(sqlLike(search?.msgid_like) + "%") }`;
+    whereQuery += ` and t.msgid like ${ args.push("%" + sqlLike(search?.msgid_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -283,6 +279,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -397,10 +397,10 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxwMsgSearch | PartialNull<WxwMsgModel>} search0
+ * @param {WxwMsgInput} search0
  */
 export async function findByUnique(
-  search0: WxwMsgSearch | PartialNull<WxwMsgModel>,
+  search0: WxwMsgInput,
   options?: {
   },
 ): Promise<WxwMsgModel[]> {
@@ -420,14 +420,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxwMsgModel} oldModel
- * @param {PartialNull<WxwMsgModel>} model
+ * @param {WxwMsgInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxwMsgModel,
-  model: PartialNull<WxwMsgModel>,
+  input: WxwMsgInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -445,7 +445,6 @@ export async function checkByUnique(
   oldModel: WxwMsgModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -462,7 +461,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -488,11 +486,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -669,7 +665,6 @@ export async function create(
   input: WxwMsgInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_msg";
@@ -822,8 +817,8 @@ export async function create(
     sql += `,${ args.push(input.msgid) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -882,7 +877,6 @@ export async function updateById(
   input: WxwMsgInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_msg";
@@ -995,7 +989,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

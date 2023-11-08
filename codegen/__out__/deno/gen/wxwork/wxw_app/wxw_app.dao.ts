@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -109,7 +105,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.corpid !== undefined) {
     whereQuery += ` and t.corpid = ${ args.push(search.corpid) }`;
@@ -118,7 +114,7 @@ async function getWhereQuery(
     whereQuery += ` and t.corpid is null`;
   }
   if (isNotEmpty(search?.corpid_like)) {
-    whereQuery += ` and t.corpid like ${ args.push(sqlLike(search?.corpid_like) + "%") }`;
+    whereQuery += ` and t.corpid like ${ args.push("%" + sqlLike(search?.corpid_like) + "%") }`;
   }
   if (search?.agentid !== undefined) {
     whereQuery += ` and t.agentid = ${ args.push(search.agentid) }`;
@@ -127,7 +123,7 @@ async function getWhereQuery(
     whereQuery += ` and t.agentid is null`;
   }
   if (isNotEmpty(search?.agentid_like)) {
-    whereQuery += ` and t.agentid like ${ args.push(sqlLike(search?.agentid_like) + "%") }`;
+    whereQuery += ` and t.agentid like ${ args.push("%" + sqlLike(search?.agentid_like) + "%") }`;
   }
   if (search?.domain_id && !Array.isArray(search?.domain_id)) {
     search.domain_id = [ search.domain_id ];
@@ -168,7 +164,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -271,6 +267,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -397,16 +397,18 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
+    tenant_id: await n("租户"),
+    tenant_id_lbl: await n("租户"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxwAppSearch | PartialNull<WxwAppModel>} search0
+ * @param {WxwAppInput} search0
  */
 export async function findByUnique(
-  search0: WxwAppSearch | PartialNull<WxwAppModel>,
+  search0: WxwAppInput,
   options?: {
   },
 ): Promise<WxwAppModel[]> {
@@ -466,29 +468,29 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxwAppModel} oldModel
- * @param {PartialNull<WxwAppModel>} model
+ * @param {WxwAppInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxwAppModel,
-  model: PartialNull<WxwAppModel>,
+  input: WxwAppInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
   if (
-    oldModel.corpid === model.corpid &&
-    oldModel.agentid === model.agentid
+    oldModel.corpid === input.corpid &&
+    oldModel.agentid === input.agentid
   ) {
     return true;
   }
   if (
-    oldModel.domain_id === model.domain_id
+    oldModel.domain_id === input.domain_id
   ) {
     return true;
   }
@@ -550,11 +552,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -899,7 +899,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -1111,7 +1113,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

@@ -1,7 +1,5 @@
 {
   "recommendations": [
-    "aaron-bond.better-comments",
-    "alefragnani.bookmarks",
     "ms-ceintl.vscode-language-pack-zh-hans",
     "mikestead.dotenv",
     "hediet.vscode-drawio-insiders-build",
@@ -29,6 +27,9 @@
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
-    "britesnow.vscode-toggle-quotes"
+    "britesnow.vscode-toggle-quotes",
+    "ponetto.vscode-diff-viewer",
+    "chakrounanas.turbo-console-log",
+    "johnsoncodehk.vscode-tsconfig-helper"
   ]
 }

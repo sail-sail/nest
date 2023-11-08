@@ -1,13 +1,14 @@
 <template>
 <el-date-picker
-  v-if="readonly !== true"
-  class="custom_date_picker"
-  un-w="full"
+  class="custom_date_picker w-full"
+  :class="{ 'custom_date_picker_range': props.type?.endsWith('range') }"
   v-bind="$attrs"
-  v-model="modelValue"
   :type="props.type"
+  v-model="modelValue"
+  :format="props.format"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  :readonly="props.readonly"
   @change="onChange"
   @clear="onClear"
 >
@@ -19,30 +20,12 @@
     <slot :name="key"></slot>
   </template>
 </el-date-picker>
-<template
-  v-else
->
-  <div
-    un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
-    un-box-border
-    un-rounded
-    un-m="l-1"
-    un-w="full"
-    un-min="h-8"
-    un-line-height="normal"
-    un-break-words
-    class="custom_select_readonly"
-    v-bind="$attrs"
-  >
-    {{ modelLabel }}
-  </div>
-</template>
 </template>
 
 <script lang="ts" setup>
-import type { IDatePickerType } from "element-plus/es/components/date-picker/src/date-picker.type";
+import type { ElDatePicker } from "element-plus";
 
+type DatePickerType = InstanceType<typeof ElDatePicker>;
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
@@ -52,15 +35,15 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<{
+    type?: DatePickerType["type"];
     modelValue?: any;
-    type?: IDatePickerType;
     format?: string;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
+    type: undefined,
     modelValue: undefined,
-    type: "date",
     format: undefined,
     disabled: undefined,
     readonly: undefined,
@@ -75,29 +58,6 @@ watch(
     modelValue = props.modelValue;
   },
 );
-
-let format = $computed(() => {
-  if (props.format) {
-    return props.format;
-  }
-  if (props.type === "datetime") {
-    return "YYYY-MM-DD HH:mm:ss";
-  }
-  if (props.type === "month") {
-    return "YYYY-MM";
-  }
-  if (props.type === "year") {
-    return "YYYY";
-  }
-  return "YYYY-MM-DD";
-});
-
-let modelLabel = $computed(() => {
-  if (modelValue) {
-    return dayjs(modelValue).format(format);
-  }
-  return "";
-});
 
 function onChange() {
   emit("update:modelValue", modelValue);

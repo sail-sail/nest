@@ -305,6 +305,11 @@ export interface TableCloumn {
      */
     isLinkForeignTabs?: boolean;
     
+    /**
+     * 主表删除数据时是否级联删除, 默认为 false
+     */
+    isDeleteCascade?: boolean;
+    
   },
   
   foreignTabs?: {
@@ -754,6 +759,21 @@ export interface TablesConfigItem {
      * 是否需要做数据权限校验, 默认为否
      */
     dataPermit?: boolean;
+    
+    /**
+     * 增加和修改时的内联外键关联可编辑表格, 聚合关联表
+     */
+    inlineForeignTabs?: {
+      mod: string;
+      mod_slash_table?: string;
+      table: string;
+      label: string;
+      column: string;
+      /**
+       * 主表删除数据时是否级联删除, 默认为 true
+       */
+      isDeleteCascade?: boolean;
+    }[],
     
   },
   columns?: TableCloumn[];

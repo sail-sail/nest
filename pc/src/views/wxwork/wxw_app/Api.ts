@@ -66,6 +66,53 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {WxwAppSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: WxwAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneWxwApp: Query["findOneWxwApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwAppSearch, $sort: [SortInput!]) {
+        findOneWxwApp(search: $search, sort: $sort) {
+          id
+          lbl
+          corpid
+          agentid
+          domain_id
+          domain_id_lbl
+          corpsecret
+          contactsecret
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneWxwApp;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {WxwAppSearch} search?
@@ -355,9 +402,10 @@ export async function findAllDomain(
 
 export async function getDomainList() {
   const data = await findAllDomain(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",

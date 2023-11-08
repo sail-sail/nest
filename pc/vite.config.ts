@@ -29,13 +29,6 @@ import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/assets/style/common.scss";`,
-      },
-    },
-  },
   plugins: [
     Inspector({
       toggleButtonPos: "top-left",
