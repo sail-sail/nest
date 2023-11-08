@@ -81,6 +81,69 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {PayTransactionsJsapiSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: PayTransactionsJsapiSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOnePayTransactionsJsapi: Query["findOnePayTransactionsJsapi"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
+        findOnePayTransactionsJsapi(search: $search, sort: $sort) {
+          id
+          appid
+          mchid
+          description
+          out_trade_no
+          transaction_id
+          trade_state
+          trade_state_lbl
+          trade_state_desc
+          success_time
+          success_time_lbl
+          time_expire
+          attach
+          attach2
+          notify_url
+          support_fapiao
+          support_fapiao_lbl
+          total_fee
+          currency
+          currency_lbl
+          openid
+          prepay_id
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOnePayTransactionsJsapi;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {PayTransactionsJsapiSearch} search?
@@ -192,9 +255,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "create_time",

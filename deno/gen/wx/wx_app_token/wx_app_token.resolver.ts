@@ -89,12 +89,15 @@ export async function createWxAppToken(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./wx_app_token.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +117,22 @@ export async function updateByIdWxAppToken(
   id: string,
   input: WxAppTokenInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./wx_app_token.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/wx/wx_app_token",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./wx_app_token.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +143,11 @@ export async function updateByIdWxAppToken(
 export async function deleteByIdsWxAppToken(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./wx_app_token.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +156,6 @@ export async function deleteByIdsWxAppToken(
     "/wx/wx_app_token",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./wx_app_token.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -158,6 +166,11 @@ export async function deleteByIdsWxAppToken(
 export async function revertByIdsWxAppToken(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./wx_app_token.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -166,10 +179,6 @@ export async function revertByIdsWxAppToken(
     "/wx/wx_app_token",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./wx_app_token.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

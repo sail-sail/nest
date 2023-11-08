@@ -18,14 +18,15 @@ export interface WxAppModel extends WxAppModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
+  tenant_id: string;
 }
 
 export interface WxAppInput extends WxAppInputType {
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
   tenant_id?: string | null;
 }
 

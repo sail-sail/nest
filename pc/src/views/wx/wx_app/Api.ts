@@ -70,6 +70,57 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {WxAppSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: WxAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneWxApp: Query["findOneWxApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxAppSearch, $sort: [SortInput!]) {
+        findOneWxApp(search: $search, sort: $sort) {
+          id
+          lbl
+          appid
+          appsecret
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneWxApp;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {WxAppSearch} search?
@@ -363,9 +414,10 @@ export async function findAllUsr(
 
 export async function getUsrList() {
   const data = await findAllUsr(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "create_time",
@@ -556,6 +608,8 @@ export async function importModels(
       break;
     }
     
+    percentage.value = Math.floor((i + 1) / models.length * 100);
+    
     const item = models[i];
     
     opt = opt || { };
@@ -574,7 +628,6 @@ export async function importModels(
       failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);

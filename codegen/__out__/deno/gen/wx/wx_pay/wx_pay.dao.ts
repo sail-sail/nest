@@ -1,13 +1,13 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
-  escape,
 } from "sqlstring";
 
 import dayjs from "dayjs";
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -21,10 +21,6 @@ import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
-
-import type {
-  PartialNull,
-} from "/typings/types.ts";
 
 import {
   isNotEmpty,
@@ -102,7 +98,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.appid !== undefined) {
     whereQuery += ` and t.appid = ${ args.push(search.appid) }`;
@@ -111,7 +107,7 @@ async function getWhereQuery(
     whereQuery += ` and t.appid is null`;
   }
   if (isNotEmpty(search?.appid_like)) {
-    whereQuery += ` and t.appid like ${ args.push(sqlLike(search?.appid_like) + "%") }`;
+    whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
   }
   if (search?.mchid !== undefined) {
     whereQuery += ` and t.mchid = ${ args.push(search.mchid) }`;
@@ -120,7 +116,7 @@ async function getWhereQuery(
     whereQuery += ` and t.mchid is null`;
   }
   if (isNotEmpty(search?.mchid_like)) {
-    whereQuery += ` and t.mchid like ${ args.push(sqlLike(search?.mchid_like) + "%") }`;
+    whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
   if (search?.publicKey !== undefined) {
     whereQuery += ` and t.publicKey = ${ args.push(search.publicKey) }`;
@@ -129,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.publicKey is null`;
   }
   if (isNotEmpty(search?.publicKey_like)) {
-    whereQuery += ` and t.publicKey like ${ args.push(sqlLike(search?.publicKey_like) + "%") }`;
+    whereQuery += ` and t.publicKey like ${ args.push("%" + sqlLike(search?.publicKey_like) + "%") }`;
   }
   if (search?.privateKey !== undefined) {
     whereQuery += ` and t.privateKey = ${ args.push(search.privateKey) }`;
@@ -138,7 +134,7 @@ async function getWhereQuery(
     whereQuery += ` and t.privateKey is null`;
   }
   if (isNotEmpty(search?.privateKey_like)) {
-    whereQuery += ` and t.privateKey like ${ args.push(sqlLike(search?.privateKey_like) + "%") }`;
+    whereQuery += ` and t.privateKey like ${ args.push("%" + sqlLike(search?.privateKey_like) + "%") }`;
   }
   if (search?.key !== undefined) {
     whereQuery += ` and t.key = ${ args.push(search.key) }`;
@@ -147,7 +143,7 @@ async function getWhereQuery(
     whereQuery += ` and t.key is null`;
   }
   if (isNotEmpty(search?.key_like)) {
-    whereQuery += ` and t.key like ${ args.push(sqlLike(search?.key_like) + "%") }`;
+    whereQuery += ` and t.key like ${ args.push("%" + sqlLike(search?.key_like) + "%") }`;
   }
   if (search?.payer_client_ip !== undefined) {
     whereQuery += ` and t.payer_client_ip = ${ args.push(search.payer_client_ip) }`;
@@ -156,7 +152,7 @@ async function getWhereQuery(
     whereQuery += ` and t.payer_client_ip is null`;
   }
   if (isNotEmpty(search?.payer_client_ip_like)) {
-    whereQuery += ` and t.payer_client_ip like ${ args.push(sqlLike(search?.payer_client_ip_like) + "%") }`;
+    whereQuery += ` and t.payer_client_ip like ${ args.push("%" + sqlLike(search?.payer_client_ip_like) + "%") }`;
   }
   if (search?.notify_url !== undefined) {
     whereQuery += ` and t.notify_url = ${ args.push(search.notify_url) }`;
@@ -165,7 +161,7 @@ async function getWhereQuery(
     whereQuery += ` and t.notify_url is null`;
   }
   if (isNotEmpty(search?.notify_url_like)) {
-    whereQuery += ` and t.notify_url like ${ args.push(sqlLike(search?.notify_url_like) + "%") }`;
+    whereQuery += ` and t.notify_url like ${ args.push("%" + sqlLike(search?.notify_url_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -194,7 +190,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -340,6 +336,14 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -427,6 +431,36 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: WxPayInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -462,10 +496,10 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxPaySearch | PartialNull<WxPayModel>} search0
+ * @param {WxPayInput} search0
  */
 export async function findByUnique(
-  search0: WxPaySearch | PartialNull<WxPayModel>,
+  search0: WxPayInput,
   options?: {
   },
 ): Promise<WxPayModel[]> {
@@ -495,18 +529,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxPayModel} oldModel
- * @param {PartialNull<WxPayModel>} model
+ * @param {WxPayInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxPayModel,
-  model: PartialNull<WxPayModel>,
+  input: WxPayInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.appid === model.appid
+    oldModel.appid === input.appid
   ) {
     return true;
   }
@@ -525,7 +559,6 @@ export async function checkByUnique(
   oldModel: WxPayModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -542,7 +575,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -568,11 +600,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -644,6 +674,25 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: WxPayModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `${ await ns("微信支付") } ${ await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: WxPayModel,
+) {
+  if (!model) {
+    throw `${ await ns("微信支付") } ${ await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
@@ -756,35 +805,16 @@ export async function create(
   input: WxPayInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_pay";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
   }
   
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -805,8 +835,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
@@ -941,7 +976,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -1022,7 +1059,6 @@ export async function updateById(
   input: WxPayInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wx_wx_pay";
@@ -1035,34 +1071,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1177,7 +1191,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {
