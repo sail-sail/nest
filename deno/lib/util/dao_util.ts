@@ -271,13 +271,17 @@ export async function decrypt(
   }
   const ivStr = str.substring(0, 16);
   const iv = new TextEncoder().encode(ivStr);
-  const buf = await crypto.subtle.decrypt(
-    {
-      name: "AES-CBC",
-      iv,
-    },
-    cryptoKey,
-    decodeBase64(str.substring(16)),
-  );
-  return (new TextDecoder().decode(buf)).substring(16);
+  try {
+    const buf = await crypto.subtle.decrypt(
+      {
+        name: "AES-CBC",
+        iv,
+      },
+      cryptoKey,
+      decodeBase64(str.substring(16)),
+    );
+    return (new TextDecoder().decode(buf)).substring(16);
+  } catch (_err) {
+    return "";
+  }
 }

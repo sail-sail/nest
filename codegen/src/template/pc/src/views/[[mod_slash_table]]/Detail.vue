@@ -2361,6 +2361,9 @@ async function onInitI18ns() {
     if (column.noList) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "org_id") continue;
+    if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
