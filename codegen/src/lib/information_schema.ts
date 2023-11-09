@@ -647,9 +647,6 @@ export async function getSchema(
     if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
     }
-    if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
-      column.foreignKey.isDeleteCascade = false;
-    }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {
         const foreignTab = column.foreignTabs[i];
@@ -705,22 +702,6 @@ export async function getSchema(
       item.foreignKey.defaultSort = {
         ...defaultSort,
       };
-    }
-  }
-  // 聚合关联表里面的isDeleteCascade默认为true
-  if (tables[table_name].opts?.inlineForeignTabs) {
-    const inlineForeignTabs = tables[table_name].opts.inlineForeignTabs;
-    for (const inlineForeignTab of inlineForeignTabs) {
-      if (inlineForeignTab.isDeleteCascade == null) {
-        inlineForeignTab.isDeleteCascade = true;
-      }
-      const mod = inlineForeignTab.mod;
-      const table = inlineForeignTab.table;
-      const columns = tables[`${ mod }_${ table }`]?.columns || [ ];
-      const column = columns.find((item) => item.COLUMN_NAME === inlineForeignTab.column);
-      if (column.foreignKey && column.foreignKey.isDeleteCascade == null) {
-        column.foreignKey.isDeleteCascade = inlineForeignTab.isDeleteCascade;
-      }
     }
   }
   tablesConfigItemMap[table_name] = tables[table_name];
