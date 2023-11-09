@@ -9,6 +9,7 @@
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  :placeholder="props.readonly ? props.readonlyPlaceholder : props.placeholder"
   @change="onChange"
   @clear="onClear"
 >
@@ -40,6 +41,8 @@ const props = withDefaults(
     format?: string;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     type: undefined,
@@ -47,6 +50,8 @@ const props = withDefaults(
     format: undefined,
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
