@@ -2,7 +2,9 @@
   <tm-sheet
     :transprent="props.transprent"
     :round="3"
-    _class="flex flex-col overflow"
+    un-flex="~ [1_0_0] col"
+    un-overflow-y-auto
+    un-overflow-x-hidden
     :padding="props.padding"
     :margin="props.margin"
   >
@@ -63,11 +65,13 @@ const props = defineProps({
   },
   margin: {
     type: Array as PropType<Array<number>>,
-    default: () => [32, 24],
+    // default: () => [32, 24],
+    default: () => [0, 0],
   },
   padding: {
     type: Array as PropType<Array<number>>,
-    default: () => [16, 0],
+    // default: () => [16, 0],
+    default: () => [0, 0],
   },
   //表单标签是竖还是横排列。
   //vertical,horizontal
