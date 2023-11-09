@@ -55,17 +55,16 @@ export async function code2Session(
       },
     ),
   );
+  const appid = wx_appModel.appid;
+  const appsecret = wx_appModel.appsecret;
   const params = new URLSearchParams();
-  params.set("appid", wx_appModel.appid);
-  params.set("secret", wx_appModel.appsecret);
-  params.set("js_code", model.code);
+  const js_code = model.code;
+  params.set("appid", appid);
+  params.set("secret", appsecret);
+  params.set("js_code", js_code);
   params.set("grant_type", "authorization_code");
-  const res = await fetch(
-    `https://api.weixin.qq.com/sns/jscode2session?${ params.toString() }`,
-    {
-      method: "GET",
-    },
-  );
+  const url = `https://api.weixin.qq.com/sns/jscode2session?${ params.toString() }`;
+  const res = await fetch(url);
   const data: {
     openid: string,
     session_key: string,
@@ -73,37 +72,40 @@ export async function code2Session(
     errcode: number,
     errmsg: string,
   } = await res.json();
-  if (data.errcode && data.errcode != 0) {
-    throw `WxappService.code2Session: ${ JSON.stringify(data) }`;
+  const errcode = data.errcode;
+  if (errcode && errcode != 0) {
+    error(`WxappService.code2Session: ${ JSON.stringify(data) }`);
+    throw data.errmsg;
   }
-  data.unionid = data.unionid || "";
+  const openid = data.openid;
+  const unionid = data.unionid;
   let wx_usrModel = await findOneWxUsr(
     {
-      openid: data.openid,
+      openid,
     },
   );
   // 用户初次登录, 设置租户
   if (!wx_usrModel) {
-    const id = (await createWxUsr(
+    const id = await createWxUsr(
       {
-        openid: data.openid,
-        lbl: data.openid,
-        unionid: data.unionid,
+        openid,
+        lbl: openid,
+        unionid,
       },
-    ))!;
+    );
     await updateTenantByIdWxUsr(id, wx_appModel.tenant_id!);
     wx_usrModel = await validateOptionWxUsr(
       await findByIdWxUsr(id),
     );
   }
   if (wx_usrModel.tenant_id !== wx_appModel.tenant_id) {
-    await updateTenantByIdWxUsr(wx_usrModel.id, wx_appModel.tenant_id!);
+    await updateTenantByIdWxUsr(wx_usrModel.id, wx_appModel.tenant_id);
   }
-  if (wx_usrModel.unionid !== data.unionid) {
+  if (wx_usrModel.unionid != unionid) {
     await updateByIdWxUsr(
       wx_usrModel.id,
       {
-        unionid: data.unionid,
+        unionid,
       },
     );
   }
@@ -117,8 +119,16 @@ export async function code2Session(
         uniqueType: UniqueType.Update,
       },
     );
-    await updateTenantByIdUsr(id, wx_appModel.tenant_id!);
-    wx_usrModel.usr_id = id;
+    await updateTenantByIdUsr(id, wx_appModel.tenant_id);
+    await updateByIdWxUsr(
+      wx_usrModel.id,
+      {
+        usr_id: id,
+      },
+    );
+    wx_usrModel = await validateOptionWxUsr(
+      await findByIdWxUsr(wx_usrModel.id),
+    );
   }
   const tokenInfo = await createTokenAuth({
     id: wx_usrModel.usr_id,
