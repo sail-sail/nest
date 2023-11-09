@@ -323,7 +323,7 @@ export function useDownloadImportTemplate(routePath: string) {
             id
             lbl
           }
-          getDictbiz(codes: [
+          getDict(codes: [
             "wx_unified_order_trade_type",
             "wx_pay_notice_trade_state",
             "wx_pay_notice_currency",
@@ -434,7 +434,7 @@ export function useExportExcel(routePath: string) {
           findAllUsr {
             lbl
           }
-          getDictbiz(codes: [
+          getDict(codes: [
             "wx_unified_order_trade_type",
             "wx_pay_notice_trade_state",
             "wx_pay_notice_currency",

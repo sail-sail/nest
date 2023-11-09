@@ -1,6 +1,0 @@
-id,code,lbl,type,order_by,is_locked,is_sys
-D/YHbZPUS4OqHrJUa6e3dg,wx_usr_gender,微信用户-性别,number,1,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-VkG+mAlHR7y6IlfsDCoROw,wx_unified_order_trade_type,微信统一下单-交易类型,string,2,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-Pz11MYjESMaE8ift9DOCpg,wx_pay_notice_trade_state,微信支付通知-交易状态,string,4,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-A+3vwR6vS7eFqf8mewVXlA,wx_pay_notice_currency,微信支付通知-货币类型,string,5,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-qdUtCjusRjiO22jxXk7ipA,wx_pay_notice_payer_currency,微信支付通知-用户支付币种,string,6,1,ZDbZlC1OT8KaDg6soxMCBQ,1

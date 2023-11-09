@@ -27,6 +27,7 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
+  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -36,8 +37,6 @@ import {
 import * as validators from "/lib/validators/mod.ts";
 
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
-
-import * as dictbizSrcDao from "/src/base/dictbiz_detail/dictbiz_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
@@ -179,15 +178,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.unionid_like)) {
     whereQuery += ` and t.unionid like ${ args.push("%" + sqlLike(search?.unionid_like) + "%") }`;
-  }
-  if (search?.session_key !== undefined) {
-    whereQuery += ` and t.session_key = ${ args.push(search.session_key) }`;
-  }
-  if (search?.session_key === null) {
-    whereQuery += ` and t.session_key is null`;
-  }
-  if (isNotEmpty(search?.session_key_like)) {
-    whereQuery += ` and t.session_key like ${ args.push("%" + sqlLike(search?.session_key_like) + "%") }`;
   }
   if (search?.gender && !Array.isArray(search?.gender)) {
     search.gender = [ search.gender ];
@@ -347,10 +337,13 @@ export async function findCount(
       ) t
   `;
   
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
   interface Result {
     total: number,
   }
-  const model = await queryOne<Result>(sql, args);
+  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
   let result = model?.total || 0;
   
   return result;
@@ -419,25 +412,28 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  // 缓存
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
   const result = await query<WxUsrModel>(
     sql,
     args,
+    {
+      cacheKey1,
+      cacheKey2,
+    },
   );
   
   const [
+    genderDict, // 性别
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "wx_usr_gender",
     "is_locked",
     "is_enabled",
   ]);
-  
-  const [
-    genderDict, // 性别
-  ] = await dictbizSrcDao.getDictbiz([
-    "wx_usr_gender",
-  ]);
-  
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -506,17 +502,13 @@ export async function setIdByLbl(
 ) {
   
   const [
+    genderDict, // 性别
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "wx_usr_gender",
     "is_locked",
     "is_enabled",
-  ]);
-  
-  const [
-    genderDict, // 性别
-  ] = await dictbizSrcDao.getDictbiz([
-    "wx_usr_gender",
   ]);
   
   // 用户
@@ -569,7 +561,6 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     openid: await n("小程序openid"),
     gz_openid: await n("公众号openid"),
     unionid: await n("unionid"),
-    session_key: await n("会话密钥"),
     gender: await n("性别"),
     gender_lbl: await n("性别"),
     city: await n("城市"),
@@ -612,6 +603,16 @@ export async function findByUnique(
     return [ model ];
   }
   const models: WxUsrModel[] = [ ];
+  {
+    if (search0.openid == null) {
+      return [ ];
+    }
+    const openid = search0.openid;
+    const modelTmps = await findAll({
+      openid,
+    });
+    models.push(...modelTmps);
+  }
   return models;
 }
 
@@ -627,6 +628,11 @@ export function equalsByUnique(
 ): boolean {
   if (!oldModel || !input) {
     return false;
+  }
+  if (
+    oldModel.openid === input.openid
+  ) {
+    return true;
   }
   return false;
 }
@@ -745,12 +751,15 @@ export async function existById(
     limit 1
   `;
   
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
   interface Result {
     e: number,
   }
   let model = await queryOne<Result>(
     sql,
-    args,
+    args,{ cacheKey1, cacheKey2 },
   );
   let result = !!model?.e;
   
@@ -846,13 +855,6 @@ export async function validate(
     input.unionid,
     100,
     fieldComments.unionid,
-  );
-  
-  // 会话密钥
-  await validators.chars_max_length(
-    input.session_key,
-    500,
-    fieldComments.session_key,
   );
   
   // 城市
@@ -1024,9 +1026,6 @@ export async function create(
   if (input.unionid !== undefined) {
     sql += `,unionid`;
   }
-  if (input.session_key !== undefined) {
-    sql += `,session_key`;
-  }
   if (input.gender !== undefined) {
     sql += `,gender`;
   }
@@ -1109,9 +1108,6 @@ export async function create(
   if (input.unionid !== undefined) {
     sql += `,${ args.push(input.unionid) }`;
   }
-  if (input.session_key !== undefined) {
-    sql += `,${ args.push(input.session_key) }`;
-  }
   if (input.gender !== undefined) {
     sql += `,${ args.push(input.gender) }`;
   }
@@ -1137,10 +1133,32 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
+  
+  await delCache();
   const res = await execute(sql, args);
   log(JSON.stringify(res));
   
+  await delCache();
+  
   return input.id;
+}
+
+/**
+ * 删除缓存
+ */
+export async function delCache() {
+  const table = "wx_wx_usr";
+  const method = "delCache";
+  
+  await delCacheCtx(`dao.sql.${ table }`);
+  const foreignTables: string[] = [
+    "base_usr",
+  ];
+  for (let k = 0; k < foreignTables.length; k++) {
+    const foreignTable = foreignTables[k];
+    if (foreignTable === table) continue;
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
+  }
 }
 
 /**
@@ -1177,6 +1195,8 @@ export async function updateTenantById(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
+  
+  await delCache();
   return num;
 }
 
@@ -1213,8 +1233,12 @@ export async function updateOrgById(
     where
       id = ${ args.push(id) }
   `;
+  
+  await delCache();
   const result = await execute(sql, args);
   const num = result.affectedRows;
+  
+  await delCache();
   return num;
 }
 
@@ -1334,12 +1358,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.session_key !== undefined) {
-    if (input.session_key != oldModel.session_key) {
-      sql += `session_key = ${ args.push(input.session_key) },`;
-      updateFldNum++;
-    }
-  }
   if (input.gender !== undefined) {
     if (input.gender != oldModel.gender) {
       sql += `gender = ${ args.push(input.gender) },`;
@@ -1400,8 +1418,14 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
+    await delCache();
+    
     const res = await execute(sql, args);
     log(JSON.stringify(res));
+  }
+  
+  if (updateFldNum > 0) {
+    await delCache();
   }
   
   const newModel = await findById(id);
@@ -1430,6 +1454,10 @@ export async function deleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1451,6 +1479,8 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache();
   
   return num;
 }
@@ -1493,6 +1523,10 @@ export async function enableByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
   let sql = `
     update
@@ -1514,6 +1548,8 @@ export async function enableByIds(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
+  
+  await delCache();
   
   return num;
 }
@@ -1557,6 +1593,10 @@ export async function lockByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
   let sql = `
     update
@@ -1579,6 +1619,8 @@ export async function lockByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
+  await delCache();
+  
   return num;
 }
 
@@ -1597,6 +1639,10 @@ export async function revertByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
   }
   
   let num = 0;
@@ -1632,6 +1678,8 @@ export async function revertByIds(
     }
   }
   
+  await delCache();
+  
   return num;
 }
 
@@ -1650,6 +1698,10 @@ export async function forceDeleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
   }
   
   let num = 0;
@@ -1680,6 +1732,8 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache();
   
   return num;
 }

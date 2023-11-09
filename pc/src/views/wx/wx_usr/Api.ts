@@ -44,7 +44,6 @@ export async function findAll(
           openid
           gz_openid
           unionid
-          session_key
           gender
           gender_lbl
           city
@@ -109,7 +108,6 @@ export async function findOne(
           openid
           gz_openid
           unionid
-          session_key
           gender
           gender_lbl
           city
@@ -254,7 +252,6 @@ export async function findById(
           openid
           gz_openid
           unionid
-          session_key
           gender
           gender_lbl
           city
@@ -493,7 +490,6 @@ export function useDownloadImportTemplate(routePath: string) {
             openid
             gz_openid
             unionid
-            session_key
             gender_lbl
             city
             province
@@ -512,14 +508,9 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
+            "wx_usr_gender",
             "is_locked",
             "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
-            "wx_usr_gender",
           ]) {
             code
             lbl
@@ -576,7 +567,6 @@ export function useExportExcel(routePath: string) {
             openid
             gz_openid
             unionid
-            session_key
             gender
             gender_lbl
             city
@@ -606,7 +596,6 @@ export function useExportExcel(routePath: string) {
             openid
             gz_openid
             unionid
-            session_key
             gender_lbl
             city
             province
@@ -624,14 +613,9 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
+            "wx_usr_gender",
             "is_locked",
             "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
-            "wx_usr_gender",
           ]) {
             code
             lbl

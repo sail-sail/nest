@@ -40,10 +40,6 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
-
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
-
 import {
   UniqueType,
   SortOrderEnum,
@@ -73,15 +69,6 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
-    }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
-  }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
@@ -626,15 +613,6 @@ export async function create(
       ,create_time
       ,update_time
   `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
-    }
-  }
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
@@ -664,15 +642,6 @@ export async function create(
     sql += `,expires_in`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
@@ -731,45 +700,6 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateTenantById(
-  id: string,
-  tenant_id: string,
-  options?: {
-  },
-): Promise<number> {
-  const table = "wx_wx_app_token";
-  const method = "updateTenantById";
-  
-  const tenantExist = await tenantDao.existById(tenant_id);
-  if (!tenantExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `
-    update
-      wx_wx_app_token
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  return num;
-}
-
-/**
  * 根据id修改一行数据
  * @param {string} id
  * @param {WxAppTokenInput} input
@@ -796,11 +726,6 @@ export async function updateById(
   }
   if (!input) {
     throw new Error("updateById: input cannot be null");
-  }
-  
-  // 修改租户id
-  if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
   }
   
   await setIdByLbl(input);

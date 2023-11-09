@@ -9,7 +9,6 @@ import type {
 } from "/gen/types.ts";
 
 export interface WxAppTokenSearch extends WxAppTokenSearchType {
-  tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
@@ -18,7 +17,6 @@ export interface WxAppTokenModel extends WxAppTokenModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id: string;
 }
 
 export interface WxAppTokenInput extends WxAppTokenInputType {
@@ -27,7 +25,6 @@ export interface WxAppTokenInput extends WxAppTokenInputType {
   update_usr_id?: string | null;
   update_time?: string | null;
   is_deleted?: number | null;
-  tenant_id?: string | null;
 }
 
 export interface WxAppTokenFieldComment {

@@ -1,10 +1,10 @@
 import {
+  log,
   error,
 } from "/lib/context.ts";
  
 import {
   isEmpty,
-  shortUuidV4,
 } from "/lib/util/string_util.ts";
  
 import dayjs from "dayjs";
@@ -50,10 +50,8 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `微信小程序 获取 access_token 失败: ${ url }`;
     }
-    const id = shortUuidV4();
     await wx_app_tokenDao.create(
       {
-        id,
         wx_app_id,
         access_token,
         expires_in: data.expires_in,
@@ -70,16 +68,21 @@ export async function getAccessToken(
     || !(expires_in > 0)
     || !access_token
     || !wx_app_tokenModel.token_time
-    // || !token_time.isValid()
-    || token_time.add(2, "m").isBefore(dateNow)
+    || !token_time.isValid()
+    || token_time.add(expires_in, "s").add(5, "m").isBefore(dateNow)
   ) {
-    const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${ appid }&secret=${ appsecret }`;
+    log(`微信小程序 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_tokenModel) }`);
+    const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${
+      encodeURIComponent(appid)
+    }&secret=${
+      encodeURIComponent(appsecret)
+    }`;
     const res = await fetch(url);
     const data: {
-      access_token: string,
-      expires_in: number,
       errcode: number,
       errmsg: string,
+      access_token: string,
+      expires_in: number,
     } = await res.json();
     access_token = data.access_token;
     if (!access_token) {

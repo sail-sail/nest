@@ -317,13 +317,8 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
             "wx_pay_notice_trade_state",
+            "is_enabled",
             "wx_pay_notice_currency",
           ]) {
             code
@@ -429,13 +424,8 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
             "wx_pay_notice_trade_state",
+            "is_enabled",
             "wx_pay_notice_currency",
           ]) {
             code

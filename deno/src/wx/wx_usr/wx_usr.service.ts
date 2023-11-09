@@ -3,11 +3,16 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
   findOne as findOneWxUsr,
   create as createWxUsr,
   updateTenantById as updateTenantByIdWxUsr,
   findById as findByIdWxUsr,
   updateById as updateByIdWxUsr,
+  validateOption as validateOptionWxUsr,
 } from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
 import {
@@ -83,23 +88,21 @@ export async function code2Session(
       {
         openid: data.openid,
         lbl: data.openid,
-        session_key: data.session_key,
         unionid: data.unionid,
       },
     ))!;
     await updateTenantByIdWxUsr(id, wx_appModel.tenant_id!);
-    wx_usrModel = (await findByIdWxUsr(
-      id,
-    ))!;
+    wx_usrModel = await validateOptionWxUsr(
+      await findByIdWxUsr(id),
+    );
   }
   if (wx_usrModel.tenant_id !== wx_appModel.tenant_id) {
     await updateTenantByIdWxUsr(wx_usrModel.id, wx_appModel.tenant_id!);
   }
-  if (wx_usrModel.session_key !== data.session_key || wx_usrModel.unionid !== data.unionid) {
+  if (wx_usrModel.unionid !== data.unionid) {
     await updateByIdWxUsr(
       wx_usrModel.id,
       {
-        session_key: data.session_key,
         unionid: data.unionid,
       },
     );
@@ -126,22 +129,10 @@ export async function code2Session(
   return tokenInfo;
 }
 
-/**
- * code换取用户手机号。 每个 code 只能使用一次，code的有效期为5min
- * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/phonenumber/phonenumber.getPhoneNumber.html
- * @param appid 小程序appid
- * @param code 手机号获取凭证
- */
-export async function getPhoneNumber(
-  appid: string,
+async function fetchPhoneNumber(
+  access_token: string,
   code: string,
-  opt: {
-    force?: boolean;
-  } = {
-    force: false,
-  },
-): Promise<string> {
-  const access_token = await getAccessToken(appid, opt.force);
+) {
   const url = `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${ encodeURIComponent(access_token) }`;
   const res = await fetch(
     url,
@@ -165,20 +156,50 @@ export async function getPhoneNumber(
       };
     };
   } = await res.json();
-  // 42001 AccessToken过期强制重新获取, 只重试一次
-  if (data.errcode == 42001 && !opt.force) {
-    return await getPhoneNumber(
-      appid,
-      code,
+  return data;
+}
+
+/**
+ * code换取用户手机号。 每个 code 只能使用一次，code的有效期为5min
+ * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/phonenumber/phonenumber.getPhoneNumber.html
+ * @param appid 小程序appid
+ * @param code 手机号获取凭证
+ */
+export async function getPhoneNumber(
+  appid: string,
+  code: string,
+) {
+  const authModel = await getAuthModel();
+  const usr_id = authModel.id;
+  const wx_usrModel = await validateOptionWxUsr(
+    await findOneWxUsr(
       {
-        force: true,
+        usr_id: [ usr_id ],
       },
-    );
+    ),
+  );
+  const wx_usr_id = wx_usrModel.id;
+  
+  const access_token = await getAccessToken(appid);
+  let data = await fetchPhoneNumber(access_token, code);
+  // 42001 AccessToken过期强制重新获取, 只重试一次
+  if (data.errcode == 42001) {
+    const access_token = await getAccessToken(appid, true);
+    data = await fetchPhoneNumber(access_token, code);
   }
   if (data.errcode != 0) {
     error(data);
     throw data.errmsg;
   }
-  const phoneNumber = data.phone_info?.phoneNumber;
-  return phoneNumber;
+  const mobile = data.phone_info.phoneNumber;
+  if (!mobile) {
+    error(`获取手机号失败: ${ JSON.stringify(data) }`);
+    throw `获取手机号失败`;
+  }
+  await updateByIdWxUsr(
+    wx_usr_id,
+    {
+      mobile,
+    },
+  );
 }
