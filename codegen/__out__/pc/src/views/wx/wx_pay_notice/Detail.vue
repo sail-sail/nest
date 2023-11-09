@@ -134,13 +134,13 @@
             :label="n('交易类型')"
             prop="trade_type"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.trade_type = dialogModel.trade_type ?? undefined"
               v-model="dialogModel.trade_type"
               code="wx_unified_order_trade_type"
               :placeholder="`${ ns('请选择') } ${ n('交易类型') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -149,13 +149,13 @@
             :label="n('交易状态')"
             prop="trade_state"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.trade_state = dialogModel.trade_state ?? undefined"
               v-model="dialogModel.trade_state"
               code="wx_pay_notice_trade_state"
               :placeholder="`${ ns('请选择') } ${ n('交易状态') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -245,13 +245,13 @@
             :label="n('货币类型')"
             prop="currency"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.currency = dialogModel.currency ?? undefined"
               v-model="dialogModel.currency"
               code="wx_pay_notice_currency"
               :placeholder="`${ ns('请选择') } ${ n('货币类型') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -260,13 +260,13 @@
             :label="n('用户支付币种')"
             prop="payer_currency"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.payer_currency = dialogModel.payer_currency ?? undefined"
               v-model="dialogModel.payer_currency"
               code="wx_pay_notice_currency"
               :placeholder="`${ ns('请选择') } ${ n('用户支付币种') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         

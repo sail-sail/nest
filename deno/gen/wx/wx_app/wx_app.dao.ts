@@ -462,6 +462,16 @@ export async function findByUnique(
   }
   const models: WxAppModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
+    const lbl = search0.lbl;
+    const modelTmps = await findAll({
+      lbl,
+    });
+    models.push(...modelTmps);
+  }
+  {
     if (search0.appid == null) {
       return [ ];
     }
@@ -486,6 +496,11 @@ export function equalsByUnique(
 ): boolean {
   if (!oldModel || !input) {
     return false;
+  }
+  if (
+    oldModel.lbl === input.lbl
+  ) {
+    return true;
   }
   if (
     oldModel.appid === input.appid

@@ -134,13 +134,13 @@
             :label="n('交易状态')"
             prop="trade_state"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.trade_state = dialogModel.trade_state ?? undefined"
               v-model="dialogModel.trade_state"
               code="wx_pay_notice_trade_state"
               :placeholder="`${ ns('请选择') } ${ n('交易状态') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -258,13 +258,13 @@
             :label="n('货币类型')"
             prop="currency"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.currency = dialogModel.currency ?? undefined"
               v-model="dialogModel.currency"
               code="wx_pay_notice_currency"
               :placeholder="`${ ns('请选择') } ${ n('货币类型') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         

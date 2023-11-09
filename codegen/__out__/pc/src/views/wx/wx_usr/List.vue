@@ -519,15 +519,6 @@
             </el-table-column>
           </template>
           
-          <!-- 会话密钥 -->
-          <template v-else-if="'session_key' === col.prop && (showBuildIn || builtInSearch?.session_key == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 性别 -->
           <template v-else-if="'gender_lbl' === col.prop && (showBuildIn || builtInSearch?.gender == null)">
             <el-table-column
@@ -846,8 +837,6 @@ const props = defineProps<{
   gz_openid_like?: string; // 公众号openid
   unionid?: string; // unionid
   unionid_like?: string; // unionid
-  session_key?: string; // 会话密钥
-  session_key_like?: string; // 会话密钥
   gender?: string|string[]; // 性别
   city?: string; // 城市
   city_like?: string; // 城市
@@ -1064,14 +1053,6 @@ function getTableColumns(): ColumnType[] {
     {
       label: "unionid",
       prop: "unionid",
-      width: 180,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "会话密钥",
-      prop: "session_key",
       width: 180,
       align: "center",
       headerAlign: "center",
@@ -1449,7 +1430,6 @@ async function onImportExcel() {
     [ await nAsync("小程序openid") ]: "openid",
     [ await nAsync("公众号openid") ]: "gz_openid",
     [ await nAsync("unionid") ]: "unionid",
-    [ await nAsync("会话密钥") ]: "session_key",
     [ await nAsync("性别") ]: "gender_lbl",
     [ await nAsync("城市") ]: "city",
     [ await nAsync("省份") ]: "province",
@@ -1487,7 +1467,6 @@ async function onImportExcel() {
           "openid": "string",
           "gz_openid": "string",
           "unionid": "string",
-          "session_key": "string",
           "gender_lbl": "string",
           "city": "string",
           "province": "string",
@@ -1803,7 +1782,6 @@ async function initI18nsEfc() {
     "小程序openid",
     "公众号openid",
     "unionid",
-    "会话密钥",
     "性别",
     "城市",
     "省份",

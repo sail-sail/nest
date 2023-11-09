@@ -25,8 +25,6 @@ type WxUsrModel {
   gz_openid: String!
   "unionid"
   unionid: String!
-  "会话密钥"
-  session_key: String!
   "性别"
   gender: Int!
   "性别"
@@ -87,8 +85,6 @@ type WxUsrFieldComment {
   gz_openid: String!
   "unionid"
   unionid: String!
-  "会话密钥"
-  session_key: String!
   "性别"
   gender: String!
   "性别"
@@ -149,8 +145,6 @@ input WxUsrInput {
   gz_openid: String
   "unionid"
   unionid: String
-  "会话密钥"
-  session_key: String
   "性别"
   gender: Int
   "性别"
@@ -221,9 +215,6 @@ input WxUsrSearch {
   "unionid"
   unionid: String
   unionid_like: String
-  "会话密钥"
-  session_key: String
-  session_key_like: String
   "性别"
   gender: [Int!]
   "城市"

@@ -35,7 +35,7 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictbizSrcDao from "/src/base/dictbiz_detail/dictbiz_detail.dao.ts";
+import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
@@ -422,13 +422,12 @@ export async function findAll(
     trade_stateDict, // 交易状态
     currencyDict, // 货币类型
     payer_currencyDict, // 用户支付币种
-  ] = await dictbizSrcDao.getDictbiz([
+  ] = await dictSrcDao.getDict([
     "wx_unified_order_trade_type",
     "wx_pay_notice_trade_state",
     "wx_pay_notice_currency",
     "wx_pay_notice_currency",
   ]);
-  
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -541,7 +540,7 @@ export async function setIdByLbl(
     trade_stateDict, // 交易状态
     currencyDict, // 货币类型
     payer_currencyDict, // 用户支付币种
-  ] = await dictbizSrcDao.getDictbiz([
+  ] = await dictSrcDao.getDict([
     "wx_unified_order_trade_type",
     "wx_pay_notice_trade_state",
     "wx_pay_notice_currency",

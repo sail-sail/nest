@@ -44,7 +44,6 @@ export interface WxUsrFieldComment {
   openid: string;
   gz_openid: string;
   unionid: string;
-  session_key: string;
   gender: string;
   gender_lbl: string;
   city: string;

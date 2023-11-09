@@ -176,31 +176,18 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.session_key == null)">
-          <el-form-item
-            :label="n('会话密钥')"
-            prop="session_key"
-          >
-            <CustomInput
-              v-model="dialogModel.session_key"
-              :placeholder="`${ ns('请输入') } ${ n('会话密钥') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.gender == null)">
           <el-form-item
             :label="n('性别')"
             prop="gender"
           >
-            <DictbizSelect
+            <DictSelect
               :set="dialogModel.gender = dialogModel.gender ?? undefined"
               v-model="dialogModel.gender"
               code="wx_usr_gender"
               :placeholder="`${ ns('请选择') } ${ n('性别') }`"
               :readonly="isLocked || isReadonly"
-            ></DictbizSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -822,7 +809,6 @@ async function onInitI18ns() {
     "小程序openid",
     "公众号openid",
     "unionid",
-    "会话密钥",
     "性别",
     "城市",
     "省份",

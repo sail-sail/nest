@@ -6,15 +6,13 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
+        [ "lbl" ],
         [ "appid" ],
       ],
     },
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 120,
       },
       {
         COLUMN_NAME: "appid",
@@ -80,7 +78,12 @@ export default defineConfig({
   },
   // 微信用户
   wx_wx_usr: {
-    opts: {},
+    opts: {
+      cache: true,
+      uniques: [
+        [ "openid" ],
+      ],
+    },
     columns: [
       {
         COLUMN_NAME: "lbl",
@@ -116,10 +119,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "unionid",
-        width: 180,
-      },
-      {
-        COLUMN_NAME: "session_key",
         width: 180,
       },
       {
