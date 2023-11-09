@@ -35,7 +35,6 @@ let loading = $computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, .5);
 }
 .loop_icon {
   animation: loop_icon 1s linear infinite;
