@@ -741,8 +741,6 @@ async function onInitI18ns() {
     "启用",
     "排序",
     "备注",
-    "租户",
-    "删除",
   ];
   await Promise.all([
     initDetailI18ns(),
