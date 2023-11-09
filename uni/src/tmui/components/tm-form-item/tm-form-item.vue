@@ -106,8 +106,7 @@
 		},
 		margin: {
 			type: Array as PropType<Array<number>>,
-			// default: () => [12, 12],
-			default: () => [0, 0],
+			default: () => [12, 12],
 		},
 		padding: {
 			type: Array as PropType<Array<number>>,
