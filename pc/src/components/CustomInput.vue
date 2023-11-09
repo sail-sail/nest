@@ -46,7 +46,7 @@
     <template
       v-if="!(modelValue ?? '')"
     >
-      {{ props.placeholder ?? "" }}
+      {{ props.readonlyPlaceholder ?? "" }}
     </template>
     <template
       v-else
@@ -72,6 +72,7 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     modelValue: undefined,
@@ -79,6 +80,7 @@ const props = withDefaults(
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
