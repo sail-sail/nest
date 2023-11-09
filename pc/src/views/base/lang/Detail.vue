@@ -406,8 +406,9 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        order_by,
+        order_by: order_by + 1,
       };
+      Object.assign(dialogModel, { is_deleted: undefined });
     }
   } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
@@ -605,8 +606,9 @@ async function onSave() {
       id: undefined,
     };
     if (!showBuildIn) {
-      Object.assign(dialogModel2, builtInModel, { is_deleted: undefined });
+      Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await updateById(
       dialogModel.id,
       dialogModel2,
