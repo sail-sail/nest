@@ -10,7 +10,7 @@ import type {
 
 export interface UsrSearch extends UsrSearchType {
   tenant_id?: string | null;
-  is_hidden?: 0|1[];
+  is_hidden?: (0|1)[];
   $extra?: SearchExtra[];
 }
 

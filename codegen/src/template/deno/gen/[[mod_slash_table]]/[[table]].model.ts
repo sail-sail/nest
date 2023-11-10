@@ -51,7 +51,7 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
   #><#
   if (hasIsHidden) {
   #>
-  is_hidden?: 0|1[];<#
+  is_hidden?: (0|1)[];<#
   }
   #>
   $extra?: SearchExtra[];
