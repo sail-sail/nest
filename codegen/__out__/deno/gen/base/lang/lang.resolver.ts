@@ -29,7 +29,11 @@ import {
 export async function findCountLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./lang.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./lang.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllLang(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<LangModel[]> {
-  const { findAll } = await import("./lang.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./lang.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<LangModel | undefined> {
-  const { findOne } = await import("./lang.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./lang.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -87,6 +87,8 @@ async function getSchema0(
   const hasOrderBy = records.some((item) => item.COLUMN_NAME === 'order_by' && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
+  // 是否有隐藏字段
+  const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -130,10 +132,26 @@ async function getSchema0(
       onlyCodegenDeno: true,
     });
   }
+  // 隐藏记录
+  if (hasIsHidden && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_hidden")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "is_hidden",
+      COLUMN_TYPE: "tinyint(1) unsigned",
+      DATA_TYPE: "tinyint",
+      COLUMN_COMMENT: "隐藏记录",
+      dict: "is_hidden",
+      onlyCodegenDeno: true,
+    });
+  }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
     const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
+    if (column_name === "is_hidden") {
+      if (item.onlyCodegenDeno != null) {
+        item.onlyCodegenDeno = true;
+      }
+    }
     if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;

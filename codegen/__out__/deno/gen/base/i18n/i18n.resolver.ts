@@ -29,7 +29,11 @@ import {
 export async function findCountI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./i18n.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./i18n.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllI18N(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<I18Nmodel[]> {
-  const { findAll } = await import("./i18n.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./i18n.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<I18Nmodel | undefined> {
-  const { findOne } = await import("./i18n.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./i18n.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -10,6 +10,7 @@ import type {
 
 export interface UsrSearch extends UsrSearchType {
   tenant_id?: string | null;
+  is_hidden?: 0|1[];
   $extra?: SearchExtra[];
 }
 
@@ -19,6 +20,7 @@ export interface UsrModel extends UsrModelType {
   update_usr_id: string;
   update_time?: string | null;
   tenant_id: string;
+  is_hidden: 0|1;
 }
 
 export interface UsrInput extends UsrInputType {
@@ -28,6 +30,7 @@ export interface UsrInput extends UsrInputType {
   update_time?: string | null;
   is_deleted?: number | null;
   tenant_id?: string | null;
+  is_hidden?: 0|1|null;
 }
 
 export interface UsrFieldComment {
