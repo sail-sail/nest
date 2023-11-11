@@ -29,7 +29,11 @@ import {
 export async function findCountWxPay(
   search?: WxPaySearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./wx_pay.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./wx_pay.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllWxPay(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxPayModel[]> {
-  const { findAll } = await import("./wx_pay.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./wx_pay.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneWxPay(
   search?: WxPaySearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<WxPayModel | undefined> {
-  const { findOne } = await import("./wx_pay.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./wx_pay.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

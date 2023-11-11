@@ -29,7 +29,11 @@ import {
 export async function findCountWxPayNotice(
   search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./wx_pay_notice.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllWxPayNotice(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxPayNoticeModel[]> {
-  const { findAll } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./wx_pay_notice.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneWxPayNotice(
   search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<WxPayNoticeModel | undefined> {
-  const { findOne } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./wx_pay_notice.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }
