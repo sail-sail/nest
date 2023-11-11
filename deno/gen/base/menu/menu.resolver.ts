@@ -29,7 +29,11 @@ import {
 export async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./menu.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./menu.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllMenu(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<MenuModel[]> {
-  const { findAll } = await import("./menu.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./menu.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<MenuModel | undefined> {
-  const { findOne } = await import("./menu.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./menu.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

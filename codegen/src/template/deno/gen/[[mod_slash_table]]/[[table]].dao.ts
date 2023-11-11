@@ -950,6 +950,7 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -975,6 +976,7 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1005,6 +1007,7 @@ export async function findAll(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1029,6 +1032,7 @@ export async function findAll(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1081,6 +1085,7 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1247,6 +1252,8 @@ export async function setIdByLbl(
         "update_usr_id",
         "update_time",
         "is_sys",
+        "is_deleted",
+        "is_hidden",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1328,6 +1335,7 @@ export async function setIdByLbl(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1353,6 +1361,7 @@ export async function setIdByLbl(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1382,6 +1391,8 @@ export async function setIdByLbl(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1405,6 +1416,8 @@ export async function setIdByLbl(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1436,6 +1449,8 @@ export async function setIdByLbl(
       "update_usr_id",
       "update_time",
       "is_sys",
+      "is_deleted",
+      "is_hidden",
     ].includes(column_name)) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -1560,6 +1575,9 @@ export async function setIdByLbl(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "is_sys") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "is_hidden") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1622,6 +1640,9 @@ export async function setIdByLbl(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "is_sys") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "is_hidden") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1690,6 +1711,9 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
         continue;
       }
       if (column_name === "tenant_id") {
+        continue;
+      }
+      if (column_name === "is_hidden") {
         continue;
       }
       let selectList = [ ];

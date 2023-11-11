@@ -29,7 +29,14 @@ import {
 export async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./usr.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./usr.service.ts");
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +49,14 @@ export async function findAllUsr(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<UsrModel[]> {
-  const { findAll } = await import("./usr.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./usr.service.ts");
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];
+  
   const res = await findAll(search, page, sort);
   
   for (const model of res) {
@@ -68,7 +82,14 @@ export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<UsrModel | undefined> {
-  const { findOne } = await import("./usr.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./usr.service.ts");
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];
+  
   const res = await findOne(search, sort);
   
   if (res) {
