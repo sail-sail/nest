@@ -29,7 +29,11 @@ import {
 export async function findCountFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./field_permit.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./field_permit.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllFieldPermit(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<FieldPermitModel[]> {
-  const { findAll } = await import("./field_permit.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./field_permit.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<FieldPermitModel | undefined> {
-  const { findOne } = await import("./field_permit.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./field_permit.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -29,7 +29,11 @@ import {
 export async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./permit.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./permit.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllPermit(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<PermitModel[]> {
-  const { findAll } = await import("./permit.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./permit.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<PermitModel | undefined> {
-  const { findOne } = await import("./permit.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./permit.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }
