@@ -18,6 +18,8 @@
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
     "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts",
     "decimal.js": "https://esm.sh/decimal.js@10.4.3",
-    "croner": "https://deno.land/x/croner@7.0.3/dist/croner.js"
+    "croner": "https://deno.land/x/croner@7.0.3/dist/croner.js",
+    "@fidm/x509": "https://esm.sh/@fidm/x509@1.2.1",
+    "wechatpay-node-v3": "./lib/wechatpay-node-v3/mod.ts"
   }
 }
