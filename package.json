@@ -19,6 +19,7 @@
     "permit": "cd pc && node src/utils/permit_scan.js",
     "build": "cd deno && npm run build",
     "publish": "cd deno && npm run publish",
+    "upgrade": "cd codegen && npm run upgrade",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm"
