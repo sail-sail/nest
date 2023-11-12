@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "lib": [ "esnext", "dom" ],
     "types": [
+      "@vue-macros/reactivity-transform/macros-global",
       "node",
       "vite/client",
       "@uni-helper/uni-app-types"
@@ -35,10 +36,12 @@
     ]
   },
   "include": [
-    "node_modules/vue/ref-macros.d.ts",
     "**/*.ts",
     "**/*.d.ts",
     "**/*.tsx",
     "**/*.vue"
+  ],
+  "exclude": [
+    "src/tmui/**/*"
   ]
 }
