@@ -12,6 +12,7 @@
     "uuid": "ts-node src/util/npmShortUuidV4.ts",
     "pwd": "ts-node src/util/npmPassword.ts",
     "permit": "cd ../pc && node src/utils/permit_scan.js",
+    "upgrade": "ts-node src/util/npmUpgrade.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
