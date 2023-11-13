@@ -191,7 +191,7 @@ function submit() {
     () => {
 	  const result = validate();
 	  validateResultList.value = [...result.result]
-      emits("submit", { data: toRaw(_modelVal.value), ...result });
+      emits("submit", { data: toRaw(_modelVal.value), ...result as any });
 	  
     },
     220,
@@ -216,7 +216,7 @@ function validate() {
 		  if(!vallist[j].validator){
 			  isPass = false
 			  rulstVal.message = vallist[j]?.message??'校验通过'
-			  rulstVal.validator = vallist[j]?.validator??true
+			  rulstVal.validator = vallist[j]?.validator??true as any
 			  break;
 		  }
 	  }

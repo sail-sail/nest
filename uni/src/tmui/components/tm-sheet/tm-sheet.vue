@@ -11,13 +11,13 @@
     v-if="_blue_sheet"
     :blurEffect="_blurEffect"
     @click="onClick"
-    @longpress="longpress"
-    @touchend="touchend"
-    @touchstart="touchstart"
-    @touchcancel="touchcancel"
-    @mousedown="mousedown"
-    @mouseup="mouseup"
-    @mouseleave="mouseleave"
+    @longpress="(longpress as any)"
+    @touchend="(touchend as any)"
+    @touchstart="(touchstart as any)"
+    @touchcancel="(touchcancel as any)"
+    @mousedown="(mousedown as any)"
+    @mouseup="(mouseup as any)"
+    @mouseleave="(mouseleave as any)"
     :class="[
       'flex flex-col noNvueBorder',
       parenClass_p,
