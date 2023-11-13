@@ -5,7 +5,7 @@
   props.lineHeight == 'auto'
     ? { lineHeight: (_fontSize ? _fontSize * 1.3 : 42) + props.unit }
     : {},
-  props.lineHeight > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
+  (props.lineHeight as any) > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
   {
     color: textColor,
   },
@@ -22,7 +22,7 @@
   props.lineHeight == 'auto'
     ? { lineHeight: (_fontSize ? _fontSize * 1.3 : 42) + props.unit }
     : {},
-  props.lineHeight > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
+  (props.lineHeight as any) > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
   {
     color: textColor,
   },
