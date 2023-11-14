@@ -3,13 +3,24 @@ import {
   log,
 } from "/lib/context.ts";
 
-import * as wx_paySrcDao from "/src/wx/wx_pay/wx_pay.dao.ts";
+import {
+  getWxPayModel,
+} from "/src/wx/wx_pay/wx_pay.dao.ts";
 
-import * as wx_payDao from "/gen/wx/wx_pay/wx_pay.dao.ts";
+import {
+  findOne as findOneWxPay,
+} from "/gen/wx/wx_pay/wx_pay.dao.ts";
 
-import * as wx_pay_noticeDao from "/gen/wx/wx_pay_notice/wx_pay_notice.dao.ts";
+import {
+  create as createWxPayNotice,
+  updateById as updateByIdWxPayNotice,
+} from "/gen/wx/wx_pay_notice/wx_pay_notice.dao.ts";
 
-import * as pay_transactions_jsapiDao from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
+import {
+  findOne as findOnePayTransactionsJsapi,
+  validateOption as validateOptionTransactionsJsapi,
+  updateById as updateByIdTransactionsJsapi,
+} from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
 
 import dayjs from "dayjs";
 
@@ -19,12 +30,9 @@ import {
 
 import {
   isEmpty,
-  isNotEmpty,
 } from "/lib/util/string_util.ts";
 
-import {
-  SortOrderEnum,
-} from "/gen/types.ts";
+import WxPay from "wechatpay-node-v3";
 
 interface Ipay {
   appid: string; //  直连商户申请的公众号或移动应用appid。
@@ -94,41 +102,27 @@ async function fetchPay_notice(
     timestamp: string;
   },
 ) {
-  const res = await fetch(
-    "http://localhost:30030/api/wx_pay_notice/pay_notice",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        obj,
-        params,
-      }),
-    },
-  );
-  const data = await res.json();
-  // const wxPay = new WxPay({
-  //   appid: obj.appid,
-  //   mchid: obj.mchid,
-  //   publicKey: Buffer.from(obj.publicKey),
-  //   privateKey: Buffer.from(obj.privateKey),
-  //   key: obj.key,
-  // });
-  // const ret = await wxPay.verifySign(params);
-  // if (!ret) {
-  //   throw new Error("签名验证失败");
-  // }
-  // const pay_noticeBody = params.body;
-  // // 数据密文
-  // const ciphertext = pay_noticeBody.resource.ciphertext;
-  // // 附加数据
-  // const associated_data = pay_noticeBody.resource.associated_data;
-  // // 随机串
-  // const nonce = pay_noticeBody.resource.nonce;
-  // // APIv3密钥
-  // const key = obj.key;
-  // const data = wxPay.decipher_gcm<PayNoticeBody>(ciphertext, associated_data, nonce, key);
+  const wxPay = new WxPay({
+    appid: obj.appid,
+    mchid: obj.mchid,
+    publicKey: Buffer.from(obj.publicKey),
+    privateKey: Buffer.from(obj.privateKey),
+    key: obj.key,
+  });
+  const ret = await wxPay.verifySign(params);
+  if (!ret) {
+    throw new Error("签名验证失败");
+  }
+  const pay_noticeBody = params.body;
+  // 数据密文
+  const ciphertext = pay_noticeBody.resource.ciphertext;
+  // 附加数据
+  const associated_data = pay_noticeBody.resource.associated_data;
+  // 随机串
+  const nonce = pay_noticeBody.resource.nonce;
+  // APIv3密钥
+  const key = obj.key;
+  const data = wxPay.decipher_gcm<PayNoticeBody>(ciphertext, associated_data, nonce, key);
   return data;
 }
 
@@ -164,21 +158,27 @@ export async function pay_notice(
   }
   */
   log(`pay_notice_body: ${ JSON.stringify(params.body) }`);
-  const wx_payModel0 = await wx_payDao.findOne({
+  const wx_payModel0 = await findOneWxPay({
     notify_url,
   });
   if (!wx_payModel0 || !wx_payModel0.appid) {
     error(`回调地址: ${ notify_url } 未配置微信支付`);
     return;
   }
-  const wx_payModel = await wx_paySrcDao.getWxPay(wx_payModel0.appid);
+  const wx_payModel = await getWxPayModel(wx_payModel0);
+  const appid = wx_payModel.appid;
+  const mchid = wx_payModel.mchid;
+  const public_key = wx_payModel.public_key;
+  const private_key = wx_payModel.private_key;
+  const v3_key = wx_payModel.v3_key;
+  
   const result = await fetchPay_notice(
     {
-      appid: wx_payModel.appid,
-      mchid: wx_payModel.mchid,
-      publicKey: wx_payModel.publicKey,
-      privateKey: wx_payModel.privateKey,
-      key: wx_payModel.key,
+      appid,
+      mchid,
+      publicKey: public_key,
+      privateKey: private_key,
+      key: v3_key,
     },
     params,
   );
@@ -211,7 +211,7 @@ export async function pay_notice(
   }
   */
   // 记录订单
-  const wx_pay_noticeId = await wx_pay_noticeDao.create({
+  const wx_pay_noticeId = await createWxPayNotice({
     appid: result.appid,
     mchid: result.mchid,
     openid: result.payer.openid,
@@ -230,45 +230,54 @@ export async function pay_notice(
     device_id: result.device_id,
     raw: JSON.stringify(result),
   });
-  let attach2: string | undefined = undefined;
-  if (result.trade_state === "SUCCESS" && result.trade_type === "JSAPI") {
-    const pay_transactions_jsapiModel = await pay_transactions_jsapiDao.findOne({
-      out_trade_no: result.out_trade_no,
-    });
-    if (!pay_transactions_jsapiModel) {
-      error(`pay_notice_订单号: ${ result.out_trade_no } 不存在`);
-      return;
-    }
-    await wx_pay_noticeDao.updateById(
+  const transaction_id = result.transaction_id;
+  const trade_state = result.trade_state;
+  const trade_type = result.trade_type;
+  const out_trade_no = result.out_trade_no;
+  const trade_state_desc = result.trade_state_desc;
+  const total = result.amount.total;
+  
+  const pay_transactions_jsapiModel = await validateOptionTransactionsJsapi(
+    await findOnePayTransactionsJsapi({
+      out_trade_no,
+    }),
+  );
+  const pay_transactions_jsapi_id = pay_transactions_jsapiModel.id;
+  const tenant_id = pay_transactions_jsapiModel.tenant_id;
+  const org_id = pay_transactions_jsapiModel.org_id;
+  const attach2 = pay_transactions_jsapiModel.attach2;
+  
+  if (trade_state === "SUCCESS" && trade_type === "JSAPI") {
+    await updateByIdWxPayNotice(
       wx_pay_noticeId,
       {
-        tenant_id: pay_transactions_jsapiModel.tenant_id,
-        org_id: pay_transactions_jsapiModel.org_id,
+        tenant_id,
+        org_id,
       },
     );
-    const id = pay_transactions_jsapiModel.id;
-    await pay_transactions_jsapiDao.updateById(
-      id,
+    
+    await updateByIdTransactionsJsapi(
+      pay_transactions_jsapi_id,
       {
-        transaction_id: result.transaction_id,
-        trade_state: result.trade_state,
-        trade_state_desc: result.trade_state_desc,
+        transaction_id,
+        trade_state,
+        trade_state_desc,
         success_time,
       },
     );
-    attach2 = pay_transactions_jsapiModel.attach2;
+  } else {
+    error(`支付回调失败: ${ JSON.stringify(result) }`);
+    return;
   }
-  if (!isNotEmpty(attach2)) {
+  if (isEmpty(attach2)) {
     error(`pay_notice_attach2: attach2 为空!`);
     return;
   }
   const attach2Obj = JSON.parse(attach2);
   const action = attach2Obj.action;
-  const pay_transactions_jsapiModel = (await pay_transactions_jsapiDao.findOne({
-    out_trade_no: result.out_trade_no,
-  }))!;
-  const amt = new Decimal(result.amount.total / 100);
-  const integral = Math.floor(result.amount.total / 100);
-  if (action === "recharge_card") {
-  }
+  
+  const amt = new Decimal(total / 100);
+  const integral = Math.floor(total / 100);
+  // if (action === "recharge_card") {
+  // }
 }

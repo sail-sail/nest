@@ -14,11 +14,11 @@ type WxPayModel {
   "商户号"
   mchid: String!
   "公钥"
-  publicKey: String!
+  public_key: String!
   "私钥"
-  privateKey: String!
+  private_key: String!
   "APIv3密钥"
-  key: String!
+  v3_key: String!
   "支付终端IP"
   payer_client_ip: String!
   "通知地址"
@@ -62,11 +62,11 @@ type WxPayFieldComment {
   "商户号"
   mchid: String!
   "公钥"
-  publicKey: String!
+  public_key: String!
   "私钥"
-  privateKey: String!
+  private_key: String!
   "APIv3密钥"
-  key: String!
+  v3_key: String!
   "支付终端IP"
   payer_client_ip: String!
   "通知地址"
@@ -110,11 +110,11 @@ input WxPayInput {
   "商户号"
   mchid: String
   "公钥"
-  publicKey: String
+  public_key: String
   "私钥"
-  privateKey: String
+  private_key: String
   "APIv3密钥"
-  key: String
+  v3_key: String
   "支付终端IP"
   payer_client_ip: String
   "通知地址"
@@ -165,14 +165,14 @@ input WxPaySearch {
   mchid: String
   mchid_like: String
   "公钥"
-  publicKey: String
-  publicKey_like: String
+  public_key: String
+  public_key_like: String
   "私钥"
-  privateKey: String
-  privateKey_like: String
+  private_key: String
+  private_key_like: String
   "APIv3密钥"
-  key: String
-  key_like: String
+  v3_key: String
+  v3_key_like: String
   "支付终端IP"
   payer_client_ip: String
   payer_client_ip_like: String

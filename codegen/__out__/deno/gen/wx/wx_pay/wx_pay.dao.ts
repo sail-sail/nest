@@ -118,32 +118,32 @@ async function getWhereQuery(
   if (isNotEmpty(search?.mchid_like)) {
     whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
-  if (search?.publicKey !== undefined) {
-    whereQuery += ` and t.publicKey = ${ args.push(search.publicKey) }`;
+  if (search?.public_key !== undefined) {
+    whereQuery += ` and t.public_key = ${ args.push(search.public_key) }`;
   }
-  if (search?.publicKey === null) {
-    whereQuery += ` and t.publicKey is null`;
+  if (search?.public_key === null) {
+    whereQuery += ` and t.public_key is null`;
   }
-  if (isNotEmpty(search?.publicKey_like)) {
-    whereQuery += ` and t.publicKey like ${ args.push("%" + sqlLike(search?.publicKey_like) + "%") }`;
+  if (isNotEmpty(search?.public_key_like)) {
+    whereQuery += ` and t.public_key like ${ args.push("%" + sqlLike(search?.public_key_like) + "%") }`;
   }
-  if (search?.privateKey !== undefined) {
-    whereQuery += ` and t.privateKey = ${ args.push(search.privateKey) }`;
+  if (search?.private_key !== undefined) {
+    whereQuery += ` and t.private_key = ${ args.push(search.private_key) }`;
   }
-  if (search?.privateKey === null) {
-    whereQuery += ` and t.privateKey is null`;
+  if (search?.private_key === null) {
+    whereQuery += ` and t.private_key is null`;
   }
-  if (isNotEmpty(search?.privateKey_like)) {
-    whereQuery += ` and t.privateKey like ${ args.push("%" + sqlLike(search?.privateKey_like) + "%") }`;
+  if (isNotEmpty(search?.private_key_like)) {
+    whereQuery += ` and t.private_key like ${ args.push("%" + sqlLike(search?.private_key_like) + "%") }`;
   }
-  if (search?.key !== undefined) {
-    whereQuery += ` and t.key = ${ args.push(search.key) }`;
+  if (search?.v3_key !== undefined) {
+    whereQuery += ` and t.v3_key = ${ args.push(search.v3_key) }`;
   }
-  if (search?.key === null) {
-    whereQuery += ` and t.key is null`;
+  if (search?.v3_key === null) {
+    whereQuery += ` and t.v3_key is null`;
   }
-  if (isNotEmpty(search?.key_like)) {
-    whereQuery += ` and t.key like ${ args.push("%" + sqlLike(search?.key_like) + "%") }`;
+  if (isNotEmpty(search?.v3_key_like)) {
+    whereQuery += ` and t.v3_key like ${ args.push("%" + sqlLike(search?.v3_key_like) + "%") }`;
   }
   if (search?.payer_client_ip !== undefined) {
     whereQuery += ` and t.payer_client_ip = ${ args.push(search.payer_client_ip) }`;
@@ -471,9 +471,9 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
     lbl: await n("名称"),
     appid: await n("appid"),
     mchid: await n("商户号"),
-    publicKey: await n("公钥"),
-    privateKey: await n("私钥"),
-    key: await n("APIv3密钥"),
+    public_key: await n("公钥"),
+    private_key: await n("私钥"),
+    v3_key: await n("APIv3密钥"),
     payer_client_ip: await n("支付终端IP"),
     notify_url: await n("通知地址"),
     is_locked: await n("锁定"),
@@ -523,6 +523,16 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
+  {
+    if (search0.notify_url == null) {
+      return [ ];
+    }
+    const notify_url = search0.notify_url;
+    const modelTmps = await findAll({
+      notify_url,
+    });
+    models.push(...modelTmps);
+  }
   return models;
 }
 
@@ -541,6 +551,11 @@ export function equalsByUnique(
   }
   if (
     oldModel.appid === input.appid
+  ) {
+    return true;
+  }
+  if (
+    oldModel.notify_url === input.notify_url
   ) {
     return true;
   }
@@ -734,23 +749,23 @@ export async function validate(
   
   // 公钥
   await validators.chars_max_length(
-    input.publicKey,
+    input.public_key,
     22,
-    fieldComments.publicKey,
+    fieldComments.public_key,
   );
   
   // 私钥
   await validators.chars_max_length(
-    input.privateKey,
+    input.private_key,
     22,
-    fieldComments.privateKey,
+    fieldComments.private_key,
   );
   
   // APIv3密钥
   await validators.chars_max_length(
-    input.key,
+    input.v3_key,
     32,
-    fieldComments.key,
+    fieldComments.v3_key,
   );
   
   // 支付终端IP
@@ -885,14 +900,14 @@ export async function create(
   if (input.mchid !== undefined) {
     sql += `,mchid`;
   }
-  if (input.publicKey !== undefined) {
-    sql += `,publicKey`;
+  if (input.public_key !== undefined) {
+    sql += `,public_key`;
   }
-  if (input.privateKey !== undefined) {
-    sql += `,privateKey`;
+  if (input.private_key !== undefined) {
+    sql += `,private_key`;
   }
-  if (input.key !== undefined) {
-    sql += `,key`;
+  if (input.v3_key !== undefined) {
+    sql += `,v3_key`;
   }
   if (input.payer_client_ip !== undefined) {
     sql += `,payer_client_ip`;
@@ -947,14 +962,14 @@ export async function create(
   if (input.mchid !== undefined) {
     sql += `,${ args.push(input.mchid) }`;
   }
-  if (input.publicKey !== undefined) {
-    sql += `,${ args.push(input.publicKey) }`;
+  if (input.public_key !== undefined) {
+    sql += `,${ args.push(input.public_key) }`;
   }
-  if (input.privateKey !== undefined) {
-    sql += `,${ args.push(input.privateKey) }`;
+  if (input.private_key !== undefined) {
+    sql += `,${ args.push(input.private_key) }`;
   }
-  if (input.key !== undefined) {
-    sql += `,${ args.push(input.key) }`;
+  if (input.v3_key !== undefined) {
+    sql += `,${ args.push(input.v3_key) }`;
   }
   if (input.payer_client_ip !== undefined) {
     sql += `,${ args.push(input.payer_client_ip) }`;
@@ -1123,21 +1138,21 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.publicKey !== undefined) {
-    if (input.publicKey != oldModel.publicKey) {
-      sql += `publicKey = ${ args.push(input.publicKey) },`;
+  if (input.public_key !== undefined) {
+    if (input.public_key != oldModel.public_key) {
+      sql += `public_key = ${ args.push(input.public_key) },`;
       updateFldNum++;
     }
   }
-  if (input.privateKey !== undefined) {
-    if (input.privateKey != oldModel.privateKey) {
-      sql += `privateKey = ${ args.push(input.privateKey) },`;
+  if (input.private_key !== undefined) {
+    if (input.private_key != oldModel.private_key) {
+      sql += `private_key = ${ args.push(input.private_key) },`;
       updateFldNum++;
     }
   }
-  if (input.key !== undefined) {
-    if (input.key != oldModel.key) {
-      sql += `key = ${ args.push(input.key) },`;
+  if (input.v3_key !== undefined) {
+    if (input.v3_key != oldModel.v3_key) {
+      sql += `v3_key = ${ args.push(input.v3_key) },`;
       updateFldNum++;
     }
   }

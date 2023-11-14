@@ -77,9 +77,9 @@ CREATE TABLE `wx_wx_pay` (
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
   `appid` varchar(22) NOT NULL DEFAULT '' COMMENT 'appid',
   `mchid` varchar(32) NOT NULL DEFAULT '' COMMENT '商户号',
-  `publicKey` varchar(22) NOT NULL DEFAULT '' COMMENT '公钥',
-  `privateKey` varchar(22) NOT NULL DEFAULT '' COMMENT '私钥',
-  `key` varchar(32) NOT NULL DEFAULT '' COMMENT 'APIv3密钥',
+  `public_key` varchar(22) NOT NULL DEFAULT '' COMMENT '公钥',
+  `private_key` varchar(22) NOT NULL DEFAULT '' COMMENT '私钥',
+  `v3_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'APIv3密钥',
   `payer_client_ip` varchar(45) NOT NULL DEFAULT '' COMMENT '支付终端IP',
   `notify_url` varchar(256) NOT NULL DEFAULT '' COMMENT '通知地址',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
@@ -93,7 +93,8 @@ CREATE TABLE `wx_wx_pay` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`appid`),
+  INDEX (`appid`, `tenant_id`),
+  INDEX (`notify_url`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='微信支付';
 

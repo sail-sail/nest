@@ -35,9 +35,9 @@ export interface WxPayFieldComment {
   lbl: string;
   appid: string;
   mchid: string;
-  publicKey: string;
-  privateKey: string;
-  key: string;
+  public_key: string;
+  private_key: string;
+  v3_key: string;
   payer_client_ip: string;
   notify_url: string;
   is_locked: string;

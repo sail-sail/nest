@@ -38,9 +38,9 @@ export async function findAll(
           lbl
           appid
           mchid
-          publicKey
-          privateKey
-          key
+          public_key
+          private_key
+          v3_key
           payer_client_ip
           notify_url
           is_locked
@@ -96,9 +96,9 @@ export async function findOne(
           lbl
           appid
           mchid
-          publicKey
-          privateKey
-          key
+          public_key
+          private_key
+          v3_key
           payer_client_ip
           notify_url
           is_locked
@@ -234,9 +234,9 @@ export async function findById(
           lbl
           appid
           mchid
-          publicKey
-          privateKey
-          key
+          public_key
+          private_key
+          v3_key
           payer_client_ip
           notify_url
           is_locked
@@ -467,9 +467,9 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             appid
             mchid
-            publicKey
-            privateKey
-            key
+            public_key
+            private_key
+            v3_key
             payer_client_ip
             notify_url
             is_locked_lbl
@@ -538,9 +538,9 @@ export function useExportExcel(routePath: string) {
             lbl
             appid
             mchid
-            publicKey
-            privateKey
-            key
+            public_key
+            private_key
+            v3_key
             payer_client_ip
             notify_url
             is_locked
@@ -562,9 +562,9 @@ export function useExportExcel(routePath: string) {
             lbl
             appid
             mchid
-            publicKey
-            privateKey
-            key
+            public_key
+            private_key
+            v3_key
             payer_client_ip
             notify_url
             is_locked_lbl

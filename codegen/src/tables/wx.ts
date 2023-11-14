@@ -170,6 +170,7 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "appid" ],
+        [ "notify_url" ],
       ],
     },
     columns: [
@@ -190,17 +191,17 @@ export default defineConfig({
         width: 140,
       },
       {
-        COLUMN_NAME: "publicKey",
+        COLUMN_NAME: "public_key",
         isAtt: true,
         width: 80,
       },
       {
-        COLUMN_NAME: "privateKey",
+        COLUMN_NAME: "private_key",
         isAtt: true,
         width: 80,
       },
       {
-        COLUMN_NAME: "key",
+        COLUMN_NAME: "v3_key",
         align: "left",
         width: 180,
       },
