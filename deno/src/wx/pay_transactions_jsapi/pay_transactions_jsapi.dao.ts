@@ -2,25 +2,44 @@ import {
   log,
 } from "/lib/context.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
-
-import * as wx_usrDao from "/gen/wx/wx_usr/wx_usr.dao.ts";
-
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
-
-import * as wx_paySrcDao from "/src/wx/wx_pay/wx_pay.dao.ts";
-
-import * as pay_transactions_jsapiDao from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
-
-import * as domainDao from "/gen/base/domain/domain.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import {
-  isEmpty,
-} from "/lib/util/string_util.ts";
+  findById as findByIdWxUsr,
+  validateOption as validateOptionWxUsr,
+  validateIsEnabled as validateIsEnabledWxUsr,
+} from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
 import {
-  type RequestPaymentOptions,
+  findById as findByIdTenant,
+  validateOption as validateOptionTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
+  getWxPayModel,
+} from "/src/wx/wx_pay/wx_pay.dao.ts";
+
+import {
+  findOne as findOneWxPay,
+  validateOption as validateOptionWxPay,
+} from "/gen/wx/wx_pay/wx_pay.dao.ts";
+
+import {
+  create as createPayTransactionsJsapi,
+} from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
+
+import {
+  findOne as findOneDomain,
+  validateOption as validateOptionDomain,
+} from "/gen/base/domain/domain.dao.ts";
+
+import type {
+  RequestPaymentOptions,
 } from "/gen/types.ts";
+
+import WxPay from "wechatpay-node-v3";
 
 /** 订单金额信息 */
 interface Iamount {
@@ -92,6 +111,13 @@ interface Ipay {
   key?: string;
 }
 
+/**
+ * 统一下单
+ * @param appid 
+ * @param params0 
+ * @param attachInfo 
+ * @returns 
+ */
 export async function transactions_jsapi(
   appid: string,
   params0: Partial<Ijsapi>,
@@ -105,27 +131,14 @@ export async function transactions_jsapi(
   } = await getJsapiObj(appid);
   Object.assign(params, params0);
   log(`transactions_jsapi.params: ${ JSON.stringify(params) } `);
-  const res = await fetch(
-    "http://localhost:30030/transactions_jsapi",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        obj,
-        params,
-      }),
-    },
-  );
-  // const wxPay = new WxPay({
-  //   appid: obj.appid,
-  //   mchid: obj.mchid,
-  //   publicKey: Buffer.from(obj.publicKey),
-  //   privateKey: Buffer.from(obj.privateKey),
-  //   key: obj.key,
-  // });
-  // const res = await wxPay.transactions_jsapi(params);
+  const wxPay = new WxPay({
+    appid: obj.appid,
+    mchid: obj.mchid,
+    publicKey: new TextEncoder().encode(obj.publicKey),
+    privateKey: new TextEncoder().encode(obj.privateKey),
+    key: obj.key,
+  });
+  const res = await wxPay.transactions_jsapi(params);
   const result = await res.json();
   /*
   {
@@ -149,9 +162,16 @@ export async function transactions_jsapi(
   }
   result.orderInfo = obj.appid;
   log(`transactions_jsapi.result: ${ JSON.stringify(result) }`);
-  const authModel = await authDao.getAuthModel();
-  const wx_usrModel = (await wx_usrDao.findById(authModel.wx_usr_id))!;
-  await pay_transactions_jsapiDao.create({
+  const authModel = await getAuthModel();
+  const wx_usr_id = authModel.wx_usr_id;
+  
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(wx_usr_id),
+  );
+  const tenant_id = wx_usrModel.tenant_id;
+  const org_id = wx_usrModel.org_id;
+  
+  await createPayTransactionsJsapi({
     appid: obj.appid,
     mchid: obj.mchid,
     description: params.description,
@@ -168,8 +188,8 @@ export async function transactions_jsapi(
     currency: params.amount.currency,
     openid: params.payer.openid,
     prepay_id: result.package,
-    tenant_id: wx_usrModel.tenant_id,
-    org_id: wx_usrModel.org_id,
+    tenant_id,
+    org_id,
   });
   return result;
 }
@@ -177,36 +197,33 @@ export async function transactions_jsapi(
 export async function getJsapiObj(
   appid: string,
 ) {
-  const wx_payModel = await wx_paySrcDao.getWxPay(appid);
   
-  const authModel = await authDao.getAuthModel();
-  const wx_usrModel = await wx_usrDao.findById(authModel.wx_usr_id);
-  if (!wx_usrModel) {
-    throw `未找到微信用户`;
-  }
-  if (!wx_usrModel.openid) {
-    throw `微信用户未绑定 openid`;
-  }
-  if (wx_usrModel.is_enabled !== 1) {
-    throw `微信用户 ${ wx_usrModel.openid } 未启用`;
-  }
-  if (!wx_payModel.payer_client_ip) {
-    throw `appid:${ appid }, 未配置 微信支付 - 客户端 IP`;
-  }
-  if (!wx_payModel.notify_url) {
-    throw `appid:${ appid }, 未配置 微信支付 - 通知地址`;
-  }
-  
+  const wx_payModel = await validateOptionWxPay(
+    await findOneWxPay({
+      appid,
+    }),
+  );
+  await getWxPayModel(wx_payModel);
   let notify_url = wx_payModel.notify_url;
+  const mchid = wx_payModel.mchid;
+  const public_key = wx_payModel.public_key;
+  const private_key = wx_payModel.private_key;
+  const v3_key = wx_payModel.v3_key;
+  const payer_client_ip = wx_payModel.payer_client_ip;
+  
+  const authModel = await getAuthModel();
+  const wx_usr_id = authModel.wx_usr_id;
+  
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(wx_usr_id),
+  );
+  await validateIsEnabledWxUsr(wx_usrModel);
+  const openid = wx_usrModel.openid;
   const tenant_id = wx_usrModel.tenant_id;
-  const tenantModel = await tenantDao.findById(tenant_id);
-  if (!tenantModel) {
-    throw `未找到租户 ${ tenant_id }`;
-  }
-  const org_id = wx_usrModel.org_id;
-  if (!org_id) {
-    throw `用户 ${ wx_usrModel.lbl } 未绑定 门店`;
-  }
+  
+  const tenantModel = await validateOptionTenant(
+    await findByIdTenant(tenant_id),
+  );
   if (tenantModel.is_enabled !== 1) {
     throw `租户 ${ tenantModel.lbl } 未启用`;
   }
@@ -214,23 +231,25 @@ export async function getJsapiObj(
   if (!domain_ids || domain_ids.length === 0) {
     throw `租户 ${ tenantModel.lbl } 未设置默认域名`;
   }
-  const domainModel = await domainDao.findOne({
-    ids: domain_ids,
-    is_default: [ 1 ],
-    is_enabled: [ 1 ],
-  });
-  if (!domainModel || isEmpty(domainModel.lbl)) {
-    throw `租户 ${ tenantModel.lbl } 未设置默认域名`;
-  }
-  notify_url = `https://${ domainModel.lbl }${ notify_url }`;
-  const openid = wx_usrModel.openid;
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      ids: domain_ids,
+      is_default: [ 1 ],
+      is_enabled: [ 1 ],
+    }),
+  );
+  const domain_lbl = domainModel.lbl;
+  const protocol = domainModel.protocol || "https";
+  
+  notify_url = `${ protocol }://${ domain_lbl }${ notify_url }`;
+  
   const out_trade_no = crypto.randomUUID().replaceAll("-", "");
   const obj = {
     appid,
-    mchid: wx_payModel.mchid,
-    publicKey: wx_payModel.publicKey,
-    privateKey: wx_payModel.privateKey,
-    key: wx_payModel.key,
+    mchid,
+    publicKey: public_key,
+    privateKey: private_key,
+    key: v3_key,
   };
   return {
     obj,
@@ -245,7 +264,7 @@ export async function getJsapiObj(
         openid,
       },
       scene_info: {
-        payer_client_ip: wx_payModel.payer_client_ip,
+        payer_client_ip,
       },
     } as Ijsapi,
   };

@@ -60,8 +60,8 @@ export interface Ipay {
   appid: string; //  直连商户申请的公众号或移动应用appid。
   mchid: string; // 商户号
   serial_no?: string; // 证书序列号
-  publicKey: Buffer; // 公钥
-  privateKey: Buffer; // 密钥
+  publicKey: Uint8Array; // 公钥
+  privateKey: Uint8Array; // 密钥
   authType?: string; // 认证类型，目前为WECHATPAY2-SHA256-RSA2048
   userAgent?: string;
   key?: string;

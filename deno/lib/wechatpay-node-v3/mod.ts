@@ -47,7 +47,7 @@ class Pay extends Base {
    * @param userAgent 可选参数 User-Agent
    * @param key 可选参数 APIv3密钥
    */
-  public constructor(appid: string, mchid: string, publicKey: Uint32Array, privateKey: Uint32Array, optipns?: Ioptions);
+  public constructor(appid: string, mchid: string, publicKey: Uint8Array, privateKey: Uint8Array, optipns?: Ioptions);
   /**
    * 构造器
    * @param obj object类型 包括下面参数
@@ -62,7 +62,7 @@ class Pay extends Base {
    * @param key 可选参数 APIv3密钥
    */
   public constructor(obj: Ipay);
-  public constructor(arg1: Ipay | string, mchid?: string, publicKey?: Uint32Array, privateKey?: Uint32Array, optipns?: Ioptions) {
+  public constructor(arg1: Ipay | string, mchid?: string, publicKey?: Uint8Array, privateKey?: Uint8Array, optipns?: Ioptions) {
     super();
 
     if (arg1 instanceof Object) {

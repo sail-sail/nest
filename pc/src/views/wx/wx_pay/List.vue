@@ -490,7 +490,7 @@
           </template>
           
           <!-- 公钥 -->
-          <template v-else-if="'publicKey' === col.prop && (showBuildIn || builtInSearch?.publicKey == null)">
+          <template v-else-if="'public_key' === col.prop && (showBuildIn || builtInSearch?.public_key == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -506,7 +506,7 @@
           </template>
           
           <!-- 私钥 -->
-          <template v-else-if="'privateKey' === col.prop && (showBuildIn || builtInSearch?.privateKey == null)">
+          <template v-else-if="'private_key' === col.prop && (showBuildIn || builtInSearch?.private_key == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -522,7 +522,7 @@
           </template>
           
           <!-- APIv3密钥 -->
-          <template v-else-if="'key' === col.prop && (showBuildIn || builtInSearch?.key == null)">
+          <template v-else-if="'v3_key' === col.prop && (showBuildIn || builtInSearch?.v3_key == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -828,12 +828,12 @@ const props = defineProps<{
   appid_like?: string; // appid
   mchid?: string; // 商户号
   mchid_like?: string; // 商户号
-  publicKey?: string; // 公钥
-  publicKey_like?: string; // 公钥
-  privateKey?: string; // 私钥
-  privateKey_like?: string; // 私钥
-  key?: string; // APIv3密钥
-  key_like?: string; // APIv3密钥
+  public_key?: string; // 公钥
+  public_key_like?: string; // 公钥
+  private_key?: string; // 私钥
+  private_key_like?: string; // 私钥
+  v3_key?: string; // APIv3密钥
+  v3_key_like?: string; // APIv3密钥
   payer_client_ip?: string; // 支付终端IP
   payer_client_ip_like?: string; // 支付终端IP
   notify_url?: string; // 通知地址
@@ -1009,21 +1009,21 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "公钥",
-      prop: "publicKey",
+      prop: "public_key",
       width: 80,
       align: "center",
       headerAlign: "center",
     },
     {
       label: "私钥",
-      prop: "privateKey",
+      prop: "private_key",
       width: 80,
       align: "center",
       headerAlign: "center",
     },
     {
       label: "APIv3密钥",
-      prop: "key",
+      prop: "v3_key",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -1384,9 +1384,9 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("appid") ]: "appid",
     [ await nAsync("商户号") ]: "mchid",
-    [ await nAsync("公钥") ]: "publicKey",
-    [ await nAsync("私钥") ]: "privateKey",
-    [ await nAsync("APIv3密钥") ]: "key",
+    [ await nAsync("公钥") ]: "public_key",
+    [ await nAsync("私钥") ]: "private_key",
+    [ await nAsync("APIv3密钥") ]: "v3_key",
     [ await nAsync("支付终端IP") ]: "payer_client_ip",
     [ await nAsync("通知地址") ]: "notify_url",
     [ await nAsync("锁定") ]: "is_locked_lbl",
@@ -1417,9 +1417,9 @@ async function onImportExcel() {
           "lbl": "string",
           "appid": "string",
           "mchid": "string",
-          "publicKey": "string",
-          "privateKey": "string",
-          "key": "string",
+          "public_key": "string",
+          "private_key": "string",
+          "v3_key": "string",
           "payer_client_ip": "string",
           "notify_url": "string",
           "is_locked_lbl": "string",

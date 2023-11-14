@@ -9,26 +9,31 @@ import {
  
 import dayjs from "dayjs";
  
-import * as wx_app_tokenDao from "/gen/wx/wx_app_token/wx_app_token.dao.ts";
-import * as wx_wx_appDao from "/gen/wx/wx_app/wx_app.dao.ts";
+import {
+  findOne as findOneWxAppToken,
+  create as createWxAppToken,
+  updateById as updateWxAppTokenById,
+} from "/gen/wx/wx_app_token/wx_app_token.dao.ts";
+
+import {
+  findOne as findOneWxApp,
+  validateOption as validateOptionWxApp,
+} from "/gen/wx/wx_app/wx_app.dao.ts";
  
 export async function getAccessToken(
   appid: string,
   force = false,
 ) {
-  const wx_appModel = await wx_wx_appDao.findOne({
-    appid,
-  });
-  if (!wx_appModel) {
-    throw `未设置微信小程序, appid: ${ appid }`;
-  }
+  const wx_appModel = await validateOptionWxApp(
+    await findOneWxApp({
+      appid,
+    }),
+  );
   const wx_app_id = wx_appModel.id;
   const appsecret = wx_appModel.appsecret;
-  if (isEmpty(appsecret)) {
-    throw `未设置微信小程序, appid: ${ appid }`;
-  }
+  
   const dateNow = dayjs();
-  const wx_app_tokenModel = await wx_app_tokenDao.findOne(
+  const wx_app_tokenModel = await findOneWxAppToken(
     {
       wx_app_id: [ wx_app_id ],
     },
@@ -50,7 +55,7 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `微信小程序 获取 access_token 失败: ${ url }`;
     }
-    await wx_app_tokenDao.create(
+    await createWxAppToken(
       {
         wx_app_id,
         access_token,
@@ -60,6 +65,7 @@ export async function getAccessToken(
     );
     return access_token;
   }
+  const wx_app_token_id = wx_app_tokenModel.id;
   let access_token = wx_app_tokenModel.access_token;
   const expires_in = wx_app_tokenModel.expires_in ?? 0;
   const token_time = dayjs(wx_app_tokenModel.token_time);
@@ -67,7 +73,6 @@ export async function getAccessToken(
     force
     || !(expires_in > 0)
     || !access_token
-    || !wx_app_tokenModel.token_time
     || !token_time.isValid()
     || token_time.add(expires_in, "s").add(5, "m").isBefore(dateNow)
   ) {
@@ -85,18 +90,16 @@ export async function getAccessToken(
       expires_in: number,
     } = await res.json();
     access_token = data.access_token;
+    const expires_in = data.expires_in;
     if (!access_token) {
       error(data);
-      throw data;
+      throw data.errmsg;
     }
-    if (isEmpty(access_token)) {
-      throw `微信小程序 获取 access_token 失败: ${ url }`;
-    }
-    await wx_app_tokenDao.updateById(
-      wx_appModel.id,
+    await updateWxAppTokenById(
+      wx_app_token_id,
       {
-        access_token: data.access_token,
-        expires_in: data.expires_in,
+        access_token,
+        expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
       },
     );

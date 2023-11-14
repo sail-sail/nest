@@ -104,13 +104,13 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.key == null)">
+        <template v-if="(showBuildIn || builtInModel?.v3_key == null)">
           <el-form-item
             :label="n('APIv3密钥')"
-            prop="key"
+            prop="v3_key"
           >
             <CustomInput
-              v-model="dialogModel.key"
+              v-model="dialogModel.v3_key"
               :placeholder="`${ ns('请输入') } ${ n('APIv3密钥') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
@@ -372,7 +372,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: WxPayInput = {
-    is_locked: 1,
+    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };
