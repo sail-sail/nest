@@ -1756,6 +1756,9 @@ async function getDefaultInput() {
       } else {
         defaultValue = `"${ defaultValue }"`;
       }
+      if (column_name === "is_locked") {
+        defaultValue = "0";
+      }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
     }
