@@ -42,6 +42,18 @@ function rustKeyEscape(key: string) {
   return key;
 }
 
+const mysqlKeys = [
+  "select", "from", "where", "and", "or", "not", "insert", "into", "update", "delete", "create", "database", "alter", "create", "table", "alter", "drop", "create", "index", "drop", "null", "like", "in", "between", "join", "inner", "left", "right", "union", "group", "by", "order", "limit", "offset",
+];
+
+function mysqlKeyEscape(key: string) {
+  key = key.toLowerCase();
+  if (mysqlKeys.includes(key)) {
+    return "`" + key + "`";
+  }
+  return key;
+}
+
 /**
  * 检查此表是否有selectInput
  * @param table 

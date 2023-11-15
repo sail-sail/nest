@@ -2446,28 +2446,29 @@ export async function create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
   if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `,<#=column_name#>`;
+    sql += `,<#=column_name_mysql#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
   if (input.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,<#=column_name_mysql#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
   if (input.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,<#=column_name_mysql#>`;
   }<#
     } else {
   #>
   if (input.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,<#=column_name_mysql#>`;
   }<#
     }
   #><#
@@ -3031,11 +3032,12 @@ export async function updateById(
     if (column_name === "org_id") {
       continue;
     }
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
   if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `<#=column_name#> = ?,`;
+    sql += `<#=column_name_mysql#> = ?,`;
     args.push(await authDao.getPassword(input.<#=column_name#>));
     updateFldNum++;
   }<#
@@ -3046,7 +3048,7 @@ export async function updateById(
       input.<#=column_name#> = null;
     }
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -3056,7 +3058,7 @@ export async function updateById(
   #>
   if (input.<#=column_name#> !== undefined) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -3064,7 +3066,7 @@ export async function updateById(
   #>
   if (input.<#=column_name#> !== undefined) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -3097,10 +3099,11 @@ export async function updateById(
   #><#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
+      const val_mysql = mysqlKeyEscape(val);
   #>
   if (input.<#=val#> !== undefined) {
     if (input.<#=val#> != oldModel.<#=val#>) {
-      sql += `<#=val#> = ${ args.push(input.<#=val#>) },`;
+      sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
       updateFldNum++;
     }
   }<#
