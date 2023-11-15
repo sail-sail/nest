@@ -445,3 +445,11 @@ body .el-input-number.is-without-controls .el-input__inner {
 .custom_date_picker_range {
   margin-left: 4px;
 }
+
+.custom_date_picker {
+  .el-input__wrapper {
+    .el-input__suffix-inner {
+      width: 20px;
+    }
+  }
+}
