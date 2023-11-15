@@ -176,7 +176,7 @@ function play() {
     tmid.value = setTimeout(function () {
 		emits("start");
 		nvueAmatons();
-    }, 50);
+    }, 50) as any;
   });
   // #endif
   // #ifndef APP-NVUE
@@ -215,7 +215,7 @@ onUnmounted(() => {
 });
 
 function nvueAmatons() {
-  var el = proxy.$refs.nvueElAni;
+  var el = proxy!.$refs.nvueElAni;
   let propsAni = {};
 
   if (animationName.value == "fade") {
@@ -271,7 +271,7 @@ function nvueAmatons() {
         animationStatus.value = 2;
       }
     );
-  }, 20);
+  }, 20) as any;
 }
 function noNvueAmations() {
   clearTimeout(tmid.value);
@@ -283,9 +283,9 @@ function noNvueAmations() {
     }
 	tmid.value = setTimeout(() => {
 	  emits("end");
-	}, props.duration);
+	}, props.duration) as any;
 	
-  }, 20);
+  }, 20) as any;
   
 }
 </script>

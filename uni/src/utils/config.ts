@@ -13,7 +13,7 @@ const homePage = `/${pages.pages[0]?.path}`;
 if(import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
-  port = "4000";
+  port = "4001";
   domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "http:";
   wsProt = "ws:";
