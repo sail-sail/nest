@@ -42,6 +42,18 @@ function rustKeyEscape(key: string) {
   return key;
 }
 
+const mysqlKeys = [
+  "select", "from", "where", "and", "or", "not", "insert", "into", "update", "delete", "create", "database", "alter", "create", "table", "alter", "drop", "create", "index", "drop", "null", "like", "in", "between", "join", "inner", "left", "right", "union", "group", "by", "order", "limit", "offset",
+];
+
+function mysqlKeyEscape(key: string) {
+  key = key.toLowerCase();
+  if (mysqlKeys.includes(key)) {
+    return "`" + key + "`";
+  }
+  return key;
+}
+
 /**
  * 检查此表是否有selectInput
  * @param table 
@@ -151,8 +163,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             isImport && 
             (
               [
-                "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
             )
@@ -160,6 +174,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           if (
             [
               "is_deleted", "is_sys",
+              "tenant_id", "tenant_id_lbl",
+              "org_id", "org_id_lbl",
             ].includes(column_name)
           ) continue;
           let data_type = column.DATA_TYPE;

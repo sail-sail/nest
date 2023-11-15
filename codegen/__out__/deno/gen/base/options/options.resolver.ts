@@ -29,7 +29,11 @@ import {
 export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./options.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./options.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllOptions(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OptionsModel[]> {
-  const { findAll } = await import("./options.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./options.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<OptionsModel | undefined> {
-  const { findOne } = await import("./options.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./options.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

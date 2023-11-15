@@ -233,6 +233,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_hidden && !Array.isArray(search?.is_hidden)) {
+    search.is_hidden = [ search.is_hidden ];
+  }
+  if (search?.is_hidden && search?.is_hidden?.length > 0) {
+    whereQuery += ` and t.is_hidden in ${ args.push(search.is_hidden) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -1087,6 +1093,9 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
+  if (input.is_hidden !== undefined) {
+    sql += `,is_hidden`;
+  }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
@@ -1136,6 +1145,9 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
+  }
+  if (input.is_hidden !== undefined) {
+    sql += `,${ args.push(input.is_hidden) }`;
   }
   sql += `)`;
   
@@ -1354,6 +1366,12 @@ export async function updateById(
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_hidden !== undefined) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden = ${ args.push(input.is_hidden) },`;
       updateFldNum++;
     }
   }

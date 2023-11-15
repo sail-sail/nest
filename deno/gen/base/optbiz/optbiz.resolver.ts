@@ -29,7 +29,11 @@ import {
 export async function findCountOptbiz(
   search?: OptbizSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./optbiz.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./optbiz.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllOptbiz(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OptbizModel[]> {
-  const { findAll } = await import("./optbiz.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./optbiz.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneOptbiz(
   search?: OptbizSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<OptbizModel | undefined> {
-  const { findOne } = await import("./optbiz.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./optbiz.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

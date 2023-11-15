@@ -138,7 +138,7 @@ export function deepObjectMerge<T>(FirstOBJ : Data, SecondOBJ : Data) : Data { /
 * @return {Array}  arr - 分组后的新数组
 */
 export function splitData<T>(arr : Array<T> = [], size = 1) : Array<T[]> {
-	const result = [];
+	const result: T[][] = [];
 	for (let i = 0; i < arr.length; i += size) {
 		result.push(arr.slice(i, i + size));
 	}

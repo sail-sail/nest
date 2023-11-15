@@ -29,7 +29,11 @@ import {
 export async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./dept.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./dept.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllDept(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DeptModel[]> {
-  const { findAll } = await import("./dept.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./dept.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<DeptModel | undefined> {
-  const { findOne } = await import("./dept.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./dept.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -305,11 +305,6 @@ export interface TableCloumn {
      */
     isLinkForeignTabs?: boolean;
     
-    /**
-     * 主表删除数据时是否级联删除, 默认为 false
-     */
-    isDeleteCascade?: boolean;
-    
   },
   
   foreignTabs?: {
@@ -769,10 +764,6 @@ export interface TablesConfigItem {
       table: string;
       label: string;
       column: string;
-      /**
-       * 主表删除数据时是否级联删除, 默认为 true
-       */
-      isDeleteCascade?: boolean;
     }[],
     
   },
