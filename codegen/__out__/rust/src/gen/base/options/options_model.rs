@@ -14,13 +14,15 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsModel {
   /// 系统字段
   pub is_sys: u8,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 名称
   pub lbl: String,
   /// 键
@@ -42,7 +44,7 @@ pub struct OptionsModel {
   /// 版本号
   pub version: u32,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -50,7 +52,7 @@ pub struct OptionsModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -66,7 +68,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 键
@@ -86,7 +88,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     // 版本号
     let version: u32 = row.try_get("version")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -96,7 +98,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -182,8 +184,8 @@ pub struct OptionsFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -210,13 +212,13 @@ pub struct OptionsSearch {
   /// 版本号
   pub version: Option<Vec<u32>>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -227,7 +229,7 @@ pub struct OptionsSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
@@ -254,7 +256,7 @@ pub struct OptionsInput {
   /// 版本号
   pub version: Option<u32>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -262,7 +264,7 @@ pub struct OptionsInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间

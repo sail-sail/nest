@@ -14,21 +14,23 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantModel {
   /// 系统字段
   pub is_sys: u8,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 名称
   pub lbl: String,
   /// 所属域名
-  pub domain_ids: Vec<String>,
+  pub domain_ids: Vec<ID>,
   /// 所属域名
   pub domain_ids_lbl: Vec<String>,
   /// 菜单权限
-  pub menu_ids: Vec<String>,
+  pub menu_ids: Vec<ID>,
   /// 菜单权限
   pub menu_ids_lbl: Vec<String>,
   /// 锁定
@@ -44,7 +46,7 @@ pub struct TenantModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -52,7 +54,7 @@ pub struct TenantModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -68,11 +70,11 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 所属域名
-    let domain_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("domain_ids")?;
+    let domain_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("domain_ids")?;
     let domain_ids = domain_ids.unwrap_or_default().0;
     let domain_ids = {
       let mut keys: Vec<u32> = domain_ids.keys()
@@ -84,10 +86,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       keys.into_iter()
         .map(|x| 
           domain_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let domain_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("domain_ids_lbl")?;
     let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
@@ -107,7 +109,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         .collect::<Vec<String>>()
     };
     // 菜单权限
-    let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids")?;
+    let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids = {
       let mut keys: Vec<u32> = menu_ids.keys()
@@ -119,10 +121,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       keys.into_iter()
         .map(|x| 
           menu_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let menu_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
@@ -152,7 +154,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -162,7 +164,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -251,19 +253,19 @@ pub struct TenantFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
   /// 所属域名
-  pub domain_ids: Option<Vec<String>>,
+  pub domain_ids: Option<Vec<ID>>,
   /// 所属域名
   pub domain_ids_is_null: Option<bool>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<String>>,
+  pub menu_ids: Option<Vec<ID>>,
   /// 菜单权限
   pub menu_ids_is_null: Option<bool>,
   /// 锁定
@@ -277,13 +279,13 @@ pub struct TenantSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -294,7 +296,7 @@ pub struct TenantSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
@@ -303,11 +305,11 @@ pub struct TenantInput {
   /// 名称
   pub lbl: Option<String>,
   /// 所属域名
-  pub domain_ids: Option<Vec<String>>,
+  pub domain_ids: Option<Vec<ID>>,
   /// 所属域名
   pub domain_ids_lbl: Option<Vec<String>>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<String>>,
+  pub menu_ids: Option<Vec<ID>>,
   /// 菜单权限
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 锁定
@@ -323,7 +325,7 @@ pub struct TenantInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -331,7 +333,7 @@ pub struct TenantInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间

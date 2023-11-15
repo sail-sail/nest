@@ -3,8 +3,10 @@ use crate::common::context::{
   get_short_uuid,
 };
 
+use crate::common::id::ID;
+
 /// 清空缓存
-pub fn generate_id() -> String {
+pub fn generate_id() -> ID {
   get_short_uuid()
 }
 

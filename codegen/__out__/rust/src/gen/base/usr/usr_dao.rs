@@ -1,5 +1,6 @@
 use anyhow::Result;
 use tracing::{info, error};
+use crate::common::id::ID;
 use crate::common::auth::auth_dao::get_password;
 use crate::common::util::string::*;
 
@@ -71,7 +72,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<ID> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -171,7 +172,7 @@ async fn get_where_query(
     }
   }
   {
-    let org_ids: Vec<String> = match &search {
+    let org_ids: Vec<ID> = match &search {
       Some(item) => item.org_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -197,7 +198,7 @@ async fn get_where_query(
     }
   }
   {
-    let default_org_id: Vec<String> = match &search {
+    let default_org_id: Vec<ID> = match &search {
       Some(item) => item.default_org_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -257,7 +258,7 @@ async fn get_where_query(
     }
   }
   {
-    let dept_ids: Vec<String> = match &search {
+    let dept_ids: Vec<ID> = match &search {
       Some(item) => item.dept_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -283,7 +284,7 @@ async fn get_where_query(
     }
   }
   {
-    let role_ids: Vec<String> = match &search {
+    let role_ids: Vec<ID> = match &search {
       Some(item) => item.role_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -330,7 +331,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<String> = match &search {
+    let create_usr_id: Vec<ID> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -377,7 +378,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<String> = match &search {
+    let update_usr_id: Vec<ID> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -421,6 +422,23 @@ async fn get_where_query(
     }
     if let Some(update_time_lt) = update_time_lt {
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+    }
+  }
+  {
+    let is_hidden: Vec<u8> = match &search {
+      Some(item) => item.is_hidden.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_hidden.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_hidden.len());
+        for item in is_hidden {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_hidden in ({})", arg);
     }
   }
   Ok(where_query)
@@ -578,10 +596,12 @@ pub async fn find_all(
   let dict_vec = get_dict(vec![
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
+    "is_hidden".to_owned(),
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
+  let is_hidden_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -599,6 +619,14 @@ pub async fn find_all(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 隐藏记录
+    model.is_hidden_lbl = {
+      is_hidden_dict.iter()
+        .find(|item| item.val == model.is_hidden.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_hidden.to_string())
     };
     
   }
@@ -703,6 +731,8 @@ pub async fn get_field_comments(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
+    "隐藏记录".into(),
+    "隐藏记录".into(),
   ];
   
   let map = n_route.n_batch(
@@ -743,6 +773,8 @@ pub async fn get_field_comments(
     update_usr_id_lbl: vec[22].to_owned(),
     update_time: vec[23].to_owned(),
     update_time_lbl: vec[24].to_owned(),
+    is_hidden: vec[25].to_owned(),
+    is_hidden_lbl: vec[26].to_owned(),
   };
   Ok(field_comments)
 }
@@ -773,7 +805,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
   
@@ -807,7 +839,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -890,7 +922,7 @@ pub async fn check_by_unique(
   input: UsrInput,
   model: UsrModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<ID>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -932,6 +964,7 @@ pub async fn set_id_by_lbl(
   let dict_vec = get_dict(vec![
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
+    "is_hidden".to_owned(),
   ]).await?;
   
   // 锁定
@@ -955,6 +988,20 @@ pub async fn set_id_by_lbl(
       input.is_enabled = is_enabled_dict.iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 隐藏记录
+  if input.is_hidden.is_none() {
+    let is_hidden_dict = &dict_vec[2];
+    if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
+      input.is_hidden = is_hidden_dict.iter()
+        .find(|item| {
+          item.lbl == is_hidden_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -986,7 +1033,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.org_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
         .into();
     }
   }
@@ -1036,7 +1083,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.dept_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
         .into();
     }
   }
@@ -1065,7 +1112,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.role_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
         .into();
     }
   }
@@ -1078,7 +1125,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: UsrInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let table = "base_usr";
   let _method = "create";
@@ -1105,7 +1152,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<ID> = None;
     
     for old_model in old_models {
       
@@ -1229,6 +1276,12 @@ pub async fn create(
     sql_values += ",?";
     args.push(update_time.into());
   }
+  // 隐藏记录
+  if let Some(is_hidden) = input.is_hidden {
+    sql_fields += ",is_hidden";
+    sql_values += ",?";
+    args.push(is_hidden.into());
+  }
   
   let sql = format!(
     "insert into {} ({}) values ({})",
@@ -1298,8 +1351,8 @@ pub async fn create(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: ID,
+  tenant_id: ID,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_usr";
@@ -1339,10 +1392,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: ID,
   mut input: UsrInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1461,6 +1514,12 @@ pub async fn update_by_id(
     sql_fields += ",rem = ?";
     args.push(rem.into());
   }
+  // 隐藏记录
+  if let Some(is_hidden) = input.is_hidden {
+    field_num += 1;
+    sql_fields += ",is_hidden = ?";
+    args.push(is_hidden.into());
+  }
   
   if field_num > 0 {
     
@@ -1575,7 +1634,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1617,7 +1676,7 @@ pub async fn delete_by_ids(
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1636,7 +1695,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1678,7 +1737,7 @@ pub async fn enable_by_ids(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1697,7 +1756,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1737,7 +1796,7 @@ pub async fn lock_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1814,7 +1873,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   

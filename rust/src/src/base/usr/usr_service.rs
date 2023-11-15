@@ -6,6 +6,7 @@ use crate::common::context::{
   get_now,
   get_server_tokentimeout,
 };
+use crate::common::id::ID;
 
 use super::usr_model::Login;
 
@@ -51,7 +52,7 @@ pub async fn login(
   let usr_model = usr_dao::find_one(
     UsrSearch {
       username: username.into(),
-      tenant_id: tenant_id.clone().to_string().into(),
+      tenant_id: tenant_id.clone().into(),
       ..Default::default()
     }.into(),
     None,
@@ -82,7 +83,7 @@ pub async fn login(
     }
   }
   
-  let org_id: String = org_id.unwrap();
+  let org_id: ID = org_id.unwrap();
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
@@ -220,12 +221,12 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   let org_id = get_auth_org_id();
   
   let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
-    .iter()
-    .zip(org_ids_lbl.iter())
+    .into_iter()
+    .zip(org_ids_lbl.into_iter())
     .map(|(id, lbl)| {
       GetLoginInfoorgIdModel {
-        id: id.into(),
-        lbl: lbl.into(),
+        id,
+        lbl,
       }
     }).collect();
   

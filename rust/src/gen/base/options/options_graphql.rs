@@ -1,6 +1,8 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -83,7 +85,7 @@ impl OptionsGenQuery {
   async fn find_by_id_options(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<Option<OptionsModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -101,7 +103,7 @@ impl OptionsGenQuery {
   async fn get_is_enabled_by_id_options(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -120,7 +122,7 @@ impl OptionsGenQuery {
   async fn get_is_locked_by_id_options(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -176,7 +178,7 @@ impl OptionsGenMutation {
     ctx: &Context<'_>,
     model: OptionsInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -197,9 +199,9 @@ impl OptionsGenMutation {
   async fn update_by_id_options(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
     model: OptionsInput,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -217,7 +219,7 @@ impl OptionsGenMutation {
   async fn delete_by_ids_options(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -235,7 +237,7 @@ impl OptionsGenMutation {
   async fn enable_by_ids_options(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -255,7 +257,7 @@ impl OptionsGenMutation {
   async fn lock_by_ids_options(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -275,7 +277,7 @@ impl OptionsGenMutation {
   async fn revert_by_ids_options(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -293,7 +295,7 @@ impl OptionsGenMutation {
   async fn force_delete_by_ids_options(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

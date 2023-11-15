@@ -1,6 +1,8 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 use crate::common::context::Ctx;
 
 use super::app_service;
@@ -15,7 +17,7 @@ impl AppQuery {
   async fn generate_id(
     &self,
     ctx: &Context<'_>,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

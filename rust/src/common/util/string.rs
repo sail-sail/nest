@@ -1,13 +1,15 @@
 use sha2::{Digest, Sha256};
 use base64::{engine::general_purpose, Engine};
 
-pub fn trim_opt(s: Option<impl AsRef<str>>) -> Option<String> {
+use crate::common::id::ID;
+
+pub fn trim_opt(s: Option<impl AsRef<ID>>) -> Option<ID> {
   if let Some(s) = s {
     let s = s.as_ref().trim();
     if s.is_empty() {
       None
     } else {
-      s.to_owned().into()
+      ID::from(s).into()
     }
   } else {
     None

@@ -6,6 +6,7 @@ use crate::common::context::{
   get_auth_lang,
   Options,
 };
+use crate::common::id::ID;
 
 use regex::{Regex, Captures};
 
@@ -174,7 +175,7 @@ pub async fn n_lang(
     None,
     options.clone(),
   ).await?;
-  let mut menu_id: Option<String> = None;
+  let mut menu_id: Option<ID> = None;
   if let Some(route_path) = route_path {
     let menu_model = find_one_menu(
       MenuSearch {
@@ -186,16 +187,17 @@ pub async fn n_lang(
       options.clone(),
     ).await?;
     if let Some(menu_model) = menu_model {
-      menu_id = menu_model.id.to_string().into();
+      menu_id = menu_model.id.into();
     }
   }
   if let Some(lang_model) = lang_model {
+    let lang_id = lang_model.id;
     #[allow(unused_assignments)]
     let mut i18n_model: Option<I18nModel> = None;
     if let Some(menu_id) = menu_id {
       i18n_model = find_one_i18n(
         I18nSearch {
-          lang_id: vec![lang_model.id.to_string()].into(),
+          lang_id: vec![lang_id.clone()].into(),
           menu_id: vec![menu_id].into(),
           code: code.clone().into(),
           ..Default::default()
@@ -206,7 +208,7 @@ pub async fn n_lang(
       if i18n_model.is_none() {
         i18n_model = find_one_i18n(
           I18nSearch {
-            lang_id: vec![lang_model.id.to_string()].into(),
+            lang_id: vec![lang_id.clone()].into(),
             menu_id_is_null: true.into(),
             code: code.into(),
             ..Default::default()
@@ -218,7 +220,7 @@ pub async fn n_lang(
     } else {
       i18n_model = find_one_i18n(
         I18nSearch {
-          lang_id: vec![lang_model.id.to_string()].into(),
+          lang_id: vec![lang_id].into(),
           menu_id_is_null: true.into(),
           code: code.into(),
           ..Default::default()

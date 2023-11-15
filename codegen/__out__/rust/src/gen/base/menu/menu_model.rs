@@ -14,17 +14,19 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuModel {
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 类型
   pub r#type: String,
   /// 类型
   pub type_lbl: String,
   /// 父菜单
-  pub parent_id: String,
+  pub parent_id: ID,
   /// 父菜单
   pub parent_id_lbl: String,
   /// 名称
@@ -46,7 +48,7 @@ pub struct MenuModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -54,7 +56,7 @@ pub struct MenuModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -68,12 +70,12 @@ pub struct MenuModel {
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 类型
     let r#type: String = row.try_get("type")?;
     let type_lbl: String = r#type.to_string();
     // 父菜单
-    let parent_id: String = row.try_get("parent_id")?;
+    let parent_id: ID = row.try_get("parent_id")?;
     let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
     let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
@@ -93,7 +95,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -103,7 +105,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -197,13 +199,13 @@ pub struct MenuFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 类型
   pub r#type: Option<Vec<String>>,
   /// 父菜单
-  pub parent_id: Option<Vec<String>>,
+  pub parent_id: Option<Vec<ID>>,
   /// 父菜单
   pub parent_id_is_null: Option<bool>,
   /// 名称
@@ -227,13 +229,13 @@ pub struct MenuSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -244,7 +246,7 @@ pub struct MenuSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 类型
@@ -252,7 +254,7 @@ pub struct MenuInput {
   /// 类型
   pub type_lbl: Option<String>,
   /// 父菜单
-  pub parent_id: Option<String>,
+  pub parent_id: Option<ID>,
   /// 父菜单
   pub parent_id_lbl: Option<String>,
   /// 名称
@@ -274,7 +276,7 @@ pub struct MenuInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -282,7 +284,7 @@ pub struct MenuInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间

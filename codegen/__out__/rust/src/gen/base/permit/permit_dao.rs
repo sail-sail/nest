@@ -1,5 +1,6 @@
 use anyhow::Result;
 use tracing::{info, error};
+use crate::common::id::ID;
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -65,7 +66,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<ID> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -82,7 +83,7 @@ async fn get_where_query(
     }
   }
   {
-    let menu_id: Vec<String> = match &search {
+    let menu_id: Vec<ID> = match &search {
       Some(item) => item.menu_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -171,7 +172,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<String> = match &search {
+    let create_usr_id: Vec<ID> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -218,7 +219,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<String> = match &search {
+    let update_usr_id: Vec<ID> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -500,7 +501,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
@@ -534,7 +535,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -620,7 +621,7 @@ pub async fn check_by_unique(
   input: PermitInput,
   model: PermitModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<ID>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -691,7 +692,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let table = "base_permit";
   let _method = "create";
@@ -718,7 +719,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<ID> = None;
     
     for old_model in old_models {
       
@@ -840,10 +841,10 @@ pub async fn create(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: ID,
   mut input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -987,7 +988,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1028,7 +1029,7 @@ pub async fn delete_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1105,7 +1106,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   

@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   SrvErr,
@@ -64,7 +66,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<Option<LangModel>> {
   
@@ -93,7 +95,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   input: LangInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let id = lang_dao::create(
     input,
@@ -107,10 +109,10 @@ pub async fn create(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: ID,
   mut input: LangInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let res = lang_dao::update_by_id(
     id,
@@ -124,13 +126,13 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let len = ids.len();
   let ids0 = ids.clone();
-  let mut ids: Vec<String> = vec![];
+  let mut ids: Vec<ID> = vec![];
   for id in ids0 {
     let model = lang_dao::find_by_id(
       id.clone(),
@@ -162,7 +164,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -177,7 +179,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用数据
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -206,7 +208,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -221,7 +223,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   

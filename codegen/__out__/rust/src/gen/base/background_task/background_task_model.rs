@@ -14,13 +14,15 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// 租户ID
-  pub tenant_id: String,
+  pub tenant_id: ID,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 名称
   pub lbl: String,
   /// 状态
@@ -46,7 +48,7 @@ pub struct BackgroundTaskModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -54,7 +56,7 @@ pub struct BackgroundTaskModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -70,7 +72,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 状态
@@ -98,7 +100,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -108,7 +110,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -200,10 +202,10 @@ pub struct BackgroundTaskFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -230,13 +232,13 @@ pub struct BackgroundTaskSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -247,12 +249,12 @@ pub struct BackgroundTaskSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   /// 名称
   pub lbl: Option<String>,
   /// 状态
@@ -278,7 +280,7 @@ pub struct BackgroundTaskInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -286,7 +288,7 @@ pub struct BackgroundTaskInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间

@@ -1,10 +1,12 @@
 use anyhow::Result;
+
+use crate::common::id::ID;
 use crate::common::context::get_auth_tenant_id;
 
 use crate::gen::base::tenant::tenant_dao;
 
 /// 当前租户拥有的菜单
-pub async fn get_menu_ids_by_tenant() -> Result<Vec<String>> {
+pub async fn get_menu_ids_by_tenant() -> Result<Vec<ID>> {
   
   let tenant_id = get_auth_tenant_id();
   if tenant_id.is_none() {
@@ -24,8 +26,8 @@ pub async fn get_menu_ids_by_tenant() -> Result<Vec<String>> {
 }
 
 pub async fn filter_menu_ids_by_tenant(
-  menu_ids: Vec<String>,
-) -> Result<Vec<String>> {
+  menu_ids: Vec<ID>,
+) -> Result<Vec<ID>> {
   let tenant_menu_ids = get_menu_ids_by_tenant().await?;
   let mut menu_ids2 = vec![];
   for menu_id in menu_ids {

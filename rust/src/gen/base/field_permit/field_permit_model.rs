@@ -14,15 +14,17 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitModel {
   /// 系统字段
   pub is_sys: u8,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 菜单
-  pub menu_id: String,
+  pub menu_id: ID,
   /// 菜单
   pub menu_id_lbl: String,
   /// 编码
@@ -36,7 +38,7 @@ pub struct FieldPermitModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -44,7 +46,7 @@ pub struct FieldPermitModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -60,9 +62,9 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 菜单
-    let menu_id: String = row.try_get("menu_id")?;
+    let menu_id: ID = row.try_get("menu_id")?;
     let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
     let menu_id_lbl = menu_id_lbl.unwrap_or_default();
     // 编码
@@ -75,7 +77,7 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -85,7 +87,7 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -162,11 +164,11 @@ pub struct FieldPermitFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 菜单
-  pub menu_id: Option<Vec<String>>,
+  pub menu_id: Option<Vec<ID>>,
   /// 菜单
   pub menu_id_is_null: Option<bool>,
   /// 编码
@@ -184,13 +186,13 @@ pub struct FieldPermitSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -201,14 +203,14 @@ pub struct FieldPermitSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 菜单
-  pub menu_id: Option<String>,
+  pub menu_id: Option<ID>,
   /// 菜单
   pub menu_id_lbl: Option<String>,
   /// 编码
@@ -222,7 +224,7 @@ pub struct FieldPermitInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -230,7 +232,7 @@ pub struct FieldPermitInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间

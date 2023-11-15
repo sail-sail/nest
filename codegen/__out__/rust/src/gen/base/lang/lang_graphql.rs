@@ -1,6 +1,8 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -83,7 +85,7 @@ impl LangGenQuery {
   async fn find_by_id_lang(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<Option<LangModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -101,7 +103,7 @@ impl LangGenQuery {
   async fn get_is_enabled_by_id_lang(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -157,7 +159,7 @@ impl LangGenMutation {
     ctx: &Context<'_>,
     model: LangInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -178,9 +180,9 @@ impl LangGenMutation {
   async fn update_by_id_lang(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
     model: LangInput,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -198,7 +200,7 @@ impl LangGenMutation {
   async fn delete_by_ids_lang(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -216,7 +218,7 @@ impl LangGenMutation {
   async fn enable_by_ids_lang(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -236,7 +238,7 @@ impl LangGenMutation {
   async fn revert_by_ids_lang(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -254,7 +256,7 @@ impl LangGenMutation {
   async fn force_delete_by_ids_lang(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

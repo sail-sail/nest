@@ -1,6 +1,8 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -83,7 +85,7 @@ impl BackgroundTaskGenQuery {
   async fn find_by_id_background_task(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<Option<BackgroundTaskModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -122,8 +124,8 @@ impl BackgroundTaskGenMutation {
   async fn update_tenant_by_id_background_task(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: ID,
+    tenant_id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -142,7 +144,7 @@ impl BackgroundTaskGenMutation {
   async fn delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -160,7 +162,7 @@ impl BackgroundTaskGenMutation {
   async fn revert_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -178,7 +180,7 @@ impl BackgroundTaskGenMutation {
   async fn force_delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

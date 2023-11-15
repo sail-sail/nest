@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   SrvErr,
@@ -64,7 +66,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<Option<DictbizDetailModel>> {
   
@@ -93,7 +95,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   input: DictbizDetailInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let id = dictbiz_detail_dao::create(
     input,
@@ -106,8 +108,8 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: ID,
+  tenant_id: ID,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -124,10 +126,10 @@ pub async fn update_tenant_by_id(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: ID,
   mut input: DictbizDetailInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let is_locked = dictbiz_detail_dao::get_is_locked_by_id(
     id.clone(),
@@ -151,13 +153,13 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let len = ids.len();
   let ids0 = ids.clone();
-  let mut ids: Vec<String> = vec![];
+  let mut ids: Vec<ID> = vec![];
   for id in ids0 {
     let is_locked = dictbiz_detail_dao::get_is_locked_by_id(
       id.clone(),
@@ -181,7 +183,7 @@ pub async fn delete_by_ids(
   
   let len = ids.len();
   let ids0 = ids.clone();
-  let mut ids: Vec<String> = vec![];
+  let mut ids: Vec<ID> = vec![];
   for id in ids0 {
     let model = dictbiz_detail_dao::find_by_id(
       id.clone(),
@@ -213,7 +215,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -228,7 +230,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用数据
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -247,7 +249,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -262,7 +264,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁数据
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -291,7 +293,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -306,7 +308,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   

@@ -14,23 +14,25 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptModel {
   /// 租户ID
-  pub tenant_id: String,
+  pub tenant_id: ID,
   /// 组织ID
-  pub org_id: String,
+  pub org_id: ID,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 父部门
-  pub parent_id: String,
+  pub parent_id: ID,
   /// 父部门
   pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
   /// 部门负责人
-  pub usr_ids: Vec<String>,
+  pub usr_ids: Vec<ID>,
   /// 部门负责人
   pub usr_ids_lbl: Vec<String>,
   /// 锁定
@@ -46,7 +48,7 @@ pub struct DeptModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -54,7 +56,7 @@ pub struct DeptModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -72,15 +74,15 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     // 组织ID
     let org_id = row.try_get("org_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 父部门
-    let parent_id: String = row.try_get("parent_id")?;
+    let parent_id: ID = row.try_get("parent_id")?;
     let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
     let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 部门负责人
-    let usr_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("usr_ids")?;
+    let usr_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("usr_ids")?;
     let usr_ids = usr_ids.unwrap_or_default().0;
     let usr_ids = {
       let mut keys: Vec<u32> = usr_ids.keys()
@@ -92,10 +94,10 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       keys.into_iter()
         .map(|x| 
           usr_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let usr_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("usr_ids_lbl")?;
     let usr_ids_lbl = usr_ids_lbl.unwrap_or_default().0;
@@ -125,7 +127,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -135,7 +137,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -225,13 +227,13 @@ pub struct DeptFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   pub is_deleted: Option<u8>,
   /// 父部门
-  pub parent_id: Option<Vec<String>>,
+  pub parent_id: Option<Vec<ID>>,
   /// 父部门
   pub parent_id_is_null: Option<bool>,
   /// 名称
@@ -239,7 +241,7 @@ pub struct DeptSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 部门负责人
-  pub usr_ids: Option<Vec<String>>,
+  pub usr_ids: Option<Vec<ID>>,
   /// 部门负责人
   pub usr_ids_is_null: Option<bool>,
   /// 锁定
@@ -253,42 +255,42 @@ pub struct DeptSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 组织ID
-  pub org_id: Option<String>,
+  pub org_id: Option<ID>,
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: Option<String>,
+  pub org_id: Option<ID>,
   /// 父部门
-  pub parent_id: Option<String>,
+  pub parent_id: Option<ID>,
   /// 父部门
   pub parent_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 部门负责人
-  pub usr_ids: Option<Vec<String>>,
+  pub usr_ids: Option<Vec<ID>>,
   /// 部门负责人
   pub usr_ids_lbl: Option<Vec<String>>,
   /// 锁定
@@ -304,7 +306,7 @@ pub struct DeptInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -312,7 +314,7 @@ pub struct DeptInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
