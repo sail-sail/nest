@@ -403,6 +403,7 @@ async function showDialog(
         ...data,
         id: undefined,
       };
+      Object.assign(dialogModel, { is_deleted: undefined });
     }
   } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
