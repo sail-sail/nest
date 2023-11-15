@@ -29,7 +29,11 @@ import {
 export async function findCountOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./operation_record.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./operation_record.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllOperationRecord(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OperationRecordModel[]> {
-  const { findAll } = await import("./operation_record.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./operation_record.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<OperationRecordModel | undefined> {
-  const { findOne } = await import("./operation_record.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./operation_record.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

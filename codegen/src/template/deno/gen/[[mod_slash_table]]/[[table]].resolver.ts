@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasPassword = columns.some((column) => column.isPassword);
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -92,7 +93,18 @@ import {
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./<#=table#>.service.ts");<#
+  if (hasIsHidden) {
+  #>
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];<#
+  }
+  #>
+  
   const res = await findCount(search);
   return res;
 }
@@ -105,7 +117,18 @@ export async function findAll<#=Table_Up#>(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
-  const { findAll } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./<#=table#>.service.ts");<#
+  if (hasIsHidden) {
+  #>
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];<#
+  }
+  #>
+  
   const res = await findAll(search, page, sort);<#
   if (hasPassword) {
   #>
@@ -172,7 +195,18 @@ export async function findOne<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
-  const { findOne } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./<#=table#>.service.ts");<#
+  if (hasIsHidden) {
+  #>
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];<#
+  }
+  #>
+  
   const res = await findOne(search, sort);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];

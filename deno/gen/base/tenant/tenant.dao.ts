@@ -481,11 +481,9 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_deletedDict, // 删除
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
-    "is_deleted",
   ]);
   
   // 所属域名
@@ -575,8 +573,6 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_deleted: await n("删除"),
-    is_deleted_lbl: await n("删除"),
   };
   return fieldComments;
 }

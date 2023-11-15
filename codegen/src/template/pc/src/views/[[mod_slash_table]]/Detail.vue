@@ -1756,6 +1756,9 @@ async function getDefaultInput() {
       } else {
         defaultValue = `"${ defaultValue }"`;
       }
+      if (column_name === "is_locked") {
+        defaultValue = "0";
+      }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
     }
@@ -1896,10 +1899,11 @@ async function showDialog(
         #><#
         if (hasOrderBy) {
         #>
-        order_by,<#
+        order_by: order_by + 1,<#
         }
         #>
       };
+      Object.assign(dialogModel, { is_deleted: undefined });
     }
   } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
@@ -2199,8 +2203,9 @@ async function onSave() {
       id: undefined,
     };
     if (!showBuildIn) {
-      Object.assign(dialogModel2, builtInModel, { is_deleted: undefined });
+      Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await updateById(
       dialogModel.id,
       dialogModel2,
@@ -2361,6 +2366,9 @@ async function onInitI18ns() {
     if (column.noList) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "org_id") continue;
+    if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";

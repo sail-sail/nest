@@ -29,7 +29,11 @@ import {
 export async function findCountDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./domain.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./domain.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllDomain(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DomainModel[]> {
-  const { findAll } = await import("./domain.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./domain.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<DomainModel | undefined> {
-  const { findOne } = await import("./domain.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./domain.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -215,7 +215,7 @@ function show(argFs: config) {
 function showAction(argFs: config) {
   //显示所需要的参数
   let arg = argFs || {};
-  let { duration, icon, text, color, dark, model, mask,lines } = arg;
+  let { duration, icon, text, color, dark, model, mask,lines } = arg as any;
   model_ref.value = typeof model == "undefined" ? model_ref.value : model;
   icon_ref.value = icon = icon ?? modelIcon.value[model_ref.value].icon;
   text_ref.value = text = text ?? modelIcon.value[model_ref.value].text;
@@ -248,13 +248,13 @@ function showAction(argFs: config) {
     uid = setTimeout(function () {
       showValue.value = false;
       uid = NaN;
-    }, dur.value);
+    }, dur.value) as any;
   }
 }
 
 function showNvueAniMation() {
-  var el = proxy.$refs.nvueElAni;
-  var elContent = proxy.$refs.nvueElAniContent;
+  var el = proxy!.$refs.nvueElAni;
+  var elContent = proxy!.$refs.nvueElAniContent;
   animation.transition(
     el,
     {
