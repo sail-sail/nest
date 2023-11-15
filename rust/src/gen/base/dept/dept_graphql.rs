@@ -1,6 +1,8 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -83,7 +85,7 @@ impl DeptGenQuery {
   async fn find_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<Option<DeptModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -101,7 +103,7 @@ impl DeptGenQuery {
   async fn get_is_enabled_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -120,7 +122,7 @@ impl DeptGenQuery {
   async fn get_is_locked_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -176,7 +178,7 @@ impl DeptGenMutation {
     ctx: &Context<'_>,
     model: DeptInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -197,8 +199,8 @@ impl DeptGenMutation {
   async fn update_tenant_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: ID,
+    tenant_id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -217,8 +219,8 @@ impl DeptGenMutation {
   async fn update_org_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    org_id: String,
+    id: ID,
+    org_id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -237,9 +239,9 @@ impl DeptGenMutation {
   async fn update_by_id_dept(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
     model: DeptInput,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -257,7 +259,7 @@ impl DeptGenMutation {
   async fn delete_by_ids_dept(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -275,7 +277,7 @@ impl DeptGenMutation {
   async fn enable_by_ids_dept(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -295,7 +297,7 @@ impl DeptGenMutation {
   async fn lock_by_ids_dept(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -315,7 +317,7 @@ impl DeptGenMutation {
   async fn revert_by_ids_dept(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -333,7 +335,7 @@ impl DeptGenMutation {
   async fn force_delete_by_ids_dept(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

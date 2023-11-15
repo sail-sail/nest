@@ -1,11 +1,13 @@
 use anyhow::Result;
 use crate::common::context::get_auth_model;
 
+use crate::common::id::ID;
+
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 /// 获取当前用户拥有的角色id列表
 #[allow(dead_code)]
-async fn get_auth_role_ids() -> Result<Vec<String>> {
+async fn get_auth_role_ids() -> Result<Vec<ID>> {
   
   let aut_model = get_auth_model();
   if aut_model.is_none() {

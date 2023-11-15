@@ -14,13 +14,15 @@ use async_graphql::{
   InputObject,
 };
 
+use crate::common::id::ID;
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
   /// 租户ID
-  pub tenant_id: String,
+  pub tenant_id: ID,
   /// ID
-  pub id: String,
+  pub id: ID,
   /// 头像
   pub img: String,
   /// 名称
@@ -30,11 +32,11 @@ pub struct UsrModel {
   /// 密码
   pub password: String,
   /// 所属组织
-  pub org_ids: Vec<String>,
+  pub org_ids: Vec<ID>,
   /// 所属组织
   pub org_ids_lbl: Vec<String>,
   /// 默认组织
-  pub default_org_id: String,
+  pub default_org_id: ID,
   /// 默认组织
   pub default_org_id_lbl: String,
   /// 锁定
@@ -46,17 +48,17 @@ pub struct UsrModel {
   /// 启用
   pub is_enabled_lbl: String,
   /// 所属部门
-  pub dept_ids: Vec<String>,
+  pub dept_ids: Vec<ID>,
   /// 所属部门
   pub dept_ids_lbl: Vec<String>,
   /// 拥有角色
-  pub role_ids: Vec<String>,
+  pub role_ids: Vec<ID>,
   /// 拥有角色
   pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: ID,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -64,13 +66,17 @@ pub struct UsrModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: ID,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 隐藏记录
+  pub is_hidden: u8,
+  /// 隐藏记录
+  pub is_hidden_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
@@ -80,7 +86,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: ID = row.try_get("id")?;
     // 头像
     let img: String = row.try_get("img")?;
     // 名称
@@ -90,7 +96,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 密码
     let password: String = row.try_get("password")?;
     // 所属组织
-    let org_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids")?;
+    let org_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
     let org_ids = {
       let mut keys: Vec<u32> = org_ids.keys()
@@ -102,10 +108,10 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           org_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let org_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
@@ -125,7 +131,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         .collect::<Vec<String>>()
     };
     // 默认组织
-    let default_org_id: String = row.try_get("default_org_id")?;
+    let default_org_id: ID = row.try_get("default_org_id")?;
     let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
     let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
     // 锁定
@@ -135,7 +141,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 所属部门
-    let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids")?;
+    let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
     let dept_ids = {
       let mut keys: Vec<u32> = dept_ids.keys()
@@ -147,10 +153,10 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           dept_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let dept_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
@@ -170,7 +176,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         .collect::<Vec<String>>()
     };
     // 拥有角色
-    let role_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("role_ids")?;
+    let role_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
     let role_ids = {
       let mut keys: Vec<u32> = role_ids.keys()
@@ -182,10 +188,10 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           role_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let role_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
@@ -207,7 +213,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: ID = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -217,7 +223,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: ID = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -226,6 +232,9 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 隐藏记录
+    let is_hidden: u8 = row.try_get("is_hidden")?;
+    let is_hidden_lbl: String = is_hidden.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -258,6 +267,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      is_hidden,
+      is_hidden_lbl,
     };
     
     Ok(model)
@@ -317,15 +328,19 @@ pub struct UsrFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 隐藏记录
+  pub is_hidden: String,
+  /// 隐藏记录
+  pub is_hidden_lbl: String,
 }
 
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   pub is_deleted: Option<u8>,
   /// 头像
   pub img: Option<String>,
@@ -344,11 +359,11 @@ pub struct UsrSearch {
   /// 密码
   pub password_like: Option<String>,
   /// 所属组织
-  pub org_ids: Option<Vec<String>>,
+  pub org_ids: Option<Vec<ID>>,
   /// 所属组织
   pub org_ids_is_null: Option<bool>,
   /// 默认组织
-  pub default_org_id: Option<Vec<String>>,
+  pub default_org_id: Option<Vec<ID>>,
   /// 默认组织
   pub default_org_id_is_null: Option<bool>,
   /// 锁定
@@ -356,11 +371,11 @@ pub struct UsrSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 所属部门
-  pub dept_ids: Option<Vec<String>>,
+  pub dept_ids: Option<Vec<ID>>,
   /// 所属部门
   pub dept_ids_is_null: Option<bool>,
   /// 拥有角色
-  pub role_ids: Option<Vec<String>>,
+  pub role_ids: Option<Vec<ID>>,
   /// 拥有角色
   pub role_ids_is_null: Option<bool>,
   /// 备注
@@ -368,29 +383,31 @@ pub struct UsrSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<ID>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<ID>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 隐藏记录
+  pub is_hidden: Option<Vec<u8>>,
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<ID>,
   /// 头像
   pub img: Option<String>,
   /// 名称
@@ -400,11 +417,11 @@ pub struct UsrInput {
   /// 密码
   pub password: Option<String>,
   /// 所属组织
-  pub org_ids: Option<Vec<String>>,
+  pub org_ids: Option<Vec<ID>>,
   /// 所属组织
   pub org_ids_lbl: Option<Vec<String>>,
   /// 默认组织
-  pub default_org_id: Option<String>,
+  pub default_org_id: Option<ID>,
   /// 默认组织
   pub default_org_id_lbl: Option<String>,
   /// 锁定
@@ -416,17 +433,17 @@ pub struct UsrInput {
   /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 所属部门
-  pub dept_ids: Option<Vec<String>>,
+  pub dept_ids: Option<Vec<ID>>,
   /// 所属部门
   pub dept_ids_lbl: Option<Vec<String>>,
   /// 拥有角色
-  pub role_ids: Option<Vec<String>>,
+  pub role_ids: Option<Vec<ID>>,
   /// 拥有角色
   pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<ID>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -434,13 +451,17 @@ pub struct UsrInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<ID>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 隐藏记录
+  pub is_hidden: Option<u8>,
+  /// 隐藏记录
+  pub is_hidden_lbl: Option<String>,
 }
 
 impl From<UsrModel> for UsrInput {
@@ -489,6 +510,9 @@ impl From<UsrModel> for UsrInput {
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      // 隐藏记录
+      is_hidden: model.is_hidden.into(),
+      is_hidden_lbl: model.is_hidden_lbl.into(),
     }
   }
 }
@@ -531,6 +555,8 @@ impl From<UsrInput> for UsrSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
+      // 隐藏记录
+      is_hidden: input.is_hidden.map(|x| vec![x]),
       ..Default::default()
     }
   }

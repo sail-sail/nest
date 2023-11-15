@@ -24,7 +24,7 @@ pub struct LoginInput {
   pub tenant_id: ID,
   
   /// 组织ID
-  pub org_id: Option<String>,
+  pub org_id: Option<ID>,
   
   /// 语言
   pub lang: String,
@@ -51,7 +51,7 @@ pub struct ChangePasswordInput {
 pub struct Login {
   
   pub authorization: String,
-  pub org_id: String,
+  pub org_id: ID,
   
 }
 
@@ -62,7 +62,7 @@ pub struct GetLoginInfo {
   pub lbl: String,
   pub username: String,
   pub lang: String,
-  pub org_id: Option<String>,
+  pub org_id: Option<ID>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
   
 }
@@ -71,7 +71,7 @@ pub struct GetLoginInfo {
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
   
-  pub id: String,
+  pub id: ID,
   pub lbl: String,
   
 }

@@ -9,6 +9,12 @@ use smol_str::SmolStr;
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ID(SmolStr);
 
+impl AsRef<ID> for ID {
+  fn as_ref(&self) -> &ID {
+    self
+  }
+}
+
 impl Display for ID {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     self.0.fmt(f)

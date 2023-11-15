@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+
+use crate::common::id::ID;
 use crate::common::context::get_auth_model;
 
 use crate::src::base::i18n::i18n_dao::ns;
@@ -58,7 +60,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     None,
   ).await?;
   
-  let mut permit_ids = Vec::<String>::new();
+  let mut permit_ids = Vec::<ID>::new();
   for role_model in role_models {
     for permit_id in role_model.permit_ids {
       if permit_ids.contains(&permit_id) {
@@ -76,7 +78,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     batch_count += 1;
   }
   let batch_count = batch_count;
-  let mut permit_ids_arr = Vec::<Vec<String>>::with_capacity(batch_count);
+  let mut permit_ids_arr = Vec::<Vec<ID>>::with_capacity(batch_count);
   for i in 0..batch_count {
     let start = i * batch_size;
     let mut end = (i + 1) * batch_size;
@@ -104,7 +106,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   }
   let permit_models = permit_models;
   
-  let mut menu_id_map = HashMap::<String, String>::with_capacity(permit_len);
+  let mut menu_id_map = HashMap::<ID, String>::with_capacity(permit_len);
   
   for permit_model in permit_models.iter() {
     let menu_id = permit_model.menu_id.clone();
@@ -133,7 +135,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   let permits: Vec<GetUsrPermits> = permit_models.into_iter()
     .map(|item| {
       let menu_id = item.menu_id;
-      let route_path: Option<&String> = menu_id_map.get(menu_id.as_str());
+      let route_path: Option<&String> = menu_id_map.get(menu_id.as_ref());
       let route_path: String = route_path
         .map_or_else(
           || "".to_owned(),
@@ -227,7 +229,7 @@ pub async fn use_permit(
   ).await?;
   
   // 过滤掉重复的 permit_ids
-  let mut permit_ids = Vec::<String>::new();
+  let mut permit_ids = Vec::<ID>::new();
   for role_model in role_models.into_iter() {
     for permit_id in role_model.permit_ids.into_iter() {
       if permit_ids.contains(&permit_id) {
@@ -239,7 +241,7 @@ pub async fn use_permit(
   let permit_ids = permit_ids;
   
   // 切分成多个批次查询
-  let mut permit_ids_arr = Vec::<Vec<String>>::new();
+  let mut permit_ids_arr = Vec::<Vec<ID>>::new();
   let batch_size = 100;
   let batch_count = permit_ids.len() / batch_size;
   for i in 0..batch_count {

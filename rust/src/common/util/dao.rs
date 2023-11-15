@@ -28,6 +28,8 @@ use crate::common::context::{
   get_short_uuid,
 };
 
+use crate::common::id::ID;
+
 lazy_static! {
   static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key();
 }
@@ -144,16 +146,16 @@ pub struct ManyOpts {
 
 #[derive(FromRow, Clone, Serialize, Deserialize)]
 struct ManyModel {
-  id: String,
-  column1_id: String,
-  column2_id: String,
+  id: ID,
+  column1_id: ID,
+  column2_id: ID,
   is_deleted: bool,
   order_by: u32,
 }
 
 pub async fn many2many_update(
-  id: String,
-  foreign_ids: Vec<String>,
+  id: ID,
+  foreign_ids: Vec<ID>,
   many_opts: ManyOpts,
 ) -> Result<bool> {
   let tenant_id = get_auth_tenant_id();
@@ -244,7 +246,7 @@ pub async fn many2many_update(
   let foreign_ids2 = foreign_ids.clone().into_iter()
     .filter(|column2_id| {
       models.iter().all(|model| model.column2_id != *column2_id)
-    }).collect::<Vec<String>>();
+    }).collect::<Vec<ID>>();
   
   for foreign_id in foreign_ids2 {
     let mut args = QueryArgs::new();

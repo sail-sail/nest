@@ -35,6 +35,8 @@ const hasDictbiz = columns.some((column) => {
 #>use anyhow::Result;
 use async_graphql::{Context, Object};
 
+use crate::common::id::ID;
+
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -117,7 +119,7 @@ impl <#=tableUP#>GenQuery {
   async fn find_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<Option<<#=tableUP#>Model>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -137,7 +139,7 @@ impl <#=tableUP#>GenQuery {
   async fn get_is_enabled_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -160,7 +162,7 @@ impl <#=tableUP#>GenQuery {
   async fn get_is_locked_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -224,7 +226,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     model: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -249,8 +251,8 @@ impl <#=tableUP#>GenMutation {<#
   async fn update_tenant_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: ID,
+    tenant_id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -273,8 +275,8 @@ impl <#=tableUP#>GenMutation {<#
   async fn update_org_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    org_id: String,
+    id: ID,
+    org_id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -297,9 +299,9 @@ impl <#=tableUP#>GenMutation {<#
   async fn update_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
     model: <#=tableUP#>Input,
-  ) -> Result<String> {
+  ) -> Result<ID> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -321,7 +323,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -343,7 +345,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn default_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: ID,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -365,7 +367,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn enable_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -389,7 +391,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn lock_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -413,7 +415,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn revert_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -431,7 +433,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn force_delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<ID>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

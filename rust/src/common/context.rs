@@ -131,7 +131,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
 }
 
 /// 获取当前登录用户的id
-pub fn get_auth_id() -> Option<String> {
+pub fn get_auth_id() -> Option<ID> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.id.into(),
@@ -141,13 +141,13 @@ pub fn get_auth_id() -> Option<String> {
 }
 
 /// 获取当前登录用户的id
-pub fn get_auth_id_err() -> Result<String> {
+pub fn get_auth_id_err() -> Result<ID> {
   get_auth_id()
     .ok_or(anyhow!("Not login!"))
 }
 
 /// 获取当前登录用户的租户id
-pub fn get_auth_tenant_id() -> Option<String> {
+pub fn get_auth_tenant_id() -> Option<ID> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.tenant_id.into(),
@@ -157,7 +157,7 @@ pub fn get_auth_tenant_id() -> Option<String> {
 }
 
 /// 获取当前登录用户的组织id
-pub fn get_auth_org_id() -> Option<String> {
+pub fn get_auth_org_id() -> Option<ID> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.org_id,
@@ -168,7 +168,7 @@ pub fn get_auth_org_id() -> Option<String> {
 
 /// 获取当前登录用户的组织id, 如果不存在则返回错误
 #[allow(dead_code)]
-pub fn get_auth_org_id_err() -> Result<String> {
+pub fn get_auth_org_id_err() -> Result<ID> {
   get_auth_org_id()
     .ok_or(anyhow!("Not login!"))
 }
@@ -1720,6 +1720,12 @@ impl From<Uuid> for ArgType {
   }
 }
 
+impl From<ID> for ArgType {
+  fn from(value: ID) -> Self {
+    ArgType::ID(value)
+  }
+}
+
 #[derive(Default, new, Clone)]
 pub struct Options {
   
@@ -2048,7 +2054,7 @@ pub fn get_order_by_query(
 }
 
 #[must_use]
-pub fn get_short_uuid() -> String {
+pub fn get_short_uuid() -> ID {
   let uuid = uuid::Uuid::new_v4();
   let uuid = uuid.to_string();
   let uuid = uuid.replace('-', "");
@@ -2056,7 +2062,7 @@ pub fn get_short_uuid() -> String {
   let uuid = general_purpose::STANDARD.encode(uuid);
   // 切割字符串22位
   let uuid = utf8_slice::from(&uuid, 22);
-  uuid.to_owned()
+  uuid.into()
 }
 
 #[cfg(test)]

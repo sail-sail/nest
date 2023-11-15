@@ -107,10 +107,10 @@ pub struct <#=tableUP#>Model {<#
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<String>";
+      _data_type = "Vec<ID>";
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = "ID";
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -147,13 +147,13 @@ pub struct <#=tableUP#>Model {<#
   /// <#=column_comment#>
   pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
-  pub <#=column_name#>_lbl: <#=_data_type#>,<#
+  pub <#=column_name#>_lbl: Vec<String>,<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
-  pub <#=column_name#>_lbl: <#=_data_type#>,<#
+  pub <#=column_name#>_lbl: String,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime"
     ) {
@@ -239,10 +239,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<String>";
+      _data_type = "Vec<ID>";
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = "ID";
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -277,7 +277,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#> = <#=column_name#>.unwrap_or_default().0;
     let <#=column_name_rust#> = {
       let mut keys: Vec<u32> = <#=column_name_rust#>.keys()
@@ -289,10 +289,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       keys.into_iter()
         .map(|x| 
           <#=column_name_rust#>.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&ID::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<ID>>()
     };
     let <#=column_name#>_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
@@ -314,7 +314,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: ID = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
       } else if (column.DATA_TYPE === 'tinyint') {
@@ -519,12 +519,12 @@ pub struct <#=tableUP#>FieldComment {<#
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,<#
+  pub id: Option<ID>,
+  pub ids: Option<Vec<ID>>,<#
   if (hasTenantId) {
   #>
   #[graphql(skip)]
-  pub tenant_id: Option<String>,<#
+  pub tenant_id: Option<ID>,<#
   }
   #>
   pub is_deleted: Option<u8>,<#
@@ -559,10 +559,10 @@ pub struct <#=tableUP#>Search {
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = "ID";
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = "ID";
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -628,7 +628,7 @@ pub struct <#=tableUP#>Search {
   if (hasOrgId) {
   #>
   /// 组织ID
-  pub org_id: Option<String>,<#
+  pub org_id: Option<ID>,<#
   }
   #>
 }
@@ -637,21 +637,21 @@ pub struct <#=tableUP#>Search {
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<ID>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
   if (hasTenantId) {
   #>
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,<#
+  pub tenant_id: Option<ID>,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: Option<String>,<#
+  pub org_id: Option<ID>,<#
   }
   #><#
   if (hasIsSys) {
@@ -691,7 +691,7 @@ pub struct <#=tableUP#>Input {
     const isPassword = column.isPassword;
     let _data_type = "String";
     if (foreignKey) {
-      _data_type = "String";
+      _data_type = "ID";
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {

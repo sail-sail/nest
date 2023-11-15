@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+use crate::common::id::ID;
 use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
@@ -57,7 +58,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: ID,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
@@ -74,7 +75,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let input = permit_service::set_id_by_lbl(
     input,
@@ -96,10 +97,10 @@ pub async fn create(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: String,
+  id: ID,
   input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<ID> {
   
   let input = permit_service::set_id_by_lbl(
     input,
@@ -122,7 +123,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -154,7 +155,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -174,7 +175,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<ID>,
   options: Option<Options>,
 ) -> Result<u64> {
   
