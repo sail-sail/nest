@@ -29,7 +29,11 @@ import {
 export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./tenant.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./tenant.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllTenant(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<TenantModel[]> {
-  const { findAll } = await import("./tenant.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./tenant.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<TenantModel | undefined> {
-  const { findOne } = await import("./tenant.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./tenant.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

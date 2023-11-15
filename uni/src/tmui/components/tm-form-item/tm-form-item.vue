@@ -1,19 +1,29 @@
+<!-- @ts-ignore -->
 <template>
 	<view :class="[`mx-${props.margin[0]}`]">
 		<tm-sheet :transprent="props.transprent !== null ? props.transprent : tmFormTransprent" :round="props.round"
 			:margin="[0, 0]" :padding="props.padding">
 			<view :class="[`py-${props.margin[1]}`]">
 				<view v-if="props.showError&&props.showTopErrorGap" :style="{height: `${props.errHeight}rpx`}"> </view>
+        <!-- #ifndef APP-NVUE -->
+        <view :class="[
+            'flex',
+            tmFormLayout == 'horizontal' ? 'flex-row ' : ' ',
+            tmFormLayout == 'horizontal' && !props.align ? 'flex-row-center-start' : '',
+            tmFormLayout == 'vertical' && !props.align ? 'flex-col' : '',
+            props.align,
+            props.parentClass,
+          ]">
+        <!-- #endif -->
+        <!-- #ifdef APP-NVUE -->
 				<view :class="[
             'flex',
             tmFormLayout == 'horizontal' ? 'flex-row ' : ' ',
             tmFormLayout == 'horizontal' && !props.align ? 'flex-row-center-start' : '',
-			<!-- #ifndef APP-NVUE -->
-            tmFormLayout == 'vertical' && !props.align ? 'flex-col' : '',
-			<!-- #endif -->
             props.align,
             props.parentClass,
           ]">
+        <!-- #endif -->
 					<view v-if="_label" :style="[tmFormLayout == 'horizontal'?{ width: tmFormLabelWidth + 'rpx' }:'']"
 						class=" flex  flex-row" :class="[
               tmFormLabelAlign == 'right' ? 'flex-row-center-end' : 'flex-row-center-start',
@@ -174,7 +184,7 @@
 		value: null,
 		isRequiredError: false, //true,错误，false正常 检验状态
 		message: "", //检验信息提示语。
-		id: uni.$tm.u.getUid(1), //表单唯一标识id
+		id: uni.$tm.u.getUid(1) as any, //表单唯一标识id
 		componentsName: "", //表单组件类型。
 		rules: []
 	});

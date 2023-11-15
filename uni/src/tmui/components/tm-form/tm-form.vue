@@ -2,7 +2,9 @@
   <tm-sheet
     :transprent="props.transprent"
     :round="3"
-    _class="flex flex-col overflow"
+    un-flex="~ [1_0_0] col"
+    un-overflow-y-auto
+    un-overflow-x-hidden
     :padding="props.padding"
     :margin="props.margin"
   >
@@ -63,7 +65,8 @@ const props = defineProps({
   },
   margin: {
     type: Array as PropType<Array<number>>,
-    default: () => [32, 24],
+    // default: () => [32, 24],
+    default: () => [0, 0],
   },
   padding: {
     type: Array as PropType<Array<number>>,
@@ -188,7 +191,7 @@ function submit() {
     () => {
 	  const result = validate();
 	  validateResultList.value = [...result.result]
-      emits("submit", { data: toRaw(_modelVal.value), ...result });
+      emits("submit", { data: toRaw(_modelVal.value), ...result as any });
 	  
     },
     220,
@@ -213,7 +216,7 @@ function validate() {
 		  if(!vallist[j].validator){
 			  isPass = false
 			  rulstVal.message = vallist[j]?.message??'校验通过'
-			  rulstVal.validator = vallist[j]?.validator??true
+			  rulstVal.validator = vallist[j]?.validator??true as any
 			  break;
 		  }
 	  }

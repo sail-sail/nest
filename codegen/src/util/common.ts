@@ -35,13 +35,13 @@ export async function execCsvFile(context: Context, item: string) {
   const keys = rows[0];
   for (let k = 1; k < rows.length; k++) {
     const row = rows[k];
+    if (isEmpty(row[keys.indexOf("id")])) {
+      continue;
+    }
     let sql = `insert ignore into \`${ tableName }\`(`;
     for (let j = 0; j < keys.length; j++) {
       const key = keys[j];
       if (isEmpty(key)) {
-        if (key === "id") {
-          break;
-        }
         continue;
       }
       if (key.startsWith("_") || key.endsWith("_")) {

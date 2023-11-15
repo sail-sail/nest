@@ -85,6 +85,7 @@ CREATE TABLE if not exists `base_usr` (
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_hidden` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '隐藏记录',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',

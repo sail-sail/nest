@@ -98,7 +98,7 @@
       <span
         class="custom_select_placeholder"
       >
-        {{ placeholder ?? "" }}
+        {{ props.readonlyPlaceholder ?? "" }}
       </span>
     </template>
     <template
@@ -152,6 +152,7 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -172,6 +173,7 @@ const props = withDefaults(
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 

@@ -11,6 +11,7 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  :placeholder="props.placeholder"
   @change="onChange"
 >
   <template
@@ -40,7 +41,16 @@
       class="custom_input_number_readonly"
       v-bind="$attrs"
     >
-      {{ modelValue ?? "" }}
+      <template
+        v-if="!(modelValue ?? '')"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </template>
+      <template
+        v-else
+      >
+        {{ modelValue ?? "" }}
+      </template>
     </div>
   </template>
   <template
@@ -50,7 +60,16 @@
       class="custom_input_number_readonly readonly_border_none"
       v-bind="$attrs"
     >
-      {{ modelValue ?? "" }}
+      <template
+        v-if="!(modelValue ?? '')"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </template>
+      <template
+        v-else
+      >
+        {{ modelValue ?? "" }}
+      </template>
     </div>
   </template>
 </template>
@@ -74,6 +93,8 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     readonlyBorder?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     modelValue: undefined,
@@ -84,6 +105,8 @@ const props = withDefaults(
     disabled: undefined,
     readonly: undefined,
     readonlyBorder: true,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 

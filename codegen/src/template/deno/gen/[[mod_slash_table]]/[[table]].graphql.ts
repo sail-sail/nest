@@ -3,8 +3,10 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -47,6 +49,15 @@ type <#=modelName#> {<#
       continue;
     }
     if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
       continue;
     }
     let _data_type = "String";
@@ -194,6 +205,15 @@ type <#=fieldCommentName#> {<#
     if (column_name === "is_deleted") {
       continue;
     }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
@@ -231,6 +251,15 @@ input <#=inputName#> {<#
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
       continue;
     }
     let _data_type = "String";
@@ -365,10 +394,16 @@ input <#=searchName#> {
     if (column_name === 'org_id') {
       continue;
     }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
     if (column_name === 'is_sys') {
       continue;
     }
     if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
       continue;
     }
     if (column_name === 'id') {

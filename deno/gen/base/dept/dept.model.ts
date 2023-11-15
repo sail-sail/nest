@@ -19,8 +19,8 @@ export interface DeptModel extends DeptModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
-  org_id?: string | null;
+  tenant_id: string;
+  org_id: string;
 }
 
 export interface DeptInput extends DeptInputType {
