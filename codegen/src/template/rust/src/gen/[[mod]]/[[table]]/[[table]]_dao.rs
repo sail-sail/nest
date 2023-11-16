@@ -2079,13 +2079,14 @@ pub async fn create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
-      sql_fields += ",<#=column_name#>";
+      sql_fields += ",<#=column_name_mysql#>";
       sql_values += ",?";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
@@ -2098,7 +2099,7 @@ pub async fn create(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name#>";
+    sql_fields += ",<#=column_name_mysql#>";
     sql_values += ",?";
     args.push(<#=column_name_rust#>.into());
   }<#
@@ -2486,6 +2487,13 @@ pub async fn update_by_id(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
@@ -2493,7 +2501,7 @@ pub async fn update_by_id(
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
        field_num += 1;
-      sql_fields += ",<#=column_name#> = ?";
+      sql_fields += ",<#=column_name_mysql#> = ?";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
   }<#
@@ -2502,7 +2510,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name#> = ?";
+    sql_fields += ",<#=column_name_mysql#> = ?";
     args.push(<#=column_name_rust#>.into());
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -2512,7 +2520,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name#> = ?";
+    sql_fields += ",<#=column_name_mysql#> = ?";
     args.push(<#=column_name_rust#>.into());
   }<#
   }
@@ -2544,11 +2552,12 @@ pub async fn update_by_id(
   #><#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
+      const val_mysql = mysqlKeyEscape(val);
   #>
   // <#=column_comment#>
   if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
     field_num += 1;
-    sql_fields += ",<#=val#> = ?";
+    sql_fields += ",<#=val_mysql#> = ?";
     args.push(<#=rustKeyEscape(val)#>.into());
   }<#
     }
