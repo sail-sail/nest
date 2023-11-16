@@ -25,6 +25,7 @@ use crate::gen::base::dict_detail::dict_detail_model::{
 #[graphql(rename_fields = "snake_case")]
 pub struct DictModel {
   /// 系统字段
+  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: ID,

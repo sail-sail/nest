@@ -25,8 +25,10 @@ use crate::gen::base::dictbiz_detail::dictbiz_detail_model::{
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizModel {
   /// 租户ID
+  #[graphql(skip)]
   pub tenant_id: ID,
   /// 系统字段
+  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: ID,

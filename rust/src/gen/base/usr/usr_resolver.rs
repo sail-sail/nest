@@ -16,6 +16,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
   let res = usr_service::find_all(
     search,
     page,
@@ -39,6 +45,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
   let num = usr_service::find_count(
     search,
     options,
@@ -53,6 +65,12 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
   
   let model = usr_service::find_one(
     search,

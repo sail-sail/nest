@@ -20,6 +20,7 @@ use crate::common::id::ID;
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// 租户ID
+  #[graphql(skip)]
   pub tenant_id: ID,
   /// ID
   pub id: ID,

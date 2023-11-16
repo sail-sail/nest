@@ -20,7 +20,11 @@ use crate::common::id::ID;
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
   /// 租户ID
+  #[graphql(skip)]
   pub tenant_id: ID,
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: u8,
   /// ID
   pub id: ID,
   /// 头像
@@ -73,10 +77,6 @@ pub struct UsrModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 隐藏记录
-  pub is_hidden: u8,
-  /// 隐藏记录
-  pub is_hidden_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
@@ -85,6 +85,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
+    // 隐藏字段
+    let is_hidden = row.try_get("is_hidden")?;
     // ID
     let id: ID = row.try_get("id")?;
     // 头像
@@ -232,14 +234,12 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 隐藏记录
-    let is_hidden: u8 = row.try_get("is_hidden")?;
-    let is_hidden_lbl: String = is_hidden.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       tenant_id,
+      is_hidden,
       is_deleted,
       id,
       img,
@@ -267,8 +267,6 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_hidden,
-      is_hidden_lbl,
     };
     
     Ok(model)
@@ -328,10 +326,6 @@ pub struct UsrFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 隐藏记录
-  pub is_hidden: String,
-  /// 隐藏记录
-  pub is_hidden_lbl: String,
 }
 
 #[derive(InputObject, Default, Debug)]
@@ -341,6 +335,8 @@ pub struct UsrSearch {
   pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
   pub tenant_id: Option<ID>,
+  #[graphql(skip)]
+  pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
   /// 头像
   pub img: Option<String>,
@@ -394,8 +390,6 @@ pub struct UsrSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 隐藏记录
-  pub is_hidden: Option<Vec<u8>>,
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -408,6 +402,9 @@ pub struct UsrInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<ID>,
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: Option<u8>,
   /// 头像
   pub img: Option<String>,
   /// 名称
@@ -458,10 +455,6 @@ pub struct UsrInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-  /// 隐藏记录
-  pub is_hidden: Option<u8>,
-  /// 隐藏记录
-  pub is_hidden_lbl: Option<String>,
 }
 
 impl From<UsrModel> for UsrInput {
@@ -470,6 +463,7 @@ impl From<UsrModel> for UsrInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      is_hidden: model.is_hidden.into(),
       // 头像
       img: model.img.into(),
       // 名称
@@ -510,9 +504,6 @@ impl From<UsrModel> for UsrInput {
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
-      // 隐藏记录
-      is_hidden: model.is_hidden.into(),
-      is_hidden_lbl: model.is_hidden_lbl.into(),
     }
   }
 }
@@ -524,6 +515,8 @@ impl From<UsrInput> for UsrSearch {
       ids: None,
       // 租户ID
       tenant_id: input.tenant_id,
+      // 隐藏字段
+      is_hidden: input.is_hidden.map(|x| vec![x]),
       is_deleted: None,
       // 头像
       img: input.img,
@@ -555,8 +548,6 @@ impl From<UsrInput> for UsrSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
-      // 隐藏记录
-      is_hidden: input.is_hidden.map(|x| vec![x]),
       ..Default::default()
     }
   }

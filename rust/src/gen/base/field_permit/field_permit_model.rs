@@ -20,6 +20,7 @@ use crate::common::id::ID;
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitModel {
   /// 系统字段
+  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: ID,

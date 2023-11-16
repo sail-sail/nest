@@ -20,8 +20,10 @@ use crate::common::id::ID;
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptModel {
   /// 租户ID
+  #[graphql(skip)]
   pub tenant_id: ID,
   /// 组织ID
+  #[graphql(skip)]
   pub org_id: ID,
   /// ID
   pub id: ID,
@@ -231,6 +233,8 @@ pub struct DeptSearch {
   pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
   pub tenant_id: Option<ID>,
+  /// 组织ID
+  pub org_id: Option<ID>,
   pub is_deleted: Option<u8>,
   /// 父部门
   pub parent_id: Option<Vec<ID>>,
@@ -266,8 +270,6 @@ pub struct DeptSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 组织ID
-  pub org_id: Option<ID>,
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
