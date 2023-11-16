@@ -36,7 +36,6 @@ html,body {
 .el-form {
   label {
     white-space: nowrap;
-    margin-left: 4px;
     display: flex;
     align-items: center;
   }
@@ -325,15 +324,7 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-form .el-form-item__label {
   padding-right: 4px;
-}
-.el-form div.el-form-item__label {
-  padding-right: 1px;
-}
-.el-form-item__content:has(.el-select-v2) {
-  padding-left: 4px;
-  .el-form-item__error {
-    padding-left: 4px;
-  }
+  box-sizing: border-box;
 }
 
 .select_input_wrapper {
@@ -440,10 +431,6 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .tr_border_none.el-table:not(.el-table--border) .el-table__cell {
   border-bottom: 0;
-}
-
-.custom_date_picker_range {
-  margin-left: 4px;
 }
 
 .custom_date_picker {

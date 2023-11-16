@@ -33,7 +33,6 @@
       un-p="x-2.75 y-1"
       un-box-border
       un-rounded
-      un-m="l-1"
       un-w="full"
       un-min="h-8"
       un-line-height="normal"
