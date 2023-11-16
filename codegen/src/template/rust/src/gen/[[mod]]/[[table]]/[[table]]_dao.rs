@@ -970,6 +970,7 @@ pub async fn find_all(
         [
           "is_deleted",
           "is_sys",
+          "is_hidden",
         ].includes(column_name)
       ) continue;
       let data_type = column.DATA_TYPE;
@@ -1182,7 +1183,8 @@ pub async fn get_field_comments(
         column_name === "tenant_id" ||
         column_name === "org_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted"
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
@@ -1470,6 +1472,7 @@ pub async fn set_id_by_lbl(
         "update_time",
         "is_deleted",
         "is_sys",
+        "is_hidden",
       ].includes(column_name)
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
@@ -1517,7 +1520,8 @@ pub async fn set_id_by_lbl(
       column_name === "tenant_id" ||
       column_name === "org_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted"
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -1545,7 +1549,8 @@ pub async fn set_id_by_lbl(
       column_name === "tenant_id" ||
       column_name === "org_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted"
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -1590,7 +1595,8 @@ pub async fn set_id_by_lbl(
       column_name === "tenant_id" ||
       column_name === "org_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted"
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1618,7 +1624,8 @@ pub async fn set_id_by_lbl(
       column_name === "tenant_id" ||
       column_name === "org_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted"
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1662,7 +1669,8 @@ pub async fn set_id_by_lbl(
       column_name === "tenant_id" ||
       column_name === "org_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted"
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;

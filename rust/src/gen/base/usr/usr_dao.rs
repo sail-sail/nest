@@ -621,14 +621,6 @@ pub async fn find_all(
         .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
-    // 隐藏记录
-    model.is_hidden_lbl = {
-      is_hidden_dict.iter()
-        .find(|item| item.val == model.is_hidden.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_hidden.to_string())
-    };
-    
   }
   
   Ok(res)
@@ -773,8 +765,6 @@ pub async fn get_field_comments(
     update_usr_id_lbl: vec[22].to_owned(),
     update_time: vec[23].to_owned(),
     update_time_lbl: vec[24].to_owned(),
-    is_hidden: vec[25].to_owned(),
-    is_hidden_lbl: vec[26].to_owned(),
   };
   Ok(field_comments)
 }
@@ -964,7 +954,6 @@ pub async fn set_id_by_lbl(
   let dict_vec = get_dict(vec![
     "is_locked".to_owned(),
     "is_enabled".to_owned(),
-    "is_hidden".to_owned(),
   ]).await?;
   
   // 锁定
@@ -988,20 +977,6 @@ pub async fn set_id_by_lbl(
       input.is_enabled = is_enabled_dict.iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
-  // 隐藏记录
-  if input.is_hidden.is_none() {
-    let is_hidden_dict = &dict_vec[2];
-    if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
-      input.is_hidden = is_hidden_dict.iter()
-        .find(|item| {
-          item.lbl == is_hidden_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()

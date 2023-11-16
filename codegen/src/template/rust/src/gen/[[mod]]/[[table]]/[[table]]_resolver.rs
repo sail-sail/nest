@@ -6,6 +6,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasNoAdd = columns.some((column) => {
   const column_name = column.COLUMN_NAME;
@@ -83,7 +84,17 @@ pub async fn find_all(
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<<#=tableUP#>Model>> {
+) -> Result<Vec<<#=tableUP#>Model>> {<#
+  if (hasIsHidden) {
+  #>
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });<#
+  }
+  #>
   
   let res = <#=table#>_service::find_all(
     search,
@@ -133,7 +144,17 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<i64> {<#
+  if (hasIsHidden) {
+  #>
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });<#
+  }
+  #>
   
   let num = <#=table#>_service::find_count(
     search,
@@ -148,7 +169,17 @@ pub async fn find_one(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {
+) -> Result<Option<<#=tableUP#>Model>> {<#
+  if (hasIsHidden) {
+  #>
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });<#
+  }
+  #>
   
   let model = <#=table#>_service::find_one(
     search,
