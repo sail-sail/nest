@@ -23,6 +23,9 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     if (list_tree) {
       fileNameVue = "TreeList.vue";
     }
+    if (record.opts.onlyCodegenDeno) {
+      continue;
+    }
   #>
   {
     path: "/<#=mod_slash_table#>",
