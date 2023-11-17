@@ -8,6 +8,8 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "allowJs": true,
     "jsx": "preserve",
     "jsxImportSource": "vue",
