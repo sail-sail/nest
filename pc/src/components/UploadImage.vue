@@ -73,6 +73,7 @@
           un-cursor-pointer
           un-rounded
           @click="uploadClk"
+          :title="ns('上传')"
         >
           <ElIconUpload
             un-text="white"
@@ -80,10 +81,12 @@
         </ElIcon>
         
         <ElIcon
+          v-if="urlList.length > 0"
           size="22"
           un-cursor-pointer
           un-rounded
           @click="onView"
+          :title="ns('预览')"
         >
           <ElIconView
             un-text="white"
@@ -95,6 +98,7 @@
           un-cursor-pointer
           un-rounded
           @click="deleteClk"
+          :title="ns('删除')"
         >
           <ElIconDelete
             un-text="red-300"
@@ -352,7 +356,7 @@ function onView() {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 .upload_padding {
   // margin-bottom: 5px;

@@ -43,6 +43,15 @@ for (let i = 0; i < columns.length; i++) {
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.insert="onInsert"
+  @keydown.ctrl.arrow-down="onPageDown"
+  @keydown.ctrl.arrow-up="onPageUp"
+  @keydown.ctrl.i="onInsert"<#
+  if (opts.noAdd !== true || opts.noEdit !== true) {
+  #>
+  @keydown.ctrl.enter="onSaveKeydown"
+  @keydown.ctrl.s="onSaveKeydown"<#
+  }
+  #>
 >
   <template #extra_header>
     <div
@@ -1927,7 +1936,18 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}<#
+}
+
+watch(
+  () => inited,
+  async () => {
+    if (!inited) {
+      return;
+    }
+    await nextTick();
+    customDialogRef?.focus();
+  },
+);<#
 if (hasLocked) {
 #>
 
@@ -1949,8 +1969,10 @@ watch(
 #>
 
 /** 键盘按 Insert */
-function onInsert() {
+async function onInsert() {
   isReadonly = !isReadonly;
+  await nextTick();
+  customDialogRef?.focus();
 }
 
 /** 重置 */
@@ -2034,8 +2056,15 @@ async function onRefresh() {
 }
 
 /** 键盘按 PageUp */
-async function onPageUp() {
-  await prevId();
+async function onPageUp(e?: KeyboardEvent) {
+  if (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+  const isSucc = await prevId();
+  if (!isSucc) {
+    ElMessage.warning(await nsAsync("已经是第一项了"));
+  }
 }
 
 /** 点击上一项 */
@@ -2070,8 +2099,15 @@ async function prevId() {
 }
 
 /** 键盘按 PageDown */
-async function onPageDown() {
-  await nextId();
+async function onPageDown(e?: KeyboardEvent) {
+  if (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+  const isSucc = await nextId();
+  if (!isSucc) {
+    ElMessage.warning(await nsAsync("已经是最后一项了"));
+  }
 }
 
 /** 点击下一项 */
@@ -2108,6 +2144,13 @@ async function nextId() {
 }<#
 if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
+
+async function onSaveKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  customDialogRef?.focus();
+  await onSave();
+}
 
 /** 确定 */
 async function onSave() {
