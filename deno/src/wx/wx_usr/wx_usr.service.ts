@@ -112,8 +112,9 @@ export async function code2Session(
   if (!wx_usrModel.usr_id) {
     const id = await createUsr(
       {
-        lbl: wx_usrModel.openid,
+        lbl: await ns("游客"),
         rem: await ns("微信用户"),
+        is_hidden: 1,
       },
       {
         uniqueType: UniqueType.Update,
