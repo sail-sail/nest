@@ -311,7 +311,6 @@
         @header-dragend="headerDragend"
         @row-dblclick="openView"
         @keydown.escape="onEmptySelected"
-        @keydown.delete="onDeleteByIds"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
