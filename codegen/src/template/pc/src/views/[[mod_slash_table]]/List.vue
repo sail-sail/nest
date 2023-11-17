@@ -847,8 +847,12 @@ const hasAtt = columns.some((item) => item.isAtt);
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
-        @keydown.escape="onEmptySelected"
-        @keydown.delete="onDeleteByIds"
+        @keydown.escape="onEmptySelected"<#
+        if (opts.noDelete !== true) {
+        #>
+        @keydown.delete="onDeleteByIds"<#
+        }
+        #>
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
