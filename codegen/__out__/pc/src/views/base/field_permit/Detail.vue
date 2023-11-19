@@ -649,6 +649,7 @@ async function onSave() {
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");

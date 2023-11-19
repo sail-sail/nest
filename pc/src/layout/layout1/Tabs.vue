@@ -8,6 +8,7 @@
     class="tab_div"
     :class="{ tab_active: item.active, tab_fixed: item.fixed }"
     @click="activeTab(item)"
+    @dblclick="onClose(item)"
   >
     <el-dropdown
       trigger="contextmenu"
@@ -71,7 +72,7 @@
     >
       <ElIconClose
         class="tab_close"
-        @click.stop="closeClk(item)"
+        @click.stop="onClose(item)"
       />
     </div>
   </div>
@@ -118,7 +119,7 @@ async function activeTab(tab: TabInf) {
   });
 }
 
-async function closeClk(tab: TabInf) {
+async function onClose(tab: TabInf) {
   await tabsStore.removeTab(tab);
   if (tabsStore.actTab) {
     await activeTab(tabsStore.actTab);
@@ -128,7 +129,7 @@ async function closeClk(tab: TabInf) {
 async function menuCommand(command: string, tab: TabInf) {
   switch (command) {
     case "close":
-      await closeClk(tab);
+      await onClose(tab);
       break;
     case "closeOther":
       await tabsStore.closeOtherTabs(tab);
