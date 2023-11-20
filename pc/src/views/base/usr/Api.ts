@@ -554,50 +554,6 @@ export async function getRoleList() {
   return data;
 }
 
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    undefined,
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function getDeptTree() {
   const data = await findDeptTree(
     undefined,
@@ -637,16 +593,10 @@ export function useDownloadImportTemplate(routePath: string) {
             username
             org_ids_lbl
             default_org_id_lbl
-            is_locked_lbl
-            is_enabled_lbl
             order_by
             dept_ids_lbl
             role_ids_lbl
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllOrg {
             id
@@ -658,17 +608,6 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllRole {
             id
-            lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
             lbl
           }
         }
@@ -765,9 +704,6 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           findAllRole {
-            lbl
-          }
-          findAllUsr {
             lbl
           }
           getDict(codes: [
