@@ -54,6 +54,7 @@ export async function findAll(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -111,6 +112,7 @@ export async function findOne(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -248,6 +250,7 @@ export async function findById(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -573,7 +576,7 @@ export async function getUsrList() {
     undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -625,6 +628,7 @@ export function useDownloadImportTemplate(routePath: string) {
             data_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
+            order_by
             rem
             create_usr_id_lbl
             create_time_lbl
@@ -709,6 +713,7 @@ export function useExportExcel(routePath: string) {
             is_locked_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -727,6 +732,7 @@ export function useExportExcel(routePath: string) {
             data_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
+            order_by
             rem
             create_usr_id_lbl
             create_time_lbl
@@ -827,4 +833,25 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 查找order_by字段的最大值
+ * @export findLastOrderBy
+ * @param {GqlOpt} opt?
+ */
+export async function findLastOrderBy(
+  opt?: GqlOpt,
+) {
+  const data: {
+    findLastOrderByRole: Query["findLastOrderByRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByRole
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByRole;
+  return res;
 }

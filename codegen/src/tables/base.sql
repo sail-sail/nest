@@ -84,6 +84,7 @@ CREATE TABLE if not exists `base_usr` (
   `default_org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '默认组织',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `is_hidden` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '隐藏记录',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',

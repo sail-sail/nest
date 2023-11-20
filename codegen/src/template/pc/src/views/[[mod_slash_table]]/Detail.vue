@@ -1544,6 +1544,8 @@ watchEffect(async () => {
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1566,6 +1568,15 @@ watchEffect(async () => {
           "is_default",
         ].includes(column_name)
       ) {
+        continue;
+      }
+      if (column.onlyCodegenDeno) {
+        continue;
+      }
+      if (column.readonly) {
+        continue;
+      }
+      if (column.noAdd && column.noEdit) {
         continue;
       }
     #><#

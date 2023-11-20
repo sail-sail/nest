@@ -524,7 +524,7 @@ export async function getUsrList() {
     undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
