@@ -52,6 +52,7 @@ export async function findAll(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           dept_ids
           dept_ids_lbl
           role_ids
@@ -112,6 +113,7 @@ export async function findOne(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           dept_ids
           dept_ids_lbl
           role_ids
@@ -253,6 +255,7 @@ export async function findById(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           dept_ids
           dept_ids_lbl
           role_ids
@@ -584,8 +587,8 @@ export async function getUsrList() {
     undefined,
     [
       {
-        prop: "create_time",
-        order: "descending",
+        prop: "order_by",
+        order: "ascending",
       },
     ],
     {
@@ -636,6 +639,7 @@ export function useDownloadImportTemplate(routePath: string) {
             default_org_id_lbl
             is_locked_lbl
             is_enabled_lbl
+            order_by
             dept_ids_lbl
             role_ids_lbl
             rem
@@ -722,6 +726,7 @@ export function useExportExcel(routePath: string) {
             is_locked_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             dept_ids
             dept_ids_lbl
             role_ids
@@ -744,6 +749,7 @@ export function useExportExcel(routePath: string) {
             default_org_id_lbl
             is_locked_lbl
             is_enabled_lbl
+            order_by
             dept_ids_lbl
             role_ids_lbl
             rem
@@ -846,4 +852,25 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 查找order_by字段的最大值
+ * @export findLastOrderBy
+ * @param {GqlOpt} opt?
+ */
+export async function findLastOrderBy(
+  opt?: GqlOpt,
+) {
+  const data: {
+    findLastOrderByUsr: Query["findLastOrderByUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByUsr
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByUsr;
+  return res;
 }

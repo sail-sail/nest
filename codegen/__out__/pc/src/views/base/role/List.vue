@@ -573,6 +573,23 @@
             </el-table-column>
           </template>
           
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomInputNumber
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.order_by"
+                  :min="0"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></CustomInputNumber>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
@@ -859,6 +876,7 @@ const props = defineProps<{
   data_permit_ids_lbl?: string|string[]; // 数据权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -885,6 +903,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1064,6 +1083,15 @@ function getTableColumns(): ColumnType[] {
       sortBy: "is_enabled",
       width: 60,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1379,6 +1407,7 @@ async function onImportExcel() {
     [ await nAsync("数据权限") ]: "data_permit_ids_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1408,6 +1437,7 @@ async function onImportExcel() {
           "data_permit_ids_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
+          "order_by": "number",
           "rem": "string",
         },
       },
@@ -1715,6 +1745,7 @@ async function initI18nsEfc() {
     "数据权限",
     "锁定",
     "启用",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

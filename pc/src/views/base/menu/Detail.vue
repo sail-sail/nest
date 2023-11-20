@@ -306,6 +306,13 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 类型
+    type: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+      },
+    ],
     // 名称
     lbl: [
       {
@@ -318,18 +325,11 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 锁定
-    is_locked: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
-      },
-    ],
-    // 启用
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };

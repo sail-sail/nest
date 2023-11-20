@@ -615,6 +615,23 @@
             </el-table-column>
           </template>
           
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomInputNumber
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.order_by"
+                  :min="0"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></CustomInputNumber>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 所属部门 -->
           <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
             <el-table-column
@@ -897,6 +914,7 @@ const props = defineProps<{
   default_org_id_lbl?: string|string[]; // 默认组织
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   dept_ids?: string|string[]; // 所属部门
   dept_ids_lbl?: string|string[]; // 所属部门
   role_ids?: string|string[]; // 拥有角色
@@ -925,6 +943,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  order_by: "number",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
   role_ids: "string[]",
@@ -1112,6 +1131,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "所属部门",
       prop: "dept_ids_lbl",
       sortBy: "dept_ids",
@@ -1286,8 +1314,8 @@ async function useFindCount(
 }
 
 const defaultSort: Sort = {
-  prop: "create_time",
-  order: "descending",
+  prop: "order_by",
+  order: "ascending",
 };
 
 let sort = $ref<Sort>({
@@ -1441,6 +1469,7 @@ async function onImportExcel() {
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
     [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1472,6 +1501,7 @@ async function onImportExcel() {
           "default_org_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
+          "order_by": "number",
           "dept_ids_lbl": "string",
           "role_ids_lbl": "string",
           "rem": "string",
@@ -1781,6 +1811,7 @@ async function initI18nsEfc() {
     "默认组织",
     "锁定",
     "启用",
+    "排序",
     "所属部门",
     "拥有角色",
     "备注",

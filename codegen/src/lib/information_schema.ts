@@ -289,6 +289,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.require == null) {
+        item.require = true;
+      }
     }
     if ([ "rem" ].includes(column_name)) {
       if (item.width == null) {
@@ -367,6 +370,14 @@ async function getSchema0(
     if (item.COLUMN_NAME === "create_time" || item.COLUMN_NAME === "update_time") {
       if (item.sortable == null) {
         item.sortable = true;
+      }
+    }
+    // 业务字典, 系统字典, 外键关联字段 都默认为必填
+    if (!item.noAdd && !item.noEdit) {
+      if ((record && (record.dict || record.dictbiz || record.foreignKey)) || item.foreignKey) {
+        if (item.require == null) {
+          item.require = true;
+        }
       }
     }
   }
