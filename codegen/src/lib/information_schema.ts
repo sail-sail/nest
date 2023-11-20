@@ -58,7 +58,11 @@ export async function getTableComment(context: Context, table_name: string) {
     const result = await context.conn.query(sql);
     schemaTables = <any[]>result[0];
   }
-  const table_comment = schemaTables.find(item => item.TABLE_NAME === table_name).TABLE_COMMENT || table_name;
+  const table_schema = schemaTables.find(item => item.TABLE_NAME === table_name);
+  if (!table_schema) {
+    throw new Error(`表不存在: ${ table_name }`);
+  }
+  const table_comment = table_schema.TABLE_COMMENT || table_name;
   return table_comment;
 }
 
