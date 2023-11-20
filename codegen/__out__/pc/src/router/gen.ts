@@ -242,4 +242,40 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/cron/cron_job",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "定时任务",
+        component: () => import("@/views/cron/cron_job/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/cron/cron_job_log",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "任务执行日志",
+        component: () => import("@/views/cron/cron_job_log/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/cron/job",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "任务",
+        component: () => import("@/views/cron/job/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
