@@ -169,6 +169,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
                 "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
+              || column.noAdd
             )
           ) continue;
           if (
@@ -220,7 +221,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             || (selectList.length > 0 || column.dict || column.dictbiz)
           ) {
             if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
-              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }.map((item) => item.${ foreignKey.lbl })%>`;
+              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
             } else if (column.dict) {
               lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
             } else if (column.dictbiz) {
@@ -228,7 +229,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             } else if (selectList.length > 0) {
               lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
             }
-            lbl += `<%_dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
+            lbl += `<%selectList.${ column_name } && selectList.${ column_name }.length > 0 && _dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
             if (require) {
               lbl += `, allowBlank: '0'`;
             }

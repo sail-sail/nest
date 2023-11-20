@@ -7,26 +7,6 @@ const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
-const hasDict = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
-  return column.dict;
-});
-const hasDictbiz = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
-  return column.dictbiz;
-});
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -992,9 +972,19 @@ for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
+  if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "is_deleted") continue;
-  if (column_name === "tenant_id") continue;
+  if (column_name === "id") continue;
+  if (
+    [
+      "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+      "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+      "tenant_id", "tenant_id_lbl",
+      "org_id", "org_id_lbl",
+    ].includes(column_name)
+    || column.readonly
+    || (column.noAdd && column.noEdit)
+  ) continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -1304,9 +1294,18 @@ export function useDownloadImportTemplate(routePath: string) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
+              if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                  "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+                || column.readonly
+                || column.noAdd
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1342,9 +1341,19 @@ export function useDownloadImportTemplate(routePath: string) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
+            if (column.isAtt) continue;
             const column_name = column.COLUMN_NAME;
-            if (column_name === "is_deleted") continue;
-            if (column_name === "tenant_id") continue;
+            if (
+              [
+                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+              || column.readonly
+              || column.noAdd
+            ) continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -1377,6 +1386,34 @@ export function useDownloadImportTemplate(routePath: string) {
           }<#
           }
           #><#
+          let hasDict = false;
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
+            if (column.isAtt) continue;
+            const column_name = column.COLUMN_NAME;
+            if (
+              [
+                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+              || column.readonly
+              || column.noAdd
+            ) continue;
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            if (column.dict) {
+              hasDict = true;
+              break;
+            }
+          }
           if (hasDict) {
           #>
           getDict(codes: [<#
@@ -1384,9 +1421,19 @@ export function useDownloadImportTemplate(routePath: string) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
+              if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                  "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+                || column.readonly
+                || column.noAdd
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1418,6 +1465,34 @@ export function useDownloadImportTemplate(routePath: string) {
           }<#
           }
           #><#
+          let hasDictbiz = false;
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
+            if (column.isAtt) continue;
+            const column_name = column.COLUMN_NAME;
+            if (
+              [
+                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+              || column.readonly
+              || column.noAdd
+            ) continue;
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            if (column.dictbiz) {
+              hasDictbiz = true;
+              break;
+            }
+          }
           if (hasDictbiz) {
           #>
           getDictbiz(codes: [<#
@@ -1425,9 +1500,19 @@ export function useDownloadImportTemplate(routePath: string) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
+              if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                  "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+                || column.readonly
+                || column.noAdd
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1506,8 +1591,13 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1540,8 +1630,13 @@ export function useExportExcel(routePath: string) {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1577,9 +1672,15 @@ export function useExportExcel(routePath: string) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
             const column_name = column.COLUMN_NAME;
-            if (column_name === "is_deleted") continue;
-            if (column_name === "tenant_id") continue;
+            if (
+              [
+                "is_deleted", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+            ) continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -1611,6 +1712,30 @@ export function useExportExcel(routePath: string) {
           }<#
           }
           #><#
+          hasDict = false;
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
+            const column_name = column.COLUMN_NAME;
+            if (
+              [
+                "is_deleted", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+            ) continue;
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            if (column.dict) {
+              hasDict = true;
+              break;
+            }
+          }
           if (hasDict) {
           #>
           getDict(codes: [<#
@@ -1618,9 +1743,15 @@ export function useExportExcel(routePath: string) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
@@ -1652,6 +1783,30 @@ export function useExportExcel(routePath: string) {
           }<#
           }
           #><#
+          hasDictbiz = false;
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            if (column.notImportExportList) continue;
+            const column_name = column.COLUMN_NAME;
+            if (
+              [
+                "is_deleted", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
+              ].includes(column_name)
+            ) continue;
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            if (column.dictbiz) {
+              hasDictbiz = true;
+              break;
+            }
+          }
           if (hasDictbiz) {
           #>
           getDictbiz(codes: [<#
@@ -1659,9 +1814,15 @@ export function useExportExcel(routePath: string) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
-              if (column_name === "is_deleted") continue;
-              if (column_name === "tenant_id") continue;
+              if (
+                [
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;

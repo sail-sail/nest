@@ -548,14 +548,8 @@ export function useDownloadImportTemplate(routePath: string) {
             parent_id_lbl
             lbl
             usr_ids_lbl
-            is_locked_lbl
-            is_enabled_lbl
             order_by
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllDept {
             id
@@ -563,13 +557,6 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllUsr {
             id
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
             lbl
           }
         }
