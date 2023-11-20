@@ -31,6 +31,8 @@ type UsrModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int!
   "所属部门"
   dept_ids: [String!]
   "所属部门"
@@ -83,6 +85,8 @@ type UsrFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "排序"
+  order_by: String!
   "所属部门"
   dept_ids: String!
   "所属部门"
@@ -137,6 +141,8 @@ input UsrInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int
   "所属部门"
   dept_ids: [String!]
   "所属部门"
@@ -190,6 +196,8 @@ input UsrSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "所属部门"
   dept_ids: [String!]
   dept_ids_is_null: Boolean
@@ -221,6 +229,8 @@ type Query {
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据id查找一条数据"
   findByIdUsr(id: String!): UsrModel
+  "查找order_by字段的最大值"
+  findLastOrderByUsr: Int!
 }
 type Mutation {
   "创建一条数据"

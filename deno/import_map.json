@@ -18,6 +18,6 @@
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
     "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts",
     "decimal.js": "https://esm.sh/decimal.js@10.4.3",
-    "croner": "https://deno.land/x/croner@7.0.3/dist/croner.js"
+    "croner": "https://deno.land/x/croner@7.0.5/dist/croner.js"
   }
 }

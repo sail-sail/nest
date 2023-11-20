@@ -97,6 +97,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+          <el-form-item
+            :label="n('排序')"
+            prop="order_by"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.order_by"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -192,6 +205,7 @@ import type {
 import {
   create,
   findOne,
+  findLastOrderBy,
   updateById,
 } from "./Api";
 
@@ -266,18 +280,11 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 锁定
-    is_locked: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
-      },
-    ],
-    // 启用
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
@@ -309,6 +316,7 @@ async function getDefaultInput() {
   const defaultInput: RoleInput = {
     is_locked: 0,
     is_enabled: 1,
+    order_by: 1,
   };
   return defaultInput;
 }
@@ -371,13 +379,16 @@ async function showDialog(
   if (action === "add") {
     const [
       defaultModel,
+      order_by,
     ] = await Promise.all([
       getDefaultInput(),
+      findLastOrderBy(),
     ]);
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
       ...model,
+      order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
     if (!model?.id) {
@@ -385,11 +396,13 @@ async function showDialog(
     }
     const [
       data,
+      order_by,
     ] = await Promise.all([
       findOne({
         id: model.id,
         is_deleted,
       }),
+      findLastOrderBy(),
     ]);
     if (data) {
       dialogModel = {
@@ -397,6 +410,7 @@ async function showDialog(
         id: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
+        order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -479,12 +493,15 @@ async function onReset() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const [
       defaultModel,
+      order_by,
     ] = await Promise.all([
       getDefaultInput(),
+      findLastOrderBy(),
     ]);
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
+      order_by: order_by + 1,
     };
     nextTick(() => nextTick(() => formRef?.clearValidate()));
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -700,6 +717,7 @@ async function onInitI18ns() {
     "数据权限",
     "锁定",
     "启用",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

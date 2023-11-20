@@ -19,6 +19,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "menu_ids",
+        require: false,
         COLUMN_COMMENT: "菜单权限",
         search: true,
         foreignKey: {
@@ -27,6 +28,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "permit_ids",
+        require: false,
         COLUMN_COMMENT: "按钮权限",
         foreignKey: {
           showType: "dialog",
@@ -34,6 +36,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "data_permit_ids",
+        require: false,
         COLUMN_COMMENT: "数据权限",
         foreignKey: {
           showType: "dialog",
@@ -56,6 +59,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
@@ -99,6 +105,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "menu_ids",
+        require: false,
         COLUMN_COMMENT: "菜单权限",
         search: true,
         foreignKey: {
@@ -187,6 +194,10 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      defaultSort: {
+        prop: "order_by",
+        order: "ascending",
+      },
     },
     columns: [
       {
@@ -213,6 +224,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "org_ids",
+        require: false,
         COLUMN_COMMENT: "所属组织",
         search: true,
         width: 280,
@@ -233,8 +245,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "default_org_id",
+        require: false,
         width: 140,
-        require: true,
         foreignKey: {
           table: "org",
           column: "id",
@@ -252,6 +264,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "dept_ids",
@@ -969,6 +984,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "parent_id",
+        require: false,
         foreignKey: {
           mod: "base",
           table: "dept",

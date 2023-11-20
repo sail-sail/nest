@@ -437,18 +437,11 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("数据类型") }`,
       },
     ],
-    // 锁定
-    is_locked: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
-      },
-    ],
-    // 启用
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
