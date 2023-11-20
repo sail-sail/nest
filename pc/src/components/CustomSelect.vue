@@ -13,7 +13,7 @@
   @clear="onClear"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue ? modelValue : undefined"
+  :model-value="modelValue !== '' ? modelValue : undefined"
   @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="custom_select"
@@ -22,6 +22,7 @@
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  :placeholder="props.placeholder"
   @keyup.enter.stop
 >
   <template
@@ -42,21 +43,36 @@
     un-p="y-0.75 x-1.5"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-7.5"
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :class="{
+      'custom_select_placeholder': shouldShowPlaceholder
+    }"
     v-bind="$attrs"
   >
-    <el-tag
-      v-for="label in modelLabels"
-      :key="label"
-      type="info"
+    <template
+      v-if="modelLabels.length === 0"
     >
-      {{ label }}
-    </el-tag>
+      <span
+        class="custom_select_placeholder"
+      >
+        {{ placeholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <el-tag
+        v-for="label in modelLabels"
+        :key="label"
+        type="info"
+      >
+        {{ label }}
+      </el-tag>
+    </template>
   </div>
   <div
     v-else
@@ -64,15 +80,34 @@
     un-p="x-2.75 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :class="{
+      'custom_select_placeholder': shouldShowPlaceholder
+    }"
     v-bind="$attrs"
   >
-    {{ modelLabels[0] || "" }}
+    <template
+      v-if="!modelLabels[0]"
+    >
+      <span
+        class="custom_select_placeholder"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        class="custom_select_readonly"
+      >
+        {{ modelLabels[0] || "" }}
+      </span>
+    </template>
   </div>
 </template>
 </template>
@@ -114,6 +149,8 @@ const props = withDefaults(
     init?: boolean;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -133,6 +170,8 @@ const props = withDefaults(
     init: true,
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
@@ -144,6 +183,13 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+let shouldShowPlaceholder = $computed(() => {
+  if (props.multiple) {
+    return modelValue == null || modelValue.length === 0;
+  }
+  return modelValue == null || modelValue === "";
+});
 
 function modelValueUpdate(value?: string | string[] | null) {
   modelValue = value;

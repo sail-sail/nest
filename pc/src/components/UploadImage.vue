@@ -73,6 +73,7 @@
           un-cursor-pointer
           un-rounded
           @click="uploadClk"
+          :title="ns('上传')"
         >
           <ElIconUpload
             un-text="white"
@@ -80,14 +81,27 @@
         </ElIcon>
         
         <ElIcon
+          v-if="urlList.length > 0"
           size="22"
-          un-m="l-3"
+          un-cursor-pointer
+          un-rounded
+          @click="onView"
+          :title="ns('预览')"
+        >
+          <ElIconView
+            un-text="white"
+          />
+        </ElIcon>
+        
+        <ElIcon
+          size="22"
           un-cursor-pointer
           un-rounded
           @click="deleteClk"
+          :title="ns('删除')"
         >
           <ElIconDelete
-            un-text="white"
+            un-text="red-300"
           />
         </ElIcon>
         
@@ -143,6 +157,15 @@
     style="display: none;"
     ref="fileRef"
   />
+  <Teleport to="body">
+    <el-image-viewer
+      v-if="urlList.length > 0 && showImageViewer"
+      hide-on-click-modal
+      :url-list="urlList"
+      :initial-index="nowIndex"
+      @close="showImageViewer = false"
+    ></el-image-viewer>
+  </Teleport>
 </div>
 </template>
 
@@ -152,15 +175,13 @@ const {
   nsAsync,
 } = useI18n();
 
-import {
-  type InputMaybe,
+import type {
+  InputMaybe,
 } from "#/types";
 
 const emit = defineEmits<
   (e: "update:modelValue", value: string) => void
 >();
-
-const indexStore = useIndexStore();
 
 const props = withDefaults(
   defineProps<{
@@ -302,6 +323,12 @@ function nextClk() {
     nowIndex++;
   }
 }
+
+let showImageViewer = $ref(false);
+
+function onView() {
+  showImageViewer = !showImageViewer;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -324,12 +351,12 @@ function nextClk() {
   background-color: rgba($color: #000, $alpha: .5);
 }
 .upload_toolbar {
-  flex: 1 0 0;
   overflow: hidden;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 16px;
 }
 .upload_padding {
   // margin-bottom: 5px;

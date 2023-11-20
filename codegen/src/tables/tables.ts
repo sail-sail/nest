@@ -16,6 +16,10 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
       },
       {
+        COLUMN_NAME: "home_url",
+        width: 180,
+      },
+      {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单权限",
         search: true,
@@ -210,6 +214,26 @@ export default defineConfig({
         isPassword: true,
       },
       {
+        COLUMN_NAME: "org_ids",
+        COLUMN_COMMENT: "所属组织",
+        search: true,
+        width: 280,
+        align: "left",
+        foreignKey: {
+          mod: "base",
+          table: "org",
+          column: "id",
+          lbl: "lbl",
+          multiple: true,
+          type: "many2many",
+          defaultSort: {
+            prop: "order_by",
+            order: "ascending",
+          },
+          selectType: "select",
+        },
+      },
+      {
         COLUMN_NAME: "default_org_id",
         width: 140,
         require: true,
@@ -230,26 +254,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-      },
-      {
-        COLUMN_NAME: "org_ids",
-        COLUMN_COMMENT: "所属组织",
-        search: true,
-        width: 280,
-        align: "left",
-        foreignKey: {
-          mod: "base",
-          table: "org",
-          column: "id",
-          lbl: "lbl",
-          multiple: true,
-          type: "many2many",
-          defaultSort: {
-            prop: "order_by",
-            order: "ascending",
-          },
-          selectType: "select",
-        },
       },
       {
         COLUMN_NAME: "dept_ids",
@@ -341,16 +345,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_locked",
-      },
-      {
-        COLUMN_NAME: "tenant_ids",
-        COLUMN_COMMENT: "所在租户",
-        width: 180,
-        align: "left",
-        many2many: {
-          mod: "base",
-          table: "tenant_menu",
-        },
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -1048,6 +1042,14 @@ export default defineConfig({
         "type",
         "is_enabled",
       ],
+      inlineForeignTabs: [
+        {
+          mod: "base",
+          table: "dict_detail",
+          label: "系统字典明细",
+          column: "dict_id",
+        },
+      ],
     },
     columns: [
       {
@@ -1060,7 +1062,7 @@ export default defineConfig({
           {
             mod: "base",
             table: "dict_detail",
-            label: "系统字典",
+            label: "系统字典明细",
             column: "dict_id",
           },
         ],
@@ -1146,15 +1148,24 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-        width: 60,
       },
       {
         COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -1169,6 +1180,14 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      inlineForeignTabs: [
+        {
+          mod: "base",
+          table: "dictbiz_detail",
+          label: "业务字典明细",
+          column: "dictbiz_id",
+        },
+      ],
     },
     columns: [
       {
@@ -1206,10 +1225,10 @@ export default defineConfig({
         width: 60,
       },
       {
-        COLUMN_NAME: "rem",
+        COLUMN_NAME: "order_by",
       },
       {
-        COLUMN_NAME: "order_by",
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -1243,21 +1262,21 @@ export default defineConfig({
         align: "left",
         require: true,
         search: true,
-        width: 120,
+        width: 240,
       },
       {
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
         search: true,
-        width: 120,
+        width: 240,
       },
       {
         COLUMN_NAME: "val",
         align: "left",
         require: true,
         search: true,
-        width: 120,
+        width: 240,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -1270,6 +1289,18 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },

@@ -95,22 +95,20 @@
         </el-icon>
       </el-form-item>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
+      <el-form-item
+        label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
         >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template>
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item>
       
       <el-form-item
         label=" "
@@ -338,6 +336,16 @@
       
       <el-button
         plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconReading />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="onSearch"
       >
         <template #icon>
@@ -346,15 +354,53 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-button
-        plain
-        @click="onExport"
+      <el-dropdown
+        trigger="click"
+        un-m="x-3"
       >
-        <template #icon>
-          <ElIconDownload />
+        
+        <el-button
+          plain
+        >
+          <span
+            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+          >
+            {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else
+          >
+            {{ ns('更多操作') }}
+          </span>
+          <el-icon>
+            <ElIconArrowDown />
+          </el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu
+            un-min="w-20"
+            un-whitespace-nowrap
+          >
+            
+            <el-dropdown-item
+              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              un-justify-center
+              @click="onExport"
+            >
+              <span>{{ ns('导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-else
+              un-justify-center
+              @click="onCancelExport"
+            >
+              <span un-text="red">{{ ns('取消导出') }}</span>
+            </el-dropdown-item>
+            
+          </el-dropdown-menu>
         </template>
-        <span>{{ ns('导出') }}</span>
-      </el-button>
+      </el-dropdown>
       
     </template>
     
@@ -392,7 +438,6 @@
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="defaultSortBy"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
@@ -426,6 +471,15 @@
           
           <!-- 名称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 首页 -->
+          <template v-else-if="'home_url' === col.prop && (showBuildIn || builtInSearch?.home_url == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -608,6 +662,7 @@
   >
     <MenuTreeList
       :tenant_ids="[ usrStore.tenant_id ]"
+      is_enabled="1"
       v-bind="listSelectProps"
     ></MenuTreeList>
   </ListSelectDialog>
@@ -619,6 +674,7 @@
     v-slot="listSelectProps"
   >
     <PermitTreeList
+      is_enabled="1"
       v-bind="listSelectProps"
     ></PermitTreeList>
   </ListSelectDialog>
@@ -630,6 +686,7 @@
     v-slot="listSelectProps"
   >
     <DataPermitTreeList
+      is_enabled="1"
       v-bind="listSelectProps"
     ></DataPermitTreeList>
   </ListSelectDialog>
@@ -792,6 +849,8 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  home_url?: string; // 首页
+  home_url_like?: string; // 首页
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string|string[]; // 菜单权限
   permit_ids?: string|string[]; // 按钮权限
@@ -956,6 +1015,14 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
+      label: "首页",
+      prop: "home_url",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "菜单权限",
       prop: "menu_ids_lbl",
       sortBy: "menu_ids",
@@ -1097,13 +1164,18 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  const is_deleted = search.is_deleted;
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
+  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1152,7 +1224,7 @@ async function useFindCount(
 }
 
 const defaultSort: Sort = {
-  prop: "",
+  prop: "order_by",
   order: "ascending",
 };
 
@@ -1301,6 +1373,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("首页") ]: "home_url",
     [ await nAsync("菜单权限") ]: "menu_ids_lbl",
     [ await nAsync("按钮权限") ]: "permit_ids_lbl",
     [ await nAsync("数据权限") ]: "data_permit_ids_lbl",
@@ -1329,6 +1402,7 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
+          "home_url": "string",
           "menu_ids_lbl": "string",
           "permit_ids_lbl": "string",
           "data_permit_ids_lbl": "string",
@@ -1462,6 +1536,8 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
+  const search = getDataSearch();
+  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1472,6 +1548,7 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
+      is_deleted,
     },
   });
   tableFocus();
@@ -1632,6 +1709,7 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "首页",
     "菜单权限",
     "按钮权限",
     "数据权限",
@@ -1667,11 +1745,15 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    Object.assign(search, builtInSearch);
+    search.is_deleted = builtInSearch.is_deleted;
+    if (deepCompare(builtInSearch, search)) {
+      return;
+    }
     await dataGrid(true);
   },
   {
     deep: true,
+    immediate: true,
   },
 );
 

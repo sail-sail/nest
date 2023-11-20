@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -108,7 +104,7 @@ async function getWhereQuery(
     whereQuery += ` and t.img is null`;
   }
   if (isNotEmpty(search?.img_like)) {
-    whereQuery += ` and t.img like ${ args.push(sqlLike(search?.img_like) + "%") }`;
+    whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -117,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.username !== undefined) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
@@ -126,7 +122,19 @@ async function getWhereQuery(
     whereQuery += ` and t.username is null`;
   }
   if (isNotEmpty(search?.username_like)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
+    whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
+  }
+  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
+    search.org_ids = [ search.org_ids ];
+  }
+  if (search?.org_ids && search?.org_ids.length > 0) {
+    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
+  }
+  if (search?.org_ids === null) {
+    whereQuery += ` and base_org.id is null`;
+  }
+  if (search?.org_ids_is_null) {
+    whereQuery += ` and base_org.id is null`;
   }
   if (search?.default_org_id && !Array.isArray(search?.default_org_id)) {
     search.default_org_id = [ search.default_org_id ];
@@ -151,18 +159,6 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.org_ids && !Array.isArray(search?.org_ids)) {
-    search.org_ids = [ search.org_ids ];
-  }
-  if (search?.org_ids && search?.org_ids.length > 0) {
-    whereQuery += ` and base_org.id in ${ args.push(search.org_ids) }`;
-  }
-  if (search?.org_ids === null) {
-    whereQuery += ` and base_org.id is null`;
-  }
-  if (search?.org_ids_is_null) {
-    whereQuery += ` and base_org.id is null`;
   }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
@@ -195,7 +191,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -237,6 +233,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_hidden && !Array.isArray(search?.is_hidden)) {
+    search.is_hidden = [ search.is_hidden ];
+  }
+  if (search?.is_hidden && search?.is_hidden?.length > 0) {
+    whereQuery += ` and t.is_hidden in ${ args.push(search.is_hidden) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -253,8 +255,6 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     base_usr t
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = 0
@@ -277,6 +277,8 @@ async function getFromQuery() {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -388,9 +390,9 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
@@ -416,6 +418,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -582,6 +588,28 @@ export async function setIdByLbl(
     "is_enabled",
   ]);
   
+  // 所属组织
+  if (!input.org_ids && input.org_ids_lbl) {
+    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
+      input.org_ids_lbl = input.org_ids_lbl.split(",");
+    }
+    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_org t
+      where
+        t.lbl in ${ args.push(input.org_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.org_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 默认组织
   if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
     input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
@@ -605,28 +633,6 @@ export async function setIdByLbl(
     if (val !== undefined) {
       input.is_enabled = Number(val);
     }
-  }
-  
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 所属部门
@@ -684,14 +690,14 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     img: await n("头像"),
     lbl: await n("名称"),
     username: await n("用户名"),
+    org_ids: await n("所属组织"),
+    org_ids_lbl: await n("所属组织"),
     default_org_id: await n("默认组织"),
     default_org_id_lbl: await n("默认组织"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    org_ids: await n("所属组织"),
-    org_ids_lbl: await n("所属组织"),
     dept_ids: await n("所属部门"),
     dept_ids_lbl: await n("所属部门"),
     role_ids: await n("拥有角色"),
@@ -711,10 +717,10 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {UsrSearch | PartialNull<UsrModel>} search0
+ * @param {UsrInput} search0
  */
 export async function findByUnique(
-  search0: UsrSearch | PartialNull<UsrModel>,
+  search0: UsrInput,
   options?: {
   },
 ): Promise<UsrModel[]> {
@@ -744,18 +750,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {UsrModel} oldModel
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: UsrModel,
-  model: PartialNull<UsrModel>,
+  input: UsrInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -774,7 +780,6 @@ export async function checkByUnique(
   oldModel: UsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -791,7 +796,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -817,11 +821,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -996,7 +998,6 @@ export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1092,6 +1093,9 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
+  if (input.is_hidden !== undefined) {
+    sql += `,is_hidden`;
+  }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
@@ -1142,9 +1146,14 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
   }
+  if (input.is_hidden !== undefined) {
+    sql += `,${ args.push(input.is_hidden) }`;
+  }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 所属组织
   await many2manyUpdate(
@@ -1196,6 +1205,7 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "base_usr_org",
     "base_org",
     "base_usr_dept",
     "base_dept",
@@ -1266,7 +1276,6 @@ export async function updateById(
   input: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1360,6 +1369,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.is_hidden !== undefined) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden = ${ args.push(input.is_hidden) },`;
+      updateFldNum++;
+    }
+  }
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
@@ -1374,7 +1389,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

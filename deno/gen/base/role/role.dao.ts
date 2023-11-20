@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -106,7 +102,16 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.home_url !== undefined) {
+    whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
+  }
+  if (search?.home_url === null) {
+    whereQuery += ` and t.home_url is null`;
+  }
+  if (isNotEmpty(search?.home_url_like)) {
+    whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
@@ -163,7 +168,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -371,11 +376,24 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -629,6 +647,7 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
   const fieldComments: RoleFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
+    home_url: await n("首页"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
     permit_ids: await n("按钮权限"),
@@ -654,10 +673,10 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {RoleSearch | PartialNull<RoleModel>} search0
+ * @param {RoleInput} search0
  */
 export async function findByUnique(
-  search0: RoleSearch | PartialNull<RoleModel>,
+  search0: RoleInput,
   options?: {
   },
 ): Promise<RoleModel[]> {
@@ -687,18 +706,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {RoleModel} oldModel
- * @param {PartialNull<RoleModel>} model
+ * @param {RoleInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: RoleModel,
-  model: PartialNull<RoleModel>,
+  input: RoleInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -717,7 +736,6 @@ export async function checkByUnique(
   oldModel: RoleModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -734,7 +752,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -760,11 +777,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -880,6 +895,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 首页
+  await validators.chars_max_length(
+    input.home_url,
+    200,
+    fieldComments.home_url,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -918,7 +940,6 @@ export async function create(
   input: RoleInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_role";
@@ -1001,6 +1022,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (input.home_url !== undefined) {
+    sql += `,home_url`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -1039,6 +1063,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
+  if (input.home_url !== undefined) {
+    sql += `,${ args.push(input.home_url) }`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
   }
@@ -1050,7 +1077,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 菜单权限
   await many2manyUpdate(
@@ -1173,7 +1202,6 @@ export async function updateById(
   input: RoleInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_role";
@@ -1234,6 +1262,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.home_url !== undefined) {
+    if (input.home_url != oldModel.home_url) {
+      sql += `home_url = ${ args.push(input.home_url) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_locked !== undefined) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
@@ -1266,7 +1300,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;

@@ -87,8 +87,8 @@ const props = withDefaults(
   {
     modelValue: "",
     format: "webp",
-    width: 46,
-    height: 46,
+    width: 32,
+    height: 32,
     quality: 60,
   },
 );

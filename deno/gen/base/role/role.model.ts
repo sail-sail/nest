@@ -18,20 +18,22 @@ export interface RoleModel extends RoleModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
+  tenant_id: string;
 }
 
 export interface RoleInput extends RoleInputType {
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
   tenant_id?: string | null;
 }
 
 export interface RoleFieldComment {
   id: string;
   lbl: string;
+  home_url: string;
   menu_ids: string;
   menu_ids_lbl: string;
   permit_ids: string;

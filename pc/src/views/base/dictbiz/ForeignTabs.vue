@@ -30,6 +30,8 @@
         >
           <Dictbiz_detailList
             :dictbiz_id="dialogModel.id"
+            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+            :is-locked="dialogModel.is_deleted ? '1' : '0'"
             @add="useAllFindDebounce"
             @remove="useAllFindDebounce"
             @revert="useAllFindDebounce"
@@ -79,6 +81,7 @@ let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
   id?: string,
+  is_deleted?: number | null,
 }>({ });
 
 let tabName = $ref("业务字典");
@@ -89,6 +92,7 @@ async function useFindCountDictbiz_detail() {
   const dictbiz_id = [ dialogModel.id! ];
   dictbiz_detailTotal = await findCountDictbiz_detail(
     {
+      is_deleted: dialogModel.is_deleted,
       dictbiz_id,
     },
   );
@@ -121,6 +125,7 @@ async function showDialog(
     title?: string;
     model?: {
       id?: string;
+      is_deleted?: number | null;
     };
     action?: typeof dialogAction;
   },
@@ -134,6 +139,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
     dialogModel.id = model?.id;
