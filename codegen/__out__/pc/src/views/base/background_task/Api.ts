@@ -277,52 +277,6 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 下载导入模板
  */
@@ -349,14 +303,6 @@ export function useDownloadImportTemplate(routePath: string) {
             begin_time_lbl
             end_time_lbl
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          findAllUsr {
-            id
-            lbl
           }
           getDict(codes: [
             "background_task_state",
@@ -442,9 +388,6 @@ export function useExportExcel(routePath: string) {
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
-          }
-          findAllUsr {
-            lbl
           }
           getDict(codes: [
             "background_task_state",
