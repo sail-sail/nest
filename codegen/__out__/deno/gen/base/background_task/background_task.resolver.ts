@@ -29,7 +29,11 @@ import {
 export async function findCountBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./background_task.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./background_task.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllBackgroundTask(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<BackgroundTaskModel[]> {
-  const { findAll } = await import("./background_task.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./background_task.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<BackgroundTaskModel | undefined> {
-  const { findOne } = await import("./background_task.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./background_task.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

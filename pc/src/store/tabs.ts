@@ -6,6 +6,8 @@ export interface TabInf {
   query?: { [key: string]: any },
   _hasPermit?: boolean, // 当前选项卡是否有权限打开
   fixed?: boolean, // 是否固定选项卡
+  closeable?: boolean, // 是否可关闭
+  icon?: string, // 图标
 }
 
 export default defineStore("tabs", function() {
@@ -98,6 +100,9 @@ export default defineStore("tabs", function() {
     if (!tab) {
       return false;
     }
+    if (tab.closeable === false) {
+      return false;
+    }
     const idx = tabs.findIndex((item: TabInf) => {
       return tabEqual(item, tab);
     });
@@ -122,12 +127,16 @@ export default defineStore("tabs", function() {
   }
   
   async function closeOtherTabs(tab?: TabInf) {
+    const notCloseableTabs = tabs.filter((item) => item.closeable === false);
     if (!tab) {
-      tabs = [ ];
+      tabs = notCloseableTabs;
       await router.replace({ path: "/", query: { } });
       return;
     }
-    tabs = [ tab ];
+    tabs = [ ...notCloseableTabs ];
+    if (!notCloseableTabs.some((item) => tab && tabEqual(item, tab))) {
+      tabs.push(tab);
+    }
     tab.active = true;
     keepAliveNames = [ tab.name ];
     await router.replace({ path: tab.path, query: tab.query });

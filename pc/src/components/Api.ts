@@ -32,3 +32,20 @@ export async function getStatsOss(
   const data = rvData?.getStatsOss;
   return data;
 }
+
+/**
+ * 获取首页轮播图路由
+ */
+export async function getHomeUrls(
+  opt?: GqlOpt,
+): Promise<string[]> {
+  const res = await query({
+    query: /* GraphQL */ `
+      query {
+        getHomeUrls
+      }
+    `,
+  }, opt);
+  const data = res?.getHomeUrls || [ ];
+  return data;
+}

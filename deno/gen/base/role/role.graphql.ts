@@ -9,6 +9,8 @@ type RoleModel {
   id: String!
   "名称"
   lbl: String!
+  "首页"
+  home_url: String!
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
@@ -53,6 +55,8 @@ type RoleModel {
 type RoleFieldComment {
   "名称"
   lbl: String!
+  "首页"
+  home_url: String!
   "菜单权限"
   menu_ids: String!
   "菜单权限"
@@ -97,6 +101,8 @@ input RoleInput {
   id: String
   "名称"
   lbl: String
+  "首页"
+  home_url: String
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
@@ -146,6 +152,9 @@ input RoleSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "首页"
+  home_url: String
+  home_url_like: String
   "菜单权限"
   menu_ids: [String!]
   menu_ids_is_null: Boolean

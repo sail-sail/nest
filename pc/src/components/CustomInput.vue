@@ -8,6 +8,7 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  :placeholder="props.placeholder"
   @change="onChange"
   @clear="onClear"
 >
@@ -27,18 +28,30 @@
     un-p="x-2.75 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :class="{
+      'whitespace-pre-wrap': type === 'textarea',
+      'custom_input_placeholder': shouldShowPlaceholder
+    }"
     :style="{
       height: textareaHeight != null ? textareaHeight + 'px' : undefined,
     }"
     v-bind="$attrs"
   >
-    {{ modelValue ?? "" }}
+    <template
+      v-if="!(modelValue ?? '')"
+    >
+      {{ props.readonlyPlaceholder ?? "" }}
+    </template>
+    <template
+      v-else
+    >
+      {{ modelValue ?? "" }}
+    </template>
   </div>
 </template>
 </template>
@@ -57,12 +70,16 @@ const props = withDefaults(
     type?: string;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     modelValue: undefined,
     type: "text",
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
@@ -74,6 +91,10 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+let shouldShowPlaceholder = $computed(() => {
+  return modelValue == null || modelValue === "";
+});
 
 let inputRef = $ref<InstanceType<typeof ElInput>>();
 let textareaHeight = $shallowRef<number>();

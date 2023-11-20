@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -103,7 +99,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.scope && !Array.isArray(search?.scope)) {
     search.scope = [ search.scope ];
@@ -124,7 +120,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -165,12 +161,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -283,6 +273,10 @@ export async function findAll(
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -314,11 +308,9 @@ export async function findAll(
   const [
     scopeDict, // 范围
     typeDict, // 类型
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "data_permit_scope",
     "data_permit_type",
-    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -367,16 +359,6 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
-    
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -390,11 +372,9 @@ export async function setIdByLbl(
   const [
     scopeDict, // 范围
     typeDict, // 类型
-    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "data_permit_scope",
     "data_permit_type",
-    "is_sys",
   ]);
   
   // 菜单
@@ -419,14 +399,6 @@ export async function setIdByLbl(
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
       input.type = val;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
     }
   }
 }
@@ -454,18 +426,16 @@ export async function getFieldComments(): Promise<DataPermitFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DataPermitSearch | PartialNull<DataPermitModel>} search0
+ * @param {DataPermitInput} search0
  */
 export async function findByUnique(
-  search0: DataPermitSearch | PartialNull<DataPermitModel>,
+  search0: DataPermitInput,
   options?: {
   },
 ): Promise<DataPermitModel[]> {
@@ -510,19 +480,19 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DataPermitModel} oldModel
- * @param {PartialNull<DataPermitModel>} model
+ * @param {DataPermitInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DataPermitModel,
-  model: PartialNull<DataPermitModel>,
+  input: DataPermitInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.menu_id === model.menu_id &&
-    oldModel.scope === model.scope
+    oldModel.menu_id === input.menu_id &&
+    oldModel.scope === input.scope
   ) {
     return true;
   }
@@ -541,7 +511,6 @@ export async function checkByUnique(
   oldModel: DataPermitModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -558,7 +527,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -584,11 +552,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -754,7 +720,6 @@ export async function create(
   input: DataPermitInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_data_permit";
@@ -872,7 +837,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -915,7 +882,6 @@ export async function updateById(
   input: DataPermitInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_data_permit";
@@ -1007,7 +973,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

@@ -51,5 +51,8 @@ export async function changePassword(
   const {
     changePassword,
   } = await import("./usr.service.ts");
+  const context = useContext();
+  
+  context.is_tran = true;
   return await changePassword(input);
 }

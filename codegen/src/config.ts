@@ -281,7 +281,7 @@ export interface TableCloumn {
      *   selectInput: 弹框选择
      *   tree: 树形选择
      */
-    selectType?: "select"|"selectInput"|"tree",
+    selectType?: "select" | "selectInput" | "tree";
     
     /**
      * 外键关联的默认排序
@@ -297,7 +297,7 @@ export interface TableCloumn {
      * 列表页面上的显示方式
      * @type {string} tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
-    showType?: string;
+    showType?: "tag" | "dialog" | "link";
     
     /**
      * 是否显示这个表所在的外键选项卡列表
@@ -754,6 +754,17 @@ export interface TablesConfigItem {
      * 是否需要做数据权限校验, 默认为否
      */
     dataPermit?: boolean;
+    
+    /**
+     * 增加和修改时的内联外键关联可编辑表格, 聚合关联表
+     */
+    inlineForeignTabs?: {
+      mod: string;
+      mod_slash_table?: string;
+      table: string;
+      label: string;
+      column: string;
+    }[],
     
   },
   columns?: TableCloumn[];

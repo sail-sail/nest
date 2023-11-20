@@ -25,8 +25,8 @@ PageJsonInit.pages.forEach((el:any) => {
 		navigationBarTextStyle: txtColor
 	})
 })
-if (Array.isArray(PageJsonInit?.subPackages ?? null)) {
-	PageJsonInit?.subPackages.forEach((el: any) => {
+if (Array.isArray((PageJsonInit as any)?.subPackages ?? null)) {
+	(PageJsonInit as any)?.subPackages.forEach((el: any) => {
 		let rootPath = el.root;
 		el.pages.forEach((el2: any) => {
 			let elany: any = el2;
@@ -51,7 +51,7 @@ let tabBar: tabBarType = pagers?.tabBar ?? {
 }
 
 // custom icon
-let cusutomIconList = [];
+let cusutomIconList: any[] = [];
 // #ifdef APP
 cusutomIconList = fontJson;
 // #endif
@@ -220,7 +220,7 @@ export default {
 		}
 		
 		/**对外暴露 */
-		uni.$tm = $tm;
+		uni.$tm = $tm as any;
 		// #ifdef APP
 		util.setCookie('$tm',$tm)
 		// #endif

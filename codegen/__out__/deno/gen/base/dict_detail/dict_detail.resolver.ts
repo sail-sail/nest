@@ -29,7 +29,11 @@ import {
 export async function findCountDictDetail(
   search?: DictDetailSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./dict_detail.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./dict_detail.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllDictDetail(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DictDetailModel[]> {
-  const { findAll } = await import("./dict_detail.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./dict_detail.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneDictDetail(
   search?: DictDetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<DictDetailModel | undefined> {
-  const { findOne } = await import("./dict_detail.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./dict_detail.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

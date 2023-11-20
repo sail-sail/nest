@@ -338,7 +338,7 @@ export async function uniLogin() {
     let appLanguage = systemInfo.appLanguage?.toLocaleLowerCase() || "zh-cn";
     if (appLanguage === "en") {
       appLanguage = "en-us";
-    } else if (appLanguage === "zh" || appLanguage === "zh-hans" || appLanguage === "zh-hant" || appLanguage === "zh-hans-cn" || appLanguage === "zh-hk" || appLanguage === "zh-tw" || appLanguage === "zh-mo") {
+    } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn", "zh-hk", "zh-tw", "zh-mo"].includes(appLanguage)) {
       appLanguage = "zh-cn";
     }
     const loginRes = await uni.login({ provider: "weixin" });

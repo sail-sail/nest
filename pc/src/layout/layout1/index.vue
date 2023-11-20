@@ -131,6 +131,7 @@
           </el-dropdown>
         </template>
         <div
+          v-if="locales.length > 1"
           un-flex="~"
           un-items-center
           un-h="full"
@@ -232,7 +233,7 @@
                   @click="onChangePassword"
                 >
                   <ElIcon>
-                    <ElIconDelete />
+                    <ElIconLock />
                   </ElIcon>
                   <span>{{ ns('修改密码') }}</span>
                 </el-dropdown-item>
@@ -261,7 +262,7 @@
       <div
         ref="tab_active_lineRef"
         
-        un-display-none
+        un-hidden
         un-pos-absolute
         un-bottom-0
         un-left="[23px]"
@@ -311,6 +312,10 @@ import {
   getUsrPermits,
 } from "./Api";
 
+import {
+  getLoginLangs,
+} from "../Api";
+
 const {
   n,
   ns,
@@ -354,12 +359,16 @@ watch(
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
     const lbl = menuLbl || (route.meta?.name as string) || name || "";
+    const closeable = route.meta?.closeable as boolean ?? true;
+    const icon = route.meta?.icon as string | undefined;
     tabsStore.activeTab({
       name,
       lbl,
       active: true,
       path: route.path,
       query: route.query,
+      closeable,
+      icon,
     });
   },
   {
@@ -544,12 +553,19 @@ async function initFrame() {
   if (usrStore.authorization) {
     const [
       loginInfoTmp,
+      _,
+      langModels,
     ] = await Promise.all([
       getLoginInfo({ notLoading: true }),
       getUsrPermitsEfc(),
+      getLoginLangs(),
     ]);
     loginInfo = loginInfoTmp;
     usrStore.loginInfo = loginInfo;
+    locales = langModels.map(item => ({
+      code: item.code,
+      lbl: item.lbl,
+    }));
   }
   inited = true;
 }
