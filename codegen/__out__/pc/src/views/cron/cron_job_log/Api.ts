@@ -323,7 +323,6 @@ export function useDownloadImportTemplate(routePath: string) {
             begin_time_lbl
             end_time_lbl
             rem
-            create_time_lbl
           }
           findAllCronJob {
             id
