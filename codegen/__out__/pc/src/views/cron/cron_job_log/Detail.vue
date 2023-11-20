@@ -264,6 +264,13 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 定时任务
+    cron_job_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("定时任务") }`,
+      },
+    ],
   };
 });
 
