@@ -1,0 +1,187 @@
+
+
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  CronJobLogInput,
+  CronJobLogModel,
+  CronJobLogSearch,
+  CronJobLogFieldComment,
+} from "./cron_job_log.model.ts";
+
+import * as cron_job_logDao from "./cron_job_log.dao.ts";
+
+/**
+ * 根据条件查找总数
+ * @param {CronJobLogSearch} search? 搜索条件
+ * @return {Promise<number>}
+ */
+export async function findCount(
+  search?: CronJobLogSearch,
+): Promise<number> {
+  search = search || { };
+  const data = await cron_job_logDao.findCount(search);
+  return data;
+}
+
+/**
+ * 根据条件和分页查找数据
+ * @param {CronJobLogSearch} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
+ * @return {Promise<CronJobLogModel[]>} 
+ */
+export async function findAll(
+  search?: CronJobLogSearch,
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
+): Promise<CronJobLogModel[]> {
+  search = search || { };
+  const models: CronJobLogModel[] = await cron_job_logDao.findAll(search, page, sort);
+  return models;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: CronJobLogInput,
+) {
+  const data = await cron_job_logDao.setIdByLbl(input);
+  return data;
+}
+
+/**
+ * 根据条件查找第一条数据
+ * @param {CronJobLogSearch} search? 搜索条件
+ */
+export async function findOne(
+  search?: CronJobLogSearch,
+  sort?: SortInput|SortInput[],
+): Promise<CronJobLogModel | undefined> {
+  search = search || { };
+  const model = await cron_job_logDao.findOne(search, sort);
+  return model;
+}
+
+/**
+ * 根据id查找数据
+ * @param {string} id
+ */
+export async function findById(
+  id?: string | null,
+): Promise<CronJobLogModel | undefined> {
+  const model = await cron_job_logDao.findById(id);
+  return model;
+}
+
+/**
+ * 根据搜索条件判断数据是否存在
+ * @param {CronJobLogSearch} search? 搜索条件
+ */
+export async function exist(
+  search?: CronJobLogSearch,
+): Promise<boolean> {
+  search = search || { };
+  const data = await cron_job_logDao.exist(search);
+  return data;
+}
+
+/**
+ * 根据id查找数据是否存在
+ * @param {string} id
+ */
+export async function existById(
+  id?: string | null,
+): Promise<boolean> {
+  const data = await cron_job_logDao.existById(id);
+  return data;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: CronJobLogInput,
+): Promise<void> {
+  const data = await cron_job_logDao.validate(input);
+  return data;
+}
+
+/**
+ * 创建数据
+ * @param {CronJobLogInput} input
+ * @return {Promise<string>} id
+ */
+export async function create(
+  input: CronJobLogInput,
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<string> {
+  const data = await cron_job_logDao.create(input, options);
+  return data;
+}
+
+/**
+ * 根据 id 修改数据
+ * @param {string} id
+ * @param {CronJobLogInput} input
+ * @return {Promise<string>}
+ */
+export async function updateById(
+  id: string,
+  input: CronJobLogInput,
+): Promise<string> {
+  
+  const data = await cron_job_logDao.updateById(id, input);
+  return data;
+}
+
+/**
+ * 根据 ids 删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function deleteByIds(
+  ids: string[],
+): Promise<number> {
+  
+  const data = await cron_job_logDao.deleteByIds(ids);
+  return data;
+}
+
+/**
+ * 根据 ids 还原数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function revertByIds(
+  ids: string[],
+): Promise<number> {
+  const data = await cron_job_logDao.revertByIds(ids);
+  return data;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function forceDeleteByIds(
+  ids: string[],
+): Promise<number> {
+  const data = await cron_job_logDao.forceDeleteByIds(ids);
+  return data;
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments(): Promise<CronJobLogFieldComment> {
+  const data = await cron_job_logDao.getFieldComments();
+  return data;
+}

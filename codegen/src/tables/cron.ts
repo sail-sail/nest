@@ -9,11 +9,15 @@ export default defineConfig({
         [ "code" ],
         [ "lbl" ],
       ],
+      sys_fields: [
+        "code",
+      ],
     },
     columns: [
       {
         COLUMN_NAME: "code",
         width: 140,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
@@ -49,48 +53,33 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "lbl" ],
+        [ "job_id", "cron" ],
       ],
     },
     columns: [
       {
-        COLUMN_NAME: "code",
-        onlyCodegenDeno: true,
-      },
-      {
-        COLUMN_NAME: "lbl",
+        COLUMN_NAME: "job_id",
+        width: 140,
+        require: true,
+        search: true,
+        foreignTabs: [
+          {
+            mod: "cron",
+            table: "cron_job_log",
+            label: "任务执行日志",
+            column: "job_id",
+          },
+        ],
       },
       {
         COLUMN_NAME: "cron",
         width: 140,
+        require: true,
       },
       {
         COLUMN_NAME: "timezone",
         width: 80,
-      },
-      {
-        COLUMN_NAME: "job_id",
-        width: 140,
-      },
-      {
-        COLUMN_NAME: "exec_state",
-        width: 100,
-      },
-      {
-        COLUMN_NAME: "exec_result",
-        width: 220,
-      },
-      {
-        COLUMN_NAME: "exec_count",
-        width: 100,
-      },
-      {
-        COLUMN_NAME: "prev_time",
-        width: 160,
-      },
-      {
-        COLUMN_NAME: "next_time",
-        width: 160,
+        require: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -128,6 +117,9 @@ export default defineConfig({
       {
         COLUMN_NAME: "cron_job_id",
         width: 140,
+        foreignKey: {
+          showType: "dialog",
+        },
       },
       {
         COLUMN_NAME: "exec_state",
