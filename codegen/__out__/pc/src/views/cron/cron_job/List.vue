@@ -26,6 +26,21 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
+        <el-form-item
+          :label="n('名称')"
+          prop="lbl_like"
+        >
+          <el-input
+            v-model="search.lbl_like"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template>
+      
       <template v-if="showBuildIn || builtInSearch?.job_id == null">
         <el-form-item
           label="任务"
@@ -454,8 +469,25 @@
           :key="col.prop"
         >
           
+          <!-- 名称 -->
+          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, row[column.property])"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 任务 -->
-          <template v-if="'job_id_lbl' === col.prop && (showBuildIn || builtInSearch?.job_id == null)">
+          <template v-else-if="'job_id_lbl' === col.prop && (showBuildIn || builtInSearch?.job_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -767,6 +799,8 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
+  lbl?: string; // 名称
+  lbl_like?: string; // 名称
   job_id?: string|string[]; // 任务
   job_id_lbl?: string|string[]; // 任务
   cron?: string; // Cron表达式
@@ -920,6 +954,15 @@ let tableData = $ref<CronJobModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
+    {
+      label: "名称",
+      prop: "lbl",
+      width: 200,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
     {
       label: "任务",
       prop: "job_id_lbl",
@@ -1278,6 +1321,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ await nAsync("名称") ]: "lbl",
     [ await nAsync("任务") ]: "job_id_lbl",
     [ await nAsync("Cron表达式") ]: "cron",
     [ await nAsync("时区") ]: "timezone_lbl",
@@ -1306,6 +1350,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "lbl": "string",
           "job_id_lbl": "string",
           "cron": "string",
           "timezone_lbl": "string",
@@ -1628,6 +1673,7 @@ async function openForeignTabs(id: string, title: string) {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "名称",
     "任务",
     "Cron表达式",
     "时区",

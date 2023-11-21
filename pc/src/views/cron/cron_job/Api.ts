@@ -36,6 +36,7 @@ export async function findAll(
       query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCronJob(search: $search, page: $page, sort: $sort) {
           id
+          lbl
           job_id
           job_id_lbl
           cron
@@ -91,6 +92,7 @@ export async function findOne(
       query($search: CronJobSearch, $sort: [SortInput!]) {
         findOneCronJob(search: $search, sort: $sort) {
           id
+          lbl
           job_id
           job_id_lbl
           cron
@@ -226,6 +228,7 @@ export async function findById(
       query($id: String!) {
         findByIdCronJob(id: $id) {
           id
+          lbl
           job_id
           job_id_lbl
           cron
@@ -456,6 +459,7 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsCronJob {
+            lbl
             job_id_lbl
             cron
             timezone_lbl
@@ -515,6 +519,7 @@ export function useExportExcel(routePath: string) {
         query($search: CronJobSearch, $sort: [SortInput!]) {
           findAllCronJob(search: $search, sort: $sort) {
             id
+            lbl
             job_id
             job_id_lbl
             cron
@@ -536,6 +541,7 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsCronJob {
+            lbl
             job_id_lbl
             cron
             timezone_lbl

@@ -266,7 +266,7 @@ export async function findAllCronJob(
       query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCronJob(search: $search, page: $page, sort: $sort) {
           id
-          
+          lbl
         }
       }
     `,
@@ -326,7 +326,7 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllCronJob {
             id
-            
+            lbl
           }
           getDict(codes: [
             "cron_job_exec_state",
@@ -400,7 +400,7 @@ export function useExportExcel(routePath: string) {
             create_time_lbl
           }
           findAllCronJob {
-            
+            lbl
           }
           getDict(codes: [
             "cron_job_exec_state",

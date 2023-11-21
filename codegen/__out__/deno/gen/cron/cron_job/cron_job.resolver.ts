@@ -23,6 +23,8 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import "./cron_job.service.ts";
+
 /**
  * 根据条件查找据数总数
  */

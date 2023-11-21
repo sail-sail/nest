@@ -7,6 +7,8 @@ defineGraphql(resolver, /* GraphQL */ `
 type CronJobModel {
   "ID"
   id: String!
+  "名称"
+  lbl: String!
   "任务"
   job_id: String!
   "任务"
@@ -49,6 +51,8 @@ type CronJobModel {
   is_deleted: Int!
 }
 type CronJobFieldComment {
+  "名称"
+  lbl: String!
   "任务"
   job_id: String!
   "任务"
@@ -91,6 +95,8 @@ type CronJobFieldComment {
 input CronJobInput {
   ""
   id: String
+  "名称"
+  lbl: String
   "任务"
   job_id: String
   "任务"
@@ -137,6 +143,9 @@ input CronJobSearch {
   ids: [String]
   "String"
   id: String
+  "名称"
+  lbl: String
+  lbl_like: String
   "任务"
   job_id: [String!]
   job_id_is_null: Boolean

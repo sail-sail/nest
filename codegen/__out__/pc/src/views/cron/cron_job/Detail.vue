@@ -70,6 +70,19 @@
         @keyup.enter="onSave"
       >
         
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+          <el-form-item
+            :label="n('名称')"
+            prop="lbl"
+          >
+            <CustomInput
+              v-model="dialogModel.lbl"
+              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.job_id == null)">
           <el-form-item
             :label="n('任务')"
@@ -86,6 +99,7 @@
               })"
               :placeholder="`${ ns('请选择') } ${ n('任务') }`"
               :readonly="isLocked || isReadonly"
+              @change="onJobId"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -99,6 +113,7 @@
               v-model="dialogModel.cron"
               :placeholder="`${ ns('请输入') } ${ n('Cron表达式') }`"
               :readonly="isLocked || isReadonly"
+              :title="cron_lbl"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -239,6 +254,17 @@ import {
   getJobList,
 } from "./Api";
 
+import cronstrue from "cronstrue/i18n";
+import { lang } from "@/locales/index";
+
+let locale = $computed(() => {
+  if (lang === "zh-cn") {
+    return "zh_CN";
+  } else if (lang === "zh-tw") {
+    return "zh_TW";
+  }
+});
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -287,6 +313,18 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 名称
+    lbl: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+      },
+      {
+        type: "string",
+        max: 50,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+      },
+    ],
     // 任务
     job_id: [
       {
@@ -498,6 +536,46 @@ watch(
   },
 );
 
+let job_lbl = $ref<string>("");
+
+// 任务
+function onJobId(jobModel?: JobModel) {
+  if (!jobModel) {
+    job_lbl = "";
+    return;
+  }
+  job_lbl = jobModel.lbl;
+}
+
+let cron_lbl = $computed(() => {
+  if (!dialogModel.cron) {
+    return "";
+  }
+  try {
+    return cronstrue.toString(
+      dialogModel.cron, {
+        locale,
+      },
+    );
+  } catch (err) {
+    return "";
+  }
+});
+
+// 名称
+watch(
+  () => [ inited, job_lbl, cron_lbl ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!job_lbl || !cron_lbl) {
+      return;
+    }
+    dialogModel.lbl = `${ cron_lbl } - ${ job_lbl }`;
+  },
+);
+
 /** 键盘按 Insert */
 async function onInsert() {
   isReadonly = !isReadonly;
@@ -560,6 +638,7 @@ async function onRefresh() {
     dialogModel = {
       ...data,
     };
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
 }
 
@@ -743,6 +822,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "名称",
     "任务",
     "Cron表达式",
     "时区",

@@ -25,6 +25,7 @@ CREATE TABLE if not exists `cron_job` (
 drop table if exists `cron_cron_job`;
 CREATE TABLE if not exists `cron_cron_job` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `job_id` varchar(22) NOT NULL DEFAULT '' COMMENT '任务',
   `cron` varchar(50) NOT NULL DEFAULT '' COMMENT 'Cron表达式',
   `timezone` varchar(20) NOT NULL DEFAULT 'Asia/Shanghai' COMMENT '时区,dict:cron_job_timezone',
