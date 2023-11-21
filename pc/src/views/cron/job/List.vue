@@ -906,7 +906,7 @@ function getTableColumns(): ColumnType[] {
       label: "编码",
       prop: "code",
       width: 140,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",

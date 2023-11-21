@@ -6,6 +6,15 @@ import {
 import dayjs from "dayjs";
 
 import {
+  newContext,
+  runInAsyncHooks,
+} from "/lib/context.ts";
+
+import {
+  refreshCronJobs,
+} from "/src/cron/cron_job/cron_job.dao.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -92,6 +101,15 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.lbl !== undefined) {
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+  }
+  if (search?.lbl === null) {
+    whereQuery += ` and t.lbl is null`;
+  }
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.job_id && !Array.isArray(search?.job_id)) {
     search.job_id = [ search.job_id ];
@@ -459,6 +477,7 @@ export async function getFieldComments(): Promise<CronJobFieldComment> {
   const n = initN(route_path);
   const fieldComments: CronJobFieldComment = {
     id: await n("ID"),
+    lbl: await n("名称"),
     job_id: await n("任务"),
     job_id_lbl: await n("任务"),
     cron: await n("Cron表达式"),
@@ -710,6 +729,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    50,
+    fieldComments.lbl,
+  );
+  
   // 任务
   await validators.chars_max_length(
     input.job_id,
@@ -840,6 +866,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.lbl !== undefined) {
+    sql += `,lbl`;
+  }
   if (input.job_id !== undefined) {
     sql += `,job_id`;
   }
@@ -887,6 +916,9 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
+  }
   if (input.job_id !== undefined) {
     sql += `,${ args.push(input.job_id) }`;
   }
@@ -915,6 +947,8 @@ export async function create(
   log(JSON.stringify(res));
   
   await delCache();
+  
+  await refreshCronJobs();
   
   return input.id;
 }
@@ -974,6 +1008,8 @@ export async function updateTenantById(
   const num = result.affectedRows;
   
   await delCache();
+  
+  await refreshCronJobs();
   return num;
 }
 
@@ -1040,6 +1076,12 @@ export async function updateById(
     update cron_cron_job set
   `;
   let updateFldNum = 0;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
   if (input.job_id !== undefined) {
     if (input.job_id != oldModel.job_id) {
       sql += `job_id = ${ args.push(input.job_id) },`;
@@ -1110,6 +1152,8 @@ export async function updateById(
     console.log(JSON.stringify(oldModel));
   }
   
+  await refreshCronJobs();
+  
   return id;
 }
 
@@ -1157,6 +1201,8 @@ export async function deleteByIds(
   }
   
   await delCache();
+  
+  await refreshCronJobs();
   
   return num;
 }
@@ -1226,6 +1272,8 @@ export async function enableByIds(
   const num = result.affectedRows;
   
   await delCache();
+  
+  await refreshCronJobs();
   
   return num;
 }
@@ -1356,6 +1404,8 @@ export async function revertByIds(
   
   await delCache();
   
+  await refreshCronJobs();
+  
   return num;
 }
 
@@ -1455,4 +1505,16 @@ export async function findLastOrderBy(
   let result = model?.order_by ?? 0;
   
   return result;
+}
+
+{
+  const context = newContext();
+  context.notVerifyToken = true;
+  runInAsyncHooks(context, async () => {
+    try {
+      await refreshCronJobs();
+    } catch (err) {
+      console.error(err);
+    }
+  });
 }

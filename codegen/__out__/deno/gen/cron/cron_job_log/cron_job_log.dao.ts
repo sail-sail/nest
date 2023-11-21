@@ -230,6 +230,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
+      ,cron_job_id_lbl.lbl cron_job_id_lbl
     from
       ${ await getFromQuery() }
     where
@@ -382,6 +383,15 @@ export async function setIdByLbl(
   ] = await dictSrcDao.getDict([
     "cron_job_exec_state",
   ]);
+  
+  // 定时任务
+  if (isNotEmpty(input.cron_job_id_lbl) && input.cron_job_id === undefined) {
+    input.cron_job_id_lbl = String(input.cron_job_id_lbl).trim();
+    const cron_jobModel = await cron_jobDao.findOne({ lbl: input.cron_job_id_lbl });
+    if (cron_jobModel) {
+      input.cron_job_id = cron_jobModel.id;
+    }
+  }
   
   // 执行状态
   if (isNotEmpty(input.exec_state_lbl) && input.exec_state === undefined) {

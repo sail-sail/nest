@@ -29,7 +29,7 @@
           name="任务执行日志"
         >
           <Cron_job_logList
-            :job_id="dialogModel.id"
+            :cron_job_id="dialogModel.id"
             :is_deleted="dialogModel.is_deleted ? '1' : '0'"
             :is-locked="dialogModel.is_deleted ? '1' : '0'"
             @add="useAllFindDebounce"
@@ -89,11 +89,11 @@ let tabName = $ref("任务执行日志");
 let cron_job_logTotal = $ref<number>();
 
 async function useFindCountCron_job_log() {
-  const job_id = [ dialogModel.id! ];
+  const cron_job_id = [ dialogModel.id! ];
   cron_job_logTotal = await findCountCron_job_log(
     {
       is_deleted: dialogModel.is_deleted,
-      job_id,
+      cron_job_id,
     },
   );
 }

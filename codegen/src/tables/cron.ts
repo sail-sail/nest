@@ -17,6 +17,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "code",
         width: 140,
+        align: "center",
         fixed: "left",
       },
       {
@@ -58,18 +59,21 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "job_id",
-        width: 140,
-        require: true,
-        search: true,
+        COLUMN_NAME: "lbl",
         foreignTabs: [
           {
             mod: "cron",
             table: "cron_job_log",
             label: "任务执行日志",
-            column: "job_id",
+            column: "cron_job_id",
           },
         ],
+      },
+      {
+        COLUMN_NAME: "job_id",
+        width: 140,
+        require: true,
+        search: true,
       },
       {
         COLUMN_NAME: "cron",

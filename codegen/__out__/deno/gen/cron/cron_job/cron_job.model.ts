@@ -32,6 +32,7 @@ export interface CronJobInput extends CronJobInputType {
 
 export interface CronJobFieldComment {
   id: string;
+  lbl: string;
   job_id: string;
   job_id_lbl: string;
   cron: string;
