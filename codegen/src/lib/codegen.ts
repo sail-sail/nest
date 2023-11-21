@@ -461,15 +461,35 @@ export async function gitDiffOut() {
   shelljs.cd(projectPh);
   shelljs.exec(diffStr);
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
+  let applyHasErr = false;
   if (!isEmpty0(str)) {
     str = str.replace(/\/codegen\/__out__\//gm, "/");
     await writeFile(`${ projectPh }/${ diffFile }`, str);
     shelljs.cd(projectPh);
-    shelljs.exec(`git apply ${ diffFile } --ignore-space-change --binary --whitespace=nowarn`);
+    const applyRes = shelljs.exec(`git apply ${ diffFile } --ignore-space-change --binary --whitespace=nowarn`);
+    const applyErr = applyRes.stderr;
+    if (applyErr && applyErr.includes("error: patch failed:")) {
+      applyHasErr = true;
+      console.log("");
+      const errArr = applyErr.split("\n");
+      for (let item of errArr) {
+        if (!item.startsWith("error: ") || !item.endsWith(": patch does not apply")) continue;
+        item = item.substring("error: ".length, item.length - ": patch does not apply".length);
+        // 打开vscode的diff
+        const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
+        console.log(cmdTmp);
+        shelljs.exec(cmdTmp);
+      }
+      console.log("");
+    }
   }
   await treeDir();
   await unlink(`${ projectPh }/codegening.txt`);
-  console.log(`代码合并完毕!`);
+  if (applyHasErr) {
+    console.log(`代码合并失败!`);
+  } else {
+    console.log(`代码合并成功!`);
+  }
 }
 
 async function copyXlsx(out: string = "") {
