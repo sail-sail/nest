@@ -277,6 +277,11 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"<#
               }
+              #><#
+              if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
+              #>
+              @change="onJobId"<#
+              }
               #>
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
@@ -516,6 +521,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (mod === "cron" && table === "cron_job" && column_name === "cron") {
+              #>
+              :title="cron_lbl"<#
               }
               #>
             ></CustomInput><#
@@ -1465,6 +1475,21 @@ import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=for
 }
 #><#
 }
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+import cronstrue from "cronstrue/i18n";
+import { lang } from "@/locales/index";
+
+let locale = $computed(() => {
+  if (lang === "zh-cn") {
+    return "zh_CN";
+  } else if (lang === "zh-tw") {
+    return "zh_TW";
+  }
+});<#
+}
 #>
 
 const emit = defineEmits<{
@@ -1974,6 +1999,50 @@ watch(
     } else {
       dialogNotice = "";
     }
+  },
+);<#
+}
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+let job_lbl = $ref<string>("");
+
+// 任务
+function onJobId(jobModel?: JobModel) {
+  if (!jobModel) {
+    job_lbl = "";
+    return;
+  }
+  job_lbl = jobModel.lbl;
+}
+
+let cron_lbl = $computed(() => {
+  if (!dialogModel.cron) {
+    return "";
+  }
+  try {
+    return cronstrue.toString(
+      dialogModel.cron, {
+        locale,
+      },
+    );
+  } catch (err) {
+    return "";
+  }
+});
+
+// 名称
+watch(
+  () => [ inited, job_lbl, cron_lbl ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!job_lbl || !cron_lbl) {
+      return;
+    }
+    dialogModel.lbl = `${ cron_lbl } - ${ job_lbl }`;
   },
 );<#
 }
