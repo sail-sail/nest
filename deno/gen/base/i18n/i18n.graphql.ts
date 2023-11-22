@@ -111,7 +111,7 @@ input I18Nsearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "语言"
   lang_id: [String!]

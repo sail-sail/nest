@@ -242,6 +242,7 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #FFF;
 }
 .tab_close_div {
   display: flex;
