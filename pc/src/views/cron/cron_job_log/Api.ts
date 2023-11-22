@@ -329,7 +329,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "cron_job_exec_state",
+            "cron_job_log_exec_state",
           ]) {
             code
             lbl
@@ -403,7 +403,7 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "cron_job_exec_state",
+            "cron_job_log_exec_state",
           ]) {
             code
             lbl

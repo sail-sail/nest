@@ -465,6 +465,22 @@
           width="50"
         ></el-table-column>
         
+        <el-table-column
+          prop="_operation"
+          label="操作"
+          width="110"
+          align="center"
+          fixed="left"
+        >
+          <template #default="{ row }">
+            <el-button
+              @click.stop="onRunCronJob(row.id, row.lbl)"
+            >
+              手动执行
+            </el-button>
+          </template>
+        </el-table-column>
+        
         <template
           v-for="col in tableColumns"
           :key="col.prop"
@@ -695,6 +711,10 @@ import {
 } from "./Api";
 
 import ForeignTabs from "./ForeignTabs.vue";
+
+import {
+  runCronJob,
+} from "./Api";
 
 defineOptions({
   name: "定时任务",
@@ -1697,6 +1717,24 @@ async function onRevertByIds() {
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
+}
+
+/** 手动执行定时任务 */
+async function onRunCronJob(
+  id: string,
+  lbl: string,
+) {
+  try {
+    await ElMessageBox.confirm(`${ await nsAsync("确定手动执行定时任务 {0} 吗?", lbl) }`, {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
+      type: "warning",
+    });
+  } catch (err) {
+    return;
+  }
+  await runCronJob(id);
+  ElMessage.success(await nsAsync("手动执行定时任务 {0} 成功", lbl));
 }
 
 let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();

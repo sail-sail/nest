@@ -49,13 +49,16 @@ drop table if exists `cron_cron_job_log`;
 CREATE TABLE if not exists `cron_cron_job_log` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `cron_job_id` varchar(22) NOT NULL DEFAULT '' COMMENT '定时任务',
-  `exec_state` varchar(10) NOT NULL DEFAULT '' COMMENT '执行状态,dict:cron_job_log_exec_state',
+  `exec_state` varchar(10) NOT NULL DEFAULT 'running' COMMENT '执行状态,dict:cron_job_log_exec_state',
   `exec_result` varchar(500) NOT NULL DEFAULT '' COMMENT '执行结果',
   `begin_time` datetime DEFAULT NULL COMMENT '开始时间',
   `end_time` datetime DEFAULT NULL COMMENT '结束时间',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`)

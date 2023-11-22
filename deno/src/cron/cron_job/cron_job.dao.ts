@@ -21,14 +21,16 @@ const cronJobs: {
 
 function newCron(
   job_id: string,
+  cron_job_id: string,
   cron: string,
+  tenant_id: string,
 ) {
   const job = new Cron(cron, async () => {
     const context = newContext();
     context.notVerifyToken = true;
     await runInAsyncHooks(context, async () => {
       try {
-        await runJob(job_id, cron);
+        await runJob(job_id, cron_job_id, cron, tenant_id);
       } catch (err) {
         console.error(err);
       }
@@ -49,18 +51,19 @@ export async function refreshCronJobs() {
     }
   }
   cron_jobModels.forEach((cron_jobModel) => {
-    const id = cron_jobModel.id;
+    const cron_job_id = cron_jobModel.id;
     const job_id = cron_jobModel.job_id;
     const cron = cron_jobModel.cron;
-    const cronJob = cronJobs.find((item) => item.id === id);
+    const tenant_id = cron_jobModel.tenant_id;
+    const cronJob = cronJobs.find((item) => item.id === cron_job_id);
     if (!cronJob) {
-      const job = newCron(job_id, cron);
-      cronJobs.push({ id, cron, job });
+      const job = newCron(job_id, cron_job_id, cron, tenant_id);
+      cronJobs.push({ id: cron_job_id, cron, job });
       return;
     }
     if (cronJob.cron !== cron) {
       cronJob.job.stop();
-      cronJob.job = newCron(id, cron);
+      cronJob.job = newCron(job_id, cron_job_id, cron, tenant_id);
     }
   });
 }
