@@ -129,7 +129,7 @@ input DictbizDetailSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "业务字典"
   dictbiz_id: [String!]

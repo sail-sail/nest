@@ -247,7 +247,7 @@
                     type="primary"
                     @click="dict_detailAdd"
                   >
-                    {{ ns('增加') }}
+                    {{ ns('新增') }}
                   </el-button>
                   
                   <el-button
@@ -437,18 +437,11 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("数据类型") }`,
       },
     ],
-    // 锁定
-    is_locked: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
-      },
-    ],
-    // 启用
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
@@ -475,7 +468,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DictInput = {
     type: "string",
@@ -848,7 +841,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

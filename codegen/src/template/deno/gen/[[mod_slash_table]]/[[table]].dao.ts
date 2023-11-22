@@ -114,6 +114,19 @@ if (hasDecimal) {
 
 import Decimal from "decimal.js";<#
 }
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+import {
+  newContext,
+  runInAsyncHooks,
+} from "/lib/context.ts";
+
+import {
+  refreshCronJobs,
+} from "/src/cron/cron_job/cron_job.dao.ts";<# 
+}
 #>
 
 import {
@@ -2709,6 +2722,12 @@ export async function create(
   
   await delCache();<#
   }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
+  }
   #>
   
   return input.id;
@@ -2804,6 +2823,12 @@ export async function updateTenantById(
   
   await delCache();<#
   }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
+  }
   #>
   return num;
 }<#
@@ -2857,6 +2882,12 @@ export async function updateOrgById(
   #>
   
   await delCache();<#
+  }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
   }
   #>
   return num;
@@ -3256,7 +3287,13 @@ export async function updateById(
     });<#
     }
     #>
+  }<#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
   }
+  #>
   
   return id;
 }
@@ -3328,6 +3365,12 @@ export async function deleteByIds(
   #>
   
   await delCache();<#
+  }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
   }
   #>
   
@@ -3479,6 +3522,12 @@ export async function enableByIds(
   #>
   
   await delCache();<#
+  }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
   }
   #>
   
@@ -3648,6 +3697,12 @@ export async function revertByIds(
   
   await delCache();<#
   }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  await refreshCronJobs();<#
+  }
   #>
   
   return num;
@@ -3791,6 +3846,22 @@ export async function findLastOrderBy(
   let result = model?.order_by ?? 0;
   
   return result;
+}<#
+}
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+{
+  const context = newContext();
+  context.notVerifyToken = true;
+  runInAsyncHooks(context, async () => {
+    try {
+      await refreshCronJobs();
+    } catch (err) {
+      console.error(err);
+    }
+  });
 }<#
 }
 #>

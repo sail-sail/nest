@@ -135,7 +135,7 @@ input DeptSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "父部门"
   parent_id: [String!]
