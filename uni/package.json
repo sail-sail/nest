@@ -92,7 +92,7 @@
     "unplugin-auto-import": "0.16.7",
     "unplugin-icons": "0.17.4",
     "unplugin-vue-components": "0.25.2",
-    "vite": "5.0.1",
+    "vite": "5.0.2",
     "vite-plugin-inspect": "0.7.42",
     "vite-plugin-vue-inspector": "4.0.0",
     "vitest": "0.34.6",

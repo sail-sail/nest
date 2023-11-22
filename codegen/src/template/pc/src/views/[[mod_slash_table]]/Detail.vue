@@ -34,6 +34,21 @@ for (let i = 0; i < columns.length; i++) {
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (
+    [
+      "is_default",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
   columnNum++;
 }
 #>
@@ -914,7 +929,7 @@ for (let i = 0; i < columns.length; i++) {
                     type="primary"
                     @click="<#=table#>Add"
                   >
-                    {{ ns('增加') }}
+                    {{ ns('新增') }}
                   </el-button>
                   
                   <el-button
@@ -1746,7 +1761,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
@@ -2334,7 +2349,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }<#
   }
   #>
