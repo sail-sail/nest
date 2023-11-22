@@ -117,7 +117,7 @@ input DataPermitSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "菜单"
   menu_id: [String!]

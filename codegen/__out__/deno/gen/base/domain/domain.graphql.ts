@@ -129,7 +129,7 @@ input DomainSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "协议"
   protocol: String

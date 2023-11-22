@@ -485,7 +485,7 @@ input <#=searchName#> {
   <#=column_name#>: <#=data_type#><#
     } else if (column_name === "id") {
   #>
-  "<#=column_comment#>"
+  "ID"
   <#=column_name#>: <#=data_type#><#
     } else if (
       column.DATA_TYPE === "int"

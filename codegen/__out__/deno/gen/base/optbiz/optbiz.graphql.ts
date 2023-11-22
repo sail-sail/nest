@@ -129,7 +129,7 @@ input OptbizSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "名称"
   lbl: String

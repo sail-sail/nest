@@ -133,7 +133,7 @@ input DictSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
+  "ID"
   id: String
   "编码"
   code: String
