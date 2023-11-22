@@ -341,7 +341,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: FieldPermitInput = {
     type: "editable",
@@ -669,7 +669,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

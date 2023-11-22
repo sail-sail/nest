@@ -247,7 +247,7 @@
                     type="primary"
                     @click="dictbiz_detailAdd"
                   >
-                    {{ ns('增加') }}
+                    {{ ns('新增') }}
                   </el-button>
                   
                   <el-button
@@ -468,7 +468,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DictbizInput = {
     type: "string",
@@ -841,7 +841,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

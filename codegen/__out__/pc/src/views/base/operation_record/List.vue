@@ -265,7 +265,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="primary"
-        @click="revertByIdsEfc"
+        @click="onRevertByIds"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -1164,6 +1164,10 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("delete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1192,6 +1196,10 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("forceDelete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1215,9 +1223,13 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击还原 */
-async function revertByIdsEfc() {
+async function onRevertByIds() {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("delete") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
