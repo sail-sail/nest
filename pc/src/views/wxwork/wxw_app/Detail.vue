@@ -336,18 +336,18 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 锁定
-    is_locked: [
+    // 可信域名
+    domain_id: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+        message: `${ await nsAsync("请选择") } ${ n("可信域名") }`,
       },
     ],
-    // 启用
-    is_enabled: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
@@ -374,7 +374,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: WxwAppInput = {
     is_locked: 0,
@@ -710,6 +710,7 @@ async function onSave() {
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");
@@ -729,7 +730,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {
