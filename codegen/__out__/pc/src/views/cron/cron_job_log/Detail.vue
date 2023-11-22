@@ -75,7 +75,7 @@
             <DictSelect
               :set="dialogModel.exec_state = dialogModel.exec_state ?? undefined"
               v-model="dialogModel.exec_state"
-              code="cron_job_exec_state"
+              code="cron_job_log_exec_state"
               :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
@@ -298,6 +298,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: CronJobLogInput = {
+    exec_state: "running",
   };
   return defaultInput;
 }

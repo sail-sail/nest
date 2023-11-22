@@ -662,3 +662,23 @@ export async function findLastOrderBy(
   const res = data.findLastOrderByCronJob;
   return res;
 }
+
+export async function runCronJob(
+  id: string,
+  opt?: GqlOpt,
+) {
+  const data: {
+    runCronJob: Mutation["runCronJob"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: String!) {
+        runCronJob(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.runCronJob;
+  return res;
+}

@@ -281,7 +281,7 @@ export async function findAll(
   const [
     exec_stateDict, // 执行状态
   ] = await dictSrcDao.getDict([
-    "cron_job_exec_state",
+    "cron_job_log_exec_state",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -381,7 +381,7 @@ export async function setIdByLbl(
   const [
     exec_stateDict, // 执行状态
   ] = await dictSrcDao.getDict([
-    "cron_job_exec_state",
+    "cron_job_log_exec_state",
   ]);
   
   // 定时任务
