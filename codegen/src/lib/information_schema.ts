@@ -58,7 +58,11 @@ export async function getTableComment(context: Context, table_name: string) {
     const result = await context.conn.query(sql);
     schemaTables = <any[]>result[0];
   }
-  const table_comment = schemaTables.find(item => item.TABLE_NAME === table_name).TABLE_COMMENT || table_name;
+  const table_schema = schemaTables.find(item => item.TABLE_NAME === table_name);
+  if (!table_schema) {
+    throw new Error(`表不存在: ${ table_name }`);
+  }
+  const table_comment = table_schema.TABLE_COMMENT || table_name;
   return table_comment;
 }
 
@@ -285,6 +289,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.require == null) {
+        item.require = true;
+      }
     }
     if ([ "rem" ].includes(column_name)) {
       if (item.width == null) {
@@ -364,6 +371,21 @@ async function getSchema0(
       if (item.sortable == null) {
         item.sortable = true;
       }
+    }
+    // 业务字典, 系统字典, 外键关联字段 都默认为必填
+    if (!item.noAdd && !item.noEdit) {
+      if ((record && (record.dict || record.dictbiz || record.foreignKey)) || item.foreignKey) {
+        if (item.require == null) {
+          item.require = true;
+        }
+      }
+    }
+    // 是否不显示导入导出中的下拉框, 若不设置, create_usr_id 跟 update_usr_id 默认为 true
+    if (
+      (item.COLUMN_NAME === "create_usr_id" || item.COLUMN_NAME === "update_usr_id") &&
+      item.notImportExportList == null
+    ) {
+      item.notImportExportList = true;
     }
   }
   // 校验

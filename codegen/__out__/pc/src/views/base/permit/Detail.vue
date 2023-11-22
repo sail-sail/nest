@@ -319,7 +319,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: PermitInput = {
   };
@@ -626,6 +626,7 @@ async function onSave() {
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");
@@ -645,7 +646,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

@@ -460,7 +460,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
     trade_state: "NOTPAY",

@@ -31,6 +31,8 @@ type RoleModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int!
   "备注"
   rem: String!
   "创建人"
@@ -77,6 +79,8 @@ type RoleFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
   "创建人"
@@ -123,6 +127,8 @@ input RoleInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int
   "备注"
   rem: String
   "创建人"
@@ -168,6 +174,8 @@ input RoleSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
@@ -193,6 +201,8 @@ type Query {
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
   "根据id查找一条数据"
   findByIdRole(id: String!): RoleModel
+  "查找order_by字段的最大值"
+  findLastOrderByRole: Int!
 }
 type Mutation {
   "创建一条数据"

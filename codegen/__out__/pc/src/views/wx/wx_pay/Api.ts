@@ -400,52 +400,6 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "create_time",
-        order: "descending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 下载导入模板
  */
@@ -467,30 +421,11 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             appid
             mchid
-            public_key
-            private_key
             v3_key
             payer_client_ip
             notify_url
-            is_locked_lbl
-            is_enabled_lbl
             order_by
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
-            lbl
           }
         }
       `,
@@ -575,9 +510,6 @@ export function useExportExcel(routePath: string) {
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
-          }
-          findAllUsr {
-            lbl
           }
           getDict(codes: [
             "is_locked",
