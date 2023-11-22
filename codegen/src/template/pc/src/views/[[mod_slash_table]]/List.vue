@@ -853,7 +853,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.delete="onDeleteByIds"<#
         }
         #>
-        @keydown.enter="onRowEnter"
+        @keyup.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -868,7 +868,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         #><#
         if (opts.noAdd !== true) {
         #>
-        @keydown.ctrl.i="onInsertOrCopy"<#
+        @keydown.ctrl.i="onInsert"<#
         }
         #>
       >
@@ -2548,15 +2548,11 @@ async function openCopy() {
 }
 
 /** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
-async function onInsertOrCopy() {
+async function onInsert() {
   if (isLocked) {
     return;
   }
-  if (selectedIds.length === 0) {
-    await openAdd();
-  } else {
-    await openCopy();
-  }
+  await openAdd();
 }<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
