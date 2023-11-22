@@ -545,7 +545,9 @@ pub struct <#=tableUP#>FieldComment {<#
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,<#
   if (hasTenantId) {
   #>

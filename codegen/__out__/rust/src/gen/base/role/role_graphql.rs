@@ -149,6 +149,21 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 查找 order_by 字段的最大值
+  async fn find_last_order_by_role(
+    &self,
+    ctx: &Context<'_>,
+  ) -> Result<u32> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_last_order_by(
+          None,
+        )
+      }).await
+  }
+  
 }
 
 #[derive(Default)]

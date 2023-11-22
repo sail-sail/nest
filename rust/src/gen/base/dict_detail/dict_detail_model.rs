@@ -185,7 +185,9 @@ pub struct DictDetailFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailSearch {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 系统字典

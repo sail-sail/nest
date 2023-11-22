@@ -191,7 +191,9 @@ pub struct OptbizFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizSearch {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
   pub tenant_id: Option<ID>,

@@ -51,6 +51,8 @@ pub struct UsrModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: u32,
   /// 所属部门
   pub dept_ids: Vec<ID>,
   /// 所属部门
@@ -142,6 +144,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
     // 所属部门
     let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
@@ -254,6 +258,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
+      order_by,
       dept_ids,
       dept_ids_lbl,
       role_ids,
@@ -300,6 +305,8 @@ pub struct UsrFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: String,
   /// 所属部门
   pub dept_ids: String,
   /// 所属部门
@@ -331,7 +338,9 @@ pub struct UsrFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrSearch {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
   pub tenant_id: Option<ID>,
@@ -366,6 +375,8 @@ pub struct UsrSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 所属部门
   pub dept_ids: Option<Vec<ID>>,
   /// 所属部门
@@ -429,6 +440,8 @@ pub struct UsrInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
   /// 所属部门
   pub dept_ids: Option<Vec<ID>>,
   /// 所属部门
@@ -484,6 +497,8 @@ impl From<UsrModel> for UsrInput {
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
       // 所属部门
       dept_ids: model.dept_ids.into(),
       dept_ids_lbl: model.dept_ids_lbl.into(),
@@ -534,6 +549,8 @@ impl From<UsrInput> for UsrSearch {
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
+      // 排序
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 所属部门
       dept_ids: input.dept_ids,
       // 拥有角色
