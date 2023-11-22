@@ -235,3 +235,13 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
   const data = await usrDao.getFieldComments();
   return data;
 }
+
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+): Promise<number> {
+  const data = await usrDao.findLastOrderBy();
+  return data;
+}

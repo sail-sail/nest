@@ -1,3 +1,5 @@
+import { getRouter } from "@/router/util";
+
 export interface TabInf {
   name: string,
   lbl?: string,
@@ -49,6 +51,10 @@ export default defineStore("tabs", function() {
     return tabs.some((item) => tabEqual(item, tab));
   }
   
+  function findTab(tab: Pick<TabInf, "path" | "query">) {
+    return tabs.find((item) => tabEqual(item, tab));
+  }
+  
   function activeTab(tab?: TabInf) {
     if (tab && tab.name) {
       if (!keepAliveNames.includes(tab.name)) {
@@ -96,11 +102,11 @@ export default defineStore("tabs", function() {
     }
   }
   
-  async function removeTab(tab: TabInf) {
+  async function removeTab(tab: TabInf, force = false) {
     if (!tab) {
       return false;
     }
-    if (tab.closeable === false) {
+    if (!force && tab.closeable === false) {
       return false;
     }
     const idx = tabs.findIndex((item: TabInf) => {
@@ -124,6 +130,21 @@ export default defineStore("tabs", function() {
         keepAliveNames.splice(idx2, 1);
       }
     }
+  }
+  
+  /** 关闭当前路由对应的选项卡 */
+  function closeCurrentTab(
+    tab0: Pick<TabInf, "path" | "query">,
+    force = false,
+  ) {
+    const tab = findTab({
+      path: tab0.path,
+      query: tab0.query,
+    });
+    if (!tab) {
+      return;
+    }
+    removeTab(tab, force);
   }
   
   async function closeOtherTabs(tab?: TabInf) {
@@ -184,8 +205,42 @@ export default defineStore("tabs", function() {
     return navFail;
   }
   
+  function setIndexTab(active = false) {
+    const tab = findTab({
+      path: "/index",
+      query: { },
+    });
+    if (tab) {
+      return tab;
+    }
+    const route = getRouter("/index");
+    if (route) {
+      const name = route.name as string;
+      const lbl = (route.meta?.name as string) || name || "";
+      const closeable = route.meta?.closeable as boolean ?? true;
+      const icon = route.meta?.icon as string | undefined;
+      const tab: TabInf = {
+        name,
+        lbl,
+        active: false,
+        path: route.path,
+        closeable,
+        icon,
+      };
+      unshiftTab(tab);
+      if (active) {
+        activeTab(tab);
+      }
+      return tab;
+    }
+  }
+  
   function reset() {
     tabs = [ ];
+    const tab = setIndexTab();
+    if (tab) {
+      activeTab(tab);
+    }
   }
   
   return $$({
@@ -193,10 +248,13 @@ export default defineStore("tabs", function() {
     actTab,
     activeTab,
     hasTab,
+    findTab,
     unshiftTab,
     refreshTab,
     removeTab,
     closeOtherTabs,
+    closeCurrentTab,
+    setIndexTab,
     moveTab,
     reset,
     keepAliveNames,

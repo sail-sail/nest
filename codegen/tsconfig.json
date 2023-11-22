@@ -10,7 +10,6 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "watch": false,
     "target": "esnext",
     "allowJs": true,
     "noUnusedLocals": false,

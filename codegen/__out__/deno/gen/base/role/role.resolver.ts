@@ -270,3 +270,12 @@ export async function forceDeleteByIdsRole(
   const res = await forceDeleteByIds(ids);
   return res;
 }
+
+/**
+ * 查找 order_by 字段的最大值
+ */
+export async function findLastOrderByRole(): Promise<number> {
+  const { findLastOrderBy } = await import("./role.service.ts");
+  const res = findLastOrderBy();
+  return res;
+}

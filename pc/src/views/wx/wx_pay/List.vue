@@ -307,7 +307,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="primary"
-        @click="revertByIdsEfc"
+        @click="onRevertByIds"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -448,6 +448,7 @@
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
+        @keydown.ctrl.i="onInsertOrCopy"
       >
         
         <el-table-column
@@ -954,8 +955,10 @@ function resetSelectedIds() {
 /** 取消已选择筛选 */
 async function onEmptySelected() {
   resetSelectedIds();
-  idsChecked = 0;
-  await dataGrid(true);
+  if (idsChecked === 1) {
+    idsChecked = 0;
+    await dataGrid(true);
+  }
 }
 
 /** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
@@ -1294,7 +1297,7 @@ async function linkAttChg(row: any, key: any) {
   await updateById(row.id!, { [key]: row[key] });
 }
 
-/** 打开增加页面 */
+/** 打开新增页面 */
 async function openAdd() {
   if (isLocked) {
     return;
@@ -1302,10 +1305,14 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("增加"),
+    title: await nsAsync("新增"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1328,6 +1335,10 @@ async function openCopy() {
     return;
   }
   if (!detailRef) {
+    return;
+  }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
@@ -1355,6 +1366,18 @@ async function openCopy() {
   dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
+}
+
+/** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
+async function onInsertOrCopy() {
+  if (isLocked) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    await openAdd();
+  } else {
+    await openCopy();
+  }
 }
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
@@ -1499,7 +1522,7 @@ async function onIs_enabled(id: string, is_enabled: 0 | 1) {
   );
 }
 
-/** 打开修改页面 */
+/** 打开编辑页面 */
 async function openEdit() {
   if (isLocked) {
     return;
@@ -1507,14 +1530,18 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
+  if (!permit("edit")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要修改的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("修改"),
+    title: await nsAsync("编辑"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1583,6 +1610,10 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("delete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1611,6 +1642,10 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("forceDelete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1637,6 +1672,10 @@ async function onForceDeleteByIds() {
 async function onEnableByIds(is_enabled: 0 | 1) {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
@@ -1669,6 +1708,10 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1694,9 +1737,13 @@ async function onLockByIds(is_locked: 0 | 1) {
 }
 
 /** 点击还原 */
-async function revertByIdsEfc() {
+async function onRevertByIds() {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("delete") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {

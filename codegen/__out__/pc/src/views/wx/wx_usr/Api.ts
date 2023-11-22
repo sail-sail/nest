@@ -453,8 +453,8 @@ export async function getUsrList() {
     undefined,
     [
       {
-        prop: "create_time",
-        order: "descending",
+        prop: "order_by",
+        order: "ascending",
       },
     ],
     {
@@ -495,13 +495,7 @@ export function useDownloadImportTemplate(routePath: string) {
             province
             country
             language
-            is_locked_lbl
-            is_enabled_lbl
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllUsr {
             id
@@ -509,8 +503,6 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           getDict(codes: [
             "wx_usr_gender",
-            "is_locked",
-            "is_enabled",
           ]) {
             code
             lbl

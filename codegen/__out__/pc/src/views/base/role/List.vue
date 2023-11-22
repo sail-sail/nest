@@ -314,7 +314,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="primary"
-        @click="revertByIdsEfc"
+        @click="onRevertByIds"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -455,6 +455,7 @@
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
+        @keydown.ctrl.i="onInsertOrCopy"
       >
         
         <el-table-column
@@ -569,6 +570,23 @@
                   v-model="row.is_enabled"
                   @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomInputNumber
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.order_by"
+                  :min="0"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></CustomInputNumber>
               </template>
             </el-table-column>
           </template>
@@ -859,6 +877,7 @@ const props = defineProps<{
   data_permit_ids_lbl?: string|string[]; // 数据权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -885,6 +904,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -977,8 +997,10 @@ function resetSelectedIds() {
 /** 取消已选择筛选 */
 async function onEmptySelected() {
   resetSelectedIds();
-  idsChecked = 0;
-  await dataGrid(true);
+  if (idsChecked === 1) {
+    idsChecked = 0;
+    await dataGrid(true);
+  }
 }
 
 /** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
@@ -1064,6 +1086,15 @@ function getTableColumns(): ColumnType[] {
       sortBy: "is_enabled",
       width: 60,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1285,7 +1316,7 @@ async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
-/** 打开增加页面 */
+/** 打开新增页面 */
 async function openAdd() {
   if (isLocked) {
     return;
@@ -1293,10 +1324,14 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("增加"),
+    title: await nsAsync("新增"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1319,6 +1354,10 @@ async function openCopy() {
     return;
   }
   if (!detailRef) {
+    return;
+  }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
@@ -1346,6 +1385,18 @@ async function openCopy() {
   dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
+}
+
+/** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
+async function onInsertOrCopy() {
+  if (isLocked) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    await openAdd();
+  } else {
+    await openCopy();
+  }
 }
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
@@ -1379,6 +1430,7 @@ async function onImportExcel() {
     [ await nAsync("数据权限") ]: "data_permit_ids_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1408,6 +1460,7 @@ async function onImportExcel() {
           "data_permit_ids_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
+          "order_by": "number",
           "rem": "string",
         },
       },
@@ -1482,7 +1535,7 @@ async function onIs_enabled(id: string, is_enabled: 0 | 1) {
   );
 }
 
-/** 打开修改页面 */
+/** 打开编辑页面 */
 async function openEdit() {
   if (isLocked) {
     return;
@@ -1490,14 +1543,18 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
+  if (!permit("edit")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要修改的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("修改"),
+    title: await nsAsync("编辑"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1566,6 +1623,10 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("delete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1594,6 +1655,10 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("forceDelete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1620,6 +1685,10 @@ async function onForceDeleteByIds() {
 async function onEnableByIds(is_enabled: 0 | 1) {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
@@ -1652,6 +1721,10 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1677,9 +1750,13 @@ async function onLockByIds(is_locked: 0 | 1) {
 }
 
 /** 点击还原 */
-async function revertByIdsEfc() {
+async function onRevertByIds() {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("delete") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {
@@ -1715,6 +1792,7 @@ async function initI18nsEfc() {
     "数据权限",
     "锁定",
     "启用",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

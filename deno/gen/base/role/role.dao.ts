@@ -161,6 +161,14 @@ async function getWhereQuery(
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -658,6 +666,7 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -1031,6 +1040,9 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
+  if (input.order_by !== undefined) {
+    sql += `,order_by`;
+  }
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
@@ -1071,6 +1083,9 @@ export async function create(
   }
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
+  }
+  if (input.order_by !== undefined) {
+    sql += `,${ args.push(input.order_by) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -1277,6 +1292,12 @@ export async function updateById(
   if (input.is_enabled !== undefined) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(input.is_enabled) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.order_by !== undefined) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
@@ -1667,4 +1688,47 @@ export async function forceDeleteByIds(
   await delCache();
   
   return num;
+}
+  
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_role";
+  const method = "findLastOrderBy";
+  
+  let sql = `
+    select
+      t.order_by order_by
+    from
+      base_role t
+  `;
+  const whereQuery: string[] = [ ];
+  const args = new QueryArgs();
+  whereQuery.push(`t.is_deleted = 0`);
+  {
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }
+  if (whereQuery.length > 0) {
+    sql += " where " + whereQuery.join(" and ");
+  }
+  sql += `
+    order by
+      t.order_by desc
+    limit 1
+  `;
+  
+  interface Result {
+    order_by: number;
+  }
+  let model = await queryOne<Result>(sql, args);
+  let result = model?.order_by ?? 0;
+  
+  return result;
 }

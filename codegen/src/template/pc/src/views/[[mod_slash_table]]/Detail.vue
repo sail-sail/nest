@@ -34,6 +34,21 @@ for (let i = 0; i < columns.length; i++) {
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (
+    [
+      "is_default",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
   columnNum++;
 }
 #>
@@ -277,6 +292,11 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"<#
               }
+              #><#
+              if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
+              #>
+              @change="onJobId"<#
+              }
               #>
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
@@ -516,6 +536,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (mod === "cron" && table === "cron_job" && column_name === "cron") {
+              #>
+              :title="cron_lbl"<#
               }
               #>
             ></CustomInput><#
@@ -904,7 +929,7 @@ for (let i = 0; i < columns.length; i++) {
                     type="primary"
                     @click="<#=table#>Add"
                   >
-                    {{ ns('增加') }}
+                    {{ ns('新增') }}
                   </el-button>
                   
                   <el-button
@@ -1465,6 +1490,21 @@ import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=for
 }
 #><#
 }
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+import cronstrue from "cronstrue/i18n";
+import { lang } from "@/locales/index";
+
+let locale = $computed(() => {
+  if (lang === "zh-cn") {
+    return "zh_CN";
+  } else if (lang === "zh-tw") {
+    return "zh_TW";
+  }
+});<#
+}
 #>
 
 const emit = defineEmits<{
@@ -1544,6 +1584,8 @@ watchEffect(async () => {
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1566,6 +1608,15 @@ watchEffect(async () => {
           "is_default",
         ].includes(column_name)
       ) {
+        continue;
+      }
+      if (column.onlyCodegenDeno) {
+        continue;
+      }
+      if (column.readonly) {
+        continue;
+      }
+      if (column.noAdd && column.noEdit) {
         continue;
       }
     #><#
@@ -1710,7 +1761,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
@@ -1966,6 +2017,50 @@ watch(
   },
 );<#
 }
+#><#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+let job_lbl = $ref<string>("");
+
+// 任务
+function onJobId(jobModel?: JobModel) {
+  if (!jobModel) {
+    job_lbl = "";
+    return;
+  }
+  job_lbl = jobModel.lbl;
+}
+
+let cron_lbl = $computed(() => {
+  if (!dialogModel.cron) {
+    return "";
+  }
+  try {
+    return cronstrue.toString(
+      dialogModel.cron, {
+        locale,
+      },
+    );
+  } catch (err) {
+    return "";
+  }
+});
+
+// 名称
+watch(
+  () => [ inited, job_lbl, cron_lbl ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!job_lbl || !cron_lbl) {
+      return;
+    }
+    dialogModel.lbl = `${ cron_lbl } - ${ job_lbl }`;
+  },
+);<#
+}
 #>
 
 /** 键盘按 Insert */
@@ -2201,6 +2296,7 @@ async function onSave() {
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");
@@ -2253,7 +2349,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }<#
   }
   #>

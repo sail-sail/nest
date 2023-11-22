@@ -10,7 +10,7 @@ export async function initDetailI18ns() {
     "请输入",
     "请选择",
     "增加成功",
-    "修改成功",
+    "编辑成功",
     "取消",
     "保存",
     "上一项",
