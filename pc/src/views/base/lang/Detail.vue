@@ -59,7 +59,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -113,7 +113,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
+            un-grid="col-span-1"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -284,11 +284,11 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // 启用
-    is_enabled: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
@@ -315,7 +315,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 增加时的默认值 */
+/** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: LangInput = {
     is_enabled: 1,
@@ -633,6 +633,7 @@ async function onSave() {
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
+    Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");
@@ -652,7 +653,7 @@ async function onSave() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("修改成功");
+    msg = await nsAsync("编辑成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

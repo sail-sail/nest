@@ -199,6 +199,13 @@
                 un-whitespace-nowrap
               >
                 
+                <el-dropdown-item @click="goIndex">
+                  <ElIcon>
+                    <ElIconHomeFilled />
+                  </ElIcon>
+                  <span>{{ ns('打开首页') }}</span>
+                </el-dropdown-item>
+                
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
                     <ElIcon>
@@ -315,6 +322,8 @@ import {
 import {
   getLoginLangs,
 } from "../Api";
+import tabs from "@/store/tabs";
+import router from "@/router";
 
 const {
   n,
@@ -470,6 +479,17 @@ watch(
     immediate: true,
   },
 );
+
+// 首页
+async function goIndex() {
+  const tab = tabsStore.setIndexTab(true);
+  if (tab) {
+    await router.push({
+      name: tab.name,
+      query: tab.query,
+    });
+  }
+}
 
 // 关闭其它选项卡
 function closeOtherTabs() {
