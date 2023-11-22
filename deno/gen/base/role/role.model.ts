@@ -44,6 +44,7 @@ export interface RoleFieldComment {
   is_locked_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
+  order_by: string;
   rem: string;
   create_usr_id: string;
   create_usr_id_lbl: string;

@@ -46,6 +46,7 @@ export interface UsrFieldComment {
   is_locked_lbl: string;
   is_enabled: string;
   is_enabled_lbl: string;
+  order_by: string;
   dept_ids: string;
   dept_ids_lbl: string;
   role_ids: string;

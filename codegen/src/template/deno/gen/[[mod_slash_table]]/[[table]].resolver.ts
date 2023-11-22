@@ -85,7 +85,13 @@ import {
 
 import {
   usePermit,
-} from "/src/base/permit/permit.service.ts";
+} from "/src/base/permit/permit.service.ts";<#
+if (mod === "cron" && table === "cron_job") {
+#>
+
+import "./cron_job.service.ts";<#
+}
+#>
 
 /**
  * 根据条件查找据数总数

@@ -434,9 +434,11 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 
 .custom_date_picker {
-  .el-input__wrapper {
-    .el-input__suffix-inner {
-      width: 20px;
+  .el-input__suffix-inner {
+    width: 1em;
+    .el-icon {
+      padding: 0;
+      margin: 0;
     }
   }
 }
