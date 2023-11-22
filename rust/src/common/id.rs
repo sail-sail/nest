@@ -21,7 +21,7 @@ impl Display for ID {
   }
 }
 
-#[async_graphql::Scalar]
+#[async_graphql::Scalar(name = "String")]
 impl async_graphql::ScalarType for ID {
   
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
