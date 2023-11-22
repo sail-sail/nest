@@ -297,3 +297,15 @@ pub async fn force_delete_by_ids(
   
   Ok(num)
 }
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by(
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let res = usr_dao::find_last_order_by(
+    options,
+  ).await?;
+  
+  Ok(res)
+}

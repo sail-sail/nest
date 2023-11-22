@@ -160,7 +160,9 @@ pub struct I18nFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct I18nSearch {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,
   pub is_deleted: Option<u8>,
   /// 语言

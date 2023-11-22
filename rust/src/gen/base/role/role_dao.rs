@@ -24,6 +24,7 @@ use crate::common::context::{
   CountModel,
   UniqueType,
   SrvErr,
+  OrderByModel,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -259,6 +260,27 @@ async fn get_where_query(
         items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
+    }
+  }
+  {
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let order_by_gt: Option<u32> = match &order_by.len() {
+      0 => None,
+      _ => order_by[0].into(),
+    };
+    let order_by_lt: Option<u32> = match &order_by.len() {
+      0 => None,
+      1 => None,
+      _ => order_by[1].into(),
+    };
+    if let Some(order_by_gt) = order_by_gt {
+      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
+    }
+    if let Some(order_by_lt) = order_by_lt {
+      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
   {
@@ -641,6 +663,7 @@ pub async fn get_field_comments(
     "锁定".into(),
     "启用".into(),
     "启用".into(),
+    "排序".into(),
     "备注".into(),
     "创建人".into(),
     "创建人".into(),
@@ -678,15 +701,16 @@ pub async fn get_field_comments(
     is_locked_lbl: vec[10].to_owned(),
     is_enabled: vec[11].to_owned(),
     is_enabled_lbl: vec[12].to_owned(),
-    rem: vec[13].to_owned(),
-    create_usr_id: vec[14].to_owned(),
-    create_usr_id_lbl: vec[15].to_owned(),
-    create_time: vec[16].to_owned(),
-    create_time_lbl: vec[17].to_owned(),
-    update_usr_id: vec[18].to_owned(),
-    update_usr_id_lbl: vec[19].to_owned(),
-    update_time: vec[20].to_owned(),
-    update_time_lbl: vec[21].to_owned(),
+    order_by: vec[13].to_owned(),
+    rem: vec[14].to_owned(),
+    create_usr_id: vec[15].to_owned(),
+    create_usr_id_lbl: vec[16].to_owned(),
+    create_time: vec[17].to_owned(),
+    create_time_lbl: vec[18].to_owned(),
+    update_usr_id: vec[19].to_owned(),
+    update_usr_id_lbl: vec[20].to_owned(),
+    update_time: vec[21].to_owned(),
+    update_time_lbl: vec[22].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1120,6 +1144,12 @@ pub async fn create(
     sql_values += ",?";
     args.push(is_enabled.into());
   }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
+    sql_values += ",?";
+    args.push(order_by.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
@@ -1343,6 +1373,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
+  }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    field_num += 1;
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -1762,6 +1798,56 @@ pub async fn force_delete_by_ids(
   }
   
   Ok(num)
+}
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by(
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let table = "base_role";
+  let _method = "find_last_order_by";
+  
+  #[allow(unused_mut)]
+  let mut args = QueryArgs::new();
+  let mut sql_where = "".to_owned();
+  
+  sql_where += "t.is_deleted = 0";
+  
+  if let Some(tenant_id) = get_auth_tenant_id() {
+    sql_where += " and t.tenant_id = ?";
+    args.push(tenant_id.into());
+  }
+  
+  let sql = format!(
+    "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
+    table,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();
+  
+  let model = query_one::<OrderByModel>(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  let order_by = {
+    if let Some(model) = model {
+      model.order_by
+    } else {
+      0
+    }
+  };
+  
+  Ok(order_by)
 }
 
 /// 校验记录是否启用

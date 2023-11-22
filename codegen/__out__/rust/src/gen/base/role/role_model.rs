@@ -48,6 +48,8 @@ pub struct RoleModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: u32,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -191,6 +193,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -232,6 +236,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
+      order_by,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -276,6 +281,8 @@ pub struct RoleFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -299,7 +306,9 @@ pub struct RoleFieldComment {
 #[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleSearch {
+  /// ID
   pub id: Option<ID>,
+  /// ID列表
   pub ids: Option<Vec<ID>>,
   #[graphql(skip)]
   pub tenant_id: Option<ID>,
@@ -328,6 +337,8 @@ pub struct RoleSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -380,6 +391,8 @@ pub struct RoleInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -425,6 +438,8 @@ impl From<RoleModel> for RoleInput {
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -465,6 +480,8 @@ impl From<RoleInput> for RoleSearch {
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
+      // 排序
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       // 创建人
