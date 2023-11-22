@@ -259,7 +259,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="primary"
-        @click="revertByIdsEfc"
+        @click="onRevertByIds"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -769,8 +769,10 @@ function resetSelectedIds() {
 /** 取消已选择筛选 */
 async function onEmptySelected() {
   resetSelectedIds();
-  idsChecked = 0;
-  await dataGrid(true);
+  if (idsChecked === 1) {
+    idsChecked = 0;
+    await dataGrid(true);
+  }
 }
 
 /** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
@@ -1085,6 +1087,10 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("delete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1113,6 +1119,10 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
+  if (!permit("forceDelete")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1136,9 +1146,13 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击还原 */
-async function revertByIdsEfc() {
+async function onRevertByIds() {
   tableFocus();
   if (isLocked) {
+    return;
+  }
+  if (permit("delete") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
     return;
   }
   if (selectedIds.length === 0) {

@@ -443,20 +443,11 @@ export function useDownloadImportTemplate(routePath: string) {
             domain_id_lbl
             corpsecret
             contactsecret
-            is_locked_lbl
-            is_enabled_lbl
             order_by
             rem
           }
           findAllDomain {
             id
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
             lbl
           }
         }

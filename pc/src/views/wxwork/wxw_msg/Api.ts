@@ -320,7 +320,6 @@ export function useDownloadImportTemplate(routePath: string) {
             title
             description
             btntxt
-            create_time_lbl
             errmsg
           }
           findAllWxwApp {
