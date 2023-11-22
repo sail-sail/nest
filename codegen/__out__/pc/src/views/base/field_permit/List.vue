@@ -838,8 +838,10 @@ function resetSelectedIds() {
 /** 取消已选择筛选 */
 async function onEmptySelected() {
   resetSelectedIds();
-  idsChecked = 0;
-  await dataGrid(true);
+  if (idsChecked === 1) {
+    idsChecked = 0;
+    await dataGrid(true);
+  }
 }
 
 /** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
