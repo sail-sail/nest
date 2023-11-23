@@ -8,7 +8,8 @@ use async_graphql::{
   SimpleObject,
 };
 
-use crate::common::id::ID;
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::org::org_model::OrgId;
 
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -21,10 +22,10 @@ pub struct LoginInput {
   pub password: String,
   
   /// 租户ID
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   
   /// 组织ID
-  pub org_id: Option<ID>,
+  pub org_id: Option<OrgId>,
   
   /// 语言
   pub lang: String,
@@ -51,7 +52,7 @@ pub struct ChangePasswordInput {
 pub struct Login {
   
   pub authorization: String,
-  pub org_id: ID,
+  pub org_id: OrgId,
   
 }
 
@@ -62,7 +63,7 @@ pub struct GetLoginInfo {
   pub lbl: String,
   pub username: String,
   pub lang: String,
-  pub org_id: Option<ID>,
+  pub org_id: Option<OrgId>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
   
 }
@@ -71,7 +72,7 @@ pub struct GetLoginInfo {
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
   
-  pub id: ID,
+  pub id: OrgId,
   pub lbl: String,
   
 }

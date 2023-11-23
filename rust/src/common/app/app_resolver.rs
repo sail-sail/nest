@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::id::ID;
-
 use crate::common::context::Ctx;
 
 use super::app_service;
@@ -13,11 +11,11 @@ pub struct AppQuery;
 #[Object]
 impl AppQuery {
   
-  /// 生成ID主键
+  /// 生成 id 主键
   async fn generate_id(
     &self,
     ctx: &Context<'_>,
-  ) -> Result<ID> {
+  ) -> Result<String> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

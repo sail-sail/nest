@@ -10,6 +10,7 @@ use serde_json::json;
 use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
+use smol_str::SmolStr;
 
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -26,10 +27,12 @@ use super::auth::auth_model::{AuthModel, AUTHORIZATION};
 use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
 use super::gql::model::{SortInput, PageInput};
 
-use super::id::ID;
-
 pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
+
+use crate::gen::base::usr::usr_model::UsrId;
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::org::org_model::OrgId;
 
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
@@ -131,7 +134,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
 }
 
 /// 获取当前登录用户的id
-pub fn get_auth_id() -> Option<ID> {
+pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.id.into(),
@@ -141,13 +144,13 @@ pub fn get_auth_id() -> Option<ID> {
 }
 
 /// 获取当前登录用户的id
-pub fn get_auth_id_err() -> Result<ID> {
+pub fn get_auth_id_err() -> Result<UsrId> {
   get_auth_id()
     .ok_or(anyhow!("Not login!"))
 }
 
 /// 获取当前登录用户的租户id
-pub fn get_auth_tenant_id() -> Option<ID> {
+pub fn get_auth_tenant_id() -> Option<TenantId> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.tenant_id.into(),
@@ -157,7 +160,7 @@ pub fn get_auth_tenant_id() -> Option<ID> {
 }
 
 /// 获取当前登录用户的组织id
-pub fn get_auth_org_id() -> Option<ID> {
+pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
     match ctx.auth_model.clone() {
       Some(item) => item.org_id,
@@ -168,7 +171,7 @@ pub fn get_auth_org_id() -> Option<ID> {
 
 /// 获取当前登录用户的组织id, 如果不存在则返回错误
 #[allow(dead_code)]
-pub fn get_auth_org_id_err() -> Result<ID> {
+pub fn get_auth_org_id_err() -> Result<OrgId> {
   get_auth_org_id()
     .ok_or(anyhow!("Not login!"))
 }
@@ -241,7 +244,7 @@ impl Ctx {
     self.auth_model = Some(auth_model);
   }
   
-  /// 查找当前数据库连接的连接ID, 如果数据库事务尚未开启则返回0
+  /// 查找当前数据库连接的连接id, 如果数据库事务尚未开启则返回0
   async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
     if tran.is_none() {
@@ -406,8 +409,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -480,8 +483,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -573,8 +576,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -647,8 +650,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -770,8 +773,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -844,8 +847,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -938,8 +941,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -1012,8 +1015,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -1134,8 +1137,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -1208,8 +1211,8 @@ impl Ctx {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-            ArgType::ID(s) => {
-              query = query.bind(s);
+            ArgType::SmolStr(s) => {
+              query = query.bind(s.to_string());
             }
           };
         }
@@ -1303,8 +1306,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -1377,8 +1380,8 @@ impl Ctx {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-          ArgType::ID(s) => {
-            query = query.bind(s);
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
           }
         };
       }
@@ -1502,7 +1505,7 @@ pub enum ArgType {
   Time(NaiveTime),
   Json(serde_json::Value),
   Uuid(Uuid),
-  ID(ID),
+  SmolStr(SmolStr),
 }
 
 impl Serialize for ArgType {
@@ -1531,7 +1534,7 @@ impl Serialize for ArgType {
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
       ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
       ArgType::Uuid(value) => serializer.serialize_str(&value.to_string()),
-      ArgType::ID(value) => serializer.serialize_str(&value.to_string()),
+      ArgType::SmolStr(value) => serializer.serialize_str(value.as_str()),
     }
   }
 }
@@ -1559,7 +1562,7 @@ impl Display for ArgType {
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
       ArgType::Json(value) => write!(f, "{}", value),
       ArgType::Uuid(value) => write!(f, "{}", value),
-      ArgType::ID(value) => write!(f, "{}", value),
+      ArgType::SmolStr(value) => write!(f, "{}", value),
     }
   }
 }
@@ -1720,9 +1723,15 @@ impl From<Uuid> for ArgType {
   }
 }
 
-impl From<ID> for ArgType {
-  fn from(value: ID) -> Self {
-    ArgType::ID(value)
+impl From<SmolStr> for ArgType {
+  fn from(value: SmolStr) -> Self {
+    ArgType::SmolStr(value)
+  }
+}
+
+impl From<&SmolStr> for ArgType {
+  fn from(value: &SmolStr) -> Self {
+    ArgType::SmolStr(value.clone())
   }
 }
 
@@ -2054,7 +2063,7 @@ pub fn get_order_by_query(
 }
 
 #[must_use]
-pub fn get_short_uuid() -> ID {
+pub fn get_short_uuid() -> SmolStr {
   let uuid = uuid::Uuid::new_v4();
   let uuid = uuid.to_string();
   let uuid = uuid.replace('-', "");

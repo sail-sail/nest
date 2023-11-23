@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,30 +24,36 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::permit::permit_model::PermitId;
+use crate::gen::base::data_permit::data_permit_model::DataPermitId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleModel {
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   /// ID
-  pub id: ID,
+  pub id: RoleId,
   /// 名称
   pub lbl: String,
   /// 首页
   pub home_url: String,
   /// 菜单权限
-  pub menu_ids: Vec<ID>,
+  pub menu_ids: Vec<MenuId>,
   /// 菜单权限
   pub menu_ids_lbl: Vec<String>,
   /// 按钮权限
-  pub permit_ids: Vec<ID>,
+  pub permit_ids: Vec<PermitId>,
   /// 按钮权限
   pub permit_ids_lbl: Vec<String>,
   /// 数据权限
-  pub data_permit_ids: Vec<ID>,
+  pub data_permit_ids: Vec<DataPermitId>,
   /// 数据权限
   pub data_permit_ids_lbl: Vec<String>,
   /// 锁定
@@ -53,7 +69,7 @@ pub struct RoleModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -61,7 +77,7 @@ pub struct RoleModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -77,13 +93,13 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: RoleId = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 首页
     let home_url: String = row.try_get("home_url")?;
     // 菜单权限
-    let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("menu_ids")?;
+    let menu_ids: Option<sqlx::types::Json<HashMap<String, MenuId>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids = {
       let mut keys: Vec<u32> = menu_ids.keys()
@@ -95,12 +111,12 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       keys.into_iter()
         .map(|x| 
           menu_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&MenuId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<MenuId>>()
     };
-    let menu_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     let menu_ids_lbl = {
       let mut keys: Vec<u32> = menu_ids_lbl.keys()
@@ -118,7 +134,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         .collect::<Vec<String>>()
     };
     // 按钮权限
-    let permit_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("permit_ids")?;
+    let permit_ids: Option<sqlx::types::Json<HashMap<String, PermitId>>> = row.try_get("permit_ids")?;
     let permit_ids = permit_ids.unwrap_or_default().0;
     let permit_ids = {
       let mut keys: Vec<u32> = permit_ids.keys()
@@ -130,12 +146,12 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       keys.into_iter()
         .map(|x| 
           permit_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&PermitId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<PermitId>>()
     };
-    let permit_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("permit_ids_lbl")?;
+    let permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("permit_ids_lbl")?;
     let permit_ids_lbl = permit_ids_lbl.unwrap_or_default().0;
     let permit_ids_lbl = {
       let mut keys: Vec<u32> = permit_ids_lbl.keys()
@@ -153,7 +169,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         .collect::<Vec<String>>()
     };
     // 数据权限
-    let data_permit_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("data_permit_ids")?;
+    let data_permit_ids: Option<sqlx::types::Json<HashMap<String, DataPermitId>>> = row.try_get("data_permit_ids")?;
     let data_permit_ids = data_permit_ids.unwrap_or_default().0;
     let data_permit_ids = {
       let mut keys: Vec<u32> = data_permit_ids.keys()
@@ -165,12 +181,12 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       keys.into_iter()
         .map(|x| 
           data_permit_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&DataPermitId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<DataPermitId>>()
     };
-    let data_permit_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("data_permit_ids_lbl")?;
+    let data_permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("data_permit_ids_lbl")?;
     let data_permit_ids_lbl = data_permit_ids_lbl.unwrap_or_default().0;
     let data_permit_ids_lbl = {
       let mut keys: Vec<u32> = data_permit_ids_lbl.keys()
@@ -198,7 +214,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -208,7 +224,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -307,11 +323,11 @@ pub struct RoleFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<RoleId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<RoleId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -322,15 +338,15 @@ pub struct RoleSearch {
   /// 首页
   pub home_url_like: Option<String>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<ID>>,
+  pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   pub menu_ids_is_null: Option<bool>,
   /// 按钮权限
-  pub permit_ids: Option<Vec<ID>>,
+  pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
   pub permit_ids_is_null: Option<bool>,
   /// 数据权限
-  pub data_permit_ids: Option<Vec<ID>>,
+  pub data_permit_ids: Option<Vec<DataPermitId>>,
   /// 数据权限
   pub data_permit_ids_is_null: Option<bool>,
   /// 锁定
@@ -344,13 +360,13 @@ pub struct RoleSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -361,26 +377,26 @@ pub struct RoleSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<RoleId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 名称
   pub lbl: Option<String>,
   /// 首页
   pub home_url: Option<String>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<ID>>,
+  pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 按钮权限
-  pub permit_ids: Option<Vec<ID>>,
+  pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
   pub permit_ids_lbl: Option<Vec<String>>,
   /// 数据权限
-  pub data_permit_ids: Option<Vec<ID>>,
+  pub data_permit_ids: Option<Vec<DataPermitId>>,
   /// 数据权限
   pub data_permit_ids_lbl: Option<Vec<String>>,
   /// 锁定
@@ -396,7 +412,7 @@ pub struct RoleInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -404,7 +420,7 @@ pub struct RoleInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -495,4 +511,114 @@ impl From<RoleInput> for RoleSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct RoleId(SmolStr);
+
+impl fmt::Display for RoleId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "RoleId")]
+impl async_graphql::ScalarType for RoleId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<RoleId> for ArgType {
+  fn from(value: RoleId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&RoleId> for ArgType {
+  fn from(value: &RoleId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<RoleId> for SmolStr {
+  fn from(id: RoleId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for RoleId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for RoleId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for RoleId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for RoleId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for RoleId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for RoleId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for RoleId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for RoleId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

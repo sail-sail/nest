@@ -1,4 +1,7 @@
 <#
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -14,7 +17,17 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
-#>use serde::{
+#>
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
+use serde::{
   Serialize,
   Deserialize,
 };
@@ -30,7 +43,7 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;<#
+use crate::common::context::ArgType;<#
 if (hasEncrypt) {
 #>
 use crate::common::util::dao::decrypt;<#
@@ -58,6 +71,75 @@ use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
   <#=Table_Up#>Input,
 };<#
 }
+#><#
+
+// 已经导入的ID列表
+const modelIds = [ ];
+modelIds.push(Table_Up + "Id");
+#><#
+if (hasTenantId && !modelIds.includes("TenantId")) {
+#>
+
+use crate::gen::base::tenant::tenant_model::TenantId;<#
+modelIds.push("TenantId");
+#><#
+}
+#><#
+if (hasOrgId && !modelIds.includes("OrgId")) {
+#>
+
+use crate::gen::base::org::org_model::OrgId;<#
+modelIds.push("OrgId");
+#><#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+  if (column_name === 'id') continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const modelId = foreignTable_Up + "Id";
+  if (modelIds.includes(modelId)) {
+    continue;
+  }
+  modelIds.push(modelId);
+#>
+use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
+}
 #>
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -67,14 +149,14 @@ pub struct <#=tableUP#>Model {<#
   #>
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,<#
+  pub tenant_id: TenantId,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: ID,<#
+  pub org_id: OrgId,<#
   }
   #><#
   if (hasIsSys) {
@@ -116,13 +198,18 @@ pub struct <#=tableUP#>Model {<#
     }
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<ID>";
+      _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "ID";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -153,7 +240,7 @@ pub struct <#=tableUP#>Model {<#
     if (column_name === "id") {
   #>
   /// ID
-  pub id: ID,<#
+  pub id: <#=Table_Up#>Id,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#>
@@ -255,13 +342,18 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     }
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<ID>";
+      _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "ID";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -292,11 +384,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (column_name === "id") {
     #>
     // ID
-    let id: ID = row.try_get("id")?;<#
+    let id: <#=Table_Up#>Id = row.try_get("id")?;<#
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: Option<sqlx::types::Json<HashMap<String, <#=foreignTable_Up#>Id>>> = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#> = <#=column_name#>.unwrap_or_default().0;
     let <#=column_name_rust#> = {
       let mut keys: Vec<u32> = <#=column_name_rust#>.keys()
@@ -308,12 +400,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       keys.into_iter()
         .map(|x| 
           <#=column_name_rust#>.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&<#=foreignTable_Up#>Id::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<<#=foreignTable_Up#>Id>>()
     };
-    let <#=column_name#>_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
     let <#=column_name#>_lbl = {
       let mut keys: Vec<u32> = <#=column_name#>_lbl.keys()
@@ -333,7 +425,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: ID = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
       } else if (column.DATA_TYPE === 'tinyint') {
@@ -546,19 +638,19 @@ pub struct <#=tableUP#>FieldComment {<#
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<<#=Table_Up#>Id>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,<#
+  pub ids: Option<Vec<<#=Table_Up#>Id>>,<#
   if (hasTenantId) {
   #>
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,<#
+  pub tenant_id: Option<TenantId>,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
-  pub org_id: Option<ID>,<#
+  pub org_id: Option<OrgId>,<#
   }
   #><#
   if (hasIsHidden) {
@@ -596,14 +688,17 @@ pub struct <#=tableUP#>Search {
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "ID";
+      _data_type = `${ foreignTable_Up }Id`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "ID";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -672,21 +767,21 @@ pub struct <#=tableUP#>Search {
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<<#=Table_Up#>Id>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
   if (hasTenantId) {
   #>
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,<#
+  pub tenant_id: Option<TenantId>,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: Option<ID>,<#
+  pub org_id: Option<OrgId>,<#
   }
   #><#
   if (hasIsSys) {
@@ -731,10 +826,13 @@ pub struct <#=tableUP#>Input {
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     let _data_type = "String";
     if (foreignKey) {
-      _data_type = "ID";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -1099,3 +1197,113 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
 }<#
 }
 #>
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct <#=Table_Up#>Id(SmolStr);
+
+impl fmt::Display for <#=Table_Up#>Id {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "<#=Table_Up#>Id")]
+impl async_graphql::ScalarType for <#=Table_Up#>Id {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<<#=Table_Up#>Id> for ArgType {
+  fn from(value: <#=Table_Up#>Id) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&<#=Table_Up#>Id> for ArgType {
+  fn from(value: &<#=Table_Up#>Id) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<<#=Table_Up#>Id> for SmolStr {
+  fn from(id: <#=Table_Up#>Id) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for <#=Table_Up#>Id {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for <#=Table_Up#>Id {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for <#=Table_Up#>Id {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for <#=Table_Up#>Id {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for <#=Table_Up#>Id {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for <#=Table_Up#>Id {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for <#=Table_Up#>Id {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
+}

@@ -1,6 +1,5 @@
 use anyhow::Result;
 
-use crate::common::id::ID;
 use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
@@ -56,9 +55,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: ID,
+  id: LangId,
   options: Option<Options>,
 ) -> Result<Option<LangModel>> {
   
@@ -75,7 +74,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: LangInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<LangId> {
   
   let input = lang_service::set_id_by_lbl(
     input,
@@ -97,10 +96,10 @@ pub async fn create(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: ID,
+  id: LangId,
   input: LangInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<LangId> {
   
   let input = lang_service::set_id_by_lbl(
     input,
@@ -123,7 +122,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -140,11 +139,11 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: ID,
+  id: LangId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -159,7 +158,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或禁用数据
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<LangId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -193,7 +192,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -213,7 +212,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

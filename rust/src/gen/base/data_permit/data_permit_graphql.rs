@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::id::ID;
-
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -81,11 +79,11 @@ impl DataPermitGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DataPermitId,
   ) -> Result<Option<DataPermitModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -126,7 +124,7 @@ impl DataPermitGenMutation {
     ctx: &Context<'_>,
     model: DataPermitInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<ID> {
+  ) -> Result<DataPermitId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -147,9 +145,9 @@ impl DataPermitGenMutation {
   async fn update_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DataPermitId,
     model: DataPermitInput,
-  ) -> Result<ID> {
+  ) -> Result<DataPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -167,7 +165,7 @@ impl DataPermitGenMutation {
   async fn delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DataPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -185,7 +183,7 @@ impl DataPermitGenMutation {
   async fn revert_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DataPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -203,7 +201,7 @@ impl DataPermitGenMutation {
   async fn force_delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DataPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

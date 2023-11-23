@@ -1,12 +1,13 @@
 use anyhow::Result;
 use crate::common::context::Ctx;
-use crate::common::id::ID;
 
 use super::org_service;
 
+use crate::gen::base::org::org_model::OrgId;
+
 pub async fn org_login_select(
   ctx: &mut Ctx,
-  org_id: ID,
+  org_id: OrgId,
 ) -> Result<String> {
   
   let res = org_service::org_login_select(

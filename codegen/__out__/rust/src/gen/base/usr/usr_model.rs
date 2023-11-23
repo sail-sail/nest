@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,19 +24,24 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::org::org_model::OrgId;
+use crate::gen::base::dept::dept_model::DeptId;
+use crate::gen::base::role::role_model::RoleId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   /// 隐藏字段
   #[graphql(skip)]
   pub is_hidden: u8,
   /// ID
-  pub id: ID,
+  pub id: UsrId,
   /// 头像
   pub img: String,
   /// 名称
@@ -36,11 +51,11 @@ pub struct UsrModel {
   /// 密码
   pub password: String,
   /// 所属组织
-  pub org_ids: Vec<ID>,
+  pub org_ids: Vec<OrgId>,
   /// 所属组织
   pub org_ids_lbl: Vec<String>,
   /// 默认组织
-  pub default_org_id: ID,
+  pub default_org_id: OrgId,
   /// 默认组织
   pub default_org_id_lbl: String,
   /// 锁定
@@ -54,17 +69,17 @@ pub struct UsrModel {
   /// 排序
   pub order_by: u32,
   /// 所属部门
-  pub dept_ids: Vec<ID>,
+  pub dept_ids: Vec<DeptId>,
   /// 所属部门
   pub dept_ids_lbl: Vec<String>,
   /// 拥有角色
-  pub role_ids: Vec<ID>,
+  pub role_ids: Vec<RoleId>,
   /// 拥有角色
   pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -72,7 +87,7 @@ pub struct UsrModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -90,7 +105,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 隐藏字段
     let is_hidden = row.try_get("is_hidden")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: UsrId = row.try_get("id")?;
     // 头像
     let img: String = row.try_get("img")?;
     // 名称
@@ -100,7 +115,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 密码
     let password: String = row.try_get("password")?;
     // 所属组织
-    let org_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("org_ids")?;
+    let org_ids: Option<sqlx::types::Json<HashMap<String, OrgId>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
     let org_ids = {
       let mut keys: Vec<u32> = org_ids.keys()
@@ -112,12 +127,12 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           org_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&OrgId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<OrgId>>()
     };
-    let org_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
+    let org_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
     let org_ids_lbl = {
       let mut keys: Vec<u32> = org_ids_lbl.keys()
@@ -135,7 +150,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         .collect::<Vec<String>>()
     };
     // 默认组织
-    let default_org_id: ID = row.try_get("default_org_id")?;
+    let default_org_id: OrgId = row.try_get("default_org_id")?;
     let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
     let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
     // 锁定
@@ -147,7 +162,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 所属部门
-    let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("dept_ids")?;
+    let dept_ids: Option<sqlx::types::Json<HashMap<String, DeptId>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
     let dept_ids = {
       let mut keys: Vec<u32> = dept_ids.keys()
@@ -159,12 +174,12 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           dept_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&DeptId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<DeptId>>()
     };
-    let dept_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
     let dept_ids_lbl = {
       let mut keys: Vec<u32> = dept_ids_lbl.keys()
@@ -182,7 +197,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         .collect::<Vec<String>>()
     };
     // 拥有角色
-    let role_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("role_ids")?;
+    let role_ids: Option<sqlx::types::Json<HashMap<String, RoleId>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
     let role_ids = {
       let mut keys: Vec<u32> = role_ids.keys()
@@ -194,12 +209,12 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.into_iter()
         .map(|x| 
           role_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&RoleId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<RoleId>>()
     };
-    let role_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
+    let role_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
     let role_ids_lbl = {
       let mut keys: Vec<u32> = role_ids_lbl.keys()
@@ -219,7 +234,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -229,7 +244,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -339,11 +354,11 @@ pub struct UsrFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<UsrId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<UsrId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   #[graphql(skip)]
   pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
@@ -364,11 +379,11 @@ pub struct UsrSearch {
   /// 密码
   pub password_like: Option<String>,
   /// 所属组织
-  pub org_ids: Option<Vec<ID>>,
+  pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
   pub org_ids_is_null: Option<bool>,
   /// 默认组织
-  pub default_org_id: Option<Vec<ID>>,
+  pub default_org_id: Option<Vec<OrgId>>,
   /// 默认组织
   pub default_org_id_is_null: Option<bool>,
   /// 锁定
@@ -378,11 +393,11 @@ pub struct UsrSearch {
   /// 排序
   pub order_by: Option<Vec<u32>>,
   /// 所属部门
-  pub dept_ids: Option<Vec<ID>>,
+  pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
   pub dept_ids_is_null: Option<bool>,
   /// 拥有角色
-  pub role_ids: Option<Vec<ID>>,
+  pub role_ids: Option<Vec<RoleId>>,
   /// 拥有角色
   pub role_ids_is_null: Option<bool>,
   /// 备注
@@ -390,13 +405,13 @@ pub struct UsrSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -407,12 +422,12 @@ pub struct UsrSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<UsrId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 隐藏字段
   #[graphql(skip)]
   pub is_hidden: Option<u8>,
@@ -425,11 +440,11 @@ pub struct UsrInput {
   /// 密码
   pub password: Option<String>,
   /// 所属组织
-  pub org_ids: Option<Vec<ID>>,
+  pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
   pub org_ids_lbl: Option<Vec<String>>,
   /// 默认组织
-  pub default_org_id: Option<ID>,
+  pub default_org_id: Option<OrgId>,
   /// 默认组织
   pub default_org_id_lbl: Option<String>,
   /// 锁定
@@ -443,17 +458,17 @@ pub struct UsrInput {
   /// 排序
   pub order_by: Option<u32>,
   /// 所属部门
-  pub dept_ids: Option<Vec<ID>>,
+  pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
   pub dept_ids_lbl: Option<Vec<String>>,
   /// 拥有角色
-  pub role_ids: Option<Vec<ID>>,
+  pub role_ids: Option<Vec<RoleId>>,
   /// 拥有角色
   pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -461,7 +476,7 @@ pub struct UsrInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -568,4 +583,114 @@ impl From<UsrInput> for UsrSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct UsrId(SmolStr);
+
+impl fmt::Display for UsrId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "UsrId")]
+impl async_graphql::ScalarType for UsrId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<UsrId> for ArgType {
+  fn from(value: UsrId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&UsrId> for ArgType {
+  fn from(value: &UsrId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<UsrId> for SmolStr {
+  fn from(id: UsrId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for UsrId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for UsrId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for UsrId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for UsrId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for UsrId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for UsrId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for UsrId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for UsrId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

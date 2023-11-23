@@ -1,6 +1,5 @@
 use anyhow::Result;
 use tracing::{info, error};
-use crate::common::id::ID;
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -35,6 +34,7 @@ use crate::common::gql::model::{
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::options_model::*;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -54,7 +54,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -67,7 +67,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<ID> = match &search {
+    let ids: Vec<OptionsId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -244,7 +244,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<ID> = match &search {
+    let create_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -291,7 +291,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<ID> = match &search {
+    let update_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -600,7 +600,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: ID,
+  id: OptionsId,
   options: Option<Options>,
 ) -> Result<Option<OptionsModel>> {
   
@@ -634,7 +634,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: ID,
+  id: OptionsId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -720,7 +720,7 @@ pub async fn check_by_unique(
   input: OptionsInput,
   model: OptionsModel,
   unique_type: UniqueType,
-) -> Result<Option<ID>> {
+) -> Result<Option<OptionsId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -800,7 +800,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: OptionsInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<OptionsId> {
   
   let table = "base_options";
   let _method = "create";
@@ -827,7 +827,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<ID> = None;
+    let mut id: Option<OptionsId> = None;
     
     for old_model in old_models {
       
@@ -847,9 +847,9 @@ pub async fn create(
     }
   }
   
-  let mut id;
+  let mut id: OptionsId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -971,7 +971,7 @@ pub async fn create(
 }
 
 pub async fn get_version_by_id(
-  id: ID,
+  id: OptionsId,
 ) -> Result<Option<u32>> {
   
   let model = find_by_id(id, None).await?;
@@ -986,10 +986,10 @@ pub async fn get_version_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: ID,
+  id: OptionsId,
   mut input: OptionsInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<OptionsId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1173,7 +1173,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1212,10 +1212,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
-  id: ID,
+  id: OptionsId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1234,7 +1234,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OptionsId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1272,11 +1272,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已锁定
+/// 根据 id 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
-  id: ID,
+  id: OptionsId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1295,7 +1295,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OptionsId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1335,7 +1335,7 @@ pub async fn lock_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1412,7 +1412,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

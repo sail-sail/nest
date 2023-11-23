@@ -1,6 +1,5 @@
 use anyhow::Result;
 use tracing::{info, error};
-use crate::common::id::ID;
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -41,6 +40,11 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::dept_model::*;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+
+use crate::gen::base::org::org_model::OrgId;
+use crate::gen::base::usr::usr_model::UsrId;
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -59,7 +63,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -72,7 +76,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<ID> = match &search {
+    let ids: Vec<DeptId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -91,10 +95,10 @@ async fn get_where_query(
   {
     let tenant_id = {
       let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
+        Some(item) => item.tenant_id.clone(),
+        None => None,
       };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
+      let tenant_id = match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -111,10 +115,10 @@ async fn get_where_query(
   {
     let org_id = {
       let org_id = match &search {
-        Some(item) => &item.org_id,
-        None => &None,
+        Some(item) => item.org_id.clone(),
+        None => None,
       };
-      let org_id = match trim_opt(org_id.as_ref()) {
+      let org_id = match org_id {
         None => get_auth_org_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -129,7 +133,7 @@ async fn get_where_query(
     }
   }
   {
-    let parent_id: Vec<ID> = match &search {
+    let parent_id: Vec<DeptId> = match &search {
       Some(item) => item.parent_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -176,7 +180,7 @@ async fn get_where_query(
     }
   }
   {
-    let usr_ids: Vec<ID> = match &search {
+    let usr_ids: Vec<UsrId> = match &search {
       Some(item) => item.usr_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -278,7 +282,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<ID> = match &search {
+    let create_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -325,7 +329,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<ID> = match &search {
+    let update_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -663,7 +667,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: ID,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
@@ -697,7 +701,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: ID,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -783,7 +787,7 @@ pub async fn check_by_unique(
   input: DeptInput,
   model: DeptModel,
   unique_type: UniqueType,
-) -> Result<Option<ID>> {
+) -> Result<Option<DeptId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -900,7 +904,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.usr_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<ID>>()
+        .collect::<Vec<UsrId>>()
         .into();
     }
   }
@@ -913,7 +917,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: DeptInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<DeptId> {
   
   let table = "base_dept";
   let _method = "create";
@@ -940,7 +944,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<ID> = None;
+    let mut id: Option<DeptId> = None;
     
     for old_model in old_models {
       
@@ -960,9 +964,9 @@ pub async fn create(
     }
   }
   
-  let mut id;
+  let mut id: DeptId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -1085,8 +1089,11 @@ pub async fn create(
   // 部门负责人
   if let Some(usr_ids) = input.usr_ids {
     many2many_update(
-      id.clone(),
-      usr_ids.clone(),
+      id.clone().into(),
+      usr_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "dept_usr",
@@ -1101,8 +1108,8 @@ pub async fn create(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: ID,
-  tenant_id: ID,
+  id: DeptId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_dept";
@@ -1141,8 +1148,8 @@ pub async fn update_tenant_by_id(
 
 /// 根据id修改组织id
 pub async fn update_org_by_id(
-  id: ID,
-  org_id: ID,
+  id: DeptId,
+  org_id: OrgId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_dept";
@@ -1182,10 +1189,10 @@ pub async fn update_org_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: ID,
+  id: DeptId,
   mut input: DeptInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<DeptId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1330,8 +1337,11 @@ pub async fn update_by_id(
   // 部门负责人
   if let Some(usr_ids) = input.usr_ids {
     many2many_update(
-      id.clone(),
-      usr_ids.clone(),
+      id.clone().into(),
+      usr_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "dept_usr",
@@ -1368,7 +1378,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1407,10 +1417,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
-  id: ID,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1429,7 +1439,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<DeptId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1467,11 +1477,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已锁定
+/// 根据 id 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
-  id: ID,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1490,7 +1500,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<DeptId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1530,7 +1540,7 @@ pub async fn lock_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1607,7 +1617,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

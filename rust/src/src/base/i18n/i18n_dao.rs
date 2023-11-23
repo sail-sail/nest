@@ -6,8 +6,6 @@ use crate::common::context::{
   get_auth_lang,
   Options,
 };
-use crate::common::id::ID;
-
 use regex::{Regex, Captures};
 
 use crate::gen::base::lang::lang_dao::find_one as find_one_lang;
@@ -15,7 +13,7 @@ use crate::gen::base::lang::lang_model::LangSearch;
 use crate::gen::base::i18n::i18n_dao::find_one as find_one_i18n;
 use crate::gen::base::i18n::i18n_model::{I18nSearch, I18nModel};
 use crate::gen::base::menu::menu_dao::find_one as find_one_menu;
-use crate::gen::base::menu::menu_model::MenuSearch;
+use crate::gen::base::menu::menu_model::{MenuSearch, MenuId};
 
 lazy_static! {
   static ref REG: Regex = Regex::new(r"\{([\s\S]*?)\}").unwrap();
@@ -175,7 +173,7 @@ pub async fn n_lang(
     None,
     options.clone(),
   ).await?;
-  let mut menu_id: Option<ID> = None;
+  let mut menu_id: Option<MenuId> = None;
   if let Some(route_path) = route_path {
     let menu_model = find_one_menu(
       MenuSearch {

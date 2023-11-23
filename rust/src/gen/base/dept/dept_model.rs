@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,27 +24,32 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+
+use crate::gen::base::org::org_model::OrgId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptModel {
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: ID,
+  pub org_id: OrgId,
   /// ID
-  pub id: ID,
+  pub id: DeptId,
   /// 父部门
-  pub parent_id: ID,
+  pub parent_id: DeptId,
   /// 父部门
   pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
   /// 部门负责人
-  pub usr_ids: Vec<ID>,
+  pub usr_ids: Vec<UsrId>,
   /// 部门负责人
   pub usr_ids_lbl: Vec<String>,
   /// 锁定
@@ -50,7 +65,7 @@ pub struct DeptModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -58,7 +73,7 @@ pub struct DeptModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -76,15 +91,15 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     // 组织ID
     let org_id = row.try_get("org_id")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: DeptId = row.try_get("id")?;
     // 父部门
-    let parent_id: ID = row.try_get("parent_id")?;
+    let parent_id: DeptId = row.try_get("parent_id")?;
     let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
     let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 部门负责人
-    let usr_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("usr_ids")?;
+    let usr_ids: Option<sqlx::types::Json<HashMap<String, UsrId>>> = row.try_get("usr_ids")?;
     let usr_ids = usr_ids.unwrap_or_default().0;
     let usr_ids = {
       let mut keys: Vec<u32> = usr_ids.keys()
@@ -96,12 +111,12 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       keys.into_iter()
         .map(|x| 
           usr_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&UsrId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<UsrId>>()
     };
-    let usr_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("usr_ids_lbl")?;
+    let usr_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("usr_ids_lbl")?;
     let usr_ids_lbl = usr_ids_lbl.unwrap_or_default().0;
     let usr_ids_lbl = {
       let mut keys: Vec<u32> = usr_ids_lbl.keys()
@@ -129,7 +144,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -139,7 +154,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -230,16 +245,16 @@ pub struct DeptFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<DeptId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<DeptId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 组织ID
-  pub org_id: Option<ID>,
+  pub org_id: Option<OrgId>,
   pub is_deleted: Option<u8>,
   /// 父部门
-  pub parent_id: Option<Vec<ID>>,
+  pub parent_id: Option<Vec<DeptId>>,
   /// 父部门
   pub parent_id_is_null: Option<bool>,
   /// 名称
@@ -247,7 +262,7 @@ pub struct DeptSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 部门负责人
-  pub usr_ids: Option<Vec<ID>>,
+  pub usr_ids: Option<Vec<UsrId>>,
   /// 部门负责人
   pub usr_ids_is_null: Option<bool>,
   /// 锁定
@@ -261,13 +276,13 @@ pub struct DeptSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -278,23 +293,23 @@ pub struct DeptSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<DeptId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: Option<ID>,
+  pub org_id: Option<OrgId>,
   /// 父部门
-  pub parent_id: Option<ID>,
+  pub parent_id: Option<DeptId>,
   /// 父部门
   pub parent_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 部门负责人
-  pub usr_ids: Option<Vec<ID>>,
+  pub usr_ids: Option<Vec<UsrId>>,
   /// 部门负责人
   pub usr_ids_lbl: Option<Vec<String>>,
   /// 锁定
@@ -310,7 +325,7 @@ pub struct DeptInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -318,7 +333,7 @@ pub struct DeptInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -403,4 +418,114 @@ impl From<DeptInput> for DeptSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct DeptId(SmolStr);
+
+impl fmt::Display for DeptId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "DeptId")]
+impl async_graphql::ScalarType for DeptId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<DeptId> for ArgType {
+  fn from(value: DeptId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&DeptId> for ArgType {
+  fn from(value: &DeptId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<DeptId> for SmolStr {
+  fn from(id: DeptId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for DeptId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for DeptId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for DeptId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for DeptId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for DeptId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for DeptId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for DeptId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for DeptId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }
