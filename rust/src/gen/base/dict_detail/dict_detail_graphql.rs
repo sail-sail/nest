@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::id::ID;
-
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -81,11 +79,11 @@ impl DictDetailGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DictDetailId,
   ) -> Result<Option<DictDetailModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -98,12 +96,12 @@ impl DictDetailGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已启用
+  /// 根据 id 查找是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DictDetailId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -116,13 +114,13 @@ impl DictDetailGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已锁定
+  /// 根据 id 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DictDetailId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -178,7 +176,7 @@ impl DictDetailGenMutation {
     ctx: &Context<'_>,
     model: DictDetailInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<ID> {
+  ) -> Result<DictDetailId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -199,9 +197,9 @@ impl DictDetailGenMutation {
   async fn update_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: DictDetailId,
     model: DictDetailInput,
-  ) -> Result<ID> {
+  ) -> Result<DictDetailId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -219,7 +217,7 @@ impl DictDetailGenMutation {
   async fn delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DictDetailId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -237,7 +235,7 @@ impl DictDetailGenMutation {
   async fn enable_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DictDetailId>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -257,7 +255,7 @@ impl DictDetailGenMutation {
   async fn lock_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DictDetailId>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -277,7 +275,7 @@ impl DictDetailGenMutation {
   async fn revert_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DictDetailId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -295,7 +293,7 @@ impl DictDetailGenMutation {
   async fn force_delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<DictDetailId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

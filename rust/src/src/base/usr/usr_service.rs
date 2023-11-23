@@ -6,7 +6,6 @@ use crate::common::context::{
   get_now,
   get_server_tokentimeout,
 };
-use crate::common::id::ID;
 
 use super::usr_model::Login;
 
@@ -31,6 +30,8 @@ use super::usr_model::{
 };
 
 use crate::src::base::i18n::i18n_dao::NRoute;
+
+use crate::gen::base::org::org_model::OrgId;
 
 /// 登录, 获得token
 pub async fn login(
@@ -83,7 +84,7 @@ pub async fn login(
     }
   }
   
-  let org_id: ID = org_id.unwrap();
+  let org_id: OrgId = org_id.unwrap();
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();

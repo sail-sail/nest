@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,16 +24,19 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   /// ID
-  pub id: ID,
+  pub id: BackgroundTaskId,
   /// 名称
   pub lbl: String,
   /// 状态
@@ -49,7 +62,7 @@ pub struct BackgroundTaskModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -57,7 +70,7 @@ pub struct BackgroundTaskModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -73,7 +86,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: BackgroundTaskId = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 状态
@@ -101,7 +114,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -111,7 +124,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -204,11 +217,11 @@ pub struct BackgroundTaskFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<BackgroundTaskId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<BackgroundTaskId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -235,13 +248,13 @@ pub struct BackgroundTaskSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -252,12 +265,12 @@ pub struct BackgroundTaskSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<BackgroundTaskId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 名称
   pub lbl: Option<String>,
   /// 状态
@@ -283,7 +296,7 @@ pub struct BackgroundTaskInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -291,7 +304,7 @@ pub struct BackgroundTaskInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -377,4 +390,114 @@ impl From<BackgroundTaskInput> for BackgroundTaskSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct BackgroundTaskId(SmolStr);
+
+impl fmt::Display for BackgroundTaskId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "BackgroundTaskId")]
+impl async_graphql::ScalarType for BackgroundTaskId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<BackgroundTaskId> for ArgType {
+  fn from(value: BackgroundTaskId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&BackgroundTaskId> for ArgType {
+  fn from(value: &BackgroundTaskId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<BackgroundTaskId> for SmolStr {
+  fn from(id: BackgroundTaskId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for BackgroundTaskId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for BackgroundTaskId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for BackgroundTaskId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for BackgroundTaskId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for BackgroundTaskId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for BackgroundTaskId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for BackgroundTaskId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for BackgroundTaskId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

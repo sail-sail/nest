@@ -1,12 +1,13 @@
 use anyhow::Result;
 
-use crate::common::id::ID;
 use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::background_task_model::*;
 use super::background_task_service;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
@@ -56,9 +57,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: ID,
+  id: BackgroundTaskId,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
@@ -75,7 +76,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: BackgroundTaskInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<BackgroundTaskId> {
   
   let input = background_task_service::set_id_by_lbl(
     input,
@@ -97,8 +98,8 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: ID,
-  tenant_id: ID,
+  id: BackgroundTaskId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -114,10 +115,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: ID,
+  id: BackgroundTaskId,
   input: BackgroundTaskInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<BackgroundTaskId> {
   
   let input = background_task_service::set_id_by_lbl(
     input,
@@ -140,7 +141,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -172,7 +173,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -192,7 +193,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

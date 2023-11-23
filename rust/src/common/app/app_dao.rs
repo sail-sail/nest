@@ -1,12 +1,12 @@
+use smol_str::SmolStr;
+
 use crate::common::context::{
   has_auth_model,
   get_short_uuid,
 };
 
-use crate::common::id::ID;
-
 /// 清空缓存
-pub fn generate_id() -> ID {
+pub fn generate_id() -> SmolStr {
   get_short_uuid()
 }
 

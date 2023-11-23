@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::id::ID;
-
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -17,6 +15,8 @@ use crate::common::gql::model::{
 
 use super::usr_model::*;
 use super::usr_resolver;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct UsrGenQuery;
@@ -81,11 +81,11 @@ impl UsrGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_usr(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: UsrId,
   ) -> Result<Option<UsrModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -98,12 +98,12 @@ impl UsrGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已启用
+  /// 根据 id 查找是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_usr(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: UsrId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -116,13 +116,13 @@ impl UsrGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已锁定
+  /// 根据 id 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_usr(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: UsrId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -178,7 +178,7 @@ impl UsrGenMutation {
     ctx: &Context<'_>,
     model: UsrInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<ID> {
+  ) -> Result<UsrId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -199,8 +199,8 @@ impl UsrGenMutation {
   async fn update_tenant_by_id_usr(
     &self,
     ctx: &Context<'_>,
-    id: ID,
-    tenant_id: ID,
+    id: UsrId,
+    tenant_id: TenantId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -219,9 +219,9 @@ impl UsrGenMutation {
   async fn update_by_id_usr(
     &self,
     ctx: &Context<'_>,
-    id: ID,
+    id: UsrId,
     model: UsrInput,
-  ) -> Result<ID> {
+  ) -> Result<UsrId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -239,7 +239,7 @@ impl UsrGenMutation {
   async fn delete_by_ids_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<UsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -257,7 +257,7 @@ impl UsrGenMutation {
   async fn enable_by_ids_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<UsrId>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -277,7 +277,7 @@ impl UsrGenMutation {
   async fn lock_by_ids_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<UsrId>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -297,7 +297,7 @@ impl UsrGenMutation {
   async fn revert_by_ids_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<UsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -315,7 +315,7 @@ impl UsrGenMutation {
   async fn force_delete_by_ids_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<ID>,
+    ids: Vec<UsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

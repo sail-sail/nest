@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,19 +24,22 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizModel {
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   /// 系统字段
   #[graphql(skip)]
   pub is_sys: u8,
   /// ID
-  pub id: ID,
+  pub id: OptbizId,
   /// 名称
   pub lbl: String,
   /// 键
@@ -48,7 +61,7 @@ pub struct OptbizModel {
   /// 版本号
   pub version: u32,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -56,7 +69,7 @@ pub struct OptbizModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -74,7 +87,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: OptbizId = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 键
@@ -94,7 +107,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     // 版本号
     let version: u32 = row.try_get("version")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -104,7 +117,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -192,11 +205,11 @@ pub struct OptbizFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<OptbizId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<OptbizId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -223,13 +236,13 @@ pub struct OptbizSearch {
   /// 版本号
   pub version: Option<Vec<u32>>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -240,12 +253,12 @@ pub struct OptbizSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<OptbizId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<ID>,
+  pub tenant_id: Option<TenantId>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
@@ -270,7 +283,7 @@ pub struct OptbizInput {
   /// 版本号
   pub version: Option<u32>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -278,7 +291,7 @@ pub struct OptbizInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -363,4 +376,114 @@ impl From<OptbizInput> for OptbizSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct OptbizId(SmolStr);
+
+impl fmt::Display for OptbizId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "OptbizId")]
+impl async_graphql::ScalarType for OptbizId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<OptbizId> for ArgType {
+  fn from(value: OptbizId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&OptbizId> for ArgType {
+  fn from(value: &OptbizId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<OptbizId> for SmolStr {
+  fn from(id: OptbizId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for OptbizId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for OptbizId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for OptbizId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for OptbizId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for OptbizId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for OptbizId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for OptbizId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for OptbizId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

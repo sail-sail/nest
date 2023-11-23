@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,7 +24,10 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+use crate::gen::base::domain::domain_model::DomainId;
+use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -23,15 +36,15 @@ pub struct TenantModel {
   #[graphql(skip)]
   pub is_sys: u8,
   /// ID
-  pub id: ID,
+  pub id: TenantId,
   /// 名称
   pub lbl: String,
   /// 所属域名
-  pub domain_ids: Vec<ID>,
+  pub domain_ids: Vec<DomainId>,
   /// 所属域名
   pub domain_ids_lbl: Vec<String>,
   /// 菜单权限
-  pub menu_ids: Vec<ID>,
+  pub menu_ids: Vec<MenuId>,
   /// 菜单权限
   pub menu_ids_lbl: Vec<String>,
   /// 锁定
@@ -47,7 +60,7 @@ pub struct TenantModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -55,7 +68,7 @@ pub struct TenantModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -71,11 +84,11 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: TenantId = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 所属域名
-    let domain_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("domain_ids")?;
+    let domain_ids: Option<sqlx::types::Json<HashMap<String, DomainId>>> = row.try_get("domain_ids")?;
     let domain_ids = domain_ids.unwrap_or_default().0;
     let domain_ids = {
       let mut keys: Vec<u32> = domain_ids.keys()
@@ -87,12 +100,12 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       keys.into_iter()
         .map(|x| 
           domain_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&DomainId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<DomainId>>()
     };
-    let domain_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("domain_ids_lbl")?;
+    let domain_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("domain_ids_lbl")?;
     let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
     let domain_ids_lbl = {
       let mut keys: Vec<u32> = domain_ids_lbl.keys()
@@ -110,7 +123,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         .collect::<Vec<String>>()
     };
     // 菜单权限
-    let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, ID>>> = row.try_get("menu_ids")?;
+    let menu_ids: Option<sqlx::types::Json<HashMap<String, MenuId>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids = {
       let mut keys: Vec<u32> = menu_ids.keys()
@@ -122,12 +135,12 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       keys.into_iter()
         .map(|x| 
           menu_ids.get(&x.to_string())
-            .unwrap_or(&ID::default())
+            .unwrap_or(&MenuId::default())
             .to_owned()
         )
-        .collect::<Vec<ID>>()
+        .collect::<Vec<MenuId>>()
     };
-    let menu_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     let menu_ids_lbl = {
       let mut keys: Vec<u32> = menu_ids_lbl.keys()
@@ -155,7 +168,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -165,7 +178,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -255,20 +268,20 @@ pub struct TenantFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<TenantId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<TenantId>>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
   /// 所属域名
-  pub domain_ids: Option<Vec<ID>>,
+  pub domain_ids: Option<Vec<DomainId>>,
   /// 所属域名
   pub domain_ids_is_null: Option<bool>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<ID>>,
+  pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   pub menu_ids_is_null: Option<bool>,
   /// 锁定
@@ -282,13 +295,13 @@ pub struct TenantSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -299,7 +312,7 @@ pub struct TenantSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<TenantId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
@@ -308,11 +321,11 @@ pub struct TenantInput {
   /// 名称
   pub lbl: Option<String>,
   /// 所属域名
-  pub domain_ids: Option<Vec<ID>>,
+  pub domain_ids: Option<Vec<DomainId>>,
   /// 所属域名
   pub domain_ids_lbl: Option<Vec<String>>,
   /// 菜单权限
-  pub menu_ids: Option<Vec<ID>>,
+  pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 锁定
@@ -328,7 +341,7 @@ pub struct TenantInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -336,7 +349,7 @@ pub struct TenantInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -416,4 +429,114 @@ impl From<TenantInput> for TenantSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct TenantId(SmolStr);
+
+impl fmt::Display for TenantId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "TenantId")]
+impl async_graphql::ScalarType for TenantId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<TenantId> for ArgType {
+  fn from(value: TenantId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&TenantId> for ArgType {
+  fn from(value: &TenantId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<TenantId> for SmolStr {
+  fn from(id: TenantId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for TenantId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for TenantId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for TenantId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for TenantId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for TenantId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for TenantId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for TenantId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for TenantId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

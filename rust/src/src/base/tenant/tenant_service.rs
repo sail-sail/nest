@@ -1,8 +1,6 @@
 use anyhow::Result;
 // use crate::common::context::get_auth_tenant_id;
 
-use crate::common::id::ID;
-
 use crate::gen::base::tenant::tenant_dao;
 use crate::gen::base::tenant::tenant_model::{
   TenantSearch,
@@ -13,6 +11,7 @@ use crate::gen::base::domain::domain_dao;
 use crate::gen::base::domain::domain_model::{
   DomainSearch,
   DomainModel,
+  DomainId,
 };
 
 // 获取当前租户绑定的网址
@@ -66,7 +65,7 @@ pub async fn get_login_tenants(
   let res: Vec<TenantModel> = if domain_models.is_empty() {
     vec![]
   } else {
-    let domain_ids: Vec<ID> = domain_models.into_iter()
+    let domain_ids: Vec<DomainId> = domain_models.into_iter()
       .map(|x| x.id)
       .collect();
     tenant_dao::find_all(

@@ -1,17 +1,20 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
-use crate::common::id::ID;
+use crate::gen::base::usr::usr_model::UsrId;
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::org::org_model::OrgId;
 
 pub const SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
 pub const AUTHORIZATION: &str = "authorization";
 
 #[derive(Deserialize, Serialize, Clone, Default)]
 pub struct AuthModel {
-  pub id: ID,
-  pub wx_usr_id: Option<ID>,
-  pub org_id: Option<ID>,
+  pub id: UsrId,
+  pub wx_usr_id: Option<SmolStr>,
+  pub org_id: Option<OrgId>,
   pub lang: String,
-  pub tenant_id: ID,
+  pub tenant_id: TenantId,
   pub exp: i64,
 }
 

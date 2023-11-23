@@ -1,3 +1,13 @@
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
+
 use serde::{
   Serialize,
   Deserialize,
@@ -14,7 +24,8 @@ use async_graphql::{
   InputObject,
 };
 
-use crate::common::id::ID;
+use crate::common::context::ArgType;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -23,7 +34,7 @@ pub struct OptionsModel {
   #[graphql(skip)]
   pub is_sys: u8,
   /// ID
-  pub id: ID,
+  pub id: OptionsId,
   /// 名称
   pub lbl: String,
   /// 键
@@ -45,7 +56,7 @@ pub struct OptionsModel {
   /// 版本号
   pub version: u32,
   /// 创建人
-  pub create_usr_id: ID,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -53,7 +64,7 @@ pub struct OptionsModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: ID,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -69,7 +80,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: ID = row.try_get("id")?;
+    let id: OptionsId = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 键
@@ -89,7 +100,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     // 版本号
     let version: u32 = row.try_get("version")?;
     // 创建人
-    let create_usr_id: ID = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -99,7 +110,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: ID = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -186,9 +197,9 @@ pub struct OptionsFieldComment {
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsSearch {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<OptionsId>,
   /// ID列表
-  pub ids: Option<Vec<ID>>,
+  pub ids: Option<Vec<OptionsId>>,
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
@@ -215,13 +226,13 @@ pub struct OptionsSearch {
   /// 版本号
   pub version: Option<Vec<u32>>,
   /// 创建人
-  pub create_usr_id: Option<Vec<ID>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<ID>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
@@ -232,7 +243,7 @@ pub struct OptionsSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsInput {
   /// ID
-  pub id: Option<ID>,
+  pub id: Option<OptionsId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
@@ -259,7 +270,7 @@ pub struct OptionsInput {
   /// 版本号
   pub version: Option<u32>,
   /// 创建人
-  pub create_usr_id: Option<ID>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -267,7 +278,7 @@ pub struct OptionsInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<ID>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -349,4 +360,114 @@ impl From<OptionsInput> for OptionsSearch {
       ..Default::default()
     }
   }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct OptionsId(SmolStr);
+
+impl fmt::Display for OptionsId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "OptionsId")]
+impl async_graphql::ScalarType for OptionsId {
+  
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+  
+}
+
+impl From<OptionsId> for ArgType {
+  fn from(value: OptionsId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&OptionsId> for ArgType {
+  fn from(value: &OptionsId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<OptionsId> for SmolStr {
+  fn from(id: OptionsId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for OptionsId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for OptionsId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for OptionsId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for OptionsId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for OptionsId {
+  
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+  
+}
+
+impl Encode<'_, MySql> for OptionsId {
+  
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+  
+}
+
+impl sqlx::Type<MySql> for OptionsId {
+  
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for OptionsId {
+  
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+  
 }

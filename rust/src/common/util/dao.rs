@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use serde::{Serialize, Deserialize};
+use smol_str::SmolStr;
 use sqlx::FromRow;
 
 use aes::cipher::{
@@ -27,8 +28,6 @@ use crate::common::context::{
   escape_id,
   get_short_uuid,
 };
-
-use crate::common::id::ID;
 
 lazy_static! {
   static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key();
@@ -71,8 +70,10 @@ pub fn encrypt(
     return "".to_owned();
   }
   let crypto_key = CRYPTO_KEY.unwrap();
-  let salt = &get_short_uuid()[..16];
-  let iv_str = &get_short_uuid()[..16];
+  let salt = get_short_uuid();
+  let iv_str = get_short_uuid();
+  let salt = &salt.as_str()[..16];
+  let iv_str = &iv_str.as_str()[..16];
   let iv = iv_str.as_bytes();
   let ct = Aes128CbcEnc::new(
     crypto_key.into(),
@@ -146,16 +147,16 @@ pub struct ManyOpts {
 
 #[derive(FromRow, Clone, Serialize, Deserialize)]
 struct ManyModel {
-  id: ID,
-  column1_id: ID,
-  column2_id: ID,
+  id: String,
+  column1_id: String,
+  column2_id: String,
   is_deleted: bool,
   order_by: u32,
 }
 
 pub async fn many2many_update(
-  id: ID,
-  foreign_ids: Vec<ID>,
+  id: SmolStr,
+  foreign_ids: Vec<SmolStr>,
   many_opts: ManyOpts,
 ) -> Result<bool> {
   let tenant_id = get_auth_tenant_id();
@@ -246,7 +247,7 @@ pub async fn many2many_update(
   let foreign_ids2 = foreign_ids.clone().into_iter()
     .filter(|column2_id| {
       models.iter().all(|model| model.column2_id != *column2_id)
-    }).collect::<Vec<ID>>();
+    }).collect::<Vec<SmolStr>>();
   
   for foreign_id in foreign_ids2 {
     let mut args = QueryArgs::new();
@@ -280,7 +281,7 @@ pub async fn many2many_update(
         if column1 != "tenant_id" && column2 != "tenant_id" {
           sql_fields += ",tenant_id";
           sql_values += ",?";
-          args.push(tenant_id.clone().into());
+          args.push(tenant_id.clone().as_str().into());
         }
       }
     }
@@ -288,7 +289,7 @@ pub async fn many2many_update(
     if let Some(auth_model) = &auth_model {
       sql_fields += ",create_usr_id";
       sql_values += ",?";
-      args.push(auth_model.id.clone().into());
+      args.push(auth_model.id.clone().as_str().into());
     }
     
     sql_fields += &format!(",{column1}");

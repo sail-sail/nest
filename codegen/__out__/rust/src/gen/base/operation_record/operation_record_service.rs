@@ -1,7 +1,5 @@
 use anyhow::Result;
 
-use crate::common::id::ID;
-
 #[allow(unused_imports)]
 use crate::common::context::{
   SrvErr,
@@ -12,6 +10,8 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 use super::operation_record_model::*;
 use super::operation_record_dao;
@@ -64,9 +64,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: ID,
+  id: OperationRecordId,
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
   
@@ -95,7 +95,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   input: OperationRecordInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<OperationRecordId> {
   
   let id = operation_record_dao::create(
     input,
@@ -108,8 +108,8 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: ID,
-  tenant_id: ID,
+  id: OperationRecordId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -126,10 +126,10 @@ pub async fn update_tenant_by_id(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: ID,
+  id: OperationRecordId,
   mut input: OperationRecordInput,
   options: Option<Options>,
-) -> Result<ID> {
+) -> Result<OperationRecordId> {
   
   let res = operation_record_dao::update_by_id(
     id,
@@ -143,7 +143,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -170,7 +170,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -185,7 +185,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<ID>,
+  ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
