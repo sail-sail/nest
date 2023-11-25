@@ -1460,17 +1460,17 @@ pub struct SrvErr {
 }
 
 impl SrvErr {
-  pub fn msg(msg: String) -> Self {
+  pub fn msg<T: Into<String>>(msg: T) -> Self {
     SrvErr {
       code: None,
-      msg,
+      msg: msg.into(),
     }
   }
   #[allow(dead_code)]
-  pub fn new(code: String, msg: String) -> Self {
+  pub fn new<T: Into<String>>(code: T, msg: T) -> Self {
     SrvErr {
-      code: Some(code),
-      msg,
+      code: Some(code.into()),
+      msg: msg.into(),
     }
   }
 }

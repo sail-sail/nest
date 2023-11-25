@@ -81,7 +81,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
@@ -126,7 +126,7 @@ async fn get_where_query(
     }
   }
   {
-    let state: Vec<String> = match &search {
+    let state: Vec<BackgroundTaskState> = match &search {
       Some(item) => item.state.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -143,7 +143,7 @@ async fn get_where_query(
     }
   }
   {
-    let r#type: Vec<String> = match &search {
+    let r#type: Vec<BackgroundTaskType> = match &search {
       Some(item) => item.r#type.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -433,28 +433,33 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "background_task_state".to_owned(),
-    "background_task_type".to_owned(),
+  let dict_vec = get_dict(&[
+    "background_task_state",
+    "background_task_type",
   ]).await?;
-  
-  let state_dict = &dict_vec[0];
-  let type_dict = &dict_vec[1];
+  let [
+    state_dict,
+    type_dict,
+  ]: [Vec<_>; 2] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 状态
     model.state_lbl = {
-      state_dict.iter()
-        .find(|item| item.val == model.state)
+      state_dict
+        .iter()
+        .find(|item| item.val == model.state.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.state.to_string())
     };
     
     // 类型
     model.r#type_lbl = {
-      r#type_dict.iter()
-        .find(|item| item.val == model.r#type)
+      r#type_dict
+        .iter()
+        .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
     };
@@ -748,16 +753,17 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "background_task_state".to_owned(),
-    "background_task_type".to_owned(),
+  let dict_vec = get_dict(&[
+    "background_task_state",
+    "background_task_type",
   ]).await?;
   
   // 状态
   if input.state.is_none() {
     let state_dict = &dict_vec[0];
     if let Some(state_lbl) = input.state_lbl.clone() {
-      input.state = state_dict.iter()
+      input.state = state_dict
+        .iter()
         .find(|item| {
           item.lbl == state_lbl
         })
@@ -771,7 +777,8 @@ pub async fn set_id_by_lbl(
   if input.r#type.is_none() {
     let type_dict = &dict_vec[1];
     if let Some(type_lbl) = input.type_lbl.clone() {
-      input.r#type = type_dict.iter()
+      input.r#type = type_dict
+        .iter()
         .find(|item| {
           item.lbl == type_lbl
         })

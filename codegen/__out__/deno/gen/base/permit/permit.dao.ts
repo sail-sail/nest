@@ -36,8 +36,6 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -302,10 +300,6 @@ export async function findAll(
     },
   );
   
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -341,10 +335,6 @@ export async function findAll(
 export async function setIdByLbl(
   input: PermitInput,
 ) {
-  
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
   
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {

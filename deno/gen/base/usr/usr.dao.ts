@@ -241,11 +241,8 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.is_hidden && !Array.isArray(search?.is_hidden)) {
-    search.is_hidden = [ search.is_hidden ];
-  }
-  if (search?.is_hidden && search?.is_hidden?.length > 0) {
-    whereQuery += ` and t.is_hidden in ${ args.push(search.is_hidden) }`;
+  if (isNotEmpty(search?.is_hidden)) {
+    whereQuery += ` and t.is_hidden = ${ args.push(search?.is_hidden) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;

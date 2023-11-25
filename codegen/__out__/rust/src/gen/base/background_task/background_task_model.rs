@@ -3,15 +3,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -19,9 +17,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;
@@ -40,11 +40,11 @@ pub struct BackgroundTaskModel {
   /// 名称
   pub lbl: String,
   /// 状态
-  pub state: String,
+  pub state: BackgroundTaskState,
   /// 状态
   pub state_lbl: String,
   /// 类型
-  pub r#type: String,
+  pub r#type: BackgroundTaskType,
   /// 类型
   pub type_lbl: String,
   /// 执行结果
@@ -90,11 +90,11 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 状态
-    let state: String = row.try_get("state")?;
-    let state_lbl: String = state.to_string();
+    let state_lbl: String = row.try_get("state")?;
+    let state: BackgroundTaskState = state_lbl.clone().try_into()?;
     // 类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: BackgroundTaskType = type_lbl.clone().try_into()?;
     // 执行结果
     let result: String = row.try_get("result")?;
     // 错误信息
@@ -228,9 +228,9 @@ pub struct BackgroundTaskSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 状态
-  pub state: Option<Vec<String>>,
+  pub state: Option<Vec<BackgroundTaskState>>,
   /// 类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<BackgroundTaskType>>,
   /// 执行结果
   pub result: Option<String>,
   /// 执行结果
@@ -274,11 +274,11 @@ pub struct BackgroundTaskInput {
   /// 名称
   pub lbl: Option<String>,
   /// 状态
-  pub state: Option<String>,
+  pub state: Option<BackgroundTaskState>,
   /// 状态
   pub state_lbl: Option<String>,
   /// 类型
-  pub r#type: Option<String>,
+  pub r#type: Option<BackgroundTaskType>,
   /// 类型
   pub type_lbl: Option<String>,
   /// 执行结果
@@ -403,7 +403,6 @@ impl fmt::Display for BackgroundTaskId {
 
 #[async_graphql::Scalar(name = "BackgroundTaskId")]
 impl async_graphql::ScalarType for BackgroundTaskId {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -414,7 +413,6 @@ impl async_graphql::ScalarType for BackgroundTaskId {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<BackgroundTaskId> for ArgType {
@@ -460,17 +458,14 @@ impl From<&str> for BackgroundTaskId {
 }
 
 impl Deref for BackgroundTaskId {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for BackgroundTaskId {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -478,11 +473,9 @@ impl Encode<'_, MySql> for BackgroundTaskId {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for BackgroundTaskId {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -493,11 +486,225 @@ impl sqlx::Type<MySql> for BackgroundTaskId {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for BackgroundTaskId {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+/// 后台任务状态
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum BackgroundTaskState {
+  /// 运行中
+  #[graphql(name="running")]
+  Running,
+  /// 成功
+  #[graphql(name="success")]
+  Success,
+  /// 失败
+  #[graphql(name="fail")]
+  Fail,
+  /// 取消
+  #[graphql(name="cancel")]
+  Cancel,
+}
+
+impl fmt::Display for BackgroundTaskState {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Running => write!(f, "running"),
+      Self::Success => write!(f, "success"),
+      Self::Fail => write!(f, "fail"),
+      Self::Cancel => write!(f, "cancel"),
+    }
+  }
+}
+
+impl From<BackgroundTaskState> for SmolStr {
+  fn from(value: BackgroundTaskState) -> Self {
+    match value {
+      BackgroundTaskState::Running => "running".into(),
+      BackgroundTaskState::Success => "success".into(),
+      BackgroundTaskState::Fail => "fail".into(),
+      BackgroundTaskState::Cancel => "cancel".into(),
+    }
+  }
+}
+
+impl From<BackgroundTaskState> for String {
+  fn from(value: BackgroundTaskState) -> Self {
+    match value {
+      BackgroundTaskState::Running => "running".into(),
+      BackgroundTaskState::Success => "success".into(),
+      BackgroundTaskState::Fail => "fail".into(),
+      BackgroundTaskState::Cancel => "cancel".into(),
+    }
+  }
+}
+
+impl From<BackgroundTaskState> for ArgType {
+  fn from(value: BackgroundTaskState) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for BackgroundTaskState {
+  fn default() -> Self {
+    Self::Running
+  }
+}
+
+impl FromStr for BackgroundTaskState {
+  type Err = anyhow::Error;
   
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "running" => Ok(Self::Running),
+      "success" => Ok(Self::Success),
+      "fail" => Ok(Self::Fail),
+      "cancel" => Ok(Self::Cancel),
+      _ => Err(anyhow::anyhow!("BackgroundTaskState can't convert from {s}")),
+    }
+  }
+}
+
+impl BackgroundTaskState {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Running => "running",
+      Self::Success => "success",
+      Self::Fail => "fail",
+      Self::Cancel => "cancel",
+    }
+  }
+}
+
+impl TryFrom<String> for BackgroundTaskState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "running" => Ok(Self::Running),
+      "success" => Ok(Self::Success),
+      "fail" => Ok(Self::Fail),
+      "cancel" => Ok(Self::Cancel),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "BackgroundTaskState can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+/// 后台任务类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum BackgroundTaskType {
+  /// 文本
+  #[graphql(name="text")]
+  Text,
+  /// 下载
+  #[graphql(name="download")]
+  Download,
+  /// 查看
+  #[graphql(name="inline")]
+  Inline,
+  /// 标签
+  #[graphql(name="tag")]
+  Tag,
+}
+
+impl fmt::Display for BackgroundTaskType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Text => write!(f, "text"),
+      Self::Download => write!(f, "download"),
+      Self::Inline => write!(f, "inline"),
+      Self::Tag => write!(f, "tag"),
+    }
+  }
+}
+
+impl From<BackgroundTaskType> for SmolStr {
+  fn from(value: BackgroundTaskType) -> Self {
+    match value {
+      BackgroundTaskType::Text => "text".into(),
+      BackgroundTaskType::Download => "download".into(),
+      BackgroundTaskType::Inline => "inline".into(),
+      BackgroundTaskType::Tag => "tag".into(),
+    }
+  }
+}
+
+impl From<BackgroundTaskType> for String {
+  fn from(value: BackgroundTaskType) -> Self {
+    match value {
+      BackgroundTaskType::Text => "text".into(),
+      BackgroundTaskType::Download => "download".into(),
+      BackgroundTaskType::Inline => "inline".into(),
+      BackgroundTaskType::Tag => "tag".into(),
+    }
+  }
+}
+
+impl From<BackgroundTaskType> for ArgType {
+  fn from(value: BackgroundTaskType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for BackgroundTaskType {
+  fn default() -> Self {
+    Self::Text
+  }
+}
+
+impl FromStr for BackgroundTaskType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "text" => Ok(Self::Text),
+      "download" => Ok(Self::Download),
+      "inline" => Ok(Self::Inline),
+      "tag" => Ok(Self::Tag),
+      _ => Err(anyhow::anyhow!("BackgroundTaskType can't convert from {s}")),
+    }
+  }
+}
+
+impl BackgroundTaskType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Text => "text",
+      Self::Download => "download",
+      Self::Inline => "inline",
+      Self::Tag => "tag",
+    }
+  }
+}
+
+impl TryFrom<String> for BackgroundTaskType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "text" => Ok(Self::Text),
+      "download" => Ok(Self::Download),
+      "inline" => Ok(Self::Inline),
+      "tag" => Ok(Self::Tag),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "BackgroundTaskType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
 }

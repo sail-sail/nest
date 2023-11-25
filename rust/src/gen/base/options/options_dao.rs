@@ -80,7 +80,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
@@ -414,19 +414,23 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "is_locked".to_owned(),
-    "is_enabled".to_owned(),
+  let dict_vec = get_dict(&[
+    "is_locked",
+    "is_enabled",
   ]).await?;
-  
-  let is_locked_dict = &dict_vec[0];
-  let is_enabled_dict = &dict_vec[1];
+  let [
+    is_locked_dict,
+    is_enabled_dict,
+  ]: [Vec<_>; 2] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 锁定
     model.is_locked_lbl = {
-      is_locked_dict.iter()
+      is_locked_dict
+        .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_locked.to_string())
@@ -434,7 +438,8 @@ pub async fn find_all(
     
     // 启用
     model.is_enabled_lbl = {
-      is_enabled_dict.iter()
+      is_enabled_dict
+        .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
@@ -759,16 +764,17 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "is_locked".to_owned(),
-    "is_enabled".to_owned(),
+  let dict_vec = get_dict(&[
+    "is_locked",
+    "is_enabled",
   ]).await?;
   
   // 锁定
   if input.is_locked.is_none() {
     let is_locked_dict = &dict_vec[0];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict.iter()
+      input.is_locked = is_locked_dict
+        .iter()
         .find(|item| {
           item.lbl == is_locked_lbl
         })
@@ -782,7 +788,8 @@ pub async fn set_id_by_lbl(
   if input.is_enabled.is_none() {
     let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-      input.is_enabled = is_enabled_dict.iter()
+      input.is_enabled = is_enabled_dict
+        .iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
         })

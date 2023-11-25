@@ -3,15 +3,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -19,9 +17,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;
@@ -50,7 +50,7 @@ pub struct DictbizModel {
   /// 名称
   pub lbl: String,
   /// 数据类型
-  pub r#type: String,
+  pub r#type: DictbizType,
   /// 数据类型
   pub type_lbl: String,
   /// 锁定
@@ -101,8 +101,8 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 数据类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: DictbizType = type_lbl.clone().try_into()?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -229,7 +229,7 @@ pub struct DictbizSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 数据类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<DictbizType>>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -272,7 +272,7 @@ pub struct DictbizInput {
   /// 名称
   pub lbl: Option<String>,
   /// 数据类型
-  pub r#type: Option<String>,
+  pub r#type: Option<DictbizType>,
   /// 数据类型
   pub type_lbl: Option<String>,
   /// 锁定
@@ -399,7 +399,6 @@ impl fmt::Display for DictbizId {
 
 #[async_graphql::Scalar(name = "DictbizId")]
 impl async_graphql::ScalarType for DictbizId {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -410,7 +409,6 @@ impl async_graphql::ScalarType for DictbizId {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<DictbizId> for ArgType {
@@ -456,17 +454,14 @@ impl From<&str> for DictbizId {
 }
 
 impl Deref for DictbizId {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for DictbizId {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -474,11 +469,9 @@ impl Encode<'_, MySql> for DictbizId {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for DictbizId {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -489,11 +482,135 @@ impl sqlx::Type<MySql> for DictbizId {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for DictbizId {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+/// 业务字典数据类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DictbizType {
+  /// 字符串
+  #[graphql(name="string")]
+  String,
+  /// 数值
+  #[graphql(name="number")]
+  Number,
+  /// 日期
+  #[graphql(name="date")]
+  Date,
+  /// 日期时间
+  #[graphql(name="datetime")]
+  Datetime,
+  /// 时间
+  #[graphql(name="time")]
+  Time,
+  /// 布尔
+  #[graphql(name="boolean")]
+  Boolean,
+}
+
+impl fmt::Display for DictbizType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::String => write!(f, "string"),
+      Self::Number => write!(f, "number"),
+      Self::Date => write!(f, "date"),
+      Self::Datetime => write!(f, "datetime"),
+      Self::Time => write!(f, "time"),
+      Self::Boolean => write!(f, "boolean"),
+    }
+  }
+}
+
+impl From<DictbizType> for SmolStr {
+  fn from(value: DictbizType) -> Self {
+    match value {
+      DictbizType::String => "string".into(),
+      DictbizType::Number => "number".into(),
+      DictbizType::Date => "date".into(),
+      DictbizType::Datetime => "datetime".into(),
+      DictbizType::Time => "time".into(),
+      DictbizType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictbizType> for String {
+  fn from(value: DictbizType) -> Self {
+    match value {
+      DictbizType::String => "string".into(),
+      DictbizType::Number => "number".into(),
+      DictbizType::Date => "date".into(),
+      DictbizType::Datetime => "datetime".into(),
+      DictbizType::Time => "time".into(),
+      DictbizType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictbizType> for ArgType {
+  fn from(value: DictbizType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for DictbizType {
+  fn default() -> Self {
+    Self::String
+  }
+}
+
+impl FromStr for DictbizType {
+  type Err = anyhow::Error;
   
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(anyhow::anyhow!("DictbizType can't convert from {s}")),
+    }
+  }
+}
+
+impl DictbizType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::String => "string",
+      Self::Number => "number",
+      Self::Date => "date",
+      Self::Datetime => "datetime",
+      Self::Time => "time",
+      Self::Boolean => "boolean",
+    }
+  }
+}
+
+impl TryFrom<String> for DictbizType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DictbizType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
 }

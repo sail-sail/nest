@@ -30,8 +30,6 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;
-
 use super::permit_model::*;
 use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
@@ -80,7 +78,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
@@ -345,10 +343,6 @@ pub async fn find_all(
     args,
     options,
   ).await?;
-  
-  let dict_vec = get_dict(vec![
-  ]).await?;
-  
   
   for model in &mut res {
     
@@ -660,9 +654,6 @@ pub async fn set_id_by_lbl(
   
   #[allow(unused_mut)]
   let mut input = input;
-  
-  let dict_vec = get_dict(vec![
-  ]).await?;
   
   // 菜单
   if input.menu_id_lbl.is_some()

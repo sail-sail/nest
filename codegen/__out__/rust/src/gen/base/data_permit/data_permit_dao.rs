@@ -80,7 +80,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
@@ -131,7 +131,7 @@ async fn get_where_query(
     }
   }
   {
-    let scope: Vec<String> = match &search {
+    let scope: Vec<DataPermitScope> = match &search {
       Some(item) => item.scope.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -148,7 +148,7 @@ async fn get_where_query(
     }
   }
   {
-    let r#type: Vec<String> = match &search {
+    let r#type: Vec<DataPermitType> = match &search {
       Some(item) => item.r#type.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -359,28 +359,33 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "data_permit_scope".to_owned(),
-    "data_permit_type".to_owned(),
+  let dict_vec = get_dict(&[
+    "data_permit_scope",
+    "data_permit_type",
   ]).await?;
-  
-  let scope_dict = &dict_vec[0];
-  let type_dict = &dict_vec[1];
+  let [
+    scope_dict,
+    type_dict,
+  ]: [Vec<_>; 2] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 范围
     model.scope_lbl = {
-      scope_dict.iter()
-        .find(|item| item.val == model.scope)
+      scope_dict
+        .iter()
+        .find(|item| item.val == model.scope.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.scope.to_string())
     };
     
     // 类型
     model.r#type_lbl = {
-      r#type_dict.iter()
-        .find(|item| item.val == model.r#type)
+      r#type_dict
+        .iter()
+        .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
     };
@@ -700,16 +705,17 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "data_permit_scope".to_owned(),
-    "data_permit_type".to_owned(),
+  let dict_vec = get_dict(&[
+    "data_permit_scope",
+    "data_permit_type",
   ]).await?;
   
   // 范围
   if input.scope.is_none() {
     let scope_dict = &dict_vec[0];
     if let Some(scope_lbl) = input.scope_lbl.clone() {
-      input.scope = scope_dict.iter()
+      input.scope = scope_dict
+        .iter()
         .find(|item| {
           item.lbl == scope_lbl
         })
@@ -723,7 +729,8 @@ pub async fn set_id_by_lbl(
   if input.r#type.is_none() {
     let type_dict = &dict_vec[1];
     if let Some(type_lbl) = input.type_lbl.clone() {
-      input.r#type = type_dict.iter()
+      input.r#type = type_dict
+        .iter()
         .find(|item| {
           item.lbl == type_lbl
         })
