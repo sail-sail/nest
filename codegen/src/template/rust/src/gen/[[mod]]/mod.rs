@@ -1,6 +1,6 @@
 <#
-for (let i = 0; i < records.length; i++) {
-  const record = records[i];
+for (let i = 0; i < allTables.length; i++) {
+  const record = allTables[i];
   let table_name = record.TABLE_NAME;
   if (!optTables[table_name]) continue;
   let table_comment = record.TABLE_COMMENT;

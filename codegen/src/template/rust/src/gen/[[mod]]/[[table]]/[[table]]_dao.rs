@@ -376,7 +376,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -525,7 +525,29 @@ async fn get_where_query(
       _data_type = "rust_decimal::Decimal";
     }
   #><#
-    if (foreignKey && foreignKey.type !== "many2many") {
+    if ([
+      "is_hidden",
+      "is_sys",
+    ].includes(column_name)) {
+  #>
+  {
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => Default::default(),
+    };
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      let arg = {
+        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+        for item in <#=column_name_rust#> {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.<#=column_name#> in ({arg})");
+    }
+  }<#
+    } else if (foreignKey && foreignKey.type !== "many2many") {
   #>
   {
     let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
@@ -582,9 +604,17 @@ async fn get_where_query(
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+    let <#=column_name_rust#>: Vec<<#=enumColumnName#>> = match &search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -889,18 +919,19 @@ pub async fn find_all(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(vec![<#
+  let dict_vec = get_dict(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)
-    ) continue;
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -912,54 +943,59 @@ pub async fn find_all(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>".to_owned(),<#
+    "<#=column.dict#>",<#
   }
   #>
   ]).await?;
-  <#
-  let dictNum = 0;
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (
-      [
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
+  let [<#
+    let dictNum = 0;
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (!column.dict) continue;
+    #>
+    <#=column_name#>_dict,<#
+      dictNum++;
     }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (!column.dict) continue;
-  #>
-  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];<#
-    dictNum++;
-  }
-  #><#
+    #>
+  ]: [Vec<_>; <#=dictNum#>] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;<#
     }
   #><#
     if (hasDictbiz) {
   #>
   
-  let dictbiz_vec = get_dictbiz(vec![<#
+  let dictbiz_vec = get_dictbiz(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
-      [
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -972,38 +1008,42 @@ pub async fn find_all(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>".to_owned(),<#
+    "<#=column.dictbiz#>",<#
   }
   #>
   ]).await?;
-  <#
-  let dictBizNum = 0;
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (
-      [
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
+  let [<#
+    let dictBizNum = 0;
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (!column.dictbiz) continue;
+    #>
+    <#=column_name#>_dictbiz,<#
+    dictBizNum++;
     }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (!column.dictbiz) continue;
-  #>
-  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];<#
-  dictBizNum++;
-  }
-  #><#
+    #>
+  ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dictbiz_vec.len() != 3"))?;<#
     }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -1069,8 +1109,9 @@ pub async fn find_all(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      <#=column_name#>_dict.iter()
-        .find(|item| item.val == model.<#=column_name#>)
+      <#=column_name#>_dict
+        .iter()
+        .find(|item| item.val == model.<#=column_name#>.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
@@ -1079,7 +1120,8 @@ pub async fn find_all(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      <#=column_name#>_dict.iter()
+      <#=column_name#>_dict
+        .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
@@ -1584,7 +1626,7 @@ pub async fn set_id_by_lbl(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(vec![<#
+  let dict_vec = get_dict(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1608,7 +1650,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>".to_owned(),<#
+    "<#=column.dict#>",<#
   }
   #>
   ]).await?;<#
@@ -1642,7 +1684,8 @@ pub async fn set_id_by_lbl(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dict.iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dict
+        .iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })
@@ -1659,7 +1702,7 @@ pub async fn set_id_by_lbl(
   #><#
     if (hasDictbiz) {
   #>
-  let dictbiz_vec = get_dictbiz(vec![<#
+  let dictbiz_vec = get_dictbiz(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1684,7 +1727,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>".to_owned(),<#
+    "<#=column.dictbiz#>",<#
   }
   #>
   ]).await?;<#
@@ -1718,7 +1761,8 @@ pub async fn set_id_by_lbl(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dictbiz.iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dictbiz
+        .iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })

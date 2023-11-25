@@ -3,15 +3,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -19,9 +17,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;
@@ -45,7 +45,7 @@ pub struct FieldPermitModel {
   /// 名称
   pub lbl: String,
   /// 类型
-  pub r#type: String,
+  pub r#type: FieldPermitType,
   /// 类型
   pub type_lbl: String,
   /// 备注
@@ -85,8 +85,8 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: FieldPermitType = type_lbl.clone().try_into()?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -195,7 +195,7 @@ pub struct FieldPermitSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<FieldPermitType>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -233,7 +233,7 @@ pub struct FieldPermitInput {
   /// 名称
   pub lbl: Option<String>,
   /// 类型
-  pub r#type: Option<String>,
+  pub r#type: Option<FieldPermitType>,
   /// 类型
   pub type_lbl: Option<String>,
   /// 备注
@@ -330,7 +330,6 @@ impl fmt::Display for FieldPermitId {
 
 #[async_graphql::Scalar(name = "FieldPermitId")]
 impl async_graphql::ScalarType for FieldPermitId {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -341,7 +340,6 @@ impl async_graphql::ScalarType for FieldPermitId {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<FieldPermitId> for ArgType {
@@ -387,17 +385,14 @@ impl From<&str> for FieldPermitId {
 }
 
 impl Deref for FieldPermitId {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for FieldPermitId {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -405,11 +400,9 @@ impl Encode<'_, MySql> for FieldPermitId {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for FieldPermitId {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -420,11 +413,108 @@ impl sqlx::Type<MySql> for FieldPermitId {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for FieldPermitId {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+/// 字段权限类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum FieldPermitType {
+  /// 可改
+  #[graphql(name="editable")]
+  Editable,
+  /// 隐藏
+  #[graphql(name="hidden")]
+  Hidden,
+  /// 只读
+  #[graphql(name="readonly")]
+  Readonly,
+}
+
+impl fmt::Display for FieldPermitType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Editable => write!(f, "editable"),
+      Self::Hidden => write!(f, "hidden"),
+      Self::Readonly => write!(f, "readonly"),
+    }
+  }
+}
+
+impl From<FieldPermitType> for SmolStr {
+  fn from(value: FieldPermitType) -> Self {
+    match value {
+      FieldPermitType::Editable => "editable".into(),
+      FieldPermitType::Hidden => "hidden".into(),
+      FieldPermitType::Readonly => "readonly".into(),
+    }
+  }
+}
+
+impl From<FieldPermitType> for String {
+  fn from(value: FieldPermitType) -> Self {
+    match value {
+      FieldPermitType::Editable => "editable".into(),
+      FieldPermitType::Hidden => "hidden".into(),
+      FieldPermitType::Readonly => "readonly".into(),
+    }
+  }
+}
+
+impl From<FieldPermitType> for ArgType {
+  fn from(value: FieldPermitType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for FieldPermitType {
+  fn default() -> Self {
+    Self::Editable
+  }
+}
+
+impl FromStr for FieldPermitType {
+  type Err = anyhow::Error;
   
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "editable" => Ok(Self::Editable),
+      "hidden" => Ok(Self::Hidden),
+      "readonly" => Ok(Self::Readonly),
+      _ => Err(anyhow::anyhow!("FieldPermitType can't convert from {s}")),
+    }
+  }
+}
+
+impl FieldPermitType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Editable => "editable",
+      Self::Hidden => "hidden",
+      Self::Readonly => "readonly",
+    }
+  }
+}
+
+impl TryFrom<String> for FieldPermitType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "editable" => Ok(Self::Editable),
+      "hidden" => Ok(Self::Hidden),
+      "readonly" => Ok(Self::Readonly),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "FieldPermitType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
 }

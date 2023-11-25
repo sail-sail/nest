@@ -22,15 +22,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -38,9 +36,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;<#
@@ -253,12 +253,24 @@ pub struct <#=tableUP#>Model {<#
   pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz
-      || data_type === "date" || data_type === "datetime"
-    ) {
+    } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: <#=_data_type#>,
+  /// <#=column_comment#>
+  pub <#=column_name#>_lbl: String,<#
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: <#=enumColumnName#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
@@ -433,7 +445,17 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
-      } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const enumColumnName = Table_Up + Column_Up;
+    #>
+    // <#=column_comment#>
+    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone().try_into()?;<#
+      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
@@ -735,7 +757,19 @@ pub struct <#=tableUP#>Search {
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#>
   pub <#=column_name#>_is_null: Option<bool>,<#
-    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>>,<#
+    } else if (foreignKey) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
@@ -860,13 +894,27 @@ pub struct <#=tableUP#>Input {
       _data_type = "String";
     }
   #><#
-    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+    if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: Option<<#=enumColumnName#>>,
+  /// <#=column_comment#>
+  pub <#=column_name#>_lbl: Option<String>,<#
+    } else if (foreignKey && foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
-  } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  } else if (foreignKey && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
@@ -1209,7 +1257,6 @@ impl fmt::Display for <#=Table_Up#>Id {
 
 #[async_graphql::Scalar(name = "<#=Table_Up#>Id")]
 impl async_graphql::ScalarType for <#=Table_Up#>Id {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -1220,7 +1267,6 @@ impl async_graphql::ScalarType for <#=Table_Up#>Id {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<<#=Table_Up#>Id> for ArgType {
@@ -1266,17 +1312,14 @@ impl From<&str> for <#=Table_Up#>Id {
 }
 
 impl Deref for <#=Table_Up#>Id {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for <#=Table_Up#>Id {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -1284,11 +1327,9 @@ impl Encode<'_, MySql> for <#=Table_Up#>Id {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for <#=Table_Up#>Id {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -1299,11 +1340,259 @@ impl sqlx::Type<MySql> for <#=Table_Up#>Id {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
-  
+}<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const column_default = column.COLUMN_DEFAULT;
+  if (!column.dict && !column.dictbiz) continue;
+  const data_type = column.DATA_TYPE;
+  if ([ "int", "decimal", "tinyint" ].includes(data_type)) {
+    continue;
+  }
+  let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+  Column_Up = Column_Up.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const enumColumnName = Table_Up + Column_Up;
+  const columnDictModels = [
+    ...dictModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+    ...dictbizModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+  ];
+  const columnDictDefault = column_default && columnDictModels.find(function(item) {
+    return item.val === column_default;
+  });
+  const require = column.require;
+  if (require && !columnDictDefault) {
+    throw `表: ${ mod }_${ table } 的字段: ${ column_name } 的默认值: ${ column_default } 在字典中不存在`;
+    process.exit(1);
+  }
+#>
+
+/// <#=table_comment#><#=column_comment#>
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum <#=enumColumnName#> {<#
+  if (!require) {
+  #>
+  /// Empty
+  Empty,<#
+  }
+  #><#
+  for (const columnDictModel of columnDictModels) {
+    const val = columnDictModel.val;
+    const lbl = columnDictModel.lbl;
+    let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+    valUp = valUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  /// <#=lbl#>
+  #[graphql(name="<#=val#>")]
+  <#=valUp#>,<#
+  }
+  #>
 }
+
+impl fmt::Display for <#=enumColumnName#> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {<#
+      if (!require) {
+      #>
+      Self::Empty => write!(f, ""),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      Self::<#=valUp#> => write!(f, "<#=val#>"),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for SmolStr {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    match value {<#
+      if (!require) {
+      #>
+      <#=enumColumnName#>::Empty => "".into(),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for String {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    match value {<#
+      if (!require) {
+      #>
+      <#=enumColumnName#>::Empty => "".into(),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for ArgType {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for <#=enumColumnName#> {
+  fn default() -> Self {<#
+    if (!require && !columnDictDefault) {
+    #>
+    Self::Empty,<#
+    } else {
+      const val = columnDictDefault.val;
+      let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+      valUp = valUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    Self::<#=valUp#><#
+    }
+    #>
+  }
+}
+
+impl FromStr for <#=enumColumnName#> {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {<#
+      if (!require) {
+      #>
+      "empty" => Ok(Self::Empty),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      "<#=val#>" => Ok(Self::<#=valUp#>),<#
+      }
+      #>
+      _ => Err(anyhow::anyhow!("<#=enumColumnName#> can't convert from {s}")),
+    }
+  }
+}
+
+impl <#=enumColumnName#> {
+  pub fn as_str(&self) -> &str {
+    match self {<#
+      if (!require) {
+      #>
+      Self::Empty => "",<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      Self::<#=valUp#> => "<#=val#>",<#
+      }
+      #>
+    }
+  }
+}
+
+impl TryFrom<String> for <#=enumColumnName#> {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {<#
+      if (!require) {
+      #>
+      "" => Ok(Self::Empty),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      "<#=val#>" => Ok(Self::<#=valUp#>),<#
+      }
+      #>
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "<#=column_name#>".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "<#=enumColumnName#> can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}<#
+}
+#>

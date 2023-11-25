@@ -3,15 +3,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -19,9 +17,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;
@@ -45,7 +45,7 @@ pub struct DictModel {
   /// 名称
   pub lbl: String,
   /// 数据类型
-  pub r#type: String,
+  pub r#type: DictType,
   /// 数据类型
   pub type_lbl: String,
   /// 锁定
@@ -94,8 +94,8 @@ impl FromRow<'_, MySqlRow> for DictModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 数据类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: DictType = type_lbl.clone().try_into()?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -219,7 +219,7 @@ pub struct DictSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 数据类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<DictType>>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -259,7 +259,7 @@ pub struct DictInput {
   /// 名称
   pub lbl: Option<String>,
   /// 数据类型
-  pub r#type: Option<String>,
+  pub r#type: Option<DictType>,
   /// 数据类型
   pub type_lbl: Option<String>,
   /// 锁定
@@ -383,7 +383,6 @@ impl fmt::Display for DictId {
 
 #[async_graphql::Scalar(name = "DictId")]
 impl async_graphql::ScalarType for DictId {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -394,7 +393,6 @@ impl async_graphql::ScalarType for DictId {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<DictId> for ArgType {
@@ -440,17 +438,14 @@ impl From<&str> for DictId {
 }
 
 impl Deref for DictId {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for DictId {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -458,11 +453,9 @@ impl Encode<'_, MySql> for DictId {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for DictId {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -473,11 +466,135 @@ impl sqlx::Type<MySql> for DictId {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for DictId {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+/// 系统字典数据类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DictType {
+  /// 字符串
+  #[graphql(name="string")]
+  String,
+  /// 数值
+  #[graphql(name="number")]
+  Number,
+  /// 日期
+  #[graphql(name="date")]
+  Date,
+  /// 日期时间
+  #[graphql(name="datetime")]
+  Datetime,
+  /// 时间
+  #[graphql(name="time")]
+  Time,
+  /// 布尔
+  #[graphql(name="boolean")]
+  Boolean,
+}
+
+impl fmt::Display for DictType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::String => write!(f, "string"),
+      Self::Number => write!(f, "number"),
+      Self::Date => write!(f, "date"),
+      Self::Datetime => write!(f, "datetime"),
+      Self::Time => write!(f, "time"),
+      Self::Boolean => write!(f, "boolean"),
+    }
+  }
+}
+
+impl From<DictType> for SmolStr {
+  fn from(value: DictType) -> Self {
+    match value {
+      DictType::String => "string".into(),
+      DictType::Number => "number".into(),
+      DictType::Date => "date".into(),
+      DictType::Datetime => "datetime".into(),
+      DictType::Time => "time".into(),
+      DictType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictType> for String {
+  fn from(value: DictType) -> Self {
+    match value {
+      DictType::String => "string".into(),
+      DictType::Number => "number".into(),
+      DictType::Date => "date".into(),
+      DictType::Datetime => "datetime".into(),
+      DictType::Time => "time".into(),
+      DictType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictType> for ArgType {
+  fn from(value: DictType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for DictType {
+  fn default() -> Self {
+    Self::String
+  }
+}
+
+impl FromStr for DictType {
+  type Err = anyhow::Error;
   
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(anyhow::anyhow!("DictType can't convert from {s}")),
+    }
+  }
+}
+
+impl DictType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::String => "string",
+      Self::Number => "number",
+      Self::Date => "date",
+      Self::Datetime => "datetime",
+      Self::Time => "time",
+      Self::Boolean => "boolean",
+    }
+  }
+}
+
+impl TryFrom<String> for DictType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DictType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
 }

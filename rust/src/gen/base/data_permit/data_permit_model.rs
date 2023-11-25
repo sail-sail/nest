@@ -3,15 +3,13 @@ use std::fmt;
 use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
-
-use serde::{
-  Serialize,
-  Deserialize,
-};
 
 use sqlx::{
   FromRow,
@@ -19,9 +17,11 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
 use crate::common::context::ArgType;
@@ -43,11 +43,11 @@ pub struct DataPermitModel {
   /// 名称
   pub lbl: String,
   /// 范围
-  pub scope: String,
+  pub scope: DataPermitScope,
   /// 范围
   pub scope_lbl: String,
   /// 类型
-  pub r#type: String,
+  pub r#type: DataPermitType,
   /// 类型
   pub type_lbl: String,
   /// 备注
@@ -85,11 +85,11 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 范围
-    let scope: String = row.try_get("scope")?;
-    let scope_lbl: String = scope.to_string();
+    let scope_lbl: String = row.try_get("scope")?;
+    let scope: DataPermitScope = scope_lbl.clone().try_into()?;
     // 类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: DataPermitType = type_lbl.clone().try_into()?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -197,9 +197,9 @@ pub struct DataPermitSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 范围
-  pub scope: Option<Vec<String>>,
+  pub scope: Option<Vec<DataPermitScope>>,
   /// 类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<DataPermitType>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -235,11 +235,11 @@ pub struct DataPermitInput {
   /// 名称
   pub lbl: Option<String>,
   /// 范围
-  pub scope: Option<String>,
+  pub scope: Option<DataPermitScope>,
   /// 范围
   pub scope_lbl: Option<String>,
   /// 类型
-  pub r#type: Option<String>,
+  pub r#type: Option<DataPermitType>,
   /// 类型
   pub type_lbl: Option<String>,
   /// 备注
@@ -337,7 +337,6 @@ impl fmt::Display for DataPermitId {
 
 #[async_graphql::Scalar(name = "DataPermitId")]
 impl async_graphql::ScalarType for DataPermitId {
-  
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -348,7 +347,6 @@ impl async_graphql::ScalarType for DataPermitId {
   fn to_value(&self) -> async_graphql::Value {
     async_graphql::Value::String(self.0.clone().into())
   }
-  
 }
 
 impl From<DataPermitId> for ArgType {
@@ -394,17 +392,14 @@ impl From<&str> for DataPermitId {
 }
 
 impl Deref for DataPermitId {
-  
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
     &self.0
   }
-  
 }
 
 impl Encode<'_, MySql> for DataPermitId {
-  
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -412,11 +407,9 @@ impl Encode<'_, MySql> for DataPermitId {
   fn size_hint(&self) -> usize {
     self.len()
   }
-  
 }
 
 impl sqlx::Type<MySql> for DataPermitId {
-  
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -427,11 +420,207 @@ impl sqlx::Type<MySql> for DataPermitId {
 }
 
 impl<'r> sqlx::Decode<'r, MySql> for DataPermitId {
-  
   fn decode(
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+/// 数据权限范围
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DataPermitScope {
+  /// 创建人
+  #[graphql(name="create")]
+  Create,
+  /// 本部门
+  #[graphql(name="dept")]
+  Dept,
+  /// 本角色
+  #[graphql(name="role")]
+  Role,
+  /// 本租户
+  #[graphql(name="tenant")]
+  Tenant,
+}
+
+impl fmt::Display for DataPermitScope {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Create => write!(f, "create"),
+      Self::Dept => write!(f, "dept"),
+      Self::Role => write!(f, "role"),
+      Self::Tenant => write!(f, "tenant"),
+    }
+  }
+}
+
+impl From<DataPermitScope> for SmolStr {
+  fn from(value: DataPermitScope) -> Self {
+    match value {
+      DataPermitScope::Create => "create".into(),
+      DataPermitScope::Dept => "dept".into(),
+      DataPermitScope::Role => "role".into(),
+      DataPermitScope::Tenant => "tenant".into(),
+    }
+  }
+}
+
+impl From<DataPermitScope> for String {
+  fn from(value: DataPermitScope) -> Self {
+    match value {
+      DataPermitScope::Create => "create".into(),
+      DataPermitScope::Dept => "dept".into(),
+      DataPermitScope::Role => "role".into(),
+      DataPermitScope::Tenant => "tenant".into(),
+    }
+  }
+}
+
+impl From<DataPermitScope> for ArgType {
+  fn from(value: DataPermitScope) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for DataPermitScope {
+  fn default() -> Self {
+    Self::Tenant
+  }
+}
+
+impl FromStr for DataPermitScope {
+  type Err = anyhow::Error;
   
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "create" => Ok(Self::Create),
+      "dept" => Ok(Self::Dept),
+      "role" => Ok(Self::Role),
+      "tenant" => Ok(Self::Tenant),
+      _ => Err(anyhow::anyhow!("DataPermitScope can't convert from {s}")),
+    }
+  }
+}
+
+impl DataPermitScope {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Create => "create",
+      Self::Dept => "dept",
+      Self::Role => "role",
+      Self::Tenant => "tenant",
+    }
+  }
+}
+
+impl TryFrom<String> for DataPermitScope {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "create" => Ok(Self::Create),
+      "dept" => Ok(Self::Dept),
+      "role" => Ok(Self::Role),
+      "tenant" => Ok(Self::Tenant),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "scope".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DataPermitScope can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+/// 数据权限类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DataPermitType {
+  /// 只读
+  #[graphql(name="readonly")]
+  Readonly,
+  /// 可改
+  #[graphql(name="editable")]
+  Editable,
+}
+
+impl fmt::Display for DataPermitType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Readonly => write!(f, "readonly"),
+      Self::Editable => write!(f, "editable"),
+    }
+  }
+}
+
+impl From<DataPermitType> for SmolStr {
+  fn from(value: DataPermitType) -> Self {
+    match value {
+      DataPermitType::Readonly => "readonly".into(),
+      DataPermitType::Editable => "editable".into(),
+    }
+  }
+}
+
+impl From<DataPermitType> for String {
+  fn from(value: DataPermitType) -> Self {
+    match value {
+      DataPermitType::Readonly => "readonly".into(),
+      DataPermitType::Editable => "editable".into(),
+    }
+  }
+}
+
+impl From<DataPermitType> for ArgType {
+  fn from(value: DataPermitType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for DataPermitType {
+  fn default() -> Self {
+    Self::Editable
+  }
+}
+
+impl FromStr for DataPermitType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "readonly" => Ok(Self::Readonly),
+      "editable" => Ok(Self::Editable),
+      _ => Err(anyhow::anyhow!("DataPermitType can't convert from {s}")),
+    }
+  }
+}
+
+impl DataPermitType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Readonly => "readonly",
+      Self::Editable => "editable",
+    }
+  }
+}
+
+impl TryFrom<String> for DataPermitType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "readonly" => Ok(Self::Readonly),
+      "editable" => Ok(Self::Editable),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DataPermitType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
 }
