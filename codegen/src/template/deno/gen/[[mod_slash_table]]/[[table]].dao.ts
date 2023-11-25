@@ -12,6 +12,7 @@ const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -166,25 +167,45 @@ import * as validators from "/lib/validators/mod.ts";<#
   if (hasDict) {
 #>
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";<#
+import {
+  getDict,<#
+  if (hasRedundLbl) {
+  #>
+  val2Str,<#
+  }
+  #>
+} from "/src/base/dict_detail/dict_detail.dao.ts";<#
   }
 #><#
   if (hasDictbiz) {
 #>
 
-import * as dictbizSrcDao from "/src/base/dictbiz_detail/dictbiz_detail.dao.ts";<#
+import {
+  getDictbiz,
+} from "/src/base/dictbiz_detail/dictbiz_detail.dao.ts";<#
   }
 #>
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";<#
+import {
+  getAuthModel,<#
+  if (hasPassword) {
+  #>
+  getPassword,<#
+  }
+  #>
+} from "/lib/auth/auth.dao.ts";<#
 if (hasTenant_id) {
 #>
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";<#
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";<#
 }
 #><#
 if (hasOrgId) {
@@ -410,7 +431,7 @@ async function getWhereQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasUsrPermit) {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       whereQuery += ` and t.create_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -430,8 +451,8 @@ async function getWhereQuery(
   if (hasTenant_id) {
   #>
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -443,7 +464,7 @@ async function getWhereQuery(
   if (hasOrgId) {
   #>
   if (search?.org_id == null) {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
       whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
@@ -981,7 +1002,7 @@ export async function findAll(
     #><#
     }
     #>
-  ] = await dictSrcDao.getDict([<#
+  ] = await getDict([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1038,7 +1059,7 @@ export async function findAll(
     #><#
     }
     #>
-  ] = await dictbizSrcDao.getDictbiz([<#
+  ] = await getDictbiz([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1366,7 +1387,7 @@ export async function setIdByLbl(
     #><#
     }
     #>
-  ] = await dictSrcDao.getDict([<#
+  ] = await getDict([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1423,7 +1444,7 @@ export async function setIdByLbl(
     #><#
     }
     #>
-  ] = await dictbizSrcDao.getDictbiz([<#
+  ] = await getDictbiz([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1620,7 +1641,7 @@ export async function setIdByLbl(
   // <#=column_comment#>
   if (input.<#=column_name#> != null) {
     const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
@@ -1635,7 +1656,7 @@ export async function setIdByLbl(
   // <#=column_comment#>
   if (input.<#=column_name#> != null) {
     const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
@@ -2403,8 +2424,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -2416,7 +2437,7 @@ export async function create(
   if (input.org_id != null) {
     sql += `,org_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.org_id) {
       sql += `,org_id`;
     }
@@ -2426,7 +2447,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -2434,7 +2455,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -2527,8 +2548,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -2540,7 +2561,7 @@ export async function create(
   if (input.org_id != null) {
     sql += `,${ args.push(input.org_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.org_id) {
       sql += `,${ args.push(authModel?.org_id) }`;
     }
@@ -2550,7 +2571,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -2558,7 +2579,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -2586,7 +2607,7 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `,${ args.push(await authDao.getPassword(input.<#=column_name#>)) }`;
+    sql += `,${ args.push(await getPassword(input.<#=column_name#>)) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
@@ -2801,7 +2822,7 @@ export async function updateTenantById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -3069,7 +3090,7 @@ export async function updateById(
   #>
   if (isNotEmpty(input.<#=column_name#>)) {
     sql += `<#=column_name_mysql#> = ?,`;
-    args.push(await authDao.getPassword(input.<#=column_name#>));
+    args.push(await getPassword(input.<#=column_name#>));
     updateFldNum++;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
@@ -3146,7 +3167,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -3425,7 +3446,7 @@ export async function defaultById(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -3506,7 +3527,7 @@ export async function enableByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -3594,7 +3615,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -3813,8 +3834,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }
@@ -3822,7 +3843,7 @@ export async function findLastOrderBy(
   if (hasOrgId) {
   #>
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
       whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
