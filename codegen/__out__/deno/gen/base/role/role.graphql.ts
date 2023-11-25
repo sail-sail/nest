@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./role.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar RoleId
+
 
 type RoleModel {
   "ID"
@@ -14,23 +16,23 @@ type RoleModel {
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [MenuId!]
   "按钮权限"
   permit_ids: [String!]
   "按钮权限"
-  permit_ids_lbl: [String!]
+  permit_ids_lbl: [PermitId!]
   "数据权限"
   data_permit_ids: [String!]
   "数据权限"
-  data_permit_ids_lbl: [String!]
+  data_permit_ids_lbl: [DataPermitId!]
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -38,7 +40,7 @@ type RoleModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -46,7 +48,7 @@ type RoleModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -61,40 +63,26 @@ type RoleFieldComment {
   home_url: String!
   "菜单权限"
   menu_ids: String!
-  "菜单权限"
-  menu_ids_lbl: String!
   "按钮权限"
   permit_ids: String!
-  "按钮权限"
-  permit_ids_lbl: String!
   "数据权限"
   data_permit_ids: String!
-  "数据权限"
-  data_permit_ids_lbl: String!
   "锁定"
   is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -102,7 +90,7 @@ type RoleFieldComment {
 }
 input RoleInput {
   ""
-  id: String
+  id: RoleId
   "名称"
   lbl: String
   "首页"
@@ -110,15 +98,15 @@ input RoleInput {
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [MenuId!]
   "按钮权限"
   permit_ids: [String!]
   "按钮权限"
-  permit_ids_lbl: [String!]
+  permit_ids_lbl: [PermitId!]
   "数据权限"
   data_permit_ids: [String!]
   "数据权限"
-  data_permit_ids_lbl: [String!]
+  data_permit_ids_lbl: [DataPermitId!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -134,7 +122,7 @@ input RoleInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -142,7 +130,7 @@ input RoleInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -154,7 +142,7 @@ input RoleSearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: RoleId
   "名称"
   lbl: String
   lbl_like: String
@@ -162,13 +150,13 @@ input RoleSearch {
   home_url: String
   home_url_like: String
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   menu_ids_is_null: Boolean
   "按钮权限"
-  permit_ids: [String!]
+  permit_ids: [PermitId!]
   permit_ids_is_null: Boolean
   "数据权限"
-  data_permit_ids: [String!]
+  data_permit_ids: [DataPermitId!]
   data_permit_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
@@ -180,12 +168,12 @@ input RoleSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

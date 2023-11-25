@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./domain.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar DomainId
+
 
 type DomainModel {
   "ID"
@@ -14,15 +16,15 @@ type DomainModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "默认"
   is_default: Int!
   "默认"
-  is_default_lbl: String
+  is_default_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -30,7 +32,7 @@ type DomainModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -38,7 +40,7 @@ type DomainModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -53,32 +55,22 @@ type DomainFieldComment {
   lbl: String!
   "锁定"
   is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "默认"
   is_default: String!
-  "默认"
-  is_default_lbl: String!
   "启用"
   is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -86,7 +78,7 @@ type DomainFieldComment {
 }
 input DomainInput {
   ""
-  id: String
+  id: DomainId
   "协议"
   protocol: String
   "名称"
@@ -110,7 +102,7 @@ input DomainInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -118,7 +110,7 @@ input DomainInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -130,7 +122,7 @@ input DomainSearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: DomainId
   "协议"
   protocol: String
   protocol_like: String
@@ -149,12 +141,12 @@ input DomainSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

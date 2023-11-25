@@ -8,10 +8,12 @@ const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden")
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let table_Up = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
 let searchName = "";
+let commentName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
@@ -20,11 +22,13 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   fieldCommentName = Table_Up + "fieldComment";
   inputName = Table_Up + "input";
   searchName = Table_Up + "search";
+  commentName = Table_Up + "comment";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
+  commentName = Table_Up + "Comment";
 }
 const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
 const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
@@ -36,7 +40,11 @@ import type {
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
+  <#=fieldCommentName#> as <#=fieldCommentName#>Type,
 } from "/gen/types.ts";
+
+export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
+export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;
 
 export interface <#=searchName#> extends <#=searchName#>Type {<#
   if (hasTenant_id) {
@@ -260,56 +268,4 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   #>
 }
 
-export interface <#=fieldCommentName#> {<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_name === "is_sys") {
-      continue;
-    }
-    if (column_name === "tenant_id") {
-      continue;
-    }
-    if (column_name === "org_id") {
-      continue;
-    }
-    if (column_name === "is_deleted") {
-      continue;
-    }
-    if (column_name === "is_hidden") {
-      continue;
-    }
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const isPassword = column.isPassword;
-    if (isPassword) continue;
-    const foreignKey = column.foreignKey;
-  #><#
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-      || data_type === "datetime" || data_type === "date"
-    ) {
-  #>
-  <#=column_name#>: string;<#
-      if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
-  #>
-  <#=column_name#>_lbl: string;<#
-      }
-  #><#
-    } else {
-  #>
-  <#=column_name#>: string;<#
-    }
-  #><#
-  }
-  #>
-}
+export type { <#=fieldCommentName#>Type as <#=fieldCommentName#> };

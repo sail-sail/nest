@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./i18n.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar I18NId
+
 
 type I18Nmodel {
   "ID"
@@ -10,11 +12,11 @@ type I18Nmodel {
   "语言"
   lang_id: String!
   "语言"
-  lang_id_lbl: String
+  lang_id_lbl: LangId
   "菜单"
   menu_id: String!
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: MenuId
   "编码"
   code: String!
   "名称"
@@ -24,7 +26,7 @@ type I18Nmodel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -32,7 +34,7 @@ type I18Nmodel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -43,12 +45,8 @@ type I18Nmodel {
 type I18NfieldComment {
   "语言"
   lang_id: String!
-  "语言"
-  lang_id_lbl: String!
   "菜单"
   menu_id: String!
-  "菜单"
-  menu_id_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -57,16 +55,12 @@ type I18NfieldComment {
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -74,15 +68,15 @@ type I18NfieldComment {
 }
 input I18Ninput {
   ""
-  id: String
+  id: I18NId
   "语言"
   lang_id: String
   "语言"
-  lang_id_lbl: String
+  lang_id_lbl: LangId
   "菜单"
   menu_id: String
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: MenuId
   "编码"
   code: String
   "名称"
@@ -92,7 +86,7 @@ input I18Ninput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -100,7 +94,7 @@ input I18Ninput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,12 +106,12 @@ input I18Nsearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: I18NId
   "语言"
-  lang_id: [String!]
+  lang_id: [LangId!]
   lang_id_is_null: Boolean
   "菜单"
-  menu_id: [String!]
+  menu_id: [MenuId!]
   menu_id_is_null: Boolean
   "编码"
   code: String
@@ -129,12 +123,12 @@ input I18Nsearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

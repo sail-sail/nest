@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./dictbiz_detail.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar DictbizDetailId
+
 
 type DictbizDetailModel {
   "ID"
@@ -10,7 +12,7 @@ type DictbizDetailModel {
   "业务字典"
   dictbiz_id: String!
   "业务字典"
-  dictbiz_id_lbl: String
+  dictbiz_id_lbl: DictbizId
   "名称"
   lbl: String!
   "值"
@@ -18,11 +20,11 @@ type DictbizDetailModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -30,7 +32,7 @@ type DictbizDetailModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -38,7 +40,7 @@ type DictbizDetailModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -49,36 +51,26 @@ type DictbizDetailModel {
 type DictbizDetailFieldComment {
   "业务字典"
   dictbiz_id: String!
-  "业务字典"
-  dictbiz_id_lbl: String!
   "名称"
   lbl: String!
   "值"
   val: String!
   "锁定"
   is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -86,11 +78,11 @@ type DictbizDetailFieldComment {
 }
 input DictbizDetailInput {
   ""
-  id: String
+  id: DictbizDetailId
   "业务字典"
   dictbiz_id: String
   "业务字典"
-  dictbiz_id_lbl: String
+  dictbiz_id_lbl: DictbizId
   "名称"
   lbl: String
   "值"
@@ -110,7 +102,7 @@ input DictbizDetailInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -118,7 +110,7 @@ input DictbizDetailInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -130,9 +122,9 @@ input DictbizDetailSearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: DictbizDetailId
   "业务字典"
-  dictbiz_id: [String!]
+  dictbiz_id: [DictbizId!]
   dictbiz_id_is_null: Boolean
   "名称"
   lbl: String
@@ -150,12 +142,12 @@ input DictbizDetailSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

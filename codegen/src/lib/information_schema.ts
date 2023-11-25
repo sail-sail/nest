@@ -132,7 +132,6 @@ async function getSchema0(
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
       COLUMN_COMMENT: "系统字段",
-      dict: "is_sys",
       onlyCodegenDeno: true,
     });
   }
@@ -143,7 +142,6 @@ async function getSchema0(
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
       COLUMN_COMMENT: "隐藏记录",
-      dict: "is_hidden",
       onlyCodegenDeno: true,
     });
   }
@@ -763,4 +761,92 @@ export async function getAllTables(context: Context) {
     schemaTables = <any[]>result[0];
   }
   return schemaTables;
+}
+
+export type DictModel = {
+  id: string;
+  code: string;
+  lbl: string;
+  val: string;
+  type: string;
+};
+
+let _dictModels: DictModel[] = undefined;
+
+export async function getDictModels(context: Context) {
+  if (!_dictModels) {
+    const sql = `
+      select
+        t.id,
+        base_dict.code,
+        t.lbl,
+        t.val,
+        base_dict.type
+      from
+        base_dict_detail t
+      inner join base_dict
+        on base_dict.id = t.dict_id
+        and base_dict.is_deleted = 0
+        and base_dict.is_sys = 1
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc,
+        t.create_time asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictModels = <any[]>result[0];
+  }
+  return _dictModels;
+}
+
+let _dictbizModels: DictModel[] = undefined;
+
+export async function getDictbizModels(context: Context) {
+  if (!_dictbizModels) {
+    let tenant_id = "";
+    {
+      const sql = `
+        select t.id
+        from base_tenant t
+        where t.is_deleted = 0 and t.is_sys = 1
+        order by t.order_by asc, t.create_time asc
+        limit 1
+      `
+      const result = await context.conn.query(sql);
+      const records = <any[]>result[0];
+      if (records.length === 0) {
+        throw new Error(`租户不存在`);
+      }
+      tenant_id = records[0].id;
+    }
+    if (!tenant_id) {
+      throw new Error(`系统租户不存在`);
+    }
+    const sql = `
+      select
+        t.id,
+        base_dictbiz.code,
+        t.lbl,
+        t.val,
+        base_dictbiz.type
+      from
+        base_dictbiz_detail t
+      inner join base_dictbiz
+        on base_dictbiz.id = t.dictbiz_id
+        and base_dictbiz.is_deleted = 0
+        and base_dictbiz.is_sys = 1
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+        and t.tenant_id = ?
+      order by
+        t.order_by asc,
+        t.create_time asc
+    `;
+    const result = await context.conn.query(sql, [ tenant_id ]);
+    _dictbizModels = <any[]>result[0];
+  }
+  return _dictbizModels;
 }

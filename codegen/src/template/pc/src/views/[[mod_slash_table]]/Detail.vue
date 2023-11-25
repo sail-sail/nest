@@ -1789,7 +1789,7 @@ async function getDefaultInput() {
       ) {
         continue;
       }
-      if (!column.COLUMN_DEFAULT) continue;
+      if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
       let defaultValue = column.COLUMN_DEFAULT.toString();
       if (selectList.length > 0) {
         if (typeof selectList[0].value === "string") {

@@ -14,7 +14,7 @@ function graphqlCodegen() {
   const arr = [
     "node_modules/@graphql-codegen/cli/cjs/bin.js",
     "--config",
-    "./lib/script/graphql_codegen_config.yml",
+    "./lib/script/graphql_codegen_config.ts",
     "--watch",
   ];
   console.log("node " + arr.join(" "));

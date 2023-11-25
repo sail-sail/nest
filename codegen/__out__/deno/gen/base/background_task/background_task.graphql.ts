@@ -3,6 +3,12 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./background_task.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar BackgroundTaskId
+
+"后台任务状态"
+scalar BackgroundTaskState
+"后台任务类型"
+scalar BackgroundTaskType
 
 type BackgroundTaskModel {
   "ID"
@@ -10,13 +16,13 @@ type BackgroundTaskModel {
   "名称"
   lbl: String!
   "状态"
-  state: String!
+  state: BackgroundTaskState
   "状态"
-  state_lbl: String
+  state_lbl: String!
   "类型"
-  type: String!
+  type: BackgroundTaskType
   "类型"
-  type_lbl: String
+  type_lbl: String!
   "执行结果"
   result: String!
   "错误信息"
@@ -34,7 +40,7 @@ type BackgroundTaskModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -42,7 +48,7 @@ type BackgroundTaskModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -55,12 +61,8 @@ type BackgroundTaskFieldComment {
   lbl: String!
   "状态"
   state: String!
-  "状态"
-  state_lbl: String!
   "类型"
   type: String!
-  "类型"
-  type_lbl: String!
   "执行结果"
   result: String!
   "错误信息"
@@ -77,16 +79,12 @@ type BackgroundTaskFieldComment {
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -94,15 +92,15 @@ type BackgroundTaskFieldComment {
 }
 input BackgroundTaskInput {
   ""
-  id: String
+  id: BackgroundTaskId
   "名称"
   lbl: String
   "状态"
-  state: String
+  state: BackgroundTaskState
   "状态"
   state_lbl: String
   "类型"
-  type: String
+  type: BackgroundTaskType
   "类型"
   type_lbl: String
   "执行结果"
@@ -122,7 +120,7 @@ input BackgroundTaskInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -130,7 +128,7 @@ input BackgroundTaskInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -142,7 +140,7 @@ input BackgroundTaskSearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: BackgroundTaskId
   "名称"
   lbl: String
   lbl_like: String
@@ -164,12 +162,12 @@ input BackgroundTaskSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

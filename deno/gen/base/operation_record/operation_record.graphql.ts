@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./operation_record.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar OperationRecordId
+
 
 type OperationRecordModel {
   "ID"
@@ -26,7 +28,7 @@ type OperationRecordModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -34,7 +36,7 @@ type OperationRecordModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -61,16 +63,12 @@ type OperationRecordFieldComment {
   rem: String!
   "创建人"
   create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
@@ -78,7 +76,7 @@ type OperationRecordFieldComment {
 }
 input OperationRecordInput {
   ""
-  id: String
+  id: OperationRecordId
   "模块"
   module: String
   "模块名称"
@@ -98,7 +96,7 @@ input OperationRecordInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -106,7 +104,7 @@ input OperationRecordInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -118,7 +116,7 @@ input OperationRecordSearch {
   "ID列表"
   ids: [String]
   "ID"
-  id: String
+  id: OperationRecordId
   "模块"
   module: String
   module_like: String
@@ -144,12 +142,12 @@ input OperationRecordSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

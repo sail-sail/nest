@@ -6,7 +6,11 @@ import type {
   PermitInput as PermitInputType,
   PermitModel as PermitModelType,
   PermitSearch as PermitSearchType,
+  PermitFieldComment as PermitFieldCommentType,
 } from "/gen/types.ts";
+
+export const permitId = Symbol.for("PermitId");
+export type PermitId = typeof permitId;
 
 export interface PermitSearch extends PermitSearchType {
   $extra?: SearchExtra[];
@@ -31,19 +35,4 @@ export interface PermitInput extends PermitInputType {
   is_deleted?: number | null;
 }
 
-export interface PermitFieldComment {
-  id: string;
-  menu_id: string;
-  menu_id_lbl: string;
-  code: string;
-  lbl: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { PermitFieldCommentType as PermitFieldComment };
