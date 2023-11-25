@@ -49,24 +49,36 @@ type DataPermitModel {
   is_deleted: Int!
 }
 type DataPermitFieldComment {
+  "ID"
+  id: String!
   "菜单"
   menu_id: String!
+  "菜单"
+  menu_id_lbl: String!
   "名称"
   lbl: String!
   "范围"
   scope: String!
+  "范围"
+  scope_lbl: String!
   "类型"
   type: String!
+  "类型"
+  type_lbl: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"

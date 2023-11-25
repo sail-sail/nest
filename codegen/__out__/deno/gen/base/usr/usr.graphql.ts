@@ -65,6 +65,8 @@ type UsrModel {
   is_deleted: Int!
 }
 type UsrFieldComment {
+  "ID"
+  id: String!
   "头像"
   img: String!
   "名称"
@@ -73,28 +75,44 @@ type UsrFieldComment {
   username: String!
   "所属组织"
   org_ids: String!
+  "所属组织"
+  org_ids_lbl: String!
   "默认组织"
   default_org_id: String!
+  "默认组织"
+  default_org_id_lbl: String!
   "锁定"
   is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "所属部门"
   dept_ids: String!
+  "所属部门"
+  dept_ids_lbl: String!
   "拥有角色"
   role_ids: String!
+  "拥有角色"
+  role_ids_lbl: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"

@@ -57,10 +57,16 @@ type MenuModel {
   is_deleted: Int!
 }
 type MenuFieldComment {
+  "ID"
+  id: String!
   "类型"
   type: String!
+  "类型"
+  type_lbl: String!
   "父菜单"
   parent_id: String!
+  "父菜单"
+  parent_id_lbl: String!
   "名称"
   lbl: String!
   "路由"
@@ -69,20 +75,28 @@ type MenuFieldComment {
   route_query: String!
   "锁定"
   is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"

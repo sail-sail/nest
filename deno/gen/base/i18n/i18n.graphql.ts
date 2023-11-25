@@ -43,10 +43,16 @@ type I18Nmodel {
   is_deleted: Int!
 }
 type I18NfieldComment {
+  "ID"
+  id: String!
   "语言"
   lang_id: String!
+  "语言"
+  lang_id_lbl: String!
   "菜单"
   menu_id: String!
+  "菜单"
+  menu_id_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -55,12 +61,16 @@ type I18NfieldComment {
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"

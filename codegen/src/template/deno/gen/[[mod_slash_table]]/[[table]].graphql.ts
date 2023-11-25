@@ -254,9 +254,6 @@ type <#=fieldCommentName#> {<#
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') {
-      continue;
-    }
     if (column_name === "is_sys") {
       continue;
     }
@@ -275,19 +272,19 @@ type <#=fieldCommentName#> {<#
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
-    if (column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime") {
+    if (foreignKey) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!<#
-    } else if (column.dict || column.dictbiz) {
-      let enumColumnName = _data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
-        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
-        Column_Up = Column_Up.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
-        }).join("");
-        enumColumnName = Table_Up + Column_Up;
-      }
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!
@@ -296,9 +293,7 @@ type <#=fieldCommentName#> {<#
     } else {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!
-  "<#=column_comment#>"
-  <#=column_name#>_lbl: String!<#
+  <#=column_name#>: String!<#
     }
   }
   #>

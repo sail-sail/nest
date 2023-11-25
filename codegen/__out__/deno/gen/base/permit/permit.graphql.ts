@@ -39,8 +39,12 @@ type PermitModel {
   is_deleted: Int!
 }
 type PermitFieldComment {
+  "ID"
+  id: String!
   "菜单"
   menu_id: String!
+  "菜单"
+  menu_id_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -49,12 +53,16 @@ type PermitFieldComment {
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"

@@ -51,28 +51,42 @@ type DeptModel {
   is_deleted: Int!
 }
 type DeptFieldComment {
+  "ID"
+  id: String!
   "父部门"
   parent_id: String!
+  "父部门"
+  parent_id_lbl: String!
   "名称"
   lbl: String!
   "部门负责人"
   usr_ids: String!
+  "部门负责人"
+  usr_ids_lbl: String!
   "锁定"
   is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
   "更新人"
   update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
   "更新时间"
