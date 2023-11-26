@@ -38,6 +38,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "version") continue;
   if (column_name === "tenant_id") continue;
+  if (column_name === "org_id") continue;
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.showType === "dialog") {
     continue;
@@ -154,6 +155,7 @@ for (let i = 0; i < columns.length; i++) {
           if (column_name === "is_deleted") continue;
           if (column_name === "version") continue;
           if (column_name === "tenant_id") continue;
+          if (column_name === "org_id") continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -622,6 +624,8 @@ for (let i = 0; i < columns.length; i++) {
                 if (column_name === "is_locked") continue;
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
+                if (column_name === "tenant_id") continue;
+                if (column_name === "org_id") continue;
                 let data_type = column.DATA_TYPE;
                 let column_type = column.COLUMN_TYPE;
                 let column_comment = column.COLUMN_COMMENT || "";
@@ -1064,6 +1068,7 @@ import type {<#
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "tenant_id") continue;
+  if (column_name === "org_id") continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -1141,6 +1146,7 @@ import {<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "tenant_id") continue;
+    if (column_name === "org_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1329,6 +1335,8 @@ import type {<#
       if (column.ignoreCodegen) continue;
       if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       const data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1376,6 +1384,8 @@ import {<#
       if (column.ignoreCodegen) continue;
       if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       const data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1423,6 +1433,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "tenant_id") continue;
+    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -1468,6 +1480,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "tenant_id") continue;
+    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -1785,6 +1799,9 @@ async function getDefaultInput() {
       if (
         [
           "is_default",
+          "is_deleted",
+          "tenant_id",
+          "org_id",
         ].includes(column_name)
       ) {
         continue;
@@ -1816,8 +1833,8 @@ async function getDefaultInput() {
       } else {
         defaultValue = `"${ defaultValue }"`;
       }
-      if (column_name === "is_locked") {
-        defaultValue = "0";
+      if (data_type === "decimal") {
+        defaultValue = `"${ defaultValue }"`;
       }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
