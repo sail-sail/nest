@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./permit.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar PermitId
+
 
 type PermitModel {
   "ID"
@@ -10,7 +12,7 @@ type PermitModel {
   "菜单"
   menu_id: String!
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: MenuId
   "编码"
   code: String!
   "名称"
@@ -20,7 +22,7 @@ type PermitModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -28,7 +30,7 @@ type PermitModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -37,6 +39,8 @@ type PermitModel {
   is_deleted: Int!
 }
 type PermitFieldComment {
+  "ID"
+  id: String!
   "菜单"
   menu_id: String!
   "菜单"
@@ -66,11 +70,11 @@ type PermitFieldComment {
 }
 input PermitInput {
   ""
-  id: String
+  id: PermitId
   "菜单"
   menu_id: String
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: MenuId
   "编码"
   code: String
   "名称"
@@ -80,7 +84,7 @@ input PermitInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -88,7 +92,7 @@ input PermitInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -99,10 +103,10 @@ input PermitSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: PermitId
   "菜单"
-  menu_id: [String!]
+  menu_id: [MenuId!]
   menu_id_is_null: Boolean
   "编码"
   code: String
@@ -114,12 +118,12 @@ input PermitSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

@@ -370,8 +370,8 @@ drop table if exists `base_background_task`;
 CREATE TABLE if not exists `base_background_task` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `state` varchar(10) NOT NULL DEFAULT '' COMMENT '状态,dict:background_task_state',
-  `type` varchar(10) NOT NULL DEFAULT '' COMMENT '类型,dict:background_task_type',
+  `state` varchar(10) NOT NULL DEFAULT 'running' COMMENT '状态,dict:background_task_state',
+  `type` varchar(10) NOT NULL DEFAULT 'text' COMMENT '类型,dict:background_task_type',
   `result` varchar(500) NOT NULL DEFAULT '' COMMENT '执行结果',
   `err_msg` varchar(100) NOT NULL DEFAULT '' COMMENT '错误信息',
   `begin_time` datetime DEFAULT NULL COMMENT '开始时间',

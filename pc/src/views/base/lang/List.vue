@@ -423,7 +423,7 @@
         @row-dblclick="openView"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
-        @keydown.enter="onRowEnter"
+        @keyup.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -432,7 +432,7 @@
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
-        @keydown.ctrl.i="onInsertOrCopy"
+        @keydown.ctrl.i="onInsert"
       >
         
         <el-table-column
@@ -1195,15 +1195,11 @@ async function openCopy() {
 }
 
 /** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
-async function onInsertOrCopy() {
+async function onInsert() {
   if (isLocked) {
     return;
   }
-  if (selectedIds.length === 0) {
-    await openAdd();
-  } else {
-    await openCopy();
-  }
+  await openAdd();
 }
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
