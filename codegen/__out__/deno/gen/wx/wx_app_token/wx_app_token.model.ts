@@ -6,7 +6,11 @@ import type {
   WxAppTokenInput as WxAppTokenInputType,
   WxAppTokenModel as WxAppTokenModelType,
   WxAppTokenSearch as WxAppTokenSearchType,
+  WxAppTokenFieldComment as WxAppTokenFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxAppTokenId = Symbol.for("WxAppTokenId");
+export type WxAppTokenId = typeof wxAppTokenId;
 
 export interface WxAppTokenSearch extends WxAppTokenSearchType {
   $extra?: SearchExtra[];
@@ -27,12 +31,4 @@ export interface WxAppTokenInput extends WxAppTokenInputType {
   is_deleted?: number | null;
 }
 
-export interface WxAppTokenFieldComment {
-  id: string;
-  wx_app_id: string;
-  wx_app_id_lbl: string;
-  access_token: string;
-  token_time: string;
-  token_time_lbl: string;
-  expires_in: string;
-}
+export type { WxAppTokenFieldCommentType as WxAppTokenFieldComment };

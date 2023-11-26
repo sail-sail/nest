@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wx_app_token.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxAppTokenId
+
 
 type WxAppTokenModel {
   "ID"
@@ -10,7 +12,7 @@ type WxAppTokenModel {
   "微信小程序"
   wx_app_id: String!
   "微信小程序"
-  wx_app_id_lbl: String
+  wx_app_id_lbl: WxAppId
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -23,6 +25,8 @@ type WxAppTokenModel {
   is_deleted: Int!
 }
 type WxAppTokenFieldComment {
+  "ID"
+  id: String!
   "微信小程序"
   wx_app_id: String!
   "微信小程序"
@@ -38,11 +42,11 @@ type WxAppTokenFieldComment {
 }
 input WxAppTokenInput {
   ""
-  id: String
+  id: WxAppTokenId
   "微信小程序"
   wx_app_id: String
   "微信小程序"
-  wx_app_id_lbl: String
+  wx_app_id_lbl: WxAppId
   "令牌"
   access_token: String
   "令牌创建时间"
@@ -57,10 +61,10 @@ input WxAppTokenSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxAppTokenId
   "微信小程序"
-  wx_app_id: [String!]
+  wx_app_id: [WxAppId!]
   wx_app_id_is_null: Boolean
   "令牌"
   access_token: String

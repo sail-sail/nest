@@ -3,6 +3,16 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wx_pay_notice.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxPayNoticeId
+
+"微信支付通知交易类型"
+scalar WxPayNoticeTradeType
+"微信支付通知交易状态"
+scalar WxPayNoticeTradeState
+"微信支付通知货币类型"
+scalar WxPayNoticeCurrency
+"微信支付通知用户支付币种"
+scalar WxPayNoticePayerCurrency
 
 type WxPayNoticeModel {
   "ID"
@@ -18,13 +28,13 @@ type WxPayNoticeModel {
   "微信支付订单号"
   transaction_id: String!
   "交易类型"
-  trade_type: String!
+  trade_type: WxPayNoticeTradeType
   "交易类型"
-  trade_type_lbl: String
+  trade_type_lbl: String!
   "交易状态"
-  trade_state: String!
+  trade_state: WxPayNoticeTradeState
   "交易状态"
-  trade_state_lbl: String
+  trade_state_lbl: String!
   "交易状态描述"
   trade_state_desc: String!
   "付款银行"
@@ -40,13 +50,13 @@ type WxPayNoticeModel {
   "用户支付金额"
   payer_total: Int!
   "货币类型"
-  currency: String!
+  currency: WxPayNoticeCurrency
   "货币类型"
-  currency_lbl: String
+  currency_lbl: String!
   "用户支付币种"
-  payer_currency: String!
+  payer_currency: WxPayNoticePayerCurrency
   "用户支付币种"
-  payer_currency_lbl: String
+  payer_currency_lbl: String!
   "商户端设备号"
   device_id: String!
   "备注"
@@ -56,7 +66,7 @@ type WxPayNoticeModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -64,7 +74,7 @@ type WxPayNoticeModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -73,6 +83,8 @@ type WxPayNoticeModel {
   is_deleted: Int!
 }
 type WxPayNoticeFieldComment {
+  "ID"
+  id: String!
   "appid"
   appid: String!
   "商户号"
@@ -138,7 +150,7 @@ type WxPayNoticeFieldComment {
 }
 input WxPayNoticeInput {
   ""
-  id: String
+  id: WxPayNoticeId
   "appid"
   appid: String
   "商户号"
@@ -150,11 +162,11 @@ input WxPayNoticeInput {
   "微信支付订单号"
   transaction_id: String
   "交易类型"
-  trade_type: String
+  trade_type: WxPayNoticeTradeType
   "交易类型"
   trade_type_lbl: String
   "交易状态"
-  trade_state: String
+  trade_state: WxPayNoticeTradeState
   "交易状态"
   trade_state_lbl: String
   "交易状态描述"
@@ -172,11 +184,11 @@ input WxPayNoticeInput {
   "用户支付金额"
   payer_total: Int
   "货币类型"
-  currency: String
+  currency: WxPayNoticeCurrency
   "货币类型"
   currency_lbl: String
   "用户支付币种"
-  payer_currency: String
+  payer_currency: WxPayNoticePayerCurrency
   "用户支付币种"
   payer_currency_lbl: String
   "商户端设备号"
@@ -188,7 +200,7 @@ input WxPayNoticeInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -196,7 +208,7 @@ input WxPayNoticeInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -207,8 +219,8 @@ input WxPayNoticeSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxPayNoticeId
   "appid"
   appid: String
   appid_like: String
@@ -257,12 +269,12 @@ input WxPayNoticeSearch {
   raw: String
   raw_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

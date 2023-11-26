@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wx_usr.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxUsrId
+
 
 type WxUsrModel {
   "ID"
@@ -12,7 +14,7 @@ type WxUsrModel {
   "用户"
   usr_id: String!
   "用户"
-  usr_id_lbl: String
+  usr_id_lbl: UsrId
   "昵称"
   nick_name: String!
   "头像"
@@ -28,7 +30,7 @@ type WxUsrModel {
   "性别"
   gender: Int!
   "性别"
-  gender_lbl: String
+  gender_lbl: String!
   "城市"
   city: String!
   "省份"
@@ -40,17 +42,17 @@ type WxUsrModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "备注"
   rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -58,7 +60,7 @@ type WxUsrModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -67,6 +69,8 @@ type WxUsrModel {
   is_deleted: Int!
 }
 type WxUsrFieldComment {
+  "ID"
+  id: String!
   "名称"
   lbl: String!
   "用户"
@@ -126,13 +130,13 @@ type WxUsrFieldComment {
 }
 input WxUsrInput {
   ""
-  id: String
+  id: WxUsrId
   "名称"
   lbl: String
   "用户"
   usr_id: String
   "用户"
-  usr_id_lbl: String
+  usr_id_lbl: UsrId
   "昵称"
   nick_name: String
   "头像"
@@ -170,7 +174,7 @@ input WxUsrInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -178,7 +182,7 @@ input WxUsrInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -189,13 +193,13 @@ input WxUsrSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxUsrId
   "名称"
   lbl: String
   lbl_like: String
   "用户"
-  usr_id: [String!]
+  usr_id: [UsrId!]
   usr_id_is_null: Boolean
   "昵称"
   nick_name: String
@@ -237,12 +241,12 @@ input WxUsrSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
