@@ -551,8 +551,8 @@ async function getWhereQuery(
   }<#
   } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
-  if (isNotEmpty(search?.<#=column_name#>)) {
-    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
+  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+    whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
   }<#
   } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
@@ -566,8 +566,8 @@ async function getWhereQuery(
   }<#
   } else if (data_type === "tinyint") {
   #>
-  if (isNotEmpty(search?.<#=column_name#>)) {
-    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
+  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+    whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
   }<#
   } else if (!column.isEncrypt) {
   #>
