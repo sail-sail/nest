@@ -6,7 +6,11 @@ import type {
   DictbizDetailInput as DictbizDetailInputType,
   DictbizDetailModel as DictbizDetailModelType,
   DictbizDetailSearch as DictbizDetailSearchType,
+  DictbizDetailFieldComment as DictbizDetailFieldCommentType,
 } from "/gen/types.ts";
+
+export const dictbizDetailId = Symbol.for("DictbizDetailId");
+export type DictbizDetailId = typeof dictbizDetailId;
 
 export interface DictbizDetailSearch extends DictbizDetailSearchType {
   tenant_id?: string | null;
@@ -34,24 +38,4 @@ export interface DictbizDetailInput extends DictbizDetailInputType {
   tenant_id?: string | null;
 }
 
-export interface DictbizDetailFieldComment {
-  id: string;
-  dictbiz_id: string;
-  dictbiz_id_lbl: string;
-  lbl: string;
-  val: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { DictbizDetailFieldCommentType as DictbizDetailFieldComment };
