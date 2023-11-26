@@ -24,7 +24,8 @@
     "web": true,
     "**/__unconfig_vite.config.ts": true,
     "deno/tmp/**": true,
-    "**/.eslintrc-auto-import.json": true
+    "**/.eslintrc-auto-import.json": true,
+    "**/vite.config.mts.timestamp-*.mjs": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -53,7 +54,8 @@
     "**/.nuxt/**": true,
     "web": true,
     "**/*/types.ts": true,
-    "**/.eslintrc-auto-import.json": true
+    "**/.eslintrc-auto-import.json": true,
+    "**/vite.config.mts.timestamp-*.mjs": true
   },
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
@@ -77,6 +79,5 @@
   "files.eol": "\n",
   "volar.updateImportsOnFileMove.enabled": false,
   "volar.codeLens.references": false,
-  "references.preferredLocation": "peek",
-  "deno.suggest.autoImports": false
+  "references.preferredLocation": "peek"
 }
