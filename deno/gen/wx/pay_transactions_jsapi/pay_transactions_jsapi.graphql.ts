@@ -3,6 +3,12 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./pay_transactions_jsapi.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar PayTransactionsJsapiId
+
+"微信JSAPI下单交易状态"
+scalar PayTransactionsJsapiTradeState
+"微信JSAPI下单货币类型"
+scalar PayTransactionsJsapiCurrency
 
 type PayTransactionsJsapiModel {
   "ID"
@@ -18,9 +24,9 @@ type PayTransactionsJsapiModel {
   "微信支付订单号"
   transaction_id: String!
   "交易状态"
-  trade_state: String!
+  trade_state: PayTransactionsJsapiTradeState
   "交易状态"
-  trade_state_lbl: String
+  trade_state_lbl: String!
   "交易状态描述"
   trade_state_desc: String!
   "支付完成时间"
@@ -38,13 +44,13 @@ type PayTransactionsJsapiModel {
   "是否支持发票"
   support_fapiao: Int!
   "是否支持发票"
-  support_fapiao_lbl: String
+  support_fapiao_lbl: String!
   "订单金额(分)"
   total_fee: Int!
   "货币类型"
-  currency: String!
+  currency: PayTransactionsJsapiCurrency
   "货币类型"
-  currency_lbl: String
+  currency_lbl: String!
   "用户标识"
   openid: String!
   "预支付交易会话标识"
@@ -52,7 +58,7 @@ type PayTransactionsJsapiModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -60,7 +66,7 @@ type PayTransactionsJsapiModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -69,6 +75,8 @@ type PayTransactionsJsapiModel {
   is_deleted: Int!
 }
 type PayTransactionsJsapiFieldComment {
+  "ID"
+  id: String!
   "appid"
   appid: String!
   "商户号"
@@ -130,7 +138,7 @@ type PayTransactionsJsapiFieldComment {
 }
 input PayTransactionsJsapiInput {
   ""
-  id: String
+  id: PayTransactionsJsapiId
   "appid"
   appid: String
   "商户号"
@@ -142,7 +150,7 @@ input PayTransactionsJsapiInput {
   "微信支付订单号"
   transaction_id: String
   "交易状态"
-  trade_state: String
+  trade_state: PayTransactionsJsapiTradeState
   "交易状态"
   trade_state_lbl: String
   "交易状态描述"
@@ -166,7 +174,7 @@ input PayTransactionsJsapiInput {
   "订单金额(分)"
   total_fee: Int
   "货币类型"
-  currency: String
+  currency: PayTransactionsJsapiCurrency
   "货币类型"
   currency_lbl: String
   "用户标识"
@@ -176,7 +184,7 @@ input PayTransactionsJsapiInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -184,7 +192,7 @@ input PayTransactionsJsapiInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -195,8 +203,8 @@ input PayTransactionsJsapiSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: PayTransactionsJsapiId
   "appid"
   appid: String
   appid_like: String
@@ -244,12 +252,12 @@ input PayTransactionsJsapiSearch {
   prepay_id: String
   prepay_id_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

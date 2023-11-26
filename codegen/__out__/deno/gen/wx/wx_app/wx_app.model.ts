@@ -6,7 +6,11 @@ import type {
   WxAppInput as WxAppInputType,
   WxAppModel as WxAppModelType,
   WxAppSearch as WxAppSearchType,
+  WxAppFieldComment as WxAppFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxAppId = Symbol.for("WxAppId");
+export type WxAppId = typeof wxAppId;
 
 export interface WxAppSearch extends WxAppSearchType {
   tenant_id?: string | null;
@@ -30,23 +34,4 @@ export interface WxAppInput extends WxAppInputType {
   tenant_id?: string | null;
 }
 
-export interface WxAppFieldComment {
-  id: string;
-  lbl: string;
-  appid: string;
-  appsecret: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { WxAppFieldCommentType as WxAppFieldComment };

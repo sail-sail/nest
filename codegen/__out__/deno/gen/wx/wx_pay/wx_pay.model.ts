@@ -6,7 +6,11 @@ import type {
   WxPayInput as WxPayInputType,
   WxPayModel as WxPayModelType,
   WxPaySearch as WxPaySearchType,
+  WxPayFieldComment as WxPayFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxPayId = Symbol.for("WxPayId");
+export type WxPayId = typeof wxPayId;
 
 export interface WxPaySearch extends WxPaySearchType {
   tenant_id?: string | null;
@@ -30,28 +34,4 @@ export interface WxPayInput extends WxPayInputType {
   tenant_id?: string | null;
 }
 
-export interface WxPayFieldComment {
-  id: string;
-  lbl: string;
-  appid: string;
-  mchid: string;
-  public_key: string;
-  private_key: string;
-  v3_key: string;
-  payer_client_ip: string;
-  notify_url: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { WxPayFieldCommentType as WxPayFieldComment };

@@ -296,7 +296,7 @@
         @header-dragend="headerDragend"
         @row-dblclick="openView"
         @keydown.escape="onEmptySelected"
-        @keydown.enter="onRowEnter"
+        @keyup.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
