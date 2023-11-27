@@ -65,5 +65,10 @@
   "volar.updateImportsOnFileMove.enabled": false,
   "volar.codeLens.references": false,
   "references.preferredLocation": "peek",
-  "deno.suggest.autoImports": false
+  "pair-diff.patterns": [
+    {
+      "source": "./gen/**/*/*.ts",
+      "target": "../codegen/template/<basename>"
+    },
+  ]
 }
