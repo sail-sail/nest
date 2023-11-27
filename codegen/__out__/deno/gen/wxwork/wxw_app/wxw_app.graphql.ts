@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wxw_app.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxwAppId
+
 
 type WxwAppModel {
   "ID"
@@ -16,7 +18,7 @@ type WxwAppModel {
   "可信域名"
   domain_id: String!
   "可信域名"
-  domain_id_lbl: String
+  domain_id_lbl: DomainId
   "应用密钥"
   corpsecret: String!
   "通讯录密钥"
@@ -24,11 +26,11 @@ type WxwAppModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -37,6 +39,8 @@ type WxwAppModel {
   is_deleted: Int!
 }
 type WxwAppFieldComment {
+  "ID"
+  id: String!
   "名称"
   lbl: String!
   "企业ID"
@@ -66,7 +70,7 @@ type WxwAppFieldComment {
 }
 input WxwAppInput {
   ""
-  id: String
+  id: WxwAppId
   "名称"
   lbl: String
   "企业ID"
@@ -76,7 +80,7 @@ input WxwAppInput {
   "可信域名"
   domain_id: String
   "可信域名"
-  domain_id_lbl: String
+  domain_id_lbl: DomainId
   "应用密钥"
   corpsecret: String
   "通讯录密钥"
@@ -99,8 +103,8 @@ input WxwAppSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxwAppId
   "名称"
   lbl: String
   lbl_like: String
@@ -111,7 +115,7 @@ input WxwAppSearch {
   agentid: String
   agentid_like: String
   "可信域名"
-  domain_id: [String!]
+  domain_id: [DomainId!]
   domain_id_is_null: Boolean
   "锁定"
   is_locked: [Int!]

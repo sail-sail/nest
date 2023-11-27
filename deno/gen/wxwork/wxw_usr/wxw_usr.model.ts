@@ -6,7 +6,11 @@ import type {
   WxwUsrInput as WxwUsrInputType,
   WxwUsrModel as WxwUsrModelType,
   WxwUsrSearch as WxwUsrSearchType,
+  WxwUsrFieldComment as WxwUsrFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxwUsrId = Symbol.for("WxwUsrId");
+export type WxwUsrId = typeof wxwUsrId;
 
 export interface WxwUsrSearch extends WxwUsrSearchType {
   tenant_id?: string | null;
@@ -66,18 +70,4 @@ export interface WxwUsrInput extends WxwUsrInputType {
   tenant_id?: string | null;
 }
 
-export interface WxwUsrFieldComment {
-  id: string;
-  lbl: string;
-  userid: string;
-  mobile: string;
-  gender: string;
-  email: string;
-  biz_email: string;
-  direct_leader: string;
-  position: string;
-  avatar: string;
-  thumb_avatar: string;
-  qr_code: string;
-  rem: string;
-}
+export type { WxwUsrFieldCommentType as WxwUsrFieldComment };

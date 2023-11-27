@@ -36,15 +36,23 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   encrypt,
@@ -81,8 +89,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -302,7 +310,7 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -346,7 +354,7 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -787,8 +795,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -796,7 +804,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -804,7 +812,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -843,8 +851,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -852,7 +860,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -860,7 +868,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -941,7 +949,7 @@ export async function updateTenantById(
   const table = "wxwork_wxw_app";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1101,7 +1109,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -1227,7 +1235,7 @@ export async function enableByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1297,7 +1305,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1450,8 +1458,8 @@ export async function findLastOrderBy(
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);
   {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }
   if (whereQuery.length > 0) {

@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wxw_app_token.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxwAppTokenId
+
 
 type WxwAppTokenModel {
   "ID"
@@ -10,7 +12,7 @@ type WxwAppTokenModel {
   "企微应用"
   wxw_app_id: String!
   "企微应用"
-  wxw_app_id_lbl: String
+  wxw_app_id_lbl: WxwAppId
   "类型corp和contact"
   type: String!
   "令牌"
@@ -25,6 +27,8 @@ type WxwAppTokenModel {
   is_deleted: Int!
 }
 type WxwAppTokenFieldComment {
+  "ID"
+  id: String!
   "企微应用"
   wxw_app_id: String!
   "企微应用"
@@ -42,11 +46,11 @@ type WxwAppTokenFieldComment {
 }
 input WxwAppTokenInput {
   ""
-  id: String
+  id: WxwAppTokenId
   "企微应用"
   wxw_app_id: String
   "企微应用"
-  wxw_app_id_lbl: String
+  wxw_app_id_lbl: WxwAppId
   "类型corp和contact"
   type: String
   "令牌"
@@ -63,10 +67,10 @@ input WxwAppTokenSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxwAppTokenId
   "企微应用"
-  wxw_app_id: [String!]
+  wxw_app_id: [WxwAppId!]
   wxw_app_id_is_null: Boolean
   "类型corp和contact"
   type: String

@@ -6,7 +6,11 @@ import type {
   DataPermitInput as DataPermitInputType,
   DataPermitModel as DataPermitModelType,
   DataPermitSearch as DataPermitSearchType,
+  DataPermitFieldComment as DataPermitFieldCommentType,
 } from "/gen/types.ts";
+
+export const dataPermitId = Symbol.for("DataPermitId");
+export type DataPermitId = typeof dataPermitId;
 
 export interface DataPermitSearch extends DataPermitSearchType {
   $extra?: SearchExtra[];
@@ -31,22 +35,4 @@ export interface DataPermitInput extends DataPermitInputType {
   is_deleted?: number | null;
 }
 
-export interface DataPermitFieldComment {
-  id: string;
-  menu_id: string;
-  menu_id_lbl: string;
-  lbl: string;
-  scope: string;
-  scope_lbl: string;
-  type: string;
-  type_lbl: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { DataPermitFieldCommentType as DataPermitFieldComment };
