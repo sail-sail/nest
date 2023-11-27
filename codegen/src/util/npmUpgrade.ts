@@ -1,6 +1,8 @@
 import { execSync } from "node:child_process";
 
 const parentBranchs = [
+  "main",
+  "deno4wx",
 ];
 
 async function exec() {

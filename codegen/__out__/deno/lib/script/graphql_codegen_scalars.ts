@@ -160,4 +160,70 @@ export const scalars = {
     "output": `import("/gen/base/usr/usr.model.ts").BaseUsrId`,
   },
   
+  // 微信JSAPI下单ID
+  "WxPayTransactionsJsapiId": {
+    "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiId`,
+    "output": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiId`,
+  },
+  // 微信JSAPI下单交易状态
+  "WxPayTransactionsJsapiTradeState": {
+    "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiTradeState`,
+    "output": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiTradeState`,
+  },
+  // 微信JSAPI下单货币类型
+  "WxPayTransactionsJsapiCurrency": {
+    "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiCurrency`,
+    "output": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiCurrency`,
+  },
+  
+  // 微信小程序ID
+  "WxWxAppId": {
+    "input": `import("/gen/wx/wx_app/wx_app.model.ts").WxWxAppId`,
+    "output": `import("/gen/wx/wx_app/wx_app.model.ts").WxWxAppId`,
+  },
+  
+  // 小程序接口凭据ID
+  "WxWxAppTokenId": {
+    "input": `import("/gen/wx/wx_app_token/wx_app_token.model.ts").WxWxAppTokenId`,
+    "output": `import("/gen/wx/wx_app_token/wx_app_token.model.ts").WxWxAppTokenId`,
+  },
+  
+  // 微信支付ID
+  "WxWxPayId": {
+    "input": `import("/gen/wx/wx_pay/wx_pay.model.ts").WxWxPayId`,
+    "output": `import("/gen/wx/wx_pay/wx_pay.model.ts").WxWxPayId`,
+  },
+  
+  // 微信支付通知ID
+  "WxWxPayNoticeId": {
+    "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeId`,
+    "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeId`,
+  },
+  // 微信支付通知交易类型
+  "WxWxPayNoticeTradeType": {
+    "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeTradeType`,
+    "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeTradeType`,
+  },
+  // 微信支付通知交易状态
+  "WxWxPayNoticeTradeState": {
+    "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeTradeState`,
+    "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeTradeState`,
+  },
+  // 微信支付通知货币类型
+  "WxWxPayNoticeCurrency": {
+    "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeCurrency`,
+    "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticeCurrency`,
+  },
+  // 微信支付通知用户支付币种
+  "WxWxPayNoticePayerCurrency": {
+    "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticePayerCurrency`,
+    "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxWxPayNoticePayerCurrency`,
+  },
+  
+  // 微信用户ID
+  "WxWxUsrId": {
+    "input": `import("/gen/wx/wx_usr/wx_usr.model.ts").WxWxUsrId`,
+    "output": `import("/gen/wx/wx_usr/wx_usr.model.ts").WxWxUsrId`,
+  },
+  
 };

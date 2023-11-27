@@ -5,7 +5,7 @@ let port: string | undefined = undefined;
 let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
-let appid = "wxd4b24c53a1813485";
+let appid = "wxa7caabcfd1914512";
 let agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
