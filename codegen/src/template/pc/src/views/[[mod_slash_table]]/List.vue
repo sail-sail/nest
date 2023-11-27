@@ -86,6 +86,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "version") continue;
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
+        if (column_name === "org_id") continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
         let column_comment = column.COLUMN_COMMENT || "";
@@ -853,7 +854,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.delete="onDeleteByIds"<#
         }
         #>
-        @keydown.enter="onRowEnter"
+        @keyup.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -868,7 +869,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         #><#
         if (opts.noAdd !== true) {
         #>
-        @keydown.ctrl.i="onInsertOrCopy"<#
+        @keydown.ctrl.i="onInsert"<#
         }
         #>
       >
@@ -895,6 +896,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
+            if (column_name === "org_id") continue;
             const foreignKey = column.foreignKey;
             let data_type = column.DATA_TYPE;
             let column_type = column.COLUMN_TYPE;
@@ -925,6 +927,17 @@ const hasAtt = columns.some((item) => item.isAtt);
                   v-model="row[column.property]"
                 ></LinkImage>
               </template>
+            </el-table-column>
+          </template><#
+            } else if (data_type === "decimal") {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template><#
             } else if (column.isEncrypt) {
@@ -2548,15 +2561,11 @@ async function openCopy() {
 }
 
 /** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
-async function onInsertOrCopy() {
+async function onInsert() {
   if (isLocked) {
     return;
   }
-  if (selectedIds.length === 0) {
-    await openAdd();
-  } else {
-    await openCopy();
-  }
+  await openAdd();
 }<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>

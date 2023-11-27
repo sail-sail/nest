@@ -6,7 +6,11 @@ import type {
   I18Ninput as I18NinputType,
   I18Nmodel as I18NmodelType,
   I18Nsearch as I18NsearchType,
+  I18NfieldComment as I18NfieldCommentType,
 } from "/gen/types.ts";
+
+export const i18nId = Symbol.for("I18NId");
+export type I18NId = typeof i18nId;
 
 export interface I18Nsearch extends I18NsearchType {
   $extra?: SearchExtra[];
@@ -27,21 +31,4 @@ export interface I18Ninput extends I18NinputType {
   is_deleted?: number | null;
 }
 
-export interface I18NfieldComment {
-  id: string;
-  lang_id: string;
-  lang_id_lbl: string;
-  menu_id: string;
-  menu_id_lbl: string;
-  code: string;
-  lbl: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { I18NfieldCommentType as I18NfieldComment };

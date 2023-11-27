@@ -6,7 +6,11 @@ import type {
   WxwMsgInput as WxwMsgInputType,
   WxwMsgModel as WxwMsgModelType,
   WxwMsgSearch as WxwMsgSearchType,
+  WxwMsgFieldComment as WxwMsgFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxwMsgId = Symbol.for("WxwMsgId");
+export type WxwMsgId = typeof wxwMsgId;
 
 export interface WxwMsgSearch extends WxwMsgSearchType {
   tenant_id?: string | null;
@@ -38,19 +42,4 @@ export interface WxwMsgInput extends WxwMsgInputType {
   tenant_id?: string | null;
 }
 
-export interface WxwMsgFieldComment {
-  id: string;
-  wxw_app_id: string;
-  wxw_app_id_lbl: string;
-  errcode: string;
-  errcode_lbl: string;
-  touser: string;
-  title: string;
-  description: string;
-  url: string;
-  btntxt: string;
-  create_time: string;
-  create_time_lbl: string;
-  errmsg: string;
-  msgid: string;
-}
+export type { WxwMsgFieldCommentType as WxwMsgFieldComment };

@@ -35,6 +35,38 @@ const hasSummary = columns.some((column) => column.showSummary);
 import * as resolver from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar <#=Table_Up#>Id
+<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const data_type = column.DATA_TYPE;
+  const column_comment = column.COLUMN_COMMENT;
+#><#
+  if (
+    (column.dict || column.dictbiz) &&
+    ![ "int", "decimal", "tinyint" ].includes(data_type)
+  ) {
+    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+    Column_Up = Column_Up.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const enumColumnName = Table_Up + Column_Up;
+#>
+"<#=table_comment#><#=column_comment#>"
+scalar <#=enumColumnName#><#
+  }
+  #><#
+}
+#>
 
 type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
@@ -44,6 +76,11 @@ type <#=modelName#> {<#
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
       continue;
@@ -63,15 +100,16 @@ type <#=modelName#> {<#
     let _data_type = "String";
     if (column_name === 'id') {
       data_type = 'String';
+      _data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey && foreignKey.multiple) {
       data_type = '[String!]';
-      _data_type = "[String!]";
+      _data_type = `[${ foreignTable_Up }Id!]`;
       is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'String';
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -84,6 +122,7 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
+      _data_type = "Int";
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'String';
@@ -93,9 +132,11 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'tinyint') {
       data_type = 'Int';
+      _data_type = "Int";
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Decimal';
+      _data_type = "Decimal";
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -124,12 +165,24 @@ type <#=modelName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
-      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
-    ) {
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if (column.dict || column.dictbiz) {
+      let enumColumnName = data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
     } else {
@@ -183,10 +236,14 @@ type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let column_comment = column.COLUMN_COMMENT;
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -195,9 +252,6 @@ type <#=fieldCommentName#> {<#
     }
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_name === 'id') {
-      continue;
     }
     if (column_name === "is_sys") {
       continue;
@@ -217,15 +271,19 @@ type <#=fieldCommentName#> {<#
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
-      && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
-    ) {
+    if (foreignKey) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!<#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
-      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
-    ) {
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!
@@ -234,9 +292,7 @@ type <#=fieldCommentName#> {<#
     } else {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!
-  "<#=column_comment#>"
-  <#=column_name#>_lbl: String!<#
+  <#=column_name#>: String!<#
     }
   }
   #>
@@ -249,6 +305,11 @@ input <#=inputName#> {<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
       continue;
@@ -264,15 +325,15 @@ input <#=inputName#> {<#
     }
     let _data_type = "String";
     if (column_name === 'id') {
-      data_type = 'String';
+      data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey && foreignKey.multiple) {
       data_type = '[String!]';
-      _data_type = "[String!]";
+      _data_type = `[${ foreignTable_Up }Id!]`;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'String';
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -312,7 +373,13 @@ input <#=inputName#> {<#
     }
     if (column_name === 'id') column_comment = '';
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+    if (foreignKey) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: <#=_data_type#><#
+    } else if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
   #>
@@ -324,12 +391,20 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
-    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: <#=_data_type#><#
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"
@@ -388,6 +463,11 @@ input <#=searchName#> {
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const search = column.search;
@@ -407,10 +487,10 @@ input <#=searchName#> {
       continue;
     }
     if (column_name === 'id') {
-      data_type = 'String';
+      data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey) {
-      data_type = '[String!]';
+      data_type = `[${ foreignTable_Up }Id!]`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -485,7 +565,7 @@ input <#=searchName#> {
   <#=column_name#>: <#=data_type#><#
     } else if (column_name === "id") {
   #>
-  "<#=column_comment#>"
+  "ID"
   <#=column_name#>: <#=data_type#><#
     } else if (
       column.DATA_TYPE === "int"

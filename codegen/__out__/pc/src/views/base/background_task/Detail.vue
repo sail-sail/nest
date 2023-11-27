@@ -358,6 +358,8 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: BackgroundTaskInput = {
+    state: "running",
+    type: "text",
   };
   return defaultInput;
 }

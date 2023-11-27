@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./tenant.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar TenantId
+
 
 type TenantModel {
   "ID"
@@ -12,19 +14,19 @@ type TenantModel {
   "所属域名"
   domain_ids: [String!]
   "所属域名"
-  domain_ids_lbl: [String!]
+  domain_ids_lbl: [DomainId!]
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [MenuId!]
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -32,7 +34,7 @@ type TenantModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -40,7 +42,7 @@ type TenantModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -49,6 +51,8 @@ type TenantModel {
   is_deleted: Int!
 }
 type TenantFieldComment {
+  "ID"
+  id: String!
   "名称"
   lbl: String!
   "所属域名"
@@ -90,17 +94,17 @@ type TenantFieldComment {
 }
 input TenantInput {
   ""
-  id: String
+  id: TenantId
   "名称"
   lbl: String
   "所属域名"
   domain_ids: [String!]
   "所属域名"
-  domain_ids_lbl: [String!]
+  domain_ids_lbl: [DomainId!]
   "菜单权限"
   menu_ids: [String!]
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [MenuId!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -116,7 +120,7 @@ input TenantInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -124,7 +128,7 @@ input TenantInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -135,16 +139,16 @@ input TenantSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: TenantId
   "名称"
   lbl: String
   lbl_like: String
   "所属域名"
-  domain_ids: [String!]
+  domain_ids: [DomainId!]
   domain_ids_is_null: Boolean
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   menu_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
@@ -156,12 +160,12 @@ input TenantSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
