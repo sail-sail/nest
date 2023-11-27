@@ -161,8 +161,8 @@ export default defineConfig({
           "@/store/dirty": [
             [ "default", "useDirtyStore" ],
           ],
-          "@/utils/axios": [
-            "axios",
+          "@/utils/request": [
+            "request",
             "uploadFile",
             "getDownloadUrl",
             "downloadById",

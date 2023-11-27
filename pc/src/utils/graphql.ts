@@ -1,6 +1,5 @@
 import { uniqueID, uuid } from "./StringUtil";
 import { ElMessage } from "element-plus";
-import { axios } from "./axios";
 
 import {
   type FieldNode,
@@ -16,10 +15,12 @@ import combinedQuery from "graphql-combine-query";
 import useUsrStore from "../store/usr";
 import useBackground_taskStore from "../store/background_task";
 
+import { request } from "./request";
+
 export {
-  axios,
+  request,
   baseURL,
-} from "./axios";
+} from "./request";
 
 declare global {
   
@@ -302,7 +303,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   }
   let rvData: any = undefined;
   try {
-    rvData = await axios.request({
+    rvData = await request({
       method: "post",
       url: `/graphql`,
       data: gqlArg,
