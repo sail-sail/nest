@@ -30,6 +30,7 @@
     "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
     "chakrounanas.turbo-console-log",
-    "johnsoncodehk.vscode-tsconfig-helper"
+    "johnsoncodehk.vscode-tsconfig-helper",
+    "antfu.pair-diff"
   ]
 }

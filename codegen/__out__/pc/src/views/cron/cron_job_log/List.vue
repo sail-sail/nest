@@ -333,7 +333,7 @@
         @row-dblclick="openView"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
-        @keydown.enter="onRowEnter"
+        @keyup.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
