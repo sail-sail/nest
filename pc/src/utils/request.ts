@@ -1,141 +1,129 @@
-import Axios, { type AxiosRequestConfig } from "axios";
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr";
 import useIndexStore from "../store/index";
 import { saveAs } from "file-saver";
 
-// const CancelToken = Axios.CancelToken;
+import cfg from "./config";
 
 export const baseURL = "";
 
-export const axios = Axios.create({
-  baseURL,
-  timeout: 60000,
-  timeoutErrorMessage: "请求超时!",
-});
-
-// 前置拦截器（发起请求之前的拦截）
-axios.interceptors.request.use(
-  (config) => {
-    const usrStore = useUsrStore();
-    const indexStore = useIndexStore();
-    const authorization: string = usrStore.authorization;
-    if (authorization) {
-      if (!authorization.startsWith("Bearer ")) {
-        config.headers = config.headers || { };
-        (config.headers as any).Authorization = `Bearer ${ authorization }`;
-      } else {
-        config.headers = config.headers || { };
-        (config.headers as any).Authorization = authorization;
+export async function request<T>(
+  config: {
+    url?: string;
+    reqType?: string;
+    notLoading?: boolean;
+    showErrMsg?: boolean;
+    header?: Headers;
+    notLogin?: boolean;
+    method?: string;
+    data?: any;
+    duration?: number;
+  },
+): Promise<T> {
+  const indexStore = useIndexStore(cfg.pinia);
+  const usrStore = useUsrStore(cfg.pinia);
+  let err: Error | undefined;
+  let res: {
+    data: any;
+    header: Headers;
+  } | undefined;
+  try {
+    if (config.reqType !== "graphql") {
+      if (isEmpty(config.url)) {
+        throw new Error("config.url is empty");
       }
+      config.url = `${ baseURL }/${ config.url }`;
     }
-    const configAny = config as any;
-    if (configAny.notLoading !== true) {
+    if (!config.notLoading) {
       indexStore.addLoading();
-      if (configAny.isMutation) {
-        if (indexStore.mutationLoading > 0) {
-          console.error("正在执行其他修改操作");
-          throw "";
-          // const source = CancelToken.source();
-          // config.cancelToken = source.token;
-          // return config;
-        }
-        indexStore.mutationLoading++;
-      }
     }
-    return config;
-  },
-  (error) => {
-    const indexStore = useIndexStore();
-    indexStore.minusLoading();
-    return Promise.reject(error);
-  },
-);
-
-// 后置拦截器（获取到响应时的拦截）
-axios.interceptors.response.use(
-  (response) => {
-    const indexStore = useIndexStore();
-    const usrStore = useUsrStore();
-    const config = response.config;
-    const configAny = config as any;
-    if (configAny.notLoading !== true) {
-      if (configAny.isMutation) {
-        if (indexStore.mutationLoading > 0) {
-          indexStore.mutationLoading--;
-        }
-      }
+    config.header = config.header || new Headers();
+    
+    const authorization = usrStore.authorization;
+    if (authorization) {
+      config.header.set("authorization", authorization);
+    }
+    
+    config.header.set("content-type", "application/json; charset=utf-8");
+    
+    const body = JSON.stringify(config.data);
+    const resFt = await fetch(config.url!, {
+      headers: config.header,
+      method: config.method || "post",
+      body,
+    });
+    if (resFt.status !== 200) {
+      throw resFt;
+    }
+    const data = await resFt.json();
+    res = {
+      data,
+      header: resFt.headers,
+    };
+  } catch(errTmp) {
+    err = (errTmp as Error);
+  } finally {
+    if (!config.notLoading) {
       indexStore.minusLoading();
     }
-    const headers = response.headers;
-    if (headers["authorization"]) {
-      let authorization = headers["authorization"];
-      if (authorization.startsWith("Bearer ")) {
-        authorization = authorization.substring(7);
-      }
-      usrStore.refreshToken(authorization);
+  }
+  const header = res?.header || new Headers();
+  let authorization = header?.get("authorization");
+  if (authorization) {
+    if (authorization.startsWith("Bearer ")) {
+      authorization = authorization.substring(7);
     }
-    if (configAny.reqType === "graphql") {
-      return response;
-    }
-    const data: any = response.data;
-    if (data.key === "token_empty" || data.key === "refresh_token_expired") {
-      indexStore.logout();
-      return data;
-    }
-    if (data.code !== 0) {
-      const errMsg = <string>data.msg;
-      if (configAny.showErrMsg !== false) {
-        if (errMsg) {
-          ElMessage({
-            offset: 0,
-            type: "error",
-            showClose: true,
-            message: errMsg,
-            duration: configAny.duration,
-          });
-        }
-      }
-      return Promise.reject(data);
-    }
-    return response;
-  },
-  (error) => {
-    const indexStore = useIndexStore();
-    indexStore.mutationLoading--;
-    if (indexStore.mutationLoading > 0) {
-      indexStore.mutationLoading--;
-    }
-    indexStore.minusLoading();
-    let errMsg = "";
-    if (error.code === "ERR_NETWORK") {
-      errMsg = "网络连接失败!";
-    } else if (error.code === "ECONNABORTED") {
-      errMsg = "请求超时!";
-    }
+    usrStore.refreshToken(authorization);
+  }
+  
+  if (err && (!config || config.showErrMsg !== false)) {
+    const errMsg = (err as any).errMsg || err.toString();
     if (errMsg) {
       ElMessage({
         offset: 0,
         type: "error",
         showClose: true,
         message: errMsg,
+        duration: config.duration,
       });
     }
-    return Promise.reject(error);
-  },
-);
+    throw err;
+  }
+  const data = res!.data;
+  if (config.reqType === "graphql") {
+    return res as T;
+  }
+  if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
+    indexStore.logout();
+    return data;
+  }
+  if (data && data.code !== 0) {
+    if (data.msg && (!config || config.showErrMsg !== false)) {
+      const errMsg = data.msg;
+      if (errMsg) {
+        ElMessage({
+          offset: 0,
+          type: "error",
+          showClose: true,
+          message: errMsg,
+          duration: config.duration,
+        });
+      }
+    }
+    throw data;
+  }
+  return data;
+}
 
-/**
- * 上传文件
- * @export
- * @param {File} file 需要上传的文件
- * @param {{ [key: string]: any }} data 上传文件时需要附带的数据
- * @param {AxiosRequestConfig<FormData>} config 配置选项, type: oss 或者 tmpfile, 默认为 oss
- */
 export async function uploadFile(
   file: File,
   data?: { [key: string]: any },
-  config?: AxiosRequestConfig<FormData> & { type?: "oss"|"tmpfile" },
+  config?: {
+    url?: string;
+    method?: string;
+    type?: "oss"|"tmpfile",
+    data?: FormData;
+  },
 ) {
   config = config || { };
   config.type = config.type || "oss";
@@ -151,12 +139,12 @@ export async function uploadFile(
     }
   }
   config.data = formData;
-  const res = await axios.request<{
+  const res = await request<{
     code: number;
     msg: string;
     data: string;
   }>(config);
-  const id = res.data.data;
+  const id = res.data;
   return id;
 }
 

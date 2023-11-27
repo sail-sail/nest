@@ -1,6 +1,6 @@
 import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
-import { Context } from "./information_schema";
+import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
 import { basename, dirname, resolve, normalize } from "path";
 import * as chalk from "chalk";
@@ -120,14 +120,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   }
   
   let optTables = tables;
-  const result = await context.conn.query(`
-    select
-      t.TABLE_NAME
-      ,t.TABLE_COMMENT
-    from information_schema.TABLES t
-    where t.table_schema = (select database())
-  `);
-  const records: any = result[0];
+  const allTables = await getAllTables(context);
+  const dictModels = await getDictModels(context);
+  const dictbizModels = await getDictbizModels(context);
   
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
@@ -283,6 +278,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/deno/gen/graphql.ts") {
         return;
       }
+      if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
+        return;
+      }
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
@@ -407,16 +405,9 @@ export async function genMenu(context: Context) {
 
 export async function genRouter(context: Context) {
   let optTables = tables;
-  const result = await context.conn.query(`
-    select
-      t.TABLE_NAME
-      ,t.TABLE_COMMENT
-    from information_schema.TABLES t
-    where t.table_schema = (select database())
-  `);
-  const records: any = result[0];
-  for (let i = 0; i < records.length; i++) {
-    const record = records[i];
+  const allTables: any = await getAllTables(context);
+  for (let i = 0; i < allTables.length; i++) {
+    const record = allTables[i];
     if (optTables[record.TABLE_NAME] == null) {
       continue;
     }
@@ -425,6 +416,7 @@ export async function genRouter(context: Context) {
   const files = [
     "pc/src/router/gen.ts",
     "deno/gen/graphql.ts",
+    "deno/lib/script/graphql_codegen_scalars.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
