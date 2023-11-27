@@ -7,6 +7,8 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_service;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
   search: Option<WxwAppTokenSearch>,
@@ -55,9 +57,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: WxwAppTokenId,
   options: Option<Options>,
 ) -> Result<Option<WxwAppTokenModel>> {
   
@@ -74,7 +76,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: WxwAppTokenInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwAppTokenId> {
   
   let input = wxw_app_token_service::set_id_by_lbl(
     input,
@@ -96,8 +98,8 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: WxwAppTokenId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -113,10 +115,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: String,
+  id: WxwAppTokenId,
   input: WxwAppTokenInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwAppTokenId> {
   
   let input = wxw_app_token_service::set_id_by_lbl(
     input,
@@ -139,7 +141,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -171,7 +173,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -191,7 +193,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

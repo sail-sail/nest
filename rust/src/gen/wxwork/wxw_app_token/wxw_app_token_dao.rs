@@ -32,6 +32,9 @@ use crate::common::gql::model::{
 
 use super::wxw_app_token_model::*;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -50,7 +53,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -63,7 +66,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<WxwAppTokenId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -76,16 +79,16 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
     let tenant_id = {
       let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
+        Some(item) => item.tenant_id.clone(),
+        None => None,
       };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
+      let tenant_id = match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -100,7 +103,7 @@ async fn get_where_query(
     }
   }
   {
-    let wxw_app_id: Vec<String> = match &search {
+    let wxw_app_id: Vec<WxwAppId> = match &search {
       Some(item) => item.wxw_app_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -138,7 +141,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(type_like) = type_like {
-      where_query += &format!(" and t.type like {}", args.push((sql_like(&type_like) + "%").into()));
+      where_query += &format!(
+        " and t.type like {}",
+        args.push(
+          format!("%{}%", sql_like(&type_like)).into()
+        ),
+      );
     }
   }
   {
@@ -154,7 +162,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(access_token_like) = access_token_like {
-      where_query += &format!(" and t.access_token like {}", args.push((sql_like(&access_token_like) + "%").into()));
+      where_query += &format!(
+        " and t.access_token like {}",
+        args.push(
+          format!("%{}%", sql_like(&access_token_like)).into()
+        ),
+      );
     }
   }
   {
@@ -222,10 +235,23 @@ pub async fn find_all(
   let table = "wxwork_wxw_app_token";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
+  
+  let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "desc".into(),
+    });
+  }
+  let sort = sort.into();
+  
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -394,7 +420,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: WxwAppTokenId,
   options: Option<Options>,
 ) -> Result<Option<WxwAppTokenModel>> {
   
@@ -428,7 +454,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: WxwAppTokenId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -480,8 +506,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -501,8 +527,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -541,7 +567,7 @@ pub async fn check_by_unique(
   input: WxwAppTokenInput,
   model: WxwAppTokenModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<WxwAppTokenId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -609,7 +635,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: WxwAppTokenInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwAppTokenId> {
   
   let table = "wxwork_wxw_app_token";
   let _method = "create";
@@ -636,7 +662,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<WxwAppTokenId> = None;
     
     for old_model in old_models {
       
@@ -656,9 +682,9 @@ pub async fn create(
     }
   }
   
-  let mut id;
+  let mut id: WxwAppTokenId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -755,8 +781,8 @@ pub async fn create(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: WxwAppTokenId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "wxwork_wxw_app_token";
@@ -796,10 +822,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: WxwAppTokenId,
   mut input: WxwAppTokenInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwAppTokenId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -948,7 +974,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -958,7 +984,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -989,7 +1015,7 @@ pub async fn delete_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -999,7 +1025,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1066,7 +1092,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1076,7 +1102,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       WxwAppTokenSearch {

@@ -16,6 +16,7 @@ use crate::common::gql::model::{
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_resolver;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct WxwAppTokenGenQuery;
@@ -80,11 +81,11 @@ impl WxwAppTokenGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: WxwAppTokenId,
   ) -> Result<Option<WxwAppTokenModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -125,7 +126,7 @@ impl WxwAppTokenGenMutation {
     ctx: &Context<'_>,
     model: WxwAppTokenInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<WxwAppTokenId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -146,8 +147,8 @@ impl WxwAppTokenGenMutation {
   async fn update_tenant_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: WxwAppTokenId,
+    tenant_id: TenantId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -166,9 +167,9 @@ impl WxwAppTokenGenMutation {
   async fn update_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: WxwAppTokenId,
     model: WxwAppTokenInput,
-  ) -> Result<String> {
+  ) -> Result<WxwAppTokenId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -186,7 +187,7 @@ impl WxwAppTokenGenMutation {
   async fn delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -204,7 +205,7 @@ impl WxwAppTokenGenMutation {
   async fn revert_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -222,7 +223,7 @@ impl WxwAppTokenGenMutation {
   async fn force_delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

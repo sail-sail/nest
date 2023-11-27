@@ -6,7 +6,11 @@ import type {
   WxwUsrInput as WxwUsrInputType,
   WxwUsrModel as WxwUsrModelType,
   WxwUsrSearch as WxwUsrSearchType,
+  WxwUsrFieldComment as WxwUsrFieldCommentType,
 } from "/gen/types.ts";
+
+export const wxwUsrId = Symbol.for("WxwUsrId");
+export type WxwUsrId = typeof wxwUsrId;
 
 export interface WxwUsrSearch extends WxwUsrSearchType {
   tenant_id?: string | null;
@@ -36,7 +40,7 @@ export interface WxwUsrModel extends WxwUsrModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
+  tenant_id: string;
 }
 
 export interface WxwUsrInput extends WxwUsrInputType {
@@ -58,25 +62,12 @@ export interface WxwUsrInput extends WxwUsrInputType {
   thumb_avatar?: string;
   /** 个人二维码 */
   qr_code?: string;
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
   tenant_id?: string | null;
 }
 
-export interface WxwUsrFieldComment {
-  id: string;
-  lbl: string;
-  userid: string;
-  mobile: string;
-  gender: string;
-  email: string;
-  biz_email: string;
-  direct_leader: string;
-  position: string;
-  avatar: string;
-  thumb_avatar: string;
-  qr_code: string;
-  rem: string;
-}
+export type { WxwUsrFieldCommentType as WxwUsrFieldComment };

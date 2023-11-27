@@ -3,6 +3,10 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wxw_msg.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxwMsgId
+
+"企微消息发送状态"
+scalar WxwMsgErrcode
 
 type WxwMsgModel {
   "ID"
@@ -10,11 +14,11 @@ type WxwMsgModel {
   "企微应用"
   wxw_app_id: String!
   "企微应用"
-  wxw_app_id_lbl: String
+  wxw_app_id_lbl: WxwAppId
   "发送状态"
-  errcode: String!
+  errcode: WxwMsgErrcode
   "发送状态"
-  errcode_lbl: String
+  errcode_lbl: String!
   "成员ID"
   touser: String!
   "标题"
@@ -37,6 +41,8 @@ type WxwMsgModel {
   is_deleted: Int!
 }
 type WxwMsgFieldComment {
+  "ID"
+  id: String!
   "企微应用"
   wxw_app_id: String!
   "企微应用"
@@ -51,6 +57,8 @@ type WxwMsgFieldComment {
   title: String!
   "描述"
   description: String!
+  "链接"
+  url: String!
   "按钮文字"
   btntxt: String!
   "发送时间"
@@ -59,16 +67,18 @@ type WxwMsgFieldComment {
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
+  "消息ID"
+  msgid: String!
 }
 input WxwMsgInput {
   ""
-  id: String
+  id: WxwMsgId
   "企微应用"
   wxw_app_id: String
   "企微应用"
-  wxw_app_id_lbl: String
+  wxw_app_id_lbl: WxwAppId
   "发送状态"
-  errcode: String
+  errcode: WxwMsgErrcode
   "发送状态"
   errcode_lbl: String
   "成员ID"
@@ -95,10 +105,10 @@ input WxwMsgSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxwMsgId
   "企微应用"
-  wxw_app_id: [String!]
+  wxw_app_id: [WxwAppId!]
   wxw_app_id_is_null: Boolean
   "发送状态"
   errcode: [String!]

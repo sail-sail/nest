@@ -55,6 +55,43 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {WxwUsrSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: WxwUsrSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneWxwUsr: Query["findOneWxwUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwUsrSearch, $sort: [SortInput!]) {
+        findOneWxwUsr(search: $search, sort: $sort) {
+          id
+          lbl
+          userid
+          rem
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneWxwUsr;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {WxwUsrSearch} search?

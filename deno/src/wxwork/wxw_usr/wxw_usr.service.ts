@@ -1,5 +1,6 @@
 import {
   log,
+  error,
 } from "/lib/context.ts";
 
 import type {
@@ -221,16 +222,33 @@ export async function wxwSyncUsr(
     throw "企微用户正在同步中, 请稍后再试";
   }
   wxwSyncUsrLock = true;
-  let num = 0;
+  let wxw_app_id: string;
+  let tenant_id: string;
+  let userids: string[];
   try {
-    num = await _wxwSyncUsr(host);
+    const res = await fetchUserIdList(host);
+    wxw_app_id = res.wxw_app_id;
+    tenant_id = res.tenant_id;
+    userids = res.userids;
   } finally {
     wxwSyncUsrLock = false;
   }
-  return num;
+  (async function() {
+    try {
+      await _wxwSyncUsr(
+        wxw_app_id,
+        tenant_id,
+        userids,
+      );
+    } catch(err) {
+      error(`企微应用 ${ wxw_app_id } 同步企微用户失败: ${ err }`);
+    } finally {
+      wxwSyncUsrLock = false;
+    }
+  })();
 }
 
-async function _wxwSyncUsr(
+async function fetchUserIdList(
   host: string,
 ) {
   // 获取域名
@@ -252,9 +270,22 @@ async function _wxwSyncUsr(
   await validateIsEnabledWxwApp(wxw_appModel);
   
   const wxw_app_id = wxw_appModel.id;
+  const tenant_id = wxw_appModel.tenant_id!;
+  
   const userids = await getuseridlist(wxw_app_id);
   log(`企微应用 ${ wxw_appModel.lbl } 同步企微用户, 获取到企微用户数量: ${ userids.length }`);
-  
+  return {
+    wxw_app_id,
+    tenant_id,
+    userids,
+  };
+}
+
+async function _wxwSyncUsr(
+  wxw_app_id: string,
+  tenant_id: string,
+  userids: string[],
+) {
   const wxw_usrModels = await findAllWxwUsr();
   const userids4add = userids.filter((userid) => {
     return !wxw_usrModels.some((wxw_usrModel) => {
@@ -272,7 +303,7 @@ async function _wxwSyncUsr(
     wxw_usrModels4add.push({
       userid,
       lbl: name,
-      tenant_id: wxw_appModel.tenant_id!,
+      tenant_id,
     });
   }
   let num = 0;

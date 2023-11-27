@@ -16,6 +16,7 @@ use crate::common::gql::model::{
 use super::wxw_usr_model::*;
 use super::wxw_usr_resolver;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct WxwUsrGenQuery;
@@ -80,11 +81,11 @@ impl WxwUsrGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: WxwUsrId,
   ) -> Result<Option<WxwUsrModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -125,7 +126,7 @@ impl WxwUsrGenMutation {
     ctx: &Context<'_>,
     model: WxwUsrInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<WxwUsrId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -146,8 +147,8 @@ impl WxwUsrGenMutation {
   async fn update_tenant_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: WxwUsrId,
+    tenant_id: TenantId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -166,9 +167,9 @@ impl WxwUsrGenMutation {
   async fn update_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: WxwUsrId,
     model: WxwUsrInput,
-  ) -> Result<String> {
+  ) -> Result<WxwUsrId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -186,7 +187,7 @@ impl WxwUsrGenMutation {
   async fn delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -204,7 +205,7 @@ impl WxwUsrGenMutation {
   async fn revert_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -222,7 +223,7 @@ impl WxwUsrGenMutation {
   async fn force_delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

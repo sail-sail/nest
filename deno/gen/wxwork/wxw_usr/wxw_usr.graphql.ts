@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./wxw_usr.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar WxwUsrId
+
 
 type WxwUsrModel {
   "ID"
@@ -35,16 +37,36 @@ type WxwUsrModel {
   is_deleted: Int!
 }
 type WxwUsrFieldComment {
+  "ID"
+  id: String!
   "姓名"
   lbl: String!
   "用户ID"
   userid: String!
+  "手机号"
+  mobile: String!
+  "性别"
+  gender: String!
+  "邮箱"
+  email: String!
+  "企业邮箱"
+  biz_email: String!
+  "直属上级"
+  direct_leader: String!
+  "职位"
+  position: String!
+  "头像"
+  avatar: String!
+  "头像缩略图"
+  thumb_avatar: String!
+  "个人二维码"
+  qr_code: String!
   "备注"
   rem: String!
 }
 input WxwUsrInput {
   ""
-  id: String
+  id: WxwUsrId
   "姓名"
   lbl: String
   "用户ID"
@@ -75,8 +97,8 @@ input WxwUsrSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: WxwUsrId
   "姓名"
   lbl: String
   lbl_like: String
