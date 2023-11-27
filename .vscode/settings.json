@@ -79,5 +79,11 @@
   "files.eol": "\n",
   "volar.updateImportsOnFileMove.enabled": false,
   "volar.codeLens.references": false,
-  "references.preferredLocation": "peek"
+  "references.preferredLocation": "peek",
+  "pair-diff.patterns": [
+    {
+      "source": "./deno/gen/*.ts",
+      "target": "<dir>/../codegen/template/deno/<basename>"
+    },
+  ]
 }
