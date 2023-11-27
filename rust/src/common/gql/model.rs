@@ -4,13 +4,13 @@ use async_graphql::{
   Enum,
 };
 
-#[derive(SimpleObject, InputObject)]
+#[derive(SimpleObject, InputObject, Copy, Clone)]
 pub struct PageInput {
   pub pg_offset: Option<i64>,
   pub pg_size: Option<i64>,
 }
 
-#[derive(SimpleObject, InputObject)]
+#[derive(SimpleObject, InputObject, Clone)]
 pub struct SortInput {
   #[graphql(default)]
   pub prop: String,

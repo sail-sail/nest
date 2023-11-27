@@ -89,14 +89,14 @@ export async function nLang(
       if (!i18nModel) {
         i18nModel = await findOneI18n({
           lang_id: [ langModel.id ],
-          menu_id: null,
+          menu_id_is_null: true,
           code,
         });
       }
     } else {
       i18nModel = await findOneI18n({
         lang_id: [ langModel.id ],
-        menu_id: null,
+        menu_id_is_null: true,
         code,
       });
     }

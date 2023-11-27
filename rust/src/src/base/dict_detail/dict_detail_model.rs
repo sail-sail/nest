@@ -2,6 +2,8 @@ use async_graphql::SimpleObject;
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
+use crate::gen::base::dict_detail::dict_detail_model::DictDetailId;
+
 #[derive(
   FromRow,
   SimpleObject,
@@ -12,7 +14,7 @@ use sqlx::FromRow;
   Clone,
 )]
 pub struct GetDict {
-  pub id: String,
+  pub id: DictDetailId,
   pub code: String,
   pub r#type: String,
   pub lbl: String,

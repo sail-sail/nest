@@ -3,6 +3,10 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./dict.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar DictId
+
+"系统字典数据类型"
+scalar DictType
 
 type DictModel {
   "ID"
@@ -12,17 +16,17 @@ type DictModel {
   "名称"
   lbl: String!
   "数据类型"
-  type: String!
+  type: DictType
   "数据类型"
-  type_lbl: String
+  type_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -30,7 +34,7 @@ type DictModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -38,19 +42,19 @@ type DictModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
+  "系统字典明细"
+  dict_detail_models: [DictDetailModel!]
 }
 type DictFieldComment {
+  "ID"
+  id: String!
   "编码"
   code: String!
   "名称"
@@ -90,13 +94,13 @@ type DictFieldComment {
 }
 input DictInput {
   ""
-  id: String
+  id: DictId
   "编码"
   code: String
   "名称"
   lbl: String
   "数据类型"
-  type: String
+  type: DictType
   "数据类型"
   type_lbl: String
   "锁定"
@@ -114,7 +118,7 @@ input DictInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -122,23 +126,21 @@ input DictInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
+  "系统字典明细"
+  dict_detail_models: [DictDetailInput!]
 }
 input DictSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: DictId
   "编码"
   code: String
   code_like: String
@@ -157,17 +159,15 @@ input DictSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  "系统字段"
-  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

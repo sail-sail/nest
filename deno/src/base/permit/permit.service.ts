@@ -138,7 +138,7 @@ export async function usePermit(
     is_enabled: [ 1 ],
   });
   if (!menuModel) {
-    throw await ns("无权限");
+    return;
   }
   
   const authModel = await getAuthModel(false);

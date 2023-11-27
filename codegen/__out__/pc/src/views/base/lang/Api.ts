@@ -67,6 +67,54 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {LangSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: LangSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneLang: Query["findOneLang"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: LangSearch, $sort: [SortInput!]) {
+        findOneLang(search: $search, sort: $sort) {
+          id
+          code
+          lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneLang;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {LangSearch} search?
@@ -299,51 +347,6 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 下载导入模板
  */
@@ -364,23 +367,8 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsLang {
             code
             lbl
-            is_enabled_lbl
             order_by
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "is_enabled",
-          ]) {
-            code
-            lbl
           }
         }
       `,
@@ -450,9 +438,6 @@ export function useExportExcel(routePath: string) {
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
-          }
-          findAllUsr {
-            lbl
           }
           getDict(codes: [
             "is_enabled",

@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::domain_model::*;
 use super::domain_resolver;
 
-
 #[derive(Default)]
 pub struct DomainGenQuery;
 
@@ -80,11 +79,11 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_domain(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: DomainId,
   ) -> Result<Option<DomainModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -97,12 +96,12 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已启用
+  /// 根据 id 查找是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_domain(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: DomainId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -115,13 +114,13 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已锁定
+  /// 根据 id 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_domain(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: DomainId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -177,7 +176,7 @@ impl DomainGenMutation {
     ctx: &Context<'_>,
     model: DomainInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<DomainId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -198,9 +197,9 @@ impl DomainGenMutation {
   async fn update_by_id_domain(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: DomainId,
     model: DomainInput,
-  ) -> Result<String> {
+  ) -> Result<DomainId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -218,7 +217,7 @@ impl DomainGenMutation {
   async fn delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<DomainId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -236,7 +235,7 @@ impl DomainGenMutation {
   async fn default_by_id_domain(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: DomainId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -254,7 +253,7 @@ impl DomainGenMutation {
   async fn enable_by_ids_domain(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<DomainId>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -274,7 +273,7 @@ impl DomainGenMutation {
   async fn lock_by_ids_domain(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<DomainId>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -294,7 +293,7 @@ impl DomainGenMutation {
   async fn revert_by_ids_domain(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<DomainId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -312,7 +311,7 @@ impl DomainGenMutation {
   async fn force_delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<DomainId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

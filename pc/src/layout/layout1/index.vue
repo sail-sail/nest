@@ -131,6 +131,7 @@
           </el-dropdown>
         </template>
         <div
+          v-if="locales.length > 1"
           un-flex="~"
           un-items-center
           un-h="full"
@@ -198,6 +199,13 @@
                 un-whitespace-nowrap
               >
                 
+                <el-dropdown-item @click="goIndex">
+                  <ElIcon>
+                    <ElIconHomeFilled />
+                  </ElIcon>
+                  <span>{{ ns('打开首页') }}</span>
+                </el-dropdown-item>
+                
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
                     <ElIcon>
@@ -261,7 +269,7 @@
       <div
         ref="tab_active_lineRef"
         
-        un-display-none
+        un-hidden
         un-pos-absolute
         un-bottom-0
         un-left="[23px]"
@@ -310,6 +318,12 @@ import {
   selectLang,
   getUsrPermits,
 } from "./Api";
+
+import {
+  getLoginLangs,
+} from "../Api";
+import tabs from "@/store/tabs";
+import router from "@/router";
 
 const {
   n,
@@ -466,6 +480,17 @@ watch(
   },
 );
 
+// 首页
+async function goIndex() {
+  const tab = tabsStore.setIndexTab(true);
+  if (tab) {
+    await router.push({
+      name: tab.name,
+      query: tab.query,
+    });
+  }
+}
+
 // 关闭其它选项卡
 function closeOtherTabs() {
   if (tabsStore.actTab) {
@@ -548,12 +573,19 @@ async function initFrame() {
   if (usrStore.authorization) {
     const [
       loginInfoTmp,
+      _,
+      langModels,
     ] = await Promise.all([
       getLoginInfo({ notLoading: true }),
       getUsrPermitsEfc(),
+      getLoginLangs(),
     ]);
     loginInfo = loginInfoTmp;
     usrStore.loginInfo = loginInfo;
+    locales = langModels.map(item => ({
+      code: item.code,
+      lbl: item.lbl,
+    }));
   }
   inited = true;
 }

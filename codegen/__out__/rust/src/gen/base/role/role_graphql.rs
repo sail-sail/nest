@@ -16,6 +16,7 @@ use crate::common::gql::model::{
 use super::role_model::*;
 use super::role_resolver;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct RoleGenQuery;
@@ -80,11 +81,11 @@ impl RoleGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_role(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: RoleId,
   ) -> Result<Option<RoleModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -97,12 +98,12 @@ impl RoleGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已启用
+  /// 根据 id 查找是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_role(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: RoleId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -115,13 +116,13 @@ impl RoleGenQuery {
       }).await
   }
   
-  /// 根据 ID 查找是否已锁定
+  /// 根据 id 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_role(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: RoleId,
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -148,6 +149,21 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 查找 order_by 字段的最大值
+  async fn find_last_order_by_role(
+    &self,
+    ctx: &Context<'_>,
+  ) -> Result<u32> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_last_order_by(
+          None,
+        )
+      }).await
+  }
+  
 }
 
 #[derive(Default)]
@@ -162,7 +178,7 @@ impl RoleGenMutation {
     ctx: &Context<'_>,
     model: RoleInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<RoleId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -183,8 +199,8 @@ impl RoleGenMutation {
   async fn update_tenant_by_id_role(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: RoleId,
+    tenant_id: TenantId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -203,9 +219,9 @@ impl RoleGenMutation {
   async fn update_by_id_role(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: RoleId,
     model: RoleInput,
-  ) -> Result<String> {
+  ) -> Result<RoleId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -223,7 +239,7 @@ impl RoleGenMutation {
   async fn delete_by_ids_role(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<RoleId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -241,7 +257,7 @@ impl RoleGenMutation {
   async fn enable_by_ids_role(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<RoleId>,
     is_enabled: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -261,7 +277,7 @@ impl RoleGenMutation {
   async fn lock_by_ids_role(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<RoleId>,
     is_locked: u8,
   ) -> Result<u64> {
     Ctx::builder(ctx)
@@ -281,7 +297,7 @@ impl RoleGenMutation {
   async fn revert_by_ids_role(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<RoleId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -299,7 +315,7 @@ impl RoleGenMutation {
   async fn force_delete_by_ids_role(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<RoleId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

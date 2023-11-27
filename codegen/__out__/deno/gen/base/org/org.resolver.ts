@@ -29,7 +29,11 @@ import {
 export async function findCountOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./org.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./org.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllOrg(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OrgModel[]> {
-  const { findAll } = await import("./org.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./org.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<OrgModel | undefined> {
-  const { findOne } = await import("./org.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./org.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./dictbiz_detail.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar DictbizDetailId
+
 
 type DictbizDetailModel {
   "ID"
@@ -10,7 +12,7 @@ type DictbizDetailModel {
   "业务字典"
   dictbiz_id: String!
   "业务字典"
-  dictbiz_id_lbl: String
+  dictbiz_id_lbl: DictbizId
   "名称"
   lbl: String!
   "值"
@@ -18,23 +20,37 @@ type DictbizDetailModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
   rem: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
 }
 type DictbizDetailFieldComment {
+  "ID"
+  id: String!
   "业务字典"
   dictbiz_id: String!
   "业务字典"
@@ -55,14 +71,30 @@ type DictbizDetailFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input DictbizDetailInput {
   ""
-  id: String
+  id: DictbizDetailId
   "业务字典"
   dictbiz_id: String
   "业务字典"
-  dictbiz_id_lbl: String
+  dictbiz_id_lbl: DictbizId
   "名称"
   lbl: String
   "值"
@@ -79,20 +111,32 @@ input DictbizDetailInput {
   order_by: Int
   "备注"
   rem: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 input DictbizDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: DictbizDetailId
   "业务字典"
-  dictbiz_id: [String!]
+  dictbiz_id: [DictbizId!]
   dictbiz_id_is_null: Boolean
   "名称"
   lbl: String
@@ -109,8 +153,16 @@ input DictbizDetailSearch {
   "备注"
   rem: String
   rem_like: String
-  "系统字段"
-  is_sys: [Int!]
+  "创建人"
+  create_usr_id: [UsrId!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [UsrId!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找据数总数"

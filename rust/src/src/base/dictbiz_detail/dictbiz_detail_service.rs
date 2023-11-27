@@ -8,7 +8,7 @@ pub async fn get_dictbiz(
 ) -> Result<Vec<Vec<GetDictbiz>>> {
   
   let data = dictbiz_detail_dao::get_dictbiz(
-    codes,
+    codes.as_slice(),
   ).await?;
   
   Ok(data)

@@ -29,7 +29,11 @@ import {
 export async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./role.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./role.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllRole(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<RoleModel[]> {
-  const { findAll } = await import("./role.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./role.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<RoleModel | undefined> {
-  const { findOne } = await import("./role.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./role.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }
@@ -256,5 +268,14 @@ export async function forceDeleteByIdsRole(
     forceDeleteByIds,
   } = await import("./role.service.ts");
   const res = await forceDeleteByIds(ids);
+  return res;
+}
+
+/**
+ * 查找 order_by 字段的最大值
+ */
+export async function findLastOrderByRole(): Promise<number> {
+  const { findLastOrderBy } = await import("./role.service.ts");
+  const res = findLastOrderBy();
   return res;
 }

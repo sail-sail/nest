@@ -159,11 +159,25 @@ function showDialog<OnCloseResolveType>(
 }
 
 async function focus() {
+  const activeElement = document.activeElement;
+  if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")) {
+    (activeElement as HTMLInputElement).blur();
+    (activeElement as HTMLInputElement).focus();
+    return;
+  }
   await nextTick();
   if (!dialogRef) {
     return;
   }
-  dialogRef.dialogContentRef.$el.focus();
+  const el = dialogRef.dialogContentRef.$el as (HTMLElement | undefined);
+  if (el) {
+    const firstInput = el.querySelector("textarea:not([disabled]), input:not([disabled]):not([type='file']") as (HTMLInputElement | undefined);
+    if (firstInput) {
+      firstInput.focus();
+    } else {
+      el.focus();
+    }
+  }
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {

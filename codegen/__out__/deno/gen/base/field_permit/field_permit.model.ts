@@ -6,7 +6,11 @@ import type {
   FieldPermitInput as FieldPermitInputType,
   FieldPermitModel as FieldPermitModelType,
   FieldPermitSearch as FieldPermitSearchType,
+  FieldPermitFieldComment as FieldPermitFieldCommentType,
 } from "/gen/types.ts";
+
+export const fieldPermitId = Symbol.for("FieldPermitId");
+export type FieldPermitId = typeof fieldPermitId;
 
 export interface FieldPermitSearch extends FieldPermitSearchType {
   $extra?: SearchExtra[];
@@ -24,29 +28,11 @@ export interface FieldPermitModel extends FieldPermitModelType {
 export interface FieldPermitInput extends FieldPermitInputType {
   /** 系统字段 */
   is_sys?: number;
-  create_usr_id?: string;
+  create_usr_id?: string | null;
   create_time?: string | null;
-  update_usr_id?: string;
+  update_usr_id?: string | null;
   update_time?: string | null;
+  is_deleted?: number | null;
 }
 
-export interface FieldPermitFieldComment {
-  id: string;
-  menu_id: string;
-  menu_id_lbl: string;
-  code: string;
-  lbl: string;
-  type: string;
-  type_lbl: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-  is_sys: string;
-  is_sys_lbl: string;
-}
+export type { FieldPermitFieldCommentType as FieldPermitFieldComment };

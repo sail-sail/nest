@@ -1,7 +1,15 @@
-use serde::{
-  Serialize,
-  Deserialize,
-};
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -9,18 +17,26 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::usr::usr_model::UsrId;
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordModel {
   /// 租户ID
-  pub tenant_id: String,
+  #[graphql(skip)]
+  pub tenant_id: TenantId,
   /// ID
-  pub id: String,
+  pub id: OperationRecordId,
   /// 模块
   pub module: String,
   /// 模块名称
@@ -38,7 +54,7 @@ pub struct OperationRecordModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -46,7 +62,7 @@ pub struct OperationRecordModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -62,7 +78,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: OperationRecordId = row.try_get("id")?;
     // 模块
     let module: String = row.try_get("module")?;
     // 模块名称
@@ -80,7 +96,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -90,7 +106,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -104,6 +120,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       module,
       module_lbl,
@@ -121,14 +138,13 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordFieldComment {
   /// ID
@@ -167,13 +183,15 @@ pub struct OperationRecordFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  /// ID
+  pub id: Option<OperationRecordId>,
+  /// ID列表
+  pub ids: Option<Vec<OperationRecordId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 模块
   pub module: Option<String>,
@@ -208,27 +226,29 @@ pub struct OperationRecordSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordInput {
+  /// ID
+  pub id: Option<OperationRecordId>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
-  /// ID
-  pub id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   /// 模块
   pub module: Option<String>,
   /// 模块名称
@@ -246,7 +266,7 @@ pub struct OperationRecordInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -254,7 +274,7 @@ pub struct OperationRecordInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
@@ -263,12 +283,50 @@ pub struct OperationRecordInput {
   pub update_time_lbl: Option<String>,
 }
 
+impl From<OperationRecordModel> for OperationRecordInput {
+  fn from(model: OperationRecordModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 模块
+      module: model.module.into(),
+      // 模块名称
+      module_lbl: model.module_lbl.into(),
+      // 方法
+      method: model.method.into(),
+      // 方法名称
+      method_lbl: model.method_lbl.into(),
+      // 操作
+      lbl: model.lbl.into(),
+      // 操作前数据
+      old_data: model.old_data.into(),
+      // 操作后数据
+      new_data: model.new_data.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
+}
+
 impl From<OperationRecordInput> for OperationRecordSearch {
   fn from(input: OperationRecordInput) -> Self {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 模块
@@ -297,5 +355,106 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
+  }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct OperationRecordId(SmolStr);
+
+impl fmt::Display for OperationRecordId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "OperationRecordId")]
+impl async_graphql::ScalarType for OperationRecordId {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<OperationRecordId> for ArgType {
+  fn from(value: OperationRecordId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&OperationRecordId> for ArgType {
+  fn from(value: &OperationRecordId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<OperationRecordId> for SmolStr {
+  fn from(id: OperationRecordId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for OperationRecordId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for OperationRecordId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for OperationRecordId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for OperationRecordId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for OperationRecordId {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for OperationRecordId {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for OperationRecordId {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for OperationRecordId {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
 }

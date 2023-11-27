@@ -16,6 +16,7 @@ use crate::common::gql::model::{
 use super::operation_record_model::*;
 use super::operation_record_resolver;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct OperationRecordGenQuery;
@@ -80,11 +81,11 @@ impl OperationRecordGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: OperationRecordId,
   ) -> Result<Option<OperationRecordModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -123,8 +124,8 @@ impl OperationRecordGenMutation {
   async fn update_tenant_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
-    id: String,
-    tenant_id: String,
+    id: OperationRecordId,
+    tenant_id: TenantId,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -143,7 +144,7 @@ impl OperationRecordGenMutation {
   async fn delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -161,7 +162,7 @@ impl OperationRecordGenMutation {
   async fn revert_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -179,7 +180,7 @@ impl OperationRecordGenMutation {
   async fn force_delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

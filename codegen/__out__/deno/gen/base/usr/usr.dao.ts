@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -40,15 +36,24 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+  getPassword,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   many2manyUpdate,
@@ -84,8 +89,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -108,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.img is null`;
   }
   if (isNotEmpty(search?.img_like)) {
-    whereQuery += ` and t.img like ${ args.push(sqlLike(search?.img_like) + "%") }`;
+    whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -117,7 +122,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.username !== undefined) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
@@ -126,7 +131,7 @@ async function getWhereQuery(
     whereQuery += ` and t.username is null`;
   }
   if (isNotEmpty(search?.username_like)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
+    whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
   }
   if (search?.org_ids && !Array.isArray(search?.org_ids)) {
     search.org_ids = [ search.org_ids ];
@@ -164,6 +169,14 @@ async function getWhereQuery(
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
   }
@@ -195,7 +208,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -236,6 +249,9 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
+  }
+  if (search?.is_hidden && search?.is_hidden?.length > 0) {
+    whereQuery += ` and t.is_hidden in ${ args.push(search?.is_hidden) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -408,14 +424,18 @@ export async function findAll(
   if (!sort) {
     sort = [
       {
-        prop: "create_time",
-        order: SortOrderEnum.Desc,
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
       },
     ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -513,7 +533,7 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -577,7 +597,7 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -692,6 +712,7 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    order_by: await n("排序"),
     dept_ids: await n("所属部门"),
     dept_ids_lbl: await n("所属部门"),
     role_ids: await n("拥有角色"),
@@ -711,10 +732,10 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {UsrSearch | PartialNull<UsrModel>} search0
+ * @param {UsrInput} search0
  */
 export async function findByUnique(
-  search0: UsrSearch | PartialNull<UsrModel>,
+  search0: UsrInput,
   options?: {
   },
 ): Promise<UsrModel[]> {
@@ -744,18 +765,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {UsrModel} oldModel
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: UsrModel,
-  model: PartialNull<UsrModel>,
+  input: UsrInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -774,7 +795,6 @@ export async function checkByUnique(
   oldModel: UsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -791,7 +811,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -817,11 +836,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -996,7 +1013,6 @@ export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1046,8 +1062,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -1055,7 +1071,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -1063,7 +1079,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -1089,15 +1105,21 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
+  if (input.order_by !== undefined) {
+    sql += `,order_by`;
+  }
   if (input.rem !== undefined) {
     sql += `,rem`;
+  }
+  if (input.is_hidden !== undefined) {
+    sql += `,is_hidden`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -1105,7 +1127,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1113,7 +1135,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1128,7 +1150,7 @@ export async function create(
     sql += `,${ args.push(input.username) }`;
   }
   if (isNotEmpty(input.password)) {
-    sql += `,${ args.push(await authDao.getPassword(input.password)) }`;
+    sql += `,${ args.push(await getPassword(input.password)) }`;
   }
   if (input.default_org_id !== undefined) {
     sql += `,${ args.push(input.default_org_id) }`;
@@ -1139,12 +1161,20 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
+  if (input.order_by !== undefined) {
+    sql += `,${ args.push(input.order_by) }`;
+  }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
   }
+  if (input.is_hidden !== undefined) {
+    sql += `,${ args.push(input.is_hidden) }`;
+  }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 所属组织
   await many2manyUpdate(
@@ -1228,7 +1258,7 @@ export async function updateTenantById(
   const table = "base_usr";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1267,7 +1297,6 @@ export async function updateById(
   input: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_usr";
@@ -1334,7 +1363,7 @@ export async function updateById(
   }
   if (isNotEmpty(input.password)) {
     sql += `password = ?,`;
-    args.push(await authDao.getPassword(input.password));
+    args.push(await getPassword(input.password));
     updateFldNum++;
   }
   if (input.default_org_id !== undefined) {
@@ -1355,9 +1384,21 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.order_by !== undefined) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_hidden !== undefined) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden = ${ args.push(input.is_hidden) },`;
       updateFldNum++;
     }
   }
@@ -1365,7 +1406,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -1375,7 +1416,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;
@@ -1541,7 +1583,7 @@ export async function enableByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1611,7 +1653,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1741,4 +1783,47 @@ export async function forceDeleteByIds(
   await delCache();
   
   return num;
+}
+  
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_usr";
+  const method = "findLastOrderBy";
+  
+  let sql = `
+    select
+      t.order_by order_by
+    from
+      base_usr t
+  `;
+  const whereQuery: string[] = [ ];
+  const args = new QueryArgs();
+  whereQuery.push(`t.is_deleted = 0`);
+  {
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
+    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }
+  if (whereQuery.length > 0) {
+    sql += " where " + whereQuery.join(" and ");
+  }
+  sql += `
+    order by
+      t.order_by desc
+    limit 1
+  `;
+  
+  interface Result {
+    order_by: number;
+  }
+  let model = await queryOne<Result>(sql, args);
+  let result = model?.order_by ?? 0;
+  
+  return result;
 }

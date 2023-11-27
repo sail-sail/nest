@@ -1,19 +1,34 @@
 <#
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
   return !!column.isEncrypt;
 });
-#>use serde::{
-  Serialize,
-  Deserialize,
-};
+#>
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -21,35 +36,155 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
-};<#
+  Enum,
+};
+
+use crate::common::context::ArgType;<#
 if (hasEncrypt) {
 #>
 use crate::common::util::dao::decrypt;<#
 }
+#><#
+const foreignTableArr = [];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr.includes(table)) continue;
+  foreignTableArr.push(table);
 #>
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Input,
+};<#
+}
+#><#
+
+// 已经导入的ID列表
+const modelIds = [ ];
+modelIds.push(Table_Up + "Id");
+#><#
+if (hasTenantId && !modelIds.includes("TenantId")) {
+#>
+
+use crate::gen::base::tenant::tenant_model::TenantId;<#
+modelIds.push("TenantId");
+#><#
+}
+#><#
+if (hasOrgId && !modelIds.includes("OrgId")) {
+#>
+
+use crate::gen::base::org::org_model::OrgId;<#
+modelIds.push("OrgId");
+#><#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+  if (column_name === 'id') continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const modelId = foreignTable_Up + "Id";
+  if (modelIds.includes(modelId)) {
+    continue;
+  }
+  modelIds.push(modelId);
+#>
+use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
+}
+#>
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
   #>
   /// 租户ID
-  pub tenant_id: String,<#
+  #[graphql(skip)]
+  pub tenant_id: TenantId,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
-  pub org_id: String,<#
+  #[graphql(skip)]
+  pub org_id: OrgId,<#
+  }
+  #><#
+  if (hasIsSys) {
+  #>
+  /// 系统字段
+  #[graphql(skip)]
+  pub is_sys: u8,<#
+  }
+  #><#
+  if (hasIsHidden) {
+  #>
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: u8,<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -63,13 +198,18 @@ pub struct <#=tableUP#>Model {<#
     }
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<String>";
+      _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -100,37 +240,67 @@ pub struct <#=tableUP#>Model {<#
     if (column_name === "id") {
   #>
   /// ID
-  pub id: String,<#
+  pub id: <#=Table_Up#>Id,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
-  pub <#=column_name#>_lbl: <#=_data_type#>,<#
+  pub <#=column_name#>_lbl: Vec<String>,<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
   /// <#=column_comment#>
-  pub <#=column_name#>_lbl: <#=_data_type#>,<#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz
-      || data_type === "date" || data_type === "datetime"
-    ) {
+  pub <#=column_name#>_lbl: String,<#
+    } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,
+  /// <#=column_comment#>
+  pub <#=column_name#>_lbl: String,<#
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: <#=enumColumnName#>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: <#=_data_type#>,<#
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
     }
   #><#
   }
   #>
   /// 是否已删除
-  pub is_deleted: u8,
+  pub is_deleted: u8,<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=table#>_models: Vec<<#=Table_Up#>Model>,
+  <#
+  }
+  #>
 }
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
@@ -147,10 +317,29 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let org_id = row.try_get("org_id")?;<#
     }
     #><#
+    if (hasIsSys) {
+    #>
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;<#
+    }
+    #><#
+    if (hasIsHidden) {
+    #>
+    // 隐藏字段
+    let is_hidden = row.try_get("is_hidden")?;<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -165,13 +354,18 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     }
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<String>";
+      _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -202,11 +396,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (column_name === "id") {
     #>
     // ID
-    let id: String = row.try_get("id")?;<#
+    let id: <#=Table_Up#>Id = row.try_get("id")?;<#
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: Option<sqlx::types::Json<HashMap<String, <#=foreignTable_Up#>Id>>> = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#> = <#=column_name#>.unwrap_or_default().0;
     let <#=column_name_rust#> = {
       let mut keys: Vec<u32> = <#=column_name_rust#>.keys()
@@ -218,12 +412,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       keys.into_iter()
         .map(|x| 
           <#=column_name_rust#>.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
+            .unwrap_or(&<#=foreignTable_Up#>Id::default())
             .to_owned()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<<#=foreignTable_Up#>Id>>()
     };
-    let <#=column_name#>_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
     let <#=column_name#>_lbl = {
       let mut keys: Vec<u32> = <#=column_name#>_lbl.keys()
@@ -243,7 +437,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
       } else if (column.DATA_TYPE === 'tinyint') {
@@ -251,7 +445,17 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
-      } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const enumColumnName = Table_Up + Column_Up;
+    #>
+    // <#=column_comment#>
+    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone().try_into()?;<#
+      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
@@ -325,10 +529,28 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       org_id,<#
       }
       #><#
+      if (hasIsSys) {
+      #>
+      is_sys,<#
+      }
+      #><#
+      if (hasIsHidden) {
+      #>
+      is_hidden,<#
+      }
+      #>
+      is_deleted,<#
       for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -361,21 +583,45 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
       #><#
       }
+      #><#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
       #>
-      is_deleted,
+      <#=table#>_models: vec![],
+      <#
+      }
+      #>
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -397,28 +643,42 @@ pub struct <#=tableUP#>FieldComment {<#
     ) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: String,
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: String,<#
+  pub <#=column_name_rust#>: String,<#
     }
   #><#
   }
   #>
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,<#
+  /// ID
+  pub id: Option<<#=Table_Up#>Id>,
+  /// ID列表
+  pub ids: Option<Vec<<#=Table_Up#>Id>>,<#
   if (hasTenantId) {
   #>
   #[graphql(skip)]
-  pub tenant_id: Option<String>,<#
+  pub tenant_id: Option<TenantId>,<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+  /// 组织ID
+  pub org_id: Option<OrgId>,<#
+  }
+  #><#
+  if (hasIsHidden) {
+  #>
+  #[graphql(skip)]
+  pub is_hidden: Option<Vec<u8>>,<#
   }
   #>
   pub is_deleted: Option<u8>,<#
@@ -429,6 +689,13 @@ pub struct <#=tableUP#>Search {
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -443,14 +710,17 @@ pub struct <#=tableUP#>Search {
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -487,7 +757,19 @@ pub struct <#=tableUP#>Search {
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#>
   pub <#=column_name#>_is_null: Option<bool>,<#
-    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>>,<#
+    } else if (foreignKey) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
@@ -512,39 +794,56 @@ pub struct <#=tableUP#>Search {
     }
   #><#
   }
-  #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  pub org_id: Option<String>,<#
-  }
   #>
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
-pub struct <#=tableUP#>Input {<#
+pub struct <#=tableUP#>Input {
+  /// ID
+  pub id: Option<<#=Table_Up#>Id>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,<#
   if (hasTenantId) {
   #>
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,<#
+  pub tenant_id: Option<TenantId>,<#
   }
   #><#
   if (hasOrgId) {
   #>
   /// 组织ID
   #[graphql(skip)]
-  pub org_id: Option<String>,<#
+  pub org_id: Option<OrgId>,<#
   }
+  #><#
+  if (hasIsSys) {
   #>
-  /// ID
-  pub id: Option<String>,<#
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,<#
+  }
+  #><#
+  if (hasIsHidden) {
+  #>
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: Option<u8>,<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
@@ -561,10 +860,13 @@ pub struct <#=tableUP#>Input {<#
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     let _data_type = "String";
     if (foreignKey) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -592,13 +894,27 @@ pub struct <#=tableUP#>Input {<#
       _data_type = "String";
     }
   #><#
-    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+    if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: Option<<#=enumColumnName#>>,
+  /// <#=column_comment#>
+  pub <#=column_name#>_lbl: Option<String>,<#
+    } else if (foreignKey && foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
-  } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  } else if (foreignKey && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
@@ -617,7 +933,131 @@ pub struct <#=tableUP#>Input {<#
   }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
+  }
+  #>
+}
+
+impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
+  fn from(model: <#=tableUP#>Model) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),<#
+      if (hasTenantId) {
+      #>
+      tenant_id: model.tenant_id.into(),<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      org_id: model.org_id.into(),<#
+      }
+      #><#
+      if (hasIsSys) {
+      #>
+      is_sys: model.is_sys.into(),<#
+      }
+      #><#
+      if (hasIsHidden) {
+      #>
+      is_hidden: model.is_hidden.into(),<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
+        const column_name = column.COLUMN_NAME;
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted" ||
+          column_name === "is_hidden"
+        ) continue;
+        const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+        if (column_name === 'id') continue;
+        let data_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        let column_comment = column.COLUMN_COMMENT || "";
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        let is_nullable = column.IS_NULLABLE === "YES";
+        if (foreignKey && foreignKey.multiple) {
+          is_nullable = false;
+        }
+      #><#
+        if (
+          (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+          || (data_type === "date" || data_type === "datetime")
+        ) {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,<#
+        }
+      #><#
+      }
+      #><#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=table#>_models: model.<#=table#>_models
+        .into_iter()
+        .map(|x| x.into())
+        .collect::<Vec<<#=Table_Up#>Input>>()
+        .into(),<#
+      }
+      #>
+    }
+  }
 }
 
 impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
@@ -627,8 +1067,20 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       ids: None,<#
       if (hasTenantId) {
       #>
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      // 组织ID
+      org_id: input.org_id,<#
+      }
+      #><#
+      if (hasIsHidden) {
+      #>
+      // 隐藏字段
+      is_hidden: input.is_hidden.map(|x| vec![x]),<#
       }
       #>
       is_deleted: None,<#
@@ -637,6 +1089,13 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         if (column.ignoreCodegen) continue;
         if (column.isVirtual) continue;
         const column_name = rustKeyEscape(column.COLUMN_NAME);
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted" ||
+          column_name === "is_hidden"
+        ) continue;
         if (column_name === 'id') continue;
         let data_type = column.DATA_TYPE;
         let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -699,13 +1158,44 @@ if (opts?.history_table) {
 impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_model::<#=historyTableUp#>Input {
   fn from(model: <#=tableUP#>Model) -> Self {
     Self {<#
+      if (hasTenantId) {
+      #>
+      // 租户ID
+      tenant_id: input.tenant_id,<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      // 组织ID
+      org_id: input.org_id,<#
+      }
+      #><#
+      if (hasIsSys) {
+      #>
+      // 系统记录
+      is_sys: input.is_sys,<#
+      }
+      #><#
+      if (hasIsHidden) {
+      #>
+      // 隐藏字段
+      is_hidden: input.is_hidden,<#
+      }
+      #><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        const column_name = rustKeyEscape(column.COLUMN_NAME);
+        const column_name = column.COLUMN_NAME;
         if (column_name === "id") {
           continue;
         }
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted"
+        ) continue;
+        const column_name_rust = rustKeyEscape(column_name);
         let data_type = column.DATA_TYPE;
         let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
         let column_comment = column.COLUMN_COMMENT || "";
@@ -750,6 +1240,357 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       #>
       <#=table#>_id: model.id.into(),
       ..Default::default()
+    }
+  }
+}<#
+}
+#>
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct <#=Table_Up#>Id(SmolStr);
+
+impl fmt::Display for <#=Table_Up#>Id {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "<#=Table_Up#>Id")]
+impl async_graphql::ScalarType for <#=Table_Up#>Id {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<<#=Table_Up#>Id> for ArgType {
+  fn from(value: <#=Table_Up#>Id) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&<#=Table_Up#>Id> for ArgType {
+  fn from(value: &<#=Table_Up#>Id) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<<#=Table_Up#>Id> for SmolStr {
+  fn from(id: <#=Table_Up#>Id) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for <#=Table_Up#>Id {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for <#=Table_Up#>Id {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for <#=Table_Up#>Id {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for <#=Table_Up#>Id {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for <#=Table_Up#>Id {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for <#=Table_Up#>Id {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for <#=Table_Up#>Id {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const column_default = column.COLUMN_DEFAULT;
+  if (!column.dict && !column.dictbiz) continue;
+  const data_type = column.DATA_TYPE;
+  if ([ "int", "decimal", "tinyint" ].includes(data_type)) {
+    continue;
+  }
+  let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+  Column_Up = Column_Up.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const enumColumnName = Table_Up + Column_Up;
+  const columnDictModels = [
+    ...dictModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+    ...dictbizModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+  ];
+  const columnDictDefault = column_default && columnDictModels.find(function(item) {
+    return item.val === column_default;
+  });
+  const require = column.require;
+  if (require && !columnDictDefault) {
+    throw `表: ${ mod }_${ table } 的字段: ${ column_name } 的默认值: ${ column_default } 在字典中不存在`;
+    process.exit(1);
+  }
+#>
+
+/// <#=table_comment#><#=column_comment#>
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum <#=enumColumnName#> {<#
+  if (!require) {
+  #>
+  /// Empty
+  Empty,<#
+  }
+  #><#
+  for (const columnDictModel of columnDictModels) {
+    const val = columnDictModel.val;
+    const lbl = columnDictModel.lbl;
+    let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+    valUp = valUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  /// <#=lbl#>
+  #[graphql(name="<#=val#>")]
+  <#=valUp#>,<#
+  }
+  #>
+}
+
+impl fmt::Display for <#=enumColumnName#> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {<#
+      if (!require) {
+      #>
+      Self::Empty => write!(f, ""),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      Self::<#=valUp#> => write!(f, "<#=val#>"),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for SmolStr {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    match value {<#
+      if (!require) {
+      #>
+      <#=enumColumnName#>::Empty => "".into(),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for String {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    match value {<#
+      if (!require) {
+      #>
+      <#=enumColumnName#>::Empty => "".into(),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
+      }
+      #>
+    }
+  }
+}
+
+impl From<<#=enumColumnName#>> for ArgType {
+  fn from(value: <#=enumColumnName#>) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for <#=enumColumnName#> {
+  fn default() -> Self {<#
+    if (!require && !columnDictDefault) {
+    #>
+    Self::Empty,<#
+    } else {
+      const val = columnDictDefault.val;
+      let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+      valUp = valUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    Self::<#=valUp#><#
+    }
+    #>
+  }
+}
+
+impl FromStr for <#=enumColumnName#> {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {<#
+      if (!require) {
+      #>
+      "empty" => Ok(Self::Empty),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      "<#=val#>" => Ok(Self::<#=valUp#>),<#
+      }
+      #>
+      _ => Err(anyhow::anyhow!("<#=enumColumnName#> can't convert from {s}")),
+    }
+  }
+}
+
+impl <#=enumColumnName#> {
+  pub fn as_str(&self) -> &str {
+    match self {<#
+      if (!require) {
+      #>
+      Self::Empty => "",<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      Self::<#=valUp#> => "<#=val#>",<#
+      }
+      #>
+    }
+  }
+}
+
+impl TryFrom<String> for <#=enumColumnName#> {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {<#
+      if (!require) {
+      #>
+      "" => Ok(Self::Empty),<#
+      }
+      #><#
+      for (const columnDictModel of columnDictModels) {
+        const val = columnDictModel.val;
+        const lbl = columnDictModel.lbl;
+        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
+        valUp = valUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      "<#=val#>" => Ok(Self::<#=valUp#>),<#
+      }
+      #>
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "<#=column_name#>".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "<#=enumColumnName#> can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }<#

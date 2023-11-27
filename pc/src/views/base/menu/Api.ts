@@ -12,7 +12,6 @@ import type {
 } from "#/types";
 
 import type {
-  TenantSearch,
   UsrSearch,
 } from "#/types";
 
@@ -50,8 +49,6 @@ export async function findAll(
           route_query
           is_locked
           is_locked_lbl
-          tenant_ids
-          tenant_ids_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -80,6 +77,62 @@ export async function findAll(
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return res;
+}
+
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {MenuSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneMenu: Query["findOneMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch, $sort: [SortInput!]) {
+        findOneMenu(search: $search, sort: $sort) {
+          id
+          type
+          type_lbl
+          parent_id
+          parent_id_lbl
+          lbl
+          route_path
+          route_query
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneMenu;
+  if (model) {
+      model.route_query = model.route_query && JSON.stringify(model.route_query) || "";
+  }
+  return model;
 }
 
 export type MenuModelTree = MenuModel & {
@@ -217,8 +270,6 @@ export async function findById(
           route_query
           is_locked
           is_locked_lbl
-          tenant_ids
-          tenant_ids_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -411,101 +462,10 @@ export async function findAllMenu(
 export async function getMenuList() {
   const data = await findAllMenu(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function findAllTenant(
-  search?: TenantSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllTenant: Query["findAllTenant"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllTenant(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllTenant;
-  return res;
-}
-
-export async function getTenantList() {
-  const data = await findAllTenant(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
         order: "ascending",
       },
     ],
@@ -555,32 +515,15 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             route_path
             route_query
-            is_locked_lbl
-            tenant_ids_lbl
-            is_enabled_lbl
             order_by
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllMenu {
             id
             lbl
           }
-          findAllTenant {
-            id
-            lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
           getDict(codes: [
             "menu_type",
-            "is_locked",
-            "is_enabled",
           ]) {
             code
             lbl
@@ -637,8 +580,6 @@ export function useExportExcel(routePath: string) {
             route_query
             is_locked
             is_locked_lbl
-            tenant_ids
-            tenant_ids_lbl
             is_enabled
             is_enabled_lbl
             order_by
@@ -659,7 +600,6 @@ export function useExportExcel(routePath: string) {
             route_path
             route_query
             is_locked_lbl
-            tenant_ids_lbl
             is_enabled_lbl
             order_by
             rem
@@ -669,12 +609,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
-            lbl
-          }
-          findAllTenant {
-            lbl
-          }
-          findAllUsr {
             lbl
           }
           getDict(codes: [

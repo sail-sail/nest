@@ -9,8 +9,8 @@ use crate::common::context::{
 use super::dictbiz_detail_model::GetDictbiz;
 
 /// 获取业务字典
-pub async fn get_dictbiz(
-  codes: Vec<String>,
+pub async fn get_dictbiz<T: AsRef<str>>(
+  codes: &[T],
 ) -> Result<Vec<Vec<GetDictbiz>>> {
   if codes.is_empty() {
     return Ok(vec![]);
@@ -22,8 +22,8 @@ pub async fn get_dictbiz(
   
   let code = {
     let mut code = "".to_owned();
-    for item in codes.clone() {
-      code += &format!("{},", args.push(item.into()));
+    for item in codes.iter() {
+      code += &format!("{},", args.push(item.as_ref().into()));
     }
     code = code.trim_end_matches(',').to_owned();
     code
@@ -70,10 +70,10 @@ pub async fn get_dictbiz(
   
   let mut data: Vec<Vec<GetDictbiz>> = Vec::with_capacity(res_len);
   
-  for code in codes {
+  for code in codes.iter() {
     let mut item: Vec<GetDictbiz> = Vec::with_capacity(res_len);
     for d in res.clone() {
-      if d.code == code {
+      if d.code == code.as_ref() {
         item.push(d);
       }
     }

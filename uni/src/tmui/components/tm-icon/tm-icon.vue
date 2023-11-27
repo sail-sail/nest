@@ -56,7 +56,7 @@
     <!-- #endif  -->
     <image
       :render-whole="true"
-      @click="clickhandle"
+      @click="(clickhandle as any)"
       @longpress="emits('longpress', $event)"
       ref="icon"
       v-if="isImg"
@@ -105,6 +105,7 @@ import { useTmpiniaStore } from "../../tool/lib/tmpinia";
 // #ifdef APP-NVUE || APP-PLUS-NVUE
 import { tmiconFont } from "./tmicon";
 import { toUnicode } from "punycode";
+// @ts-ignore
 var domModule = weex.requireModule("dom");
 const animation = uni.requireNativePlugin("animation");
 // #endif
@@ -205,7 +206,7 @@ const fontSizeComputed = computed(() => {
           : (props.fontSize || 30) + props.unit,
     };
   // #endif
-  let strc = {
+  let strc: any = {
     fontSize: (props.fontSize || 30) + props.unit,
     lineHeight:
       props.lineHeight > -1

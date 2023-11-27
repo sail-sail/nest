@@ -55,9 +55,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: FieldPermitId,
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
   
@@ -74,7 +74,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: FieldPermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<FieldPermitId> {
   
   let input = field_permit_service::set_id_by_lbl(
     input,
@@ -96,10 +96,10 @@ pub async fn create(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: String,
+  id: FieldPermitId,
   input: FieldPermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<FieldPermitId> {
   
   let input = field_permit_service::set_id_by_lbl(
     input,
@@ -122,7 +122,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -154,7 +154,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -174,7 +174,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

@@ -10,9 +10,11 @@ const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("_");
+}).join("");
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -127,7 +129,186 @@ use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
 #>
 
-use super::<#=table#>_model::*;
+use super::<#=table#>_model::*;<#
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+#>
+
+// <#=inlineForeignTab.label#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+  if (!hasFindAllTableUps) {
+  #>
+  find_all as find_all_<#=table#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create_<#=table#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  delete_by_ids as delete_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revert_by_ids as revert_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  update_by_id as update_by_id_<#=table#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  force_delete_by_ids as force_delete_by_ids_<#=table#>,<#
+  }
+  #>
+};<#
+}
+#><#
+
+// 已经导入的ID列表
+const modelIds = [ ];
+modelIds.push(Table_Up + "Id");
+#><#
+const modelTableUps = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const hasModelTableUps = modelTableUps.includes(Table_Up);
+  if (hasModelTableUps) {
+    continue;
+  }
+  modelTableUps.push(Table_Up);
+  const modelId = Table_Up + "ID";
+  modelIds.push(modelId);
+#>
+
+// <#=inlineForeignTab.label#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
+}
+#><#
+if (hasTenantId && !modelIds.includes("TenantId")) {
+#>
+
+use crate::gen::base::tenant::tenant_model::TenantId;<#
+modelIds.push("TenantId");
+#><#
+}
+#><#
+if (hasOrgId && !modelIds.includes("OrgId")) {
+#>
+
+use crate::gen::base::org::org_model::OrgId;<#
+modelIds.push("OrgId");
+#><#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+  if (column_name === 'id') continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const modelId = foreignTable_Up + "Id";
+  if (modelIds.includes(modelId)) {
+    continue;
+  }
+  modelIds.push(modelId);
+#>
+use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
+}
+#>
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -169,7 +350,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -182,7 +363,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<<#=Table_Up#>Id> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -195,7 +376,7 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -236,10 +417,10 @@ async fn get_where_query(
   {
     let tenant_id = {
       let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
+        Some(item) => item.tenant_id.clone(),
+        None => None,
       };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
+      let tenant_id = match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -260,10 +441,10 @@ async fn get_where_query(
   {
     let org_id = {
       let org_id = match &search {
-        Some(item) => &item.org_id,
-        None => &None,
+        Some(item) => item.org_id.clone(),
+        None => None,
       };
-      let org_id = match trim_opt(org_id.as_ref()) {
+      let org_id = match org_id {
         None => get_auth_org_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -284,8 +465,14 @@ async fn get_where_query(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
@@ -304,13 +491,16 @@ async fn get_where_query(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
-      _data_type = "Vec<String>";
+      _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
@@ -335,10 +525,32 @@ async fn get_where_query(
       _data_type = "rust_decimal::Decimal";
     }
   #><#
-    if (foreignKey && foreignKey.type !== "many2many") {
+    if ([
+      "is_hidden",
+      "is_sys",
+    ].includes(column_name)) {
   #>
   {
-    let <#=column_name_rust#>: Vec<String> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => Default::default(),
+    };
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      let arg = {
+        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+        for item in <#=column_name_rust#> {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.<#=column_name#> in ({arg})");
+    }
+  }<#
+    } else if (foreignKey && foreignKey.type !== "many2many") {
+  #>
+  {
+    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -366,7 +578,7 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Vec<String> = match &search {
+    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -392,9 +604,17 @@ async fn get_where_query(
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+    let <#=column_name_rust#>: Vec<<#=enumColumnName#>> = match &search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -467,7 +687,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name#>_like) = <#=column_name#>_like {
-      where_query += &format!(" and t.<#=column_name#> like {}", args.push((sql_like(&<#=column_name#>_like) + "%").into()));
+      where_query += &format!(
+        " and t.<#=column_name#> like {}",
+        args.push(
+          format!("%{}%", sql_like(&<#=column_name#>_like)).into()
+        ),
+      );
     }
   }<#
     } else {
@@ -596,20 +821,44 @@ pub async fn find_all(
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;<#
-  if (hasCreateTime) {
+  if (hasCreateTime || opts?.defaultSort) {
   #>
   
-  let mut sort = sort.unwrap_or_default();
+  let mut sort = sort.unwrap_or_default();<#
+    if (opts?.defaultSort) {
+      const prop = opts?.defaultSort.prop;
+      let order = "asc";
+      if (opts?.defaultSort.order === "ascending") {
+        order = "asc";
+      } else if (opts?.defaultSort.order === "descending") {
+        order = "desc";
+      }
+  #>
+  if !sort.iter().any(|item| item.prop == "<#=prop#>") {
+    sort.push(SortInput {
+      prop: "<#=prop#>".into(),
+      order: "<#=order#>".into(),
+    });
+  }<#
+    }
+  #><#
+    if (hasCreateTime) {
+  #>
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "asc".into(),
     });
-  }
+  }<#
+    }
+  #>
   let sort = sort.into();
   <#
   }
@@ -670,12 +919,19 @@ pub async fn find_all(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(vec![<#
+  let dict_vec = get_dict(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -687,42 +943,60 @@ pub async fn find_all(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>".to_owned(),<#
+    "<#=column.dict#>",<#
   }
   #>
   ]).await?;
-  <#
-  let dictNum = 0;
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
+  let [<#
+    let dictNum = 0;
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (!column.dict) continue;
+    #>
+    <#=column_name#>_dict,<#
+      dictNum++;
     }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (!column.dict) continue;
-  #>
-  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];<#
-    dictNum++;
-  }
-  #><#
+    #>
+  ]: [Vec<_>; <#=dictNum#>] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;<#
     }
   #><#
     if (hasDictbiz) {
   #>
-  let dictbiz_vec = get_dictbiz(vec![<#
+  
+  let dictbiz_vec = get_dictbiz(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -734,33 +1008,70 @@ pub async fn find_all(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>".to_owned(),<#
+    "<#=column.dictbiz#>",<#
   }
   #>
   ]).await?;
-  <#
-  let dictBizNum = 0;
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
+  let [<#
+    let dictBizNum = 0;
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (!column.dictbiz) continue;
+    #>
+    <#=column_name#>_dictbiz,<#
+    dictBizNum++;
     }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    #>
+  ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dictbiz_vec.len() != 3"))?;<#
     }
-    if (!column.dictbiz) continue;
-  #>
-  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];<#
-  dictBizNum++;
-  }
   #><#
-    }
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const inlineForeignTable = inlineForeignTab.table;
+    const inlineForeignMod = inlineForeignTab.mod;
+    const inlineForeignTableUp = inlineForeignTable.substring(0, 1).toUpperCase()+inlineForeignTable.substring(1);
+    const inlineForeignTable_Up = inlineForeignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=inlineForeignTable#>_models = find_all_<#=inlineForeignTable#>(
+    <#=inlineForeignTable_Up#>Search {
+      <#=inlineForeignTab.column#>: res
+        .iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<<#=Table_Up#>Id>>()
+        .into(),
+      is_deleted,
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;<#
+  }
   #>
   
   for model in &mut res {<#
@@ -769,6 +1080,13 @@ pub async fn find_all(
       if (column.ignoreCodegen) continue;
       const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
+      if (
+        [
+          "is_deleted",
+          "is_sys",
+          "is_hidden",
+        ].includes(column_name)
+      ) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -791,8 +1109,9 @@ pub async fn find_all(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      <#=column_name#>_dict.iter()
-        .find(|item| item.val == model.<#=column_name#>)
+      <#=column_name#>_dict
+        .iter()
+        .find(|item| item.val == model.<#=column_name#>.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
@@ -801,13 +1120,34 @@ pub async fn find_all(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      <#=column_name#>_dict.iter()
+      <#=column_name#>_dict
+        .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
     }
     #><#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=table#>_models = <#=table#>_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=inlineForeignTab.column#> == model.id
+      )
+      .collect();<#
     }
     #>
     
@@ -895,7 +1235,14 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -947,7 +1294,15 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -968,7 +1323,7 @@ pub async fn get_field_comments(
       ) {
         num++;
     #>
-    <#=column_name#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
         if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
           num++;
     #>
@@ -978,7 +1333,7 @@ pub async fn get_field_comments(
       } else {
         num++;
     #>
-    <#=column_name#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
       }
     #><#
     }
@@ -1013,7 +1368,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
@@ -1047,7 +1402,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1118,8 +1473,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);<#
@@ -1177,7 +1532,7 @@ pub async fn check_by_unique(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<<#=Table_Up#>Id>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -1231,6 +1586,9 @@ pub async fn set_id_by_lbl(
         "create_time",
         "update_usr_id",
         "update_time",
+        "is_deleted",
+        "is_sys",
+        "is_hidden",
       ].includes(column_name)
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
@@ -1268,12 +1626,19 @@ pub async fn set_id_by_lbl(
     if (hasDict) {
   #>
   
-  let dict_vec = get_dict(vec![<#
+  let dict_vec = get_dict(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1285,7 +1650,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dict) continue;
   #>
-    "<#=column.dict#>".to_owned(),<#
+    "<#=column.dict#>",<#
   }
   #>
   ]).await?;<#
@@ -1296,6 +1661,13 @@ pub async fn set_id_by_lbl(
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1312,7 +1684,8 @@ pub async fn set_id_by_lbl(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dict.iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dict
+        .iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })
@@ -1329,13 +1702,20 @@ pub async fn set_id_by_lbl(
   #><#
     if (hasDictbiz) {
   #>
-  let dictbiz_vec = get_dictbiz(vec![<#
+  let dictbiz_vec = get_dictbiz(&[<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1347,7 +1727,7 @@ pub async fn set_id_by_lbl(
     }
     if (!column.dictbiz) continue;
   #>
-    "<#=column.dictbiz#>".to_owned(),<#
+    "<#=column.dictbiz#>",<#
   }
   #>
   ]).await?;<#
@@ -1356,8 +1736,15 @@ pub async fn set_id_by_lbl(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -1374,7 +1761,8 @@ pub async fn set_id_by_lbl(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dictbiz.iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dictbiz
+        .iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })
@@ -1394,8 +1782,15 @@ pub async fn set_id_by_lbl(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column_name);
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1405,6 +1800,7 @@ pub async fn set_id_by_lbl(
     foreignTableUp = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const foreignTable_Up = foreignTableUp && foreignTableUp.substring(0, 1).toUpperCase()+foreignTableUp.substring(1);
     const many2many = column.many2many;
     const isPassword = column.isPassword;
     let daoStr = "";
@@ -1478,7 +1874,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.<#=column_name_rust#> = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<<#=foreignTable_Up#>Id>>()
         .into();
     }
   }<#
@@ -1614,7 +2010,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {<#
+) -> Result<<#=Table_Up#>Id> {<#
   if (false) {
   #>
   
@@ -1693,7 +2089,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<<#=Table_Up#>Id> = None;
     
     for old_model in old_models {
       
@@ -1723,9 +2119,9 @@ pub async fn create(
   }
   #>
   
-  let mut id;
+  let mut id: <#=Table_Up#>Id;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -1802,13 +2198,14 @@ pub async fn create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
-      sql_fields += ",<#=column_name#>";
+      sql_fields += ",<#=column_name_mysql#>";
       sql_values += ",?";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
@@ -1821,7 +2218,7 @@ pub async fn create(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name#>";
+    sql_fields += ",<#=column_name_mysql#>";
     sql_values += ",?";
     args.push(<#=column_name_rust#>.into());
   }<#
@@ -1916,8 +2313,11 @@ pub async fn create(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     many2many_update(
-      id.clone(),
-      <#=column_name_rust#>.clone(),
+      id.clone().into(),
+      <#=column_name_rust#>
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "<#=many2many.mod#>",
         table: "<#=many2many.table#>",
@@ -1929,6 +2329,28 @@ pub async fn create(
   }
   #><#
   }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(<#=table#>_models) = input.<#=table#>_models {
+    for mut <#=table#>_model in <#=table#>_models {
+      <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+      create_<#=table#>(
+        <#=table#>_model,
+        None,
+      ).await?;
+    }
+  }<#
+  }
   #>
   
   Ok(id)
@@ -1938,8 +2360,8 @@ if (hasTenantId) {
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: <#=Table_Up#>Id,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
@@ -1982,8 +2404,8 @@ if (hasOrgId) {
 
 /// 根据id修改组织id
 pub async fn update_org_by_id(
-  id: String,
-  org_id: String,
+  id: <#=Table_Up#>Id,
+  org_id: OrgId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
@@ -2025,7 +2447,7 @@ if (hasVersion) {
 #>
 
 pub async fn get_version_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
 ) -> Result<Option<u32>> {
   
   let model = find_by_id(id, None).await?;
@@ -2042,10 +2464,10 @@ pub async fn get_version_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {<#
+) -> Result<<#=Table_Up#>Id> {<#
   if (hasEncrypt) {
   #>
   
@@ -2187,6 +2609,13 @@ pub async fn update_by_id(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    const column_name_mysql = mysqlKeyEscape(column_name);
   #><#
     if (column.isPassword) {
   #>
@@ -2194,7 +2623,7 @@ pub async fn update_by_id(
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
        field_num += 1;
-      sql_fields += ",<#=column_name#> = ?";
+      sql_fields += ",<#=column_name_mysql#> = ?";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
   }<#
@@ -2203,7 +2632,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name#> = ?";
+    sql_fields += ",<#=column_name_mysql#> = ?";
     args.push(<#=column_name_rust#>.into());
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -2213,7 +2642,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name#> = ?";
+    sql_fields += ",<#=column_name_mysql#> = ?";
     args.push(<#=column_name_rust#>.into());
   }<#
   }
@@ -2245,15 +2674,83 @@ pub async fn update_by_id(
   #><#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
+      const val_mysql = mysqlKeyEscape(val);
   #>
   // <#=column_comment#>
   if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
     field_num += 1;
-    sql_fields += ",<#=val#> = ?";
+    sql_fields += ",<#=val_mysql#> = ?";
     args.push(<#=rustKeyEscape(val)#>.into());
   }<#
     }
   #><#
+  }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(input_<#=table#>_models) = input.<#=table#>_models {
+    let <#=table#>_models = find_all_<#=table#>(
+      <#=Table_Up#>Search {
+        <#=inlineForeignTab.column#>: vec![id.clone()].into(),
+        is_deleted: 0.into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    if !<#=table#>_models.is_empty() && !input_<#=table#>_models.is_empty() {
+      field_num += 1;
+    }
+    for <#=table#>_model in <#=table#>_models.clone() {
+      if input_<#=table#>_models
+        .iter()
+        .filter(|item| item.id.is_some())
+        .any(|item| item.id == Some(<#=table#>_model.id.clone()))
+      {
+        continue;
+      }
+      delete_by_ids_<#=table#>(
+        vec![<#=table#>_model.id],
+        None,
+      ).await?;
+    }
+    for <#=table#>_model in input_<#=table#>_models {
+      if <#=table#>_model.id.is_none() {
+        let mut <#=table#>_model = <#=table#>_model;
+        <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+        create_<#=table#>(
+          <#=table#>_model,
+          None,
+        ).await?;
+        continue;
+      }
+      let id = <#=table#>_model.id.clone().unwrap();
+      if !<#=table#>_models
+        .iter()
+        .any(|item| item.id == id)
+      {
+        revert_by_ids_<#=table#>(
+          vec![id.clone()],
+          None,
+        ).await?;
+      }
+      update_by_id_<#=table#>(
+        id.clone(),
+        <#=table#>_model,
+        None,
+      ).await?;
+    }
+  }<#
   }
   #>
   
@@ -2355,8 +2852,11 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     many2many_update(
-      id.clone(),
-      <#=column_name_rust#>.clone(),
+      id.clone().into(),
+      <#=column_name_rust#>
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "<#=many2many.mod#>",
         table: "<#=many2many.table#>",
@@ -2462,7 +2962,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -2472,7 +2972,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -2501,7 +3001,36 @@ pub async fn delete_by_ids(
       options,
     ).await?;
   }<#
-    if (table === "i18n") {
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  delete_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
+  }
+  #><#
+    if (table === "i18n" && mod === "base") {
   #>
   
   crate::src::base::options::options_dao::update_i18n_version().await?;<#
@@ -2515,7 +3044,7 @@ if (hasDefault) {
 
 /// 根据 id 设置默认记录
 pub async fn default_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -2575,10 +3104,10 @@ pub async fn default_by_id(
 if (hasEnabled) {
 #>
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -2597,7 +3126,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<<#=Table_Up#>Id>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -2639,11 +3168,11 @@ pub async fn enable_by_ids(
 if (hasLocked) {
 #>
 
-/// 根据 ID 查找是否已锁定
+/// 根据 id 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
-  id: String,
+  id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -2662,7 +3191,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids(
-  ids: Vec<String>,
+  ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -2704,7 +3233,7 @@ pub async fn lock_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -2714,7 +3243,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -2778,14 +3307,49 @@ pub async fn revert_by_ids(
       }
     }
     
+  }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
   }
+  #><#
+    if (table === "i18n" && mod === "base") {
+  #>
+  
+  crate::src::base::options::options_dao::update_i18n_version().await?;<#
+    }
+  #>
   
   Ok(num)
 }
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -2795,7 +3359,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       <#=tableUP#>Search {
@@ -2839,7 +3403,36 @@ pub async fn force_delete_by_ids(
       args,
       options,
     ).await?;
+  }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  force_delete_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
   }
+  #>
   
   Ok(num)
 }<#

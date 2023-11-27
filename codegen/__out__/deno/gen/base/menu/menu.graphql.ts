@@ -3,18 +3,22 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./menu.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar MenuId
+
+"菜单类型"
+scalar MenuType
 
 type MenuModel {
   "ID"
   id: String!
   "类型"
-  type: String!
+  type: MenuType
   "类型"
-  type_lbl: String
+  type_lbl: String!
   "父菜单"
   parent_id: String!
   "父菜单"
-  parent_id_lbl: String
+  parent_id_lbl: MenuId
   "名称"
   lbl: String!
   "路由"
@@ -24,15 +28,11 @@ type MenuModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
-  "所在租户"
-  tenant_ids: [String!]
-  "所在租户"
-  tenant_ids_lbl: [String!]
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -40,7 +40,7 @@ type MenuModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -48,7 +48,7 @@ type MenuModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -57,6 +57,8 @@ type MenuModel {
   is_deleted: Int!
 }
 type MenuFieldComment {
+  "ID"
+  id: String!
   "类型"
   type: String!
   "类型"
@@ -75,10 +77,6 @@ type MenuFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
-  "所在租户"
-  tenant_ids: String!
-  "所在租户"
-  tenant_ids_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -106,15 +104,15 @@ type MenuFieldComment {
 }
 input MenuInput {
   ""
-  id: String
+  id: MenuId
   "类型"
-  type: String
+  type: MenuType
   "类型"
   type_lbl: String
   "父菜单"
   parent_id: String
   "父菜单"
-  parent_id_lbl: String
+  parent_id_lbl: MenuId
   "名称"
   lbl: String
   "路由"
@@ -125,10 +123,6 @@ input MenuInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
-  "所在租户"
-  tenant_ids: [String!]
-  "所在租户"
-  tenant_ids_lbl: [String!]
   "启用"
   is_enabled: Int
   "启用"
@@ -140,7 +134,7 @@ input MenuInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -148,7 +142,7 @@ input MenuInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -159,12 +153,12 @@ input MenuSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: MenuId
   "类型"
   type: [String!]
   "父菜单"
-  parent_id: [String!]
+  parent_id: [MenuId!]
   parent_id_is_null: Boolean
   "名称"
   lbl: String
@@ -177,9 +171,6 @@ input MenuSearch {
   route_query_like: String
   "锁定"
   is_locked: [Int!]
-  "所在租户"
-  tenant_ids: [String!]
-  tenant_ids_is_null: Boolean
   "启用"
   is_enabled: [Int!]
   "排序"
@@ -188,12 +179,12 @@ input MenuSearch {
   rem: String
   rem_like: String
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]

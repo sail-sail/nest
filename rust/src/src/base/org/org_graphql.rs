@@ -5,6 +5,8 @@ use crate::common::context::Ctx;
 
 use super::org_resolver;
 
+use crate::gen::base::org::org_model::OrgId;
+
 #[derive(Default)]
 pub struct OrgMutation;
 
@@ -15,7 +17,7 @@ impl OrgMutation {
   async fn org_login_select(
     &self,
     ctx: &Context<'_>,
-    org_id: String,
+    org_id: OrgId,
   ) -> Result<String> {
     
     let mut ctx = Ctx::builder(ctx)

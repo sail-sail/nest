@@ -1,7 +1,15 @@
-use serde::{
-  Serialize,
-  Deserialize,
-};
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -9,24 +17,37 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::common::context::ArgType;
+
+use crate::gen::base::dict_detail::dict_detail_model::{
+  DictDetailModel,
+  DictDetailInput,
+};
+use crate::gen::base::usr::usr_model::UsrId;
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictModel {
+  /// 系统字段
+  #[graphql(skip)]
+  pub is_sys: u8,
   /// ID
-  pub id: String,
+  pub id: DictId,
   /// 编码
   pub code: String,
   /// 名称
   pub lbl: String,
   /// 数据类型
-  pub r#type: String,
+  pub r#type: DictType,
   /// 数据类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -40,7 +61,7 @@ pub struct DictModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -48,32 +69,33 @@ pub struct DictModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: u8,
-  /// 系统字段
-  pub is_sys_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 系统字典明细
+  pub dict_detail_models: Vec<DictDetailModel>,
+  
 }
 
 impl FromRow<'_, MySqlRow> for DictModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 系统记录
+    let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: DictId = row.try_get("id")?;
     // 编码
     let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 数据类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: DictType = type_lbl.clone().try_into()?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -85,7 +107,7 @@ impl FromRow<'_, MySqlRow> for DictModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -95,7 +117,7 @@ impl FromRow<'_, MySqlRow> for DictModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -104,13 +126,12 @@ impl FromRow<'_, MySqlRow> for DictModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 系统字段
-    let is_sys: u8 = row.try_get("is_sys")?;
-    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_sys,
+      is_deleted,
       id,
       code,
       lbl,
@@ -130,16 +151,15 @@ impl FromRow<'_, MySqlRow> for DictModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_sys,
-      is_sys_lbl,
-      is_deleted,
+      dict_detail_models: vec![],
+      
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictFieldComment {
   /// ID
@@ -151,7 +171,7 @@ pub struct DictFieldComment {
   /// 数据类型
   pub r#type: String,
   /// 数据类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -180,17 +200,15 @@ pub struct DictFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: String,
-  /// 系统字段
-  pub is_sys_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  /// ID
+  pub id: Option<DictId>,
+  /// ID列表
+  pub ids: Option<Vec<DictId>>,
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
@@ -201,7 +219,7 @@ pub struct DictSearch {
   /// 名称
   pub lbl_like: Option<String>,
   /// 数据类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<DictType>>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -213,32 +231,35 @@ pub struct DictSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 系统字段
-  pub is_sys: Option<Vec<u8>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<DictId>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
+  /// 系统记录
+  #[graphql(skip)]
+  pub is_sys: Option<u8>,
   /// 编码
   pub code: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 数据类型
-  pub r#type: Option<String>,
+  pub r#type: Option<DictType>,
   /// 数据类型
   pub type_lbl: Option<String>,
   /// 锁定
@@ -254,7 +275,7 @@ pub struct DictInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -262,17 +283,60 @@ pub struct DictInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<u8>,
-  /// 系统字段
-  pub is_sys_lbl: Option<String>,
+  /// 系统字典明细
+  pub dict_detail_models: Option<Vec<DictDetailInput>>,
+}
+
+impl From<DictModel> for DictInput {
+  fn from(model: DictModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      is_sys: model.is_sys.into(),
+      // 编码
+      code: model.code.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 数据类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+      // 系统字典明细
+      dict_detail_models: model.dict_detail_models
+        .into_iter()
+        .map(|x| x.into())
+        .collect::<Vec<DictDetailInput>>()
+        .into(),
+    }
+  }
 }
 
 impl From<DictInput> for DictSearch {
@@ -303,9 +367,234 @@ impl From<DictInput> for DictSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
-      // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
+    }
+  }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct DictId(SmolStr);
+
+impl fmt::Display for DictId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "DictId")]
+impl async_graphql::ScalarType for DictId {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<DictId> for ArgType {
+  fn from(value: DictId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&DictId> for ArgType {
+  fn from(value: &DictId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<DictId> for SmolStr {
+  fn from(id: DictId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for DictId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for DictId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for DictId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for DictId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for DictId {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for DictId {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for DictId {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for DictId {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+/// 系统字典数据类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DictType {
+  /// 字符串
+  #[graphql(name="string")]
+  String,
+  /// 数值
+  #[graphql(name="number")]
+  Number,
+  /// 日期
+  #[graphql(name="date")]
+  Date,
+  /// 日期时间
+  #[graphql(name="datetime")]
+  Datetime,
+  /// 时间
+  #[graphql(name="time")]
+  Time,
+  /// 布尔
+  #[graphql(name="boolean")]
+  Boolean,
+}
+
+impl fmt::Display for DictType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::String => write!(f, "string"),
+      Self::Number => write!(f, "number"),
+      Self::Date => write!(f, "date"),
+      Self::Datetime => write!(f, "datetime"),
+      Self::Time => write!(f, "time"),
+      Self::Boolean => write!(f, "boolean"),
+    }
+  }
+}
+
+impl From<DictType> for SmolStr {
+  fn from(value: DictType) -> Self {
+    match value {
+      DictType::String => "string".into(),
+      DictType::Number => "number".into(),
+      DictType::Date => "date".into(),
+      DictType::Datetime => "datetime".into(),
+      DictType::Time => "time".into(),
+      DictType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictType> for String {
+  fn from(value: DictType) -> Self {
+    match value {
+      DictType::String => "string".into(),
+      DictType::Number => "number".into(),
+      DictType::Date => "date".into(),
+      DictType::Datetime => "datetime".into(),
+      DictType::Time => "time".into(),
+      DictType::Boolean => "boolean".into(),
+    }
+  }
+}
+
+impl From<DictType> for ArgType {
+  fn from(value: DictType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for DictType {
+  fn default() -> Self {
+    Self::String
+  }
+}
+
+impl FromStr for DictType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(anyhow::anyhow!("DictType can't convert from {s}")),
+    }
+  }
+}
+
+impl DictType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::String => "string",
+      Self::Number => "number",
+      Self::Date => "date",
+      Self::Datetime => "datetime",
+      Self::Time => "time",
+      Self::Boolean => "boolean",
+    }
+  }
+}
+
+impl TryFrom<String> for DictType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "string" => Ok(Self::String),
+      "number" => Ok(Self::Number),
+      "date" => Ok(Self::Date),
+      "datetime" => Ok(Self::Datetime),
+      "time" => Ok(Self::Time),
+      "boolean" => Ok(Self::Boolean),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DictType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }

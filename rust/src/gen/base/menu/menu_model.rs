@@ -1,7 +1,15 @@
-use serde::{
-  Serialize,
-  Deserialize,
-};
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -9,22 +17,27 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::common::context::ArgType;
+use crate::gen::base::usr::usr_model::UsrId;
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuModel {
   /// ID
-  pub id: String,
+  pub id: MenuId,
   /// 类型
-  pub r#type: String,
+  pub r#type: MenuType,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 父菜单
-  pub parent_id: String,
+  pub parent_id: MenuId,
   /// 父菜单
   pub parent_id_lbl: String,
   /// 名称
@@ -37,10 +50,6 @@ pub struct MenuModel {
   pub is_locked: u8,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 所在租户
-  pub tenant_ids: Vec<String>,
-  /// 所在租户
-  pub tenant_ids_lbl: Vec<String>,
   /// 启用
   pub is_enabled: u8,
   /// 启用
@@ -50,7 +59,7 @@ pub struct MenuModel {
   /// 备注
   pub rem: String,
   /// 创建人
-  pub create_usr_id: String,
+  pub create_usr_id: UsrId,
   /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -58,7 +67,7 @@ pub struct MenuModel {
   /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
-  pub update_usr_id: String,
+  pub update_usr_id: UsrId,
   /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
@@ -72,12 +81,12 @@ pub struct MenuModel {
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
-    let id: String = row.try_get("id")?;
+    let id: MenuId = row.try_get("id")?;
     // 类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: MenuType = type_lbl.clone().try_into()?;
     // 父菜单
-    let parent_id: String = row.try_get("parent_id")?;
+    let parent_id: MenuId = row.try_get("parent_id")?;
     let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
     let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
@@ -89,41 +98,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
-    // 所在租户
-    let tenant_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids")?;
-    let tenant_ids = tenant_ids.unwrap_or_default().0;
-    let tenant_ids = {
-      let mut keys: Vec<u32> = tenant_ids.keys()
-        .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
-        )
-        .collect();
-      keys.sort();
-      keys.into_iter()
-        .map(|x| 
-          tenant_ids.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
-        )
-        .collect::<Vec<String>>()
-    };
-    let tenant_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids_lbl")?;
-    let tenant_ids_lbl = tenant_ids_lbl.unwrap_or_default().0;
-    let tenant_ids_lbl = {
-      let mut keys: Vec<u32> = tenant_ids_lbl.keys()
-        .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
-        )
-        .collect();
-      keys.sort();
-      keys.into_iter()
-        .map(|x| 
-          tenant_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
-        )
-        .collect::<Vec<String>>()
-    };
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -132,7 +106,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
-    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
     let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
@@ -142,7 +116,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       None => "".to_owned(),
     };
     // 更新人
-    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
     let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
@@ -155,6 +129,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_deleted,
       id,
       r#type,
       type_lbl,
@@ -165,8 +140,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       route_query,
       is_locked,
       is_locked_lbl,
-      tenant_ids,
-      tenant_ids_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -179,14 +152,13 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_deleted,
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuFieldComment {
   /// ID
@@ -194,7 +166,7 @@ pub struct MenuFieldComment {
   /// 类型
   pub r#type: String,
   /// 类型
-  pub r#type_lbl: String,
+  pub type_lbl: String,
   /// 父菜单
   pub parent_id: String,
   /// 父菜单
@@ -209,10 +181,6 @@ pub struct MenuFieldComment {
   pub is_locked: String,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 所在租户
-  pub tenant_ids: String,
-  /// 所在租户
-  pub tenant_ids_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
@@ -239,16 +207,18 @@ pub struct MenuFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  /// ID
+  pub id: Option<MenuId>,
+  /// ID列表
+  pub ids: Option<Vec<MenuId>>,
   pub is_deleted: Option<u8>,
   /// 类型
-  pub r#type: Option<Vec<String>>,
+  pub r#type: Option<Vec<MenuType>>,
   /// 父菜单
-  pub parent_id: Option<Vec<String>>,
+  pub parent_id: Option<Vec<MenuId>>,
   /// 父菜单
   pub parent_id_is_null: Option<bool>,
   /// 名称
@@ -263,10 +233,6 @@ pub struct MenuSearch {
   pub route_query: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
-  /// 所在租户
-  pub tenant_ids: Option<Vec<String>>,
-  /// 所在租户
-  pub tenant_ids_is_null: Option<bool>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
@@ -276,30 +242,32 @@ pub struct MenuSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
-  pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
   /// ID
-  pub id: Option<String>,
+  pub id: Option<MenuId>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 类型
-  pub r#type: Option<String>,
+  pub r#type: Option<MenuType>,
   /// 类型
   pub type_lbl: Option<String>,
   /// 父菜单
-  pub parent_id: Option<String>,
+  pub parent_id: Option<MenuId>,
   /// 父菜单
   pub parent_id_lbl: Option<String>,
   /// 名称
@@ -312,10 +280,6 @@ pub struct MenuInput {
   pub is_locked: Option<u8>,
   /// 锁定
   pub is_locked_lbl: Option<String>,
-  /// 所在租户
-  pub tenant_ids: Option<Vec<String>>,
-  /// 所在租户
-  pub tenant_ids_lbl: Option<Vec<String>>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
@@ -325,7 +289,7 @@ pub struct MenuInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
-  pub create_usr_id: Option<String>,
+  pub create_usr_id: Option<UsrId>,
   /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
@@ -333,13 +297,56 @@ pub struct MenuInput {
   /// 创建时间
   pub create_time_lbl: Option<String>,
   /// 更新人
-  pub update_usr_id: Option<String>,
+  pub update_usr_id: Option<UsrId>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl From<MenuModel> for MenuInput {
+  fn from(model: MenuModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      // 类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
+      // 父菜单
+      parent_id: model.parent_id.into(),
+      parent_id_lbl: model.parent_id_lbl.into(),
+      // 名称
+      lbl: model.lbl.into(),
+      // 路由
+      route_path: model.route_path.into(),
+      // 参数
+      route_query: model.route_query,
+      // 锁定
+      is_locked: model.is_locked.into(),
+      is_locked_lbl: model.is_locked_lbl.into(),
+      // 启用
+      is_enabled: model.is_enabled.into(),
+      is_enabled_lbl: model.is_enabled_lbl.into(),
+      // 排序
+      order_by: model.order_by.into(),
+      // 备注
+      rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
+    }
+  }
 }
 
 impl From<MenuInput> for MenuSearch {
@@ -360,8 +367,6 @@ impl From<MenuInput> for MenuSearch {
       route_query: input.route_query,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
-      // 所在租户
-      tenant_ids: input.tenant_ids,
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
@@ -377,6 +382,197 @@ impl From<MenuInput> for MenuSearch {
       // 更新时间
       update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
+    }
+  }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct MenuId(SmolStr);
+
+impl fmt::Display for MenuId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "MenuId")]
+impl async_graphql::ScalarType for MenuId {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<MenuId> for ArgType {
+  fn from(value: MenuId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&MenuId> for ArgType {
+  fn from(value: &MenuId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<MenuId> for SmolStr {
+  fn from(id: MenuId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for MenuId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for MenuId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for MenuId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for MenuId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for MenuId {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for MenuId {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for MenuId {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for MenuId {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+/// 菜单类型
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum MenuType {
+  /// 电脑端
+  #[graphql(name="pc")]
+  Pc,
+  /// 手机端
+  #[graphql(name="mobile")]
+  Mobile,
+}
+
+impl fmt::Display for MenuType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Pc => write!(f, "pc"),
+      Self::Mobile => write!(f, "mobile"),
+    }
+  }
+}
+
+impl From<MenuType> for SmolStr {
+  fn from(value: MenuType) -> Self {
+    match value {
+      MenuType::Pc => "pc".into(),
+      MenuType::Mobile => "mobile".into(),
+    }
+  }
+}
+
+impl From<MenuType> for String {
+  fn from(value: MenuType) -> Self {
+    match value {
+      MenuType::Pc => "pc".into(),
+      MenuType::Mobile => "mobile".into(),
+    }
+  }
+}
+
+impl From<MenuType> for ArgType {
+  fn from(value: MenuType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for MenuType {
+  fn default() -> Self {
+    Self::Pc
+  }
+}
+
+impl FromStr for MenuType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "pc" => Ok(Self::Pc),
+      "mobile" => Ok(Self::Mobile),
+      _ => Err(anyhow::anyhow!("MenuType can't convert from {s}")),
+    }
+  }
+}
+
+impl MenuType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Pc => "pc",
+      Self::Mobile => "mobile",
+    }
+  }
+}
+
+impl TryFrom<String> for MenuType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "pc" => Ok(Self::Pc),
+      "mobile" => Ok(Self::Mobile),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "MenuType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
