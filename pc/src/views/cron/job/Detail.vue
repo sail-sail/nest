@@ -318,7 +318,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: JobInput = {
-    is_locked: 0,
+    is_locked: 1,
     is_enabled: 1,
     order_by: 1,
   };

@@ -3,6 +3,10 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./cron_job_log.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar CronJobLogId
+
+"任务执行日志执行状态"
+scalar CronJobLogExecState
 
 type CronJobLogModel {
   "ID"
@@ -10,11 +14,11 @@ type CronJobLogModel {
   "定时任务"
   cron_job_id: String!
   "定时任务"
-  cron_job_id_lbl: String
+  cron_job_id_lbl: CronJobId
   "执行状态"
-  exec_state: String!
+  exec_state: CronJobLogExecState
   "执行状态"
-  exec_state_lbl: String
+  exec_state_lbl: String!
   "执行结果"
   exec_result: String!
   "开始时间"
@@ -35,6 +39,8 @@ type CronJobLogModel {
   is_deleted: Int!
 }
 type CronJobLogFieldComment {
+  "ID"
+  id: String!
   "定时任务"
   cron_job_id: String!
   "定时任务"
@@ -62,13 +68,13 @@ type CronJobLogFieldComment {
 }
 input CronJobLogInput {
   ""
-  id: String
+  id: CronJobLogId
   "定时任务"
   cron_job_id: String
   "定时任务"
-  cron_job_id_lbl: String
+  cron_job_id_lbl: CronJobId
   "执行状态"
-  exec_state: String
+  exec_state: CronJobLogExecState
   "执行状态"
   exec_state_lbl: String
   "执行结果"
@@ -93,10 +99,10 @@ input CronJobLogSearch {
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: CronJobLogId
   "定时任务"
-  cron_job_id: [String!]
+  cron_job_id: [CronJobId!]
   cron_job_id_is_null: Boolean
   "执行状态"
   exec_state: [String!]

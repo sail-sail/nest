@@ -386,7 +386,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 async function getDefaultInput() {
   const defaultInput: CronJobInput = {
     timezone: "Asia/Shanghai",
-    is_locked: 0,
+    is_locked: 1,
     is_enabled: 1,
     order_by: 1,
   };

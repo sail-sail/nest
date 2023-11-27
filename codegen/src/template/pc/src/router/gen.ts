@@ -2,8 +2,8 @@ import { RouteRecordRaw } from "vue-router";
 import Layout1 from "@/layout/layout1/index.vue";
 
 export const routesGen: Array<RouteRecordRaw> = [<#
-  for (let i = 0; i < records.length; i++) {
-    const record = records[i];
+  for (let i = 0; i < allTables.length; i++) {
+    const record = allTables[i];
     let table_name = record.TABLE_NAME;
     if (!optTables[table_name]) continue;
     const table_nameUp = table_name.substring(0, 1).toUpperCase() + table_name.substring(1);

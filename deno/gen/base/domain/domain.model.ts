@@ -6,7 +6,11 @@ import type {
   DomainInput as DomainInputType,
   DomainModel as DomainModelType,
   DomainSearch as DomainSearchType,
+  DomainFieldComment as DomainFieldCommentType,
 } from "/gen/types.ts";
+
+export const domainId = Symbol.for("DomainId");
+export type DomainId = typeof domainId;
 
 export interface DomainSearch extends DomainSearchType {
   $extra?: SearchExtra[];
@@ -27,24 +31,4 @@ export interface DomainInput extends DomainInputType {
   is_deleted?: number | null;
 }
 
-export interface DomainFieldComment {
-  id: string;
-  protocol: string;
-  lbl: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_default: string;
-  is_default_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { DomainFieldCommentType as DomainFieldComment };

@@ -6,7 +6,11 @@ import type {
   JobInput as JobInputType,
   JobModel as JobModelType,
   JobSearch as JobSearchType,
+  JobFieldComment as JobFieldCommentType,
 } from "/gen/types.ts";
+
+export const jobId = Symbol.for("JobId");
+export type JobId = typeof jobId;
 
 export interface JobSearch extends JobSearchType {
   tenant_id?: string | null;
@@ -34,22 +38,4 @@ export interface JobInput extends JobInputType {
   tenant_id?: string | null;
 }
 
-export interface JobFieldComment {
-  id: string;
-  code: string;
-  lbl: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { JobFieldCommentType as JobFieldComment };

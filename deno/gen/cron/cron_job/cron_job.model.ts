@@ -6,7 +6,11 @@ import type {
   CronJobInput as CronJobInputType,
   CronJobModel as CronJobModelType,
   CronJobSearch as CronJobSearchType,
+  CronJobFieldComment as CronJobFieldCommentType,
 } from "/gen/types.ts";
+
+export const cronJobId = Symbol.for("CronJobId");
+export type CronJobId = typeof cronJobId;
 
 export interface CronJobSearch extends CronJobSearchType {
   tenant_id?: string | null;
@@ -30,26 +34,4 @@ export interface CronJobInput extends CronJobInputType {
   tenant_id?: string | null;
 }
 
-export interface CronJobFieldComment {
-  id: string;
-  lbl: string;
-  job_id: string;
-  job_id_lbl: string;
-  cron: string;
-  timezone: string;
-  timezone_lbl: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { CronJobFieldCommentType as CronJobFieldComment };
