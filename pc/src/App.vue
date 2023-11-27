@@ -83,6 +83,6 @@ async function initI18nsEfc() {
 initI18nsEfc();
 
 onMounted(async () => {
-  await tabsStore.refreshTab();
+  await tabsStore.refreshTab(route);
 });
 </script>
