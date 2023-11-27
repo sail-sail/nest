@@ -172,8 +172,7 @@ export default defineStore("tabs", function() {
     tabs.splice(newIndex, 0, tab);
   }
   
-  async function refreshTab() {
-    const route = useRoute();
+  async function refreshTab(route: RouteLocationNormalized) {
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);
