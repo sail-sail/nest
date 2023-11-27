@@ -6,7 +6,11 @@ import type {
   UsrInput as UsrInputType,
   UsrModel as UsrModelType,
   UsrSearch as UsrSearchType,
+  UsrFieldComment as UsrFieldCommentType,
 } from "/gen/types.ts";
+
+export const usrId = Symbol.for("UsrId");
+export type UsrId = typeof usrId;
 
 export interface UsrSearch extends UsrSearchType {
   tenant_id?: string | null;
@@ -33,31 +37,4 @@ export interface UsrInput extends UsrInputType {
   is_hidden?: 0|1|null;
 }
 
-export interface UsrFieldComment {
-  id: string;
-  img: string;
-  lbl: string;
-  username: string;
-  org_ids: string;
-  org_ids_lbl: string;
-  default_org_id: string;
-  default_org_id_lbl: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  dept_ids: string;
-  dept_ids_lbl: string;
-  role_ids: string;
-  role_ids_lbl: string;
-  rem: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { UsrFieldCommentType as UsrFieldComment };

@@ -6,7 +6,11 @@ import type {
   OptbizInput as OptbizInputType,
   OptbizModel as OptbizModelType,
   OptbizSearch as OptbizSearchType,
+  OptbizFieldComment as OptbizFieldCommentType,
 } from "/gen/types.ts";
+
+export const optbizId = Symbol.for("OptbizId");
+export type OptbizId = typeof optbizId;
 
 export interface OptbizSearch extends OptbizSearchType {
   tenant_id?: string | null;
@@ -34,24 +38,4 @@ export interface OptbizInput extends OptbizInputType {
   tenant_id?: string | null;
 }
 
-export interface OptbizFieldComment {
-  id: string;
-  lbl: string;
-  ky: string;
-  val: string;
-  is_locked: string;
-  is_locked_lbl: string;
-  is_enabled: string;
-  is_enabled_lbl: string;
-  order_by: string;
-  rem: string;
-  version: string;
-  create_usr_id: string;
-  create_usr_id_lbl: string;
-  create_time: string;
-  create_time_lbl: string;
-  update_usr_id: string;
-  update_usr_id_lbl: string;
-  update_time: string;
-  update_time_lbl: string;
-}
+export type { OptbizFieldCommentType as OptbizFieldComment };
