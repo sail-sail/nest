@@ -293,7 +293,7 @@
 
 <script lang="ts" setup>
 import { filesize } from "filesize";
-import { baseURL } from '@/utils/axios';
+import { baseURL } from '@/utils/request';
 
 import {
   getStatsOss,
