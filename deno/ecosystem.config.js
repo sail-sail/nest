@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
-    name: "nest",
-    script: "./nest",
+    name: "xh4esw",
+    script: "./xh4esw",
     instances: 1,
     autorestart: true,
     watch: false,
