@@ -1,10 +1,14 @@
 import { defineConfig } from "../config";
 
 import base from "./base/base";
+import wx from "./wx/wx";
 
 export default defineConfig({
   
   // 基础模块
   ...base,
+  
+  // 微信模块
+  ...wx,
   
 });

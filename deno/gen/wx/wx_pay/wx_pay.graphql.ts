@@ -1,0 +1,237 @@
+import { defineGraphql } from "/lib/context.ts";
+
+import * as resolver from "./wx_pay.resolver.ts";
+
+defineGraphql(resolver, /* GraphQL */ `
+scalar WxPayId
+
+
+type WxPayModel {
+  "ID"
+  id: String!
+  "名称"
+  lbl: String!
+  "appid"
+  appid: String!
+  "商户号"
+  mchid: String!
+  "公钥"
+  public_key: String!
+  "私钥"
+  private_key: String!
+  "APIv3密钥"
+  v3_key: String!
+  "支付终端IP"
+  payer_client_ip: String!
+  "通知地址"
+  notify_url: String!
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String!
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: Int!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
+}
+type WxPayFieldComment {
+  "ID"
+  id: String!
+  "名称"
+  lbl: String!
+  "appid"
+  appid: String!
+  "商户号"
+  mchid: String!
+  "公钥"
+  public_key: String!
+  "私钥"
+  private_key: String!
+  "APIv3密钥"
+  v3_key: String!
+  "支付终端IP"
+  payer_client_ip: String!
+  "通知地址"
+  notify_url: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: String!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
+}
+input WxPayInput {
+  ""
+  id: WxPayId
+  "名称"
+  lbl: String
+  "appid"
+  appid: String
+  "商户号"
+  mchid: String
+  "公钥"
+  public_key: String
+  "私钥"
+  private_key: String
+  "APIv3密钥"
+  v3_key: String
+  "支付终端IP"
+  payer_client_ip: String
+  "通知地址"
+  notify_url: String
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int
+  "备注"
+  rem: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
+}
+input WxPaySearch {
+  "是否已删除"
+  is_deleted: Int
+  "ID列表"
+  ids: [String]
+  "ID"
+  id: WxPayId
+  "名称"
+  lbl: String
+  lbl_like: String
+  "appid"
+  appid: String
+  appid_like: String
+  "商户号"
+  mchid: String
+  mchid_like: String
+  "公钥"
+  public_key: String
+  public_key_like: String
+  "私钥"
+  private_key: String
+  private_key_like: String
+  "APIv3密钥"
+  v3_key: String
+  v3_key_like: String
+  "支付终端IP"
+  payer_client_ip: String
+  payer_client_ip_like: String
+  "通知地址"
+  notify_url: String
+  notify_url_like: String
+  "锁定"
+  is_locked: [Int!]
+  "启用"
+  is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
+  "创建人"
+  create_usr_id: [UsrId!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [UsrId!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
+}
+type Query {
+  "根据条件查找据数总数"
+  findCountWxPay(search: WxPaySearch): Int!
+  "根据搜索条件和分页查找数据"
+  findAllWxPay(search: WxPaySearch, page: PageInput, sort: [SortInput!]): [WxPayModel!]!
+  "获取字段对应的名称"
+  getFieldCommentsWxPay: WxPayFieldComment!
+  "根据条件查找第一条数据"
+  findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
+  "根据id查找一条数据"
+  findByIdWxPay(id: String!): WxPayModel
+  "查找order_by字段的最大值"
+  findLastOrderByWxPay: Int!
+}
+type Mutation {
+  "创建一条数据"
+  createWxPay(model: WxPayInput!, unique_type: UniqueType): String!
+  "根据id修改一条数据"
+  updateByIdWxPay(id: String!, model: WxPayInput!): String!
+  "根据 ids 删除数据"
+  deleteByIdsWxPay(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsWxPay(ids: [String!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsWxPay(ids: [String!]!, is_locked: Int!): Int!
+  "根据 ids 还原数据"
+  revertByIdsWxPay(ids: [String!]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsWxPay(ids: [String!]!): Int!
+}
+
+`);
