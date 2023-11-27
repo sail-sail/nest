@@ -3,6 +3,10 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -31,6 +35,38 @@ const hasSummary = columns.some((column) => column.showSummary);
 import * as resolver from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar <#=Table_Up#>Id
+<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const data_type = column.DATA_TYPE;
+  const column_comment = column.COLUMN_COMMENT;
+#><#
+  if (
+    (column.dict || column.dictbiz) &&
+    ![ "int", "decimal", "tinyint" ].includes(data_type)
+  ) {
+    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+    Column_Up = Column_Up.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const enumColumnName = Table_Up + Column_Up;
+#>
+"<#=table_comment#><#=column_comment#>"
+scalar <#=enumColumnName#><#
+  }
+  #><#
+}
+#>
 
 type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
@@ -40,19 +76,40 @@ type <#=modelName#> {<#
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let data_type = column.DATA_TYPE;
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
     let _data_type = "String";
     if (column_name === 'id') {
       data_type = 'String';
+      _data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey && foreignKey.multiple) {
       data_type = '[String!]';
-      _data_type = "[String!]";
+      _data_type = `[${ foreignTable_Up }Id!]`;
       is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'String';
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -65,6 +122,7 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
+      _data_type = "Int";
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'String';
@@ -74,9 +132,11 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'tinyint') {
       data_type = 'Int';
+      _data_type = "Int";
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Decimal';
+      _data_type = "Decimal";
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -105,12 +165,24 @@ type <#=modelName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
-      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
-    ) {
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if (column.dict || column.dictbiz) {
+      let enumColumnName = data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
     } else {
@@ -123,16 +195,55 @@ type <#=modelName#> {<#
   }
   #>
   "是否已删除"
-  is_deleted: Int!
+  is_deleted: Int!<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=table#>_models: [<#=modelName#>!]<#
+  }
+  #>
 }
 type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let column_comment = column.COLUMN_COMMENT;
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -142,21 +253,37 @@ type <#=fieldCommentName#> {<#
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') {
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "is_deleted") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
       continue;
     }
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
-      && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
-    ) {
+    if (foreignKey) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!<#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
-      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
-    ) {
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
+    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!
@@ -165,9 +292,7 @@ type <#=fieldCommentName#> {<#
     } else {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: String!
-  "<#=column_comment#>"
-  <#=column_name#>_lbl: String!<#
+  <#=column_name#>: String!<#
     }
   }
   #>
@@ -178,19 +303,37 @@ input <#=inputName#> {<#
     if (column.ignoreCodegen) continue;
     // if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (column_name === "is_deleted") continue;
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let data_type = column.DATA_TYPE;
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
     let _data_type = "String";
     if (column_name === 'id') {
-      data_type = 'String';
+      data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey && foreignKey.multiple) {
       data_type = '[String!]';
-      _data_type = "[String!]";
+      _data_type = `[${ foreignTable_Up }Id!]`;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'String';
-      _data_type = "String";
+      _data_type = `${ foreignTable_Up }Id`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -230,7 +373,13 @@ input <#=inputName#> {<#
     }
     if (column_name === 'id') column_comment = '';
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+    if (foreignKey) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: <#=_data_type#><#
+    } else if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
   #>
@@ -242,18 +391,61 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
-    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      let enumColumnName = data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: <#=_data_type#><#
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
     }
   #><#
+  }
+  #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=table#>_models: [<#=inputName#>!]<#
   }
   #>
 }
@@ -271,17 +463,34 @@ input <#=searchName#> {
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const search = column.search;
     if (column_name === 'org_id') {
       continue;
     }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
+    if (column_name === 'is_sys') {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
     if (column_name === 'id') {
-      data_type = 'String';
+      data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey) {
-      data_type = '[String!]';
+      data_type = `[${ foreignTable_Up }Id!]`;
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -356,7 +565,7 @@ input <#=searchName#> {
   <#=column_name#>: <#=data_type#><#
     } else if (column_name === "id") {
   #>
-  "<#=column_comment#>"
+  "ID"
   <#=column_name#>: <#=data_type#><#
     } else if (
       column.DATA_TYPE === "int"

@@ -7,6 +7,10 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::dept_model::*;
 use super::dept_service;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+
+use crate::gen::base::org::org_model::OrgId;
+
 /// 根据搜索条件和分页查找数据
 pub async fn find_all(
   search: Option<DeptSearch>,
@@ -55,9 +59,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
@@ -74,7 +78,7 @@ pub async fn find_by_id(
 pub async fn create(
   input: DeptInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<DeptId> {
   
   let input = dept_service::set_id_by_lbl(
     input,
@@ -96,8 +100,8 @@ pub async fn create(
 /// 根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: DeptId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -113,8 +117,8 @@ pub async fn update_tenant_by_id(
 /// 根据id修改部门id
 #[allow(dead_code)]
 pub async fn update_org_by_id(
-  id: String,
-  org_id: String,
+  id: DeptId,
+  org_id: OrgId,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -130,10 +134,10 @@ pub async fn update_org_by_id(
 /// 根据id修改数据
 #[allow(dead_code)]
 pub async fn update_by_id(
-  id: String,
+  id: DeptId,
   input: DeptInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<DeptId> {
   
   let input = dept_service::set_id_by_lbl(
     input,
@@ -156,7 +160,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -173,11 +177,11 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -192,7 +196,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或禁用数据
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DeptId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -211,12 +215,12 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已锁定
+/// 根据 id 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: String,
+  id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -231,7 +235,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或解锁数据
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DeptId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -265,7 +269,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -285,7 +289,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   

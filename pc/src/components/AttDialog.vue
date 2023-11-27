@@ -285,7 +285,7 @@
     ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
-    un-display-none
+    un-hidden
     @change="inputChg"
   />
 </CustomDialog>
@@ -293,7 +293,7 @@
 
 <script lang="ts" setup>
 import { filesize } from "filesize";
-import { baseURL } from '@/utils/axios';
+import { baseURL } from '@/utils/request';
 
 import {
   getStatsOss,

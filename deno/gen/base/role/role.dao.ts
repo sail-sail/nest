@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -40,15 +36,23 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   many2manyUpdate,
@@ -82,8 +86,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -106,7 +110,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.home_url !== undefined) {
     whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
@@ -115,7 +119,7 @@ async function getWhereQuery(
     whereQuery += ` and t.home_url is null`;
   }
   if (isNotEmpty(search?.home_url_like)) {
-    whereQuery += ` and t.home_url like ${ args.push(sqlLike(search?.home_url_like) + "%") }`;
+    whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
@@ -165,6 +169,14 @@ async function getWhereQuery(
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -172,7 +184,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -380,11 +392,24 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -478,7 +503,7 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -542,7 +567,7 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "is_locked",
     "is_enabled",
   ]);
@@ -649,6 +674,7 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -664,10 +690,10 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {RoleSearch | PartialNull<RoleModel>} search0
+ * @param {RoleInput} search0
  */
 export async function findByUnique(
-  search0: RoleSearch | PartialNull<RoleModel>,
+  search0: RoleInput,
   options?: {
   },
 ): Promise<RoleModel[]> {
@@ -697,18 +723,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {RoleModel} oldModel
- * @param {PartialNull<RoleModel>} model
+ * @param {RoleInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: RoleModel,
-  model: PartialNull<RoleModel>,
+  input: RoleInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -727,7 +753,6 @@ export async function checkByUnique(
   oldModel: RoleModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -744,7 +769,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -770,11 +794,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -935,7 +957,6 @@ export async function create(
   input: RoleInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_role";
@@ -993,8 +1014,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -1002,7 +1023,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -1010,7 +1031,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -1027,6 +1048,9 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
+  if (input.order_by !== undefined) {
+    sql += `,order_by`;
+  }
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
@@ -1034,8 +1058,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -1043,7 +1067,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1051,7 +1075,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1068,12 +1092,17 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
+  if (input.order_by !== undefined) {
+    sql += `,${ args.push(input.order_by) }`;
+  }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   // 菜单权限
   await many2manyUpdate(
@@ -1157,7 +1186,7 @@ export async function updateTenantById(
   const table = "base_role";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1196,7 +1225,6 @@ export async function updateById(
   input: RoleInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_role";
@@ -1275,6 +1303,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.order_by !== undefined) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
@@ -1285,7 +1319,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -1295,7 +1329,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   updateFldNum++;
@@ -1461,7 +1496,7 @@ export async function enableByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1531,7 +1566,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1661,4 +1696,47 @@ export async function forceDeleteByIds(
   await delCache();
   
   return num;
+}
+  
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_role";
+  const method = "findLastOrderBy";
+  
+  let sql = `
+    select
+      t.order_by order_by
+    from
+      base_role t
+  `;
+  const whereQuery: string[] = [ ];
+  const args = new QueryArgs();
+  whereQuery.push(`t.is_deleted = 0`);
+  {
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
+    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }
+  if (whereQuery.length > 0) {
+    sql += " where " + whereQuery.join(" and ");
+  }
+  sql += `
+    order by
+      t.order_by desc
+    limit 1
+  `;
+  
+  interface Result {
+    order_by: number;
+  }
+  let model = await queryOne<Result>(sql, args);
+  let result = model?.order_by ?? 0;
+  
+  return result;
 }

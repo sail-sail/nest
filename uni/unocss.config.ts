@@ -44,7 +44,7 @@ const presets = [
     prefix: "u",
     prefixedOnly: true,
   }),
-  presetRemRpx({ enable: true }),
+  presetRemRpx(),
 ];
 
 export default defineConfig({

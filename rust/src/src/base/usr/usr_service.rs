@@ -31,6 +31,8 @@ use super::usr_model::{
 
 use crate::src::base::i18n::i18n_dao::NRoute;
 
+use crate::gen::base::org::org_model::OrgId;
+
 /// 登录, 获得token
 pub async fn login(
   input: LoginInput,
@@ -82,7 +84,7 @@ pub async fn login(
     }
   }
   
-  let org_id: String = org_id.unwrap();
+  let org_id: OrgId = org_id.unwrap();
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
@@ -90,7 +92,7 @@ pub async fn login(
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_model.id,
-    tenant_id,
+    tenant_id: tenant_id.to_string().into(),
     org_id: org_id.clone().into(),
     lang,
     exp,
@@ -220,12 +222,12 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   let org_id = get_auth_org_id();
   
   let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
-    .iter()
-    .zip(org_ids_lbl.iter())
+    .into_iter()
+    .zip(org_ids_lbl.into_iter())
     .map(|(id, lbl)| {
       GetLoginInfoorgIdModel {
-        id: id.into(),
-        lbl: lbl.into(),
+        id,
+        lbl,
       }
     }).collect();
   

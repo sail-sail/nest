@@ -58,6 +58,7 @@ export async function findAll(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -84,6 +85,62 @@ export async function findAll(
     (item as any).home_url_lbl = homeUrlMap.find((item2) => item2.id === item.home_url)?.lbl || item.home_url;
   }
   return res;
+}
+
+/**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {RoleSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: RoleSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneRole: Query["findOneRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch, $sort: [SortInput!]) {
+        findOneRole(search: $search, sort: $sort) {
+          id
+          lbl
+          home_url
+          menu_ids
+          menu_ids_lbl
+          permit_ids
+          permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneRole;
+  if (model) {
+  }
+  return model;
 }
 
 /**
@@ -199,6 +256,7 @@ export async function findById(
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -384,12 +442,13 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -430,8 +489,7 @@ export async function findAllPermit(
 export async function getPermitList() {
   const data = await findAllPermit(
     undefined,
-    {
-    },
+    undefined,
     [
       {
         prop: "",
@@ -475,53 +533,7 @@ export async function findAllDataPermit(
 export async function getDataPermitList() {
   const data = await findAllDataPermit(
     undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
     undefined,
-    {
-    },
     [
       {
         prop: "",
@@ -540,7 +552,7 @@ export async function getMenuTree() {
     undefined,
     [
       {
-        prop: "",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -574,13 +586,8 @@ export function useDownloadImportTemplate(routePath: string) {
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl
-            is_locked_lbl
-            is_enabled_lbl
+            order_by
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllMenu {
             id
@@ -593,17 +600,6 @@ export function useDownloadImportTemplate(routePath: string) {
           findAllDataPermit {
             id
             scope
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
-            lbl
           }
         }
       `,
@@ -660,6 +656,7 @@ export function useExportExcel(routePath: string) {
             is_locked_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -678,6 +675,7 @@ export function useExportExcel(routePath: string) {
             data_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
+            order_by
             rem
             create_usr_id_lbl
             create_time_lbl
@@ -692,9 +690,6 @@ export function useExportExcel(routePath: string) {
           }
           findAllDataPermit {
             scope
-          }
-          findAllUsr {
-            lbl
           }
           getDict(codes: [
             "is_locked",
@@ -778,4 +773,25 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 查找order_by字段的最大值
+ * @export findLastOrderBy
+ * @param {GqlOpt} opt?
+ */
+export async function findLastOrderBy(
+  opt?: GqlOpt,
+) {
+  const data: {
+    findLastOrderByRole: Query["findLastOrderByRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByRole
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByRole;
+  return res;
 }

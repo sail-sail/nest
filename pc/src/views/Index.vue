@@ -22,8 +22,16 @@
         un-justify-center
         un-items-center
         un-text="gray"
+        un-gap="x-4"
       >
-        (暂未设置首页)
+        <span>(暂未设置首页)</span>
+        <el-button
+          plain
+          size="small"
+          @click="closeCurrentTab"
+        >
+          关闭
+        </el-button>
       </div>
     </template>
     <template v-else-if="myComponents.length === 1">
@@ -78,7 +86,9 @@ defineOptions({
   name: "首页",
 });
 
+const route = useRoute();
 const usrStore = useUsrStore();
+const tabStore = useTabsStore();
 
 let inited = $ref(false);
 
@@ -90,6 +100,17 @@ let homeUrls = $shallowRef<string[]>([ ]);
 async function onGetHomeUrls() {
   const homeUrls = await getHomeUrls() || [ ];
   myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
+}
+
+async function closeCurrentTab() {
+  tabStore.closeCurrentTab(
+    {
+      path: route.path,
+      query: route.query,
+    },
+    true,
+  );
+  await tabStore.refreshTab();
 }
 
 async function initFrame() {

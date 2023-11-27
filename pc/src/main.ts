@@ -6,8 +6,9 @@ import "element-plus/theme-chalk/dark/css-vars.css";
 import "element-plus/dist/index.css";
 import "uno.css";
 
-import App from "./App.vue";
+import "@/assets/style/common.scss";
 
+import App from "./App.vue";
 
 import router from "./router/index";
 import "./utils/DateUtil";
@@ -15,8 +16,11 @@ import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
 import { tableDataSortable } from "./components/TableDataSortable";
 
+import cfg from "./utils/config";
+
 const app = createApp(App);
 const pinia = createPinia();
+cfg.pinia = pinia;
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 setActivePinia(pinia);

@@ -16,7 +16,6 @@ use crate::common::gql::model::{
 use super::permit_model::*;
 use super::permit_resolver;
 
-
 #[derive(Default)]
 pub struct PermitGenQuery;
 
@@ -80,11 +79,11 @@ impl PermitGenQuery {
       }).await
   }
   
-  /// 根据ID查找第一条数据
+  /// 根据 id 查找第一条数据
   async fn find_by_id_permit(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: PermitId,
   ) -> Result<Option<PermitModel>> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -125,7 +124,7 @@ impl PermitGenMutation {
     ctx: &Context<'_>,
     model: PermitInput,
     unique_type: Option<UniqueType>,
-  ) -> Result<String> {
+  ) -> Result<PermitId> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -146,9 +145,9 @@ impl PermitGenMutation {
   async fn update_by_id_permit(
     &self,
     ctx: &Context<'_>,
-    id: String,
+    id: PermitId,
     model: PermitInput,
-  ) -> Result<String> {
+  ) -> Result<PermitId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
@@ -166,7 +165,7 @@ impl PermitGenMutation {
   async fn delete_by_ids_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<PermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -184,7 +183,7 @@ impl PermitGenMutation {
   async fn revert_by_ids_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<PermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -202,7 +201,7 @@ impl PermitGenMutation {
   async fn force_delete_by_ids_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<String>,
+    ids: Vec<PermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?

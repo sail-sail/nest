@@ -74,6 +74,56 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {DataPermitSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: DataPermitSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneDataPermit: Query["findOneDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DataPermitSearch, $sort: [SortInput!]) {
+        findOneDataPermit(search: $search, sort: $sort) {
+          id
+          menu_id
+          menu_id_lbl
+          lbl
+          scope
+          scope_lbl
+          type
+          type_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneDataPermit;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {DataPermitSearch} search?
@@ -308,57 +358,13 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
         order: "ascending",
       },
     ],
@@ -410,16 +416,8 @@ export function useDownloadImportTemplate(routePath: string) {
             scope_lbl
             type_lbl
             rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
           findAllMenu {
-            id
-            lbl
-          }
-          findAllUsr {
             id
             lbl
           }
@@ -502,9 +500,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
-            lbl
-          }
-          findAllUsr {
             lbl
           }
           getDict(codes: [

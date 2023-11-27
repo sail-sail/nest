@@ -3,6 +3,8 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./options.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
+scalar OptionsId
+
 
 type OptionsModel {
   "ID"
@@ -16,11 +18,11 @@ type OptionsModel {
   "锁定"
   is_locked: Int!
   "锁定"
-  is_locked_lbl: String
+  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
-  is_enabled_lbl: String
+  is_enabled_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -30,7 +32,7 @@ type OptionsModel {
   "创建人"
   create_usr_id: String!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -38,19 +40,17 @@ type OptionsModel {
   "更新人"
   update_usr_id: String!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "系统字段"
-  is_sys: Int!
-  "系统字段"
-  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
 }
 type OptionsFieldComment {
+  "ID"
+  id: String!
   "名称"
   lbl: String!
   "键"
@@ -90,7 +90,7 @@ type OptionsFieldComment {
 }
 input OptionsInput {
   ""
-  id: String
+  id: OptionsId
   "名称"
   lbl: String
   "键"
@@ -114,7 +114,7 @@ input OptionsInput {
   "创建人"
   create_usr_id: String
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: UsrId
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -122,23 +122,19 @@ input OptionsInput {
   "更新人"
   update_usr_id: String
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: UsrId
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
-  "系统字段"
-  is_sys: Int
-  "系统字段"
-  is_sys_lbl: String
 }
 input OptionsSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
   ids: [String]
-  "String"
-  id: String
+  "ID"
+  id: OptionsId
   "名称"
   lbl: String
   lbl_like: String
@@ -160,17 +156,15 @@ input OptionsSearch {
   "版本号"
   version: [Int!]
   "创建人"
-  create_usr_id: [String!]
+  create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
-  update_usr_id: [String!]
+  update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  "系统字段"
-  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

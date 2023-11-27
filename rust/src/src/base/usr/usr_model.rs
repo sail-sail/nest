@@ -8,7 +8,10 @@ use async_graphql::{
   SimpleObject,
 };
 
-#[derive(InputObject, Clone, Default, Serialize, Deserialize)]
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::org::org_model::OrgId;
+
+#[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
   
@@ -19,17 +22,17 @@ pub struct LoginInput {
   pub password: String,
   
   /// 租户ID
-  pub tenant_id: String,
+  pub tenant_id: TenantId,
   
   /// 组织ID
-  pub org_id: Option<String>,
+  pub org_id: Option<OrgId>,
   
   /// 语言
   pub lang: String,
   
 }
 
-#[derive(InputObject, Clone, Default, Serialize, Deserialize)]
+#[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "camelCase")]
 pub struct ChangePasswordInput {
   
@@ -44,32 +47,32 @@ pub struct ChangePasswordInput {
   
 }
 
-#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct Login {
   
   pub authorization: String,
-  pub org_id: String,
+  pub org_id: OrgId,
   
 }
 
-#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfo {
   
   pub lbl: String,
   pub username: String,
   pub lang: String,
-  pub org_id: Option<String>,
+  pub org_id: Option<OrgId>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
   
 }
 
-#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
   
-  pub id: String,
+  pub id: OrgId,
   pub lbl: String,
   
 }

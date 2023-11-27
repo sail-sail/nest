@@ -33,6 +33,8 @@ use crate::common::gql::model::{
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::data_permit_model::*;
+use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -52,7 +54,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -65,7 +67,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<DataPermitId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -78,11 +80,11 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
-    let menu_id: Vec<String> = match &search {
+    let menu_id: Vec<MenuId> = match &search {
       Some(item) => item.menu_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -120,11 +122,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+      where_query += &format!(
+        " and t.lbl like {}",
+        args.push(
+          format!("%{}%", sql_like(&lbl_like)).into()
+        ),
+      );
     }
   }
   {
-    let scope: Vec<String> = match &search {
+    let scope: Vec<DataPermitScope> = match &search {
       Some(item) => item.scope.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -141,7 +148,7 @@ async fn get_where_query(
     }
   }
   {
-    let r#type: Vec<String> = match &search {
+    let r#type: Vec<DataPermitType> = match &search {
       Some(item) => item.r#type.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -170,11 +177,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+      where_query += &format!(
+        " and t.rem like {}",
+        args.push(
+          format!("%{}%", sql_like(&rem_like)).into()
+        ),
+      );
     }
   }
   {
-    let create_usr_id: Vec<String> = match &search {
+    let create_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -221,7 +233,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<String> = match &search {
+    let update_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -267,23 +279,6 @@ async fn get_where_query(
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
-  {
-    let is_sys: Vec<u8> = match &search {
-      Some(item) => item.is_sys.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_sys.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_sys.len());
-        for item in is_sys {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_sys in ({})", arg);
-    }
-  }
   Ok(where_query)
 }
 
@@ -311,12 +306,21 @@ pub async fn find_all(
   let table = "base_data_permit";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "desc".into(),
+    });
+  }
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
@@ -355,40 +359,35 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "data_permit_scope".to_owned(),
-    "data_permit_type".to_owned(),
-    "is_sys".to_owned(),
+  let dict_vec = get_dict(&[
+    "data_permit_scope",
+    "data_permit_type",
   ]).await?;
-  
-  let scope_dict = &dict_vec[0];
-  let type_dict = &dict_vec[1];
-  let is_sys_dict = &dict_vec[2];
+  let [
+    scope_dict,
+    type_dict,
+  ]: [Vec<_>; 2] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 范围
     model.scope_lbl = {
-      scope_dict.iter()
-        .find(|item| item.val == model.scope)
+      scope_dict
+        .iter()
+        .find(|item| item.val == model.scope.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.scope.to_string())
     };
     
     // 类型
     model.r#type_lbl = {
-      r#type_dict.iter()
-        .find(|item| item.val == model.r#type)
+      r#type_dict
+        .iter()
+        .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
-    };
-    
-    // 系统字段
-    model.is_sys_lbl = {
-      is_sys_dict.iter()
-        .find(|item| item.val == model.is_sys.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -485,8 +484,6 @@ pub async fn get_field_comments(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
-    "系统字段".into(),
-    "系统字段".into(),
   ];
   
   let map = n_route.n_batch(
@@ -509,7 +506,7 @@ pub async fn get_field_comments(
     scope: vec[4].to_owned(),
     scope_lbl: vec[5].to_owned(),
     r#type: vec[6].to_owned(),
-    r#type_lbl: vec[7].to_owned(),
+    type_lbl: vec[7].to_owned(),
     rem: vec[8].to_owned(),
     create_usr_id: vec[9].to_owned(),
     create_usr_id_lbl: vec[10].to_owned(),
@@ -519,8 +516,6 @@ pub async fn get_field_comments(
     update_usr_id_lbl: vec[14].to_owned(),
     update_time: vec[15].to_owned(),
     update_time_lbl: vec[16].to_owned(),
-    is_sys: vec[17].to_owned(),
-    is_sys_lbl: vec[18].to_owned(),
   };
   Ok(field_comments)
 }
@@ -551,7 +546,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: DataPermitId,
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
   
@@ -585,7 +580,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: DataPermitId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -637,8 +632,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -671,7 +666,7 @@ pub async fn check_by_unique(
   input: DataPermitInput,
   model: DataPermitModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<DataPermitId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -710,17 +705,17 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "data_permit_scope".to_owned(),
-    "data_permit_type".to_owned(),
-    "is_sys".to_owned(),
+  let dict_vec = get_dict(&[
+    "data_permit_scope",
+    "data_permit_type",
   ]).await?;
   
   // 范围
   if input.scope.is_none() {
     let scope_dict = &dict_vec[0];
     if let Some(scope_lbl) = input.scope_lbl.clone() {
-      input.scope = scope_dict.iter()
+      input.scope = scope_dict
+        .iter()
         .find(|item| {
           item.lbl == scope_lbl
         })
@@ -734,23 +729,10 @@ pub async fn set_id_by_lbl(
   if input.r#type.is_none() {
     let type_dict = &dict_vec[1];
     if let Some(type_lbl) = input.type_lbl.clone() {
-      input.r#type = type_dict.iter()
+      input.r#type = type_dict
+        .iter()
         .find(|item| {
           item.lbl == type_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
-  // 系统字段
-  if input.is_sys.is_none() {
-    let is_sys_dict = &dict_vec[2];
-    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
-      input.is_sys = is_sys_dict.iter()
-        .find(|item| {
-          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -787,7 +769,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: DataPermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<DataPermitId> {
   
   let table = "base_data_permit";
   let _method = "create";
@@ -814,7 +796,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<DataPermitId> = None;
     
     for old_model in old_models {
       
@@ -834,9 +816,9 @@ pub async fn create(
     }
   }
   
-  let mut id;
+  let mut id: DataPermitId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -942,10 +924,10 @@ pub async fn create(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: DataPermitId,
   mut input: DataPermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<DataPermitId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1095,7 +1077,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1105,7 +1087,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1136,7 +1118,7 @@ pub async fn delete_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1146,7 +1128,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1213,7 +1195,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1223,7 +1205,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       DataPermitSearch {

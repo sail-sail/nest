@@ -37,13 +37,13 @@ pub async fn upload(
     }
   }
   if content.is_none() {
-    return Ok("".to_string());
+    return Ok("".to_owned());
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
   let id = get_short_uuid();
-  oss_service::put_object(&id, &content, &content_type, &file_name).await?;
-  Ok(id)
+  oss_service::put_object(id.as_str(), &content, &content_type, &file_name).await?;
+  Ok(id.to_string())
 }
 
 #[handler]

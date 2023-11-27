@@ -11,7 +11,7 @@ pub struct AppQuery;
 #[Object]
 impl AppQuery {
   
-  /// 生成ID主键
+  /// 生成 id 主键
   async fn generate_id(
     &self,
     ctx: &Context<'_>,

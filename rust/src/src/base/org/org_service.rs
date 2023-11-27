@@ -9,9 +9,11 @@ use crate::common::context::{
 
 use crate::gen::base::usr::usr_dao;
 
+use crate::gen::base::org::org_model::OrgId;
+
 pub async fn org_login_select(
   ctx: &mut Ctx,
-  org_id: String,
+  org_id: OrgId,
 ) -> Result<String> {
   let org_id2 = get_auth_org_id();
   if let Some(org_id2) = org_id2 {
@@ -27,7 +29,7 @@ pub async fn org_login_select(
     auth_model.id.clone(),
     None,
   ).await?;
-  let org_ids: Vec<String> = {
+  let org_ids: Vec<OrgId> = {
     if let Some(usr_model) = usr_model {
       usr_model.org_ids
     } else {

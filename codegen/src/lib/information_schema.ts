@@ -58,7 +58,11 @@ export async function getTableComment(context: Context, table_name: string) {
     const result = await context.conn.query(sql);
     schemaTables = <any[]>result[0];
   }
-  const table_comment = schemaTables.find(item => item.TABLE_NAME === table_name).TABLE_COMMENT || table_name;
+  const table_schema = schemaTables.find(item => item.TABLE_NAME === table_name);
+  if (!table_schema) {
+    throw new Error(`表不存在: ${ table_name }`);
+  }
+  const table_comment = table_schema.TABLE_COMMENT || table_name;
   return table_comment;
 }
 
@@ -68,6 +72,9 @@ async function getSchema0(
   context: Context,
   table_name: string,
 ): Promise<TableCloumn[]> {
+  if (!table_name) {
+    return [ ];
+  }
   if (!allTableSchemaRecords) {
     let sql = `
       select
@@ -84,6 +91,8 @@ async function getSchema0(
   const hasOrderBy = records.some((item) => item.COLUMN_NAME === 'order_by' && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
+  // 是否有隐藏字段
+  const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -106,7 +115,7 @@ async function getSchema0(
     }
   }
   const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
-  if (tenant_idColumn) {
+  if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
   }
   const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
@@ -114,7 +123,7 @@ async function getSchema0(
     records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
-  if (is_deletedColumn) {
+  if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
     records2.push(is_deletedColumn);
   }
   if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
@@ -123,7 +132,16 @@ async function getSchema0(
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
       COLUMN_COMMENT: "系统字段",
-      dict: "is_sys",
+      onlyCodegenDeno: true,
+    });
+  }
+  // 隐藏记录
+  if (hasIsHidden && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_hidden")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "is_hidden",
+      COLUMN_TYPE: "tinyint(1) unsigned",
+      DATA_TYPE: "tinyint",
+      COLUMN_COMMENT: "隐藏记录",
       onlyCodegenDeno: true,
     });
   }
@@ -131,6 +149,11 @@ async function getSchema0(
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
     const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
+    if (column_name === "is_hidden") {
+      if (item.onlyCodegenDeno != null) {
+        item.onlyCodegenDeno = true;
+      }
+    }
     if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
@@ -264,6 +287,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.require == null) {
+        item.require = true;
+      }
     }
     if ([ "rem" ].includes(column_name)) {
       if (item.width == null) {
@@ -344,6 +370,21 @@ async function getSchema0(
         item.sortable = true;
       }
     }
+    // 业务字典, 系统字典, 外键关联字段 都默认为必填
+    if (!item.noAdd && !item.noEdit) {
+      if ((record && (record.dict || record.dictbiz || record.foreignKey)) || item.foreignKey) {
+        if (item.require == null) {
+          item.require = true;
+        }
+      }
+    }
+    // 是否不显示导入导出中的下拉框, 若不设置, create_usr_id 跟 update_usr_id 默认为 true
+    if (
+      (item.COLUMN_NAME === "create_usr_id" || item.COLUMN_NAME === "update_usr_id") &&
+      item.notImportExportList == null
+    ) {
+      item.notImportExportList = true;
+    }
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {
@@ -389,15 +430,31 @@ async function getSchema0(
       prop: "create_time",
       order: "descending",
     };
+  } else if (
+    hasOrderBy
+    && (!tables[table_name]?.opts?.defaultSort)
+  ) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.defaultSort = {
+      prop: "order_by",
+      order: "ascending",
+    };
   }
   return records2;
 }
+
+let tablesConfigItemMap: {
+  [key: string]: TablesConfigItem;
+} = { };
 
 export async function getSchema(
   context: Context,
   table_name: string,
   table_names: string[],
 ): Promise<TablesConfigItem> {
+  if (tablesConfigItemMap[table_name]) {
+    return tablesConfigItemMap[table_name];
+  }
   const records = await getSchema0(context, table_name);
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
@@ -412,6 +469,19 @@ export async function getSchema(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
     column.ORDINAL_POSITION = i + 1;
+    
+    // 检查是否有重复的列
+    let isDuplicate = false;
+    for (let j = i + 1; j < tables[table_name].columns.length; j++) {
+      const item = tables[table_name].columns[j];
+      if (item.COLUMN_NAME === column.COLUMN_NAME) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (isDuplicate) {
+      throw new Error(`表: ${ table_name }, 列: ${ column.COLUMN_NAME } 重复了!`);
+    }
   }
   
   for (let k = 0; k < records.length; k++) {
@@ -472,6 +542,9 @@ export async function getSchema(
       });
       if (!record.foreignKey.lbl) {
         const records = await getSchema0(context, record.foreignKey.table);
+        if (records.length === 0) {
+          throw new Error(`表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 对应的外键关联表不存在: foreignKey: ${ JSON.stringify(record.foreignKey) }`);
+        }
         if (records.some((item) => item.COLUMN_NAME === "lbl")) {
           record.foreignKey.lbl = "lbl";
         }
@@ -608,6 +681,7 @@ export async function getSchema(
         column.foreignKey.multiple = false;
       }
     }
+    // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
     }
@@ -647,6 +721,28 @@ export async function getSchema(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.defaultSort = defaultSort;
   }
+  // 外键关联表的默认排序
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const item = tables[table_name].columns[i];
+    if (item.foreignKey && !item.foreignKey.defaultSort) {
+      let defaultSort = tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.opts?.defaultSort;
+      for (const columnTmp of tables[item.foreignKey.mod + "_" + item.foreignKey.table]?.columns || []) {
+        if (columnTmp.COLUMN_NAME === "order_by") {
+          if (!defaultSort) {
+            defaultSort = {
+              prop: "order_by",
+              order: "ascending",
+            };
+          }
+          break;
+        }
+      }
+      item.foreignKey.defaultSort = {
+        ...defaultSort,
+      };
+    }
+  }
+  tablesConfigItemMap[table_name] = tables[table_name];
   return tables[table_name];
 }
 
@@ -665,4 +761,92 @@ export async function getAllTables(context: Context) {
     schemaTables = <any[]>result[0];
   }
   return schemaTables;
+}
+
+export type DictModel = {
+  id: string;
+  code: string;
+  lbl: string;
+  val: string;
+  type: string;
+};
+
+let _dictModels: DictModel[] = undefined;
+
+export async function getDictModels(context: Context) {
+  if (!_dictModels) {
+    const sql = `
+      select
+        t.id,
+        base_dict.code,
+        t.lbl,
+        t.val,
+        base_dict.type
+      from
+        base_dict_detail t
+      inner join base_dict
+        on base_dict.id = t.dict_id
+        and base_dict.is_deleted = 0
+        and base_dict.is_sys = 1
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc,
+        t.create_time asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictModels = <any[]>result[0];
+  }
+  return _dictModels;
+}
+
+let _dictbizModels: DictModel[] = undefined;
+
+export async function getDictbizModels(context: Context) {
+  if (!_dictbizModels) {
+    let tenant_id = "";
+    {
+      const sql = `
+        select t.id
+        from base_tenant t
+        where t.is_deleted = 0 and t.is_sys = 1
+        order by t.order_by asc, t.create_time asc
+        limit 1
+      `
+      const result = await context.conn.query(sql);
+      const records = <any[]>result[0];
+      if (records.length === 0) {
+        throw new Error(`租户不存在`);
+      }
+      tenant_id = records[0].id;
+    }
+    if (!tenant_id) {
+      throw new Error(`系统租户不存在`);
+    }
+    const sql = `
+      select
+        t.id,
+        base_dictbiz.code,
+        t.lbl,
+        t.val,
+        base_dictbiz.type
+      from
+        base_dictbiz_detail t
+      inner join base_dictbiz
+        on base_dictbiz.id = t.dictbiz_id
+        and base_dictbiz.is_deleted = 0
+        and base_dictbiz.is_sys = 1
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+        and t.tenant_id = ?
+      order by
+        t.order_by asc,
+        t.create_time asc
+    `;
+    const result = await context.conn.query(sql, [ tenant_id ]);
+    _dictbizModels = <any[]>result[0];
+  }
+  return _dictbizModels;
 }

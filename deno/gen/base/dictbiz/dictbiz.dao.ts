@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -40,15 +36,23 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   UniqueType,
@@ -67,6 +71,15 @@ import type {
   DictbizFieldComment,
 } from "./dictbiz.model.ts";
 
+import {
+  findAll as findAllDictbizDetail,
+  create as createDictbizDetail,
+  deleteByIds as deleteByIdsDictbizDetail,
+  revertByIds as revertByIdsDictbizDetail,
+  updateById as updateByIdDictbizDetail,
+  forceDeleteByIds as forceDeleteByIdsDictbizDetail,
+} from "/gen/base/dictbiz_detail/dictbiz_detail.dao.ts";
+
 const route_path = "/base/dictbiz";
 
 async function getWhereQuery(
@@ -78,8 +91,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -102,7 +115,7 @@ async function getWhereQuery(
     whereQuery += ` and t.code is null`;
   }
   if (isNotEmpty(search?.code_like)) {
-    whereQuery += ` and t.code like ${ args.push(sqlLike(search?.code_like) + "%") }`;
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -111,7 +124,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.type && !Array.isArray(search?.type)) {
     search.type = [ search.type ];
@@ -131,15 +144,6 @@ async function getWhereQuery(
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
-  if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
-  }
-  if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
-  }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
@@ -147,6 +151,15 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
+  }
+  if (search?.rem !== undefined) {
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+  }
+  if (search?.rem === null) {
+    whereQuery += ` and t.rem is null`;
+  }
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -187,12 +200,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
-    search.is_sys = [ search.is_sys ];
-  }
-  if (search?.is_sys && search?.is_sys?.length > 0) {
-    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -299,6 +306,10 @@ export async function findAll(
   }
   sort = sort.filter((item) => item.prop);
   sort.push({
+    prop: "order_by",
+    order: SortOrderEnum.Asc,
+  });
+  sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
@@ -334,13 +345,17 @@ export async function findAll(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
+  
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -399,15 +414,9 @@ export async function findAll(
       model.update_time_lbl = "";
     }
     
-    // 系统字段
-    let is_sys_lbl = model.is_sys?.toString() || "";
-    if (model.is_sys !== undefined && model.is_sys !== null) {
-      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
-      if (dictItem) {
-        is_sys_lbl = dictItem.lbl;
-      }
-    }
-    model.is_sys_lbl = is_sys_lbl;
+    // 业务字典明细
+    model.dictbiz_detail_models = dictbiz_detail_models
+      .filter((item) => item.dictbiz_id === model.id)
   }
   
   return result;
@@ -422,12 +431,10 @@ export async function setIdByLbl(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]);
   
   // 数据类型
@@ -453,14 +460,6 @@ export async function setIdByLbl(
       input.is_enabled = Number(val);
     }
   }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
 }
 
 /**
@@ -478,8 +477,8 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
     order_by: await n("排序"),
+    rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -488,18 +487,16 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    is_sys: await n("系统字段"),
-    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
 
 /**
  * 通过唯一约束获得数据列表
- * @param {DictbizSearch | PartialNull<DictbizModel>} search0
+ * @param {DictbizInput} search0
  */
 export async function findByUnique(
-  search0: DictbizSearch | PartialNull<DictbizModel>,
+  search0: DictbizInput,
   options?: {
   },
 ): Promise<DictbizModel[]> {
@@ -529,18 +526,18 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {DictbizModel} oldModel
- * @param {PartialNull<DictbizModel>} model
+ * @param {DictbizInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: DictbizModel,
-  model: PartialNull<DictbizModel>,
+  input: DictbizInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.code === model.code
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -559,7 +556,6 @@ export async function checkByUnique(
   oldModel: DictbizModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -576,7 +572,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -602,11 +597,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -774,7 +767,6 @@ export async function create(
   input: DictbizInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_dictbiz";
@@ -824,8 +816,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -833,7 +825,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -841,7 +833,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -861,11 +853,11 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
-  if (input.rem !== undefined) {
-    sql += `,rem`;
-  }
   if (input.order_by !== undefined) {
     sql += `,order_by`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,rem`;
   }
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
@@ -874,8 +866,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -883,7 +875,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -891,7 +883,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -911,18 +903,29 @@ export async function create(
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (input.rem !== undefined) {
-    sql += `,${ args.push(input.rem) }`;
-  }
   if (input.order_by !== undefined) {
     sql += `,${ args.push(input.order_by) }`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
   if (input.is_sys !== undefined) {
     sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
+  
+  // 业务字典明细
+  if (input.dictbiz_detail_models && input.dictbiz_detail_models.length > 0) {
+    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = input.dictbiz_detail_models[i];
+      dictbiz_detail_model.dictbiz_id = input.id;
+      await createDictbizDetail(dictbiz_detail_model);
+    }
+  }
   
   await delCache();
   
@@ -964,7 +967,7 @@ export async function updateTenantById(
   const table = "base_dictbiz";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1003,7 +1006,6 @@ export async function updateById(
   input: DictbizInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_dictbiz";
@@ -1080,15 +1082,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
-    if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
-      updateFldNum++;
-    }
-  }
   if (input.order_by !== undefined) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1102,7 +1104,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -1112,7 +1114,37 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
+  }
+  
+  // 业务字典明细
+  if (input.dictbiz_detail_models) {
+    const dictbiz_detail_models = await findAllDictbizDetail({
+      dictbiz_id: [ id ],
+    });
+    if (dictbiz_detail_models.length > 0 && input.dictbiz_detail_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = dictbiz_detail_models[i];
+      if (input.dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
+        continue;
+      }
+      await deleteByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+    }
+    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
+      const dictbiz_detail_model = input.dictbiz_detail_models[i];
+      if (!dictbiz_detail_model.id) {
+        dictbiz_detail_model.dictbiz_id = id;
+        await createDictbizDetail(dictbiz_detail_model);
+        continue;
+      }
+      if (dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
+        await revertByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+      }
+      await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
+    }
   }
   
   if (updateFldNum > 0) {
@@ -1171,6 +1203,13 @@ export async function deleteByIds(
     num += result.affectedRows;
   }
   
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 0,
+  });
+  await deleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
+  
   await delCache();
   
   return num;
@@ -1227,7 +1266,7 @@ export async function enableByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1297,7 +1336,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1369,6 +1408,13 @@ export async function revertByIds(
     }
   }
   
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 1,
+  });
+  await revertByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
+  
   await delCache();
   
   return num;
@@ -1424,6 +1470,13 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
+  // 业务字典明细
+  const dictbiz_detail_models = await findAllDictbizDetail({
+    dictbiz_id: ids,
+    is_deleted: 1,
+  });
+  await forceDeleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
+  
   await delCache();
   
   return num;
@@ -1450,8 +1503,8 @@ export async function findLastOrderBy(
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);
   {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }
   if (whereQuery.length > 0) {

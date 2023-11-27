@@ -215,7 +215,7 @@ export function getDownloadUrl(
   return url;
 }
 
-export async function request(
+export async function request<T>(
   config: {
     url?: string;
     reqType?: string;
@@ -226,7 +226,7 @@ export async function request(
     method?: string;
     data?: any;
   },
-) {
+): Promise<T> {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
   let err: Error | undefined;
@@ -272,9 +272,6 @@ export async function request(
   if (config.reqType === "graphql") {
     return res;
   }
-  if (!res) {
-    return;
-  }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     await usrStore.setAuthorization("");
@@ -297,7 +294,7 @@ export async function request(
     }
     throw data;
   }
-  return data.data;
+  return data.data as T;
 }
 
 export function getAppid() {
@@ -338,7 +335,7 @@ export async function uniLogin() {
     let appLanguage = systemInfo.appLanguage?.toLocaleLowerCase() || "zh-cn";
     if (appLanguage === "en") {
       appLanguage = "en-us";
-    } else if (appLanguage === "zh" || appLanguage === "zh-hans" || appLanguage === "zh-hant" || appLanguage === "zh-hans-cn" || appLanguage === "zh-hk" || appLanguage === "zh-tw" || appLanguage === "zh-mo") {
+    } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn", "zh-hk", "zh-tw", "zh-mo"].includes(appLanguage)) {
       appLanguage = "zh-cn";
     }
     const loginRes = await uni.login({ provider: "weixin" });

@@ -1,6 +1,6 @@
 import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
-import { Context } from "./information_schema";
+import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
 import { basename, dirname, resolve, normalize } from "path";
 import * as chalk from "chalk";
@@ -38,6 +38,18 @@ const rustKeys = [
 function rustKeyEscape(key: string) {
   if (rustKeys.includes(key)) {
     return "r#" + key;
+  }
+  return key;
+}
+
+const mysqlKeys = [
+  "select", "from", "where", "and", "or", "not", "insert", "into", "update", "delete", "create", "database", "alter", "create", "table", "alter", "drop", "create", "index", "drop", "null", "like", "in", "between", "join", "inner", "left", "right", "union", "group", "by", "order", "limit", "offset",
+];
+
+function mysqlKeyEscape(key: string) {
+  key = key.toLowerCase();
+  if (mysqlKeys.includes(key)) {
+    return "`" + key + "`";
   }
   return key;
 }
@@ -108,14 +120,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   }
   
   let optTables = tables;
-  const result = await context.conn.query(`
-    select
-      t.TABLE_NAME
-      ,t.TABLE_COMMENT
-    from information_schema.TABLES t
-    where t.table_schema = (select database())
-  `);
-  const records: any = result[0];
+  const allTables = await getAllTables(context);
+  const dictModels = await getDictModels(context);
+  const dictbizModels = await getDictbizModels(context);
   
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
@@ -151,11 +158,21 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             isImport && 
             (
               [
-                "create_usr_id", "create_time", "update_usr_id", "update_time",
-                "is_default",
+                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+                "tenant_id", "tenant_id_lbl",
+                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
+              || column.noAdd
             )
+          ) continue;
+          if (
+            [
+              "is_deleted", "is_sys",
+              "tenant_id", "tenant_id_lbl",
+              "org_id", "org_id_lbl",
+            ].includes(column_name)
           ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
@@ -199,7 +216,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             || (selectList.length > 0 || column.dict || column.dictbiz)
           ) {
             if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
-              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }.map((item) => item.${ foreignKey.lbl })%>`;
+              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
             } else if (column.dict) {
               lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
             } else if (column.dictbiz) {
@@ -207,7 +224,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             } else if (selectList.length > 0) {
               lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
             }
-            lbl += `<%_dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
+            lbl += `<%selectList.${ column_name } && selectList.${ column_name }.length > 0 && _dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
             if (require) {
               lbl += `, allowBlank: '0'`;
             }
@@ -261,6 +278,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/deno/gen/graphql.ts") {
         return;
       }
+      if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
+        return;
+      }
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
@@ -306,6 +326,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           });
         }
       } catch(err) {
+        console.error(`${out}/${dir2}`);
         await writeFile(`${ projectPh }/error.js`, htmlStr);
         throw err;
       }
@@ -384,16 +405,9 @@ export async function genMenu(context: Context) {
 
 export async function genRouter(context: Context) {
   let optTables = tables;
-  const result = await context.conn.query(`
-    select
-      t.TABLE_NAME
-      ,t.TABLE_COMMENT
-    from information_schema.TABLES t
-    where t.table_schema = (select database())
-  `);
-  const records: any = result[0];
-  for (let i = 0; i < records.length; i++) {
-    const record = records[i];
+  const allTables: any = await getAllTables(context);
+  for (let i = 0; i < allTables.length; i++) {
+    const record = allTables[i];
     if (optTables[record.TABLE_NAME] == null) {
       continue;
     }
@@ -402,6 +416,7 @@ export async function genRouter(context: Context) {
   const files = [
     "pc/src/router/gen.ts",
     "deno/gen/graphql.ts",
+    "deno/lib/script/graphql_codegen_scalars.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -438,15 +453,35 @@ export async function gitDiffOut() {
   shelljs.cd(projectPh);
   shelljs.exec(diffStr);
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
+  let applyHasErr = false;
   if (!isEmpty0(str)) {
     str = str.replace(/\/codegen\/__out__\//gm, "/");
     await writeFile(`${ projectPh }/${ diffFile }`, str);
     shelljs.cd(projectPh);
-    shelljs.exec(`git apply ${ diffFile } --ignore-space-change --binary --whitespace=nowarn`);
+    const applyRes = shelljs.exec(`git apply ${ diffFile } --ignore-space-change --binary --whitespace=nowarn`);
+    const applyErr = applyRes.stderr;
+    if (applyErr && applyErr.includes("error: patch failed:")) {
+      applyHasErr = true;
+      console.log("");
+      const errArr = applyErr.split("\n");
+      for (let item of errArr) {
+        if (!item.startsWith("error: ") || !item.endsWith(": patch does not apply")) continue;
+        item = item.substring("error: ".length, item.length - ": patch does not apply".length);
+        // 打开vscode的diff
+        const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
+        console.log(cmdTmp);
+        shelljs.exec(cmdTmp);
+      }
+      console.log("");
+    }
   }
   await treeDir();
   await unlink(`${ projectPh }/codegening.txt`);
-  console.log(`代码合并完毕!`);
+  if (applyHasErr) {
+    console.log(`代码合并失败!`);
+  } else {
+    console.log(`代码合并成功!`);
+  }
 }
 
 async function copyXlsx(out: string = "") {

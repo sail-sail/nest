@@ -225,6 +225,13 @@ export interface TableCloumn {
   notForeignKeyById?: boolean;
   
   /**
+   * 是否不显示导入导出中的下拉框
+   * 若不设置, create_usr_id 跟 update_usr_id 默认为 true
+   * @type {boolean} true: 不显示, false: 显示, 默认为false
+   */
+  notImportExportList?: boolean;
+  
+  /**
    * 外键关联表
    * 默认字段名为: [表名]_id
    * 如果列名以 _ids 结尾, 并且没有设置 many2many, 则默认为外键关联字段
@@ -754,6 +761,17 @@ export interface TablesConfigItem {
      * 是否需要做数据权限校验, 默认为否
      */
     dataPermit?: boolean;
+    
+    /**
+     * 增加和修改时的内联外键关联可编辑表格, 聚合关联表
+     */
+    inlineForeignTabs?: {
+      mod: string;
+      mod_slash_table?: string;
+      table: string;
+      label: string;
+      column: string;
+    }[],
     
   },
   columns?: TableCloumn[];

@@ -23,6 +23,7 @@ use crate::common::context::{
   CountModel,
   UniqueType,
   SrvErr,
+  OrderByModel,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -38,6 +39,12 @@ use crate::common::gql::model::{
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::role_model::*;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::permit::permit_model::PermitId;
+use crate::gen::base::data_permit::data_permit_model::DataPermitId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -57,7 +64,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -70,7 +77,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<RoleId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -83,16 +90,16 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
     let tenant_id = {
       let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
+        Some(item) => item.tenant_id.clone(),
+        None => None,
       };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
+      let tenant_id = match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -119,7 +126,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+      where_query += &format!(
+        " and t.lbl like {}",
+        args.push(
+          format!("%{}%", sql_like(&lbl_like)).into()
+        ),
+      );
     }
   }
   {
@@ -135,11 +147,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(home_url_like) = home_url_like {
-      where_query += &format!(" and t.home_url like {}", args.push((sql_like(&home_url_like) + "%").into()));
+      where_query += &format!(
+        " and t.home_url like {}",
+        args.push(
+          format!("%{}%", sql_like(&home_url_like)).into()
+        ),
+      );
     }
   }
   {
-    let menu_ids: Vec<String> = match &search {
+    let menu_ids: Vec<MenuId> = match &search {
       Some(item) => item.menu_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -165,7 +182,7 @@ async fn get_where_query(
     }
   }
   {
-    let permit_ids: Vec<String> = match &search {
+    let permit_ids: Vec<PermitId> = match &search {
       Some(item) => item.permit_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -191,7 +208,7 @@ async fn get_where_query(
     }
   }
   {
-    let data_permit_ids: Vec<String> = match &search {
+    let data_permit_ids: Vec<DataPermitId> = match &search {
       Some(item) => item.data_permit_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -251,6 +268,27 @@ async fn get_where_query(
     }
   }
   {
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let order_by_gt: Option<u32> = match &order_by.len() {
+      0 => None,
+      _ => order_by[0].into(),
+    };
+    let order_by_lt: Option<u32> = match &order_by.len() {
+      0 => None,
+      1 => None,
+      _ => order_by[1].into(),
+    };
+    if let Some(order_by_gt) = order_by_gt {
+      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
+    }
+    if let Some(order_by_lt) = order_by_lt {
+      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
+    }
+  }
+  {
     let rem = match &search {
       Some(item) => item.rem.clone(),
       None => None,
@@ -263,11 +301,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+      where_query += &format!(
+        " and t.rem like {}",
+        args.push(
+          format!("%{}%", sql_like(&rem_like)).into()
+        ),
+      );
     }
   }
   {
-    let create_usr_id: Vec<String> = match &search {
+    let create_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -314,7 +357,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<String> = match &search {
+    let update_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.update_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -451,12 +494,21 @@ pub async fn find_all(
   let table = "base_role";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "order_by") {
+    sort.push(SortInput {
+      prop: "order_by".into(),
+      order: "asc".into(),
+    });
+  }
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
@@ -500,19 +552,23 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "is_locked".to_owned(),
-    "is_enabled".to_owned(),
+  let dict_vec = get_dict(&[
+    "is_locked",
+    "is_enabled",
   ]).await?;
-  
-  let is_locked_dict = &dict_vec[0];
-  let is_enabled_dict = &dict_vec[1];
+  let [
+    is_locked_dict,
+    is_enabled_dict,
+  ]: [Vec<_>; 2] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 锁定
     model.is_locked_lbl = {
-      is_locked_dict.iter()
+      is_locked_dict
+        .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_locked.to_string())
@@ -520,7 +576,8 @@ pub async fn find_all(
     
     // 启用
     model.is_enabled_lbl = {
-      is_enabled_dict.iter()
+      is_enabled_dict
+        .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
@@ -616,6 +673,7 @@ pub async fn get_field_comments(
     "锁定".into(),
     "启用".into(),
     "启用".into(),
+    "排序".into(),
     "备注".into(),
     "创建人".into(),
     "创建人".into(),
@@ -653,15 +711,16 @@ pub async fn get_field_comments(
     is_locked_lbl: vec[10].to_owned(),
     is_enabled: vec[11].to_owned(),
     is_enabled_lbl: vec[12].to_owned(),
-    rem: vec[13].to_owned(),
-    create_usr_id: vec[14].to_owned(),
-    create_usr_id_lbl: vec[15].to_owned(),
-    create_time: vec[16].to_owned(),
-    create_time_lbl: vec[17].to_owned(),
-    update_usr_id: vec[18].to_owned(),
-    update_usr_id_lbl: vec[19].to_owned(),
-    update_time: vec[20].to_owned(),
-    update_time_lbl: vec[21].to_owned(),
+    order_by: vec[13].to_owned(),
+    rem: vec[14].to_owned(),
+    create_usr_id: vec[15].to_owned(),
+    create_usr_id_lbl: vec[16].to_owned(),
+    create_time: vec[17].to_owned(),
+    create_time_lbl: vec[18].to_owned(),
+    update_usr_id: vec[19].to_owned(),
+    update_usr_id_lbl: vec[20].to_owned(),
+    update_time: vec[21].to_owned(),
+    update_time_lbl: vec[22].to_owned(),
   };
   Ok(field_comments)
 }
@@ -692,7 +751,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: RoleId,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
@@ -726,7 +785,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -776,8 +835,8 @@ pub async fn find_by_unique(
     find_all(
       search.into(),
       None,
-      None,
-      None,
+      sort.clone(),
+      options.clone(),
     ).await?
   };
   models.append(&mut models_tmp);
@@ -809,7 +868,7 @@ pub async fn check_by_unique(
   input: RoleInput,
   model: RoleModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<RoleId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -848,16 +907,17 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "is_locked".to_owned(),
-    "is_enabled".to_owned(),
+  let dict_vec = get_dict(&[
+    "is_locked",
+    "is_enabled",
   ]).await?;
   
   // 锁定
   if input.is_locked.is_none() {
     let is_locked_dict = &dict_vec[0];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict.iter()
+      input.is_locked = is_locked_dict
+        .iter()
         .find(|item| {
           item.lbl == is_locked_lbl
         })
@@ -871,7 +931,8 @@ pub async fn set_id_by_lbl(
   if input.is_enabled.is_none() {
     let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-      input.is_enabled = is_enabled_dict.iter()
+      input.is_enabled = is_enabled_dict
+        .iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
         })
@@ -905,7 +966,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.menu_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<MenuId>>()
         .into();
     }
   }
@@ -934,7 +995,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.permit_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<PermitId>>()
         .into();
     }
   }
@@ -963,7 +1024,7 @@ pub async fn set_id_by_lbl(
     if !models.is_empty() {
       input.data_permit_ids = models.into_iter()
         .map(|item| item.id)
-        .collect::<Vec<String>>()
+        .collect::<Vec<DataPermitId>>()
         .into();
     }
   }
@@ -976,7 +1037,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: RoleInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<RoleId> {
   
   let table = "base_role";
   let _method = "create";
@@ -1003,7 +1064,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<RoleId> = None;
     
     for old_model in old_models {
       
@@ -1029,9 +1090,9 @@ pub async fn create(
     ).await?.into();
   }
   
-  let mut id;
+  let mut id: RoleId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -1095,6 +1156,12 @@ pub async fn create(
     sql_values += ",?";
     args.push(is_enabled.into());
   }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
+    sql_values += ",?";
+    args.push(order_by.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
@@ -1138,8 +1205,11 @@ pub async fn create(
   // 菜单权限
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
-      id.clone(),
-      menu_ids.clone(),
+      id.clone().into(),
+      menu_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_menu",
@@ -1152,8 +1222,11 @@ pub async fn create(
   // 按钮权限
   if let Some(permit_ids) = input.permit_ids {
     many2many_update(
-      id.clone(),
-      permit_ids.clone(),
+      id.clone().into(),
+      permit_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_permit",
@@ -1166,8 +1239,11 @@ pub async fn create(
   // 数据权限
   if let Some(data_permit_ids) = input.data_permit_ids {
     many2many_update(
-      id.clone(),
-      data_permit_ids.clone(),
+      id.clone().into(),
+      data_permit_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_data_permit",
@@ -1182,8 +1258,8 @@ pub async fn create(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: RoleId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_role";
@@ -1223,10 +1299,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: RoleId,
   mut input: RoleInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<RoleId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1319,6 +1395,12 @@ pub async fn update_by_id(
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
   }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    field_num += 1;
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
@@ -1371,8 +1453,11 @@ pub async fn update_by_id(
   // 菜单权限
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
-      id.clone(),
-      menu_ids.clone(),
+      id.clone().into(),
+      menu_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_menu",
@@ -1387,8 +1472,11 @@ pub async fn update_by_id(
   // 按钮权限
   if let Some(permit_ids) = input.permit_ids {
     many2many_update(
-      id.clone(),
-      permit_ids.clone(),
+      id.clone().into(),
+      permit_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_permit",
@@ -1403,8 +1491,11 @@ pub async fn update_by_id(
   // 数据权限
   if let Some(data_permit_ids) = input.data_permit_ids {
     many2many_update(
-      id.clone(),
-      data_permit_ids.clone(),
+      id.clone().into(),
+      data_permit_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
       ManyOpts {
         r#mod: "base",
         table: "role_data_permit",
@@ -1445,7 +1536,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1455,7 +1546,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1484,10 +1575,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已启用
+/// 根据 id 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
-  id: String,
+  id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1506,7 +1597,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids(
-  ids: Vec<String>,
+  ids: Vec<RoleId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1544,11 +1635,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已锁定
+/// 根据 id 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
-  id: String,
+  id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -1567,7 +1658,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids(
-  ids: Vec<String>,
+  ids: Vec<RoleId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1607,7 +1698,7 @@ pub async fn lock_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1617,7 +1708,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1684,7 +1775,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1694,7 +1785,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       RoleSearch {
@@ -1737,6 +1828,56 @@ pub async fn force_delete_by_ids(
   }
   
   Ok(num)
+}
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by(
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let table = "base_role";
+  let _method = "find_last_order_by";
+  
+  #[allow(unused_mut)]
+  let mut args = QueryArgs::new();
+  let mut sql_where = "".to_owned();
+  
+  sql_where += "t.is_deleted = 0";
+  
+  if let Some(tenant_id) = get_auth_tenant_id() {
+    sql_where += " and t.tenant_id = ?";
+    args.push(tenant_id.into());
+  }
+  
+  let sql = format!(
+    "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
+    table,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();
+  
+  let model = query_one::<OrderByModel>(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  let order_by = {
+    if let Some(model) = model {
+      model.order_by
+    } else {
+      0
+    }
+  };
+  
+  Ok(order_by)
 }
 
 /// 校验记录是否启用

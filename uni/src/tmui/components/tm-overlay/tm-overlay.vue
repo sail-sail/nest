@@ -26,8 +26,8 @@
 				:class="[
 					bgColor_rp && !props.transprent && ani ? 'blurOnOpacity' : 'blurOffOpacity', 
 				'overlay',
-				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
-				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
+				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
+				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
 				]"
 				:style="[
 					bgColor_rp && !props.transprent ? { backgroundColor: showMask ? bgColor_rp : '' } : '',
@@ -37,7 +37,7 @@
 			></view>
 			<!-- #ifndef APP-NVUE -->
 			<view
-				@click.stop="closeByclick"
+				@click.stop="(closeByclick as any)"
 				:class="[
 					align_rpx,
 					' absolute flex flex-col  l-0 t-0 ',
@@ -54,7 +54,7 @@
 			<!-- #endif -->
 			<!-- #ifdef APP-NVUE -->
 			<view
-				@click.stop="closeByclick"
+				@click.stop="(closeByclick as any)"
 				:class="[align_rpx, ' absolute flex flex-col  l-0 t-0 ', customClass]"
 				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: width + 'px', height: height + 'px' }, customCSSStyle]"
 			>
@@ -200,13 +200,13 @@ function debounce(func: Function, wait = 500, immediate = false) {
     var callNow = !timerId;
     timerId = setTimeout(() => {
       timerId = NaN;
-    }, wait);
+    }, wait) as any;
     if (callNow) typeof func === "function" && func();
   } else {
     // 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
     timerId = setTimeout(() => {
       typeof func === "function" && func();
-    }, wait);
+    }, wait) as any;
   }
 }
 
@@ -292,7 +292,7 @@ function fadeInNvue(off: boolean = false) {
         },
         () => {}
       );
-    }, 50);
+    }, 50) as any;
   }
 }
 function fadeInVue(off = false) {

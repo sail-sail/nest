@@ -62,9 +62,9 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: PermitId,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
@@ -93,7 +93,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<PermitId> {
   
   let id = permit_dao::create(
     input,
@@ -107,10 +107,10 @@ pub async fn create(
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: PermitId,
   mut input: PermitInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<PermitId> {
   
   // 不能修改系统记录的系统字段
   let model = permit_dao::find_by_id(
@@ -140,13 +140,13 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let len = ids.len();
   let ids0 = ids.clone();
-  let mut ids: Vec<String> = vec![];
+  let mut ids: Vec<PermitId> = vec![];
   for id in ids0 {
     let model = permit_dao::find_by_id(
       id.clone(),
@@ -189,7 +189,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -204,7 +204,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
