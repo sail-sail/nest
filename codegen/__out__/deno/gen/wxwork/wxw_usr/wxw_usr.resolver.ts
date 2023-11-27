@@ -29,7 +29,11 @@ import {
 export async function findCountWxwUsr(
   search?: WxwUsrSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const { findCount } = await import("./wxw_usr.service.ts");
+  
+  const {
+    findCount,
+  } = await import("./wxw_usr.service.ts");
+  
   const res = await findCount(search);
   return res;
 }
@@ -42,7 +46,11 @@ export async function findAllWxwUsr(
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxwUsrModel[]> {
-  const { findAll } = await import("./wxw_usr.service.ts");
+  
+  const {
+    findAll,
+  } = await import("./wxw_usr.service.ts");
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,7 +71,11 @@ export async function findOneWxwUsr(
   search?: WxwUsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<WxwUsrModel | undefined> {
-  const { findOne } = await import("./wxw_usr.service.ts");
+  
+  const {
+    findOne,
+  } = await import("./wxw_usr.service.ts");
+  
   const res = await findOne(search, sort);
   return res;
 }

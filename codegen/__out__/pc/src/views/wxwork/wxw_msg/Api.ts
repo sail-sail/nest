@@ -63,6 +63,51 @@ export async function findAll(
 }
 
 /**
+ * 根据搜索条件查找第一条记录
+ * @export findOne
+ * @param {WxwMsgSearch} search?
+ * @param {Sort[]} sort?
+ * @param {GqlOpt} opt?
+ */
+export async function findOne(
+  search?: WxwMsgSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findOneWxwMsg: Query["findOneWxwMsg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwMsgSearch, $sort: [SortInput!]) {
+        findOneWxwMsg(search: $search, sort: $sort) {
+          id
+          wxw_app_id
+          wxw_app_id_lbl
+          errcode
+          errcode_lbl
+          touser
+          title
+          description
+          btntxt
+          create_time
+          create_time_lbl
+          errmsg
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  const model = data.findOneWxwMsg;
+  if (model) {
+  }
+  return model;
+}
+
+/**
  * 根据搜索条件查找数据总数
  * @export findCount
  * @param {WxwMsgSearch} search?
@@ -234,9 +279,10 @@ export async function findAllWxwApp(
 
 export async function getWxwAppList() {
   const data = await findAllWxwApp(
-    undefined,
     {
+      is_enabled: [ 1 ],
     },
+    undefined,
     [
       {
         prop: "order_by",
@@ -274,7 +320,6 @@ export function useDownloadImportTemplate(routePath: string) {
             title
             description
             btntxt
-            create_time_lbl
             errmsg
           }
           findAllWxwApp {

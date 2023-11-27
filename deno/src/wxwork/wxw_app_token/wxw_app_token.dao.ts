@@ -307,15 +307,20 @@ export async function getuseridlist(
       department: number;
     }[];
   } = await res.json();
-  if (data.errcode === 42001 && !force) {
+  const errcode = data.errcode;
+  if (errcode === 42001 && !force) {
     return await getuseridlist(
       wxw_app_id,
       true,
     );
   }
-  if (data.errcode != 0) {
+  if (errcode != 0) {
     error(data);
-    throw data.errmsg;
+    let errmsg = data.errmsg;
+    if (errcode === 60020) {
+      errmsg = "外网IP地址未在企微白名单中, 请联系管理员";
+    }
+    throw errmsg;
   }
   const userids: string[] = [ ];
   for (const dept_user of data.dept_user) {

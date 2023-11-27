@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -39,15 +35,23 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   UniqueType,
@@ -79,8 +83,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -121,7 +125,7 @@ async function getWhereQuery(
     whereQuery += ` and t.touser is null`;
   }
   if (isNotEmpty(search?.touser_like)) {
-    whereQuery += ` and t.touser like ${ args.push(sqlLike(search?.touser_like) + "%") }`;
+    whereQuery += ` and t.touser like ${ args.push("%" + sqlLike(search?.touser_like) + "%") }`;
   }
   if (search?.title !== undefined) {
     whereQuery += ` and t.title = ${ args.push(search.title) }`;
@@ -130,7 +134,7 @@ async function getWhereQuery(
     whereQuery += ` and t.title is null`;
   }
   if (isNotEmpty(search?.title_like)) {
-    whereQuery += ` and t.title like ${ args.push(sqlLike(search?.title_like) + "%") }`;
+    whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
   }
   if (search?.description !== undefined) {
     whereQuery += ` and t.description = ${ args.push(search.description) }`;
@@ -139,7 +143,7 @@ async function getWhereQuery(
     whereQuery += ` and t.description is null`;
   }
   if (isNotEmpty(search?.description_like)) {
-    whereQuery += ` and t.description like ${ args.push(sqlLike(search?.description_like) + "%") }`;
+    whereQuery += ` and t.description like ${ args.push("%" + sqlLike(search?.description_like) + "%") }`;
   }
   if (search?.url !== undefined) {
     whereQuery += ` and t.url = ${ args.push(search.url) }`;
@@ -148,7 +152,7 @@ async function getWhereQuery(
     whereQuery += ` and t.url is null`;
   }
   if (isNotEmpty(search?.url_like)) {
-    whereQuery += ` and t.url like ${ args.push(sqlLike(search?.url_like) + "%") }`;
+    whereQuery += ` and t.url like ${ args.push("%" + sqlLike(search?.url_like) + "%") }`;
   }
   if (search?.btntxt !== undefined) {
     whereQuery += ` and t.btntxt = ${ args.push(search.btntxt) }`;
@@ -157,7 +161,7 @@ async function getWhereQuery(
     whereQuery += ` and t.btntxt is null`;
   }
   if (isNotEmpty(search?.btntxt_like)) {
-    whereQuery += ` and t.btntxt like ${ args.push(sqlLike(search?.btntxt_like) + "%") }`;
+    whereQuery += ` and t.btntxt like ${ args.push("%" + sqlLike(search?.btntxt_like) + "%") }`;
   }
   if (search?.create_time && search?.create_time?.length > 0) {
     if (search.create_time[0] != null) {
@@ -174,7 +178,7 @@ async function getWhereQuery(
     whereQuery += ` and t.errmsg is null`;
   }
   if (isNotEmpty(search?.errmsg_like)) {
-    whereQuery += ` and t.errmsg like ${ args.push(sqlLike(search?.errmsg_like) + "%") }`;
+    whereQuery += ` and t.errmsg like ${ args.push("%" + sqlLike(search?.errmsg_like) + "%") }`;
   }
   if (search?.msgid !== undefined) {
     whereQuery += ` and t.msgid = ${ args.push(search.msgid) }`;
@@ -183,7 +187,7 @@ async function getWhereQuery(
     whereQuery += ` and t.msgid is null`;
   }
   if (isNotEmpty(search?.msgid_like)) {
-    whereQuery += ` and t.msgid like ${ args.push(sqlLike(search?.msgid_like) + "%") }`;
+    whereQuery += ` and t.msgid like ${ args.push("%" + sqlLike(search?.msgid_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -287,6 +291,10 @@ export async function findAll(
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -309,7 +317,7 @@ export async function findAll(
   
   const [
     errcodeDict, // 发送状态
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "wxw_msg_errcode",
   ]);
   
@@ -349,7 +357,7 @@ export async function setIdByLbl(
   
   const [
     errcodeDict, // 发送状态
-  ] = await dictSrcDao.getDict([
+  ] = await getDict([
     "wxw_msg_errcode",
   ]);
   
@@ -397,10 +405,10 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxwMsgSearch | PartialNull<WxwMsgModel>} search0
+ * @param {WxwMsgInput} search0
  */
 export async function findByUnique(
-  search0: WxwMsgSearch | PartialNull<WxwMsgModel>,
+  search0: WxwMsgInput,
   options?: {
   },
 ): Promise<WxwMsgModel[]> {
@@ -420,14 +428,14 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxwMsgModel} oldModel
- * @param {PartialNull<WxwMsgModel>} model
+ * @param {WxwMsgInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxwMsgModel,
-  model: PartialNull<WxwMsgModel>,
+  input: WxwMsgInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   return false;
@@ -445,7 +453,6 @@ export async function checkByUnique(
   oldModel: WxwMsgModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -462,7 +469,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -488,11 +494,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -669,7 +673,6 @@ export async function create(
   input: WxwMsgInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_msg";
@@ -719,8 +722,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -728,7 +731,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -736,7 +739,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -772,8 +775,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -781,7 +784,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -789,7 +792,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -822,8 +825,8 @@ export async function create(
     sql += `,${ args.push(input.msgid) }`;
   }
   sql += `)`;
-  
-  const result = await execute(sql, args);
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -845,7 +848,7 @@ export async function updateTenantById(
   const table = "wxwork_wxw_msg";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -882,7 +885,6 @@ export async function updateById(
   input: WxwMsgInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_msg";
@@ -987,7 +989,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -995,7 +997,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   const newModel = await findById(id);

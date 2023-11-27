@@ -34,6 +34,9 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::wxw_msg_model::*;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -52,7 +55,7 @@ async fn get_where_query(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id.as_ref()) {
+    let id = match id {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -65,7 +68,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<String> = match &search {
+    let ids: Vec<WxwMsgId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -78,16 +81,16 @@ async fn get_where_query(
         }
         items.join(",")
       };
-      where_query += &format!(" and t.id in ({})", arg);
+      where_query += &format!(" and t.id in ({arg})");
     }
   }
   {
     let tenant_id = {
       let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
+        Some(item) => item.tenant_id.clone(),
+        None => None,
       };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
+      let tenant_id = match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -102,7 +105,7 @@ async fn get_where_query(
     }
   }
   {
-    let wxw_app_id: Vec<String> = match &search {
+    let wxw_app_id: Vec<WxwAppId> = match &search {
       Some(item) => item.wxw_app_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -128,7 +131,7 @@ async fn get_where_query(
     }
   }
   {
-    let errcode: Vec<String> = match &search {
+    let errcode: Vec<WxwMsgErrcode> = match &search {
       Some(item) => item.errcode.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -157,7 +160,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(touser_like) = touser_like {
-      where_query += &format!(" and t.touser like {}", args.push((sql_like(&touser_like) + "%").into()));
+      where_query += &format!(
+        " and t.touser like {}",
+        args.push(
+          format!("%{}%", sql_like(&touser_like)).into()
+        ),
+      );
     }
   }
   {
@@ -173,7 +181,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(title_like) = title_like {
-      where_query += &format!(" and t.title like {}", args.push((sql_like(&title_like) + "%").into()));
+      where_query += &format!(
+        " and t.title like {}",
+        args.push(
+          format!("%{}%", sql_like(&title_like)).into()
+        ),
+      );
     }
   }
   {
@@ -189,7 +202,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(description_like) = description_like {
-      where_query += &format!(" and t.description like {}", args.push((sql_like(&description_like) + "%").into()));
+      where_query += &format!(
+        " and t.description like {}",
+        args.push(
+          format!("%{}%", sql_like(&description_like)).into()
+        ),
+      );
     }
   }
   {
@@ -205,7 +223,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(url_like) = url_like {
-      where_query += &format!(" and t.url like {}", args.push((sql_like(&url_like) + "%").into()));
+      where_query += &format!(
+        " and t.url like {}",
+        args.push(
+          format!("%{}%", sql_like(&url_like)).into()
+        ),
+      );
     }
   }
   {
@@ -221,7 +244,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(btntxt_like) = btntxt_like {
-      where_query += &format!(" and t.btntxt like {}", args.push((sql_like(&btntxt_like) + "%").into()));
+      where_query += &format!(
+        " and t.btntxt like {}",
+        args.push(
+          format!("%{}%", sql_like(&btntxt_like)).into()
+        ),
+      );
     }
   }
   {
@@ -258,7 +286,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(errmsg_like) = errmsg_like {
-      where_query += &format!(" and t.errmsg like {}", args.push((sql_like(&errmsg_like) + "%").into()));
+      where_query += &format!(
+        " and t.errmsg like {}",
+        args.push(
+          format!("%{}%", sql_like(&errmsg_like)).into()
+        ),
+      );
     }
   }
   {
@@ -274,7 +307,12 @@ async fn get_where_query(
       None => None,
     };
     if let Some(msgid_like) = msgid_like {
-      where_query += &format!(" and t.msgid like {}", args.push((sql_like(&msgid_like) + "%").into()));
+      where_query += &format!(
+        " and t.msgid like {}",
+        args.push(
+          format!("%{}%", sql_like(&msgid_like)).into()
+        ),
+      );
     }
   }
   Ok(where_query)
@@ -300,12 +338,21 @@ pub async fn find_all(
   let table = "wxwork_wxw_msg";
   let _method = "find_all";
   
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "desc".into(),
+    });
+  }
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
@@ -340,18 +387,22 @@ pub async fn find_all(
     options,
   ).await?;
   
-  let dict_vec = get_dict(vec![
-    "wxw_msg_errcode".to_owned(),
+  let dict_vec = get_dict(&[
+    "wxw_msg_errcode",
   ]).await?;
-  
-  let errcode_dict = &dict_vec[0];
+  let [
+    errcode_dict,
+  ]: [Vec<_>; 1] = dict_vec
+    .try_into()
+    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
     // 发送状态
     model.errcode_lbl = {
-      errcode_dict.iter()
-        .find(|item| item.val == model.errcode)
+      errcode_dict
+        .iter()
+        .find(|item| item.val == model.errcode.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.errcode.to_string())
     };
@@ -504,7 +555,7 @@ pub async fn find_one(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id(
-  id: String,
+  id: WxwMsgId,
   options: Option<Options>,
 ) -> Result<Option<WxwMsgModel>> {
   
@@ -538,7 +589,7 @@ pub async fn exists(
 
 /// 根据ID判断数据是否存在
 pub async fn exists_by_id(
-  id: String,
+  id: WxwMsgId,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -592,7 +643,7 @@ pub async fn check_by_unique(
   input: WxwMsgInput,
   model: WxwMsgModel,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<WxwMsgId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -631,15 +682,16 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(vec![
-    "wxw_msg_errcode".to_owned(),
+  let dict_vec = get_dict(&[
+    "wxw_msg_errcode",
   ]).await?;
   
   // 发送状态
   if input.errcode.is_none() {
     let errcode_dict = &dict_vec[0];
     if let Some(errcode_lbl) = input.errcode_lbl.clone() {
-      input.errcode = errcode_dict.iter()
+      input.errcode = errcode_dict
+        .iter()
         .find(|item| {
           item.lbl == errcode_lbl
         })
@@ -678,7 +730,7 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   mut input: WxwMsgInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwMsgId> {
   
   let table = "wxwork_wxw_msg";
   let _method = "create";
@@ -705,7 +757,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<String> = None;
+    let mut id: Option<WxwMsgId> = None;
     
     for old_model in old_models {
       
@@ -725,9 +777,9 @@ pub async fn create(
     }
   }
   
-  let mut id;
+  let mut id: WxwMsgId;
   loop {
-    id = get_short_uuid();
+    id = get_short_uuid().into();
     let is_exist = exists_by_id(
       id.clone(),
       None,
@@ -846,8 +898,8 @@ pub async fn create(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id(
-  id: String,
-  tenant_id: String,
+  id: WxwMsgId,
+  tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "wxwork_wxw_msg";
@@ -887,10 +939,10 @@ pub async fn update_tenant_by_id(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: String,
+  id: WxwMsgId,
   mut input: WxwMsgInput,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<WxwMsgId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -1061,7 +1113,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1071,7 +1123,7 @@ pub async fn delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1100,7 +1152,7 @@ pub async fn delete_by_ids(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1110,7 +1162,7 @@ pub async fn revert_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1175,7 +1227,7 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids(
-  ids: Vec<String>,
+  ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -1185,7 +1237,7 @@ pub async fn force_delete_by_ids(
   let options = Options::from(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     
     let model = find_all(
       WxwMsgSearch {

@@ -22,10 +22,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PartialNull,
-} from "/typings/types.ts";
-
 import {
   isNotEmpty,
   isEmpty,
@@ -42,11 +38,17 @@ import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
 
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   UniqueType,
@@ -76,8 +78,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -100,7 +102,7 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.userid !== undefined) {
     whereQuery += ` and t.userid = ${ args.push(search.userid) }`;
@@ -109,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.userid is null`;
   }
   if (isNotEmpty(search?.userid_like)) {
-    whereQuery += ` and t.userid like ${ args.push(sqlLike(search?.userid_like) + "%") }`;
+    whereQuery += ` and t.userid like ${ args.push("%" + sqlLike(search?.userid_like) + "%") }`;
   }
   if (search?.mobile !== undefined) {
     whereQuery += ` and t.mobile = ${ args.push(search.mobile) }`;
@@ -118,7 +120,7 @@ async function getWhereQuery(
     whereQuery += ` and t.mobile is null`;
   }
   if (isNotEmpty(search?.mobile_like)) {
-    whereQuery += ` and t.mobile like ${ args.push(sqlLike(search?.mobile_like) + "%") }`;
+    whereQuery += ` and t.mobile like ${ args.push("%" + sqlLike(search?.mobile_like) + "%") }`;
   }
   if (search?.gender !== undefined) {
     whereQuery += ` and t.gender = ${ args.push(search.gender) }`;
@@ -127,7 +129,7 @@ async function getWhereQuery(
     whereQuery += ` and t.gender is null`;
   }
   if (isNotEmpty(search?.gender_like)) {
-    whereQuery += ` and t.gender like ${ args.push(sqlLike(search?.gender_like) + "%") }`;
+    whereQuery += ` and t.gender like ${ args.push("%" + sqlLike(search?.gender_like) + "%") }`;
   }
   if (search?.email !== undefined) {
     whereQuery += ` and t.email = ${ args.push(search.email) }`;
@@ -136,7 +138,7 @@ async function getWhereQuery(
     whereQuery += ` and t.email is null`;
   }
   if (isNotEmpty(search?.email_like)) {
-    whereQuery += ` and t.email like ${ args.push(sqlLike(search?.email_like) + "%") }`;
+    whereQuery += ` and t.email like ${ args.push("%" + sqlLike(search?.email_like) + "%") }`;
   }
   if (search?.biz_email !== undefined) {
     whereQuery += ` and t.biz_email = ${ args.push(search.biz_email) }`;
@@ -145,7 +147,7 @@ async function getWhereQuery(
     whereQuery += ` and t.biz_email is null`;
   }
   if (isNotEmpty(search?.biz_email_like)) {
-    whereQuery += ` and t.biz_email like ${ args.push(sqlLike(search?.biz_email_like) + "%") }`;
+    whereQuery += ` and t.biz_email like ${ args.push("%" + sqlLike(search?.biz_email_like) + "%") }`;
   }
   if (search?.direct_leader !== undefined) {
     whereQuery += ` and t.direct_leader = ${ args.push(search.direct_leader) }`;
@@ -154,7 +156,7 @@ async function getWhereQuery(
     whereQuery += ` and t.direct_leader is null`;
   }
   if (isNotEmpty(search?.direct_leader_like)) {
-    whereQuery += ` and t.direct_leader like ${ args.push(sqlLike(search?.direct_leader_like) + "%") }`;
+    whereQuery += ` and t.direct_leader like ${ args.push("%" + sqlLike(search?.direct_leader_like) + "%") }`;
   }
   if (search?.position !== undefined) {
     whereQuery += ` and t.position = ${ args.push(search.position) }`;
@@ -163,7 +165,7 @@ async function getWhereQuery(
     whereQuery += ` and t.position is null`;
   }
   if (isNotEmpty(search?.position_like)) {
-    whereQuery += ` and t.position like ${ args.push(sqlLike(search?.position_like) + "%") }`;
+    whereQuery += ` and t.position like ${ args.push("%" + sqlLike(search?.position_like) + "%") }`;
   }
   if (search?.avatar !== undefined) {
     whereQuery += ` and t.avatar = ${ args.push(search.avatar) }`;
@@ -172,7 +174,7 @@ async function getWhereQuery(
     whereQuery += ` and t.avatar is null`;
   }
   if (isNotEmpty(search?.avatar_like)) {
-    whereQuery += ` and t.avatar like ${ args.push(sqlLike(search?.avatar_like) + "%") }`;
+    whereQuery += ` and t.avatar like ${ args.push("%" + sqlLike(search?.avatar_like) + "%") }`;
   }
   if (search?.thumb_avatar !== undefined) {
     whereQuery += ` and t.thumb_avatar = ${ args.push(search.thumb_avatar) }`;
@@ -181,7 +183,7 @@ async function getWhereQuery(
     whereQuery += ` and t.thumb_avatar is null`;
   }
   if (isNotEmpty(search?.thumb_avatar_like)) {
-    whereQuery += ` and t.thumb_avatar like ${ args.push(sqlLike(search?.thumb_avatar_like) + "%") }`;
+    whereQuery += ` and t.thumb_avatar like ${ args.push("%" + sqlLike(search?.thumb_avatar_like) + "%") }`;
   }
   if (search?.qr_code !== undefined) {
     whereQuery += ` and t.qr_code = ${ args.push(search.qr_code) }`;
@@ -190,7 +192,7 @@ async function getWhereQuery(
     whereQuery += ` and t.qr_code is null`;
   }
   if (isNotEmpty(search?.qr_code_like)) {
-    whereQuery += ` and t.qr_code like ${ args.push(sqlLike(search?.qr_code_like) + "%") }`;
+    whereQuery += ` and t.qr_code like ${ args.push("%" + sqlLike(search?.qr_code_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -199,7 +201,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -299,6 +301,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -326,6 +332,7 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -364,10 +371,10 @@ export async function getFieldComments(): Promise<WxwUsrFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxwUsrSearch | PartialNull<WxwUsrModel>} search0
+ * @param {WxwUsrInput} search0
  */
 export async function findByUnique(
-  search0: WxwUsrSearch | PartialNull<WxwUsrModel>,
+  search0: WxwUsrInput,
   options?: {
   },
 ): Promise<WxwUsrModel[]> {
@@ -407,23 +414,23 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {WxwUsrModel} oldModel
- * @param {PartialNull<WxwUsrModel>} model
+ * @param {WxwUsrInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
   oldModel: WxwUsrModel,
-  model: PartialNull<WxwUsrModel>,
+  input: WxwUsrInput,
 ): boolean {
-  if (!oldModel || !model) {
+  if (!oldModel || !input) {
     return false;
   }
   if (
-    oldModel.userid === model.userid
+    oldModel.userid === input.userid
   ) {
     return true;
   }
   if (
-    oldModel.lbl === model.lbl
+    oldModel.lbl === input.lbl
   ) {
     return true;
   }
@@ -442,7 +449,6 @@ export async function checkByUnique(
   oldModel: WxwUsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -459,7 +465,6 @@ export async function checkByUnique(
         },
         {
           ...options,
-          isEncrypt: false,
         },
       );
       return result;
@@ -485,11 +490,9 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, sort);
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return;
+  const models = await findAll(search, page, sort);
+  const model = models[0];
+  return model;
 }
 
 /**
@@ -690,7 +693,6 @@ export async function create(
   input: WxwUsrInput,
   options?: {
     uniqueType?: UniqueType;
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_usr";
@@ -740,8 +742,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -749,7 +751,7 @@ export async function create(
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -757,7 +759,7 @@ export async function create(
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
@@ -802,8 +804,8 @@ export async function create(
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -811,7 +813,7 @@ export async function create(
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -819,7 +821,7 @@ export async function create(
   if (input.update_usr_id != null && input.update_usr_id !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
-    const authModel = await authDao.getAuthModel();
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -862,7 +864,9 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await execute(sql, args);
+  await delCache();
+  const res = await execute(sql, args);
+  log(JSON.stringify(res));
   
   await delCache();
   
@@ -903,7 +907,7 @@ export async function updateTenantById(
   const table = "wxwork_wxw_usr";
   const method = "updateTenantById";
   
-  const tenantExist = await tenantDao.existById(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -942,7 +946,6 @@ export async function updateById(
   input: WxwUsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "wxwork_wxw_usr";
@@ -1065,7 +1068,7 @@ export async function updateById(
     if (input.update_usr_id && input.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
-      const authModel = await authDao.getAuthModel();
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
@@ -1075,7 +1078,8 @@ export async function updateById(
     
     await delCache();
     
-    const result = await execute(sql, args);
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {

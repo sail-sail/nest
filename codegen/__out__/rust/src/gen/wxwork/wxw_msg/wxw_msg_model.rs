@@ -1,7 +1,15 @@
-use serde::{
-  Serialize,
-  Deserialize,
-};
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -9,24 +17,32 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgModel {
   /// 租户ID
-  pub tenant_id: String,
+  #[graphql(skip)]
+  pub tenant_id: TenantId,
   /// ID
-  pub id: String,
+  pub id: WxwMsgId,
   /// 企微应用
-  pub wxw_app_id: String,
+  pub wxw_app_id: WxwAppId,
   /// 企微应用
   pub wxw_app_id_lbl: String,
   /// 发送状态
-  pub errcode: String,
+  pub errcode: WxwMsgErrcode,
   /// 发送状态
   pub errcode_lbl: String,
   /// 成员ID
@@ -56,14 +72,14 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: WxwMsgId = row.try_get("id")?;
     // 企微应用
-    let wxw_app_id: String = row.try_get("wxw_app_id")?;
+    let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
     let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
     let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
     // 发送状态
-    let errcode: String = row.try_get("errcode")?;
-    let errcode_lbl: String = errcode.to_string();
+    let errcode_lbl: String = row.try_get("errcode")?;
+    let errcode: WxwMsgErrcode = errcode_lbl.clone().try_into()?;
     // 成员ID
     let touser: String = row.try_get("touser")?;
     // 标题
@@ -89,6 +105,7 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       wxw_app_id,
       wxw_app_id_lbl,
@@ -103,14 +120,13 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
       create_time_lbl,
       errmsg,
       msgid,
-      is_deleted,
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgFieldComment {
   /// ID
@@ -143,20 +159,22 @@ pub struct WxwMsgFieldComment {
   pub msgid: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  /// ID
+  pub id: Option<WxwMsgId>,
+  /// ID列表
+  pub ids: Option<Vec<WxwMsgId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 企微应用
-  pub wxw_app_id: Option<Vec<String>>,
+  pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
   pub wxw_app_id_is_null: Option<bool>,
   /// 发送状态
-  pub errcode: Option<Vec<String>>,
+  pub errcode: Option<Vec<WxwMsgErrcode>>,
   /// 成员ID
   pub touser: Option<String>,
   /// 成员ID
@@ -189,20 +207,22 @@ pub struct WxwMsgSearch {
   pub msgid_like: Option<String>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgInput {
+  /// ID
+  pub id: Option<WxwMsgId>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
-  /// ID
-  pub id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   /// 企微应用
-  pub wxw_app_id: Option<String>,
+  pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
   pub wxw_app_id_lbl: Option<String>,
   /// 发送状态
-  pub errcode: Option<String>,
+  pub errcode: Option<WxwMsgErrcode>,
   /// 发送状态
   pub errcode_lbl: Option<String>,
   /// 成员ID
@@ -225,12 +245,45 @@ pub struct WxwMsgInput {
   pub msgid: Option<String>,
 }
 
+impl From<WxwMsgModel> for WxwMsgInput {
+  fn from(model: WxwMsgModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 企微应用
+      wxw_app_id: model.wxw_app_id.into(),
+      wxw_app_id_lbl: model.wxw_app_id_lbl.into(),
+      // 发送状态
+      errcode: model.errcode.into(),
+      errcode_lbl: model.errcode_lbl.into(),
+      // 成员ID
+      touser: model.touser.into(),
+      // 标题
+      title: model.title.into(),
+      // 描述
+      description: model.description.into(),
+      // 链接
+      url: model.url.into(),
+      // 按钮文字
+      btntxt: model.btntxt.into(),
+      // 发送时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 错误信息
+      errmsg: model.errmsg.into(),
+      // 消息ID
+      msgid: model.msgid.into(),
+    }
+  }
+}
+
 impl From<WxwMsgInput> for WxwMsgSearch {
   fn from(input: WxwMsgInput) -> Self {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 企微应用
@@ -254,6 +307,205 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       // 消息ID
       msgid: input.msgid,
       ..Default::default()
+    }
+  }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct WxwMsgId(SmolStr);
+
+impl fmt::Display for WxwMsgId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "WxwMsgId")]
+impl async_graphql::ScalarType for WxwMsgId {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<WxwMsgId> for ArgType {
+  fn from(value: WxwMsgId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&WxwMsgId> for ArgType {
+  fn from(value: &WxwMsgId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<WxwMsgId> for SmolStr {
+  fn from(id: WxwMsgId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for WxwMsgId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for WxwMsgId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for WxwMsgId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for WxwMsgId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for WxwMsgId {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for WxwMsgId {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for WxwMsgId {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for WxwMsgId {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+/// 企微消息发送状态
+#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum WxwMsgErrcode {
+  /// Empty
+  Empty,
+  /// 成功
+  #[graphql(name="0")]
+  0,
+  /// 失败
+  #[graphql(name="81013")]
+  81013,
+}
+
+impl fmt::Display for WxwMsgErrcode {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Empty => write!(f, ""),
+      Self::0 => write!(f, "0"),
+      Self::81013 => write!(f, "81013"),
+    }
+  }
+}
+
+impl From<WxwMsgErrcode> for SmolStr {
+  fn from(value: WxwMsgErrcode) -> Self {
+    match value {
+      WxwMsgErrcode::Empty => "".into(),
+      WxwMsgErrcode::0 => "0".into(),
+      WxwMsgErrcode::81013 => "81013".into(),
+    }
+  }
+}
+
+impl From<WxwMsgErrcode> for String {
+  fn from(value: WxwMsgErrcode) -> Self {
+    match value {
+      WxwMsgErrcode::Empty => "".into(),
+      WxwMsgErrcode::0 => "0".into(),
+      WxwMsgErrcode::81013 => "81013".into(),
+    }
+  }
+}
+
+impl From<WxwMsgErrcode> for ArgType {
+  fn from(value: WxwMsgErrcode) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl Default for WxwMsgErrcode {
+  fn default() -> Self {
+    Self::Empty,
+  }
+}
+
+impl FromStr for WxwMsgErrcode {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "empty" => Ok(Self::Empty),
+      "0" => Ok(Self::0),
+      "81013" => Ok(Self::81013),
+      _ => Err(anyhow::anyhow!("WxwMsgErrcode can't convert from {s}")),
+    }
+  }
+}
+
+impl WxwMsgErrcode {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Empty => "",
+      Self::0 => "0",
+      Self::81013 => "81013",
+    }
+  }
+}
+
+impl TryFrom<String> for WxwMsgErrcode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, Self::Error> {
+    match s.as_str() {
+      "" => Ok(Self::Empty),
+      "0" => Ok(Self::0),
+      "81013" => Ok(Self::81013),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "errcode".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "WxwMsgErrcode can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }

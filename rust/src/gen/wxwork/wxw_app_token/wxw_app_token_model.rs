@@ -1,7 +1,15 @@
-use serde::{
-  Serialize,
-  Deserialize,
-};
+
+use std::fmt;
+use std::ops::Deref;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::str::FromStr;
+use serde::{Serialize, Deserialize};
+
+use sqlx::encode::{Encode, IsNull};
+use sqlx::MySql;
+use smol_str::SmolStr;
 
 use sqlx::{
   FromRow,
@@ -9,20 +17,28 @@ use sqlx::{
   Row,
 };
 
+#[allow(unused_imports)]
 use async_graphql::{
   SimpleObject,
   InputObject,
+  Enum,
 };
 
-#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
+use crate::common::context::ArgType;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenModel {
   /// 租户ID
-  pub tenant_id: String,
+  #[graphql(skip)]
+  pub tenant_id: TenantId,
   /// ID
-  pub id: String,
+  pub id: WxwAppTokenId,
   /// 企微应用
-  pub wxw_app_id: String,
+  pub wxw_app_id: WxwAppId,
   /// 企微应用
   pub wxw_app_id_lbl: String,
   /// 类型corp和contact
@@ -44,9 +60,9 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
     // ID
-    let id: String = row.try_get("id")?;
+    let id: WxwAppTokenId = row.try_get("id")?;
     // 企微应用
-    let wxw_app_id: String = row.try_get("wxw_app_id")?;
+    let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
     let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
     let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
     // 类型corp和contact
@@ -66,6 +82,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     
     let model = Self {
       tenant_id,
+      is_deleted,
       id,
       wxw_app_id,
       wxw_app_id_lbl,
@@ -74,14 +91,13 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
       token_time,
       token_time_lbl,
       expires_in,
-      is_deleted,
     };
     
     Ok(model)
   }
 }
 
-#[derive(SimpleObject, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenFieldComment {
   /// ID
@@ -102,16 +118,18 @@ pub struct WxwAppTokenFieldComment {
   pub expires_in: String,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Default, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenSearch {
-  pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  /// ID
+  pub id: Option<WxwAppTokenId>,
+  /// ID列表
+  pub ids: Option<Vec<WxwAppTokenId>>,
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 企微应用
-  pub wxw_app_id: Option<Vec<String>>,
+  pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
   pub wxw_app_id_is_null: Option<bool>,
   /// 类型corp和contact
@@ -128,16 +146,18 @@ pub struct WxwAppTokenSearch {
   pub expires_in: Option<Vec<u32>>,
 }
 
-#[derive(FromModel, InputObject, Default, Clone)]
+#[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenInput {
+  /// ID
+  pub id: Option<WxwAppTokenId>,
+  #[graphql(skip)]
+  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
-  /// ID
-  pub id: Option<String>,
+  pub tenant_id: Option<TenantId>,
   /// 企微应用
-  pub wxw_app_id: Option<String>,
+  pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
   pub wxw_app_id_lbl: Option<String>,
   /// 类型corp和contact
@@ -152,12 +172,34 @@ pub struct WxwAppTokenInput {
   pub expires_in: Option<u32>,
 }
 
+impl From<WxwAppTokenModel> for WxwAppTokenInput {
+  fn from(model: WxwAppTokenModel) -> Self {
+    Self {
+      id: model.id.into(),
+      is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
+      // 企微应用
+      wxw_app_id: model.wxw_app_id.into(),
+      wxw_app_id_lbl: model.wxw_app_id_lbl.into(),
+      // 类型corp和contact
+      r#type: model.r#type.into(),
+      // 令牌
+      access_token: model.access_token.into(),
+      // 令牌创建时间
+      token_time: model.token_time,
+      token_time_lbl: model.token_time_lbl.into(),
+      // 令牌超时时间
+      expires_in: model.expires_in.into(),
+    }
+  }
+}
+
 impl From<WxwAppTokenInput> for WxwAppTokenSearch {
   fn from(input: WxwAppTokenInput) -> Self {
     Self {
       id: input.id,
       ids: None,
-      // 住户ID
+      // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 企微应用
@@ -172,5 +214,106 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       expires_in: input.expires_in.map(|x| vec![x, x]),
       ..Default::default()
     }
+  }
+}
+
+#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct WxwAppTokenId(SmolStr);
+
+impl fmt::Display for WxwAppTokenId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
+#[async_graphql::Scalar(name = "WxwAppTokenId")]
+impl async_graphql::ScalarType for WxwAppTokenId {
+  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
+    match value {
+      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      _ => Err(async_graphql::InputValueError::expected_type(value)),
+    }
+  }
+  
+  fn to_value(&self) -> async_graphql::Value {
+    async_graphql::Value::String(self.0.clone().into())
+  }
+}
+
+impl From<WxwAppTokenId> for ArgType {
+  fn from(value: WxwAppTokenId) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl From<&WxwAppTokenId> for ArgType {
+  fn from(value: &WxwAppTokenId) -> Self {
+    ArgType::SmolStr(value.clone().into())
+  }
+}
+
+impl From<WxwAppTokenId> for SmolStr {
+  fn from(id: WxwAppTokenId) -> Self {
+    id.0
+  }
+}
+
+impl From<SmolStr> for WxwAppTokenId {
+  fn from(s: SmolStr) -> Self {
+    Self(s)
+  }
+}
+
+impl From<&SmolStr> for WxwAppTokenId {
+  fn from(s: &SmolStr) -> Self {
+    Self(s.clone())
+  }
+}
+
+impl From<String> for WxwAppTokenId {
+  fn from(s: String) -> Self {
+    Self(s.into())
+  }
+}
+
+impl From<&str> for WxwAppTokenId {
+  fn from(s: &str) -> Self {
+    Self(s.into())
+  }
+}
+
+impl Deref for WxwAppTokenId {
+  type Target = SmolStr;
+  
+  fn deref(&self) -> &SmolStr {
+    &self.0
+  }
+}
+
+impl Encode<'_, MySql> for WxwAppTokenId {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+  }
+  
+  fn size_hint(&self) -> usize {
+    self.len()
+  }
+}
+
+impl sqlx::Type<MySql> for WxwAppTokenId {
+  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+    <&str as sqlx::Type<MySql>>::type_info()
+  }
+  
+  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
+    <&str as sqlx::Type<MySql>>::compatible(ty)
+  }
+}
+
+impl<'r> sqlx::Decode<'r, MySql> for WxwAppTokenId {
+  fn decode(
+    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
+  ) -> Result<Self, sqlx::error::BoxDynError> {
+    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
 }
