@@ -84,6 +84,6 @@
     {
       "source": "./deno/gen/*.ts",
       "target": "<dir>/../codegen/template/deno/<basename>"
-    },
+    }
   ]
 }

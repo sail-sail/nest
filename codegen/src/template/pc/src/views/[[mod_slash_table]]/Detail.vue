@@ -199,6 +199,7 @@ for (let i = 0; i < columns.length; i++) {
           ) {
             continue;
           }
+          const readonlyPlaceholder = column.readonlyPlaceholder;
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -244,6 +245,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             ></UploadImage><#
@@ -295,6 +301,11 @@ for (let i = 0; i < columns.length; i++) {
               :readonly="isLocked || isReadonly"<#
               }
               #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
               #>
               @change="onJobId"<#
@@ -325,6 +336,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             ></SelectInput<#=Foreign_Table_Up#>><#
@@ -361,6 +377,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             ></CustomTreeSelect><#
@@ -407,6 +428,11 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"<#
               }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
               #>
             ></DictSelect><#
             } else if (column.dictbiz) {
@@ -422,6 +448,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             ></DictbizSelect><#
@@ -454,6 +485,11 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"<#
               }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
               #>
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
@@ -468,6 +504,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             >
@@ -484,6 +525,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
             ></CustomInputNumber><#
@@ -518,6 +564,11 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"<#
               }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
               #>
             ></CustomInputNumber><#
             } else {
@@ -538,6 +589,11 @@ for (let i = 0; i < columns.length; i++) {
               } else {
               #>
               :readonly="isLocked || isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -655,6 +711,7 @@ for (let i = 0; i < columns.length; i++) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
                 const width = (column.width || 180) + 38;
+                const readonlyPlaceholder = column.readonlyPlaceholder;
               #>
               
               <el-table-column
@@ -700,6 +757,11 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly"<#
                       }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
                       #>
                     ></CustomSelect><#
                     } else if (foreignKey && foreignKey.selectType === "selectInput") {
@@ -726,6 +788,11 @@ for (let i = 0; i < columns.length; i++) {
                       } else {
                       #>
                       :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
                     >
@@ -764,6 +831,11 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly"<#
                       }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
                       #>
                     ></CustomTreeSelect><#
                     } else if (column.dict) {
@@ -780,6 +852,11 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly"<#
                       }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
                       #>
                     ></DictSelect><#
                     } else if (column.dictbiz) {
@@ -795,6 +872,11 @@ for (let i = 0; i < columns.length; i++) {
                       } else {
                       #>
                       :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -827,6 +909,11 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly"<#
                       }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
                       #>
                     ></CustomDatePicker><#
                     } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
@@ -841,6 +928,11 @@ for (let i = 0; i < columns.length; i++) {
                       } else {
                       #>
                       :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
                     >
@@ -858,6 +950,11 @@ for (let i = 0; i < columns.length; i++) {
                       } else {
                       #>
                       :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -892,6 +989,11 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly"<#
                       }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
                       #>
                     ></CustomInputNumber><#
                     } else {
@@ -905,6 +1007,11 @@ for (let i = 0; i < columns.length; i++) {
                       } else {
                       #>
                       :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
                     ></CustomInput><#
@@ -1892,15 +1999,27 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    <#
+    if (hasLocked) {
+    #>
+    if (dialogAction === "add") {
+      isLocked = false;
+    } else {
+      if (!permit("edit")) {
+        isLocked = true;
+      } else {
+        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      }
+    }<#
+    } else {
+    #>
     if (!permit("edit")) {
       isLocked = true;
     } else {
-      isLocked = <#
-      if (hasLocked) {
-      #>dialogModel.is_locked == 1 ?? <#
-      }
-      #>toValue(arg?.isLocked) ?? isLocked;
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
+    }<#
     }
+    #>
   });
   dialogAction = action || "add";
   ids = [ ];
