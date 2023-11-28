@@ -1,0 +1,162 @@
+import {
+  useContext,
+} from "/lib/context.ts";
+
+import Decimal from "decimal.js";
+
+import type {
+  SearchExtra,
+} from "/lib/util/dao_util.ts";
+
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  CardRechargeInput,
+  CardRechargeModel,
+  CardRechargeSearch,
+  CardRechargeFieldComment,
+} from "./card_recharge.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
+/**
+ * 根据条件查找据数总数
+ */
+export async function findCountCardRecharge(
+  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+): Promise<number> {
+  
+  const {
+    findCount,
+  } = await import("./card_recharge.service.ts");
+  
+  const res = await findCount(search);
+  return res;
+}
+
+/**
+ * 根据搜索条件和分页查找数据
+ */
+export async function findAllCardRecharge(
+  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
+): Promise<CardRechargeModel[]> {
+  
+  const {
+    findAll,
+  } = await import("./card_recharge.service.ts");
+  
+  const res = await findAll(search, page, sort);
+  return res;
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldCommentsCardRecharge(): Promise<CardRechargeFieldComment> {
+  const { getFieldComments } = await import("./card_recharge.service.ts");
+  const res = await getFieldComments();
+  return res;
+}
+
+/**
+ * 根据条件查找第一条数据
+ */
+export async function findOneCardRecharge(
+  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
+): Promise<CardRechargeModel | undefined> {
+  
+  const {
+    findOne,
+  } = await import("./card_recharge.service.ts");
+  
+  const res = await findOne(search, sort);
+  return res;
+}
+
+/**
+ * 根据 id 查找一条数据
+ */
+export async function findByIdCardRecharge(
+  id: string,
+): Promise<CardRechargeModel | undefined> {
+  const { findById } = await import("./card_recharge.service.ts");
+  const res = await findById(id);
+  return res;
+}
+
+/**
+ * 根据 ids 删除数据
+ */
+export async function deleteByIdsCardRecharge(
+  ids: string[],
+): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./card_recharge.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/esw/card_recharge",
+    "delete",
+  );
+  const res = await deleteByIds(ids);
+  return res;
+}
+
+/**
+ * 根据 ids 还原数据
+ */
+export async function revertByIdsCardRecharge(
+  ids: string[],
+): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./card_recharge.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/esw/card_recharge",
+    "delete",
+  );
+  const res = await revertByIds(ids);
+  return res;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsCardRecharge(
+  ids: string[],
+): Promise<number> {
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/esw/card_recharge",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./card_recharge.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
+}

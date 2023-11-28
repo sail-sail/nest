@@ -160,6 +160,63 @@ export const scalars = {
     "output": `import("/gen/base/usr/usr.model.ts").BaseUsrId`,
   },
   
+  // 会员卡ID
+  "EswCardId": {
+    "input": `import("/gen/esw/card/card.model.ts").EswCardId`,
+    "output": `import("/gen/esw/card/card.model.ts").EswCardId`,
+  },
+  // 会员卡会员等级
+  "EswCardGrade": {
+    "input": `import("/gen/esw/card/card.model.ts").EswCardGrade`,
+    "output": `import("/gen/esw/card/card.model.ts").EswCardGrade`,
+  },
+  
+  // 会员卡消费记录ID
+  "EswCardConsumeId": {
+    "input": `import("/gen/esw/card_consume/card_consume.model.ts").EswCardConsumeId`,
+    "output": `import("/gen/esw/card_consume/card_consume.model.ts").EswCardConsumeId`,
+  },
+  
+  // 会员卡充值记录ID
+  "EswCardRechargeId": {
+    "input": `import("/gen/esw/card_recharge/card_recharge.model.ts").EswCardRechargeId`,
+    "output": `import("/gen/esw/card_recharge/card_recharge.model.ts").EswCardRechargeId`,
+  },
+  
+  // 订单ID
+  "EswOrderId": {
+    "input": `import("/gen/esw/order/order.model.ts").EswOrderId`,
+    "output": `import("/gen/esw/order/order.model.ts").EswOrderId`,
+  },
+  // 订单订单状态
+  "EswOrderStatus": {
+    "input": `import("/gen/esw/order/order.model.ts").EswOrderStatus`,
+    "output": `import("/gen/esw/order/order.model.ts").EswOrderStatus`,
+  },
+  // 订单订单类型
+  "EswOrderType": {
+    "input": `import("/gen/esw/order/order.model.ts").EswOrderType`,
+    "output": `import("/gen/esw/order/order.model.ts").EswOrderType`,
+  },
+  
+  // 产品ID
+  "EswPtId": {
+    "input": `import("/gen/esw/pt/pt.model.ts").EswPtId`,
+    "output": `import("/gen/esw/pt/pt.model.ts").EswPtId`,
+  },
+  
+  // 产品类型ID
+  "EswPtTypeId": {
+    "input": `import("/gen/esw/pt_type/pt_type.model.ts").EswPtTypeId`,
+    "output": `import("/gen/esw/pt_type/pt_type.model.ts").EswPtTypeId`,
+  },
+  
+  // 充值赠送规则ID
+  "EswRechargeRuleId": {
+    "input": `import("/gen/esw/recharge_rule/recharge_rule.model.ts").EswRechargeRuleId`,
+    "output": `import("/gen/esw/recharge_rule/recharge_rule.model.ts").EswRechargeRuleId`,
+  },
+  
   // 微信JSAPI下单ID
   "WxPayTransactionsJsapiId": {
     "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").WxPayTransactionsJsapiId`,
