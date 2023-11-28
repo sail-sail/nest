@@ -366,10 +366,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    if (!permit("edit")) {
-      isLocked = true;
+    
+    if (dialogAction === "add") {
+      isLocked = false;
     } else {
-      isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      if (!permit("edit")) {
+        isLocked = true;
+      } else {
+        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      }
     }
   });
   dialogAction = action || "add";
@@ -441,17 +446,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => inited,
-  async () => {
-    if (!inited) {
-      return;
-    }
-    await nextTick();
-    customDialogRef?.focus();
-  },
-);
 
 watch(
   () => [ isLocked, is_deleted, dialogNotice ],
