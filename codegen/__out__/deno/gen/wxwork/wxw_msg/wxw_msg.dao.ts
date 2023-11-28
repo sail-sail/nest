@@ -393,12 +393,10 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
     touser: await n("成员ID"),
     title: await n("标题"),
     description: await n("描述"),
-    url: await n("链接"),
     btntxt: await n("按钮文字"),
     create_time: await n("发送时间"),
     create_time_lbl: await n("发送时间"),
     errmsg: await n("错误信息"),
-    msgid: await n("消息ID"),
   };
   return fieldComments;
 }
@@ -628,13 +626,6 @@ export async function validate(
     fieldComments.description,
   );
   
-  // 链接
-  await validators.chars_max_length(
-    input.url,
-    1024,
-    fieldComments.url,
-  );
-  
   // 按钮文字
   await validators.chars_max_length(
     input.btntxt,
@@ -647,13 +638,6 @@ export async function validate(
     input.errmsg,
     256,
     fieldComments.errmsg,
-  );
-  
-  // 消息ID
-  await validators.chars_max_length(
-    input.msgid,
-    255,
-    fieldComments.msgid,
   );
   
 }

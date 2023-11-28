@@ -25,8 +25,6 @@ type WxwMsgModel {
   title: String!
   "描述"
   description: String!
-  "链接"
-  url: String!
   "按钮文字"
   btntxt: String!
   "发送时间"
@@ -35,8 +33,6 @@ type WxwMsgModel {
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
-  "消息ID"
-  msgid: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -57,8 +53,6 @@ type WxwMsgFieldComment {
   title: String!
   "描述"
   description: String!
-  "链接"
-  url: String!
   "按钮文字"
   btntxt: String!
   "发送时间"
@@ -67,8 +61,6 @@ type WxwMsgFieldComment {
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
-  "消息ID"
-  msgid: String!
 }
 input WxwMsgInput {
   ""
@@ -87,8 +79,6 @@ input WxwMsgInput {
   title: String
   "描述"
   description: String
-  "链接"
-  url: String
   "按钮文字"
   btntxt: String
   "发送时间"
@@ -97,8 +87,6 @@ input WxwMsgInput {
   create_time_lbl: String
   "错误信息"
   errmsg: String
-  "消息ID"
-  msgid: String
 }
 input WxwMsgSearch {
   "是否已删除"
@@ -121,9 +109,6 @@ input WxwMsgSearch {
   "描述"
   description: String
   description_like: String
-  "链接"
-  url: String
-  url_like: String
   "按钮文字"
   btntxt: String
   btntxt_like: String
@@ -132,9 +117,6 @@ input WxwMsgSearch {
   "错误信息"
   errmsg: String
   errmsg_like: String
-  "消息ID"
-  msgid: String
-  msgid_like: String
 }
 type Query {
   "根据条件查找据数总数"
