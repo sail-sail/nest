@@ -45,7 +45,7 @@ pub struct MenuModel {
   /// 路由
   pub route_path: String,
   /// 参数
-  pub route_query: Option<String>,
+  pub route_query: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -94,7 +94,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 路由
     let route_path: String = row.try_get("route_path")?;
     // 参数
-    let route_query: Option<String> = row.try_get("route_query")?;
+    let route_query: String = row.try_get("route_query")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -231,6 +231,8 @@ pub struct MenuSearch {
   pub route_path_like: Option<String>,
   /// 参数
   pub route_query: Option<String>,
+  /// 参数
+  pub route_query_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -322,7 +324,7 @@ impl From<MenuModel> for MenuInput {
       // 路由
       route_path: model.route_path.into(),
       // 参数
-      route_query: model.route_query,
+      route_query: model.route_query.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
