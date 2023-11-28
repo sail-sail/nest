@@ -445,17 +445,6 @@ async function showDialog(
 }
 
 watch(
-  () => inited,
-  async () => {
-    if (!inited) {
-      return;
-    }
-    await nextTick();
-    customDialogRef?.focus();
-  },
-);
-
-watch(
   () => [ isLocked, is_deleted, dialogNotice ],
   async () => {
     if (is_deleted) {
