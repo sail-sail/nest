@@ -447,17 +447,6 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
-watch(
-  () => inited,
-  async () => {
-    if (!inited) {
-      return;
-    }
-    await nextTick();
-    customDialogRef?.focus();
-  },
-);
-
 /** 键盘按 Insert */
 async function onInsert() {
   isReadonly = !isReadonly;
