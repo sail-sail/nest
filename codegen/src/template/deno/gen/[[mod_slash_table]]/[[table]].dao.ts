@@ -1731,6 +1731,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -2148,9 +2149,23 @@ export async function validate(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === "is_sys") {
+      continue;
+    }
+    if (column_name === "is_deleted") {
+      continue;
+    }
+    if (column_name === "org_id") {
+      continue;
+    }
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";

@@ -74,7 +74,6 @@ export async function findAll(
   const res = data.findAllMenu;
   for (let i = 0; i < res.length; i++) {
     const item = res[i];
-    item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return res;
 }
@@ -130,7 +129,6 @@ export async function findOne(
   }, opt);
   const model = data.findOneMenu;
   if (model) {
-      model.route_query = model.route_query && JSON.stringify(model.route_query) || "";
   }
   return model;
 }
@@ -290,9 +288,6 @@ export async function findById(
     },
   }, opt);
   const res = data.findByIdMenu;
-  if (res?.route_query) {
-    res.route_query = JSON.stringify(res.route_query);
-  }
   return res;
 }
 
