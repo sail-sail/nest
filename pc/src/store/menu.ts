@@ -1,9 +1,9 @@
-import {
-  type MenuModel as MenuModel0,
+import type {
+  MenuModel as MenuModel0,
 } from "#/types";
 
-import {
-  type LocationQuery,
+import type {
+  LocationQuery,
 } from "vue-router";
 
 type MenuModel = MenuModel0 & {
