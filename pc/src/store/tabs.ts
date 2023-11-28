@@ -1,4 +1,6 @@
-import { getRouter } from "@/router/util";
+import type {
+  RouteLocationNormalizedLoaded,
+} from "vue-router";
 
 export interface TabInf {
   name: string,
@@ -172,7 +174,7 @@ export default defineStore("tabs", function() {
     tabs.splice(newIndex, 0, tab);
   }
   
-  async function refreshTab(route: RouteLocationNormalized) {
+  async function refreshTab(route: RouteLocationNormalizedLoaded) {
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);
@@ -212,17 +214,16 @@ export default defineStore("tabs", function() {
     if (tab) {
       return tab;
     }
-    const route = getRouter("/index");
-    if (route) {
-      const name = route.name as string;
-      const lbl = (route.meta?.name as string) || name || "";
-      const closeable = route.meta?.closeable as boolean ?? true;
-      const icon = route.meta?.icon as string | undefined;
+    {
+      const name = "首页";
+      const lbl = name;
+      const closeable = false;
+      const icon = "iconfont-home-fill";
       const tab: TabInf = {
         name,
         lbl,
         active: false,
-        path: route.path,
+        path: "/index",
         closeable,
         icon,
       };
