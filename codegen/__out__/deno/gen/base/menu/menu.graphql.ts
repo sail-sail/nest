@@ -24,7 +24,7 @@ type MenuModel {
   "路由"
   route_path: String!
   "参数"
-  route_query: String
+  route_query: String!
   "锁定"
   is_locked: Int!
   "锁定"
