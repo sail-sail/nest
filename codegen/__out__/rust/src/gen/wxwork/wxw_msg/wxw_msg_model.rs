@@ -146,6 +146,7 @@ pub struct WxwMsgFieldComment {
   /// 描述
   pub description: String,
   /// 链接
+  #[graphql(skip)]
   pub url: String,
   /// 按钮文字
   pub btntxt: String,
@@ -156,6 +157,7 @@ pub struct WxwMsgFieldComment {
   /// 错误信息
   pub errmsg: String,
   /// 消息ID
+  #[graphql(skip)]
   pub msgid: String,
 }
 
@@ -188,8 +190,10 @@ pub struct WxwMsgSearch {
   /// 描述
   pub description_like: Option<String>,
   /// 链接
+  #[graphql(skip)]
   pub url: Option<String>,
   /// 链接
+  #[graphql(skip)]
   pub url_like: Option<String>,
   /// 按钮文字
   pub btntxt: Option<String>,
@@ -202,8 +206,10 @@ pub struct WxwMsgSearch {
   /// 错误信息
   pub errmsg_like: Option<String>,
   /// 消息ID
+  #[graphql(skip)]
   pub msgid: Option<String>,
   /// 消息ID
+  #[graphql(skip)]
   pub msgid_like: Option<String>,
 }
 
@@ -232,6 +238,7 @@ pub struct WxwMsgInput {
   /// 描述
   pub description: Option<String>,
   /// 链接
+  #[graphql(skip)]
   pub url: Option<String>,
   /// 按钮文字
   pub btntxt: Option<String>,
@@ -242,6 +249,7 @@ pub struct WxwMsgInput {
   /// 错误信息
   pub errmsg: Option<String>,
   /// 消息ID
+  #[graphql(skip)]
   pub msgid: Option<String>,
 }
 

@@ -129,22 +129,31 @@ pub struct WxwUsrFieldComment {
   /// 用户ID
   pub userid: String,
   /// 手机号
+  #[graphql(skip)]
   pub mobile: String,
   /// 性别
+  #[graphql(skip)]
   pub gender: String,
   /// 邮箱
+  #[graphql(skip)]
   pub email: String,
   /// 企业邮箱
+  #[graphql(skip)]
   pub biz_email: String,
   /// 直属上级
+  #[graphql(skip)]
   pub direct_leader: String,
   /// 职位
+  #[graphql(skip)]
   pub position: String,
   /// 头像
+  #[graphql(skip)]
   pub avatar: String,
   /// 头像缩略图
+  #[graphql(skip)]
   pub thumb_avatar: String,
   /// 个人二维码
+  #[graphql(skip)]
   pub qr_code: String,
   /// 备注
   pub rem: String,
@@ -169,40 +178,58 @@ pub struct WxwUsrSearch {
   /// 用户ID
   pub userid_like: Option<String>,
   /// 手机号
+  #[graphql(skip)]
   pub mobile: Option<String>,
   /// 手机号
+  #[graphql(skip)]
   pub mobile_like: Option<String>,
   /// 性别
+  #[graphql(skip)]
   pub gender: Option<String>,
   /// 性别
+  #[graphql(skip)]
   pub gender_like: Option<String>,
   /// 邮箱
+  #[graphql(skip)]
   pub email: Option<String>,
   /// 邮箱
+  #[graphql(skip)]
   pub email_like: Option<String>,
   /// 企业邮箱
+  #[graphql(skip)]
   pub biz_email: Option<String>,
   /// 企业邮箱
+  #[graphql(skip)]
   pub biz_email_like: Option<String>,
   /// 直属上级
+  #[graphql(skip)]
   pub direct_leader: Option<String>,
   /// 直属上级
+  #[graphql(skip)]
   pub direct_leader_like: Option<String>,
   /// 职位
+  #[graphql(skip)]
   pub position: Option<String>,
   /// 职位
+  #[graphql(skip)]
   pub position_like: Option<String>,
   /// 头像
+  #[graphql(skip)]
   pub avatar: Option<String>,
   /// 头像
+  #[graphql(skip)]
   pub avatar_like: Option<String>,
   /// 头像缩略图
+  #[graphql(skip)]
   pub thumb_avatar: Option<String>,
   /// 头像缩略图
+  #[graphql(skip)]
   pub thumb_avatar_like: Option<String>,
   /// 个人二维码
+  #[graphql(skip)]
   pub qr_code: Option<String>,
   /// 个人二维码
+  #[graphql(skip)]
   pub qr_code_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
@@ -225,22 +252,31 @@ pub struct WxwUsrInput {
   /// 用户ID
   pub userid: Option<String>,
   /// 手机号
+  #[graphql(skip)]
   pub mobile: Option<String>,
   /// 性别
+  #[graphql(skip)]
   pub gender: Option<String>,
   /// 邮箱
+  #[graphql(skip)]
   pub email: Option<String>,
   /// 企业邮箱
+  #[graphql(skip)]
   pub biz_email: Option<String>,
   /// 直属上级
+  #[graphql(skip)]
   pub direct_leader: Option<String>,
   /// 职位
+  #[graphql(skip)]
   pub position: Option<String>,
   /// 头像
+  #[graphql(skip)]
   pub avatar: Option<String>,
   /// 头像缩略图
+  #[graphql(skip)]
   pub thumb_avatar: Option<String>,
   /// 个人二维码
+  #[graphql(skip)]
   pub qr_code: Option<String>,
   /// 备注
   pub rem: Option<String>,
