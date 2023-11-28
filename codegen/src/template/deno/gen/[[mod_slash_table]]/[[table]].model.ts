@@ -47,6 +47,118 @@ export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
 export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;
 
 export interface <#=searchName#> extends <#=searchName#>Type {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (!column.onlyCodegenDeno) continue;
+    // if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    const search = column.search;
+    if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
+    if (column_name === 'is_sys') {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
+    if (column_name === 'id') {
+      data_type = `${ Table_Up }Id`;
+    }
+    else if (foreignKey) {
+      data_type = `${ foreignTable_Up }Id[]`;
+    }
+    else if (column.DATA_TYPE === 'varchar') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'date') {
+      data_type = 'string[]';
+    }
+    else if (column.DATA_TYPE === 'datetime') {
+      data_type = 'string[]';
+    }
+    else if (column.DATA_TYPE === 'int') {
+      data_type = 'number[]';
+    }
+    else if (column.DATA_TYPE === 'json') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = 'number';
+    }
+    else if (column.DATA_TYPE === 'decimal') {
+      data_type = 'string[]';
+    }
+    if (column_name.startsWith("is_")) {
+      data_type = 'number';
+    }
+    if (column_name === 'id') {
+      column_comment = 'ID';
+    }
+    if (column.dict || column.dictbiz) {
+      if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
+        data_type = "number[]";
+      } else {
+        data_type = "string[]";
+      }
+    }
+  #><#
+    if (foreignKey) {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>?: <#=data_type#>;<#
+    } else if (column.dict || column.dictbiz) {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>?: <#=data_type#>;<#
+    } else if (column_name === "id") {
+  #>
+  /** ID */
+  <#=column_name#>?: <#=data_type#>;<#
+    } else if (
+      column.DATA_TYPE === "int"
+      || column.DATA_TYPE === "decimal"
+    ) {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>?: <#=data_type#>;<#
+    } else if (
+      column.DATA_TYPE === "date"
+      || column.DATA_TYPE === "datetime"
+    ) {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>?: <#=data_type#>;<#
+    } else if (!column.isEncrypt) {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>?: <#=data_type#>;
+  <#=column_name#>_like?: <#=data_type#>;<#
+    }
+  #><#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#
