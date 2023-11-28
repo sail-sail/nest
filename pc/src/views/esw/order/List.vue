@@ -475,8 +475,8 @@
             </el-table-column>
           </template>
           
-          <!-- 订单金额 -->
-          <template v-else-if="'price' === col.prop && (showBuildIn || builtInSearch?.price == null)">
+          <!-- 会员卡 -->
+          <template v-else-if="'card_id_lbl' === col.prop && (showBuildIn || builtInSearch?.card_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -484,8 +484,8 @@
             </el-table-column>
           </template>
           
-          <!-- 会员卡 -->
-          <template v-else-if="'card_id_lbl' === col.prop && (showBuildIn || builtInSearch?.card_id == null)">
+          <!-- 订单金额 -->
+          <template v-else-if="'price' === col.prop && (showBuildIn || builtInSearch?.price == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -809,9 +809,9 @@ const props = defineProps<{
   status?: string|string[]; // 订单状态
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string|string[]; // 用户
-  price?: string; // 订单金额
   card_id?: string|string[]; // 会员卡
   card_id_lbl?: string|string[]; // 会员卡
+  price?: string; // 订单金额
   type?: string|string[]; // 订单类型
   amt?: string; // 消费充值金额
   give_amt?: string; // 消费赠送金额
@@ -840,9 +840,9 @@ const builtInSearchType: { [key: string]: string } = {
   status_lbl: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
-  price: "number",
   card_id: "string[]",
   card_id_lbl: "string[]",
+  price: "number",
   type: "string[]",
   type_lbl: "string[]",
   amt: "number",
@@ -1004,19 +1004,19 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "订单金额",
-      prop: "price",
-      width: 120,
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "会员卡",
       prop: "card_id_lbl",
       sortBy: "card_id",
       width: 180,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "订单金额",
+      prop: "price",
+      width: 120,
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1410,9 +1410,14 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ await nAsync("订单状态") ]: "status_lbl",
     [ await nAsync("用户") ]: "usr_id_lbl",
-    [ await nAsync("订单金额") ]: "price",
     [ await nAsync("会员卡") ]: "card_id_lbl",
+    [ await nAsync("订单金额") ]: "price",
     [ await nAsync("订单类型") ]: "type_lbl",
+    [ await nAsync("消费充值金额") ]: "amt",
+    [ await nAsync("消费赠送金额") ]: "give_amt",
+    [ await nAsync("消费后充值余额") ]: "balance",
+    [ await nAsync("消费后赠送余额") ]: "give_balance",
+    [ await nAsync("获得积分") ]: "integral",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1439,9 +1444,14 @@ async function onImportExcel() {
         key_types: {
           "status_lbl": "string",
           "usr_id_lbl": "string",
-          "price": "string",
           "card_id_lbl": "string",
+          "price": "string",
           "type_lbl": "string",
+          "amt": "string",
+          "give_amt": "string",
+          "balance": "string",
+          "give_balance": "string",
+          "integral": "number",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
@@ -1771,8 +1781,8 @@ async function initI18nsEfc() {
     "订单号",
     "订单状态",
     "用户",
-    "订单金额",
     "会员卡",
+    "订单金额",
     "订单类型",
     "消费充值金额",
     "消费赠送金额",

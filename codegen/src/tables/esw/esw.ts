@@ -4,14 +4,19 @@ export default defineConfig({
   // 会员卡
   esw_card: {
     opts: {
-      cache: true,
       uniques: [
         [ "lbl" ],
       ],
     },
     columns: [
       {
+        COLUMN_NAME: "seq_lbl",
+        onlyCodegenDeno: true,
+      },
+      {
         COLUMN_NAME: "lbl",
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
       },
       {
         COLUMN_NAME: "usr_id",
@@ -25,11 +30,13 @@ export default defineConfig({
         COLUMN_NAME: "name",
         width: 120,
         require: true,
+        search: true,
       },
       {
         COLUMN_NAME: "mobile",
         width: 120,
         require: true,
+        search: true,
       },
       {
         COLUMN_NAME: "balance",
@@ -46,6 +53,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "growth_amt",
         width: 100,
+        readonly: true,
       },
       {
         COLUMN_NAME: "is_default",
@@ -275,10 +283,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "introduct",
+        width: 280,
       },
       {
         COLUMN_NAME: "detail",
-        width: 200,
+        width: 280,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -320,6 +329,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_home",
+        width: 80,
       },
       {
         COLUMN_NAME: "is_recommend",
@@ -361,13 +371,20 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         readonly: true,
+        readonlyPlaceholder: "(自动生成)",
       },
       {
         COLUMN_NAME: "status",
         width: 120,
+        require: true,
       },
       {
         COLUMN_NAME: "usr_id",
+        width: 180,
+        require: true,
+      },
+      {
+        COLUMN_NAME: "card_id",
         width: 180,
         require: true,
       },
@@ -377,38 +394,39 @@ export default defineConfig({
         require: true,
       },
       {
-        COLUMN_NAME: "card_id",
-        width: 180,
-        require: true,
-      },
-      {
         COLUMN_NAME: "type",
         width: 120,
+        require: true,
       },
       {
         COLUMN_NAME: "amt",
         width: 100,
-        readonly: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "give_amt",
         width: 100,
-        readonly: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "balance",
         width: 120,
-        readonly: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "give_balance",
         width: 120,
-        readonly: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "integral",
         width: 100,
-        readonly: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "is_locked",

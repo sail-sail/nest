@@ -2,9 +2,10 @@
 drop table if exists `esw_card`;
 CREATE TABLE if not exists `esw_card` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `seq_lbl` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '卡号-序列号',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '卡号',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '绑定用户',
-  `grade` varchar(10) NOT NULL DEFAULT '' COMMENT '会员等级,dictbiz:card_grade',
+  `grade` varchar(10) NOT NULL DEFAULT 'normal' COMMENT '会员等级,dictbiz:card_grade',
   `name` varchar(10) NOT NULL DEFAULT '' COMMENT '姓名',
   `mobile` varchar(22) NOT NULL DEFAULT '' COMMENT '电话',
   `balance` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '充值余额',
@@ -23,6 +24,7 @@ CREATE TABLE if not exists `esw_card` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX(`seq_lbl`, `org_id`, `tenant_id`),
   INDEX(`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='会员卡';
@@ -159,8 +161,8 @@ CREATE TABLE if not exists `esw_order` (
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '订单号',
   `status` varchar(22) NOT NULL DEFAULT 'to_be_paid' COMMENT '订单状态,dictbiz:order_status',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
-  `price` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '订单金额',
   `card_id` varchar(22) NOT NULL DEFAULT '' COMMENT '会员卡',
+  `price` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '订单金额',
   `type` varchar(22) NOT NULL DEFAULT 'pay' COMMENT '订单类型,dictbiz:order_type',
   `amt` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '消费充值金额',
   `give_amt` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '消费赠送金额',

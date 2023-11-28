@@ -29,7 +29,6 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
-  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -117,6 +116,14 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.seq_lbl && search?.seq_lbl?.length > 0) {
+    if (search.seq_lbl[0] != null) {
+      whereQuery += ` and t.seq_lbl >= ${ args.push(search.seq_lbl[0]) }`;
+    }
+    if (search.seq_lbl[1] != null) {
+      whereQuery += ` and t.seq_lbl <= ${ args.push(search.seq_lbl[1]) }`;
+    }
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -319,13 +326,10 @@ export async function findCount(
       ) t
   `;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
-  
   interface Result {
     total: number,
   }
-  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  const model = await queryOne<Result>(sql, args);
   let result = model?.total || 0;
   
   return result;
@@ -395,17 +399,9 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
-  
   const result = await query<CardModel>(
     sql,
     args,
-    {
-      cacheKey1,
-      cacheKey2,
-    },
   );
   
   const [
@@ -778,15 +774,12 @@ export async function existById(
     limit 1
   `;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
-  
   interface Result {
     e: number,
   }
   let model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
   );
   let result = !!model?.e;
   
@@ -980,6 +973,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.seq_lbl !== undefined) {
+    sql += `,seq_lbl`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -1053,6 +1049,9 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
+  if (input.seq_lbl !== undefined) {
+    sql += `,${ args.push(input.seq_lbl) }`;
+  }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
@@ -1093,32 +1092,10 @@ export async function create(
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  
-  await delCache();
   const res = await execute(sql, args);
   log(JSON.stringify(res));
   
-  await delCache();
-  
   return input.id;
-}
-
-/**
- * 删除缓存
- */
-export async function delCache() {
-  const table = "esw_card";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
 }
 
 /**
@@ -1155,8 +1132,6 @@ export async function updateTenantById(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
-  
-  await delCache();
   return num;
 }
 
@@ -1193,12 +1168,8 @@ export async function updateOrgById(
     where
       id = ${ args.push(id) }
   `;
-  
-  await delCache();
   const result = await execute(sql, args);
   const num = result.affectedRows;
-  
-  await delCache();
   return num;
 }
 
@@ -1270,6 +1241,12 @@ export async function updateById(
     update esw_card set
   `;
   let updateFldNum = 0;
+  if (input.seq_lbl !== undefined) {
+    if (input.seq_lbl != oldModel.seq_lbl) {
+      sql += `seq_lbl = ${ args.push(input.seq_lbl) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
@@ -1360,14 +1337,8 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    await delCache();
-    
     const res = await execute(sql, args);
     log(JSON.stringify(res));
-  }
-  
-  if (updateFldNum > 0) {
-    await delCache();
   }
   
   const newModel = await findById(id);
@@ -1396,10 +1367,6 @@ export async function deleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1422,8 +1389,6 @@ export async function deleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
-  
   return num;
 }
 
@@ -1443,8 +1408,6 @@ export async function defaultById(
   if (!id) {
     throw new Error("defaultById: id cannot be empty");
   }
-  
-  await delCache();
   
   {
     const args = new QueryArgs();
@@ -1481,8 +1444,6 @@ export async function defaultById(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
-  
-  await delCache();
   
   return num;
 }
@@ -1525,10 +1486,6 @@ export async function enableByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
   const args = new QueryArgs();
   let sql = `
     update
@@ -1550,8 +1507,6 @@ export async function enableByIds(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
-  
-  await delCache();
   
   return num;
 }
@@ -1595,10 +1550,6 @@ export async function lockByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
   const args = new QueryArgs();
   let sql = `
     update
@@ -1621,8 +1572,6 @@ export async function lockByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
-  
   return num;
 }
 
@@ -1641,10 +1590,6 @@ export async function revertByIds(
   
   if (!ids || !ids.length) {
     return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
   }
   
   let num = 0;
@@ -1680,8 +1625,6 @@ export async function revertByIds(
     }
   }
   
-  await delCache();
-  
   return num;
 }
 
@@ -1700,10 +1643,6 @@ export async function forceDeleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
   }
   
   let num = 0;
@@ -1734,8 +1673,6 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
-  
-  await delCache();
   
   return num;
 }

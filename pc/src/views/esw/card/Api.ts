@@ -503,7 +503,6 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsCard {
-            lbl
             usr_id_lbl
             grade_lbl
             name
@@ -511,7 +510,6 @@ export function useDownloadImportTemplate(routePath: string) {
             balance
             give_balance
             integral
-            growth_amt
             rem
           }
           findAllUsr {

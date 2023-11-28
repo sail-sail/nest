@@ -930,7 +930,7 @@ function getTableColumns(): ColumnType[] {
       label: "首页显示",
       prop: "is_home_lbl",
       sortBy: "is_home",
-      width: 60,
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,

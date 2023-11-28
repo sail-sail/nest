@@ -13,6 +13,9 @@ export const cardRechargeId = Symbol.for("CardRechargeId");
 export type CardRechargeId = typeof cardRechargeId;
 
 export interface CardRechargeSearch extends CardRechargeSearchType {
+  /** 微信支付订单号 */
+  transaction_id?: string;
+  transaction_id_like?: string;
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];

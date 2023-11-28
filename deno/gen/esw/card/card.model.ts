@@ -13,12 +13,16 @@ export const cardId = Symbol.for("CardId");
 export type CardId = typeof cardId;
 
 export interface CardSearch extends CardSearchType {
+  /** 卡号-序列号 */
+  seq_lbl?: number[];
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];
 }
 
 export interface CardModel extends CardModelType {
+  /** 卡号-序列号 */
+  seq_lbl: number;
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
@@ -28,6 +32,8 @@ export interface CardModel extends CardModelType {
 }
 
 export interface CardInput extends CardInputType {
+  /** 卡号-序列号 */
+  seq_lbl?: number;
   create_usr_id?: string | null;
   create_time?: string | null;
   update_usr_id?: string | null;

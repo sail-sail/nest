@@ -13,6 +13,9 @@ export const cardConsumeId = Symbol.for("CardConsumeId");
 export type CardConsumeId = typeof cardConsumeId;
 
 export interface CardConsumeSearch extends CardConsumeSearchType {
+  /** 微信支付订单号 */
+  transaction_id?: string;
+  transaction_id_like?: string;
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];

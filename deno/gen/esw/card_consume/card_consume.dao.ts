@@ -450,7 +450,6 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   const n = initN(route_path);
   const fieldComments: CardConsumeFieldComment = {
     id: await n("ID"),
-    transaction_id: await n("微信支付订单号"),
     card_id: await n("卡号"),
     card_id_lbl: await n("卡号"),
     usr_id: await n("用户"),
@@ -661,13 +660,6 @@ export async function validate(
     input.id,
     22,
     fieldComments.id,
-  );
-  
-  // 微信支付订单号
-  await validators.chars_max_length(
-    input.transaction_id,
-    32,
-    fieldComments.transaction_id,
   );
   
   // 卡号

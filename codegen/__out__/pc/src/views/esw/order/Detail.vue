@@ -79,6 +79,7 @@
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('订单号') }`"
               :readonly="true"
+              readonly-placeholder="(自动生成)"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -118,21 +119,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.price == null)">
-          <el-form-item
-            :label="n('订单金额')"
-            prop="price"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.price"
-              :max="99999999999.99"
-              :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('订单金额') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.card_id == null)">
           <el-form-item
             :label="n('会员卡')"
@@ -153,6 +139,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.price == null)">
+          <el-form-item
+            :label="n('订单金额')"
+            prop="price"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.price"
+              :max="99999999999.99"
+              :precision="2"
+              :placeholder="`${ ns('请输入') } ${ n('订单金额') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
             :label="n('订单类型')"
@@ -165,79 +166,6 @@
               :placeholder="`${ ns('请选择') } ${ n('订单类型') }`"
               :readonly="isLocked || isReadonly"
             ></DictbizSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.amt == null)">
-          <el-form-item
-            :label="n('消费充值金额')"
-            prop="amt"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.amt"
-              :max="99999999999.99"
-              :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费充值金额') }`"
-              :readonly="true"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.give_amt == null)">
-          <el-form-item
-            :label="n('消费赠送金额')"
-            prop="give_amt"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.give_amt"
-              :max="99999999999.99"
-              :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费赠送金额') }`"
-              :readonly="true"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.balance == null)">
-          <el-form-item
-            :label="n('消费后充值余额')"
-            prop="balance"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.balance"
-              :max="99999999999.99"
-              :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费后充值余额') }`"
-              :readonly="true"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.give_balance == null)">
-          <el-form-item
-            :label="n('消费后赠送余额')"
-            prop="give_balance"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.give_balance"
-              :max="99999999999.99"
-              :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费后赠送余额') }`"
-              :readonly="true"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.integral == null)">
-          <el-form-item
-            :label="n('获得积分')"
-            prop="integral"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.integral"
-              :placeholder="`${ ns('请输入') } ${ n('获得积分') }`"
-              :readonly="true"
-            ></CustomInputNumber>
           </el-form-item>
         </template>
         
@@ -398,11 +326,25 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 订单状态
+    status: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("订单状态") }`,
+      },
+    ],
     // 用户
     usr_id: [
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("用户") }`,
+      },
+    ],
+    // 会员卡
+    card_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("会员卡") }`,
       },
     ],
     // 订单金额
@@ -412,11 +354,11 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("订单金额") }`,
       },
     ],
-    // 会员卡
-    card_id: [
+    // 订单类型
+    type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("会员卡") }`,
+        message: `${ await nsAsync("请输入") } ${ n("订单类型") }`,
       },
     ],
   };
@@ -501,10 +443,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    if (!permit("edit")) {
-      isLocked = true;
+    
+    if (dialogAction === "add") {
+      isLocked = false;
     } else {
-      isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      if (!permit("edit")) {
+        isLocked = true;
+      } else {
+        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      }
     }
   });
   dialogAction = action || "add";
@@ -832,8 +779,8 @@ async function onInitI18ns() {
     "订单号",
     "订单状态",
     "用户",
-    "订单金额",
     "会员卡",
+    "订单金额",
     "订单类型",
     "消费充值金额",
     "消费赠送金额",

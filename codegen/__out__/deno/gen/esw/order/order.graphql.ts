@@ -23,12 +23,12 @@ type OrderModel {
   usr_id: String!
   "用户"
   usr_id_lbl: UsrId
-  "订单金额"
-  price: Decimal!
   "会员卡"
   card_id: String!
   "会员卡"
   card_id_lbl: CardId
+  "订单金额"
+  price: Decimal!
   "订单类型"
   type: OrderType
   "订单类型"
@@ -85,12 +85,12 @@ type OrderFieldComment {
   usr_id: String!
   "用户"
   usr_id_lbl: String!
-  "订单金额"
-  price: String!
   "会员卡"
   card_id: String!
   "会员卡"
   card_id_lbl: String!
+  "订单金额"
+  price: String!
   "订单类型"
   type: String!
   "订单类型"
@@ -145,12 +145,12 @@ input OrderInput {
   usr_id: String
   "用户"
   usr_id_lbl: UsrId
-  "订单金额"
-  price: Decimal
   "会员卡"
   card_id: String
   "会员卡"
   card_id_lbl: CardId
+  "订单金额"
+  price: Decimal
   "订单类型"
   type: OrderType
   "订单类型"
@@ -207,11 +207,11 @@ input OrderSearch {
   "用户"
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
-  "订单金额"
-  price: [Decimal!]
   "会员卡"
   card_id: [CardId!]
   card_id_is_null: Boolean
+  "订单金额"
+  price: [Decimal!]
   "订单类型"
   type: [String!]
   "消费充值金额"

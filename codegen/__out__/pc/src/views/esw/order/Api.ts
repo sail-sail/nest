@@ -41,9 +41,9 @@ export async function findAll(
           status_lbl
           usr_id
           usr_id_lbl
-          price
           card_id
           card_id_lbl
+          price
           type
           type_lbl
           amt
@@ -105,9 +105,9 @@ export async function findOne(
           status_lbl
           usr_id
           usr_id_lbl
-          price
           card_id
           card_id_lbl
+          price
           type
           type_lbl
           amt
@@ -249,9 +249,9 @@ export async function findById(
           status_lbl
           usr_id
           usr_id_lbl
-          price
           card_id
           card_id_lbl
+          price
           type
           type_lbl
           amt
@@ -531,8 +531,8 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsOrder {
             status_lbl
             usr_id_lbl
-            price
             card_id_lbl
+            price
             type_lbl
             rem
           }
@@ -599,9 +599,9 @@ export function useExportExcel(routePath: string) {
             status_lbl
             usr_id
             usr_id_lbl
-            price
             card_id
             card_id_lbl
+            price
             type
             type_lbl
             amt
@@ -627,8 +627,8 @@ export function useExportExcel(routePath: string) {
             lbl
             status_lbl
             usr_id_lbl
-            price
             card_id_lbl
+            price
             type_lbl
             amt
             give_amt

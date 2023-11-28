@@ -146,14 +146,6 @@ async function getWhereQuery(
   if (search?.usr_id_is_null) {
     whereQuery += ` and usr_id_lbl.id is null`;
   }
-  if (search?.price && search?.price?.length > 0) {
-    if (search.price[0] != null) {
-      whereQuery += ` and t.price >= ${ args.push(search.price[0]) }`;
-    }
-    if (search.price[1] != null) {
-      whereQuery += ` and t.price <= ${ args.push(search.price[1]) }`;
-    }
-  }
   if (search?.card_id && !Array.isArray(search?.card_id)) {
     search.card_id = [ search.card_id ];
   }
@@ -165,6 +157,14 @@ async function getWhereQuery(
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and card_id_lbl.id is null`;
+  }
+  if (search?.price && search?.price?.length > 0) {
+    if (search.price[0] != null) {
+      whereQuery += ` and t.price >= ${ args.push(search.price[0]) }`;
+    }
+    if (search.price[1] != null) {
+      whereQuery += ` and t.price <= ${ args.push(search.price[1]) }`;
+    }
   }
   if (search?.type && !Array.isArray(search?.type)) {
     search.type = [ search.type ];
@@ -605,9 +605,9 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
     status_lbl: await n("订单状态"),
     usr_id: await n("用户"),
     usr_id_lbl: await n("用户"),
-    price: await n("订单金额"),
     card_id: await n("会员卡"),
     card_id_lbl: await n("会员卡"),
+    price: await n("订单金额"),
     type: await n("订单类型"),
     type_lbl: await n("订单类型"),
     amt: await n("消费充值金额"),
@@ -1007,11 +1007,11 @@ export async function create(
   if (input.usr_id !== undefined) {
     sql += `,usr_id`;
   }
-  if (input.price !== undefined) {
-    sql += `,price`;
-  }
   if (input.card_id !== undefined) {
     sql += `,card_id`;
+  }
+  if (input.price !== undefined) {
+    sql += `,price`;
   }
   if (input.type !== undefined) {
     sql += `,type`;
@@ -1083,11 +1083,11 @@ export async function create(
   if (input.usr_id !== undefined) {
     sql += `,${ args.push(input.usr_id) }`;
   }
-  if (input.price !== undefined) {
-    sql += `,${ args.push(input.price) }`;
-  }
   if (input.card_id !== undefined) {
     sql += `,${ args.push(input.card_id) }`;
+  }
+  if (input.price !== undefined) {
+    sql += `,${ args.push(input.price) }`;
   }
   if (input.type !== undefined) {
     sql += `,${ args.push(input.type) }`;
@@ -1284,15 +1284,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.price !== undefined) {
-    if (input.price != oldModel.price) {
-      sql += `price = ${ args.push(input.price) },`;
-      updateFldNum++;
-    }
-  }
   if (input.card_id !== undefined) {
     if (input.card_id != oldModel.card_id) {
       sql += `card_id = ${ args.push(input.card_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.price !== undefined) {
+    if (input.price != oldModel.price) {
+      sql += `price = ${ args.push(input.price) },`;
       updateFldNum++;
     }
   }

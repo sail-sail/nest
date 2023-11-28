@@ -9,8 +9,6 @@ scalar CardConsumeId
 type CardConsumeModel {
   "ID"
   id: String!
-  "微信支付订单号"
-  transaction_id: String!
   "卡号"
   card_id: String!
   "卡号"
@@ -53,8 +51,6 @@ type CardConsumeModel {
 type CardConsumeFieldComment {
   "ID"
   id: String!
-  "微信支付订单号"
-  transaction_id: String!
   "卡号"
   card_id: String!
   "卡号"
@@ -95,8 +91,6 @@ type CardConsumeFieldComment {
 input CardConsumeInput {
   ""
   id: CardConsumeId
-  "微信支付订单号"
-  transaction_id: String
   "卡号"
   card_id: String
   "卡号"
@@ -141,9 +135,6 @@ input CardConsumeSearch {
   ids: [String]
   "ID"
   id: CardConsumeId
-  "微信支付订单号"
-  transaction_id: String
-  transaction_id_like: String
   "卡号"
   card_id: [CardId!]
   card_id_is_null: Boolean
