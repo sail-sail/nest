@@ -2004,18 +2004,7 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}
-
-watch(
-  () => inited,
-  async () => {
-    if (!inited) {
-      return;
-    }
-    await nextTick();
-    customDialogRef?.focus();
-  },
-);<#
+}<#
 if (hasLocked) {
 #>
 

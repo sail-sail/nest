@@ -53,7 +53,8 @@ export async function request<T>(
       body,
     });
     if (resFt.status !== 200) {
-      throw resFt;
+      const errMsg = resFt.statusText || resFt.status.toString();
+      throw errMsg;
     }
     const data = await resFt.json();
     res = {
@@ -76,7 +77,7 @@ export async function request<T>(
     usrStore.refreshToken(authorization);
   }
   
-  if (err && (!config || config.showErrMsg !== false)) {
+  if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
     if (errMsg) {
       ElMessage({
