@@ -13,6 +13,12 @@ export const wxwMsgId = Symbol.for("WxwMsgId");
 export type WxwMsgId = typeof wxwMsgId;
 
 export interface WxwMsgSearch extends WxwMsgSearchType {
+  /** 链接 */
+  url?: string;
+  url_like?: string;
+  /** 消息ID */
+  msgid?: string;
+  msgid_like?: string;
   tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
