@@ -176,6 +176,18 @@ async fn get_where_query(
     if let Some(route_query) = route_query {
       where_query += &format!(" and t.route_query = {}", args.push(route_query.into()));
     }
+    let route_query_like = match &search {
+      Some(item) => item.route_query_like.clone(),
+      None => None,
+    };
+    if let Some(route_query_like) = route_query_like {
+      where_query += &format!(
+        " and t.route_query like {}",
+        args.push(
+          format!("%{}%", sql_like(&route_query_like)).into()
+        ),
+      );
+    }
   }
   {
     let is_locked: Vec<u8> = match &search {
