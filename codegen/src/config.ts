@@ -542,6 +542,11 @@ export interface TableCloumn {
   readonly?: boolean,
   
   /**
+   * readonly 时的占位符
+   */
+  readonlyPlaceholder?: string,
+  
+  /**
    * 搜索时是否允许多选, 默认为true
    */
   searchMultiple?: boolean,

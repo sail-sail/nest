@@ -747,6 +747,13 @@ export async function validate(
     fieldComments.route_path,
   );
   
+  // 参数
+  await validators.chars_max_length(
+    input.route_query,
+    200,
+    fieldComments.route_query,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,

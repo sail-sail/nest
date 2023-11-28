@@ -190,6 +190,29 @@ async function beforeClose(done: (cancel: boolean) => void) {
   }
 }
 
+watch(
+  () => dialogRef?.dialogContentRef?.$el,
+  () => {
+    if (!dialogRef?.dialogContentRef?.$el) {
+      return;
+    }
+    const dialogEl = dialogRef.dialogContentRef.$el as HTMLElement;
+    const closeBut = dialogEl.querySelector(".el-dialog__header>.el-dialog__headerbtn");
+    if (closeBut) {
+      closeBut.setAttribute("tabindex", "-1");
+    }
+  },
+);
+
+onUnmounted(() => {
+  if (titleWatchHandle) {
+    titleWatchHandle();
+  }
+  if (noticeWatchHandle) {
+    noticeWatchHandle();
+  }
+});
+
 defineExpose({
   showDialog,
   focus,

@@ -1,6 +1,6 @@
-import {
-  type Query,
-  type QueryGetOptionsByLblArgs,
+import type {
+  Query,
+  QueryGetOptionsByLblArgs,
 } from "#/types";
 
 /**

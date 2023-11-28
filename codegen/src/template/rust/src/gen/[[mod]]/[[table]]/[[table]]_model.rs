@@ -236,6 +236,7 @@ pub struct <#=tableUP#>Model {<#
     if (is_nullable) {
       _data_type = "Option<"+_data_type+">";
     }
+    const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
     if (column_name === "id") {
   #>
@@ -243,21 +244,51 @@ pub struct <#=tableUP#>Model {<#
   pub id: <#=Table_Up#>Id,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: <#=_data_type#>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Vec<String>,<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: <#=_data_type#>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: String,<#
     } else if (data_type === "date" || data_type === "datetime") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: <#=_data_type#>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: String,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz) {
       let enumColumnName = _data_type;
@@ -269,9 +300,19 @@ pub struct <#=tableUP#>Model {<#
         enumColumnName = Table_Up + Column_Up;
       }
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: <#=enumColumnName#>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
@@ -637,18 +678,34 @@ pub struct <#=tableUP#>FieldComment {<#
     if (isPassword) continue;
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
+    const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime"
     ) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name_rust#>: String,
-  /// <#=column_comment#>
+  pub <#=column_name_rust#>: String,<#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: String,<#
     }
   #><#
@@ -744,18 +801,39 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'decimal') {
       _data_type = "rust_decimal::Decimal";
     }
+    const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz) {
       let enumColumnName = _data_type;
@@ -767,29 +845,64 @@ pub struct <#=tableUP#>Search {
         enumColumnName = Table_Up + Column_Up;
       }
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>>,<#
     } else if (foreignKey) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "tinyint") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     }
   #><#
@@ -893,6 +1006,7 @@ pub struct <#=tableUP#>Input {
     if (column_name === "id") {
       _data_type = "String";
     }
+    const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
     if (selectList.length > 0 || column.dict || column.dictbiz) {
       let enumColumnName = _data_type;
@@ -904,31 +1018,76 @@ pub struct <#=tableUP#>Input {
         enumColumnName = Table_Up + Column_Up;
       }
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=enumColumnName#>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Option<String>,<#
     } else if (foreignKey && foreignKey?.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if (foreignKey && !foreignKey?.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Option<String>,<#
   } else if (data_type === "date" || data_type === "datetime") {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
   }
   #><#
