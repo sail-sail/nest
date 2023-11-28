@@ -1,0 +1,198 @@
+import { defineGraphql } from "/lib/context.ts";
+
+import * as resolver from "./card_recharge.resolver.ts";
+
+defineGraphql(resolver, /* GraphQL */ `
+scalar CardRechargeId
+
+
+type CardRechargeModel {
+  "ID"
+  id: String!
+  "微信支付订单号"
+  transaction_id: String!
+  "会员卡"
+  card_id: String!
+  "会员卡"
+  card_id_lbl: CardId
+  "用户"
+  usr_id: String!
+  "用户"
+  usr_id_lbl: UsrId
+  "充值金额"
+  amt: Decimal!
+  "赠送金额"
+  give_amt: Decimal!
+  "充值后充值余额"
+  balance: Decimal!
+  "充值后赠送余额"
+  give_balance: Decimal!
+  "充值后积分"
+  integral: Int!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
+}
+type CardRechargeFieldComment {
+  "ID"
+  id: String!
+  "微信支付订单号"
+  transaction_id: String!
+  "会员卡"
+  card_id: String!
+  "会员卡"
+  card_id_lbl: String!
+  "用户"
+  usr_id: String!
+  "用户"
+  usr_id_lbl: String!
+  "充值金额"
+  amt: String!
+  "赠送金额"
+  give_amt: String!
+  "充值后充值余额"
+  balance: String!
+  "充值后赠送余额"
+  give_balance: String!
+  "充值后积分"
+  integral: String!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
+}
+input CardRechargeInput {
+  ""
+  id: CardRechargeId
+  "微信支付订单号"
+  transaction_id: String
+  "会员卡"
+  card_id: String
+  "会员卡"
+  card_id_lbl: CardId
+  "用户"
+  usr_id: String
+  "用户"
+  usr_id_lbl: UsrId
+  "充值金额"
+  amt: Decimal
+  "赠送金额"
+  give_amt: Decimal
+  "充值后充值余额"
+  balance: Decimal
+  "充值后赠送余额"
+  give_balance: Decimal
+  "充值后积分"
+  integral: Int
+  "备注"
+  rem: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: UsrId
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: UsrId
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
+}
+input CardRechargeSearch {
+  "是否已删除"
+  is_deleted: Int
+  "ID列表"
+  ids: [String]
+  "ID"
+  id: CardRechargeId
+  "微信支付订单号"
+  transaction_id: String
+  transaction_id_like: String
+  "会员卡"
+  card_id: [CardId!]
+  card_id_is_null: Boolean
+  "用户"
+  usr_id: [UsrId!]
+  usr_id_is_null: Boolean
+  "充值金额"
+  amt: [Decimal!]
+  "赠送金额"
+  give_amt: [Decimal!]
+  "充值后充值余额"
+  balance: [Decimal!]
+  "充值后赠送余额"
+  give_balance: [Decimal!]
+  "充值后积分"
+  integral: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
+  "创建人"
+  create_usr_id: [UsrId!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [UsrId!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
+}
+type Query {
+  "根据条件查找据数总数"
+  findCountCardRecharge(search: CardRechargeSearch): Int!
+  "根据搜索条件和分页查找数据"
+  findAllCardRecharge(search: CardRechargeSearch, page: PageInput, sort: [SortInput!]): [CardRechargeModel!]!
+  "获取字段对应的名称"
+  getFieldCommentsCardRecharge: CardRechargeFieldComment!
+  "根据条件查找第一条数据"
+  findOneCardRecharge(search: CardRechargeSearch, sort: [SortInput!]): CardRechargeModel
+  "根据id查找一条数据"
+  findByIdCardRecharge(id: String!): CardRechargeModel
+}
+type Mutation {
+  "根据 ids 删除数据"
+  deleteByIdsCardRecharge(ids: [String!]!): Int!
+  "根据 ids 还原数据"
+  revertByIdsCardRecharge(ids: [String!]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsCardRecharge(ids: [String!]!): Int!
+}
+
+`);
