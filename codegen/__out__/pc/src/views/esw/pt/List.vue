@@ -1025,6 +1025,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "简介",
       prop: "introduct",
+      width: 280,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1032,7 +1033,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "详情",
       prop: "detail",
-      width: 200,
+      width: 280,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

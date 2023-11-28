@@ -78,7 +78,8 @@
             <CustomInput
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('卡号') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
+              readonly-placeholder="(自动生成)"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -197,7 +198,7 @@
               :max="99999999999.99"
               :precision="2"
               :placeholder="`${ ns('请输入') } ${ n('累计消费') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -357,18 +358,6 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 卡号
-    lbl: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("卡号") }`,
-      },
-      {
-        type: "string",
-        max: 22,
-        message: `${ n("卡号") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
-      },
-    ],
     // 绑定用户
     usr_id: [
       {
@@ -434,6 +423,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: CardInput = {
+    grade: "normal",
     balance: "0.00",
     give_balance: "0.00",
     integral: 0,
@@ -485,10 +475,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    if (!permit("edit")) {
-      isLocked = true;
+    
+    if (dialogAction === "add") {
+      isLocked = false;
     } else {
-      isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      if (!permit("edit")) {
+        isLocked = true;
+      } else {
+        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+      }
     }
   });
   dialogAction = action || "add";

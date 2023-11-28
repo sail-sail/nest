@@ -9,8 +9,6 @@ scalar CardRechargeId
 type CardRechargeModel {
   "ID"
   id: String!
-  "微信支付订单号"
-  transaction_id: String!
   "会员卡"
   card_id: String!
   "会员卡"
@@ -53,8 +51,6 @@ type CardRechargeModel {
 type CardRechargeFieldComment {
   "ID"
   id: String!
-  "微信支付订单号"
-  transaction_id: String!
   "会员卡"
   card_id: String!
   "会员卡"
@@ -95,8 +91,6 @@ type CardRechargeFieldComment {
 input CardRechargeInput {
   ""
   id: CardRechargeId
-  "微信支付订单号"
-  transaction_id: String
   "会员卡"
   card_id: String
   "会员卡"
@@ -141,9 +135,6 @@ input CardRechargeSearch {
   ids: [String]
   "ID"
   id: CardRechargeId
-  "微信支付订单号"
-  transaction_id: String
-  transaction_id_like: String
   "会员卡"
   card_id: [CardId!]
   card_id_is_null: Boolean

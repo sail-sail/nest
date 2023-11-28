@@ -4,9 +4,9 @@
 export async function getTestPayOpt(
   appid: string,
 ) {
-  const {
-    getTestPayOpt,
-  } = await import("./pay_transactions_jsapi.service.ts");
-  const data = await getTestPayOpt(appid);
-  return data;
+  // const {
+  //   getTestPayOpt,
+  // } = await import("./pay_transactions_jsapi.service.ts");
+  // const data = await getTestPayOpt(appid);
+  // return data;
 }

@@ -41,6 +41,36 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.name == null && (showBuildIn || builtInSearch?.name_like == null)">
+        <el-form-item
+          :label="n('姓名')"
+          prop="name_like"
+        >
+          <el-input
+            v-model="search.name_like"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('姓名') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template>
+      
+      <template v-if="builtInSearch?.mobile == null && (showBuildIn || builtInSearch?.mobile_like == null)">
+        <el-form-item
+          :label="n('电话')"
+          prop="mobile_like"
+        >
+          <el-input
+            v-model="search.mobile_like"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('电话') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -1407,7 +1437,6 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("卡号") ]: "lbl",
     [ await nAsync("绑定用户") ]: "usr_id_lbl",
     [ await nAsync("会员等级") ]: "grade_lbl",
     [ await nAsync("姓名") ]: "name",
@@ -1415,7 +1444,6 @@ async function onImportExcel() {
     [ await nAsync("充值余额") ]: "balance",
     [ await nAsync("赠送余额") ]: "give_balance",
     [ await nAsync("积分") ]: "integral",
-    [ await nAsync("累计消费") ]: "growth_amt",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1441,7 +1469,6 @@ async function onImportExcel() {
       header,
       {
         key_types: {
-          "lbl": "string",
           "usr_id_lbl": "string",
           "grade_lbl": "string",
           "name": "string",
@@ -1449,7 +1476,6 @@ async function onImportExcel() {
           "balance": "string",
           "give_balance": "string",
           "integral": "number",
-          "growth_amt": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
