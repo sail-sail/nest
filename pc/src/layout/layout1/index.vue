@@ -322,8 +322,8 @@ import {
 import {
   getLoginLangs,
 } from "../Api";
-import tabs from "@/store/tabs";
-import router from "@/router";
+
+const router = useRouter();
 
 const {
   n,
