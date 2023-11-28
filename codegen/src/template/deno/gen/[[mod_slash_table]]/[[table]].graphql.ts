@@ -72,7 +72,7 @@ type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    // if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -236,6 +236,7 @@ type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -301,7 +302,7 @@ input <#=inputName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    // if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     const foreignKey = column.foreignKey;
@@ -457,6 +458,7 @@ input <#=searchName#> {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
@@ -519,30 +521,10 @@ input <#=searchName#> {
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
     }
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (selectList.length > 0) {
-      data_type = '['+data_type+'!]';
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
     if (column_name === 'id') {
-      column_comment = 'String';
+      column_comment = 'ID';
     }
-    if (selectList.length > 0) {
-      if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
-        data_type = "[Int!]";
-      } else {
-        data_type = "[String!]";
-      }
-    } else if (column.dict || column.dictbiz) {
+    if (column.dict || column.dictbiz) {
       if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
         data_type = "[Int!]";
       } else {
@@ -555,10 +537,6 @@ input <#=searchName#> {
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
   <#=column_name#>_is_null: Boolean<#
-    } else if (selectList && selectList.length > 0) {
-  #>
-  "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#><#
     } else if (column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
@@ -597,8 +575,8 @@ type <#=Table_Up#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    // if (column.onlyCodegenDeno) continue;
+    // if (column.isVirtual) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;

@@ -392,6 +392,7 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    
     if (!permit("edit")) {
       isLocked = true;
     } else {
@@ -459,17 +460,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => inited,
-  async () => {
-    if (!inited) {
-      return;
-    }
-    await nextTick();
-    customDialogRef?.focus();
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {

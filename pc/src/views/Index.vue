@@ -110,7 +110,7 @@ async function closeCurrentTab() {
     },
     true,
   );
-  await tabStore.refreshTab();
+  await tabStore.refreshTab(route);
 }
 
 async function initFrame() {
