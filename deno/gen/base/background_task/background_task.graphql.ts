@@ -6,9 +6,27 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar BackgroundTaskId
 
 "后台任务状态"
-scalar BackgroundTaskState
+enum BackgroundTaskState {
+  "运行中"
+  running
+  "成功"
+  success
+  "失败"
+  fail
+  "取消"
+  cancel
+}
 "后台任务类型"
-scalar BackgroundTaskType
+enum BackgroundTaskType {
+  "文本"
+  text
+  "下载"
+  download
+  "查看"
+  inline
+  "标签"
+  tag
+}
 
 type BackgroundTaskModel {
   "ID"

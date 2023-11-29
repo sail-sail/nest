@@ -60,9 +60,31 @@ for (let i = 0; i < columns.length; i++) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const enumColumnName = Table_Up + Column_Up;
+    const columnDictModels = [
+      ...dictModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+      ...dictbizModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+    ];
+#><#
+    if (columnDictModels.length > 0) {
 #>
 "<#=table_comment#><#=column_comment#>"
-scalar <#=enumColumnName#><#
+enum <#=enumColumnName#> {<#
+    for (let i = 0; i < columnDictModels.length; i++) {
+      const columnDictModel = columnDictModels[i];
+      const val = columnDictModel.val;
+      const lbl = columnDictModel.lbl;
+#>
+  "<#=lbl#>"
+  <#=val#><#
+    }
+#>
+}<#
+    }
+#><#
   }
   #><#
 }
@@ -173,7 +195,15 @@ type <#=modelName#> {<#
   <#=column_name#>_lbl: String!<#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -394,7 +424,15 @@ input <#=inputName#> {<#
   <#=column_name#>_lbl: <#=_data_type#><#
     } else if (selectList.length > 0 || column.dict || column.dictbiz) {
       let enumColumnName = data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);

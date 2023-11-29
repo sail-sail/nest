@@ -84,7 +84,8 @@ const config: CodegenConfig = {
           "NaiveDateTime": {
             "input": "string",
             "output": "string"
-          }
+          },
+          ...scalars,
         }
       }
     },
@@ -123,7 +124,8 @@ const config: CodegenConfig = {
           "NaiveDateTime": {
             "input": "string",
             "output": "string"
-          }
+          },
+          ...scalars,
         }
       }
     }
