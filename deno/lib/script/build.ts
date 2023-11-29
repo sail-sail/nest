@@ -26,7 +26,7 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.mkdir(`${ buildDir }/`, { recursive: true });
+  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
   await Deno.copyFile(denoDir+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
   await Deno.copyFile(denoDir+"/.env.prod", `${ buildDir }/.env.prod`);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
