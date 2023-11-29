@@ -31,6 +31,7 @@
     "unocss.root": "",
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
-    "deno.suggest.autoImports": false
+    "deno.suggest.autoImports": false,
+    "rust-analyzer.inlayHints.parameterHints.enable": false
   }
 }
