@@ -1,13 +1,19 @@
 use anyhow::Result;
 // use crate::common::context::get_auth_tenant_id;
 
-use crate::gen::base::tenant::tenant_dao;
+use crate::gen::base::tenant::tenant_dao::{
+  find_all as find_all_tenant,
+  del_cache as del_cache_tenant,
+};
 use crate::gen::base::tenant::tenant_model::{
   TenantSearch,
   TenantModel,
 };
 
-use crate::gen::base::domain::domain_dao;
+use crate::gen::base::domain::domain_dao::{
+  find_all as find_all_domain,
+  del_cache as del_cache_domain,
+};
 use crate::gen::base::domain::domain_model::{
   DomainSearch,
   DomainModel,
@@ -46,14 +52,13 @@ use crate::gen::base::domain::domain_model::{
 // }
 
 /// 根据 当前网址的域名+端口 获取 租户列表
-#[allow(unused_variables)]
 pub async fn get_login_tenants(
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   
-  let domain_models: Vec<DomainModel> = domain_dao::find_all(
+  let mut domain_models: Vec<DomainModel> = find_all_domain(
     DomainSearch {
-      lbl: domain.into(),
+      lbl: domain.clone().into(),
       is_enabled: vec![1].into(),
       ..Default::default()
     }.into(),
@@ -62,13 +67,43 @@ pub async fn get_login_tenants(
     None,
   ).await?;
   
-  let res: Vec<TenantModel> = if domain_models.is_empty() {
-    vec![]
-  } else {
-    let domain_ids: Vec<DomainId> = domain_models.into_iter()
-      .map(|x| x.id)
-      .collect();
-    tenant_dao::find_all(
+  if domain_models.is_empty() {
+    del_cache_domain().await?;
+    domain_models = find_all_domain(
+      DomainSearch {
+        lbl: domain.into(),
+        is_enabled: vec![1].into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+  }
+  
+  let domain_ids: Vec<DomainId> = domain_models
+    .into_iter()
+    .map(|x| x.id)
+    .collect();
+  
+  if domain_ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let mut tenant_models = find_all_tenant(
+    TenantSearch {
+      domain_ids: domain_ids.clone().into(),
+      is_enabled: vec![1].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  if tenant_models.is_empty() {
+    del_cache_tenant().await?;
+    tenant_models = find_all_tenant(
       TenantSearch {
         domain_ids: domain_ids.into(),
         is_enabled: vec![1].into(),
@@ -77,8 +112,10 @@ pub async fn get_login_tenants(
       None,
       None,
       None,
-    ).await?
-  };
+    ).await?;
+  }
+  
+  let res: Vec<TenantModel> = tenant_models;
   
   Ok(res)
 }
