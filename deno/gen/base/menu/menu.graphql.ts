@@ -6,7 +6,12 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar MenuId
 
 "菜单类型"
-scalar MenuType
+enum MenuType {
+  "电脑端"
+  pc
+  "手机端"
+  mobile
+}
 
 type MenuModel {
   "ID"

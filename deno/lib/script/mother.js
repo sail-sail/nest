@@ -46,6 +46,8 @@ function watchFn() {
         `${ pjPath }/*.diff`,
         `${ pjPath }/*.md`,
         `${ pjPath }/error.js`,
+        `${ pjPath }/**/*.dao.ts`,
+        `${ pjPath }/**/*.service.ts`,
       ],
       ignoreInitial: true,
     },
@@ -208,6 +210,7 @@ function start() {
   // }
   const arr = [
     "run",
+    "--unstable-hmr",
     "--inspect",
     "--unstable",
     "-A",
@@ -221,7 +224,7 @@ function start() {
     "./mod.ts",
   ];
   console.log("deno " + arr.join(" "));
-  const startTime = Date.now();
+  // const startTime = Date.now();
   ls = child_process.spawn(
     "deno",
     arr,
@@ -236,10 +239,10 @@ function start() {
     data = data.toString();
     data = data.substring(0, data.length-1);
     console.log(data);
-    if (data.startsWith("app started: ")) {
-      const endTime = Date.now();
-      console.log(`重启耗时: ${ endTime - startTime } ms`);
-    }
+    // if (data.startsWith("app started: ")) {
+    //   const endTime = Date.now();
+    //   console.log(`重启耗时: ${ endTime - startTime } ms`);
+    // }
   });
   ls.stderr.on("data", function(data) {
     data = data.toString();
