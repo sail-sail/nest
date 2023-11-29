@@ -44,6 +44,11 @@ async fn main() -> Result<(), std::io::Error> {
   if std::env::var_os("RUST_LOG").is_none() {
     std::env::set_var("RUST_LOG", format!("{}=info", server_title));
   }
+  let git_hash = std::env::var_os("GIT_HASH");
+  if let Some(git_hash) = git_hash {
+    let git_hash = git_hash.to_str().unwrap();
+    info!("git_hash: {git_hash}");
+  }
   
   #[cfg(debug_assertions)]
   let _guard = {
