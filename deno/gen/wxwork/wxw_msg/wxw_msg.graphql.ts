@@ -5,8 +5,6 @@ import * as resolver from "./wxw_msg.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwMsgId
 
-"企微消息发送状态"
-scalar WxwMsgErrcode
 
 type WxwMsgModel {
   "ID"
@@ -16,7 +14,7 @@ type WxwMsgModel {
   "企微应用"
   wxw_app_id_lbl: WxwAppId
   "发送状态"
-  errcode: WxwMsgErrcode
+  errcode: String!
   "发送状态"
   errcode_lbl: String!
   "成员ID"
@@ -70,7 +68,7 @@ input WxwMsgInput {
   "企微应用"
   wxw_app_id_lbl: WxwAppId
   "发送状态"
-  errcode: WxwMsgErrcode
+  errcode: String
   "发送状态"
   errcode_lbl: String
   "成员ID"

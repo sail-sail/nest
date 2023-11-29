@@ -121,32 +121,27 @@ export const scalars = {
   },
   
   // 企微应用ID
-  "WxworkWxwAppId": {
-    "input": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxworkWxwAppId`,
-    "output": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxworkWxwAppId`,
+  "WxwAppId": {
+    "input": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxwAppId`,
+    "output": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxwAppId`,
   },
   
   // 企微应用接口凭据ID
-  "WxworkWxwAppTokenId": {
-    "input": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxworkWxwAppTokenId`,
-    "output": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxworkWxwAppTokenId`,
+  "WxwAppTokenId": {
+    "input": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxwAppTokenId`,
+    "output": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxwAppTokenId`,
   },
   
   // 企微消息ID
-  "WxworkWxwMsgId": {
-    "input": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxworkWxwMsgId`,
-    "output": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxworkWxwMsgId`,
-  },
-  // 企微消息发送状态
-  "WxworkWxwMsgErrcode": {
-    "input": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxworkWxwMsgErrcode`,
-    "output": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxworkWxwMsgErrcode`,
+  "WxwMsgId": {
+    "input": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxwMsgId`,
+    "output": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxwMsgId`,
   },
   
   // 企微用户ID
-  "WxworkWxwUsrId": {
-    "input": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxworkWxwUsrId`,
-    "output": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxworkWxwUsrId`,
+  "WxwUsrId": {
+    "input": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxwUsrId`,
+    "output": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxwUsrId`,
   },
   
 };
