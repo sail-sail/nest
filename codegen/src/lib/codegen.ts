@@ -429,11 +429,10 @@ export async function genRouter(context: Context) {
       } catch (err) {
       }
       if (str0 !== str2) {
+        if (file === "deno/lib/script/graphql_codegen_scalars.ts") {
+          graphqlHasChanged = true;
+        }
         await writeFile(`${ out }/${ file }`, str2);
-      }
-      try {
-        await unlink(`${ projectPh }/error.js`);
-      } catch (errTmp) {
       }
     } catch(err) {
       await writeFile(`${ projectPh }/error.js`, htmlStr);

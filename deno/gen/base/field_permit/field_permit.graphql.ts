@@ -6,7 +6,14 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar FieldPermitId
 
 "字段权限类型"
-scalar FieldPermitType
+enum FieldPermitType {
+  "可改"
+  editable
+  "隐藏"
+  hidden
+  "只读"
+  readonly
+}
 
 type FieldPermitModel {
   "ID"
