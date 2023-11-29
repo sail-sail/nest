@@ -24,7 +24,10 @@ use sqlx::pool::PoolConnection;
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
-use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
+use super::cache::cache_dao::{get_cache, set_cache, del_cache};
+
+pub use super::cache::cache_dao::del_caches;
+
 use super::gql::model::{SortInput, PageInput};
 
 pub use super::gql::model::UniqueType;
@@ -338,7 +341,13 @@ impl Ctx {
     
     if let Some(options) = &options {
       if let Some(del_cache_key1s) = &options.del_cache_key1s {
-        del_caches(del_cache_key1s).await?;
+        del_caches(
+          del_cache_key1s
+            .iter()
+            .map(|item| item.as_str())
+            .collect::<Vec<&str>>()
+            .as_slice()
+        ).await?;
       }
     }
     
@@ -504,7 +513,13 @@ impl Ctx {
       if rows_affected > 0 {
         if let Some(options) = &options {
           if let Some(del_cache_key1s) = &options.del_cache_key1s {
-            del_caches(del_cache_key1s).await?;
+            del_caches(
+              del_cache_key1s
+                .iter()
+                .map(|item| item.as_str())
+                .collect::<Vec<&str>>()
+                .as_slice()
+            ).await?;
           }
         }
       }
@@ -661,7 +676,13 @@ impl Ctx {
     if rows_affected > 0 {
       if let Some(options) = &options {
         if let Some(del_cache_key1s) = &options.del_cache_key1s {
-          del_caches(del_cache_key1s).await?;
+          del_caches(
+            del_cache_key1s
+              .iter()
+              .map(|item| item.as_str())
+              .collect::<Vec<&str>>()
+              .as_slice()
+          ).await?;
         }
       }
     }
