@@ -6,9 +6,23 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar DataPermitId
 
 "数据权限范围"
-scalar DataPermitScope
+enum DataPermitScope {
+  "创建人"
+  create
+  "本部门"
+  dept
+  "本角色"
+  role
+  "本租户"
+  tenant
+}
 "数据权限类型"
-scalar DataPermitType
+enum DataPermitType {
+  "只读"
+  readonly
+  "可改"
+  editable
+}
 
 type DataPermitModel {
   "ID"

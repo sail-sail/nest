@@ -6,7 +6,20 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar DictId
 
 "系统字典数据类型"
-scalar DictType
+enum DictType {
+  "字符串"
+  string
+  "数值"
+  number
+  "日期"
+  date
+  "日期时间"
+  datetime
+  "时间"
+  time
+  "布尔"
+  boolean
+}
 
 type DictModel {
   "ID"

@@ -60,9 +60,31 @@ for (let i = 0; i < columns.length; i++) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const enumColumnName = Table_Up + Column_Up;
+    const columnDictModels = [
+      ...dictModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+      ...dictbizModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+    ];
+#><#
+    if (columnDictModels.length > 0) {
 #>
 "<#=table_comment#><#=column_comment#>"
-scalar <#=enumColumnName#><#
+enum <#=enumColumnName#> {<#
+    for (let i = 0; i < columnDictModels.length; i++) {
+      const columnDictModel = columnDictModels[i];
+      const val = columnDictModel.val;
+      const lbl = columnDictModel.lbl;
+#>
+  "<#=lbl#>"
+  <#=val#><#
+    }
+#>
+}<#
+    }
+#><#
   }
   #><#
 }
