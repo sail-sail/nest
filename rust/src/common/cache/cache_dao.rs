@@ -84,7 +84,7 @@ pub async fn del_cache(
 }
 
 pub async fn del_caches(
-  del_cache_key1s: &Vec<String>,
+  del_cache_key1s: &[&str],
 ) -> Result<()> {
   if CACHE_POOL.is_none() {
     return Ok(());
@@ -93,10 +93,8 @@ pub async fn del_caches(
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   let mut pipe: redis::Pipeline = redis::pipe();
-  let mut pipe = pipe.atomic();
-  for del_cache_key1 in del_cache_key1s {
-    pipe = pipe.cmd("DEL").arg(&[del_cache_key1]).ignore();
-  }
+  let pipe = pipe.atomic();
+  pipe.cmd("DEL").arg(del_cache_key1s).ignore();
   pipe.query_async(&mut conn).await?;
   Ok(())
 }

@@ -27,6 +27,7 @@ use crate::common::context::{
   get_short_uuid,
   get_order_by_query,
   get_page_query,
+  del_caches,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -1364,7 +1365,13 @@ pub async fn update_by_id(
     let options = Options::from(None);
     let options = options.set_del_cache_key1s(get_foreign_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
+      del_caches(
+        del_cache_key1s
+          .iter()
+          .map(|item| item.as_str())
+          .collect::<Vec<&str>>()
+          .as_slice()
+      ).await?;
     }
   }
   
@@ -1381,6 +1388,16 @@ fn get_foreign_tables() -> Vec<&'static str> {
     "base_dept_usr",
     "base_usr",
   ]
+}
+
+/// 清空缓存
+#[allow(dead_code)]
+pub async fn del_cache() -> Result<()> {
+  let cache_key1s = get_foreign_tables();
+  del_caches(
+    cache_key1s.as_slice(),
+  ).await?;
+  Ok(())
 }
 
 /// 根据 ids 删除数据
