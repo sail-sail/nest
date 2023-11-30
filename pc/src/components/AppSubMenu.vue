@@ -45,6 +45,10 @@ import type {
   MenuModel as MenuModel0,
 } from "#/types";
 
+import type {
+  MenuId,
+} from "@/typings/ids";
+
 type MenuModel = MenuModel0 & {
   children: MenuModel[];
 }
@@ -52,7 +56,7 @@ type MenuModel = MenuModel0 & {
 const props = withDefaults(
   defineProps<{
     children: MenuModel[];
-    openedIndex: string[];
+    openedIndex: MenuId[];
     lvl?: number;
   }>(),
   {

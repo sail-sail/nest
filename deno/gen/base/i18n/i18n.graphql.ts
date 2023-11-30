@@ -8,15 +8,15 @@ scalar I18NId
 
 type I18Nmodel {
   "ID"
-  id: String!
+  id: I18NId!
   "语言"
-  lang_id: String!
+  lang_id: LangId!
   "语言"
-  lang_id_lbl: LangId
+  lang_id_lbl: String
   "菜单"
-  menu_id: String!
+  menu_id: MenuId!
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String!
   "名称"
@@ -24,17 +24,17 @@ type I18Nmodel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -80,13 +80,13 @@ input I18Ninput {
   ""
   id: I18NId
   "语言"
-  lang_id: String
+  lang_id: LangId
   "语言"
-  lang_id_lbl: LangId
+  lang_id_lbl: String
   "菜单"
-  menu_id: String
+  menu_id: MenuId
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String
   "名称"
@@ -94,17 +94,17 @@ input I18Ninput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -114,7 +114,7 @@ input I18Nsearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [I18NId!]
   "ID"
   id: I18NId
   "语言"
@@ -153,19 +153,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneI18N(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
   "根据id查找一条数据"
-  findByIdI18N(id: String!): I18Nmodel
+  findByIdI18N(id: I18NId!): I18Nmodel
 }
 type Mutation {
   "创建一条数据"
-  createI18N(model: I18Ninput!, unique_type: UniqueType): String!
+  createI18N(model: I18Ninput!, unique_type: UniqueType): I18NId!
   "根据id修改一条数据"
-  updateByIdI18N(id: String!, model: I18Ninput!): String!
+  updateByIdI18N(id: I18NId!, model: I18Ninput!): I18NId!
   "根据 ids 删除数据"
-  deleteByIdsI18N(ids: [String!]!): Int!
+  deleteByIdsI18N(ids: [I18NId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsI18N(ids: [String!]!): Int!
+  revertByIdsI18N(ids: [I18NId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsI18N(ids: [String!]!): Int!
+  forceDeleteByIdsI18N(ids: [I18NId!]!): Int!
 }
 
 `);

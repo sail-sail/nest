@@ -23,7 +23,7 @@ enum DictType {
 
 type DictModel {
   "ID"
-  id: String!
+  id: DictId!
   "编码"
   code: String!
   "名称"
@@ -45,17 +45,17 @@ type DictModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -129,17 +129,17 @@ input DictInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -151,7 +151,7 @@ input DictSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DictId!]
   "ID"
   id: DictId
   "编码"
@@ -192,25 +192,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneDict(search: DictSearch, sort: [SortInput!]): DictModel
   "根据id查找一条数据"
-  findByIdDict(id: String!): DictModel
+  findByIdDict(id: DictId!): DictModel
   "查找order_by字段的最大值"
   findLastOrderByDict: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDict(model: DictInput!, unique_type: UniqueType): String!
+  createDict(model: DictInput!, unique_type: UniqueType): DictId!
   "根据id修改一条数据"
-  updateByIdDict(id: String!, model: DictInput!): String!
+  updateByIdDict(id: DictId!, model: DictInput!): DictId!
   "根据 ids 删除数据"
-  deleteByIdsDict(ids: [String!]!): Int!
+  deleteByIdsDict(ids: [DictId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsDict(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsDict(ids: [DictId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDict(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsDict(ids: [DictId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDict(ids: [String!]!): Int!
+  revertByIdsDict(ids: [DictId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDict(ids: [String!]!): Int!
+  forceDeleteByIdsDict(ids: [DictId!]!): Int!
 }
 
 `);

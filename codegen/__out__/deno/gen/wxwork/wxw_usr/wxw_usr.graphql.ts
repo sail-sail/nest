@@ -8,7 +8,7 @@ scalar WxwUsrId
 
 type WxwUsrModel {
   "ID"
-  id: String!
+  id: WxwUsrId!
   "姓名"
   lbl: String!
   "用户ID"
@@ -42,7 +42,7 @@ input WxwUsrSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxwUsrId!]
   "ID"
   id: WxwUsrId
   "姓名"
@@ -65,19 +65,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxwUsr(search: WxwUsrSearch, sort: [SortInput!]): WxwUsrModel
   "根据id查找一条数据"
-  findByIdWxwUsr(id: String!): WxwUsrModel
+  findByIdWxwUsr(id: WxwUsrId!): WxwUsrModel
 }
 type Mutation {
   "创建一条数据"
-  createWxwUsr(model: WxwUsrInput!, unique_type: UniqueType): String!
+  createWxwUsr(model: WxwUsrInput!, unique_type: UniqueType): WxwUsrId!
   "根据id修改一条数据"
-  updateByIdWxwUsr(id: String!, model: WxwUsrInput!): String!
+  updateByIdWxwUsr(id: WxwUsrId!, model: WxwUsrInput!): WxwUsrId!
   "根据 ids 删除数据"
-  deleteByIdsWxwUsr(ids: [String!]!): Int!
+  deleteByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxwUsr(ids: [String!]!): Int!
+  revertByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxwUsr(ids: [String!]!): Int!
+  forceDeleteByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
 }
 
 `);

@@ -321,6 +321,11 @@ import {
 } from "./Api";
 
 import type {
+  UsrId,
+  OrgId,
+} from "@/typings/ids";
+
+import type {
   UsrInput,
   OrgModel,
   RoleModel,
@@ -339,7 +344,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: UsrId,
     },
   ],
 }>();
@@ -370,9 +375,9 @@ let dialogModel: UsrInput = $ref({
   role_ids: [ ],
 } as UsrInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<UsrId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -422,7 +427,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: UsrId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -462,8 +467,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: UsrId;
+      ids?: UsrId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -763,7 +768,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: UsrId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
@@ -811,7 +816,7 @@ async function onSave() {
 }
 
 let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
-let old_default_org_id: string | null | undefined = undefined;
+let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
   let org_ids = dialogModel.org_ids || [ ];

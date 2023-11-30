@@ -88,7 +88,12 @@ import {
 } from "./Api";
 
 import type {
+  DeptId,
+} from "@/typings/ids";
+
+import type {
   TreeNodeData,
+  TreeKey,
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
@@ -96,7 +101,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  parent_id?: string;
+  parent_id?: DeptId;
   showBuildIn?: string;
 }>();
 
@@ -114,7 +119,7 @@ watch(
   () => props.parent_id,
   async () => {
     parent_id = props.parent_id;
-    treeRef?.setCurrentKey(parent_id);
+    treeRef?.setCurrentKey(parent_id as unknown as TreeKey);
   },
   {
     immediate: true,
@@ -163,7 +168,7 @@ function nodeClass(data: TreeNodeData, _: any): string {
 }
 
 function getById(
-  id: string,
+  id: DeptId,
   data: ModelTree[],
 ): ModelTree | undefined {
   for (const item of data) {
@@ -183,7 +188,7 @@ async function onFindTree() {
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {
-      parent_id = "";
+      parent_id = undefined;
     }
   }
 }
@@ -194,7 +199,7 @@ async function onNode(model: ModelTree) {
 
 function beforeSearchReset() {
   search_value = "";
-  parent_id = "";
+  parent_id = undefined;
   treeRef?.setCurrentKey(undefined);
 }
 

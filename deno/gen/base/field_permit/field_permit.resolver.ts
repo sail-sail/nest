@@ -17,6 +17,7 @@ import type {
   FieldPermitModel,
   FieldPermitSearch,
   FieldPermitFieldComment,
+  FieldPermitId,
 } from "./field_permit.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneFieldPermit(
  * 根据 id 查找一条数据
  */
 export async function findByIdFieldPermit(
-  id: string,
+  id: FieldPermitId,
 ): Promise<FieldPermitModel | undefined> {
   const { findById } = await import("./field_permit.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdFieldPermit(
 export async function createFieldPermit(
   input: FieldPermitInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<FieldPermitId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createFieldPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: FieldPermitId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdFieldPermit(
-  id: string,
+  id: FieldPermitId,
   input: FieldPermitInput,
-): Promise<string> {
+): Promise<FieldPermitId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdFieldPermit(
     "/base/field_permit",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: FieldPermitId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsFieldPermit(
  * 根据 ids 还原数据
  */
 export async function revertByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsFieldPermit(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   const context = useContext();
   

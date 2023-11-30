@@ -13,6 +13,7 @@ import type {
   DomainModel,
   DomainSearch,
   DomainFieldComment,
+  DomainId,
 } from "./domain.model.ts";
 
 import * as domainDao from "./domain.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {DomainId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DomainId | null,
 ): Promise<DomainModel | undefined> {
   const model = await domainDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {DomainId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DomainId | null,
 ): Promise<boolean> {
   const data = await domainDao.existById(id);
   return data;
@@ -116,51 +117,51 @@ export async function validate(
 /**
  * 创建数据
  * @param {DomainInput} input
- * @return {Promise<string>} id
+ * @return {Promise<DomainId>} id
  */
 export async function create(
   input: DomainInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await domainDao.create(input, options);
-  return data;
+): Promise<DomainId> {
+  const id: DomainId = await domainDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {DomainId} id
  * @param {DomainInput} input
- * @return {Promise<string>}
+ * @return {Promise<DomainId>}
  */
 export async function updateById(
-  id: string,
+  id: DomainId,
   input: DomainInput,
-): Promise<string> {
+): Promise<DomainId> {
   
   const is_locked = await domainDao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const data = await domainDao.updateById(id, input);
-  return data;
+  const id2: DomainId = await domainDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: DomainId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: DomainId = ids[i];
       const is_locked = await domainDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -178,11 +179,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string} id
+ * @param {DomainId} id
  * @return {Promise<number>}
  */
 export async function defaultById(
-  id: string,
+  id: DomainId,
 ): Promise<number> {
   const data = await domainDao.defaultById(id);
   return data;
@@ -190,12 +191,12 @@ export async function defaultById(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DomainId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await domainDao.enableByIds(ids, is_enabled);
@@ -204,12 +205,12 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DomainId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await domainDao.lockByIds(ids, is_locked);
@@ -218,11 +219,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   const data = await domainDao.revertByIds(ids);
   return data;
@@ -230,11 +231,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   const data = await domainDao.forceDeleteByIds(ids);
   return data;

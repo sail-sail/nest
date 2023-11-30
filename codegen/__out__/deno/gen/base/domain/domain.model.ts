@@ -12,21 +12,25 @@ import type {
 export const domainId = Symbol.for("DomainId");
 export type DomainId = typeof domainId;
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 export interface DomainSearch extends DomainSearchType {
   $extra?: SearchExtra[];
 }
 
 export interface DomainModel extends DomainModelType {
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
 }
 
 export interface DomainInput extends DomainInputType {
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
 }

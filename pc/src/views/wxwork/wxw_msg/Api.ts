@@ -1,6 +1,8 @@
-import {
-  UniqueType,
-} from "#/types";
+
+
+import type {
+  WxwMsgId,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -136,18 +138,18 @@ export async function findCount(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {WxwMsgId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: WxwMsgId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdWxwMsg: Query["findByIdWxwMsg"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: WxwMsgId!) {
         findByIdWxwMsg(id: $id) {
           id
           wxw_app_id
@@ -175,18 +177,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsWxwMsg: Mutation["deleteByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwMsgId!]!) {
         deleteByIdsWxwMsg(ids: $ids)
       }
     `,
@@ -201,18 +203,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsWxwMsg: Mutation["revertByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwMsgId!]!) {
         revertByIdsWxwMsg(ids: $ids)
       }
     `,
@@ -227,18 +229,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsWxwMsg: Mutation["forceDeleteByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwMsgId!]!) {
         forceDeleteByIdsWxwMsg(ids: $ids)
       }
     `,

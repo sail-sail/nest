@@ -614,6 +614,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  I18NId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -669,13 +673,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    I18NId[],
   ],
   add: [
-    string[],
+    I18NId[],
   ],
   edit: [
-    string[],
+    I18NId[],
   ],
   remove: [
     number,
@@ -744,25 +748,19 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: I18NId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: I18NId; // ID
   lang_id?: string|string[]; // 语言
-  lang_id_lbl?: string|string[]; // 语言
+  lang_id_lbl?: string; // 语言
   menu_id?: string|string[]; // 菜单
-  menu_id_lbl?: string|string[]; // 菜单
+  menu_id_lbl?: string; // 菜单
   code?: string; // 编码
   code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -840,7 +838,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<I18Nmodel>(
+} = $(useSelect<I18Nmodel, I18NId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

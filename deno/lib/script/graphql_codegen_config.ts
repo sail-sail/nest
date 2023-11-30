@@ -1,5 +1,6 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
-import { scalars } from "./graphql_codegen_scalars.ts";
+import { getScalars } from "./graphql_codegen_scalars.ts";
+import { getScalars as getScalarsPC } from "./graphql_pc_ids.ts";
  
 const config: CodegenConfig = {
   "schema": [
@@ -45,7 +46,7 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
-          ...scalars,
+          ...getScalars(),
         }
       }
     },
@@ -85,7 +86,7 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
-          ...scalars,
+          ...getScalarsPC(),
         }
       }
     },
@@ -125,7 +126,7 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
-          ...scalars,
+          ...getScalarsPC(),
         }
       }
     }

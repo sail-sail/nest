@@ -62,17 +62,26 @@ import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import type {
-  UniqueType,
+import type {<#
+  if (opts.noAdd !== true) {
+  #>
+  UniqueType,<#
+  }
+  #>
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  <#=inputName#>,
+import type {<#
+  if (opts.noAdd !== true && opts.noEdit !== true) {
+  #>
+  <#=inputName#>,<#
+  }
+  #>
   <#=modelName#>,
   <#=searchName#>,
   <#=fieldCommentName#>,
+  <#=Table_Up#>Id,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -248,7 +257,7 @@ export async function findOne<#=Table_Up#>(
  * 根据 id 查找一条数据
  */
 export async function findById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
   const res = await findById(id);<#
@@ -290,7 +299,7 @@ if (opts.noAdd !== true) {
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
-): Promise<string> {<#
+): Promise<<#=Table_Up#>Id> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -356,11 +365,11 @@ export async function create<#=Table_Up#>(
   }
   #>
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });<#
+  const id: <#=Table_Up#>Id = await create(input, { uniqueType });<#
   if (log) {
   #>
   
-  const new_data = await findById(res);
+  const new_data = await findById(id);
   
   await log({
     module: "<#=mod#>_<#=table#>",
@@ -373,7 +382,7 @@ export async function create<#=Table_Up#>(
   });<#
   }
   #>
-  return res;
+  return id;
 }<#
 }
 #><#
@@ -384,9 +393,9 @@ if (opts.noEdit !== true) {
  * 根据id修改一条数据
  */
 export async function updateById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<string> {<#
+): Promise<<#=Table_Up#>Id> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -449,11 +458,11 @@ export async function updateById<#=Table_Up#>(
   const old_data = await findById<#=Table_Up#>(id);<#
   }
   #>
-  const res = await updateById(id, input);<#
+  const id2: <#=Table_Up#>Id = await updateById(id, input);<#
   if (log) {
   #>
   
-  const new_data = await findById(res);
+  const new_data = await findById(id2);
   
   await log({
     module: "<#=mod#>_<#=table#>",
@@ -466,7 +475,7 @@ export async function updateById<#=Table_Up#>(
   });<#
   }
   #>
-  return res;
+  return id2;
 }<#
 }
 #><#
@@ -477,7 +486,7 @@ if (opts.noDelete !== true) {
  * 根据 ids 删除数据
  */
 export async function deleteByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
   const {<#
@@ -532,7 +541,7 @@ export async function deleteByIds<#=Table_Up#>(
  * 根据 id 设置默认记录
  */
 export async function defaultById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<number> {
   
   const {
@@ -579,7 +588,7 @@ export async function defaultById<#=Table_Up#>(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -630,7 +639,7 @@ export async function enableByIds<#=Table_Up#>(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -684,7 +693,7 @@ if (opts.noDelete !== true) {
  * 根据 ids 还原数据
  */
 export async function revertByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
   const {
@@ -727,7 +736,7 @@ export async function revertByIds<#=Table_Up#>(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const context = useContext();
   

@@ -5,8 +5,8 @@ import * as menuResolver from "./menu.resolver.ts";
 defineGraphql(menuResolver, /* GraphQL */`
   
   type GetMenus {
-    id: String!
-    parent_id: String!
+    id: MenuId!
+    parent_id: MenuId!
     lbl: String!
     route_path: String
     route_query: String

@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  WxwMsgInput,
   WxwMsgModel,
   WxwMsgSearch,
   WxwMsgFieldComment,
+  WxwMsgId,
 } from "./wxw_msg.model.ts";
 
 import {
@@ -84,7 +83,7 @@ export async function findOneWxwMsg(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxwMsg(
-  id: string,
+  id: WxwMsgId,
 ): Promise<WxwMsgModel | undefined> {
   const { findById } = await import("./wxw_msg.service.ts");
   const res = await findById(id);
@@ -95,7 +94,7 @@ export async function findByIdWxwMsg(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxwMsg(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   
   const {
@@ -118,7 +117,7 @@ export async function deleteByIdsWxwMsg(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxwMsg(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   
   const {
@@ -141,7 +140,7 @@ export async function revertByIdsWxwMsg(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxwMsg(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   const context = useContext();
   

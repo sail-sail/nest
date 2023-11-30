@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  DeptId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -184,14 +189,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {DeptInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: DeptInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<DeptId> {
   const data: {
     createDept: Mutation["createDept"];
   } = await mutation({
@@ -205,27 +210,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createDept;
-  return res;
+  const id: DeptId = data.createDept;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {DeptId} id
  * @param {DeptInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: DeptId,
   model: DeptInput,
   opt?: GqlOpt,
-) {
+): Promise<DeptId> {
   const data: {
     updateByIdDept: Mutation["updateByIdDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: DeptInput!) {
+      mutation($id: DeptId!, $model: DeptInput!) {
         updateByIdDept(id: $id, model: $model)
       }
     `,
@@ -234,25 +239,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdDept;
-  return res;
+  const id2: DeptId = data.updateByIdDept;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {DeptId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: DeptId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdDept: Query["findByIdDept"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: DeptId!) {
         findByIdDept(id: $id) {
           id
           parent_id
@@ -288,18 +293,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DeptId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsDept: Mutation["deleteByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DeptId!]!) {
         deleteByIdsDept(ids: $ids)
       }
     `,
@@ -314,12 +319,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DeptId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -327,7 +332,7 @@ export async function enableByIds(
     enableByIdsDept: Mutation["enableByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [DeptId!]!, $is_enabled: Int!) {
         enableByIdsDept(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -343,12 +348,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DeptId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -356,7 +361,7 @@ export async function lockByIds(
     lockByIdsDept: Mutation["lockByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [DeptId!]!, $is_locked: Int!) {
         lockByIdsDept(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -372,18 +377,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DeptId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsDept: Mutation["revertByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DeptId!]!) {
         revertByIdsDept(ids: $ids)
       }
     `,
@@ -398,18 +403,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DeptId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsDept: Mutation["forceDeleteByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DeptId!]!) {
         forceDeleteByIdsDept(ids: $ids)
       }
     `,
