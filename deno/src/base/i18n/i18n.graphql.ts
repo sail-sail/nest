@@ -1,8 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as i18nResolvers from "./i18n.resolver.ts";
+import * as resolvers from "./i18n.resolver.ts";
 
-defineGraphql(i18nResolvers, /* GraphQL */`
+defineGraphql(resolvers, /* GraphQL */`
   
   type Query {
     "国际化"

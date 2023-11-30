@@ -763,6 +763,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  UsrId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -822,13 +826,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    UsrId[],
   ],
   add: [
-    string[],
+    UsrId[],
   ],
   edit: [
-    string[],
+    UsrId[],
   ],
   remove: [
     number,
@@ -898,9 +902,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: UsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: UsrId; // ID
   img?: string; // 头像
   img_like?: string; // 头像
   lbl?: string; // 名称
@@ -910,24 +914,18 @@ const props = defineProps<{
   password?: string; // 密码
   password_like?: string; // 密码
   org_ids?: string|string[]; // 所属组织
-  org_ids_lbl?: string|string[]; // 所属组织
+  org_ids_lbl?: string[]; // 所属组织
   default_org_id?: string|string[]; // 默认组织
-  default_org_id_lbl?: string|string[]; // 默认组织
+  default_org_id_lbl?: string; // 默认组织
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   dept_ids?: string|string[]; // 所属部门
-  dept_ids_lbl?: string|string[]; // 所属部门
+  dept_ids_lbl?: string[]; // 所属部门
   role_ids?: string|string[]; // 拥有角色
-  role_ids_lbl?: string|string[]; // 拥有角色
+  role_ids_lbl?: string[]; // 拥有角色
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -1014,7 +1012,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<UsrModel>(
+} = $(useSelect<UsrModel, UsrId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1554,7 +1552,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: UsrId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1576,7 +1574,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: UsrId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

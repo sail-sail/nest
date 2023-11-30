@@ -19,6 +19,14 @@ import {
   findOne as findOneWxApp,
   validateOption as validateOptionWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
+
+import type {
+  WxAppId,
+} from "/gen/wx/wx_app/wx_app.model.ts";
+
+import type {
+  WxAppTokenId,
+} from "/gen/wx/wx_app_token/wx_app_token.model.ts";
  
 export async function getAccessToken(
   appid: string,
@@ -29,7 +37,7 @@ export async function getAccessToken(
       appid,
     }),
   );
-  const wx_app_id = wx_appModel.id;
+  const wx_app_id: WxAppId = wx_appModel.id;
   const appsecret = wx_appModel.appsecret;
   
   const dateNow = dayjs();
@@ -65,7 +73,7 @@ export async function getAccessToken(
     );
     return access_token;
   }
-  const wx_app_token_id = wx_app_tokenModel.id;
+  const wx_app_token_id: WxAppTokenId = wx_app_tokenModel.id;
   let access_token = wx_app_tokenModel.access_token;
   const expires_in = wx_app_tokenModel.expires_in ?? 0;
   const token_time = dayjs(wx_app_tokenModel.token_time);

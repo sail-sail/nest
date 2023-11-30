@@ -365,15 +365,23 @@ import {
 } from "./Api";
 
 import type {
+  PayTransactionsJsapiId,
+} from "@/typings/ids";
+
+import type {
 } from "#/types";
 
 type PayTransactionsJsapiInput = any;
+
+import {
+  PayTransactionsJsapiTradeState,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: PayTransactionsJsapiId,
     },
   ],
 }>();
@@ -401,9 +409,9 @@ let dialogNotice = $ref("");
 let dialogModel: PayTransactionsJsapiInput = $ref({
 } as PayTransactionsJsapiInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<PayTransactionsJsapiId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<PayTransactionsJsapiId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -429,7 +437,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: PayTransactionsJsapiId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -451,7 +459,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: PayTransactionsJsapiInput = {
-    trade_state: "NOTPAY",
+    trade_state: PayTransactionsJsapiTradeState.NOTPAY,
     trade_state_desc: "未支付",
     support_fapiao: 0,
     total_fee: 0,
@@ -470,8 +478,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: PayTransactionsJsapiId;
+      ids?: PayTransactionsJsapiId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

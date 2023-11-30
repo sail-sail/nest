@@ -17,6 +17,7 @@ import type {
   WxAppTokenModel,
   WxAppTokenSearch,
   WxAppTokenFieldComment,
+  WxAppTokenId,
 } from "./wx_app_token.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxAppToken(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxAppToken(
-  id: string,
+  id: WxAppTokenId,
 ): Promise<WxAppTokenModel | undefined> {
   const { findById } = await import("./wx_app_token.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxAppToken(
 export async function createWxAppToken(
   input: WxAppTokenInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxAppTokenId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxAppToken(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxAppTokenId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxAppToken(
-  id: string,
+  id: WxAppTokenId,
   input: WxAppTokenInput,
-): Promise<string> {
+): Promise<WxAppTokenId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxAppToken(
     "/wx/wx_app_token",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxAppTokenId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxAppToken(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxAppToken(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxAppToken(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsWxAppToken(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxAppToken(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   const context = useContext();
   

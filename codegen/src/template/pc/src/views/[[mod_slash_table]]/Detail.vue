@@ -1162,6 +1162,15 @@ import {<#
   #>
 } from "./Api";
 
+import type {
+  <#=Table_Up#>Id,<#
+  if (mod === "base" && table === "usr") {
+  #>
+  OrgId,<#
+  }
+  #>
+} from "@/typings/ids";
+
 import type {<#
   if (opts?.noAdd !== true || opts?.noEdit !== true) {
   #>
@@ -1626,13 +1635,119 @@ let locale = $computed(() => {
   }
 });<#
 }
+#><#
+let hasDefaultValue = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_deleted") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (
+    [
+      "is_default",
+      "is_deleted",
+      "tenant_id",
+      "org_id",
+      "version",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+  if (!column.dict && !column.dictbiz) {
+    continue;
+  }
+  const columnDictModels = [
+    ...dictModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+    ...dictbizModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+  ];
+  if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
+    continue;
+  }
+  let defaultValue = column.COLUMN_DEFAULT.toString();
+  if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+    continue;
+  }
+  hasDefaultValue = true;
+  break;
+}
+#><#
+if (hasDefaultValue) {
+#>
+
+import {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_deleted") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (
+      [
+        "is_default",
+        "is_deleted",
+        "tenant_id",
+        "org_id",
+        "version",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+    if (!column.dict && !column.dictbiz) {
+      continue;
+    }
+    const columnDictModels = [
+      ...dictModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+      ...dictbizModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+    ];
+    if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
+      continue;
+    }
+    let defaultValue = column.COLUMN_DEFAULT.toString();
+    if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+      continue;
+    }
+    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+    Column_Up = Column_Up.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  <#=Table_Up#><#=Column_Up#>,<#
+  }
+  #>
+} from "#/types";<#
+}
 #>
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: <#=Table_Up#>Id,
     },
   ],
 }>();
@@ -1682,9 +1797,9 @@ let dialogModel: <#=inputName#> = $ref({<#
   #>
 } as <#=inputName#>);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -1863,7 +1978,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: <#=Table_Up#>Id[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -1915,6 +2030,9 @@ async function getDefaultInput() {
       }
       if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
       let defaultValue = column.COLUMN_DEFAULT.toString();
+      if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+        continue;
+      }
       if (selectList.length > 0) {
         if (typeof selectList[0].value === "string") {
           defaultValue = `"${ defaultValue }"`;
@@ -1943,6 +2061,23 @@ async function getDefaultInput() {
       if (data_type === "decimal") {
         defaultValue = `"${ defaultValue }"`;
       }
+      if (column.dict || column.dictbiz) {
+        const columnDictModels = [
+          ...dictModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+          ...dictbizModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+        ];
+        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+          Column_Up = Column_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          defaultValue = Table_Up + Column_Up + "." + column.COLUMN_DEFAULT.toString().substring(0, 1).toUpperCase() + column.COLUMN_DEFAULT.toString().substring(1);
+        }
+      }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
     }
@@ -1962,8 +2097,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: <#=Table_Up#>Id;
+      ids?: <#=Table_Up#>Id[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -2385,7 +2520,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: <#=Table_Up#>Id | undefined = undefined;
   let msg = "";<#
   if (opts.noAdd !== true) {
   #>
@@ -2499,7 +2634,7 @@ if (mod === "base" && table === "usr") {
 #>
 
 let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
-let old_default_org_id: string | null | undefined = undefined;
+let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
   let org_ids = dialogModel.org_ids || [ ];

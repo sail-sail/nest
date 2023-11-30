@@ -12,6 +12,10 @@ import type {
 export const dictId = Symbol.for("DictId");
 export type DictId = typeof dictId;
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 export interface DictSearch extends DictSearchType {
   $extra?: SearchExtra[];
 }
@@ -19,18 +23,18 @@ export interface DictSearch extends DictSearchType {
 export interface DictModel extends DictModelType {
   /** 系统字段 */
   is_sys: number;
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
 }
 
 export interface DictInput extends DictInputType {
   /** 系统字段 */
   is_sys?: number;
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
 }

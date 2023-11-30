@@ -3,13 +3,25 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDao from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
+
+import type {
+  MenuType,
+} from "/gen/types.ts";
 
 async function _getMenus(
   type?: string,
-  parent_id?: string,
+  parent_id?: MenuId,
 ) {
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -41,8 +53,8 @@ async function _getMenus(
   if (type) {
     sql += ` and t.type = ${ args.push(type) }`;
   }
-  const authModel = await authDao.getAuthModel();
-  const tenant_id = await usrDao.getTenant_id(authModel?.id);
+  const authModel = await getAuthModel();
+  const tenant_id = await getTenant_id(authModel?.id);
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
@@ -60,8 +72,8 @@ async function _getMenus(
   const cacheKey2 = JSON.stringify({ sql, args });
   
   type Result = {
-    id: string,
-    type: string,
+    id: MenuId,
+    type: MenuType,
     parent_id: string,
     lbl: string,
     route_path: string,

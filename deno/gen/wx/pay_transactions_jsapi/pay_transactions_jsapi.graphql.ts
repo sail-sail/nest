@@ -6,13 +6,31 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar PayTransactionsJsapiId
 
 "微信JSAPI下单交易状态"
-scalar PayTransactionsJsapiTradeState
+enum PayTransactionsJsapiTradeState {
+  "支付成功"
+  SUCCESS
+  "转入退款"
+  REFUND
+  "未支付"
+  NOTPAY
+  "已关闭"
+  CLOSED
+  "已撤销"
+  REVOKED
+  "用户支付中"
+  USERPAYING
+  "支付失败"
+  PAYERROR
+}
 "微信JSAPI下单货币类型"
-scalar PayTransactionsJsapiCurrency
+enum PayTransactionsJsapiCurrency {
+  "人民币"
+  CNY
+}
 
 type PayTransactionsJsapiModel {
   "ID"
-  id: String!
+  id: PayTransactionsJsapiId!
   "appid"
   appid: String!
   "商户号"
@@ -56,17 +74,17 @@ type PayTransactionsJsapiModel {
   "预支付交易会话标识"
   prepay_id: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -182,17 +200,17 @@ input PayTransactionsJsapiInput {
   "预支付交易会话标识"
   prepay_id: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -202,7 +220,7 @@ input PayTransactionsJsapiSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [PayTransactionsJsapiId!]
   "ID"
   id: PayTransactionsJsapiId
   "appid"
@@ -272,7 +290,7 @@ type Query {
   "根据条件查找第一条数据"
   findOnePayTransactionsJsapi(search: PayTransactionsJsapiSearch, sort: [SortInput!]): PayTransactionsJsapiModel
   "根据id查找一条数据"
-  findByIdPayTransactionsJsapi(id: String!): PayTransactionsJsapiModel
+  findByIdPayTransactionsJsapi(id: PayTransactionsJsapiId!): PayTransactionsJsapiModel
 }
 
 `);

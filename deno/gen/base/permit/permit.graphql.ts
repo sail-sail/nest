@@ -8,11 +8,11 @@ scalar PermitId
 
 type PermitModel {
   "ID"
-  id: String!
+  id: PermitId!
   "菜单"
-  menu_id: String!
+  menu_id: MenuId!
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String!
   "名称"
@@ -20,17 +20,17 @@ type PermitModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -72,9 +72,9 @@ input PermitInput {
   ""
   id: PermitId
   "菜单"
-  menu_id: String
+  menu_id: MenuId
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String
   "名称"
@@ -82,17 +82,17 @@ input PermitInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -102,7 +102,7 @@ input PermitSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [PermitId!]
   "ID"
   id: PermitId
   "菜单"
@@ -138,19 +138,19 @@ type Query {
   "根据条件查找第一条数据"
   findOnePermit(search: PermitSearch, sort: [SortInput!]): PermitModel
   "根据id查找一条数据"
-  findByIdPermit(id: String!): PermitModel
+  findByIdPermit(id: PermitId!): PermitModel
 }
 type Mutation {
   "创建一条数据"
-  createPermit(model: PermitInput!, unique_type: UniqueType): String!
+  createPermit(model: PermitInput!, unique_type: UniqueType): PermitId!
   "根据id修改一条数据"
-  updateByIdPermit(id: String!, model: PermitInput!): String!
+  updateByIdPermit(id: PermitId!, model: PermitInput!): PermitId!
   "根据 ids 删除数据"
-  deleteByIdsPermit(ids: [String!]!): Int!
+  deleteByIdsPermit(ids: [PermitId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsPermit(ids: [String!]!): Int!
+  revertByIdsPermit(ids: [PermitId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsPermit(ids: [String!]!): Int!
+  forceDeleteByIdsPermit(ids: [PermitId!]!): Int!
 }
 
 `);

@@ -40,6 +40,14 @@ import {
 import {
   getAccessToken,
 } from "/src/wx/wx_app_token/wx_app_token.service.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+import type {
+  WxUsrId,
+} from "/gen/wx/wx_usr/wx_usr.model.ts";
  
 export async function code2Session(
   model: {
@@ -86,7 +94,7 @@ export async function code2Session(
   );
   // 用户初次登录, 设置租户
   if (!wx_usrModel) {
-    const id = await createWxUsr(
+    const id: WxUsrId = await createWxUsr(
       {
         openid,
         lbl: openid,
@@ -110,7 +118,7 @@ export async function code2Session(
     );
   }
   if (!wx_usrModel.usr_id) {
-    const id = await createUsr(
+    const id: UsrId = await createUsr(
       {
         lbl: await ns("游客"),
         rem: await ns("微信用户"),
@@ -181,7 +189,7 @@ export async function getPhoneNumber(
   code: string,
 ) {
   const authModel = await getAuthModel();
-  const usr_id = authModel.id;
+  const usr_id: UsrId = authModel.id;
   const wx_usrModel = await validateOptionWxUsr(
     await findOneWxUsr(
       {
@@ -189,7 +197,7 @@ export async function getPhoneNumber(
       },
     ),
   );
-  const wx_usr_id = wx_usrModel.id;
+  const wx_usr_id: WxUsrId = wx_usrModel.id;
   
   const access_token = await getAccessToken(appid);
   let data = await fetchPhoneNumber(access_token, code);

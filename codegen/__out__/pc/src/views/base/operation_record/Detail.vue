@@ -243,6 +243,10 @@ import {
 } from "./Api";
 
 import type {
+  OperationRecordId,
+} from "@/typings/ids";
+
+import type {
 } from "#/types";
 
 type OperationRecordInput = any;
@@ -251,7 +255,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: OperationRecordId,
     },
   ],
 }>();
@@ -279,9 +283,9 @@ let dialogNotice = $ref("");
 let dialogModel: OperationRecordInput = $ref({
 } as OperationRecordInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<OperationRecordId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<OperationRecordId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -312,7 +316,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: OperationRecordId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -349,8 +353,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: OperationRecordId;
+      ids?: OperationRecordId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

@@ -6,17 +6,47 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar WxPayNoticeId
 
 "微信支付通知交易类型"
-scalar WxPayNoticeTradeType
+enum WxPayNoticeTradeType {
+  "小程序支付"
+  JSAPI
+  "Native支付"
+  NATIVE
+  "app支付"
+  APP
+  "H5支付"
+  MWEB
+}
 "微信支付通知交易状态"
-scalar WxPayNoticeTradeState
+enum WxPayNoticeTradeState {
+  "支付成功"
+  SUCCESS
+  "转入退款"
+  REFUND
+  "未支付"
+  NOTPAY
+  "已关闭"
+  CLOSED
+  "已撤销"
+  REVOKED
+  "用户支付中"
+  USERPAYING
+  "支付失败"
+  PAYERROR
+}
 "微信支付通知货币类型"
-scalar WxPayNoticeCurrency
+enum WxPayNoticeCurrency {
+  "人民币"
+  CNY
+}
 "微信支付通知用户支付币种"
-scalar WxPayNoticePayerCurrency
+enum WxPayNoticePayerCurrency {
+  "人民币"
+  CNY
+}
 
 type WxPayNoticeModel {
   "ID"
-  id: String!
+  id: WxPayNoticeId!
   "appid"
   appid: String!
   "商户号"
@@ -64,17 +94,17 @@ type WxPayNoticeModel {
   "原始数据"
   raw: String
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -198,17 +228,17 @@ input WxPayNoticeInput {
   "原始数据"
   raw: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -218,7 +248,7 @@ input WxPayNoticeSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxPayNoticeId!]
   "ID"
   id: WxPayNoticeId
   "appid"
@@ -289,7 +319,7 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxPayNotice(search: WxPayNoticeSearch, sort: [SortInput!]): WxPayNoticeModel
   "根据id查找一条数据"
-  findByIdWxPayNotice(id: String!): WxPayNoticeModel
+  findByIdWxPayNotice(id: WxPayNoticeId!): WxPayNoticeModel
 }
 
 `);

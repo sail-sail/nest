@@ -8,7 +8,7 @@ scalar WxAppId
 
 type WxAppModel {
   "ID"
-  id: String!
+  id: WxAppId!
   "名称"
   lbl: String!
   "appid"
@@ -28,17 +28,17 @@ type WxAppModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -106,17 +106,17 @@ input WxAppInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -126,7 +126,7 @@ input WxAppSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxAppId!]
   "ID"
   id: WxAppId
   "名称"
@@ -165,25 +165,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxApp(search: WxAppSearch, sort: [SortInput!]): WxAppModel
   "根据id查找一条数据"
-  findByIdWxApp(id: String!): WxAppModel
+  findByIdWxApp(id: WxAppId!): WxAppModel
   "查找order_by字段的最大值"
   findLastOrderByWxApp: Int!
 }
 type Mutation {
   "创建一条数据"
-  createWxApp(model: WxAppInput!, unique_type: UniqueType): String!
+  createWxApp(model: WxAppInput!, unique_type: UniqueType): WxAppId!
   "根据id修改一条数据"
-  updateByIdWxApp(id: String!, model: WxAppInput!): String!
+  updateByIdWxApp(id: WxAppId!, model: WxAppInput!): WxAppId!
   "根据 ids 删除数据"
-  deleteByIdsWxApp(ids: [String!]!): Int!
+  deleteByIdsWxApp(ids: [WxAppId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsWxApp(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsWxApp(ids: [WxAppId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsWxApp(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsWxApp(ids: [WxAppId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxApp(ids: [String!]!): Int!
+  revertByIdsWxApp(ids: [WxAppId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxApp(ids: [String!]!): Int!
+  forceDeleteByIdsWxApp(ids: [WxAppId!]!): Int!
 }
 
 `);
