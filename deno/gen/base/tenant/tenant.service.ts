@@ -13,6 +13,7 @@ import type {
   TenantModel,
   TenantSearch,
   TenantFieldComment,
+  TenantId,
 } from "./tenant.model.ts";
 
 import * as tenantDao from "./tenant.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {TenantId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: TenantId | null,
 ): Promise<TenantModel | undefined> {
   const model = await tenantDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {TenantId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: TenantId | null,
 ): Promise<boolean> {
   const data = await tenantDao.existById(id);
   return data;
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {TenantInput} input
- * @return {Promise<string>} id
+ * @return {Promise<TenantId>} id
  */
 export async function create(
   input: TenantInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await tenantDao.create(input, options);
-  return data;
+): Promise<TenantId> {
+  const id: TenantId = await tenantDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {TenantId} id
  * @param {TenantInput} input
- * @return {Promise<string>}
+ * @return {Promise<TenantId>}
  */
 export async function updateById(
-  id: string,
+  id: TenantId,
   input: TenantInput,
-): Promise<string> {
+): Promise<TenantId> {
   
   const is_locked = await tenantDao.getIsLockedById(id);
   if (is_locked) {
@@ -151,23 +152,23 @@ export async function updateById(
     input.lbl = undefined;
   }
   
-  const data = await tenantDao.updateById(id, input);
-  return data;
+  const id2: TenantId = await tenantDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: TenantId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: TenantId = ids[i];
       const is_locked = await tenantDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -180,9 +181,9 @@ export async function deleteByIds(
   }
   
   {
-    const ids2: string[] = [ ];
+    const ids2: TenantId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: TenantId = ids[i];
       const model = await tenantDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -201,12 +202,12 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: TenantId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await tenantDao.enableByIds(ids, is_enabled);
@@ -215,12 +216,12 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: TenantId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await tenantDao.lockByIds(ids, is_locked);
@@ -229,11 +230,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   const data = await tenantDao.revertByIds(ids);
   return data;
@@ -241,11 +242,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   const data = await tenantDao.forceDeleteByIds(ids);
   return data;

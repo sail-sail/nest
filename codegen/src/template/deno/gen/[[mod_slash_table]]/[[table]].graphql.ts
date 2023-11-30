@@ -121,17 +121,17 @@ type <#=modelName#> {<#
     }
     let _data_type = "String";
     if (column_name === 'id') {
-      data_type = 'String';
-      _data_type = `${ Table_Up }Id`;
+      data_type = `${ Table_Up }Id`;
+      _data_type = 'String';
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[String!]';
-      _data_type = `[${ foreignTable_Up }Id!]`;
+      data_type = `[${ foreignTable_Up }Id!]`;
+      _data_type = '[String!]';
       is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
-      data_type = 'String';
-      _data_type = `${ foreignTable_Up }Id`;
+      data_type = `${ foreignTable_Up }Id`;
+      _data_type = 'String';
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -158,7 +158,7 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Decimal';
-      _data_type = "Decimal";
+      _data_type = "String";
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -359,12 +359,12 @@ input <#=inputName#> {<#
       data_type = `${ Table_Up }Id`;
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[String!]';
-      _data_type = `[${ foreignTable_Up }Id!]`;
+      data_type = `[${ foreignTable_Up }Id!]`;
+      _data_type = '[String!]';
     }
     else if (foreignKey && !foreignKey.multiple) {
-      data_type = 'String';
-      _data_type = `${ foreignTable_Up }Id`;
+      data_type = `${ foreignTable_Up }Id`;
+      _data_type = 'String';
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -492,7 +492,7 @@ input <#=searchName#> {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]<#
+  ids: [<#=Table_Up#>Id!]<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -659,7 +659,7 @@ type Query {
   "根据条件查找第一条数据"
   findOne<#=Table_Up#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
   "根据id查找一条数据"
-  findById<#=Table_Up#>(id: String!): <#=modelName#><#
+  findById<#=Table_Up#>(id: <#=Table_Up#>Id!): <#=modelName#><#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"
@@ -676,45 +676,45 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=Table_Up#>(model: <#=inputName#>!, unique_type: UniqueType): String!<#
+  create<#=Table_Up#>(model: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据id修改一条数据"
-  updateById<#=Table_Up#>(id: String!, model: <#=inputName#>!): String!<#
+  updateById<#=Table_Up#>(id: <#=Table_Up#>Id!, model: <#=inputName#>!): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 删除数据"
-  deleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
+  deleteByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
   if (hasDefault && opts.noEdit !== true) {
   #>
   "根据 id 设置默认记录"
-  defaultById<#=Table_Up#>(id: String!): Int!<#
+  defaultById<#=Table_Up#>(id: <#=Table_Up#>Id!): Int!<#
   }
   #><#
   if (hasEnabled && opts.noEdit !== true) {
   #>
   "根据 ids 启用或者禁用数据"
-  enableByIds<#=Table_Up#>(ids: [String!]!, is_enabled: Int!): Int!<#
+  enableByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!, is_enabled: Int!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {
   #>
   "根据 ids 锁定或者解锁数据"
-  lockByIds<#=Table_Up#>(ids: [String!]!, is_locked: Int!): Int!<#
+  lockByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 还原数据"
-  revertByIds<#=Table_Up#>(ids: [String!]!): Int!
+  revertByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
+  forceDeleteByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #>
 }<#

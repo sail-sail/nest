@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  DictId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -11,7 +16,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -190,14 +194,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {DictInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: DictInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<DictId> {
   const data: {
     createDict: Mutation["createDict"];
   } = await mutation({
@@ -211,27 +215,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createDict;
-  return res;
+  const id: DictId = data.createDict;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {DictId} id
  * @param {DictInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: DictId,
   model: DictInput,
   opt?: GqlOpt,
-) {
+): Promise<DictId> {
   const data: {
     updateByIdDict: Mutation["updateByIdDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: DictInput!) {
+      mutation($id: DictId!, $model: DictInput!) {
         updateByIdDict(id: $id, model: $model)
       }
     `,
@@ -240,25 +244,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdDict;
-  return res;
+  const id2: DictId = data.updateByIdDict;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {DictId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: DictId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdDict: Query["findByIdDict"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: DictId!) {
         findByIdDict(id: $id) {
           id
           code
@@ -312,18 +316,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DictId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsDict: Mutation["deleteByIdsDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictId!]!) {
         deleteByIdsDict(ids: $ids)
       }
     `,
@@ -338,12 +342,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {DictId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DictId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -351,7 +355,7 @@ export async function enableByIds(
     enableByIdsDict: Mutation["enableByIdsDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [DictId!]!, $is_enabled: Int!) {
         enableByIdsDict(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -367,12 +371,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {DictId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DictId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -380,7 +384,7 @@ export async function lockByIds(
     lockByIdsDict: Mutation["lockByIdsDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [DictId!]!, $is_locked: Int!) {
         lockByIdsDict(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -396,18 +400,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DictId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsDict: Mutation["revertByIdsDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictId!]!) {
         revertByIdsDict(ids: $ids)
       }
     `,
@@ -422,18 +426,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DictId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsDict: Mutation["forceDeleteByIdsDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictId!]!) {
         forceDeleteByIdsDict(ids: $ids)
       }
     `,
@@ -474,52 +478,6 @@ export async function findAllDict(
 
 export async function getDictList() {
   const data = await findAllDict(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
     },

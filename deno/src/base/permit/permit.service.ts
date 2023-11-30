@@ -3,6 +3,18 @@ import type {
   GetUsrPermits,
 } from "/gen/types.ts";
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+import type {
+  PermitId,
+} from "/gen/base/permit/permit.model.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
+
 /**
  * 根据当前用户获取权限列表
  */
@@ -31,7 +43,7 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   if (!authModel) {
     return [ ];
   }
-  const usr_id = authModel.id;
+  const usr_id: UsrId = authModel.id;
   const usrModel = await findByIdUsr(usr_id);
   if (!usrModel) {
     return [ ];
@@ -43,21 +55,21 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   const roleModels = await findAllRole({
     ids: role_ids,
   });
-  const permit_ids: string[] = [ ];
+  const permit_ids: PermitId[] = [ ];
   for (const roleModel of roleModels) {
     const permit_ids2 = roleModel.permit_ids;
     if (!permit_ids2 || permit_ids2.length === 0) {
       continue;
     }
     for (const permit_id of permit_ids2) {
-      if (permit_ids.includes(permit_id)) {
+      if (permit_ids.includes(permit_id as PermitId)) {
         continue;
       }
-      permit_ids.push(permit_id);
+      permit_ids.push(permit_id as PermitId);
     }
   }
   // 切分成多个批次查询
-  const permit_idsArr: string[][] = [ ];
+  const permit_idsArr: PermitId[][] = [ ];
   const batch_size = 100;
   const batch_count = Math.ceil(permit_ids.length / batch_size);
   for (let i = 0; i < batch_count; i++) {
@@ -70,9 +82,9 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
     });
     permitModels.push(...permitModels0);
   }
-  const menu_idMap = new Map<string, string>();
+  const menu_idMap = new Map<MenuId, string>();
   for (const permitModel of permitModels) {
-    const menu_id = permitModel.menu_id;
+    const menu_id: MenuId = permitModel.menu_id;
     if (menu_idMap.has(menu_id)) {
       continue;
     }
@@ -89,10 +101,10 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
     menu_idMap.set(menu_id, route_path);
   }
   const permits: GetUsrPermits[] = permitModels.map((permitModel) => {
-    const menu_id = permitModel.menu_id;
+    const menu_id: MenuId = permitModel.menu_id;
     const route_path = menu_idMap.get(menu_id) || "";
     return {
-      id: permitModel.id,
+      id: permitModel.id as PermitId,
       menu_id,
       route_path,
       code: permitModel.code,
@@ -146,7 +158,7 @@ export async function usePermit(
   if (!authModel) {
     throw await ns("无权限");
   }
-  const usr_id = authModel.id;
+  const usr_id: UsrId = authModel.id;
   const usrModel = await findByIdUsr(usr_id);
   if (!usrModel) {
     throw await ns("无权限");
@@ -161,21 +173,21 @@ export async function usePermit(
   const roleModels = await findAllRole({
     ids: role_ids,
   });
-  const permit_ids: string[] = [ ];
+  const permit_ids: PermitId[] = [ ];
   for (const roleModel of roleModels) {
     const permit_ids2 = roleModel.permit_ids;
     if (!permit_ids2 || permit_ids2.length === 0) {
       continue;
     }
     for (const permit_id of permit_ids2) {
-      if (permit_ids.includes(permit_id)) {
+      if (permit_ids.includes(permit_id as PermitId)) {
         continue;
       }
-      permit_ids.push(permit_id);
+      permit_ids.push(permit_id as PermitId);
     }
   }
   // 切分成多个批次查询
-  const permit_idsArr: string[][] = [ ];
+  const permit_idsArr: PermitId[][] = [ ];
   const batch_size = 100;
   const batch_count = Math.ceil(permit_ids.length / batch_size);
   for (let i = 0; i < batch_count; i++) {

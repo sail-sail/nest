@@ -736,6 +736,10 @@ import PermitTreeList from "../permit/TreeList.vue";
 
 import DataPermitTreeList from "../data_permit/TreeList.vue";
 
+import type {
+  RoleId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -788,13 +792,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    RoleId[],
   ],
   add: [
-    string[],
+    RoleId[],
   ],
   edit: [
-    string[],
+    RoleId[],
   ],
   remove: [
     number,
@@ -862,30 +866,24 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: RoleId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: RoleId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   home_url?: string; // 首页
   home_url_like?: string; // 首页
   menu_ids?: string|string[]; // 菜单权限
-  menu_ids_lbl?: string|string[]; // 菜单权限
+  menu_ids_lbl?: string[]; // 菜单权限
   permit_ids?: string|string[]; // 按钮权限
-  permit_ids_lbl?: string|string[]; // 按钮权限
+  permit_ids_lbl?: string[]; // 按钮权限
   data_permit_ids?: string|string[]; // 数据权限
-  data_permit_ids_lbl?: string|string[]; // 数据权限
+  data_permit_ids_lbl?: string[]; // 数据权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -970,7 +968,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<RoleModel>(
+} = $(useSelect<RoleModel, RoleId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1488,7 +1486,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: RoleId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1510,7 +1508,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: RoleId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1842,20 +1840,18 @@ async function onMenu_ids(row: RoleModel) {
     return;
   }
   row.menu_ids = row.menu_ids || [ ];
-  let {
-    selectedIds: selectedIds2,
-    action
-  } = await menu_idsListSelectDialogRef.showDialog({
-    selectedIds: row.menu_ids as string[],
+  const res = await menu_idsListSelectDialogRef.showDialog({
+    selectedIds: row.menu_ids,
     isLocked: row.is_locked == 1,
   });
   if (isLocked) {
     return;
   }
+  const action = res.action;
   if (action !== "select") {
     return;
   }
-  selectedIds2 = selectedIds2 || [ ];
+  const selectedIds2 = res.selectedIds || [ ];
   let isEqual = true;
   if (selectedIds2.length === row.menu_ids.length) {
     for (let i = 0; i < selectedIds2.length; i++) {
@@ -1884,20 +1880,18 @@ async function onPermit_ids(row: RoleModel) {
     return;
   }
   row.permit_ids = row.permit_ids || [ ];
-  let {
-    selectedIds: selectedIds2,
-    action
-  } = await permit_idsListSelectDialogRef.showDialog({
-    selectedIds: row.permit_ids as string[],
+  const res = await permit_idsListSelectDialogRef.showDialog({
+    selectedIds: row.permit_ids,
     isLocked: row.is_locked == 1,
   });
   if (isLocked) {
     return;
   }
+  const action = res.action;
   if (action !== "select") {
     return;
   }
-  selectedIds2 = selectedIds2 || [ ];
+  const selectedIds2 = res.selectedIds || [ ];
   let isEqual = true;
   if (selectedIds2.length === row.permit_ids.length) {
     for (let i = 0; i < selectedIds2.length; i++) {
@@ -1926,20 +1920,18 @@ async function onData_permit_ids(row: RoleModel) {
     return;
   }
   row.data_permit_ids = row.data_permit_ids || [ ];
-  let {
-    selectedIds: selectedIds2,
-    action
-  } = await data_permit_idsListSelectDialogRef.showDialog({
-    selectedIds: row.data_permit_ids as string[],
+  const res = await data_permit_idsListSelectDialogRef.showDialog({
+    selectedIds: row.data_permit_ids,
     isLocked: row.is_locked == 1,
   });
   if (isLocked) {
     return;
   }
+  const action = res.action;
   if (action !== "select") {
     return;
   }
-  selectedIds2 = selectedIds2 || [ ];
+  const selectedIds2 = res.selectedIds || [ ];
   let isEqual = true;
   if (selectedIds2.length === row.data_permit_ids.length) {
     for (let i = 0; i < selectedIds2.length; i++) {

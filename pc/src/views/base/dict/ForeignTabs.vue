@@ -70,6 +70,10 @@ import {
   findCount as findCountDict_detail,
 } from "@/views/base/dict_detail/Api";
 
+import type {
+  DictId,
+} from "@/typings/ids";
+
 const {
   n,
   initI18ns,
@@ -80,7 +84,7 @@ let inited = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
-  id?: string,
+  id?: DictId,
   is_deleted?: number | null,
 }>({ });
 
@@ -89,7 +93,7 @@ let tabName = $ref("系统字典明细");
 let dict_detailTotal = $ref<number>();
 
 async function useFindCountDict_detail() {
-  const dict_id = [ dialogModel.id! ];
+  const dict_id: DictId[] = [ dialogModel.id! ];
   dict_detailTotal = await findCountDict_detail(
     {
       is_deleted: dialogModel.is_deleted,
@@ -124,7 +128,7 @@ async function showDialog(
   arg?: {
     title?: string;
     model?: {
-      id?: string;
+      id?: DictId;
       is_deleted?: number | null;
     };
     action?: typeof dialogAction;

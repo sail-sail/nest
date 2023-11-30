@@ -17,6 +17,7 @@ import type {
   LangModel,
   LangSearch,
   LangFieldComment,
+  LangId,
 } from "./lang.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneLang(
  * 根据 id 查找一条数据
  */
 export async function findByIdLang(
-  id: string,
+  id: LangId,
 ): Promise<LangModel | undefined> {
   const { findById } = await import("./lang.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdLang(
 export async function createLang(
   input: LangInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<LangId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createLang(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: LangId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdLang(
-  id: string,
+  id: LangId,
   input: LangInput,
-): Promise<string> {
+): Promise<LangId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdLang(
     "/base/lang",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: LangId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsLang(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsLang(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsLang(
-  ids: string[],
+  ids: LangId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsLang(
  * 根据 ids 还原数据
  */
 export async function revertByIdsLang(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   
   const {
@@ -226,7 +227,7 @@ export async function revertByIdsLang(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsLang(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   const context = useContext();
   

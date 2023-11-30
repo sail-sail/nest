@@ -17,6 +17,7 @@ import type {
   TenantModel,
   TenantSearch,
   TenantFieldComment,
+  TenantId,
 } from "./tenant.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneTenant(
  * 根据 id 查找一条数据
  */
 export async function findByIdTenant(
-  id: string,
+  id: TenantId,
 ): Promise<TenantModel | undefined> {
   const { findById } = await import("./tenant.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdTenant(
 export async function createTenant(
   input: TenantInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<TenantId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createTenant(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: TenantId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdTenant(
-  id: string,
+  id: TenantId,
   input: TenantInput,
-): Promise<string> {
+): Promise<TenantId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdTenant(
     "/base/tenant",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: TenantId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsTenant(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsTenant(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsTenant(
  * 根据 ids 还原数据
  */
 export async function revertByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsTenant(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   const context = useContext();
   

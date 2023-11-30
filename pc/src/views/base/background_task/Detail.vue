@@ -253,15 +253,24 @@ import {
 } from "./Api";
 
 import type {
+  BackgroundTaskId,
+} from "@/typings/ids";
+
+import type {
 } from "#/types";
 
 type BackgroundTaskInput = any;
+
+import {
+  BackgroundTaskState,
+  BackgroundTaskType,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: BackgroundTaskId,
     },
   ],
 }>();
@@ -289,9 +298,9 @@ let dialogNotice = $ref("");
 let dialogModel: BackgroundTaskInput = $ref({
 } as BackgroundTaskInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<BackgroundTaskId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<BackgroundTaskId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -336,7 +345,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: BackgroundTaskId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -358,8 +367,8 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: BackgroundTaskInput = {
-    state: "running",
-    type: "text",
+    state: BackgroundTaskState.Running,
+    type: BackgroundTaskType.Text,
   };
   return defaultInput;
 }
@@ -375,8 +384,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: BackgroundTaskId;
+      ids?: BackgroundTaskId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

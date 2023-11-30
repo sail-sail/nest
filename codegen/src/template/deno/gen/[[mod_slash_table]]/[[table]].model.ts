@@ -41,10 +41,49 @@ import type {
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
   <#=fieldCommentName#> as <#=fieldCommentName#>Type,
-} from "/gen/types.ts";
+} from "/gen/types.ts";<#
+const hasImportIds = [ ];
+#>
 
 export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
-export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;
+export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;<#
+hasImportIds.push(Table_Up + "Id");
+#><#
+if (hasTenant_id) {
+#><#
+  if (!hasImportIds.includes("TenantId")) {
+    hasImportIds.push("TenantId");
+#>
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";<#
+  }
+#><#
+}
+#><#
+if (hasOrgId) {
+#><#
+  if (!hasImportIds.includes("OrgId")) {
+    hasImportIds.push("OrgId");
+#>
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";<#
+  }
+#><#
+}
+#><#
+if (!hasImportIds.includes("UsrId")) {
+  hasImportIds.push("UsrId");
+#>
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";<#
+}
+#>
 
 export interface <#=searchName#> extends <#=searchName#>Type {<#
   for (let i = 0; i < columns.length; i++) {
@@ -257,18 +296,18 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
   #><#
   }
   #>
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;<#
   if (hasTenant_id) {
   #>
-  tenant_id: string;<#
+  tenant_id: TenantId;<#
   }
   #><#
   if (hasOrgId) {
   #>
-  org_id: string;<#
+  org_id: OrgId;<#
   }
   #><#
   if (hasIsHidden) {
@@ -295,6 +334,10 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
+    const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     let data_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -312,13 +355,16 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     let _data_type = "string";
-    if (foreignKey && foreignKey.multiple) {
-      data_type = 'string[]';
+    if (column_name === 'id') {
+      data_type = `${ Table_Up }Id`;
+    }
+    else if (foreignKey && foreignKey.multiple) {
+      data_type = `${ foreignTable_Up }Id[]`;
       _data_type = "string[]";
       is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
-      data_type = 'string';
+      data_type = `${ foreignTable_Up }Id`;
       _data_type = "string";
     }
     else if (column.DATA_TYPE === 'varchar') {
@@ -344,6 +390,7 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Decimal';
+      _data_type = "string";
     }
   #><#
     if (is_nullable) {
@@ -358,19 +405,19 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   #><#
   }
   #>
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;<#
   if (hasTenant_id) {
   #>
-  tenant_id?: string | null;<#
+  tenant_id?: TenantId | null;<#
   }
   #><#
   if (hasOrgId) {
   #>
-  org_id?: string | null;<#
+  org_id?: OrgId | null;<#
   }
   #><#
   if (hasIsHidden) {

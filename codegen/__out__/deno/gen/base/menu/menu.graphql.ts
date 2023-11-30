@@ -15,15 +15,15 @@ enum MenuType {
 
 type MenuModel {
   "ID"
-  id: String!
+  id: MenuId!
   "类型"
   type: MenuType
   "类型"
   type_lbl: String!
   "父菜单"
-  parent_id: String!
+  parent_id: MenuId!
   "父菜单"
-  parent_id_lbl: MenuId
+  parent_id_lbl: String
   "名称"
   lbl: String!
   "路由"
@@ -43,17 +43,17 @@ type MenuModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -115,9 +115,9 @@ input MenuInput {
   "类型"
   type_lbl: String
   "父菜单"
-  parent_id: String
+  parent_id: MenuId
   "父菜单"
-  parent_id_lbl: MenuId
+  parent_id_lbl: String
   "名称"
   lbl: String
   "路由"
@@ -137,17 +137,17 @@ input MenuInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -157,7 +157,7 @@ input MenuSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [MenuId!]
   "ID"
   id: MenuId
   "类型"
@@ -204,25 +204,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
   "根据id查找一条数据"
-  findByIdMenu(id: String!): MenuModel
+  findByIdMenu(id: MenuId!): MenuModel
   "查找order_by字段的最大值"
   findLastOrderByMenu: Int!
 }
 type Mutation {
   "创建一条数据"
-  createMenu(model: MenuInput!, unique_type: UniqueType): String!
+  createMenu(model: MenuInput!, unique_type: UniqueType): MenuId!
   "根据id修改一条数据"
-  updateByIdMenu(id: String!, model: MenuInput!): String!
+  updateByIdMenu(id: MenuId!, model: MenuInput!): MenuId!
   "根据 ids 删除数据"
-  deleteByIdsMenu(ids: [String!]!): Int!
+  deleteByIdsMenu(ids: [MenuId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsMenu(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsMenu(ids: [MenuId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsMenu(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsMenu(ids: [MenuId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsMenu(ids: [String!]!): Int!
+  revertByIdsMenu(ids: [MenuId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsMenu(ids: [String!]!): Int!
+  forceDeleteByIdsMenu(ids: [MenuId!]!): Int!
 }
 
 `);
