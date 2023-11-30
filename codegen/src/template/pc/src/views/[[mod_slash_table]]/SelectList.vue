@@ -101,6 +101,10 @@ import TreeList from "./TreeList.vue";<#
 #>
 
 import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
+import type {
   <#=modelName#>,
 } from "#/types";
 
@@ -119,14 +123,14 @@ let dialogAction = $ref("select");
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  selectedIds: string[];
+  selectedIds: <#=Table_Up#>Id[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
-let selectedIds = $ref<string[]>([ ]);
+let selectedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
 let multiple = $ref(false);
 
@@ -141,7 +145,7 @@ async function showDialog(
     multiple?: boolean;
     isReadonly?: MaybeRefOrGetter<boolean>;
     model?: {
-      ids?: string[];
+      ids?: <#=Table_Up#>Id[];
     };
     action?: typeof dialogAction;
   },
@@ -173,11 +177,11 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
-function selectedIdsChg(value: string[]) {
+function selectedIdsChg(value: <#=Table_Up#>Id[]) {
   selectedIds = value;
 }
 
-async function getModelsByIds(ids: string[]) {
+async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const res = await findAll(
     {
       ids,

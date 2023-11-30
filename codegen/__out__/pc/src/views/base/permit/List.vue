@@ -583,6 +583,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  PermitId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -633,13 +637,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    PermitId[],
   ],
   add: [
-    string[],
+    PermitId[],
   ],
   edit: [
-    string[],
+    PermitId[],
   ],
   remove: [
     number,
@@ -707,23 +711,17 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: PermitId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: PermitId; // ID
   menu_id?: string|string[]; // 菜单
-  menu_id_lbl?: string|string[]; // 菜单
+  menu_id_lbl?: string; // 菜单
   code?: string; // 编码
   code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -799,7 +797,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<PermitModel>(
+} = $(useSelect<PermitModel, PermitId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

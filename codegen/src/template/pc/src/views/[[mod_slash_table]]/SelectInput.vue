@@ -128,11 +128,15 @@ import {
 } from "./Api";
 
 import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
+import type {
   <#=modelName#>,
 } from "#/types";
 
 let emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
   (e: "clear"): void,
 }>();
@@ -146,7 +150,7 @@ const {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: string | string[] | null;
+    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
@@ -196,7 +200,7 @@ function inputLeave() {
 }
 
 function getModelValueArr() {
-  let modelValueArr: string[] = [ ];
+  let modelValueArr: <#=Table_Up#>Id[] = [ ];
   if (modelValue) {
     if (Array.isArray(modelValue)) {
       modelValueArr = modelValue;
@@ -207,7 +211,7 @@ function getModelValueArr() {
   return modelValueArr;
 }
 
-async function getModelsByIds(ids: string[]) {
+async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const res = await findAll(
     {
       ids,

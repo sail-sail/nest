@@ -226,6 +226,10 @@ import {
 } from "./Api";
 
 import type {
+  DataPermitId,
+} from "@/typings/ids";
+
+import type {
   DataPermitInput,
 } from "#/types";
 
@@ -233,11 +237,16 @@ import {
   getMenuTree,
 } from "@/views/base/menu/Api";
 
+import {
+  DataPermitScope,
+  DataPermitType,
+} from "#/types";
+
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: DataPermitId,
     },
   ],
 }>();
@@ -265,9 +274,9 @@ let dialogNotice = $ref("");
 let dialogModel: DataPermitInput = $ref({
 } as DataPermitInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<DataPermitId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<DataPermitId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -319,7 +328,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: DataPermitId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -341,8 +350,8 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DataPermitInput = {
-    scope: "tenant",
-    type: "editable",
+    scope: DataPermitScope.Tenant,
+    type: DataPermitType.Editable,
   };
   return defaultInput;
 }
@@ -358,8 +367,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: DataPermitId;
+      ids?: DataPermitId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -628,7 +637,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: DataPermitId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

@@ -70,10 +70,27 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
+import type {
+  DeptId,
+} from "/gen/base/dept/dept.model.ts";
+
+import type {
+  RoleId,
+} from "/gen/base/role/role.model.ts";
+
+import type {
   UsrInput,
   UsrModel,
   UsrSearch,
   UsrFieldComment,
+  UsrId,
 } from "./usr.model.ts";
 
 import * as orgDao from "/gen/base/org/org.dao.ts";
@@ -471,7 +488,7 @@ export async function findAll(
     
     // 所属组织
     if (item.org_ids) {
-      const obj = item.org_ids as unknown as {[key: string]: string};
+      const obj = item.org_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -480,7 +497,7 @@ export async function findAll(
       item.org_ids = keys.map((key) => obj[key]);
     }
     if (item.org_ids_lbl) {
-      const obj = item.org_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.org_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -491,7 +508,7 @@ export async function findAll(
     
     // 所属部门
     if (item.dept_ids) {
-      const obj = item.dept_ids as unknown as {[key: string]: string};
+      const obj = item.dept_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -500,7 +517,7 @@ export async function findAll(
       item.dept_ids = keys.map((key) => obj[key]);
     }
     if (item.dept_ids_lbl) {
-      const obj = item.dept_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.dept_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -511,7 +528,7 @@ export async function findAll(
     
     // 拥有角色
     if (item.role_ids) {
-      const obj = item.role_ids as unknown as {[key: string]: string};
+      const obj = item.role_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -520,7 +537,7 @@ export async function findAll(
       item.role_ids = keys.map((key) => obj[key]);
     }
     if (item.role_ids_lbl) {
-      const obj = item.role_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.role_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -618,10 +635,10 @@ export async function setIdByLbl(
         t.lbl in ${ args.push(input.org_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: OrgId;
     }
     const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
+    input.org_ids = models.map((item: { id: OrgId }) => item.id);
   }
   
   // 默认组织
@@ -665,10 +682,10 @@ export async function setIdByLbl(
         t.lbl in ${ args.push(input.dept_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: DeptId;
     }
     const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: string }) => item.id);
+    input.dept_ids = models.map((item: { id: DeptId }) => item.id);
   }
   
   // 拥有角色
@@ -687,10 +704,10 @@ export async function setIdByLbl(
         t.lbl in ${ args.push(input.role_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: RoleId;
     }
     const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: string }) => item.id);
+    input.role_ids = models.map((item: { id: RoleId }) => item.id);
   }
 }
 
@@ -788,7 +805,7 @@ export function equalsByUnique(
  * @param {UsrInput} input
  * @param {UsrModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<UsrId | undefined>}
  */
 export async function checkByUnique(
   input: UsrInput,
@@ -796,14 +813,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<UsrId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: UsrId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -813,7 +830,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -843,14 +860,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {UsrId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: UsrId | null,
   options?: {
   },
 ): Promise<UsrModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -873,15 +890,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {UsrId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: UsrId | null,
 ) {
   const table = "base_usr";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -1007,14 +1024,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<UsrId>} 
  */
 export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<UsrId> {
   const table = "base_usr";
   const method = "create";
   
@@ -1026,7 +1043,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: UsrId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -1044,12 +1061,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<UsrId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -1124,7 +1141,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1132,7 +1149,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1243,15 +1260,15 @@ export async function delCache() {
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {UsrId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: UsrId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -1282,7 +1299,7 @@ export async function updateTenantById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {UsrId} id
  * @param {UsrInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -1290,15 +1307,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<UsrId>}
  */
 export async function updateById(
-  id: string,
+  id: UsrId,
   input: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<UsrId> {
   const table = "base_usr";
   const method = "updateById";
   
@@ -1311,7 +1328,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -1403,7 +1420,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1426,7 +1443,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "org_ids",
     {
@@ -1443,7 +1460,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "dept_ids",
     {
@@ -1460,7 +1477,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "role_ids",
     {
@@ -1486,11 +1503,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: UsrId[],
   options?: {
   },
 ): Promise<number> {
@@ -1507,7 +1524,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: UsrId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1535,11 +1552,11 @@ export async function deleteByIds(
 /**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {UsrId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: UsrId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1553,12 +1570,12 @@ export async function getIsEnabledById(
 
 /**
  * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * @param {UsrId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: UsrId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1605,11 +1622,11 @@ export async function enableByIds(
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {UsrId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: UsrId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1623,12 +1640,12 @@ export async function getIsLockedById(
 
 /**
  * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * @param {UsrId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: UsrId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1673,11 +1690,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: UsrId[],
   options?: {
   },
 ): Promise<number> {
@@ -1694,7 +1711,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: UsrId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1732,11 +1749,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: UsrId[],
   options?: {
   },
 ): Promise<number> {

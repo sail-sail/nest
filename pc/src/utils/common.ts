@@ -60,8 +60,9 @@ export async function getDictbiz(
 
 export function list2tree<
   R extends {
-    id: string;
-    parent_id: string;
+    id: any;
+    lbl: string;
+    parent_id: any;
   },
 >(
   list: R[],

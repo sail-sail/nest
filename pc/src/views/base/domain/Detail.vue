@@ -209,6 +209,10 @@ import {
 } from "./Api";
 
 import type {
+  DomainId,
+} from "@/typings/ids";
+
+import type {
   DomainInput,
 } from "#/types";
 
@@ -216,7 +220,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: DomainId,
     },
   ],
 }>();
@@ -244,9 +248,9 @@ let dialogNotice = $ref("");
 let dialogModel: DomainInput = $ref({
 } as DomainInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<DomainId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<DomainId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -284,7 +288,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: DomainId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -325,8 +329,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: DomainId;
+      ids?: DomainId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -627,7 +631,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: DomainId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

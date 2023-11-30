@@ -17,6 +17,7 @@ import type {
   I18Nmodel,
   I18Nsearch,
   I18NfieldComment,
+  I18NId,
 } from "./i18n.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneI18N(
  * 根据 id 查找一条数据
  */
 export async function findByIdI18N(
-  id: string,
+  id: I18NId,
 ): Promise<I18Nmodel | undefined> {
   const { findById } = await import("./i18n.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdI18N(
 export async function createI18N(
   input: I18Ninput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<I18NId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createI18N(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: I18NId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdI18N(
-  id: string,
+  id: I18NId,
   input: I18Ninput,
-): Promise<string> {
+): Promise<I18NId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdI18N(
     "/base/i18n",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: I18NId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsI18N(
-  ids: string[],
+  ids: I18NId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsI18N(
  * 根据 ids 还原数据
  */
 export async function revertByIdsI18N(
-  ids: string[],
+  ids: I18NId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsI18N(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsI18N(
-  ids: string[],
+  ids: I18NId[],
 ): Promise<number> {
   const context = useContext();
   
