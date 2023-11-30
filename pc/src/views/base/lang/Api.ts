@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  LangId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -11,7 +16,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -144,14 +148,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {LangInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: LangInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<LangId> {
   const data: {
     createLang: Mutation["createLang"];
   } = await mutation({
@@ -165,27 +169,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createLang;
-  return res;
+  const id: LangId = data.createLang;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {LangId} id
  * @param {LangInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: LangId,
   model: LangInput,
   opt?: GqlOpt,
-) {
+): Promise<LangId> {
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: LangInput!) {
+      mutation($id: LangId!, $model: LangInput!) {
         updateByIdLang(id: $id, model: $model)
       }
     `,
@@ -194,25 +198,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdLang;
-  return res;
+  const id2: LangId = data.updateByIdLang;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {LangId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: LangId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdLang: Query["findByIdLang"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: LangId!) {
         findByIdLang(id: $id) {
           id
           code
@@ -243,18 +247,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsLang: Mutation["deleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         deleteByIdsLang(ids: $ids)
       }
     `,
@@ -269,12 +273,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: LangId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -282,7 +286,7 @@ export async function enableByIds(
     enableByIdsLang: Mutation["enableByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [LangId!]!, $is_enabled: Int!) {
         enableByIdsLang(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -298,18 +302,18 @@ export async function enableByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsLang: Mutation["revertByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         revertByIdsLang(ids: $ids)
       }
     `,
@@ -324,18 +328,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsLang: Mutation["forceDeleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         forceDeleteByIdsLang(ids: $ids)
       }
     `,

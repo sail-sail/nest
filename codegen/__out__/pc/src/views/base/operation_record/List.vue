@@ -574,6 +574,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  OperationRecordId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -615,13 +619,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    OperationRecordId[],
   ],
   add: [
-    string[],
+    OperationRecordId[],
   ],
   edit: [
-    string[],
+    OperationRecordId[],
   ],
   remove: [
     number,
@@ -688,9 +692,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: OperationRecordId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: OperationRecordId; // ID
   module?: string; // 模块
   module_like?: string; // 模块
   module_lbl?: string; // 模块名称
@@ -707,12 +711,6 @@ const props = defineProps<{
   new_data_like?: string; // 操作后数据
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -786,7 +784,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<OperationRecordModel>(
+} = $(useSelect<OperationRecordModel, OperationRecordId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

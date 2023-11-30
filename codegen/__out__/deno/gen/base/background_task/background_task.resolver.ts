@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  BackgroundTaskInput,
   BackgroundTaskModel,
   BackgroundTaskSearch,
   BackgroundTaskFieldComment,
+  BackgroundTaskId,
 } from "./background_task.model.ts";
 
 import {
@@ -84,7 +83,7 @@ export async function findOneBackgroundTask(
  * 根据 id 查找一条数据
  */
 export async function findByIdBackgroundTask(
-  id: string,
+  id: BackgroundTaskId,
 ): Promise<BackgroundTaskModel | undefined> {
   const { findById } = await import("./background_task.service.ts");
   const res = await findById(id);
@@ -95,7 +94,7 @@ export async function findByIdBackgroundTask(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsBackgroundTask(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   
   const {
@@ -118,7 +117,7 @@ export async function deleteByIdsBackgroundTask(
  * 根据 ids 还原数据
  */
 export async function revertByIdsBackgroundTask(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   
   const {
@@ -141,7 +140,7 @@ export async function revertByIdsBackgroundTask(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsBackgroundTask(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   const context = useContext();
   

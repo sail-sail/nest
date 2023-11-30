@@ -7,6 +7,18 @@ import {
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
 /**
  * 返回当前登录的用户
  * @param {string} username 用户名
@@ -16,7 +28,7 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 export async function findLoginUsr(
   username: string,
   password: string,
-  tenant_id: string,
+  tenant_id: TenantId,
 ) {
   const args = new QueryArgs();
   const sql = /*sql*/`
@@ -33,14 +45,14 @@ export async function findLoginUsr(
     limit 1
   `;
   const model = await queryOne<{
-    id: string,
-    default_org_id: string,
+    id: UsrId,
+    default_org_id: OrgId,
   }>(sql, args);
   return model;
 }
 
 export async function getOrgIdsById(
-  id: string,
+  id: UsrId,
 ) {
   const args = new QueryArgs();
   const sql = /*sql*/`
@@ -53,12 +65,12 @@ export async function getOrgIdsById(
       and t.usr_id = ${ args.push(id) }
   `;
   const result = await query<{
-    org_id: string,
+    org_id: OrgId,
   }>(sql, args);
   return (result || [ ]).map((item) => item.org_id);
 }
 
-export async function getTenant_idByWx_usr() {
+export async function getTenant_idByWx_usr(): Promise<TenantId | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
   const authModel = await authDao.getAuthModel(notVerifyToken);
@@ -81,7 +93,7 @@ export async function getTenant_idByWx_usr() {
   `;
   interface Result {
     id: string;
-    tenant_id: string;
+    tenant_id: TenantId;
   }
   const model = await queryOne<Result>(
     sql,
@@ -97,11 +109,11 @@ export async function getTenant_idByWx_usr() {
 
 /**
  * 根据用户id获取租户id
- * @return {Promise<string>} 
+ * @return {Promise<TenantId>} 
  */
 export async function getTenant_id(
-  usr_id?: string,
-): Promise<string | undefined> {
+  usr_id?: UsrId | null,
+): Promise<TenantId | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
   const authModel = await authDao.getAuthModel(notVerifyToken);
@@ -117,7 +129,7 @@ export async function getTenant_id(
       limit 1
     `;
     interface Result {
-      tenant_id?: string;
+      tenant_id?: TenantId;
     }
     const model = await queryOne<Result>(
       sql,

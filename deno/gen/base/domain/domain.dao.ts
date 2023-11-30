@@ -61,6 +61,7 @@ import type {
   DomainModel,
   DomainSearch,
   DomainFieldComment,
+  DomainId,
 } from "./domain.model.ts";
 
 const route_path = "/base/domain";
@@ -513,7 +514,7 @@ export function equalsByUnique(
  * @param {DomainInput} input
  * @param {DomainModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<DomainId | undefined>}
  */
 export async function checkByUnique(
   input: DomainInput,
@@ -521,14 +522,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<DomainId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: DomainId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -538,7 +539,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -568,14 +569,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {DomainId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DomainId | null,
   options?: {
   },
 ): Promise<DomainModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -598,15 +599,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {DomainId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DomainId | null,
 ) {
   const table = "base_domain";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -718,14 +719,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<DomainId>} 
  */
 export async function create(
   input: DomainInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<DomainId> {
   const table = "base_domain";
   const method = "create";
   
@@ -737,7 +738,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: DomainId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -755,12 +756,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<DomainId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -808,7 +809,7 @@ export async function create(
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -816,7 +817,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -876,7 +877,7 @@ export async function delCache() {
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {DomainId} id
  * @param {DomainInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -884,15 +885,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<DomainId>}
  */
 export async function updateById(
-  id: string,
+  id: DomainId,
   input: DomainInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<DomainId> {
   const table = "base_domain";
   const method = "updateById";
   
@@ -975,7 +976,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1007,11 +1008,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DomainId[],
   options?: {
   },
 ): Promise<number> {
@@ -1028,7 +1029,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DomainId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1055,11 +1056,11 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认记录
- * @param {string} id
+ * @param {DomainId} id
  * @return {Promise<number>}
  */
 export async function defaultById(
-  id: string,
+  id: DomainId,
   options?: {
   },
 ): Promise<number> {
@@ -1116,11 +1117,11 @@ export async function defaultById(
 /**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {DomainId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: DomainId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1134,12 +1135,12 @@ export async function getIsEnabledById(
 
 /**
  * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DomainId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1186,11 +1187,11 @@ export async function enableByIds(
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {DomainId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: DomainId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1204,12 +1205,12 @@ export async function getIsLockedById(
 
 /**
  * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DomainId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1254,11 +1255,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DomainId[],
   options?: {
   },
 ): Promise<number> {
@@ -1275,7 +1276,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DomainId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1313,11 +1314,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DomainId[],
   options?: {
   },
 ): Promise<number> {

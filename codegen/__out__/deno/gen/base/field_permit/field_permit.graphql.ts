@@ -17,11 +17,11 @@ enum FieldPermitType {
 
 type FieldPermitModel {
   "ID"
-  id: String!
+  id: FieldPermitId!
   "菜单"
-  menu_id: String!
+  menu_id: MenuId!
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String!
   "名称"
@@ -33,17 +33,17 @@ type FieldPermitModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -89,9 +89,9 @@ input FieldPermitInput {
   ""
   id: FieldPermitId
   "菜单"
-  menu_id: String
+  menu_id: MenuId
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String
   "名称"
@@ -103,17 +103,17 @@ input FieldPermitInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -123,7 +123,7 @@ input FieldPermitSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [FieldPermitId!]
   "ID"
   id: FieldPermitId
   "菜单"
@@ -161,19 +161,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneFieldPermit(search: FieldPermitSearch, sort: [SortInput!]): FieldPermitModel
   "根据id查找一条数据"
-  findByIdFieldPermit(id: String!): FieldPermitModel
+  findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
 }
 type Mutation {
   "创建一条数据"
-  createFieldPermit(model: FieldPermitInput!, unique_type: UniqueType): String!
+  createFieldPermit(model: FieldPermitInput!, unique_type: UniqueType): FieldPermitId!
   "根据id修改一条数据"
-  updateByIdFieldPermit(id: String!, model: FieldPermitInput!): String!
+  updateByIdFieldPermit(id: FieldPermitId!, model: FieldPermitInput!): FieldPermitId!
   "根据 ids 删除数据"
-  deleteByIdsFieldPermit(ids: [String!]!): Int!
+  deleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsFieldPermit(ids: [String!]!): Int!
+  revertByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsFieldPermit(ids: [String!]!): Int!
+  forceDeleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
 }
 
 `);

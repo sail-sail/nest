@@ -1,5 +1,5 @@
-import {
-  type OperationRecordInput,
+import type {
+  OperationRecordInput,
 } from "/gen/base/operation_record/operation_record.model.ts";
 
 /**

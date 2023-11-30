@@ -113,7 +113,7 @@ export async function getUsrPermits(
 
 export async function deptLoginSelect(
   variables: {
-    org_id: string;
+    org_id: OrgId;
   },
   opt?: GqlOpt,
 ) {
@@ -121,7 +121,7 @@ export async function deptLoginSelect(
     orgLoginSelect: Mutation["orgLoginSelect"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($org_id: String!) {
+      mutation($org_id: OrgId!) {
         orgLoginSelect(org_id: $org_id)
       }
     `,
