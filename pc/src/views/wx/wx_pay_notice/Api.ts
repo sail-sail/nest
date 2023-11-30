@@ -1,6 +1,8 @@
-import {
-  UniqueType,
-} from "#/types";
+
+
+import type {
+  WxPayNoticeId,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -10,7 +12,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -176,18 +177,18 @@ export async function findCount(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {WxPayNoticeId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: WxPayNoticeId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdWxPayNotice: Query["findByIdWxPayNotice"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: WxPayNoticeId!) {
         findByIdWxPayNotice(id: $id) {
           id
           appid

@@ -17,6 +17,7 @@ import type {
   OrgModel,
   OrgSearch,
   OrgFieldComment,
+  OrgId,
 } from "./org.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneOrg(
  * 根据 id 查找一条数据
  */
 export async function findByIdOrg(
-  id: string,
+  id: OrgId,
 ): Promise<OrgModel | undefined> {
   const { findById } = await import("./org.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdOrg(
 export async function createOrg(
   input: OrgInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<OrgId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createOrg(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: OrgId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdOrg(
-  id: string,
+  id: OrgId,
   input: OrgInput,
-): Promise<string> {
+): Promise<OrgId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdOrg(
     "/base/org",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: OrgId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOrg(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsOrg(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsOrg(
-  ids: string[],
+  ids: OrgId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsOrg(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsOrg(
-  ids: string[],
+  ids: OrgId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsOrg(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOrg(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsOrg(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOrg(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   const context = useContext();
   

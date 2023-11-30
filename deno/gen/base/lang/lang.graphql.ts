@@ -8,7 +8,7 @@ scalar LangId
 
 type LangModel {
   "ID"
-  id: String!
+  id: LangId!
   "编码"
   code: String!
   "名称"
@@ -22,17 +22,17 @@ type LangModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -88,17 +88,17 @@ input LangInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -108,7 +108,7 @@ input LangSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [LangId!]
   "ID"
   id: LangId
   "编码"
@@ -145,23 +145,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
   "根据id查找一条数据"
-  findByIdLang(id: String!): LangModel
+  findByIdLang(id: LangId!): LangModel
   "查找order_by字段的最大值"
   findLastOrderByLang: Int!
 }
 type Mutation {
   "创建一条数据"
-  createLang(model: LangInput!, unique_type: UniqueType): String!
+  createLang(model: LangInput!, unique_type: UniqueType): LangId!
   "根据id修改一条数据"
-  updateByIdLang(id: String!, model: LangInput!): String!
+  updateByIdLang(id: LangId!, model: LangInput!): LangId!
   "根据 ids 删除数据"
-  deleteByIdsLang(ids: [String!]!): Int!
+  deleteByIdsLang(ids: [LangId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsLang(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsLang(ids: [LangId!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsLang(ids: [String!]!): Int!
+  revertByIdsLang(ids: [LangId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsLang(ids: [String!]!): Int!
+  forceDeleteByIdsLang(ids: [LangId!]!): Int!
 }
 
 `);

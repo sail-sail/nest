@@ -347,6 +347,10 @@ import {
 } from "./Api";
 
 import type {
+  WxUsrId,
+} from "@/typings/ids";
+
+import type {
   WxUsrInput,
   UsrModel,
 } from "#/types";
@@ -359,7 +363,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: WxUsrId,
     },
   ],
 }>();
@@ -387,9 +391,9 @@ let dialogNotice = $ref("");
 let dialogModel: WxUsrInput = $ref({
 } as WxUsrInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<WxUsrId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<WxUsrId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -420,7 +424,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: WxUsrId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -460,8 +464,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: WxUsrId;
+      ids?: WxUsrId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -751,7 +755,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: WxUsrId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

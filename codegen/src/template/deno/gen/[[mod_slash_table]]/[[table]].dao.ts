@@ -247,14 +247,190 @@ import {
 
 import type {
   PageInput,
-  SortInput,
-} from "/gen/types.ts";
+  SortInput,<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_deleted") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (
+      [
+        "is_default",
+        "is_deleted",
+        "tenant_id",
+        "org_id",
+        "version",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.dict && !column.dictbiz) {
+      continue;
+    }
+    const columnDictModels = [
+      ...dictModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+      ...dictbizModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+    ];
+    if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
+      continue;
+    }
+    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+    Column_Up = Column_Up.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  <#=Table_Up#><#=Column_Up#>,<#
+  }
+  #>
+} from "/gen/types.ts";<#
+const hasImportIds = [ ];
+#><#
+if (hasTenant_id) {
+#><#
+  if (!hasImportIds.includes("TenantId")) {
+    hasImportIds.push("TenantId");
+#>
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";<#
+  }
+#><#
+}
+#><#
+if (hasOrgId) {
+#><#
+  if (!hasImportIds.includes("OrgId")) {
+    hasImportIds.push("OrgId");
+#>
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";<#
+  }
+#><#
+}
+#><#
+for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+  const uniques = opts.uniques[i];
+  for (let k = 0; k < uniques.length; k++) {
+    const unique = uniques[k];
+    const column = columns.find((item) => item.COLUMN_NAME === unique);
+    if (!column) {
+      throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+    }
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') {
+      continue;
+    }
+    if (column_name === 'org_id') {
+      continue;
+    }
+    if (column_name === 'tenant_id') {
+      continue;
+    }
+    if (column_name === 'is_sys') {
+      continue;
+    }
+    if (column_name === 'is_deleted') {
+      continue;
+    }
+    if (column_name === 'is_hidden') {
+      continue;
+    }
+    const data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (!foreignKey) {
+      continue;
+    }
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    if (!hasImportIds.includes(foreignTable_Up + "Id")) {
+      hasImportIds.push(foreignTable_Up + "Id");
+#>
+
+import type {
+  <#=foreignTable_Up#>Id,
+} from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.model.ts";<#
+    }
+  }
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if ([
+    "id",
+    "create_usr_id",
+    "create_time",
+    "update_usr_id",
+    "update_time",
+    "is_sys",
+    "is_deleted",
+    "is_hidden",
+  ].includes(column_name)) continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const many2many = column.many2many;
+  const isPassword = column.isPassword;
+  const isVirtual = column.isVirtual;
+  if (isVirtual) continue;
+#><#
+if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+#>
+
+import type {
+  <#=foreignTable_Up#>Id,
+} from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.model.ts";<#
+}
+#><#
+}
+#>
 
 import type {
   <#=inputName#>,
   <#=modelName#>,
   <#=searchName#>,
-  <#=fieldCommentName#>,
+  <#=fieldCommentName#>,<#
+  if (!hasImportIds.includes(Table_Up + "Id")) {
+    hasImportIds.push(Table_Up + "Id");
+  #>
+  <#=Table_Up#>Id,<#
+  }
+  #>
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -914,7 +1090,7 @@ export async function findAll(
     
     // <#=column_comment#>
     if (item.<#=column_name#>) {
-      const obj = item.<#=column_name#> as unknown as {[key: string]: string};
+      const obj = item.<#=column_name#>;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -925,7 +1101,7 @@ export async function findAll(
       if (foreignKey.lbl) {
     #>
     if (item.<#=column_name#>_lbl) {
-      const obj = item.<#=column_name#>_lbl as unknown as {[key: string]: string};
+      const obj = item.<#=column_name#>_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -1178,7 +1354,7 @@ export async function findAll(
     #>
     
     // <#=column_comment#>
-    let <#=column_name#>_lbl = model.<#=column_name#>;
+    let <#=column_name#>_lbl = model.<#=column_name#> as string;
     if (!isEmpty(model.<#=column_name#>)) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>);
       if (dictItem) {
@@ -1500,6 +1676,9 @@ export async function setIdByLbl(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const many2many = column.many2many;
     const isPassword = column.isPassword;
     const isVirtual = column.isVirtual;
@@ -1527,6 +1706,30 @@ export async function setIdByLbl(
     #>
   }<#
     } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+      Column_Up = Column_Up.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+  #><#
+      if (columnDictModels.length > 0) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
+    if (val !== undefined) {
+      input.<#=column_name#> = val as <#=Table_Up#><#=Column_Up#>;
+    }
+  }<#
+      } else {
   #>
   
   // <#=column_comment#>
@@ -1536,6 +1739,8 @@ export async function setIdByLbl(
       input.<#=column_name#> = val;
     }
   }<#
+      }
+  #><#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
   
@@ -1580,10 +1785,10 @@ export async function setIdByLbl(
         t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
     `;
     interface Result {
-      id: string;
+      id: <#=foreignTable_Up#>Id;
     }
     const models = await query<Result>(sql, args);
-    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
+    input.<#=column_name#> = models.map((item: { id: <#=foreignTable_Up#>Id }) => item.id);
   }<#
   } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>
@@ -1813,8 +2018,34 @@ export async function findByUnique(
       if (!column) {
         throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
       }
+      const column_name = column.COLUMN_NAME;
+      if (column_name === 'id') {
+        continue;
+      }
+      if (column_name === 'org_id') {
+        continue;
+      }
+      if (column_name === 'tenant_id') {
+        continue;
+      }
+      if (column_name === 'is_sys') {
+        continue;
+      }
+      if (column_name === 'is_deleted') {
+        continue;
+      }
+      if (column_name === 'is_hidden') {
+        continue;
+      }
       const data_type = column.DATA_TYPE;
       const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
     #>
     if (search0.<#=unique#> == null) {
       return [ ];
@@ -1833,6 +2064,24 @@ export async function findByUnique(
         if (data_type === "tinyint" || data_type === "int") {
           _data_type = "number";
         }
+        const columnDictModels = [
+          ...dictModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+          ...dictbizModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+        ];
+        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+          Column_Up = Column_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          _data_type = Table_Up + Column_Up;
+        }
+      }
+      if (foreignKey) {
+        _data_type = foreignTable_Up + "Id";
       }
     #>
     let <#=unique#>: <#=_data_type#>[] = [ ];
@@ -1917,7 +2166,7 @@ export function equalsByUnique(
  * @param {<#=inputName#>} input
  * @param {<#=modelName#>} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<<#=Table_Up#>Id | undefined>}
  */
 export async function checkByUnique(
   input: <#=inputName#>,
@@ -1930,14 +2179,14 @@ export async function checkByUnique(
     }
     #>
   },
-): Promise<string | undefined> {
+): Promise<<#=Table_Up#>Id | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: <#=Table_Up#>Id = await updateById(
         oldModel.id,
         {
           ...input,
@@ -1952,7 +2201,7 @@ export async function checkByUnique(
           #>
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -2038,14 +2287,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  */
 export async function findById(
-  id?: string | null,
+  id?: <#=Table_Up#>Id | null,
   options?: {
   },
 ): Promise<<#=modelName#> | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -2068,15 +2317,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  */
 export async function existById(
-  id?: string | null,
+  id?: <#=Table_Up#>Id | null,
 ) {
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -2329,7 +2578,7 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<<#=Table_Up#>Id>} 
  */
 export async function create(
   input: <#=inputName#>,
@@ -2341,7 +2590,7 @@ export async function create(
     }
     #>
   },
-): Promise<string> {
+): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
@@ -2389,7 +2638,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: <#=Table_Up#>Id | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -2419,12 +2668,12 @@ export async function create(
   #>
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<<#=Table_Up#>Id>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -2583,7 +2832,7 @@ export async function create(
   }<#
   }
   #>
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -2591,7 +2840,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -2822,15 +3071,15 @@ if (hasTenant_id) {
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {<#=Table_Up#>Id} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: <#=Table_Up#>Id,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -2876,15 +3125,15 @@ if (hasOrgId) {
 /**
  * 根据id修改组织id
  * @export
- * @param {string} id
- * @param {string} org_id
+ * @param {<#=Table_Up#>Id} id
+ * @param {OrgId} org_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateOrgById(
-  id: string,
-  org_id: string,
+  id: <#=Table_Up#>Id,
+  org_id: OrgId,
   options?: {
   },
 ): Promise<number> {
@@ -2937,7 +3186,7 @@ if (hasVersion) {
  * 根据 id 获取版本号
  */
 export async function getVersionById(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<number> {
   const model = await findById(id);
   if (!model) {
@@ -2951,7 +3200,7 @@ export async function getVersionById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -2959,10 +3208,10 @@ export async function getVersionById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<<#=Table_Up#>Id>}
  */
 export async function updateById(
-  id: string,
+  id: <#=Table_Up#>Id,
   input: <#=inputName#>,
   options?: {
     uniqueType?: "ignore" | "throw";<#
@@ -2972,7 +3221,7 @@ export async function updateById(
     }
     #>
   },
-): Promise<string> {
+): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
@@ -3023,7 +3272,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }<#
   }
   #><#
@@ -3032,7 +3281,7 @@ export async function updateById(
   
   // 修改组织id
   if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id);
+    await updateOrgById(id, input.org_id as unknown as OrgId);
   }<#
   }
   #>
@@ -3179,7 +3428,7 @@ export async function updateById(
   }
   #>
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -3278,7 +3527,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "<#=column_name#>",
     {
@@ -3336,11 +3585,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   options?: {
   },
 ): Promise<number> {
@@ -3361,7 +3610,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: <#=Table_Up#>Id = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -3417,11 +3666,11 @@ if (hasDefault) {
 
 /**
  * 根据 id 设置默认记录
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @return {Promise<number>}
  */
 export async function defaultById(
-  id: string,
+  id: <#=Table_Up#>Id,
   options?: {
   },
 ): Promise<number> {
@@ -3490,11 +3739,11 @@ if (hasEnabled) {
 /**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: <#=Table_Up#>Id,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -3508,12 +3757,12 @@ export async function getIsEnabledById(
 
 /**
  * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -3578,11 +3827,11 @@ if (hasLocked) {
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: <#=Table_Up#>Id,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -3596,12 +3845,12 @@ export async function getIsLockedById(
 
 /**
  * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -3656,11 +3905,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   options?: {
   },
 ): Promise<number> {
@@ -3681,7 +3930,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: <#=Table_Up#>Id = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -3746,11 +3995,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   options?: {
   },
 ): Promise<number> {

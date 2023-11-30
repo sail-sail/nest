@@ -2,22 +2,28 @@ import {
   crypto,
   type DigestAlgorithmName,
 } from "std/crypto/mod.ts";
-import { encode } from "std/encoding/base64.ts";
+
+import { encodeBase64 } from "std/encoding/base64.ts";
 
 import type {
   InputMaybe,
 } from "/gen/types.ts";
 
+export function isEmpty<T>(str?: T | InputMaybe<T>): boolean;
+
 export function isEmpty(str?: string | InputMaybe<string>): boolean {
   return str === undefined || str === null || str === "" || str.trim() === "";
 }
+
+export function isNotEmpty<T>(str?: T | InputMaybe<T>): str is T;
 
 export function isNotEmpty(str?: string | InputMaybe<string>): str is string {
   return !(str === undefined || str === null || str === "" || str.trim() === "");
 }
 
-export function shortUuidV4(): string {
-  return encode(crypto.randomUUID().replace(/-/gm, "")).substring(0, 22);
+// deno-lint-ignore no-explicit-any
+export function shortUuidV4<T extends any>(): T {
+  return encodeBase64(crypto.randomUUID().replace(/-/gm, "")).substring(0, 22) as unknown as T;
 }
 
 export async function hash(
@@ -36,7 +42,7 @@ export async function hash(
     },
     data,
   );
-  return encode(buf2);
+  return encodeBase64(buf2);
 }
 
 export function sqlLike(str = ""): string {

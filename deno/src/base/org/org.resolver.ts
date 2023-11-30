@@ -1,5 +1,9 @@
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
 export async function orgLoginSelect(
-  org_id: string,
+  org_id: OrgId,
 ) {
   const {
     orgLoginSelect,

@@ -1,4 +1,8 @@
 <#
+const Table_Up = table.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const tableUp = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
 const column = columns.find((item) => item.foreignTabs?.length > 0);
 const foreignTabs = column?.foreignTabs || [ ];
 #><template>
@@ -87,6 +91,10 @@ import {
 }
 #>
 
+import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
 const {
   n,
   initI18ns,
@@ -97,7 +105,7 @@ let inited = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
-  id?: string,
+  id?: <#=Table_Up#>Id,
   is_deleted?: number | null,
 }>({ });
 
@@ -111,7 +119,7 @@ for (let im = 0; im < foreignTabs.length; im++) {
 let <#=itemTable#>Total = $ref<number>();
 
 async function useFindCount<#=itemTableUp#>() {
-  const <#=item.column#> = [ dialogModel.id! ];
+  const <#=item.column#>: <#=Table_Up#>Id[] = [ dialogModel.id! ];
   <#=itemTable#>Total = await findCount<#=itemTableUp#>(
     {
       is_deleted: dialogModel.is_deleted,
@@ -155,7 +163,7 @@ async function showDialog(
   arg?: {
     title?: string;
     model?: {
-      id?: string;
+      id?: <#=Table_Up#>Id;
       is_deleted?: number | null;
     };
     action?: typeof dialogAction;

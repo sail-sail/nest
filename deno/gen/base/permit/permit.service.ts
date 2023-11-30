@@ -13,6 +13,7 @@ import type {
   PermitModel,
   PermitSearch,
   PermitFieldComment,
+  PermitId,
 } from "./permit.model.ts";
 
 import * as permitDao from "./permit.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {PermitId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: PermitId | null,
 ): Promise<PermitModel | undefined> {
   const model = await permitDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {PermitId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: PermitId | null,
 ): Promise<boolean> {
   const data = await permitDao.existById(id);
   return data;
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {PermitInput} input
- * @return {Promise<string>} id
+ * @return {Promise<PermitId>} id
  */
 export async function create(
   input: PermitInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await permitDao.create(input, options);
-  return data;
+): Promise<PermitId> {
+  const id: PermitId = await permitDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {PermitId} id
  * @param {PermitInput} input
- * @return {Promise<string>}
+ * @return {Promise<PermitId>}
  */
 export async function updateById(
-  id: string,
+  id: PermitId,
   input: PermitInput,
-): Promise<string> {
+): Promise<PermitId> {
   
   // 不能修改系统记录的系统字段
   const model = await permitDao.findById(id);
@@ -149,23 +150,23 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const data = await permitDao.updateById(id, input);
-  return data;
+  const id2: PermitId = await permitDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: PermitId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: PermitId = ids[i];
       const model = await permitDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -184,11 +185,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   const data = await permitDao.revertByIds(ids);
   return data;
@@ -196,11 +197,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   const data = await permitDao.forceDeleteByIds(ids);
   return data;

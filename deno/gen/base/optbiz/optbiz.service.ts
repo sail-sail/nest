@@ -13,6 +13,7 @@ import type {
   OptbizModel,
   OptbizSearch,
   OptbizFieldComment,
+  OptbizId,
 } from "./optbiz.model.ts";
 
 import * as optbizDao from "./optbiz.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {OptbizId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: OptbizId | null,
 ): Promise<OptbizModel | undefined> {
   const model = await optbizDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {OptbizId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: OptbizId | null,
 ): Promise<boolean> {
   const data = await optbizDao.existById(id);
   return data;
@@ -116,36 +117,36 @@ export async function validate(
 /**
  * 创建数据
  * @param {OptbizInput} input
- * @return {Promise<string>} id
+ * @return {Promise<OptbizId>} id
  */
 export async function create(
   input: OptbizInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await optbizDao.create(input, options);
-  return data;
+): Promise<OptbizId> {
+  const id: OptbizId = await optbizDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 获取版本号
  */
-export async function getVersionById(id: string) {
+export async function getVersionById(id: OptbizId) {
   const version = await optbizDao.getVersionById(id);
   return version;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {OptbizId} id
  * @param {OptbizInput} input
- * @return {Promise<string>}
+ * @return {Promise<OptbizId>}
  */
 export async function updateById(
-  id: string,
+  id: OptbizId,
   input: OptbizInput,
-): Promise<string> {
+): Promise<OptbizId> {
   
   const is_locked = await optbizDao.getIsLockedById(id);
   if (is_locked) {
@@ -161,23 +162,23 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const data = await optbizDao.updateById(id, input);
-  return data;
+  const id2: OptbizId = await optbizDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: OptbizId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: OptbizId = ids[i];
       const is_locked = await optbizDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -190,9 +191,9 @@ export async function deleteByIds(
   }
   
   {
-    const ids2: string[] = [ ];
+    const ids2: OptbizId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: OptbizId = ids[i];
       const model = await optbizDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -211,12 +212,12 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await optbizDao.enableByIds(ids, is_enabled);
@@ -225,12 +226,12 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await optbizDao.lockByIds(ids, is_locked);
@@ -239,11 +240,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   const data = await optbizDao.revertByIds(ids);
   return data;
@@ -251,11 +252,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   const data = await optbizDao.forceDeleteByIds(ids);
   return data;

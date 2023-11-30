@@ -16,11 +16,15 @@ import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 /** 获取当前角色的首页轮播图路由 */
 export async function getHomeUrls() {
   
   const authModel = await getAuthModel();
-  const usr_id = authModel.id;
+  const usr_id: UsrId = authModel.id;
   
   const usrModel = await validateOptionUsr(
     await findByIdUsr(usr_id),

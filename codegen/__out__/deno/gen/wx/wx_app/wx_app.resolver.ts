@@ -17,6 +17,7 @@ import type {
   WxAppModel,
   WxAppSearch,
   WxAppFieldComment,
+  WxAppId,
 } from "./wx_app.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxApp(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxApp(
-  id: string,
+  id: WxAppId,
 ): Promise<WxAppModel | undefined> {
   const { findById } = await import("./wx_app.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxApp(
 export async function createWxApp(
   input: WxAppInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxAppId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxApp(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxAppId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxApp(
-  id: string,
+  id: WxAppId,
   input: WxAppInput,
-): Promise<string> {
+): Promise<WxAppId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxApp(
     "/wx/wx_app",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxAppId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxApp(
-  ids: string[],
+  ids: WxAppId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxApp(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsWxApp(
-  ids: string[],
+  ids: WxAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsWxApp(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsWxApp(
-  ids: string[],
+  ids: WxAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsWxApp(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxApp(
-  ids: string[],
+  ids: WxAppId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsWxApp(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxApp(
-  ids: string[],
+  ids: WxAppId[],
 ): Promise<number> {
   const context = useContext();
   

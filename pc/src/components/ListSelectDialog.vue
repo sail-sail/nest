@@ -113,7 +113,7 @@ let argIsLocked = $ref<boolean>();
 
 type OnCloseResolveType = {
   action: typeof dialogAction;
-  selectedIds?: string[];
+  selectedIds?: any[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -123,7 +123,7 @@ async function showDialog(
   arg?: {
     title?: string;
     action?: "select";
-    selectedIds: string[];
+    selectedIds: any[];
     isLocked?: boolean;
   },
 ) {

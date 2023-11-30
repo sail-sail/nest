@@ -17,6 +17,7 @@ import type {
   WxPayModel,
   WxPaySearch,
   WxPayFieldComment,
+  WxPayId,
 } from "./wx_pay.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxPay(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxPay(
-  id: string,
+  id: WxPayId,
 ): Promise<WxPayModel | undefined> {
   const { findById } = await import("./wx_pay.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxPay(
 export async function createWxPay(
   input: WxPayInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxPayId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxPay(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxPayId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxPay(
-  id: string,
+  id: WxPayId,
   input: WxPayInput,
-): Promise<string> {
+): Promise<WxPayId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxPay(
     "/wx/wx_pay",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxPayId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxPay(
-  ids: string[],
+  ids: WxPayId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxPay(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsWxPay(
-  ids: string[],
+  ids: WxPayId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsWxPay(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsWxPay(
-  ids: string[],
+  ids: WxPayId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsWxPay(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxPay(
-  ids: string[],
+  ids: WxPayId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsWxPay(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxPay(
-  ids: string[],
+  ids: WxPayId[],
 ): Promise<number> {
   const context = useContext();
   

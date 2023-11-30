@@ -17,6 +17,7 @@ import type {
   DictDetailModel,
   DictDetailSearch,
   DictDetailFieldComment,
+  DictDetailId,
 } from "./dict_detail.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneDictDetail(
  * 根据 id 查找一条数据
  */
 export async function findByIdDictDetail(
-  id: string,
+  id: DictDetailId,
 ): Promise<DictDetailModel | undefined> {
   const { findById } = await import("./dict_detail.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdDictDetail(
 export async function createDictDetail(
   input: DictDetailInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DictDetailId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDictDetail(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DictDetailId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdDictDetail(
-  id: string,
+  id: DictDetailId,
   input: DictDetailInput,
-): Promise<string> {
+): Promise<DictDetailId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDictDetail(
     "/base/dict_detail",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DictDetailId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDictDetail(
-  ids: string[],
+  ids: DictDetailId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsDictDetail(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsDictDetail(
-  ids: string[],
+  ids: DictDetailId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsDictDetail(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDictDetail(
-  ids: string[],
+  ids: DictDetailId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsDictDetail(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDictDetail(
-  ids: string[],
+  ids: DictDetailId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsDictDetail(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDictDetail(
-  ids: string[],
+  ids: DictDetailId[],
 ): Promise<number> {
   const context = useContext();
   

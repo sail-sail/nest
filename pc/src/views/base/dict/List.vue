@@ -653,6 +653,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  DictId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -702,13 +706,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    DictId[],
   ],
   add: [
-    string[],
+    DictId[],
   ],
   edit: [
-    string[],
+    DictId[],
   ],
   remove: [
     number,
@@ -775,9 +779,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: DictId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: DictId; // ID
   code?: string; // 编码
   code_like?: string; // 编码
   lbl?: string; // 名称
@@ -788,12 +792,6 @@ const props = defineProps<{
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -874,7 +872,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<DictModel>(
+} = $(useSelect<DictModel, DictId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1371,7 +1369,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: DictId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1393,7 +1391,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: DictId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1663,7 +1661,7 @@ async function onRevertByIds() {
 
 let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
 
-async function openForeignTabs(id: string, title: string) {
+async function openForeignTabs(id: DictId, title: string) {
   if (!foreignTabsRef) {
     return;
   }
