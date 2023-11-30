@@ -8,7 +8,7 @@ scalar DomainId
 
 type DomainModel {
   "ID"
-  id: String!
+  id: DomainId!
   "协议"
   protocol: String!
   "名称"
@@ -30,17 +30,17 @@ type DomainModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input DomainInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input DomainSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DomainId!]
   "ID"
   id: DomainId
   "协议"
@@ -173,27 +173,27 @@ type Query {
   "根据条件查找第一条数据"
   findOneDomain(search: DomainSearch, sort: [SortInput!]): DomainModel
   "根据id查找一条数据"
-  findByIdDomain(id: String!): DomainModel
+  findByIdDomain(id: DomainId!): DomainModel
   "查找order_by字段的最大值"
   findLastOrderByDomain: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDomain(model: DomainInput!, unique_type: UniqueType): String!
+  createDomain(model: DomainInput!, unique_type: UniqueType): DomainId!
   "根据id修改一条数据"
-  updateByIdDomain(id: String!, model: DomainInput!): String!
+  updateByIdDomain(id: DomainId!, model: DomainInput!): DomainId!
   "根据 ids 删除数据"
-  deleteByIdsDomain(ids: [String!]!): Int!
+  deleteByIdsDomain(ids: [DomainId!]!): Int!
   "根据 id 设置默认记录"
-  defaultByIdDomain(id: String!): Int!
+  defaultByIdDomain(id: DomainId!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsDomain(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsDomain(ids: [DomainId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDomain(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsDomain(ids: [DomainId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDomain(ids: [String!]!): Int!
+  revertByIdsDomain(ids: [DomainId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDomain(ids: [String!]!): Int!
+  forceDeleteByIdsDomain(ids: [DomainId!]!): Int!
 }
 
 `);

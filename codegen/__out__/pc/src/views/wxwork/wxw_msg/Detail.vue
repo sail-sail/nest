@@ -235,6 +235,10 @@ import {
 } from "./Api";
 
 import type {
+  WxwMsgId,
+} from "@/typings/ids";
+
+import type {
   WxwAppModel,
 } from "#/types";
 
@@ -248,7 +252,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: WxwMsgId,
     },
   ],
 }>();
@@ -276,9 +280,9 @@ let dialogNotice = $ref("");
 let dialogModel: WxwMsgInput = $ref({
 } as WxwMsgInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<WxwMsgId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<WxwMsgId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -297,7 +301,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: WxwMsgId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -334,8 +338,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: WxwMsgId;
+      ids?: WxwMsgId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

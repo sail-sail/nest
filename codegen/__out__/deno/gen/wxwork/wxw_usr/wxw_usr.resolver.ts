@@ -17,6 +17,7 @@ import type {
   WxwUsrModel,
   WxwUsrSearch,
   WxwUsrFieldComment,
+  WxwUsrId,
 } from "./wxw_usr.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxwUsr(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxwUsr(
-  id: string,
+  id: WxwUsrId,
 ): Promise<WxwUsrModel | undefined> {
   const { findById } = await import("./wxw_usr.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxwUsr(
 export async function createWxwUsr(
   input: WxwUsrInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxwUsrId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxwUsr(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxwUsrId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxwUsr(
-  id: string,
+  id: WxwUsrId,
   input: WxwUsrInput,
-): Promise<string> {
+): Promise<WxwUsrId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxwUsr(
     "/wxwork/wxw_usr",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxwUsrId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxwUsr(
-  ids: string[],
+  ids: WxwUsrId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxwUsr(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxwUsr(
-  ids: string[],
+  ids: WxwUsrId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsWxwUsr(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxwUsr(
-  ids: string[],
+  ids: WxwUsrId[],
 ): Promise<number> {
   const context = useContext();
   

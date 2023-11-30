@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  WxwUsrId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -121,14 +126,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {WxwUsrInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: WxwUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<WxwUsrId> {
   const data: {
     createWxwUsr: Mutation["createWxwUsr"];
   } = await mutation({
@@ -142,27 +147,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createWxwUsr;
-  return res;
+  const id: WxwUsrId = data.createWxwUsr;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {WxwUsrId} id
  * @param {WxwUsrInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: WxwUsrId,
   model: WxwUsrInput,
   opt?: GqlOpt,
-) {
+): Promise<WxwUsrId> {
   const data: {
     updateByIdWxwUsr: Mutation["updateByIdWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: WxwUsrInput!) {
+      mutation($id: WxwUsrId!, $model: WxwUsrInput!) {
         updateByIdWxwUsr(id: $id, model: $model)
       }
     `,
@@ -171,25 +176,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdWxwUsr;
-  return res;
+  const id2: WxwUsrId = data.updateByIdWxwUsr;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {WxwUsrId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: WxwUsrId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdWxwUsr: Query["findByIdWxwUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: WxwUsrId!) {
         findByIdWxwUsr(id: $id) {
           id
           lbl
@@ -209,18 +214,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxwUsrId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsWxwUsr: Mutation["deleteByIdsWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwUsrId!]!) {
         deleteByIdsWxwUsr(ids: $ids)
       }
     `,
@@ -235,18 +240,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxwUsrId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsWxwUsr: Mutation["revertByIdsWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwUsrId!]!) {
         revertByIdsWxwUsr(ids: $ids)
       }
     `,
@@ -261,18 +266,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxwUsrId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsWxwUsr: Mutation["forceDeleteByIdsWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [WxwUsrId!]!) {
         forceDeleteByIdsWxwUsr(ids: $ids)
       }
     `,

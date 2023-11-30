@@ -6,7 +6,7 @@ defineGraphql(resolver, /* GraphQL */`
   
   type GetLoginTenants {
     "ID"
-    id: String!
+    id: TenantId!
     "名称"
     lbl: String!
   }

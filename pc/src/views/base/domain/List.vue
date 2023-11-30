@@ -634,6 +634,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  DomainId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -682,13 +686,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    DomainId[],
   ],
   add: [
-    string[],
+    DomainId[],
   ],
   edit: [
-    string[],
+    DomainId[],
   ],
   remove: [
     number,
@@ -755,9 +759,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: DomainId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: DomainId; // ID
   protocol?: string; // 协议
   protocol_like?: string; // 协议
   lbl?: string; // 名称
@@ -768,12 +772,6 @@ const props = defineProps<{
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -854,7 +852,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<DomainModel>(
+} = $(useSelect<DomainModel, DomainId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1349,7 +1347,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: DomainId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1371,7 +1369,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 默认 */
-async function onIs_default(id: string) {
+async function onIs_default(id: DomainId) {
   if (isLocked) {
     return;
   }
@@ -1392,7 +1390,7 @@ async function onIs_default(id: string) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: DomainId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

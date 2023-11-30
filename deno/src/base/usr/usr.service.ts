@@ -2,14 +2,16 @@ import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
-import * as authService from "/lib/auth/auth.service.ts";
-
 import {
+  createToken,
   getAuthModel,
   getPassword,
 } from "/lib/auth/auth.dao.ts";
 
-import * as usrDao from "./usr.dao.ts";
+import {
+  findLoginUsr,
+  getOrgIdsById,
+} from "./usr.dao.ts";
 
 import * as usrDaoGen from "/gen/base/usr/usr.dao.ts";
 
@@ -24,6 +26,18 @@ import {
   ns
 } from "/src/base/i18n/i18n.ts";
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
 /**
  * 登录获得 authorization
  * @param {MutationLoginArgs["input"]} input 登录信息
@@ -35,11 +49,14 @@ import {
  */
 export async function login(
   input: MutationLoginArgs["input"],
-) {
+): Promise<{
+  authorization: string,
+  org_id?: OrgId,
+}> {
   const username = input.username;
   const password = input.password;
-  const tenant_id = input.tenant_id;
-  let org_id = input.org_id;
+  const tenant_id: TenantId = input.tenant_id;
+  let org_id: OrgId | null | undefined = input.org_id;
   const lang = input.lang;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
@@ -47,8 +64,8 @@ export async function login(
   if (isEmpty(tenant_id)) {
     throw await ns("请选择租户");
   }
-  const password2 = await authService.getPassword(password);
-  const model = await usrDao.findLoginUsr(
+  const password2 = await getPassword(password);
+  const model = await findLoginUsr(
     username,
     password2,
     tenant_id,
@@ -59,7 +76,7 @@ export async function login(
   if (org_id === null) {
     org_id = undefined;
   }
-  const org_ids = await usrDao.getOrgIdsById(
+  const org_ids = await getOrgIdsById(
     model.id,
   );
   if (!org_id) {
@@ -70,7 +87,9 @@ export async function login(
       org_id = undefined;
     }
   }
-  const { authorization } = await authService.createToken({
+  const {
+    authorization,
+  } = await createToken({
     id: model.id,
     org_id,
     tenant_id,
@@ -83,19 +102,19 @@ export async function login(
 }
 
 export async function getLoginInfo() {
-  const authModel = await authService.getAuthModel();
+  const authModel = await getAuthModel();
   if (!authModel) {
     throw await ns("未登录");
   }
   const org_id = authModel.org_id;
-  const id = authModel.id;
+  const id: UsrId = authModel.id;
   const usrModel = await usrDaoGen.findById(id);
   if (!usrModel) {
     throw await ns("用户不存在");
   }
   const org_ids = usrModel.org_ids || [ ];
   const orgModels = await orgDaoGen.findAll();
-  const org_id_models: { id: string, lbl: string }[] = [ ];
+  const org_id_models: { id: OrgId, lbl: string }[] = [ ];
   for (let i = 0; i < orgModels.length; i++) {
     const orgModel = orgModels[i];
     if (org_ids.includes(orgModel.id)) {
@@ -122,11 +141,11 @@ export async function selectLang(lang: string) {
   if (!lang) {
     throw await ns("语言编码不能为空");
   }
-  const authModel = await authService.getAuthModel();
+  const authModel = await getAuthModel();
   if (!authModel) {
     throw await ns("未登录");
   }
-  const { authorization } = await authService.createToken({
+  const { authorization } = await createToken({
     ...authModel,
     lang,
   });
@@ -160,7 +179,7 @@ export async function changePassword(
   }
   const authModel = await getAuthModel();
   
-  const id = authModel.id;
+  const id: UsrId = authModel.id;
   
   const usrModel = await usrDaoGen.validateOption(
     await usrDaoGen.findOne({
@@ -169,7 +188,7 @@ export async function changePassword(
   );
   await usrDaoGen.validateIsEnabled(usrModel);
   
-  const usr_id = usrModel.id;
+  const usr_id: UsrId = usrModel.id;
   
   const oldPassword2 = await getPassword(oldPassword);
   if (usrModel.password !== oldPassword2) {

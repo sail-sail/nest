@@ -31,9 +31,18 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   modelNameTree = Table_Up + "ModelTree";
 }
+#><#
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
 } from "#/types";
+<#
+}
+#>
+
+import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -60,8 +69,16 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "is_deleted") continue;
-  if (column_name === "tenant_id") continue;
+  if (
+    [
+      "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+      "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+      "tenant_id", "tenant_id_lbl",
+      "org_id", "org_id_lbl",
+    ].includes(column_name)
+    || column.readonly
+    || (column.noAdd && column.noEdit)
+  ) continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -587,14 +604,14 @@ if (opts.noAdd !== true) {
  * 创建一条数据
  * @export create
  * @param {<#=inputName#>} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: <#=inputName#>,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<<#=Table_Up#>Id> {
   const data: {
     create<#=Table_Up#>: Mutation["create<#=Table_Up#>"];
   } = await mutation({
@@ -608,8 +625,8 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.create<#=Table_Up#>;
-  return res;
+  const id: <#=Table_Up#>Id = data.create<#=Table_Up#>;
+  return id;
 }<#
 }
 #><#
@@ -619,20 +636,20 @@ if (opts.noEdit !== true) {
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: <#=Table_Up#>Id,
   model: <#=inputName#>,
   opt?: GqlOpt,
-) {
+): Promise<<#=Table_Up#>Id> {
   const data: {
     updateById<#=Table_Up#>: Mutation["updateById<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: <#=inputName#>!) {
+      mutation($id: <#=Table_Up#>Id!, $model: <#=inputName#>!) {
         updateById<#=Table_Up#>(id: $id, model: $model)
       }
     `,
@@ -641,8 +658,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateById<#=Table_Up#>;
-  return res;
+  const id2: <#=Table_Up#>Id = data.updateById<#=Table_Up#>;
+  return id2;
 }<#
 }
 #>
@@ -650,18 +667,18 @@ export async function updateById(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
   const data: {
     findById<#=Table_Up#>: Query["findById<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: <#=Table_Up#>Id!) {
         findById<#=Table_Up#>(id: $id) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -794,18 +811,18 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIds<#=Table_Up#>: Mutation["deleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [<#=Table_Up#>Id!]!) {
         deleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,
@@ -824,18 +841,18 @@ if (hasDefault && opts.noEdit !== true) {
 /**
  * 根据 id 设置默认记录
  * @export defaultById
- * @param {string} id
+ * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
  */
 export async function defaultById(
-  id: string,
+  id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
   const data: {
     defaultById<#=Table_Up#>: Mutation["defaultById<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!) {
+      mutation($id: <#=Table_Up#>Id!) {
         defaultById<#=Table_Up#>(id: $id)
       }
     `,
@@ -854,12 +871,12 @@ if (hasEnabled && opts.noEdit !== true) {
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -867,7 +884,7 @@ export async function enableByIds(
     enableByIds<#=Table_Up#>: Mutation["enableByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [<#=Table_Up#>Id!]!, $is_enabled: Int!) {
         enableByIds<#=Table_Up#>(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -887,12 +904,12 @@ if (hasLocked && opts.noEdit !== true) {
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -900,7 +917,7 @@ export async function lockByIds(
     lockByIds<#=Table_Up#>: Mutation["lockByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [<#=Table_Up#>Id!]!, $is_locked: Int!) {
         lockByIds<#=Table_Up#>(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -920,18 +937,18 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIds<#=Table_Up#>: Mutation["revertByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [<#=Table_Up#>Id!]!) {
         revertByIds<#=Table_Up#>(ids: $ids)
       }
     `,
@@ -946,18 +963,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIds<#=Table_Up#>: Mutation["forceDeleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [<#=Table_Up#>Id!]!) {
         forceDeleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,
@@ -1133,6 +1150,16 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+        "org_id", "org_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || (column.noAdd && column.noEdit)
+    ) continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     if (!foreignKey) continue;

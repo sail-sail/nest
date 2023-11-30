@@ -19,13 +19,15 @@ import { getEnv } from "/lib/env.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
-import {
-  type AuthModel,
-} from "/lib/auth/auth.constants.ts";
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
 
 export type SearchExtra = (args: QueryArgs) => Promise<string> | string | undefined | null;
 
@@ -91,7 +93,8 @@ export async function many2manyUpdate(
   if (!column2Ids) {
     return false;
   }
-  const { id: usr_id } = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
+  const usr_id: UsrId = authModel.id;
   const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
   type Model = {
     id: string,
@@ -244,8 +247,8 @@ export async function encrypt(
   if (!cryptoKey) {
     return "";
   }
-  const salt = shortUuidV4().substring(0, 16);
-  const ivStr = shortUuidV4().substring(0, 16);
+  const salt = shortUuidV4<string>().substring(0, 16);
+  const ivStr = shortUuidV4<string>().substring(0, 16);
   const iv = new TextEncoder().encode(ivStr);
   const buf = await crypto.subtle.encrypt(
     {

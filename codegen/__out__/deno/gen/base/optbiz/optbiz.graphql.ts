@@ -8,7 +8,7 @@ scalar OptbizId
 
 type OptbizModel {
   "ID"
-  id: String!
+  id: OptbizId!
   "名称"
   lbl: String!
   "键"
@@ -30,17 +30,17 @@ type OptbizModel {
   "版本号"
   version: Int!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input OptbizInput {
   "版本号"
   version: Int
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input OptbizSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [OptbizId!]
   "ID"
   id: OptbizId
   "名称"
@@ -176,25 +176,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneOptbiz(search: OptbizSearch, sort: [SortInput!]): OptbizModel
   "根据id查找一条数据"
-  findByIdOptbiz(id: String!): OptbizModel
+  findByIdOptbiz(id: OptbizId!): OptbizModel
   "查找order_by字段的最大值"
   findLastOrderByOptbiz: Int!
 }
 type Mutation {
   "创建一条数据"
-  createOptbiz(model: OptbizInput!, unique_type: UniqueType): String!
+  createOptbiz(model: OptbizInput!, unique_type: UniqueType): OptbizId!
   "根据id修改一条数据"
-  updateByIdOptbiz(id: String!, model: OptbizInput!): String!
+  updateByIdOptbiz(id: OptbizId!, model: OptbizInput!): OptbizId!
   "根据 ids 删除数据"
-  deleteByIdsOptbiz(ids: [String!]!): Int!
+  deleteByIdsOptbiz(ids: [OptbizId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsOptbiz(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsOptbiz(ids: [OptbizId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsOptbiz(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsOptbiz(ids: [OptbizId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsOptbiz(ids: [String!]!): Int!
+  revertByIdsOptbiz(ids: [OptbizId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsOptbiz(ids: [String!]!): Int!
+  forceDeleteByIdsOptbiz(ids: [OptbizId!]!): Int!
 }
 
 `);

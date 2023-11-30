@@ -6,9 +6,9 @@ defineGraphql(resolver, /* GraphQL */`
   
   type GetUsrPermits {
     "ID"
-    id: String!
+    id: PermitId!
     "菜单"
-    menu_id: String!
+    menu_id: MenuId!
     "路由"
     route_path: String!
     "编码"

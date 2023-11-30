@@ -143,7 +143,7 @@ export function usePage<T>(
   });
 }
 
-export function useSelect<T = any>(
+export function useSelect<T = any, Id = string>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
@@ -179,8 +179,8 @@ export function useSelect<T = any>(
   }
   
   /** 当前多行选中的数据 */
-  let selectedIds: string[] = $ref([ ]);
-  let prevSelectedIds: string[] = $ref([ ]);
+  let selectedIds: Id[] = $ref([ ]);
+  let prevSelectedIds: Id[] = $ref([ ]);
   
   function useSelectedIds() {
     if (!tableRef.value || !tableRef.value.data) {
@@ -234,7 +234,7 @@ export function useSelect<T = any>(
   
   const watch2Stop = watch(
     () => selectedIds,
-    (_newSelectIds: string[], oldSelectIds: string[]) => {
+    (_newSelectIds: Id[], oldSelectIds: Id[]) => {
       if (!tableRef.value?.data) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();

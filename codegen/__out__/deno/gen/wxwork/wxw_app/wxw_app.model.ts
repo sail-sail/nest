@@ -12,26 +12,34 @@ import type {
 export const wxwAppId = Symbol.for("WxwAppId");
 export type WxwAppId = typeof wxwAppId;
 
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 export interface WxwAppSearch extends WxwAppSearchType {
   tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
 export interface WxwAppModel extends WxwAppModelType {
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
-  tenant_id: string;
+  tenant_id: TenantId;
 }
 
 export interface WxwAppInput extends WxwAppInputType {
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
-  tenant_id?: string | null;
+  tenant_id?: TenantId | null;
 }
 
 export type { WxwAppFieldCommentType as WxwAppFieldComment };

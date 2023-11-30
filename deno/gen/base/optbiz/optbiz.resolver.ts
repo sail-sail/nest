@@ -17,6 +17,7 @@ import type {
   OptbizModel,
   OptbizSearch,
   OptbizFieldComment,
+  OptbizId,
 } from "./optbiz.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneOptbiz(
  * 根据 id 查找一条数据
  */
 export async function findByIdOptbiz(
-  id: string,
+  id: OptbizId,
 ): Promise<OptbizModel | undefined> {
   const { findById } = await import("./optbiz.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdOptbiz(
 export async function createOptbiz(
   input: OptbizInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<OptbizId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createOptbiz(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: OptbizId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdOptbiz(
-  id: string,
+  id: OptbizId,
   input: OptbizInput,
-): Promise<string> {
+): Promise<OptbizId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdOptbiz(
     "/base/optbiz",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: OptbizId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsOptbiz(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsOptbiz(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsOptbiz(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsOptbiz(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   const context = useContext();
   
