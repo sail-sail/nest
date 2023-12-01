@@ -9,7 +9,7 @@ import type {
   OptionsFieldComment as OptionsFieldCommentType,
 } from "/gen/types.ts";
 
-export const optionsId = Symbol.for("OptionsId");
+declare const optionsId: unique symbol;
 export type OptionsId = typeof optionsId;
 
 import type {
