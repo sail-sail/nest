@@ -4,7 +4,7 @@ use async_graphql::{Context, Object};
 use crate::common::context::Ctx;
 
 use super::tenant_resolver;
-use crate::gen::base::tenant::tenant_model::TenantModel;
+use super::tenant_model::GetLoginTenants;
 
 #[derive(Default)]
 pub struct TenantQuery;
@@ -17,7 +17,7 @@ impl TenantQuery {
     &self,
     ctx: &Context<'_>,
     domain: String,
-  ) -> Result<Vec<TenantModel>> {
+  ) -> Result<Vec<GetLoginTenants>> {
     Ctx::builder(ctx)
       .build()
       .scope({

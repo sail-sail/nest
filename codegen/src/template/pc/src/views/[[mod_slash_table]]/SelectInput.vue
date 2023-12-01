@@ -9,11 +9,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";

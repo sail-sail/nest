@@ -335,6 +335,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           if (dir2.endsWith(".graphql.ts")) {
             graphqlHasChanged = true;
           }
+          if (dir2.endsWith("_graphql.rs")) {
+            graphqlHasChanged = true;
+          }
           writeFnArr.push(async function() {
             await writeFile(`${out}/${dir2}`, str2);
             console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
@@ -452,6 +455,10 @@ export async function genRouter(context: Context) {
         if (file === "deno/lib/script/graphql_codegen_scalars.ts") {
           graphqlHasChanged = true;
         }
+        if (file === "rust/src/common/script/graphql_codegen_scalars.ts") {
+          graphqlHasChanged = true;
+        }
+        console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${file}`))}`);
         await writeFile(`${ out }/${ file }`, str2);
       }
     } catch(err) {
