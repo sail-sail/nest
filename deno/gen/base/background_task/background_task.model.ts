@@ -9,7 +9,7 @@ import type {
   BackgroundTaskFieldComment as BackgroundTaskFieldCommentType,
 } from "/gen/types.ts";
 
-export const backgroundTaskId = Symbol.for("BackgroundTaskId");
+declare const backgroundTaskId: unique symbol;
 export type BackgroundTaskId = typeof backgroundTaskId;
 
 import type {

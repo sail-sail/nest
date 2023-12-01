@@ -9,7 +9,7 @@ import type {
   TenantFieldComment as TenantFieldCommentType,
 } from "/gen/types.ts";
 
-export const tenantId = Symbol.for("TenantId");
+declare const tenantId: unique symbol;
 export type TenantId = typeof tenantId;
 
 import type {
