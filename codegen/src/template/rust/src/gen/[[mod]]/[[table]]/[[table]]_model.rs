@@ -291,8 +291,16 @@ pub struct <#=tableUP#>Model {<#
   #>
   pub <#=column_name#>_lbl: String,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
       let enumColumnName = _data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -487,15 +495,35 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
       } else if ((selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+        const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      let enumColumnName = _data_type;
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
-        const enumColumnName = Table_Up + Column_Up;
+        enumColumnName = Table_Up + Column_Up;
+      }
+    #><#
+      if (columnDictModels.length > 0) {
     #>
     // <#=column_comment#>
     let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone().try_into()?;<#
+      } else {
+    #>
+    // <#=column_comment#>
+    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone();<#
+      }
+    #><#
       } else if ((selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     // <#=column_comment#>
@@ -836,8 +864,16 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
       let enumColumnName = _data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1009,8 +1045,16 @@ pub struct <#=tableUP#>Input {
     const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
     if (selectList.length > 0 || column.dict || column.dictbiz) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
       let enumColumnName = _data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1545,6 +1589,7 @@ for (let i = 0; i < columns.length; i++) {
       return item.code === column.dict || item.code === column.dictbiz;
     }),
   ];
+  if (columnDictModels.length === 0) continue;
   const columnDictDefault = column_default && columnDictModels.find(function(item) {
     return item.val === column_default;
   });
@@ -1558,12 +1603,6 @@ for (let i = 0; i < columns.length; i++) {
 /// <#=table_comment#><#=column_comment#>
 #[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum <#=enumColumnName#> {<#
-  if (!require) {
-  #>
-  /// Empty
-  Empty,<#
-  }
-  #><#
   for (const columnDictModel of columnDictModels) {
     const val = columnDictModel.val;
     const lbl = columnDictModel.lbl;
@@ -1582,11 +1621,6 @@ pub enum <#=enumColumnName#> {<#
 impl fmt::Display for <#=enumColumnName#> {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {<#
-      if (!require) {
-      #>
-      Self::Empty => write!(f, ""),<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -1605,11 +1639,6 @@ impl fmt::Display for <#=enumColumnName#> {
 impl From<<#=enumColumnName#>> for SmolStr {
   fn from(value: <#=enumColumnName#>) -> Self {
     match value {<#
-      if (!require) {
-      #>
-      <#=enumColumnName#>::Empty => "".into(),<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -1628,11 +1657,6 @@ impl From<<#=enumColumnName#>> for SmolStr {
 impl From<<#=enumColumnName#>> for String {
   fn from(value: <#=enumColumnName#>) -> Self {
     match value {<#
-      if (!require) {
-      #>
-      <#=enumColumnName#>::Empty => "".into(),<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -1652,14 +1676,13 @@ impl From<<#=enumColumnName#>> for ArgType {
   fn from(value: <#=enumColumnName#>) -> Self {
     ArgType::SmolStr(value.into())
   }
-}
+}<#
+if (columnDictDefault) {
+#>
 
 impl Default for <#=enumColumnName#> {
   fn default() -> Self {<#
-    if (!require && !columnDictDefault) {
-    #>
-    Self::Empty,<#
-    } else {
+    if (columnDictDefault) {
       const val = columnDictDefault.val;
       let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
       valUp = valUp.split("_").map(function(item) {
@@ -1670,18 +1693,15 @@ impl Default for <#=enumColumnName#> {
     }
     #>
   }
+}<#
 }
+#>
 
 impl FromStr for <#=enumColumnName#> {
   type Err = anyhow::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {<#
-      if (!require) {
-      #>
-      "empty" => Ok(Self::Empty),<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -1701,11 +1721,6 @@ impl FromStr for <#=enumColumnName#> {
 impl <#=enumColumnName#> {
   pub fn as_str(&self) -> &str {
     match self {<#
-      if (!require) {
-      #>
-      Self::Empty => "",<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -1726,11 +1741,6 @@ impl TryFrom<String> for <#=enumColumnName#> {
   
   fn try_from(s: String) -> Result<Self, Self::Error> {
     match s.as_str() {<#
-      if (!require) {
-      #>
-      "" => Ok(Self::Empty),<#
-      }
-      #><#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
