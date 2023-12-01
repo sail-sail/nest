@@ -422,6 +422,20 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
+    // 所属部门
+    dept_ids: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("所属部门") }`,
+      },
+    ],
+    // 拥有角色
+    role_ids: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("拥有角色") }`,
+      },
+    ],
   };
 });
 
