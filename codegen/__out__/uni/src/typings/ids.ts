@@ -80,25 +80,25 @@ declare const usrId: unique symbol;
 export type UsrId = typeof usrId;
 
 // 微信JSAPI下单
-export const pay_transactions_jsapiId = Symbol.for("PayTransactionsJsapiId");
+declare const pay_transactions_jsapiId: unique symbol;
 export type PayTransactionsJsapiId = typeof pay_transactions_jsapiId;
 
 // 微信小程序
-export const wx_appId = Symbol.for("WxAppId");
+declare const wx_appId: unique symbol;
 export type WxAppId = typeof wx_appId;
 
 // 小程序接口凭据
-export const wx_app_tokenId = Symbol.for("WxAppTokenId");
+declare const wx_app_tokenId: unique symbol;
 export type WxAppTokenId = typeof wx_app_tokenId;
 
 // 微信支付
-export const wx_payId = Symbol.for("WxPayId");
+declare const wx_payId: unique symbol;
 export type WxPayId = typeof wx_payId;
 
 // 微信支付通知
-export const wx_pay_noticeId = Symbol.for("WxPayNoticeId");
+declare const wx_pay_noticeId: unique symbol;
 export type WxPayNoticeId = typeof wx_pay_noticeId;
 
 // 微信用户
-export const wx_usrId = Symbol.for("WxUsrId");
+declare const wx_usrId: unique symbol;
 export type WxUsrId = typeof wx_usrId;

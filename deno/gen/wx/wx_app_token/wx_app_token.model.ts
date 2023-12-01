@@ -9,7 +9,7 @@ import type {
   WxAppTokenFieldComment as WxAppTokenFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxAppTokenId = Symbol.for("WxAppTokenId");
+declare const wxAppTokenId: unique symbol;
 export type WxAppTokenId = typeof wxAppTokenId;
 
 import type {

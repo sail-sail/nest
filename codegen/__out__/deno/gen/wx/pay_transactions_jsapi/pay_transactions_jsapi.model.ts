@@ -9,7 +9,7 @@ import type {
   PayTransactionsJsapiFieldComment as PayTransactionsJsapiFieldCommentType,
 } from "/gen/types.ts";
 
-export const payTransactionsJsapiId = Symbol.for("PayTransactionsJsapiId");
+declare const payTransactionsJsapiId: unique symbol;
 export type PayTransactionsJsapiId = typeof payTransactionsJsapiId;
 
 import type {

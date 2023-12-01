@@ -9,7 +9,7 @@ import type {
   WxPayFieldComment as WxPayFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxPayId = Symbol.for("WxPayId");
+declare const wxPayId: unique symbol;
 export type WxPayId = typeof wxPayId;
 
 import type {
