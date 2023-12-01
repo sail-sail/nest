@@ -11,6 +11,7 @@ import type {
   PayTransactionsJsapiModel,
   PayTransactionsJsapiSearch,
   PayTransactionsJsapiFieldComment,
+  PayTransactionsJsapiId,
 } from "./pay_transactions_jsapi.model.ts";
 
 import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {PayTransactionsJsapiId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: PayTransactionsJsapiId | null,
 ): Promise<PayTransactionsJsapiModel | undefined> {
   const model = await pay_transactions_jsapiDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {PayTransactionsJsapiId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: PayTransactionsJsapiId | null,
 ): Promise<boolean> {
   const data = await pay_transactions_jsapiDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {PayTransactionsJsapiInput} input
- * @return {Promise<string>} id
+ * @return {Promise<PayTransactionsJsapiId>} id
  */
 export async function create(
   input: PayTransactionsJsapiInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await pay_transactions_jsapiDao.create(input, options);
-  return data;
+): Promise<PayTransactionsJsapiId> {
+  const id: PayTransactionsJsapiId = await pay_transactions_jsapiDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {PayTransactionsJsapiId} id
  * @param {PayTransactionsJsapiInput} input
- * @return {Promise<string>}
+ * @return {Promise<PayTransactionsJsapiId>}
  */
 export async function updateById(
-  id: string,
+  id: PayTransactionsJsapiId,
   input: PayTransactionsJsapiInput,
-): Promise<string> {
+): Promise<PayTransactionsJsapiId> {
   
-  const data = await pay_transactions_jsapiDao.updateById(id, input);
-  return data;
+  const id2: PayTransactionsJsapiId = await pay_transactions_jsapiDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {PayTransactionsJsapiId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: PayTransactionsJsapiId[],
 ): Promise<number> {
   
   const data = await pay_transactions_jsapiDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {PayTransactionsJsapiId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: PayTransactionsJsapiId[],
 ): Promise<number> {
   const data = await pay_transactions_jsapiDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {PayTransactionsJsapiId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: PayTransactionsJsapiId[],
 ): Promise<number> {
   const data = await pay_transactions_jsapiDao.forceDeleteByIds(ids);
   return data;

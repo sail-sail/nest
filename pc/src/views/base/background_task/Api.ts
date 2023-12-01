@@ -1,6 +1,8 @@
-import {
-  UniqueType,
-} from "#/types";
+
+
+import type {
+  BackgroundTaskId,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -10,7 +12,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -154,18 +155,18 @@ export async function findCount(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {BackgroundTaskId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: BackgroundTaskId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdBackgroundTask: Query["findByIdBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
           id
           lbl
@@ -202,18 +203,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsBackgroundTask: Mutation["deleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         deleteByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -228,18 +229,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsBackgroundTask: Mutation["revertByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         revertByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -254,18 +255,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsBackgroundTask: Mutation["forceDeleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         forceDeleteByIdsBackgroundTask(ids: $ids)
       }
     `,

@@ -11,6 +11,7 @@ import type {
   WxPayNoticeModel,
   WxPayNoticeSearch,
   WxPayNoticeFieldComment,
+  WxPayNoticeId,
 } from "./wx_pay_notice.model.ts";
 
 import * as wx_pay_noticeDao from "./wx_pay_notice.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxPayNoticeId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxPayNoticeId | null,
 ): Promise<WxPayNoticeModel | undefined> {
   const model = await wx_pay_noticeDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {WxPayNoticeId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxPayNoticeId | null,
 ): Promise<boolean> {
   const data = await wx_pay_noticeDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {WxPayNoticeInput} input
- * @return {Promise<string>} id
+ * @return {Promise<WxPayNoticeId>} id
  */
 export async function create(
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await wx_pay_noticeDao.create(input, options);
-  return data;
+): Promise<WxPayNoticeId> {
+  const id: WxPayNoticeId = await wx_pay_noticeDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {WxPayNoticeId} id
  * @param {WxPayNoticeInput} input
- * @return {Promise<string>}
+ * @return {Promise<WxPayNoticeId>}
  */
 export async function updateById(
-  id: string,
+  id: WxPayNoticeId,
   input: WxPayNoticeInput,
-): Promise<string> {
+): Promise<WxPayNoticeId> {
   
-  const data = await wx_pay_noticeDao.updateById(id, input);
-  return data;
+  const id2: WxPayNoticeId = await wx_pay_noticeDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
 ): Promise<number> {
   
   const data = await wx_pay_noticeDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
 ): Promise<number> {
   const data = await wx_pay_noticeDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
 ): Promise<number> {
   const data = await wx_pay_noticeDao.forceDeleteByIds(ids);
   return data;

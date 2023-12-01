@@ -17,6 +17,7 @@ import type {
   WxUsrModel,
   WxUsrSearch,
   WxUsrFieldComment,
+  WxUsrId,
 } from "./wx_usr.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxUsr(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxUsr(
-  id: string,
+  id: WxUsrId,
 ): Promise<WxUsrModel | undefined> {
   const { findById } = await import("./wx_usr.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxUsr(
 export async function createWxUsr(
   input: WxUsrInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxUsrId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxUsr(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxUsrId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxUsr(
-  id: string,
+  id: WxUsrId,
   input: WxUsrInput,
-): Promise<string> {
+): Promise<WxUsrId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxUsr(
     "/wx/wx_usr",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxUsrId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxUsr(
-  ids: string[],
+  ids: WxUsrId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxUsr(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsWxUsr(
-  ids: string[],
+  ids: WxUsrId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsWxUsr(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsWxUsr(
-  ids: string[],
+  ids: WxUsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsWxUsr(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxUsr(
-  ids: string[],
+  ids: WxUsrId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsWxUsr(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxUsr(
-  ids: string[],
+  ids: WxUsrId[],
 ): Promise<number> {
   const context = useContext();
   

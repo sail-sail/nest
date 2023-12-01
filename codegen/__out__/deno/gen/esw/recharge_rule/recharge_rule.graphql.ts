@@ -8,7 +8,7 @@ scalar RechargeRuleId
 
 type RechargeRuleModel {
   "ID"
-  id: String!
+  id: RechargeRuleId!
   "名称"
   lbl: String!
   "充值金额"
@@ -26,17 +26,17 @@ type RechargeRuleModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -100,17 +100,17 @@ input RechargeRuleInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -120,7 +120,7 @@ input RechargeRuleSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [RechargeRuleId!]
   "ID"
   id: RechargeRuleId
   "名称"
@@ -158,23 +158,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneRechargeRule(search: RechargeRuleSearch, sort: [SortInput!]): RechargeRuleModel
   "根据id查找一条数据"
-  findByIdRechargeRule(id: String!): RechargeRuleModel
+  findByIdRechargeRule(id: RechargeRuleId!): RechargeRuleModel
 }
 type Mutation {
   "创建一条数据"
-  createRechargeRule(model: RechargeRuleInput!, unique_type: UniqueType): String!
+  createRechargeRule(model: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
   "根据id修改一条数据"
-  updateByIdRechargeRule(id: String!, model: RechargeRuleInput!): String!
+  updateByIdRechargeRule(id: RechargeRuleId!, model: RechargeRuleInput!): RechargeRuleId!
   "根据 ids 删除数据"
-  deleteByIdsRechargeRule(ids: [String!]!): Int!
+  deleteByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsRechargeRule(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsRechargeRule(ids: [RechargeRuleId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsRechargeRule(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsRechargeRule(ids: [RechargeRuleId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsRechargeRule(ids: [String!]!): Int!
+  revertByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsRechargeRule(ids: [String!]!): Int!
+  forceDeleteByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
 }
 
 `);

@@ -8,15 +8,15 @@ scalar CardRechargeId
 
 type CardRechargeModel {
   "ID"
-  id: String!
+  id: CardRechargeId!
   "会员卡"
-  card_id: String!
+  card_id: CardId!
   "会员卡"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "用户"
-  usr_id: String!
+  usr_id: UsrId!
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "充值金额"
   amt: Decimal!
   "赠送金额"
@@ -30,17 +30,17 @@ type CardRechargeModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -92,13 +92,13 @@ input CardRechargeInput {
   ""
   id: CardRechargeId
   "会员卡"
-  card_id: String
+  card_id: CardId
   "会员卡"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "用户"
-  usr_id: String
+  usr_id: UsrId
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "充值金额"
   amt: Decimal
   "赠送金额"
@@ -112,17 +112,17 @@ input CardRechargeInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input CardRechargeSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [CardRechargeId!]
   "ID"
   id: CardRechargeId
   "会员卡"
@@ -175,15 +175,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneCardRecharge(search: CardRechargeSearch, sort: [SortInput!]): CardRechargeModel
   "根据id查找一条数据"
-  findByIdCardRecharge(id: String!): CardRechargeModel
+  findByIdCardRecharge(id: CardRechargeId!): CardRechargeModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsCardRecharge(ids: [String!]!): Int!
+  deleteByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsCardRecharge(ids: [String!]!): Int!
+  revertByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsCardRecharge(ids: [String!]!): Int!
+  forceDeleteByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
 }
 
 `);

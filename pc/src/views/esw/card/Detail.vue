@@ -302,6 +302,10 @@ import {
 } from "./Api";
 
 import type {
+  CardId,
+} from "@/typings/ids";
+
+import type {
   CardInput,
   UsrModel,
 } from "#/types";
@@ -310,11 +314,15 @@ import {
   getUsrList,
 } from "./Api";
 
+import {
+  CardGrade,
+} from "#/types";
+
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: CardId,
     },
   ],
 }>();
@@ -342,9 +350,9 @@ let dialogNotice = $ref("");
 let dialogModel: CardInput = $ref({
 } as CardInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<CardId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<CardId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -401,7 +409,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: CardId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -423,7 +431,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: CardInput = {
-    grade: "normal",
+    grade: CardGrade.Normal,
     balance: "0.00",
     give_balance: "0.00",
     integral: 0,
@@ -445,8 +453,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: CardId;
+      ids?: CardId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -738,7 +746,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: CardId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

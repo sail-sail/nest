@@ -54,7 +54,7 @@ export async function upload(
   if (opt?.notDownloadMulti) {
     meta.once = "1";
   }
-  const id = shortUuidV4();
+  const id = shortUuidV4<string>();
   await bucket.putObject(id, content, {
     contentType: file.contentType,
     meta,

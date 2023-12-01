@@ -3,10 +3,16 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
+
+import type {
+  DictbizId,
+} from "/gen/base/dictbiz/dictbiz.model.ts";
 
 type DictModel = {
-  id: string;
+  id: DictbizId;
   code: string;
   lbl: string;
   val: string;
@@ -24,7 +30,7 @@ export async function getDictbiz(
     return [ ];
   }
   
-  const tenant_id = await usrDaoSrc.getTenant_id();
+  const tenant_id = await getTenant_id();
   
   const args = new QueryArgs();
   const sql = /*sql*/ `

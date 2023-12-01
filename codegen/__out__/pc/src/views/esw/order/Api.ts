@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  OrderId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -173,14 +178,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {OrderInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: OrderInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<OrderId> {
   const data: {
     createOrder: Mutation["createOrder"];
   } = await mutation({
@@ -194,27 +199,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createOrder;
-  return res;
+  const id: OrderId = data.createOrder;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {OrderId} id
  * @param {OrderInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: OrderId,
   model: OrderInput,
   opt?: GqlOpt,
-) {
+): Promise<OrderId> {
   const data: {
     updateByIdOrder: Mutation["updateByIdOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: OrderInput!) {
+      mutation($id: OrderId!, $model: OrderInput!) {
         updateByIdOrder(id: $id, model: $model)
       }
     `,
@@ -223,25 +228,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdOrder;
-  return res;
+  const id2: OrderId = data.updateByIdOrder;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {OrderId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: OrderId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdOrder: Query["findByIdOrder"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: OrderId!) {
         findByIdOrder(id: $id) {
           id
           lbl
@@ -286,18 +291,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OrderId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsOrder: Mutation["deleteByIdsOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrderId!]!) {
         deleteByIdsOrder(ids: $ids)
       }
     `,
@@ -312,12 +317,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {OrderId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OrderId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -325,7 +330,7 @@ export async function enableByIds(
     enableByIdsOrder: Mutation["enableByIdsOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [OrderId!]!, $is_enabled: Int!) {
         enableByIdsOrder(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -341,12 +346,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {OrderId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OrderId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -354,7 +359,7 @@ export async function lockByIds(
     lockByIdsOrder: Mutation["lockByIdsOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [OrderId!]!, $is_locked: Int!) {
         lockByIdsOrder(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -370,18 +375,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OrderId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsOrder: Mutation["revertByIdsOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrderId!]!) {
         revertByIdsOrder(ids: $ids)
       }
     `,
@@ -396,18 +401,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OrderId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsOrder: Mutation["forceDeleteByIdsOrder"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrderId!]!) {
         forceDeleteByIdsOrder(ids: $ids)
       }
     `,

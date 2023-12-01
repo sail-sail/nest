@@ -683,6 +683,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  PtId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -730,13 +734,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    PtId[],
   ],
   add: [
-    string[],
+    PtId[],
   ],
   edit: [
-    string[],
+    PtId[],
   ],
   remove: [
     number,
@@ -803,15 +807,15 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: PtId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: PtId; // ID
   img?: string; // 图片
   img_like?: string; // 图片
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   pt_type_id?: string|string[]; // 类型
-  pt_type_id_lbl?: string|string[]; // 类型
+  pt_type_id_lbl?: string; // 类型
   price?: string; // 价格
   original_price?: string; // 原价
   is_new?: string|string[]; // 新品
@@ -824,12 +828,6 @@ const props = defineProps<{
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -914,7 +912,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<PtModel>(
+} = $(useSelect<PtModel, PtId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1461,7 +1459,7 @@ async function stopImport() {
 }
 
 /** 新品 */
-async function onIs_new(id: string, is_new: 0 | 1) {
+async function onIs_new(id: PtId, is_new: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1485,7 +1483,7 @@ async function onIs_new(id: string, is_new: 0 | 1) {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: PtId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1507,7 +1505,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: PtId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

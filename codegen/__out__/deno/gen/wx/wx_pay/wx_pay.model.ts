@@ -9,8 +9,16 @@ import type {
   WxPayFieldComment as WxPayFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxPayId = Symbol.for("WxPayId");
+declare const wxPayId: unique symbol;
 export type WxPayId = typeof wxPayId;
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
 
 export interface WxPaySearch extends WxPaySearchType {
   tenant_id?: string | null;
@@ -18,20 +26,20 @@ export interface WxPaySearch extends WxPaySearchType {
 }
 
 export interface WxPayModel extends WxPayModelType {
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
-  tenant_id: string;
+  tenant_id: TenantId;
 }
 
 export interface WxPayInput extends WxPayInputType {
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
-  tenant_id?: string | null;
+  tenant_id?: TenantId | null;
 }
 
 export type { WxPayFieldCommentType as WxPayFieldComment };

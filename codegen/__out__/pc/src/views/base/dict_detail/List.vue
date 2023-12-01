@@ -663,6 +663,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  DictDetailId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -715,13 +719,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    DictDetailId[],
   ],
   add: [
-    string[],
+    DictDetailId[],
   ],
   edit: [
-    string[],
+    DictDetailId[],
   ],
   remove: [
     number,
@@ -789,11 +793,11 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: DictDetailId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: DictDetailId; // ID
   dict_id?: string|string[]; // 系统字典
-  dict_id_lbl?: string|string[]; // 系统字典
+  dict_id_lbl?: string; // 系统字典
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   val?: string; // 值
@@ -803,12 +807,6 @@ const props = defineProps<{
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -889,7 +887,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<DictDetailModel>(
+} = $(useSelect<DictDetailModel, DictDetailId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1386,7 +1384,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: DictDetailId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1408,7 +1406,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: DictDetailId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

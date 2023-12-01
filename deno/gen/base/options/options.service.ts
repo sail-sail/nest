@@ -13,6 +13,7 @@ import type {
   OptionsModel,
   OptionsSearch,
   OptionsFieldComment,
+  OptionsId,
 } from "./options.model.ts";
 
 import * as optionsDao from "./options.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {OptionsId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: OptionsId | null,
 ): Promise<OptionsModel | undefined> {
   const model = await optionsDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {OptionsId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: OptionsId | null,
 ): Promise<boolean> {
   const data = await optionsDao.existById(id);
   return data;
@@ -116,36 +117,36 @@ export async function validate(
 /**
  * 创建数据
  * @param {OptionsInput} input
- * @return {Promise<string>} id
+ * @return {Promise<OptionsId>} id
  */
 export async function create(
   input: OptionsInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await optionsDao.create(input, options);
-  return data;
+): Promise<OptionsId> {
+  const id: OptionsId = await optionsDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 获取版本号
  */
-export async function getVersionById(id: string) {
+export async function getVersionById(id: OptionsId) {
   const version = await optionsDao.getVersionById(id);
   return version;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {OptionsId} id
  * @param {OptionsInput} input
- * @return {Promise<string>}
+ * @return {Promise<OptionsId>}
  */
 export async function updateById(
-  id: string,
+  id: OptionsId,
   input: OptionsInput,
-): Promise<string> {
+): Promise<OptionsId> {
   
   const is_locked = await optionsDao.getIsLockedById(id);
   if (is_locked) {
@@ -161,23 +162,23 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const data = await optionsDao.updateById(id, input);
-  return data;
+  const id2: OptionsId = await optionsDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: OptionsId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: OptionsId = ids[i];
       const is_locked = await optionsDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -190,9 +191,9 @@ export async function deleteByIds(
   }
   
   {
-    const ids2: string[] = [ ];
+    const ids2: OptionsId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: OptionsId = ids[i];
       const model = await optionsDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -211,12 +212,12 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * @param {OptionsId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OptionsId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await optionsDao.enableByIds(ids, is_enabled);
@@ -225,12 +226,12 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * @param {OptionsId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OptionsId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await optionsDao.lockByIds(ids, is_locked);
@@ -239,11 +240,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   const data = await optionsDao.revertByIds(ids);
   return data;
@@ -251,11 +252,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   const data = await optionsDao.forceDeleteByIds(ids);
   return data;

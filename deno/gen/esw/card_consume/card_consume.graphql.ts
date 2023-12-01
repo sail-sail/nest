@@ -8,15 +8,15 @@ scalar CardConsumeId
 
 type CardConsumeModel {
   "ID"
-  id: String!
+  id: CardConsumeId!
   "卡号"
-  card_id: String!
+  card_id: CardId!
   "卡号"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "用户"
-  usr_id: String!
+  usr_id: UsrId!
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "消费金额"
   amt: Decimal!
   "消费赠送金额"
@@ -30,17 +30,17 @@ type CardConsumeModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -92,13 +92,13 @@ input CardConsumeInput {
   ""
   id: CardConsumeId
   "卡号"
-  card_id: String
+  card_id: CardId
   "卡号"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "用户"
-  usr_id: String
+  usr_id: UsrId
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "消费金额"
   amt: Decimal
   "消费赠送金额"
@@ -112,17 +112,17 @@ input CardConsumeInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input CardConsumeSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [CardConsumeId!]
   "ID"
   id: CardConsumeId
   "卡号"
@@ -175,15 +175,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneCardConsume(search: CardConsumeSearch, sort: [SortInput!]): CardConsumeModel
   "根据id查找一条数据"
-  findByIdCardConsume(id: String!): CardConsumeModel
+  findByIdCardConsume(id: CardConsumeId!): CardConsumeModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsCardConsume(ids: [String!]!): Int!
+  deleteByIdsCardConsume(ids: [CardConsumeId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsCardConsume(ids: [String!]!): Int!
+  revertByIdsCardConsume(ids: [CardConsumeId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsCardConsume(ids: [String!]!): Int!
+  forceDeleteByIdsCardConsume(ids: [CardConsumeId!]!): Int!
 }
 
 `);

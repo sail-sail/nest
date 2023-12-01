@@ -69,10 +69,27 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
+
+import type {
+  PermitId,
+} from "/gen/base/permit/permit.model.ts";
+
+import type {
+  DataPermitId,
+} from "/gen/base/data_permit/data_permit.model.ts";
+
+import type {
   RoleInput,
   RoleModel,
   RoleSearch,
   RoleFieldComment,
+  RoleId,
 } from "./role.model.ts";
 
 const route_path = "/base/role";
@@ -441,7 +458,7 @@ export async function findAll(
     
     // 菜单权限
     if (item.menu_ids) {
-      const obj = item.menu_ids as unknown as {[key: string]: string};
+      const obj = item.menu_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -450,7 +467,7 @@ export async function findAll(
       item.menu_ids = keys.map((key) => obj[key]);
     }
     if (item.menu_ids_lbl) {
-      const obj = item.menu_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.menu_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -461,7 +478,7 @@ export async function findAll(
     
     // 按钮权限
     if (item.permit_ids) {
-      const obj = item.permit_ids as unknown as {[key: string]: string};
+      const obj = item.permit_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -470,7 +487,7 @@ export async function findAll(
       item.permit_ids = keys.map((key) => obj[key]);
     }
     if (item.permit_ids_lbl) {
-      const obj = item.permit_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.permit_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -481,7 +498,7 @@ export async function findAll(
     
     // 数据权限
     if (item.data_permit_ids) {
-      const obj = item.data_permit_ids as unknown as {[key: string]: string};
+      const obj = item.data_permit_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -490,7 +507,7 @@ export async function findAll(
       item.data_permit_ids = keys.map((key) => obj[key]);
     }
     if (item.data_permit_ids_lbl) {
-      const obj = item.data_permit_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.data_permit_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -588,10 +605,10 @@ export async function setIdByLbl(
         t.lbl in ${ args.push(input.menu_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: MenuId;
     }
     const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: string }) => item.id);
+    input.menu_ids = models.map((item: { id: MenuId }) => item.id);
   }
   
   // 按钮权限
@@ -610,10 +627,10 @@ export async function setIdByLbl(
         t.lbl in ${ args.push(input.permit_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: PermitId;
     }
     const models = await query<Result>(sql, args);
-    input.permit_ids = models.map((item: { id: string }) => item.id);
+    input.permit_ids = models.map((item: { id: PermitId }) => item.id);
   }
   
   // 数据权限
@@ -632,10 +649,10 @@ export async function setIdByLbl(
         t.scope in ${ args.push(input.data_permit_ids_lbl) }
     `;
     interface Result {
-      id: string;
+      id: DataPermitId;
     }
     const models = await query<Result>(sql, args);
-    input.data_permit_ids = models.map((item: { id: string }) => item.id);
+    input.data_permit_ids = models.map((item: { id: DataPermitId }) => item.id);
   }
   
   // 锁定
@@ -746,7 +763,7 @@ export function equalsByUnique(
  * @param {RoleInput} input
  * @param {RoleModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<RoleId | undefined>}
  */
 export async function checkByUnique(
   input: RoleInput,
@@ -754,14 +771,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<RoleId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: RoleId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -771,7 +788,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -801,14 +818,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {RoleId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: RoleId | null,
   options?: {
   },
 ): Promise<RoleModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -831,15 +848,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {RoleId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: RoleId | null,
 ) {
   const table = "base_role";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -951,14 +968,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<RoleId>} 
  */
 export async function create(
   input: RoleInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<RoleId> {
   const table = "base_role";
   const method = "create";
   
@@ -970,7 +987,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: RoleId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -996,12 +1013,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<RoleId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -1064,7 +1081,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1072,7 +1089,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1171,15 +1188,15 @@ export async function delCache() {
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {RoleId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: RoleId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -1210,7 +1227,7 @@ export async function updateTenantById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {RoleId} id
  * @param {RoleInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -1218,15 +1235,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<RoleId>}
  */
 export async function updateById(
-  id: string,
+  id: RoleId,
   input: RoleInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<RoleId> {
   const table = "base_role";
   const method = "updateById";
   
@@ -1239,7 +1256,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -1316,7 +1333,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1339,7 +1356,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "menu_ids",
     {
@@ -1356,7 +1373,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "permit_ids",
     {
@@ -1373,7 +1390,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "data_permit_ids",
     {
@@ -1399,11 +1416,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: RoleId[],
   options?: {
   },
 ): Promise<number> {
@@ -1420,7 +1437,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: RoleId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1448,11 +1465,11 @@ export async function deleteByIds(
 /**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {RoleId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: RoleId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1466,12 +1483,12 @@ export async function getIsEnabledById(
 
 /**
  * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: RoleId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1518,11 +1535,11 @@ export async function enableByIds(
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {RoleId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: RoleId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1536,12 +1553,12 @@ export async function getIsLockedById(
 
 /**
  * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: RoleId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1586,11 +1603,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: RoleId[],
   options?: {
   },
 ): Promise<number> {
@@ -1607,7 +1624,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: RoleId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1645,11 +1662,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: RoleId[],
   options?: {
   },
 ): Promise<number> {

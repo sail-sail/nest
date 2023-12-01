@@ -34,6 +34,30 @@ import {
 
 import WxPay from "wechatpay-node-v3";
 
+import {
+  WxPayNoticeTradeType,
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
+  PayTransactionsJsapiTradeState,
+} from "/gen/types.ts";
+
+import type {
+  WxPayNoticeId,
+} from "/gen/wx/wx_pay_notice/wx_pay_notice.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
+import type {
+  PayTransactionsJsapiId,
+} from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts";
+
 interface Ipay {
   appid: string; //  直连商户申请的公众号或移动应用appid。
   mchid: string; // 商户号
@@ -211,27 +235,27 @@ export async function pay_notice(
   }
   */
   // 记录订单
-  const wx_pay_noticeId = await createWxPayNotice({
+  const wx_pay_noticeId: WxPayNoticeId = await createWxPayNotice({
     appid: result.appid,
     mchid: result.mchid,
     openid: result.payer.openid,
     out_trade_no: result.out_trade_no,
     transaction_id: result.transaction_id,
-    trade_type: result.trade_type,
-    trade_state: result.trade_state,
+    trade_type: result.trade_type as unknown as WxPayNoticeTradeType,
+    trade_state: result.trade_state as unknown as WxPayNoticeTradeState,
     trade_state_desc: result.trade_state_desc,
     bank_type: result.bank_type,
     attach: result.attach,
     success_time,
     total: result.amount.total,
     payer_total: result.amount.payer_total,
-    currency: result.amount.currency,
-    payer_currency: result.amount.payer_currency,
+    currency: result.amount.currency as unknown as WxPayNoticeCurrency,
+    payer_currency: result.amount.payer_currency as unknown as WxPayNoticePayerCurrency,
     device_id: result.device_id,
     raw: JSON.stringify(result),
   });
   const transaction_id = result.transaction_id;
-  const trade_state = result.trade_state;
+  const trade_state = result.trade_state as unknown as PayTransactionsJsapiTradeState;
   const trade_type = result.trade_type;
   const out_trade_no = result.out_trade_no;
   const trade_state_desc = result.trade_state_desc;
@@ -242,9 +266,9 @@ export async function pay_notice(
       out_trade_no,
     }),
   );
-  const pay_transactions_jsapi_id = pay_transactions_jsapiModel.id;
-  const tenant_id = pay_transactions_jsapiModel.tenant_id;
-  const org_id = pay_transactions_jsapiModel.org_id;
+  const pay_transactions_jsapi_id: PayTransactionsJsapiId = pay_transactions_jsapiModel.id;
+  const tenant_id: TenantId = pay_transactions_jsapiModel.tenant_id;
+  const org_id: OrgId = pay_transactions_jsapiModel.org_id;
   const attach2 = pay_transactions_jsapiModel.attach2;
   
   if (trade_state === "SUCCESS" && trade_type === "JSAPI") {

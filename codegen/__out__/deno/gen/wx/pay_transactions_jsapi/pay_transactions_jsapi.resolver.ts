@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  PayTransactionsJsapiInput,
   PayTransactionsJsapiModel,
   PayTransactionsJsapiSearch,
   PayTransactionsJsapiFieldComment,
+  PayTransactionsJsapiId,
 } from "./pay_transactions_jsapi.model.ts";
 
 import {
@@ -84,7 +83,7 @@ export async function findOnePayTransactionsJsapi(
  * 根据 id 查找一条数据
  */
 export async function findByIdPayTransactionsJsapi(
-  id: string,
+  id: PayTransactionsJsapiId,
 ): Promise<PayTransactionsJsapiModel | undefined> {
   const { findById } = await import("./pay_transactions_jsapi.service.ts");
   const res = await findById(id);

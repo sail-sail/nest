@@ -53,10 +53,15 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  WxAppId,
+} from "/gen/wx/wx_app/wx_app.model.ts";
+
+import type {
   WxAppTokenInput,
   WxAppTokenModel,
   WxAppTokenSearch,
   WxAppTokenFieldComment,
+  WxAppTokenId,
 } from "./wx_app_token.model.ts";
 
 import * as wx_appDao from "/gen/wx/wx_app/wx_app.dao.ts";
@@ -348,7 +353,7 @@ export async function findByUnique(
     if (search0.wx_app_id == null) {
       return [ ];
     }
-    let wx_app_id: string[] = [ ];
+    let wx_app_id: WxAppId[] = [ ];
     if (!Array.isArray(search0.wx_app_id)) {
       wx_app_id.push(search0.wx_app_id, search0.wx_app_id);
     } else {
@@ -388,7 +393,7 @@ export function equalsByUnique(
  * @param {WxAppTokenInput} input
  * @param {WxAppTokenModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<WxAppTokenId | undefined>}
  */
 export async function checkByUnique(
   input: WxAppTokenInput,
@@ -396,14 +401,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<WxAppTokenId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: WxAppTokenId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -413,7 +418,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -443,14 +448,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxAppTokenId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxAppTokenId | null,
   options?: {
   },
 ): Promise<WxAppTokenModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -473,15 +478,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {WxAppTokenId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxAppTokenId | null,
 ) {
   const table = "wx_wx_app_token";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -563,14 +568,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<WxAppTokenId>} 
  */
 export async function create(
   input: WxAppTokenInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<WxAppTokenId> {
   const table = "wx_wx_app_token";
   const method = "create";
   
@@ -582,7 +587,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: WxAppTokenId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -600,12 +605,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<WxAppTokenId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -644,7 +649,7 @@ export async function create(
     sql += `,expires_in`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -652,7 +657,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -703,7 +708,7 @@ export async function delCache() {
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {WxAppTokenId} id
  * @param {WxAppTokenInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -711,15 +716,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<WxAppTokenId>}
  */
 export async function updateById(
-  id: string,
+  id: WxAppTokenId,
   input: WxAppTokenInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<WxAppTokenId> {
   const table = "wx_wx_app_token";
   const method = "updateById";
   
@@ -784,7 +789,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -816,11 +821,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
   options?: {
   },
 ): Promise<number> {
@@ -837,7 +842,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxAppTokenId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -864,11 +869,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
   options?: {
   },
 ): Promise<number> {
@@ -885,7 +890,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxAppTokenId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -923,11 +928,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
   options?: {
   },
 ): Promise<number> {

@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  PtTypeId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -11,7 +16,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -154,14 +158,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {PtTypeInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: PtTypeInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<PtTypeId> {
   const data: {
     createPtType: Mutation["createPtType"];
   } = await mutation({
@@ -175,27 +179,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createPtType;
-  return res;
+  const id: PtTypeId = data.createPtType;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {PtTypeId} id
  * @param {PtTypeInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: PtTypeId,
   model: PtTypeInput,
   opt?: GqlOpt,
-) {
+): Promise<PtTypeId> {
   const data: {
     updateByIdPtType: Mutation["updateByIdPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: PtTypeInput!) {
+      mutation($id: PtTypeId!, $model: PtTypeInput!) {
         updateByIdPtType(id: $id, model: $model)
       }
     `,
@@ -204,25 +208,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdPtType;
-  return res;
+  const id2: PtTypeId = data.updateByIdPtType;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {PtTypeId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: PtTypeId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdPtType: Query["findByIdPtType"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: PtTypeId!) {
         findByIdPtType(id: $id) {
           id
           lbl
@@ -258,18 +262,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: PtTypeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsPtType: Mutation["deleteByIdsPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PtTypeId!]!) {
         deleteByIdsPtType(ids: $ids)
       }
     `,
@@ -284,12 +288,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {PtTypeId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: PtTypeId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -297,7 +301,7 @@ export async function enableByIds(
     enableByIdsPtType: Mutation["enableByIdsPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [PtTypeId!]!, $is_enabled: Int!) {
         enableByIdsPtType(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -313,12 +317,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {PtTypeId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: PtTypeId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -326,7 +330,7 @@ export async function lockByIds(
     lockByIdsPtType: Mutation["lockByIdsPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [PtTypeId!]!, $is_locked: Int!) {
         lockByIdsPtType(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -342,18 +346,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: PtTypeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsPtType: Mutation["revertByIdsPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PtTypeId!]!) {
         revertByIdsPtType(ids: $ids)
       }
     `,
@@ -368,18 +372,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: PtTypeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsPtType: Mutation["forceDeleteByIdsPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PtTypeId!]!) {
         forceDeleteByIdsPtType(ids: $ids)
       }
     `,

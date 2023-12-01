@@ -554,6 +554,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  PayTransactionsJsapiId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -592,13 +596,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    PayTransactionsJsapiId[],
   ],
   add: [
-    string[],
+    PayTransactionsJsapiId[],
   ],
   edit: [
-    string[],
+    PayTransactionsJsapiId[],
   ],
   remove: [
     number,
@@ -665,9 +669,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: PayTransactionsJsapiId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: PayTransactionsJsapiId; // ID
   appid?: string; // appid
   appid_like?: string; // appid
   mchid?: string; // 商户号
@@ -697,12 +701,6 @@ const props = defineProps<{
   openid_like?: string; // 用户标识
   prepay_id?: string; // 预支付交易会话标识
   prepay_id_like?: string; // 预支付交易会话标识
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -783,7 +781,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<PayTransactionsJsapiModel>(
+} = $(useSelect<PayTransactionsJsapiModel, PayTransactionsJsapiId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

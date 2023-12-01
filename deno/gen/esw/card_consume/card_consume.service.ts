@@ -11,6 +11,7 @@ import type {
   CardConsumeModel,
   CardConsumeSearch,
   CardConsumeFieldComment,
+  CardConsumeId,
 } from "./card_consume.model.ts";
 
 import * as card_consumeDao from "./card_consume.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {CardConsumeId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: CardConsumeId | null,
 ): Promise<CardConsumeModel | undefined> {
   const model = await card_consumeDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {CardConsumeId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: CardConsumeId | null,
 ): Promise<boolean> {
   const data = await card_consumeDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {CardConsumeInput} input
- * @return {Promise<string>} id
+ * @return {Promise<CardConsumeId>} id
  */
 export async function create(
   input: CardConsumeInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await card_consumeDao.create(input, options);
-  return data;
+): Promise<CardConsumeId> {
+  const id: CardConsumeId = await card_consumeDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {CardConsumeId} id
  * @param {CardConsumeInput} input
- * @return {Promise<string>}
+ * @return {Promise<CardConsumeId>}
  */
 export async function updateById(
-  id: string,
+  id: CardConsumeId,
   input: CardConsumeInput,
-): Promise<string> {
+): Promise<CardConsumeId> {
   
-  const data = await card_consumeDao.updateById(id, input);
-  return data;
+  const id2: CardConsumeId = await card_consumeDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CardConsumeId[],
 ): Promise<number> {
   
   const data = await card_consumeDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CardConsumeId[],
 ): Promise<number> {
   const data = await card_consumeDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CardConsumeId[],
 ): Promise<number> {
   const data = await card_consumeDao.forceDeleteByIds(ids);
   return data;

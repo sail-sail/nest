@@ -710,6 +710,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  CardId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -758,13 +762,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    CardId[],
   ],
   add: [
-    string[],
+    CardId[],
   ],
   edit: [
-    string[],
+    CardId[],
   ],
   remove: [
     number,
@@ -831,13 +835,13 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: CardId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: CardId; // ID
   lbl?: string; // 卡号
   lbl_like?: string; // 卡号
   usr_id?: string|string[]; // 绑定用户
-  usr_id_lbl?: string|string[]; // 绑定用户
+  usr_id_lbl?: string; // 绑定用户
   grade?: string|string[]; // 会员等级
   name?: string; // 姓名
   name_like?: string; // 姓名
@@ -852,14 +856,6 @@ const props = defineProps<{
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  org_id?: string|string[]; // 组织
-  org_id_lbl?: string|string[]; // 组织
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -949,7 +945,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<CardModel>(
+} = $(useSelect<CardModel, CardId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1510,7 +1506,7 @@ async function stopImport() {
 }
 
 /** 默认 */
-async function onIs_default(id: string) {
+async function onIs_default(id: CardId) {
   if (isLocked) {
     return;
   }
@@ -1531,7 +1527,7 @@ async function onIs_default(id: string) {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: CardId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1553,7 +1549,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: CardId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

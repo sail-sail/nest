@@ -212,6 +212,10 @@ import {
 } from "./Api";
 
 import type {
+  RechargeRuleId,
+} from "@/typings/ids";
+
+import type {
   RechargeRuleInput,
 } from "#/types";
 
@@ -219,7 +223,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: RechargeRuleId,
     },
   ],
 }>();
@@ -247,9 +251,9 @@ let dialogNotice = $ref("");
 let dialogModel: RechargeRuleInput = $ref({
 } as RechargeRuleInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<RechargeRuleId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<RechargeRuleId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -294,7 +298,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: RechargeRuleId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -335,8 +339,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: RechargeRuleId;
+      ids?: RechargeRuleId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -626,7 +630,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: RechargeRuleId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

@@ -251,6 +251,10 @@ import {
 } from "./Api";
 
 import type {
+  MenuId,
+} from "@/typings/ids";
+
+import type {
   MenuInput,
 } from "#/types";
 
@@ -258,11 +262,15 @@ import {
   getMenuTree,
 } from "@/views/base/menu/Api";
 
+import {
+  MenuType,
+} from "#/types";
+
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: MenuId,
     },
   ],
 }>();
@@ -290,9 +298,9 @@ let dialogNotice = $ref("");
 let dialogModel: MenuInput = $ref({
 } as MenuInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<MenuId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<MenuId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -337,7 +345,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: MenuId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -359,7 +367,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: MenuInput = {
-    type: "pc",
+    type: MenuType.Pc,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
@@ -378,8 +386,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: MenuId;
+      ids?: MenuId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -678,7 +686,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: MenuId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

@@ -17,6 +17,7 @@ import type {
   OptionsModel,
   OptionsSearch,
   OptionsFieldComment,
+  OptionsId,
 } from "./options.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneOptions(
  * 根据 id 查找一条数据
  */
 export async function findByIdOptions(
-  id: string,
+  id: OptionsId,
 ): Promise<OptionsModel | undefined> {
   const { findById } = await import("./options.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdOptions(
 export async function createOptions(
   input: OptionsInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<OptionsId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createOptions(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: OptionsId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdOptions(
-  id: string,
+  id: OptionsId,
   input: OptionsInput,
-): Promise<string> {
+): Promise<OptionsId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdOptions(
     "/base/options",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: OptionsId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOptions(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsOptions(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsOptions(
-  ids: string[],
+  ids: OptionsId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsOptions(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsOptions(
-  ids: string[],
+  ids: OptionsId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsOptions(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOptions(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsOptions(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOptions(
-  ids: string[],
+  ids: OptionsId[],
 ): Promise<number> {
   const context = useContext();
   

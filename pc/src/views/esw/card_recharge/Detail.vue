@@ -265,6 +265,10 @@ import {
 } from "./Api";
 
 import type {
+  CardRechargeId,
+} from "@/typings/ids";
+
+import type {
   CardModel,
   UsrModel,
 } from "#/types";
@@ -280,7 +284,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: CardRechargeId,
     },
   ],
 }>();
@@ -308,9 +312,9 @@ let dialogNotice = $ref("");
 let dialogModel: CardRechargeInput = $ref({
 } as CardRechargeInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<CardRechargeId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<CardRechargeId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -329,7 +333,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: CardRechargeId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -371,8 +375,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: CardRechargeId;
+      ids?: CardRechargeId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

@@ -384,15 +384,25 @@ import {
 } from "./Api";
 
 import type {
+  WxPayNoticeId,
+} from "@/typings/ids";
+
+import type {
 } from "#/types";
 
 type WxPayNoticeInput = any;
+
+import {
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: WxPayNoticeId,
     },
   ],
 }>();
@@ -420,9 +430,9 @@ let dialogNotice = $ref("");
 let dialogModel: WxPayNoticeInput = $ref({
 } as WxPayNoticeInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<WxPayNoticeId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<WxPayNoticeId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -441,7 +451,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: WxPayNoticeId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -463,12 +473,12 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
-    trade_state: "NOTPAY",
+    trade_state: WxPayNoticeTradeState.NOTPAY,
     trade_state_desc: "未支付",
     total: 0,
     payer_total: 0,
-    currency: "CNY",
-    payer_currency: "CNY",
+    currency: WxPayNoticeCurrency.CNY,
+    payer_currency: WxPayNoticePayerCurrency.CNY,
   };
   return defaultInput;
 }
@@ -484,8 +494,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: WxPayNoticeId;
+      ids?: WxPayNoticeId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

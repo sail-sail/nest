@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  WxPayNoticeInput,
   WxPayNoticeModel,
   WxPayNoticeSearch,
   WxPayNoticeFieldComment,
+  WxPayNoticeId,
 } from "./wx_pay_notice.model.ts";
 
 import {
@@ -84,7 +83,7 @@ export async function findOneWxPayNotice(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxPayNotice(
-  id: string,
+  id: WxPayNoticeId,
 ): Promise<WxPayNoticeModel | undefined> {
   const { findById } = await import("./wx_pay_notice.service.ts");
   const res = await findById(id);

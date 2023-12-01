@@ -6,17 +6,26 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar CardId
 
 "会员卡会员等级"
-scalar CardGrade
+enum CardGrade {
+  "普通"
+  normal
+  "黄金"
+  gold
+  "铂金"
+  platinum
+  "钻石"
+  diamond
+}
 
 type CardModel {
   "ID"
-  id: String!
+  id: CardId!
   "卡号"
   lbl: String!
   "绑定用户"
-  usr_id: String!
+  usr_id: UsrId!
   "绑定用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "会员等级"
   grade: CardGrade
   "会员等级"
@@ -48,17 +57,17 @@ type CardModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -128,9 +137,9 @@ input CardInput {
   "卡号"
   lbl: String
   "绑定用户"
-  usr_id: String
+  usr_id: UsrId
   "绑定用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "会员等级"
   grade: CardGrade
   "会员等级"
@@ -162,17 +171,17 @@ input CardInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -182,7 +191,7 @@ input CardSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [CardId!]
   "ID"
   id: CardId
   "卡号"
@@ -237,25 +246,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneCard(search: CardSearch, sort: [SortInput!]): CardModel
   "根据id查找一条数据"
-  findByIdCard(id: String!): CardModel
+  findByIdCard(id: CardId!): CardModel
 }
 type Mutation {
   "创建一条数据"
-  createCard(model: CardInput!, unique_type: UniqueType): String!
+  createCard(model: CardInput!, unique_type: UniqueType): CardId!
   "根据id修改一条数据"
-  updateByIdCard(id: String!, model: CardInput!): String!
+  updateByIdCard(id: CardId!, model: CardInput!): CardId!
   "根据 ids 删除数据"
-  deleteByIdsCard(ids: [String!]!): Int!
+  deleteByIdsCard(ids: [CardId!]!): Int!
   "根据 id 设置默认记录"
-  defaultByIdCard(id: String!): Int!
+  defaultByIdCard(id: CardId!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsCard(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsCard(ids: [CardId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsCard(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsCard(ids: [CardId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsCard(ids: [String!]!): Int!
+  revertByIdsCard(ids: [CardId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsCard(ids: [String!]!): Int!
+  forceDeleteByIdsCard(ids: [CardId!]!): Int!
 }
 
 `);

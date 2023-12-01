@@ -19,6 +19,7 @@ import type {
   RechargeRuleModel,
   RechargeRuleSearch,
   RechargeRuleFieldComment,
+  RechargeRuleId,
 } from "./recharge_rule.model.ts";
 
 import {
@@ -86,7 +87,7 @@ export async function findOneRechargeRule(
  * 根据 id 查找一条数据
  */
 export async function findByIdRechargeRule(
-  id: string,
+  id: RechargeRuleId,
 ): Promise<RechargeRuleModel | undefined> {
   const { findById } = await import("./recharge_rule.service.ts");
   const res = await findById(id);
@@ -99,7 +100,7 @@ export async function findByIdRechargeRule(
 export async function createRechargeRule(
   input: RechargeRuleInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<RechargeRuleId> {
   
   // 充值金额
   if (input.amt != null) {
@@ -130,17 +131,17 @@ export async function createRechargeRule(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: RechargeRuleId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdRechargeRule(
-  id: string,
+  id: RechargeRuleId,
   input: RechargeRuleInput,
-): Promise<string> {
+): Promise<RechargeRuleId> {
   
   // 充值金额
   if (input.amt != null) {
@@ -167,15 +168,15 @@ export async function updateByIdRechargeRule(
     "/esw/recharge_rule",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: RechargeRuleId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsRechargeRule(
-  ids: string[],
+  ids: RechargeRuleId[],
 ): Promise<number> {
   
   const {
@@ -198,7 +199,7 @@ export async function deleteByIdsRechargeRule(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsRechargeRule(
-  ids: string[],
+  ids: RechargeRuleId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -225,7 +226,7 @@ export async function enableByIdsRechargeRule(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsRechargeRule(
-  ids: string[],
+  ids: RechargeRuleId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -252,7 +253,7 @@ export async function lockByIdsRechargeRule(
  * 根据 ids 还原数据
  */
 export async function revertByIdsRechargeRule(
-  ids: string[],
+  ids: RechargeRuleId[],
 ): Promise<number> {
   
   const {
@@ -275,7 +276,7 @@ export async function revertByIdsRechargeRule(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsRechargeRule(
-  ids: string[],
+  ids: RechargeRuleId[],
 ): Promise<number> {
   const context = useContext();
   
