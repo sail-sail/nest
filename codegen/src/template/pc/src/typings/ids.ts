@@ -22,7 +22,7 @@ for (let i = 0; i < allTables.length; i++) {
   } */
 #>
 // <#=table_comment#>
-export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
+declare const <#=table_Up#>Id: unique symbol;
 export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;
 <#
 }

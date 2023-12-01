@@ -45,7 +45,10 @@ async function gqlgen() {
     stderr: "inherit",
     stdout: "inherit",
   });
-  await command.output();
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
 }
 
 // function escapeRegExp(str: string) {
@@ -169,7 +172,10 @@ async function compile() {
       stderr: "inherit",
       stdout: "inherit",
     });
-    await command.output();
+    const output = await command.output();
+    if (output.code == 1) {
+      Deno.exit(1);
+    }
   } finally {
     // await Deno.writeTextFile(denoDir+"/deps.ts", depsStr);
   }
@@ -186,7 +192,10 @@ async function pc() {
     stderr: "inherit",
     stdout: "inherit",
   });
-  await command.output();
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
   const str = await Deno.readTextFile(`${ buildDir }/../pc/index.html`);
   const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
   await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
@@ -203,7 +212,10 @@ async function uni() {
     stderr: "inherit",
     stdout: "inherit",
   });
-  await command.output();
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
   try {
     await Deno.remove(`${ buildDir }/../uni/`, { recursive: true });
   // deno-lint-ignore no-empty
@@ -224,7 +236,10 @@ async function docs() {
     stderr: "inherit",
     stdout: "inherit",
   });
-  await command.output();
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
 }
 
 async function publish() {
@@ -238,7 +253,10 @@ async function publish() {
     stderr: "inherit",
     stdout: "inherit",
   });
-  await command.output();
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
 }
 
 for (let i = 0; i < commands.length; i++) {

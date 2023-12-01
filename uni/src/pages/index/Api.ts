@@ -2,13 +2,16 @@ import type {
   Query,
   Mutation,
   MutationLoginArgs,
+  RoleSearch,
+  PageInput,
+  GetLoginTenants,
 } from "#/types";
 
 /** 根据 当前网址的域名+端口 获取 租户列表 */
 export async function getLoginTenants(
   variables: { domain: string },
   opt?: GqlOpt,
-): Promise<{ id: string, lbl: string }[]> {
+): Promise<GetLoginTenants[]> {
   const data: {
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
@@ -80,4 +83,57 @@ export async function clearCache(
     variables,
   }, opt);
   return data?.clearCache;
+}
+
+/**
+ * 根据搜索条件查找数据
+ */
+export async function findAllRole(
+  search?: RoleSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllRole: Query["findAllRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+          menu_ids
+          menu_ids_lbl
+          permit_ids
+          permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
+          is_locked
+          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
+          is_deleted
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllRole;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
+  }
+  return res;
 }

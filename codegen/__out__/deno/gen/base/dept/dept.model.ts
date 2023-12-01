@@ -9,7 +9,7 @@ import type {
   DeptFieldComment as DeptFieldCommentType,
 } from "/gen/types.ts";
 
-export const deptId = Symbol.for("DeptId");
+declare const deptId: unique symbol;
 export type DeptId = typeof deptId;
 
 import type {

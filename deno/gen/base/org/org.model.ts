@@ -9,7 +9,7 @@ import type {
   OrgFieldComment as OrgFieldCommentType,
 } from "/gen/types.ts";
 
-export const orgId = Symbol.for("OrgId");
+declare const orgId: unique symbol;
 export type OrgId = typeof orgId;
 
 import type {
