@@ -9,7 +9,7 @@ import type {
   WxwMsgFieldComment as WxwMsgFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxwMsgId = Symbol.for("WxwMsgId");
+declare const wxwMsgId: unique symbol;
 export type WxwMsgId = typeof wxwMsgId;
 
 import type {

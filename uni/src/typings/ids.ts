@@ -80,17 +80,17 @@ declare const usrId: unique symbol;
 export type UsrId = typeof usrId;
 
 // 企微应用
-export const wxw_appId = Symbol.for("WxwAppId");
+declare const wxw_appId: unique symbol;
 export type WxwAppId = typeof wxw_appId;
 
 // 企微应用接口凭据
-export const wxw_app_tokenId = Symbol.for("WxwAppTokenId");
+declare const wxw_app_tokenId: unique symbol;
 export type WxwAppTokenId = typeof wxw_app_tokenId;
 
 // 企微消息
-export const wxw_msgId = Symbol.for("WxwMsgId");
+declare const wxw_msgId: unique symbol;
 export type WxwMsgId = typeof wxw_msgId;
 
 // 企微用户
-export const wxw_usrId = Symbol.for("WxwUsrId");
+declare const wxw_usrId: unique symbol;
 export type WxwUsrId = typeof wxw_usrId;
