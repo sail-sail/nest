@@ -54,13 +54,19 @@ import {
 import type {
   PageInput,
   SortInput,
+  FieldPermitType,
 } from "/gen/types.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
 
 import type {
   FieldPermitInput,
   FieldPermitModel,
   FieldPermitSearch,
   FieldPermitFieldComment,
+  FieldPermitId,
 } from "./field_permit.model.ts";
 
 import * as menuDao from "/gen/base/menu/menu.dao.ts";
@@ -322,7 +328,7 @@ export async function findAll(
     const model = result[i];
     
     // 类型
-    let type_lbl = model.type;
+    let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
       if (dictItem) {
@@ -383,7 +389,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.type_lbl) && input.type === undefined) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      input.type = val;
+      input.type = val as FieldPermitType;
     }
   }
 }
@@ -437,7 +443,7 @@ export async function findByUnique(
     if (search0.menu_id == null) {
       return [ ];
     }
-    let menu_id: string[] = [ ];
+    let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
       menu_id.push(search0.menu_id, search0.menu_id);
     } else {
@@ -483,7 +489,7 @@ export function equalsByUnique(
  * @param {FieldPermitInput} input
  * @param {FieldPermitModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<FieldPermitId | undefined>}
  */
 export async function checkByUnique(
   input: FieldPermitInput,
@@ -491,14 +497,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<FieldPermitId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: FieldPermitId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -508,7 +514,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -538,14 +544,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {FieldPermitId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: FieldPermitId | null,
   options?: {
   },
 ): Promise<FieldPermitModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -568,15 +574,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {FieldPermitId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: FieldPermitId | null,
 ) {
   const table = "base_field_permit";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -693,14 +699,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<FieldPermitId>} 
  */
 export async function create(
   input: FieldPermitInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<FieldPermitId> {
   const table = "base_field_permit";
   const method = "create";
   
@@ -712,7 +718,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: FieldPermitId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -730,12 +736,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<FieldPermitId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -780,7 +786,7 @@ export async function create(
     sql += `,is_sys`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -788,7 +794,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -846,7 +852,7 @@ export async function delCache() {
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {FieldPermitId} id
  * @param {FieldPermitInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -854,15 +860,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<FieldPermitId>}
  */
 export async function updateById(
-  id: string,
+  id: FieldPermitId,
   input: FieldPermitInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<FieldPermitId> {
   const table = "base_field_permit";
   const method = "updateById";
   
@@ -939,7 +945,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -971,11 +977,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   options?: {
   },
 ): Promise<number> {
@@ -992,7 +998,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: FieldPermitId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1019,11 +1025,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   options?: {
   },
 ): Promise<number> {
@@ -1040,7 +1046,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: FieldPermitId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1078,11 +1084,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   options?: {
   },
 ): Promise<number> {

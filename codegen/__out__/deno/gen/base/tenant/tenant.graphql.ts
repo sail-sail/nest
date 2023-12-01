@@ -8,17 +8,17 @@ scalar TenantId
 
 type TenantModel {
   "ID"
-  id: String!
+  id: TenantId!
   "名称"
   lbl: String!
   "所属域名"
-  domain_ids: [String!]
+  domain_ids: [DomainId!]
   "所属域名"
-  domain_ids_lbl: [DomainId!]
+  domain_ids_lbl: [String!]
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   "菜单权限"
-  menu_ids_lbl: [MenuId!]
+  menu_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -32,17 +32,17 @@ type TenantModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -98,13 +98,13 @@ input TenantInput {
   "名称"
   lbl: String
   "所属域名"
-  domain_ids: [String!]
+  domain_ids: [DomainId!]
   "所属域名"
-  domain_ids_lbl: [DomainId!]
+  domain_ids_lbl: [String!]
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   "菜单权限"
-  menu_ids_lbl: [MenuId!]
+  menu_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -118,17 +118,17 @@ input TenantInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -138,7 +138,7 @@ input TenantSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [TenantId!]
   "ID"
   id: TenantId
   "名称"
@@ -180,25 +180,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据id查找一条数据"
-  findByIdTenant(id: String!): TenantModel
+  findByIdTenant(id: TenantId!): TenantModel
   "查找order_by字段的最大值"
   findLastOrderByTenant: Int!
 }
 type Mutation {
   "创建一条数据"
-  createTenant(model: TenantInput!, unique_type: UniqueType): String!
+  createTenant(model: TenantInput!, unique_type: UniqueType): TenantId!
   "根据id修改一条数据"
-  updateByIdTenant(id: String!, model: TenantInput!): String!
+  updateByIdTenant(id: TenantId!, model: TenantInput!): TenantId!
   "根据 ids 删除数据"
-  deleteByIdsTenant(ids: [String!]!): Int!
+  deleteByIdsTenant(ids: [TenantId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsTenant(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsTenant(ids: [TenantId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsTenant(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsTenant(ids: [TenantId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsTenant(ids: [String!]!): Int!
+  revertByIdsTenant(ids: [TenantId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsTenant(ids: [String!]!): Int!
+  forceDeleteByIdsTenant(ids: [TenantId!]!): Int!
 }
 
 `);

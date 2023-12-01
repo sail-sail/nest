@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  DataPermitId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -12,7 +17,6 @@ import type {
 
 import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
@@ -153,14 +157,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {DataPermitInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<DataPermitId> {
   const data: {
     createDataPermit: Mutation["createDataPermit"];
   } = await mutation({
@@ -174,27 +178,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createDataPermit;
-  return res;
+  const id: DataPermitId = data.createDataPermit;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {DataPermitId} id
  * @param {DataPermitInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: DataPermitId,
   model: DataPermitInput,
   opt?: GqlOpt,
-) {
+): Promise<DataPermitId> {
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: DataPermitInput!) {
+      mutation($id: DataPermitId!, $model: DataPermitInput!) {
         updateByIdDataPermit(id: $id, model: $model)
       }
     `,
@@ -203,25 +207,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdDataPermit;
-  return res;
+  const id2: DataPermitId = data.updateByIdDataPermit;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {DataPermitId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: DataPermitId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdDataPermit: Query["findByIdDataPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: DataPermitId!) {
         findByIdDataPermit(id: $id) {
           id
           menu_id
@@ -254,18 +258,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsDataPermit: Mutation["deleteByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         deleteByIdsDataPermit(ids: $ids)
       }
     `,
@@ -280,18 +284,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsDataPermit: Mutation["revertByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         revertByIdsDataPermit(ids: $ids)
       }
     `,
@@ -306,18 +310,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsDataPermit: Mutation["forceDeleteByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         forceDeleteByIdsDataPermit(ids: $ids)
       }
     `,

@@ -1,39 +1,46 @@
-import { shortUuidV4 } from "/lib/util/string_util.ts";
-
-import * as background_taskDao from "/gen/base/background_task/background_task.dao.ts";
+import {
+  updateById as updateByIdBackgroundTask,
+  create as createBackgroundTask,
+} from "/gen/base/background_task/background_task.dao.ts";
 
 import dayjs from "dayjs";
 
+import type {
+  BackgroundTaskId,
+} from "/gen/base/background_task/background_task.model.ts";
+
+import {
+  BackgroundTaskState,
+  BackgroundTaskType,
+} from "/gen/types.ts";
+
 const timeoutObj = Symbol("timeoutObj");
 
-//[{value: "text", label: "文本"},{value: "download", label: "下载"},{value: "inline", label: "查看"},{value: "tag", label: "标签"}]
-export type BtType = "text"|"download"|"inline"|"tag";
-
 // deno-lint-ignore no-explicit-any
-async function handelResult(data: any, id: string) {
+async function handelResult(data: any, id: BackgroundTaskId) {
   if (typeof data === "object" && !(data instanceof String)) {
     data = JSON.stringify(data);
   }
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
-  await background_taskDao.updateById(
+  await updateByIdBackgroundTask(
     id,
     {
-      state: "success",
+      state: BackgroundTaskState.Success,
       end_time,
       result: data,
     },
   );
 }
 
-async function handelErr(err: Error, id: string) {
+async function handelErr(err: Error, id: BackgroundTaskId) {
   const errMsg = err.message || err.toString();
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
-  await background_taskDao.updateById(
+  await updateByIdBackgroundTask(
     id,
     {
-      state: "fail",
+      state: BackgroundTaskState.Fail,
       end_time,
       err_msg: errMsg,
     },
@@ -41,7 +48,7 @@ async function handelErr(err: Error, id: string) {
 }
 
 export function backgroundTaskWrap(
-  taskResult: { lbl: string, type?: BtType },
+  taskResult: { lbl: string, type?: BackgroundTaskType },
   // deno-lint-ignore no-explicit-any
   func: (...args: any[]) => Promise<any>,
 ) {
@@ -54,12 +61,12 @@ export function backgroundTaskWrap(
     const result2 = await Promise.race([ result, timeoutPrm ]);
     if (result2 === timeoutObj) {
       taskResult = taskResult || { };
-      taskResult.type = taskResult.type || "text";
-      const id = await background_taskDao.create(
+      taskResult.type = taskResult.type || BackgroundTaskType.Text;
+      const id: BackgroundTaskId = await createBackgroundTask(
         {
           lbl: taskResult.lbl || "",
           type: taskResult.type,
-          state: "running",
+          state: BackgroundTaskState.Running,
           begin_time,
           end_time: undefined,
         },

@@ -64,10 +64,15 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
   WxwMsgInput,
   WxwMsgModel,
   WxwMsgSearch,
   WxwMsgFieldComment,
+  WxwMsgId,
 } from "./wxw_msg.model.ts";
 
 import * as wxw_appDao from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
@@ -325,7 +330,7 @@ export async function findAll(
     const model = result[i];
     
     // 发送状态
-    let errcode_lbl = model.errcode;
+    let errcode_lbl = model.errcode as string;
     if (!isEmpty(model.errcode)) {
       const dictItem = errcodeDict.find((dictItem) => dictItem.val === model.errcode);
       if (dictItem) {
@@ -444,7 +449,7 @@ export function equalsByUnique(
  * @param {WxwMsgInput} input
  * @param {WxwMsgModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<WxwMsgId | undefined>}
  */
 export async function checkByUnique(
   input: WxwMsgInput,
@@ -452,14 +457,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<WxwMsgId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: WxwMsgId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -469,7 +474,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -499,14 +504,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxwMsgId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxwMsgId | null,
   options?: {
   },
 ): Promise<WxwMsgModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -529,15 +534,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {WxwMsgId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxwMsgId | null,
 ) {
   const table = "wxwork_wxw_msg";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -651,14 +656,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<WxwMsgId>} 
  */
 export async function create(
   input: WxwMsgInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<WxwMsgId> {
   const table = "wxwork_wxw_msg";
   const method = "create";
   
@@ -670,7 +675,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: WxwMsgId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -688,12 +693,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<WxwMsgId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -765,7 +770,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -773,7 +778,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -817,15 +822,15 @@ export async function create(
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {WxwMsgId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: WxwMsgId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -854,7 +859,7 @@ export async function updateTenantById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {WxwMsgId} id
  * @param {WxwMsgInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -862,15 +867,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<WxwMsgId>}
  */
 export async function updateById(
-  id: string,
+  id: WxwMsgId,
   input: WxwMsgInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<WxwMsgId> {
   const table = "wxwork_wxw_msg";
   const method = "updateById";
   
@@ -883,7 +888,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -970,7 +975,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -996,11 +1001,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   options?: {
   },
 ): Promise<number> {
@@ -1013,7 +1018,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxwMsgId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1038,11 +1043,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   options?: {
   },
 ): Promise<number> {
@@ -1055,7 +1060,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxwMsgId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1091,11 +1096,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
   options?: {
   },
 ): Promise<number> {

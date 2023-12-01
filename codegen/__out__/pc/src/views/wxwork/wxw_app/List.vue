@@ -647,6 +647,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  WxwAppId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -694,13 +698,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    WxwAppId[],
   ],
   add: [
-    string[],
+    WxwAppId[],
   ],
   edit: [
-    string[],
+    WxwAppId[],
   ],
   remove: [
     number,
@@ -767,9 +771,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: WxwAppId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: WxwAppId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   corpid?: string; // 企业ID
@@ -777,7 +781,7 @@ const props = defineProps<{
   agentid?: string; // 应用ID
   agentid_like?: string; // 应用ID
   domain_id?: string|string[]; // 可信域名
-  domain_id_lbl?: string|string[]; // 可信域名
+  domain_id_lbl?: string; // 可信域名
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -859,7 +863,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<WxwAppModel>(
+} = $(useSelect<WxwAppModel, WxwAppId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1347,7 +1351,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: WxwAppId, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1369,7 +1373,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: WxwAppId, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

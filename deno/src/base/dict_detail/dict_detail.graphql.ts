@@ -1,16 +1,16 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as dict_detailResolvers from "./dict_detail.resolver.ts";
+import * as resolvers from "./dict_detail.resolver.ts";
 
-defineGraphql(dict_detailResolvers, /* GraphQL */`
+defineGraphql(resolvers, /* GraphQL */`
 
   type GetDict {
-    "id"
-    id: String!
+    "字典ID"
+    id: DictId!
     "字典编码"
     code: String!
     "数据类型"
-    type: String!
+    type: DictType!
     "名称"
     lbl: String!
     "值"

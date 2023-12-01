@@ -1,5 +1,6 @@
-
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import type {
   UniqueType,
@@ -12,6 +13,7 @@ import type {
   BackgroundTaskModel,
   BackgroundTaskSearch,
   BackgroundTaskFieldComment,
+  BackgroundTaskId,
 } from "./background_task.model.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";
@@ -26,7 +28,7 @@ export async function findCount(
 ): Promise<number> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -48,7 +50,7 @@ export async function findAll(
 ): Promise<BackgroundTaskModel[]> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -74,7 +76,7 @@ export async function findOne(
 ): Promise<BackgroundTaskModel | undefined> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -84,10 +86,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {BackgroundTaskId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
 ): Promise<BackgroundTaskModel | undefined> {
   const model = await background_taskDao.findById(id);
   return model;
@@ -102,7 +104,7 @@ export async function exist(
 ): Promise<boolean> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -112,10 +114,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {BackgroundTaskId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
 ): Promise<boolean> {
   const data = await background_taskDao.existById(id);
   return data;
@@ -135,40 +137,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {BackgroundTaskInput} input
- * @return {Promise<string>} id
+ * @return {Promise<BackgroundTaskId>} id
  */
 export async function create(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await background_taskDao.create(input, options);
-  return data;
+): Promise<BackgroundTaskId> {
+  const id: BackgroundTaskId = await background_taskDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
- * @return {Promise<string>}
+ * @return {Promise<BackgroundTaskId>}
  */
 export async function updateById(
-  id: string,
+  id: BackgroundTaskId,
   input: BackgroundTaskInput,
-): Promise<string> {
+): Promise<BackgroundTaskId> {
   
-  const data = await background_taskDao.updateById(id, input);
-  return data;
+  const id2: BackgroundTaskId = await background_taskDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   
   const data = await background_taskDao.deleteByIds(ids);
@@ -177,11 +179,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   const data = await background_taskDao.revertByIds(ids);
   return data;
@@ -189,11 +191,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   const data = await background_taskDao.forceDeleteByIds(ids);
   return data;

@@ -5,18 +5,16 @@ import * as resolver from "./wxw_msg.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwMsgId
 
-"企微消息发送状态"
-scalar WxwMsgErrcode
 
 type WxwMsgModel {
   "ID"
-  id: String!
+  id: WxwMsgId!
   "企微应用"
-  wxw_app_id: String!
+  wxw_app_id: WxwAppId!
   "企微应用"
-  wxw_app_id_lbl: WxwAppId
+  wxw_app_id_lbl: String
   "发送状态"
-  errcode: WxwMsgErrcode
+  errcode: String!
   "发送状态"
   errcode_lbl: String!
   "成员ID"
@@ -66,11 +64,11 @@ input WxwMsgInput {
   ""
   id: WxwMsgId
   "企微应用"
-  wxw_app_id: String
+  wxw_app_id: WxwAppId
   "企微应用"
-  wxw_app_id_lbl: WxwAppId
+  wxw_app_id_lbl: String
   "发送状态"
-  errcode: WxwMsgErrcode
+  errcode: String
   "发送状态"
   errcode_lbl: String
   "成员ID"
@@ -92,7 +90,7 @@ input WxwMsgSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxwMsgId!]
   "ID"
   id: WxwMsgId
   "企微应用"
@@ -128,15 +126,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxwMsg(search: WxwMsgSearch, sort: [SortInput!]): WxwMsgModel
   "根据id查找一条数据"
-  findByIdWxwMsg(id: String!): WxwMsgModel
+  findByIdWxwMsg(id: WxwMsgId!): WxwMsgModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsWxwMsg(ids: [String!]!): Int!
+  deleteByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxwMsg(ids: [String!]!): Int!
+  revertByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxwMsg(ids: [String!]!): Int!
+  forceDeleteByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
 }
 
 `);

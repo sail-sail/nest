@@ -8,7 +8,7 @@ scalar WxwAppId
 
 type WxwAppModel {
   "ID"
-  id: String!
+  id: WxwAppId!
   "名称"
   lbl: String!
   "企业ID"
@@ -16,9 +16,9 @@ type WxwAppModel {
   "应用ID"
   agentid: String!
   "可信域名"
-  domain_id: String!
+  domain_id: DomainId!
   "可信域名"
-  domain_id_lbl: DomainId
+  domain_id_lbl: String
   "应用密钥"
   corpsecret: String!
   "通讯录密钥"
@@ -78,9 +78,9 @@ input WxwAppInput {
   "应用ID"
   agentid: String
   "可信域名"
-  domain_id: String
+  domain_id: DomainId
   "可信域名"
-  domain_id_lbl: DomainId
+  domain_id_lbl: String
   "应用密钥"
   corpsecret: String
   "通讯录密钥"
@@ -102,7 +102,7 @@ input WxwAppSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxwAppId!]
   "ID"
   id: WxwAppId
   "名称"
@@ -137,25 +137,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxwApp(search: WxwAppSearch, sort: [SortInput!]): WxwAppModel
   "根据id查找一条数据"
-  findByIdWxwApp(id: String!): WxwAppModel
+  findByIdWxwApp(id: WxwAppId!): WxwAppModel
   "查找order_by字段的最大值"
   findLastOrderByWxwApp: Int!
 }
 type Mutation {
   "创建一条数据"
-  createWxwApp(model: WxwAppInput!, unique_type: UniqueType): String!
+  createWxwApp(model: WxwAppInput!, unique_type: UniqueType): WxwAppId!
   "根据id修改一条数据"
-  updateByIdWxwApp(id: String!, model: WxwAppInput!): String!
+  updateByIdWxwApp(id: WxwAppId!, model: WxwAppInput!): WxwAppId!
   "根据 ids 删除数据"
-  deleteByIdsWxwApp(ids: [String!]!): Int!
+  deleteByIdsWxwApp(ids: [WxwAppId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsWxwApp(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsWxwApp(ids: [WxwAppId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsWxwApp(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsWxwApp(ids: [WxwAppId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxwApp(ids: [String!]!): Int!
+  revertByIdsWxwApp(ids: [WxwAppId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxwApp(ids: [String!]!): Int!
+  forceDeleteByIdsWxwApp(ids: [WxwAppId!]!): Int!
 }
 
 `);

@@ -8,17 +8,17 @@ scalar DeptId
 
 type DeptModel {
   "ID"
-  id: String!
+  id: DeptId!
   "父部门"
-  parent_id: String!
+  parent_id: DeptId!
   "父部门"
-  parent_id_lbl: DeptId
+  parent_id_lbl: String
   "名称"
   lbl: String!
   "部门负责人"
-  usr_ids: [String!]
+  usr_ids: [UsrId!]
   "部门负责人"
-  usr_ids_lbl: [UsrId!]
+  usr_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -32,17 +32,17 @@ type DeptModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -96,15 +96,15 @@ input DeptInput {
   ""
   id: DeptId
   "父部门"
-  parent_id: String
+  parent_id: DeptId
   "父部门"
-  parent_id_lbl: DeptId
+  parent_id_lbl: String
   "名称"
   lbl: String
   "部门负责人"
-  usr_ids: [String!]
+  usr_ids: [UsrId!]
   "部门负责人"
-  usr_ids_lbl: [UsrId!]
+  usr_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -118,17 +118,17 @@ input DeptInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -138,7 +138,7 @@ input DeptSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DeptId!]
   "ID"
   id: DeptId
   "父部门"
@@ -180,25 +180,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneDept(search: DeptSearch, sort: [SortInput!]): DeptModel
   "根据id查找一条数据"
-  findByIdDept(id: String!): DeptModel
+  findByIdDept(id: DeptId!): DeptModel
   "查找order_by字段的最大值"
   findLastOrderByDept: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDept(model: DeptInput!, unique_type: UniqueType): String!
+  createDept(model: DeptInput!, unique_type: UniqueType): DeptId!
   "根据id修改一条数据"
-  updateByIdDept(id: String!, model: DeptInput!): String!
+  updateByIdDept(id: DeptId!, model: DeptInput!): DeptId!
   "根据 ids 删除数据"
-  deleteByIdsDept(ids: [String!]!): Int!
+  deleteByIdsDept(ids: [DeptId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsDept(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsDept(ids: [DeptId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDept(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsDept(ids: [DeptId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDept(ids: [String!]!): Int!
+  revertByIdsDept(ids: [DeptId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDept(ids: [String!]!): Int!
+  forceDeleteByIdsDept(ids: [DeptId!]!): Int!
 }
 
 `);

@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  TenantId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -13,7 +18,6 @@ import type {
 import type {
   DomainSearch,
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
@@ -160,14 +164,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {TenantInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: TenantInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<TenantId> {
   const data: {
     createTenant: Mutation["createTenant"];
   } = await mutation({
@@ -181,27 +185,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createTenant;
-  return res;
+  const id: TenantId = data.createTenant;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {TenantId} id
  * @param {TenantInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: TenantId,
   model: TenantInput,
   opt?: GqlOpt,
-) {
+): Promise<TenantId> {
   const data: {
     updateByIdTenant: Mutation["updateByIdTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: TenantInput!) {
+      mutation($id: TenantId!, $model: TenantInput!) {
         updateByIdTenant(id: $id, model: $model)
       }
     `,
@@ -210,25 +214,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdTenant;
-  return res;
+  const id2: TenantId = data.updateByIdTenant;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {TenantId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: TenantId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdTenant: Query["findByIdTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: TenantId!) {
         findByIdTenant(id: $id) {
           id
           lbl
@@ -264,18 +268,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: TenantId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsTenant: Mutation["deleteByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [TenantId!]!) {
         deleteByIdsTenant(ids: $ids)
       }
     `,
@@ -290,12 +294,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: TenantId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -303,7 +307,7 @@ export async function enableByIds(
     enableByIdsTenant: Mutation["enableByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [TenantId!]!, $is_enabled: Int!) {
         enableByIdsTenant(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -319,12 +323,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: TenantId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -332,7 +336,7 @@ export async function lockByIds(
     lockByIdsTenant: Mutation["lockByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [TenantId!]!, $is_locked: Int!) {
         lockByIdsTenant(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -348,18 +352,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: TenantId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsTenant: Mutation["revertByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [TenantId!]!) {
         revertByIdsTenant(ids: $ids)
       }
     `,
@@ -374,18 +378,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: TenantId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsTenant: Mutation["forceDeleteByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [TenantId!]!) {
         forceDeleteByIdsTenant(ids: $ids)
       }
     `,

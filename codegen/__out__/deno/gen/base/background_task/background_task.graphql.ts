@@ -6,13 +6,31 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar BackgroundTaskId
 
 "后台任务状态"
-scalar BackgroundTaskState
+enum BackgroundTaskState {
+  "运行中"
+  running
+  "成功"
+  success
+  "失败"
+  fail
+  "取消"
+  cancel
+}
 "后台任务类型"
-scalar BackgroundTaskType
+enum BackgroundTaskType {
+  "文本"
+  text
+  "下载"
+  download
+  "查看"
+  inline
+  "标签"
+  tag
+}
 
 type BackgroundTaskModel {
   "ID"
-  id: String!
+  id: BackgroundTaskId!
   "名称"
   lbl: String!
   "状态"
@@ -38,17 +56,17 @@ type BackgroundTaskModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -128,17 +146,17 @@ input BackgroundTaskInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -148,7 +166,7 @@ input BackgroundTaskSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [BackgroundTaskId!]
   "ID"
   id: BackgroundTaskId
   "名称"
@@ -192,15 +210,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
   "根据id查找一条数据"
-  findByIdBackgroundTask(id: String!): BackgroundTaskModel
+  findByIdBackgroundTask(id: BackgroundTaskId!): BackgroundTaskModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsBackgroundTask(ids: [String!]!): Int!
+  deleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsBackgroundTask(ids: [String!]!): Int!
+  revertByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsBackgroundTask(ids: [String!]!): Int!
+  forceDeleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
 }
 
 `);

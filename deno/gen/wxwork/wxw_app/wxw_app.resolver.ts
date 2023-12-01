@@ -17,6 +17,7 @@ import type {
   WxwAppModel,
   WxwAppSearch,
   WxwAppFieldComment,
+  WxwAppId,
 } from "./wxw_app.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxwApp(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxwApp(
-  id: string,
+  id: WxwAppId,
 ): Promise<WxwAppModel | undefined> {
   const { findById } = await import("./wxw_app.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxwApp(
 export async function createWxwApp(
   input: WxwAppInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxwAppId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxwApp(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxwAppId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxwApp(
-  id: string,
+  id: WxwAppId,
   input: WxwAppInput,
-): Promise<string> {
+): Promise<WxwAppId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxwApp(
     "/wxwork/wxw_app",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxwAppId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxwApp(
-  ids: string[],
+  ids: WxwAppId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxwApp(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsWxwApp(
-  ids: string[],
+  ids: WxwAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsWxwApp(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsWxwApp(
-  ids: string[],
+  ids: WxwAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsWxwApp(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxwApp(
-  ids: string[],
+  ids: WxwAppId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsWxwApp(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxwApp(
-  ids: string[],
+  ids: WxwAppId[],
 ): Promise<number> {
   const context = useContext();
   

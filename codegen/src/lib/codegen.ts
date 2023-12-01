@@ -281,7 +281,22 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
         return;
       }
+      if (dir === "/deno/lib/script/graphql_pc_ids.ts") {
+        return;
+      }
+      if (dir === "/rust/src/common/script/graphql_codegen_scalars.ts") {
+        return;
+      }
+      if (dir === "/rust/src/common/script/graphql_pc_ids.ts") {
+        return;
+      }
       if (dir === "/pc/src/router/gen.ts") {
+        return;
+      }
+      if (dir === "/pc/src/typings/ids.ts") {
+        return;
+      }
+      if (dir === "/uni/src/typings/ids.ts") {
         return;
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
@@ -318,6 +333,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         }
         if (!str0 || str0 !== str2) {
           if (dir2.endsWith(".graphql.ts")) {
+            graphqlHasChanged = true;
+          }
+          if (dir2.endsWith("_graphql.rs")) {
             graphqlHasChanged = true;
           }
           writeFnArr.push(async function() {
@@ -417,6 +435,11 @@ export async function genRouter(context: Context) {
     "pc/src/router/gen.ts",
     "deno/gen/graphql.ts",
     "deno/lib/script/graphql_codegen_scalars.ts",
+    "deno/lib/script/graphql_pc_ids.ts",
+    "rust/src/common/script/graphql_codegen_scalars.ts",
+    "rust/src/common/script/graphql_pc_ids.ts",
+    "pc/src/typings/ids.ts",
+    "uni/src/typings/ids.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -429,11 +452,14 @@ export async function genRouter(context: Context) {
       } catch (err) {
       }
       if (str0 !== str2) {
+        if (file === "deno/lib/script/graphql_codegen_scalars.ts") {
+          graphqlHasChanged = true;
+        }
+        if (file === "rust/src/common/script/graphql_codegen_scalars.ts") {
+          graphqlHasChanged = true;
+        }
+        console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${file}`))}`);
         await writeFile(`${ out }/${ file }`, str2);
-      }
-      try {
-        await unlink(`${ projectPh }/error.js`);
-      } catch (errTmp) {
       }
     } catch(err) {
       await writeFile(`${ projectPh }/error.js`, htmlStr);

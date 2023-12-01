@@ -17,6 +17,7 @@ import type {
   MenuModel,
   MenuSearch,
   MenuFieldComment,
+  MenuId,
 } from "./menu.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneMenu(
  * 根据 id 查找一条数据
  */
 export async function findByIdMenu(
-  id: string,
+  id: MenuId,
 ): Promise<MenuModel | undefined> {
   const { findById } = await import("./menu.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdMenu(
 export async function createMenu(
   input: MenuInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<MenuId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createMenu(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: MenuId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdMenu(
-  id: string,
+  id: MenuId,
   input: MenuInput,
-): Promise<string> {
+): Promise<MenuId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdMenu(
     "/base/menu",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: MenuId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsMenu(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsMenu(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsMenu(
  * 根据 ids 还原数据
  */
 export async function revertByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsMenu(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   const context = useContext();
   

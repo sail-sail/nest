@@ -8,11 +8,11 @@ scalar DictbizDetailId
 
 type DictbizDetailModel {
   "ID"
-  id: String!
+  id: DictbizDetailId!
   "业务字典"
-  dictbiz_id: String!
+  dictbiz_id: DictbizId!
   "业务字典"
-  dictbiz_id_lbl: DictbizId
+  dictbiz_id_lbl: String
   "名称"
   lbl: String!
   "值"
@@ -30,17 +30,17 @@ type DictbizDetailModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -92,9 +92,9 @@ input DictbizDetailInput {
   ""
   id: DictbizDetailId
   "业务字典"
-  dictbiz_id: String
+  dictbiz_id: DictbizId
   "业务字典"
-  dictbiz_id_lbl: DictbizId
+  dictbiz_id_lbl: String
   "名称"
   lbl: String
   "值"
@@ -112,17 +112,17 @@ input DictbizDetailInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input DictbizDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DictbizDetailId!]
   "ID"
   id: DictbizDetailId
   "业务字典"
@@ -174,25 +174,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneDictbizDetail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
   "根据id查找一条数据"
-  findByIdDictbizDetail(id: String!): DictbizDetailModel
+  findByIdDictbizDetail(id: DictbizDetailId!): DictbizDetailModel
   "查找order_by字段的最大值"
   findLastOrderByDictbizDetail: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDictbizDetail(model: DictbizDetailInput!, unique_type: UniqueType): String!
+  createDictbizDetail(model: DictbizDetailInput!, unique_type: UniqueType): DictbizDetailId!
   "根据id修改一条数据"
-  updateByIdDictbizDetail(id: String!, model: DictbizDetailInput!): String!
+  updateByIdDictbizDetail(id: DictbizDetailId!, model: DictbizDetailInput!): DictbizDetailId!
   "根据 ids 删除数据"
-  deleteByIdsDictbizDetail(ids: [String!]!): Int!
+  deleteByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsDictbizDetail(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsDictbizDetail(ids: [DictbizDetailId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDictbizDetail(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsDictbizDetail(ids: [DictbizDetailId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDictbizDetail(ids: [String!]!): Int!
+  revertByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDictbizDetail(ids: [String!]!): Int!
+  forceDeleteByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
 }
 
 `);

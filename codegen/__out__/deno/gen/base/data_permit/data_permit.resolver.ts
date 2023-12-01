@@ -17,6 +17,7 @@ import type {
   DataPermitModel,
   DataPermitSearch,
   DataPermitFieldComment,
+  DataPermitId,
 } from "./data_permit.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneDataPermit(
  * 根据 id 查找一条数据
  */
 export async function findByIdDataPermit(
-  id: string,
+  id: DataPermitId,
 ): Promise<DataPermitModel | undefined> {
   const { findById } = await import("./data_permit.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdDataPermit(
 export async function createDataPermit(
   input: DataPermitInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DataPermitId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDataPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DataPermitId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdDataPermit(
-  id: string,
+  id: DataPermitId,
   input: DataPermitInput,
-): Promise<string> {
+): Promise<DataPermitId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDataPermit(
     "/base/data_permit",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DataPermitId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDataPermit(
-  ids: string[],
+  ids: DataPermitId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsDataPermit(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDataPermit(
-  ids: string[],
+  ids: DataPermitId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsDataPermit(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDataPermit(
-  ids: string[],
+  ids: DataPermitId[],
 ): Promise<number> {
   const context = useContext();
   

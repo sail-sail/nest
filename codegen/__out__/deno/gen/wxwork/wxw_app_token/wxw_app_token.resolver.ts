@@ -17,6 +17,7 @@ import type {
   WxwAppTokenModel,
   WxwAppTokenSearch,
   WxwAppTokenFieldComment,
+  WxwAppTokenId,
 } from "./wxw_app_token.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneWxwAppToken(
  * 根据 id 查找一条数据
  */
 export async function findByIdWxwAppToken(
-  id: string,
+  id: WxwAppTokenId,
 ): Promise<WxwAppTokenModel | undefined> {
   const { findById } = await import("./wxw_app_token.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdWxwAppToken(
 export async function createWxwAppToken(
   input: WxwAppTokenInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<WxwAppTokenId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createWxwAppToken(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: WxwAppTokenId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdWxwAppToken(
-  id: string,
+  id: WxwAppTokenId,
   input: WxwAppTokenInput,
-): Promise<string> {
+): Promise<WxwAppTokenId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdWxwAppToken(
     "/wxwork/wxw_app_token",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: WxwAppTokenId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsWxwAppToken(
-  ids: string[],
+  ids: WxwAppTokenId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsWxwAppToken(
  * 根据 ids 还原数据
  */
 export async function revertByIdsWxwAppToken(
-  ids: string[],
+  ids: WxwAppTokenId[],
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function revertByIdsWxwAppToken(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsWxwAppToken(
-  ids: string[],
+  ids: WxwAppTokenId[],
 ): Promise<number> {
   const context = useContext();
   

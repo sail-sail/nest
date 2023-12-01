@@ -350,6 +350,10 @@ import {
 } from "./Api";
 
 import type {
+  DictId,
+} from "@/typings/ids";
+
+import type {
   DictInput,
 } from "#/types";
 
@@ -358,11 +362,15 @@ import type {
   DictDetailModel,
 } from "#/types";
 
+import {
+  DictType,
+} from "#/types";
+
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: DictId,
     },
   ],
 }>();
@@ -390,9 +398,9 @@ let dialogNotice = $ref("");
 let dialogModel: DictInput = $ref({
 } as DictInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<DictId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<DictId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -449,7 +457,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: DictId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -471,7 +479,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DictInput = {
-    type: "string",
+    type: DictType.String,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
@@ -490,8 +498,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: DictId;
+      ids?: DictId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -790,7 +798,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: DictId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

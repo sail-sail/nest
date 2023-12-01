@@ -532,6 +532,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  WxwMsgId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -578,13 +582,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    WxwMsgId[],
   ],
   add: [
-    string[],
+    WxwMsgId[],
   ],
   edit: [
-    string[],
+    WxwMsgId[],
   ],
   remove: [
     number,
@@ -652,11 +656,11 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: WxwMsgId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: WxwMsgId; // ID
   wxw_app_id?: string|string[]; // 企微应用
-  wxw_app_id_lbl?: string|string[]; // 企微应用
+  wxw_app_id_lbl?: string; // 企微应用
   errcode?: string|string[]; // 发送状态
   touser?: string; // 成员ID
   touser_like?: string; // 成员ID
@@ -666,7 +670,6 @@ const props = defineProps<{
   description_like?: string; // 描述
   btntxt?: string; // 按钮文字
   btntxt_like?: string; // 按钮文字
-  create_time?: string; // 发送时间
   errmsg?: string; // 错误信息
   errmsg_like?: string; // 错误信息
 }>();
@@ -742,7 +745,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<WxwMsgModel>(
+} = $(useSelect<WxwMsgModel, WxwMsgId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
