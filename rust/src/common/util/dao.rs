@@ -193,9 +193,10 @@ pub async fn many2many_update(
   
   let mut has_change = false;
   
-  for model in &models {
+  for model in models.iter() {
     let id = model.id.clone();
-    let idx: Option<usize> = foreign_ids.iter()
+    let idx: Option<usize> = foreign_ids
+      .iter()
       .position(|foreign_id| 
         foreign_id == &model.column2_id
       );
@@ -216,7 +217,7 @@ pub async fn many2many_update(
       execute(sql, args, None).await?;
       continue;
     }
-    let idx = idx.unwrap();
+    let idx = idx.unwrap_or_default();
     let order_by = idx + 1;
     if order_by > u32::MAX as usize {
       return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));

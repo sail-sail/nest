@@ -17,6 +17,7 @@ import type {
   UsrModel,
   UsrSearch,
   UsrFieldComment,
+  UsrId,
 } from "./usr.model.ts";
 
 import {
@@ -103,7 +104,7 @@ export async function findOneUsr(
  * 根据 id 查找一条数据
  */
 export async function findByIdUsr(
-  id: string,
+  id: UsrId,
 ): Promise<UsrModel | undefined> {
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
@@ -121,7 +122,7 @@ export async function findByIdUsr(
 export async function createUsr(
   input: UsrInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<UsrId> {
   
   const {
     validate,
@@ -142,17 +143,17 @@ export async function createUsr(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: UsrId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdUsr(
-  id: string,
+  id: UsrId,
   input: UsrInput,
-): Promise<string> {
+): Promise<UsrId> {
   
   const {
     setIdByLbl,
@@ -169,15 +170,15 @@ export async function updateByIdUsr(
     "/base/usr",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: UsrId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   
   const {
@@ -200,7 +201,7 @@ export async function deleteByIdsUsr(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -227,7 +228,7 @@ export async function enableByIdsUsr(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -254,7 +255,7 @@ export async function lockByIdsUsr(
  * 根据 ids 还原数据
  */
 export async function revertByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   
   const {
@@ -277,7 +278,7 @@ export async function revertByIdsUsr(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   const context = useContext();
   

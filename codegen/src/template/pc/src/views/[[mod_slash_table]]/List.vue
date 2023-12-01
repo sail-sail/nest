@@ -7,6 +7,12 @@ const hasIsMonth = columns.some((column) => column.isMonth);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+}
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -14,11 +20,10 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -106,6 +111,12 @@ const hasAtt = columns.some((item) => item.isAtt);
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        let Foreign_Table_Up2 = Foreign_Table_Up;
+        if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+          && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+        ) {
+          Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+        }
         let foreignSchema = undefined;
         if (foreignKey) {
           foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -130,8 +141,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomTreeSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up#>Tree"
-            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+            :method="get<#=Foreign_Table_Up2#>Tree"
+            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -181,8 +192,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up#>List"
-            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+            :method="get<#=Foreign_Table_Up2#>List"
+            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -1414,6 +1425,10 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 }
 #>
 
+import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,<#
@@ -1593,6 +1608,12 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  let Foreign_Table_Up2 = Foreign_Table_Up;
+  if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+  ) {
+    Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+  }
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   if (!foreignSchema) {
     continue;
@@ -1611,7 +1632,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,
+  get<#=Foreign_Table_Up2#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
 #><#
@@ -1654,13 +1675,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    <#=Table_Up#>Id[],
   ],
   add: [
-    string[],
+    <#=Table_Up#>Id[],
   ],
   edit: [
-    string[],
+    <#=Table_Up#>Id[],
   ],
   remove: [
     number,
@@ -1758,7 +1779,7 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: <#=Table_Up#>Id[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1766,17 +1787,39 @@ const props = defineProps<{
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
-    if (column_name === "is_deleted") continue;
-    if (column_name === "tenant_id") continue;
+    if ([
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+      "tenant_id",
+      "org_id",
+      "is_hidden",
+      "is_deleted",
+    ].includes(column_name)) continue;
+    let is_nullable = column.IS_NULLABLE === "YES";
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const search = column.search;
+    let _data_type = "string";
     if (column_name === 'id') {
-      data_type = 'string';
+      data_type = `${ Table_Up }Id`;
+    }
+    else if (foreignKey && foreignKey.multiple) {
+      data_type = `${ foreignTable_Up }Id[]`;
+      _data_type = "string[]";
+      is_nullable = true;
+    }
+    else if (foreignKey && !foreignKey.multiple) {
+      data_type = `${ foreignTable_Up }Id`;
+      _data_type = "string";
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'string';
@@ -1825,7 +1868,7 @@ const props = defineProps<{
     if (foreignKey) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>
-  <#=column_name#>_lbl?: <#=data_type#>;<#=column_comment#><#
+  <#=column_name#>_lbl?: <#=_data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
@@ -1971,7 +2014,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<<#=modelName#>>(
+} = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -2773,7 +2816,7 @@ if (column_name === "is_default") {
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id) {
   if (isLocked) {
     return;
   }
@@ -2796,7 +2839,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2820,7 +2863,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2844,7 +2887,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -3166,7 +3209,7 @@ async function onOpenForeignTabs() {
 }
 #>
 
-async function openForeignTabs(id: string, title: string) {
+async function openForeignTabs(id: <#=Table_Up#>Id, title: string) {
   if (!foreignTabsRef) {
     return;
   }
@@ -3289,11 +3332,8 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
-  let {
-    selectedIds: selectedIds2,
-    action
-  } = await <#=column_name#>ListSelectDialogRef.showDialog({
-    selectedIds: row.<#=column_name#> as string[],<#
+  const res = await <#=column_name#>ListSelectDialogRef.showDialog({
+    selectedIds: row.<#=column_name#>,<#
     if (hasLocked) {
     #>
     isLocked: row.is_locked == 1,<#
@@ -3306,10 +3346,11 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (isLocked) {
     return;
   }
+  const action = res.action;
   if (action !== "select") {
     return;
   }
-  selectedIds2 = selectedIds2 || [ ];
+  const selectedIds2 = res.selectedIds || [ ];
   let isEqual = true;
   if (selectedIds2.length === row.<#=column_name#>.length) {
     for (let i = 0; i < selectedIds2.length; i++) {
@@ -3337,7 +3378,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 
 let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
 
-async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
+async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({
     title,
     isLocked: $$(isLocked),

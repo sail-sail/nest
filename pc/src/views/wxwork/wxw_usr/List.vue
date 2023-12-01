@@ -512,6 +512,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  WxwUsrId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -561,13 +565,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    WxwUsrId[],
   ],
   add: [
-    string[],
+    WxwUsrId[],
   ],
   edit: [
-    string[],
+    WxwUsrId[],
   ],
   remove: [
     number,
@@ -641,9 +645,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: WxwUsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: WxwUsrId; // ID
   lbl?: string; // 姓名
   lbl_like?: string; // 姓名
   userid?: string; // 用户ID
@@ -719,7 +723,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<WxwUsrModel>(
+} = $(useSelect<WxwUsrModel, WxwUsrId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

@@ -425,20 +425,12 @@ impl<'r> sqlx::Decode<'r, MySql> for WxwMsgId {
 pub enum WxwMsgErrcode {
   /// Empty
   Empty,
-  /// 成功
-  #[graphql(name="0")]
-  0,
-  /// 失败
-  #[graphql(name="81013")]
-  81013,
 }
 
 impl fmt::Display for WxwMsgErrcode {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
       Self::Empty => write!(f, ""),
-      Self::0 => write!(f, "0"),
-      Self::81013 => write!(f, "81013"),
     }
   }
 }
@@ -447,8 +439,6 @@ impl From<WxwMsgErrcode> for SmolStr {
   fn from(value: WxwMsgErrcode) -> Self {
     match value {
       WxwMsgErrcode::Empty => "".into(),
-      WxwMsgErrcode::0 => "0".into(),
-      WxwMsgErrcode::81013 => "81013".into(),
     }
   }
 }
@@ -457,8 +447,6 @@ impl From<WxwMsgErrcode> for String {
   fn from(value: WxwMsgErrcode) -> Self {
     match value {
       WxwMsgErrcode::Empty => "".into(),
-      WxwMsgErrcode::0 => "0".into(),
-      WxwMsgErrcode::81013 => "81013".into(),
     }
   }
 }
@@ -481,8 +469,6 @@ impl FromStr for WxwMsgErrcode {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "empty" => Ok(Self::Empty),
-      "0" => Ok(Self::0),
-      "81013" => Ok(Self::81013),
       _ => Err(anyhow::anyhow!("WxwMsgErrcode can't convert from {s}")),
     }
   }
@@ -492,8 +478,6 @@ impl WxwMsgErrcode {
   pub fn as_str(&self) -> &str {
     match self {
       Self::Empty => "",
-      Self::0 => "0",
-      Self::81013 => "81013",
     }
   }
 }
@@ -504,8 +488,6 @@ impl TryFrom<String> for WxwMsgErrcode {
   fn try_from(s: String) -> Result<Self, Self::Error> {
     match s.as_str() {
       "" => Ok(Self::Empty),
-      "0" => Ok(Self::0),
-      "81013" => Ok(Self::81013),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
           index: "errcode".to_owned(),

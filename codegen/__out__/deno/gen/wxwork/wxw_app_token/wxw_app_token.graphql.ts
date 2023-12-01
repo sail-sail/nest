@@ -8,11 +8,11 @@ scalar WxwAppTokenId
 
 type WxwAppTokenModel {
   "ID"
-  id: String!
+  id: WxwAppTokenId!
   "企微应用"
-  wxw_app_id: String!
+  wxw_app_id: WxwAppId!
   "企微应用"
-  wxw_app_id_lbl: WxwAppId
+  wxw_app_id_lbl: String
   "类型corp和contact"
   type: String!
   "令牌"
@@ -48,9 +48,9 @@ input WxwAppTokenInput {
   ""
   id: WxwAppTokenId
   "企微应用"
-  wxw_app_id: String
+  wxw_app_id: WxwAppId
   "企微应用"
-  wxw_app_id_lbl: WxwAppId
+  wxw_app_id_lbl: String
   "类型corp和contact"
   type: String
   "令牌"
@@ -66,7 +66,7 @@ input WxwAppTokenSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxwAppTokenId!]
   "ID"
   id: WxwAppTokenId
   "企微应用"
@@ -93,19 +93,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxwAppToken(search: WxwAppTokenSearch, sort: [SortInput!]): WxwAppTokenModel
   "根据id查找一条数据"
-  findByIdWxwAppToken(id: String!): WxwAppTokenModel
+  findByIdWxwAppToken(id: WxwAppTokenId!): WxwAppTokenModel
 }
 type Mutation {
   "创建一条数据"
-  createWxwAppToken(model: WxwAppTokenInput!, unique_type: UniqueType): String!
+  createWxwAppToken(model: WxwAppTokenInput!, unique_type: UniqueType): WxwAppTokenId!
   "根据id修改一条数据"
-  updateByIdWxwAppToken(id: String!, model: WxwAppTokenInput!): String!
+  updateByIdWxwAppToken(id: WxwAppTokenId!, model: WxwAppTokenInput!): WxwAppTokenId!
   "根据 ids 删除数据"
-  deleteByIdsWxwAppToken(ids: [String!]!): Int!
+  deleteByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxwAppToken(ids: [String!]!): Int!
+  revertByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxwAppToken(ids: [String!]!): Int!
+  forceDeleteByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
 }
 
 `);

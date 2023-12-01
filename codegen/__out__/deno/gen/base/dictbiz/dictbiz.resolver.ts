@@ -17,6 +17,7 @@ import type {
   DictbizModel,
   DictbizSearch,
   DictbizFieldComment,
+  DictbizId,
 } from "./dictbiz.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneDictbiz(
  * 根据 id 查找一条数据
  */
 export async function findByIdDictbiz(
-  id: string,
+  id: DictbizId,
 ): Promise<DictbizModel | undefined> {
   const { findById } = await import("./dictbiz.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdDictbiz(
 export async function createDictbiz(
   input: DictbizInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DictbizId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDictbiz(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DictbizId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdDictbiz(
-  id: string,
+  id: DictbizId,
   input: DictbizInput,
-): Promise<string> {
+): Promise<DictbizId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDictbiz(
     "/base/dictbiz",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DictbizId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDictbiz(
-  ids: string[],
+  ids: DictbizId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsDictbiz(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsDictbiz(
-  ids: string[],
+  ids: DictbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsDictbiz(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDictbiz(
-  ids: string[],
+  ids: DictbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsDictbiz(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDictbiz(
-  ids: string[],
+  ids: DictbizId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsDictbiz(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDictbiz(
-  ids: string[],
+  ids: DictbizId[],
 ): Promise<number> {
   const context = useContext();
   

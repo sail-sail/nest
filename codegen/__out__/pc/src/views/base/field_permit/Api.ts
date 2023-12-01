@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  FieldPermitId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -12,7 +17,6 @@ import type {
 
 import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
@@ -151,14 +155,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {FieldPermitInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: FieldPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<FieldPermitId> {
   const data: {
     createFieldPermit: Mutation["createFieldPermit"];
   } = await mutation({
@@ -172,27 +176,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createFieldPermit;
-  return res;
+  const id: FieldPermitId = data.createFieldPermit;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: FieldPermitId,
   model: FieldPermitInput,
   opt?: GqlOpt,
-) {
+): Promise<FieldPermitId> {
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: FieldPermitInput!) {
+      mutation($id: FieldPermitId!, $model: FieldPermitInput!) {
         updateByIdFieldPermit(id: $id, model: $model)
       }
     `,
@@ -201,25 +205,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdFieldPermit;
-  return res;
+  const id2: FieldPermitId = data.updateByIdFieldPermit;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: FieldPermitId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdFieldPermit: Query["findByIdFieldPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: FieldPermitId!) {
         findByIdFieldPermit(id: $id) {
           id
           menu_id
@@ -251,18 +255,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsFieldPermit: Mutation["deleteByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         deleteByIdsFieldPermit(ids: $ids)
       }
     `,
@@ -277,18 +281,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsFieldPermit: Mutation["revertByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         revertByIdsFieldPermit(ids: $ids)
       }
     `,
@@ -303,18 +307,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsFieldPermit: Mutation["forceDeleteByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         forceDeleteByIdsFieldPermit(ids: $ids)
       }
     `,

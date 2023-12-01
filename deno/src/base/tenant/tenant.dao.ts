@@ -1,5 +1,4 @@
 import {
-  query,
   queryOne,
   QueryArgs,
 } from "/lib/context.ts";
@@ -10,7 +9,17 @@ import {
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
 
 /**
  * 获取当前租户绑定的网址
@@ -18,8 +27,9 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
  * @return {{host: string}} 网址
  */
 export async function getHostTenant(): Promise<typeof result> {
-  const { id: usr_id } = await authDao.getAuthModel() as AuthModel;
-  const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
+  const authModel = await authDao.getAuthModel() as AuthModel;
+  const usr_id: UsrId = authModel.id;
+  const tenant_id = await getTenant_id(usr_id);
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -38,12 +48,12 @@ export async function getHostTenant(): Promise<typeof result> {
 }
 
 /** 当前租户拥有的菜单 */
-export async function getMenuIdsByTenant() {
+export async function getMenuIdsByTenant(): Promise<MenuId[]> {
   const {
     findById: findByIdTenant,
   } = await import("/gen/base/tenant/tenant.dao.ts");
-  let menu_idsInTenant: string[] = [ ];
-  const tenant_id = await usrDaoSrc.getTenant_id();
+  let menu_idsInTenant: MenuId[] = [ ];
+  const tenant_id = await getTenant_id();
   if (tenant_id) {
     const tenantModel = await findByIdTenant(tenant_id);
     menu_idsInTenant = tenantModel?.menu_ids || menu_idsInTenant;
@@ -52,7 +62,7 @@ export async function getMenuIdsByTenant() {
 }
 
 export async function filterMenuIdsByTenant(
-  menu_ids?: string[] | null,
+  menu_ids?: MenuId[] | null,
 ) {
   if (!menu_ids) {
     return menu_ids;
@@ -61,9 +71,9 @@ export async function filterMenuIdsByTenant(
     return [ ];
   }
   const menu_idsInTenant = await getMenuIdsByTenant();
-  const menu_ids2: string[] = [ ];
+  const menu_ids2: MenuId[] = [ ];
   for (let i = 0; i < menu_ids.length; i++) {
-    const menu_id = menu_ids[i];
+    const menu_id: MenuId = menu_ids[i];
     if (menu_idsInTenant.includes(menu_id)) {
       menu_ids2.push(menu_id);
     }

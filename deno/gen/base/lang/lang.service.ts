@@ -13,6 +13,7 @@ import type {
   LangModel,
   LangSearch,
   LangFieldComment,
+  LangId,
 } from "./lang.model.ts";
 
 import * as langDao from "./lang.dao.ts";
@@ -70,10 +71,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {LangId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: LangId | null,
 ): Promise<LangModel | undefined> {
   const model = await langDao.findById(id);
   return model;
@@ -93,10 +94,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {LangId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: LangId | null,
 ): Promise<boolean> {
   const data = await langDao.existById(id);
   return data;
@@ -116,51 +117,51 @@ export async function validate(
 /**
  * 创建数据
  * @param {LangInput} input
- * @return {Promise<string>} id
+ * @return {Promise<LangId>} id
  */
 export async function create(
   input: LangInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await langDao.create(input, options);
-  return data;
+): Promise<LangId> {
+  const id: LangId = await langDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {LangId} id
  * @param {LangInput} input
- * @return {Promise<string>}
+ * @return {Promise<LangId>}
  */
 export async function updateById(
-  id: string,
+  id: LangId,
   input: LangInput,
-): Promise<string> {
+): Promise<LangId> {
   
   // 不能修改系统记录的系统字段
   const model = await langDao.findById(id);
   if (model && model.is_sys === 1) {
   }
   
-  const data = await langDao.updateById(id, input);
-  return data;
+  const id2: LangId = await langDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: LangId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: LangId = ids[i];
       const model = await langDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -179,12 +180,12 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: LangId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await langDao.enableByIds(ids, is_enabled);
@@ -193,11 +194,11 @@ export async function enableByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   const data = await langDao.revertByIds(ids);
   return data;
@@ -205,11 +206,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {LangId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: LangId[],
 ): Promise<number> {
   const data = await langDao.forceDeleteByIds(ids);
   return data;

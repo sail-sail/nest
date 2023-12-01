@@ -61,13 +61,20 @@ import {
 import type {
   PageInput,
   SortInput,
+  BackgroundTaskState,
+  BackgroundTaskType,
 } from "/gen/types.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
 
 import type {
   BackgroundTaskInput,
   BackgroundTaskModel,
   BackgroundTaskSearch,
   BackgroundTaskFieldComment,
+  BackgroundTaskId,
 } from "./background_task.model.ts";
 
 const route_path = "/base/background_task";
@@ -343,7 +350,7 @@ export async function findAll(
     const model = result[i];
     
     // 状态
-    let state_lbl = model.state;
+    let state_lbl = model.state as string;
     if (!isEmpty(model.state)) {
       const dictItem = stateDict.find((dictItem) => dictItem.val === model.state);
       if (dictItem) {
@@ -353,7 +360,7 @@ export async function findAll(
     model.state_lbl = state_lbl;
     
     // 类型
-    let type_lbl = model.type;
+    let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
       if (dictItem) {
@@ -467,7 +474,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.state_lbl) && input.state === undefined) {
     const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
     if (val !== undefined) {
-      input.state = val;
+      input.state = val as BackgroundTaskState;
     }
   }
   
@@ -475,7 +482,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.type_lbl) && input.type === undefined) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      input.type = val;
+      input.type = val as BackgroundTaskType;
     }
   }
   
@@ -566,7 +573,7 @@ export function equalsByUnique(
  * @param {BackgroundTaskInput} input
  * @param {BackgroundTaskModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<BackgroundTaskId | undefined>}
  */
 export async function checkByUnique(
   input: BackgroundTaskInput,
@@ -574,14 +581,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<BackgroundTaskId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: BackgroundTaskId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -591,7 +598,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -621,14 +628,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {BackgroundTaskId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
   options?: {
   },
 ): Promise<BackgroundTaskModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -651,15 +658,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {BackgroundTaskId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
 ) {
   const table = "base_background_task";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -780,14 +787,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<BackgroundTaskId>} 
  */
 export async function create(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<BackgroundTaskId> {
   const table = "base_background_task";
   const method = "create";
   
@@ -799,7 +806,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: BackgroundTaskId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -817,12 +824,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<BackgroundTaskId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -891,7 +898,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -899,7 +906,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -940,15 +947,15 @@ export async function create(
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {BackgroundTaskId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: BackgroundTaskId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -977,7 +984,7 @@ export async function updateTenantById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -985,15 +992,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<BackgroundTaskId>}
  */
 export async function updateById(
-  id: string,
+  id: BackgroundTaskId,
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<BackgroundTaskId> {
   const table = "base_background_task";
   const method = "updateById";
   
@@ -1006,7 +1013,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -1087,7 +1094,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1113,11 +1120,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   options?: {
   },
 ): Promise<number> {
@@ -1130,7 +1137,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: BackgroundTaskId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1155,11 +1162,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   options?: {
   },
 ): Promise<number> {
@@ -1172,7 +1179,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: BackgroundTaskId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1208,11 +1215,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   options?: {
   },
 ): Promise<number> {

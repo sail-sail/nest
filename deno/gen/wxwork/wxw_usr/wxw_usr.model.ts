@@ -9,8 +9,16 @@ import type {
   WxwUsrFieldComment as WxwUsrFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxwUsrId = Symbol.for("WxwUsrId");
+declare const wxwUsrId: unique symbol;
 export type WxwUsrId = typeof wxwUsrId;
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
 
 export interface WxwUsrSearch extends WxwUsrSearchType {
   /** 手机号 */
@@ -63,11 +71,11 @@ export interface WxwUsrModel extends WxwUsrModelType {
   thumb_avatar: string;
   /** 个人二维码 */
   qr_code: string;
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
-  tenant_id: string;
+  tenant_id: TenantId;
 }
 
 export interface WxwUsrInput extends WxwUsrInputType {
@@ -89,12 +97,12 @@ export interface WxwUsrInput extends WxwUsrInputType {
   thumb_avatar?: string;
   /** 个人二维码 */
   qr_code?: string;
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
-  tenant_id?: string | null;
+  tenant_id?: TenantId | null;
 }
 
 export type { WxwUsrFieldCommentType as WxwUsrFieldComment };

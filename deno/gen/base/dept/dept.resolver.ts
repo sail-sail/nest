@@ -17,6 +17,7 @@ import type {
   DeptModel,
   DeptSearch,
   DeptFieldComment,
+  DeptId,
 } from "./dept.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneDept(
  * 根据 id 查找一条数据
  */
 export async function findByIdDept(
-  id: string,
+  id: DeptId,
 ): Promise<DeptModel | undefined> {
   const { findById } = await import("./dept.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdDept(
 export async function createDept(
   input: DeptInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DeptId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDept(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DeptId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdDept(
-  id: string,
+  id: DeptId,
   input: DeptInput,
-): Promise<string> {
+): Promise<DeptId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDept(
     "/base/dept",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DeptId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDept(
-  ids: string[],
+  ids: DeptId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsDept(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsDept(
-  ids: string[],
+  ids: DeptId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsDept(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDept(
-  ids: string[],
+  ids: DeptId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsDept(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDept(
-  ids: string[],
+  ids: DeptId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsDept(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDept(
-  ids: string[],
+  ids: DeptId[],
 ): Promise<number> {
   const context = useContext();
   

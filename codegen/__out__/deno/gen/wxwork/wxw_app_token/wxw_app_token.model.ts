@@ -9,8 +9,16 @@ import type {
   WxwAppTokenFieldComment as WxwAppTokenFieldCommentType,
 } from "/gen/types.ts";
 
-export const wxwAppTokenId = Symbol.for("WxwAppTokenId");
+declare const wxwAppTokenId: unique symbol;
 export type WxwAppTokenId = typeof wxwAppTokenId;
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
 
 export interface WxwAppTokenSearch extends WxwAppTokenSearchType {
   tenant_id?: string | null;
@@ -18,20 +26,20 @@ export interface WxwAppTokenSearch extends WxwAppTokenSearchType {
 }
 
 export interface WxwAppTokenModel extends WxwAppTokenModelType {
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
-  tenant_id: string;
+  tenant_id: TenantId;
 }
 
 export interface WxwAppTokenInput extends WxwAppTokenInputType {
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
-  tenant_id?: string | null;
+  tenant_id?: TenantId | null;
 }
 
 export type { WxwAppTokenFieldCommentType as WxwAppTokenFieldComment };

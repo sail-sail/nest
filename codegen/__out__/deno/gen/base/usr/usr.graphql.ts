@@ -8,7 +8,7 @@ scalar UsrId
 
 type UsrModel {
   "ID"
-  id: String!
+  id: UsrId!
   "头像"
   img: String!
   "名称"
@@ -18,13 +18,13 @@ type UsrModel {
   "密码"
   password: String!
   "所属组织"
-  org_ids: [String!]
+  org_ids: [OrgId!]
   "所属组织"
-  org_ids_lbl: [OrgId!]
+  org_ids_lbl: [String!]
   "默认组织"
-  default_org_id: String!
+  default_org_id: OrgId!
   "默认组织"
-  default_org_id_lbl: OrgId
+  default_org_id_lbl: String
   "锁定"
   is_locked: Int!
   "锁定"
@@ -36,27 +36,27 @@ type UsrModel {
   "排序"
   order_by: Int!
   "所属部门"
-  dept_ids: [String!]
+  dept_ids: [DeptId!]
   "所属部门"
-  dept_ids_lbl: [DeptId!]
+  dept_ids_lbl: [String!]
   "拥有角色"
-  role_ids: [String!]
+  role_ids: [RoleId!]
   "拥有角色"
-  role_ids_lbl: [RoleId!]
+  role_ids_lbl: [String!]
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -130,13 +130,13 @@ input UsrInput {
   "密码"
   password: String
   "所属组织"
-  org_ids: [String!]
+  org_ids: [OrgId!]
   "所属组织"
-  org_ids_lbl: [OrgId!]
+  org_ids_lbl: [String!]
   "默认组织"
-  default_org_id: String
+  default_org_id: OrgId
   "默认组织"
-  default_org_id_lbl: OrgId
+  default_org_id_lbl: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -148,27 +148,27 @@ input UsrInput {
   "排序"
   order_by: Int
   "所属部门"
-  dept_ids: [String!]
+  dept_ids: [DeptId!]
   "所属部门"
-  dept_ids_lbl: [DeptId!]
+  dept_ids_lbl: [String!]
   "拥有角色"
-  role_ids: [String!]
+  role_ids: [RoleId!]
   "拥有角色"
-  role_ids_lbl: [RoleId!]
+  role_ids_lbl: [String!]
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -178,7 +178,7 @@ input UsrSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [UsrId!]
   "ID"
   id: UsrId
   "头像"
@@ -232,25 +232,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据id查找一条数据"
-  findByIdUsr(id: String!): UsrModel
+  findByIdUsr(id: UsrId!): UsrModel
   "查找order_by字段的最大值"
   findLastOrderByUsr: Int!
 }
 type Mutation {
   "创建一条数据"
-  createUsr(model: UsrInput!, unique_type: UniqueType): String!
+  createUsr(model: UsrInput!, unique_type: UniqueType): UsrId!
   "根据id修改一条数据"
-  updateByIdUsr(id: String!, model: UsrInput!): String!
+  updateByIdUsr(id: UsrId!, model: UsrInput!): UsrId!
   "根据 ids 删除数据"
-  deleteByIdsUsr(ids: [String!]!): Int!
+  deleteByIdsUsr(ids: [UsrId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsUsr(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsUsr(ids: [UsrId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsUsr(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsUsr(ids: [UsrId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsUsr(ids: [String!]!): Int!
+  revertByIdsUsr(ids: [UsrId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsUsr(ids: [String!]!): Int!
+  forceDeleteByIdsUsr(ids: [UsrId!]!): Int!
 }
 
 `);

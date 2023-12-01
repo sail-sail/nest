@@ -1,6 +1,8 @@
-import {
-  UniqueType,
-} from "#/types";
+
+
+import type {
+  OperationRecordId,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -10,7 +12,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -146,18 +147,18 @@ export async function findCount(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {OperationRecordId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: OperationRecordId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdOperationRecord: Query["findByIdOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
           id
           module
@@ -190,18 +191,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsOperationRecord: Mutation["deleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         deleteByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -216,18 +217,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsOperationRecord: Mutation["revertByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         revertByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -242,18 +243,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsOperationRecord: Mutation["forceDeleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         forceDeleteByIdsOperationRecord(ids: $ids)
       }
     `,

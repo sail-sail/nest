@@ -8,9 +8,17 @@ import {
   delCache as delCacheDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
+import type {
+  DomainId,
+} from "/gen/base/domain/domain.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
 export async function getLoginTenants(
   domain: string,
-): Promise<{ id: string, lbl: string }[]> {
+): Promise<{ id: TenantId, lbl: string }[]> {
   let domainModels = await findAllDomain({
     lbl: domain,
     is_enabled: [ 1 ],
@@ -22,9 +30,9 @@ export async function getLoginTenants(
       is_enabled: [ 1 ],
     });
   }
-  let res: { id: string, lbl: string }[] = [ ];
+  let res: { id: TenantId, lbl: string }[] = [ ];
   if (domainModels.length > 0) {
-    const domain_ids = domainModels.map((item) => item.id);
+    const domain_ids: DomainId[] = domainModels.map((item) => item.id);
     let tenantModels = await findAllTenant({
       domain_ids,
       is_enabled: [ 1 ],

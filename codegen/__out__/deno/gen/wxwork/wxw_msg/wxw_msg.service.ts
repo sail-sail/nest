@@ -11,6 +11,7 @@ import type {
   WxwMsgModel,
   WxwMsgSearch,
   WxwMsgFieldComment,
+  WxwMsgId,
 } from "./wxw_msg.model.ts";
 
 import * as wxw_msgDao from "./wxw_msg.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxwMsgId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxwMsgId | null,
 ): Promise<WxwMsgModel | undefined> {
   const model = await wxw_msgDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {WxwMsgId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxwMsgId | null,
 ): Promise<boolean> {
   const data = await wxw_msgDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {WxwMsgInput} input
- * @return {Promise<string>} id
+ * @return {Promise<WxwMsgId>} id
  */
 export async function create(
   input: WxwMsgInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await wxw_msgDao.create(input, options);
-  return data;
+): Promise<WxwMsgId> {
+  const id: WxwMsgId = await wxw_msgDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {WxwMsgId} id
  * @param {WxwMsgInput} input
- * @return {Promise<string>}
+ * @return {Promise<WxwMsgId>}
  */
 export async function updateById(
-  id: string,
+  id: WxwMsgId,
   input: WxwMsgInput,
-): Promise<string> {
+): Promise<WxwMsgId> {
   
-  const data = await wxw_msgDao.updateById(id, input);
-  return data;
+  const id2: WxwMsgId = await wxw_msgDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   
   const data = await wxw_msgDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   const data = await wxw_msgDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxwMsgId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxwMsgId[],
 ): Promise<number> {
   const data = await wxw_msgDao.forceDeleteByIds(ids);
   return data;

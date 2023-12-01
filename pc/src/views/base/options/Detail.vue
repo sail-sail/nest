@@ -222,6 +222,10 @@ import {
 } from "./Api";
 
 import type {
+  OptionsId,
+} from "@/typings/ids";
+
+import type {
   OptionsInput,
 } from "#/types";
 
@@ -229,7 +233,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: OptionsId,
     },
   ],
 }>();
@@ -257,9 +261,9 @@ let dialogNotice = $ref("");
 let dialogModel: OptionsInput = $ref({
 } as OptionsInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<OptionsId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<OptionsId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -297,7 +301,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: OptionsId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -338,8 +342,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: OptionsId;
+      ids?: OptionsId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -638,7 +642,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: OptionsId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
