@@ -42,7 +42,7 @@ pub struct WxwMsgModel {
   /// 企微应用
   pub wxw_app_id_lbl: String,
   /// 发送状态
-  pub errcode: WxwMsgErrcode,
+  pub errcode: String,
   /// 发送状态
   pub errcode_lbl: String,
   /// 成员ID
@@ -79,7 +79,7 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
     // 发送状态
     let errcode_lbl: String = row.try_get("errcode")?;
-    let errcode: WxwMsgErrcode = errcode_lbl.clone().try_into()?;
+    let errcode: String = errcode_lbl.clone();
     // 成员ID
     let touser: String = row.try_get("touser")?;
     // 标题
@@ -176,7 +176,7 @@ pub struct WxwMsgSearch {
   /// 企微应用
   pub wxw_app_id_is_null: Option<bool>,
   /// 发送状态
-  pub errcode: Option<Vec<WxwMsgErrcode>>,
+  pub errcode: Option<Vec<String>>,
   /// 成员ID
   pub touser: Option<String>,
   /// 成员ID
@@ -228,7 +228,7 @@ pub struct WxwMsgInput {
   /// 企微应用
   pub wxw_app_id_lbl: Option<String>,
   /// 发送状态
-  pub errcode: Option<WxwMsgErrcode>,
+  pub errcode: Option<String>,
   /// 发送状态
   pub errcode_lbl: Option<String>,
   /// 成员ID
@@ -417,85 +417,5 @@ impl<'r> sqlx::Decode<'r, MySql> for WxwMsgId {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-/// 企微消息发送状态
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
-pub enum WxwMsgErrcode {
-  /// Empty
-  Empty,
-}
-
-impl fmt::Display for WxwMsgErrcode {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      Self::Empty => write!(f, ""),
-    }
-  }
-}
-
-impl From<WxwMsgErrcode> for SmolStr {
-  fn from(value: WxwMsgErrcode) -> Self {
-    match value {
-      WxwMsgErrcode::Empty => "".into(),
-    }
-  }
-}
-
-impl From<WxwMsgErrcode> for String {
-  fn from(value: WxwMsgErrcode) -> Self {
-    match value {
-      WxwMsgErrcode::Empty => "".into(),
-    }
-  }
-}
-
-impl From<WxwMsgErrcode> for ArgType {
-  fn from(value: WxwMsgErrcode) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for WxwMsgErrcode {
-  fn default() -> Self {
-    Self::Empty,
-  }
-}
-
-impl FromStr for WxwMsgErrcode {
-  type Err = anyhow::Error;
-  
-  fn from_str(s: &str) -> Result<Self, Self::Err> {
-    match s {
-      "empty" => Ok(Self::Empty),
-      _ => Err(anyhow::anyhow!("WxwMsgErrcode can't convert from {s}")),
-    }
-  }
-}
-
-impl WxwMsgErrcode {
-  pub fn as_str(&self) -> &str {
-    match self {
-      Self::Empty => "",
-    }
-  }
-}
-
-impl TryFrom<String> for WxwMsgErrcode {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: String) -> Result<Self, Self::Error> {
-    match s.as_str() {
-      "" => Ok(Self::Empty),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "errcode".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "WxwMsgErrcode can't convert from {s}".to_owned(),
-          )),
-        }),
-      )),
-    }
   }
 }

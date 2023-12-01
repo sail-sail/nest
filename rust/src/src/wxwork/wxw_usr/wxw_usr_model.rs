@@ -8,6 +8,9 @@ use async_graphql::{
   SimpleObject,
 };
 
+use crate::gen::base::org::org_model::OrgId;
+use crate::gen::base::tenant::tenant_model::TenantId;
+
 /// 通过host获取appid, agentid
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
@@ -44,7 +47,7 @@ pub struct WxwLoginByCode {
   pub authorization: String,
   
   /// 组织id
-  pub org_id: Option<String>,
+  pub org_id: Option<OrgId>,
   
   /// 用户名
   pub username: String,
@@ -53,7 +56,7 @@ pub struct WxwLoginByCode {
   pub name: String,
   
   /// 租户id
-  pub tenant_id: String,
+  pub tenant_id: TenantId,
   
   /// 语言
   pub lang: String,

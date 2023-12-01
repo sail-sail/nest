@@ -132,7 +132,7 @@ async fn get_where_query(
     }
   }
   {
-    let errcode: Vec<WxwMsgErrcode> = match &search {
+    let errcode: Vec<String> = match &search {
       Some(item) => item.errcode.clone().unwrap_or_default(),
       None => Default::default(),
     };

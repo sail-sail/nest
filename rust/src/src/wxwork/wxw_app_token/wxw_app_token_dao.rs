@@ -8,6 +8,7 @@ use crate::common::context::{
   get_now,
 };
 
+use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::gen::wxwork::wxw_app_token::wxw_app_token_dao::{
   find_one as find_one_wxw_app_token,
   create as create_wxw_app_token,
@@ -102,7 +103,7 @@ async fn fetch_access_token(
 
 /// 获取企业微信应用的 access_token。
 pub async fn get_access_token(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   force: Option<bool>,
 ) -> Result<String> {
   let force = force.unwrap_or(false);
@@ -199,7 +200,7 @@ pub async fn get_access_token(
 
 /// 获取企微通讯录token
 pub async fn get_contact_access_token(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   force: Option<bool>,
 ) -> Result<String> {
   let force = force.unwrap_or(false);
@@ -301,7 +302,7 @@ pub async fn get_contact_access_token(
 }
 
 async fn fetch_getuserinfo_by_code(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   code: String,
   force: bool,
 ) -> Result<GetuserinfoRes> {
@@ -340,7 +341,7 @@ async fn fetch_getuserinfo_by_code(
 /// 
 /// 返回用户身份信息 `userid`, `user_ticket`
 pub async fn getuserinfo_by_code(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   code: String,
 ) -> Result<GetuserinfoModel> {
   let mut data: GetuserinfoRes = fetch_getuserinfo_by_code(
@@ -381,7 +382,7 @@ pub async fn getuserinfo_by_code(
 }
 
 async fn fetch_getuseridlist(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   force: bool,
 ) -> Result<GetuseridlistRes> {
   let req_id = get_req_id();
@@ -407,7 +408,7 @@ async fn fetch_getuseridlist(
 
 /// 获取成员ID列表
 pub async fn getuseridlist(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
 ) -> Result<Vec<String>> {
   let req_id = get_req_id();
   let mut data: GetuseridlistRes = fetch_getuseridlist(
@@ -442,7 +443,7 @@ pub async fn getuseridlist(
 }
 
 async fn fetch_getuser(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   userid: String,
   force: Option<bool>,
 ) -> Result<GetuserRes> {
@@ -484,7 +485,7 @@ async fn fetch_getuser(
 ///
 /// 如果获取用户信息失败，则返回 `Err`，其中包含错误信息。
 pub async fn getuser(
-  wxw_app_id: String,
+  wxw_app_id: WxwAppId,
   userid: String,
 ) -> Result<Option<GetuserRes>> {
   let req_id = get_req_id();
