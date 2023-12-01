@@ -65,10 +65,15 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
   OptbizInput,
   OptbizModel,
   OptbizSearch,
   OptbizFieldComment,
+  OptbizId,
 } from "./optbiz.model.ts";
 
 const route_path = "/base/optbiz";
@@ -525,7 +530,7 @@ export function equalsByUnique(
  * @param {OptbizInput} input
  * @param {OptbizModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<OptbizId | undefined>}
  */
 export async function checkByUnique(
   input: OptbizInput,
@@ -533,14 +538,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<OptbizId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: OptbizId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -550,7 +555,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -580,14 +585,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {OptbizId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: OptbizId | null,
   options?: {
   },
 ): Promise<OptbizModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -610,15 +615,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {OptbizId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: OptbizId | null,
 ) {
   const table = "base_optbiz";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -737,14 +742,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<OptbizId>} 
  */
 export async function create(
   input: OptbizInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<OptbizId> {
   const table = "base_optbiz";
   const method = "create";
   
@@ -756,7 +761,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: OptbizId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -774,12 +779,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<OptbizId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -851,7 +856,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -859,7 +864,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -925,15 +930,15 @@ export async function delCache() {
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {OptbizId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: OptbizId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -966,7 +971,7 @@ export async function updateTenantById(
  * 根据 id 获取版本号
  */
 export async function getVersionById(
-  id: string,
+  id: OptbizId,
 ): Promise<number> {
   const model = await findById(id);
   if (!model) {
@@ -978,7 +983,7 @@ export async function getVersionById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {OptbizId} id
  * @param {OptbizInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -986,15 +991,15 @@ export async function getVersionById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<OptbizId>}
  */
 export async function updateById(
-  id: string,
+  id: OptbizId,
   input: OptbizInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<OptbizId> {
   const table = "base_optbiz";
   const method = "updateById";
   
@@ -1007,7 +1012,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -1094,7 +1099,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1133,11 +1138,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OptbizId[],
   options?: {
   },
 ): Promise<number> {
@@ -1154,7 +1159,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: OptbizId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1182,11 +1187,11 @@ export async function deleteByIds(
 /**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {OptbizId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: OptbizId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1200,12 +1205,12 @@ export async function getIsEnabledById(
 
 /**
  * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1252,11 +1257,11 @@ export async function enableByIds(
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @param {string} id
+ * @param {OptbizId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: OptbizId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1270,12 +1275,12 @@ export async function getIsLockedById(
 
 /**
  * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1320,11 +1325,11 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OptbizId[],
   options?: {
   },
 ): Promise<number> {
@@ -1341,7 +1346,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: OptbizId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1379,11 +1384,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {OptbizId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OptbizId[],
   options?: {
   },
 ): Promise<number> {

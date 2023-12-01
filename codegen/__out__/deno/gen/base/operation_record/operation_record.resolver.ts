@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  OperationRecordInput,
   OperationRecordModel,
   OperationRecordSearch,
   OperationRecordFieldComment,
+  OperationRecordId,
 } from "./operation_record.model.ts";
 
 import {
@@ -84,7 +83,7 @@ export async function findOneOperationRecord(
  * 根据 id 查找一条数据
  */
 export async function findByIdOperationRecord(
-  id: string,
+  id: OperationRecordId,
 ): Promise<OperationRecordModel | undefined> {
   const { findById } = await import("./operation_record.service.ts");
   const res = await findById(id);
@@ -95,7 +94,7 @@ export async function findByIdOperationRecord(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOperationRecord(
-  ids: string[],
+  ids: OperationRecordId[],
 ): Promise<number> {
   
   const {
@@ -118,7 +117,7 @@ export async function deleteByIdsOperationRecord(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOperationRecord(
-  ids: string[],
+  ids: OperationRecordId[],
 ): Promise<number> {
   
   const {
@@ -141,7 +140,7 @@ export async function revertByIdsOperationRecord(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOperationRecord(
-  ids: string[],
+  ids: OperationRecordId[],
 ): Promise<number> {
   const context = useContext();
   

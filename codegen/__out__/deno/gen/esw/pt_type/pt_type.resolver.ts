@@ -17,6 +17,7 @@ import type {
   PtTypeModel,
   PtTypeSearch,
   PtTypeFieldComment,
+  PtTypeId,
 } from "./pt_type.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOnePtType(
  * 根据 id 查找一条数据
  */
 export async function findByIdPtType(
-  id: string,
+  id: PtTypeId,
 ): Promise<PtTypeModel | undefined> {
   const { findById } = await import("./pt_type.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdPtType(
 export async function createPtType(
   input: PtTypeInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<PtTypeId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createPtType(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: PtTypeId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdPtType(
-  id: string,
+  id: PtTypeId,
   input: PtTypeInput,
-): Promise<string> {
+): Promise<PtTypeId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdPtType(
     "/esw/pt_type",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: PtTypeId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsPtType(
-  ids: string[],
+  ids: PtTypeId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsPtType(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsPtType(
-  ids: string[],
+  ids: PtTypeId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -203,7 +204,7 @@ export async function enableByIdsPtType(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsPtType(
-  ids: string[],
+  ids: PtTypeId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -230,7 +231,7 @@ export async function lockByIdsPtType(
  * 根据 ids 还原数据
  */
 export async function revertByIdsPtType(
-  ids: string[],
+  ids: PtTypeId[],
 ): Promise<number> {
   
   const {
@@ -253,7 +254,7 @@ export async function revertByIdsPtType(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsPtType(
-  ids: string[],
+  ids: PtTypeId[],
 ): Promise<number> {
   const context = useContext();
   

@@ -3,6 +3,10 @@ import type {
 } from "#/types";
 
 import type {
+  MenuId,
+} from "@/typings/ids";
+
+import type {
   LocationQuery,
 } from "vue-router";
 
@@ -80,9 +84,9 @@ export default defineStore("menu", function() {
   
   /**
    * 通过路由获取菜单
-   * @param {string} id
+   * @param {MenuId} id
    */
-  function getMenuById(id: string): MenuModel | undefined {
+  function getMenuById(id: MenuId): MenuModel | undefined {
     if (!id) {
       return;
     }
@@ -99,11 +103,11 @@ export default defineStore("menu", function() {
   
   /**
    * 通过菜单id向上找父菜单列表id
-   * @param {string} id
-   * @return {string[]}
+   * @param {MenuId} id
+   * @return {MenuId[]}
    */
-  function getParentIds(id: string): string[] {
-    const parentIds: string[] = [ ];
+  function getParentIds(id: MenuId): MenuId[] {
+    const parentIds: MenuId[] = [ ];
     const menus0 = [ ...menus ];
     let parentId = id;
     const tmpFn = function(menus0: MenuModel[]) {

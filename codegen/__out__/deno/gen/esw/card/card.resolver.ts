@@ -19,6 +19,7 @@ import type {
   CardModel,
   CardSearch,
   CardFieldComment,
+  CardId,
 } from "./card.model.ts";
 
 import {
@@ -86,7 +87,7 @@ export async function findOneCard(
  * 根据 id 查找一条数据
  */
 export async function findByIdCard(
-  id: string,
+  id: CardId,
 ): Promise<CardModel | undefined> {
   const { findById } = await import("./card.service.ts");
   const res = await findById(id);
@@ -99,7 +100,7 @@ export async function findByIdCard(
 export async function createCard(
   input: CardInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<CardId> {
   
   // 充值余额
   if (input.balance != null) {
@@ -135,17 +136,17 @@ export async function createCard(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: CardId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdCard(
-  id: string,
+  id: CardId,
   input: CardInput,
-): Promise<string> {
+): Promise<CardId> {
   
   // 充值余额
   if (input.balance != null) {
@@ -177,15 +178,15 @@ export async function updateByIdCard(
     "/esw/card",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: CardId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsCard(
-  ids: string[],
+  ids: CardId[],
 ): Promise<number> {
   
   const {
@@ -208,7 +209,7 @@ export async function deleteByIdsCard(
  * 根据 id 设置默认记录
  */
 export async function defaultByIdCard(
-  id: string,
+  id: CardId,
 ): Promise<number> {
   
   const {
@@ -231,7 +232,7 @@ export async function defaultByIdCard(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsCard(
-  ids: string[],
+  ids: CardId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -258,7 +259,7 @@ export async function enableByIdsCard(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsCard(
-  ids: string[],
+  ids: CardId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -285,7 +286,7 @@ export async function lockByIdsCard(
  * 根据 ids 还原数据
  */
 export async function revertByIdsCard(
-  ids: string[],
+  ids: CardId[],
 ): Promise<number> {
   
   const {
@@ -308,7 +309,7 @@ export async function revertByIdsCard(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsCard(
-  ids: string[],
+  ids: CardId[],
 ): Promise<number> {
   const context = useContext();
   

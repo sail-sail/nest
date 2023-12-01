@@ -19,6 +19,7 @@ import type {
   OrderModel,
   OrderSearch,
   OrderFieldComment,
+  OrderId,
 } from "./order.model.ts";
 
 import {
@@ -86,7 +87,7 @@ export async function findOneOrder(
  * 根据 id 查找一条数据
  */
 export async function findByIdOrder(
-  id: string,
+  id: OrderId,
 ): Promise<OrderModel | undefined> {
   const { findById } = await import("./order.service.ts");
   const res = await findById(id);
@@ -99,7 +100,7 @@ export async function findByIdOrder(
 export async function createOrder(
   input: OrderInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<OrderId> {
   
   // 订单金额
   if (input.price != null) {
@@ -145,17 +146,17 @@ export async function createOrder(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: OrderId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdOrder(
-  id: string,
+  id: OrderId,
   input: OrderInput,
-): Promise<string> {
+): Promise<OrderId> {
   
   // 订单金额
   if (input.price != null) {
@@ -197,15 +198,15 @@ export async function updateByIdOrder(
     "/esw/order",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: OrderId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOrder(
-  ids: string[],
+  ids: OrderId[],
 ): Promise<number> {
   
   const {
@@ -228,7 +229,7 @@ export async function deleteByIdsOrder(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsOrder(
-  ids: string[],
+  ids: OrderId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -255,7 +256,7 @@ export async function enableByIdsOrder(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsOrder(
-  ids: string[],
+  ids: OrderId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -282,7 +283,7 @@ export async function lockByIdsOrder(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOrder(
-  ids: string[],
+  ids: OrderId[],
 ): Promise<number> {
   
   const {
@@ -305,7 +306,7 @@ export async function revertByIdsOrder(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOrder(
-  ids: string[],
+  ids: OrderId[],
 ): Promise<number> {
   const context = useContext();
   

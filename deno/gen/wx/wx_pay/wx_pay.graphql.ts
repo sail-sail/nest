@@ -8,7 +8,7 @@ scalar WxPayId
 
 type WxPayModel {
   "ID"
-  id: String!
+  id: WxPayId!
   "名称"
   lbl: String!
   "appid"
@@ -38,17 +38,17 @@ type WxPayModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -136,17 +136,17 @@ input WxPayInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -156,7 +156,7 @@ input WxPaySearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxPayId!]
   "ID"
   id: WxPayId
   "名称"
@@ -213,25 +213,25 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
   "根据id查找一条数据"
-  findByIdWxPay(id: String!): WxPayModel
+  findByIdWxPay(id: WxPayId!): WxPayModel
   "查找order_by字段的最大值"
   findLastOrderByWxPay: Int!
 }
 type Mutation {
   "创建一条数据"
-  createWxPay(model: WxPayInput!, unique_type: UniqueType): String!
+  createWxPay(model: WxPayInput!, unique_type: UniqueType): WxPayId!
   "根据id修改一条数据"
-  updateByIdWxPay(id: String!, model: WxPayInput!): String!
+  updateByIdWxPay(id: WxPayId!, model: WxPayInput!): WxPayId!
   "根据 ids 删除数据"
-  deleteByIdsWxPay(ids: [String!]!): Int!
+  deleteByIdsWxPay(ids: [WxPayId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsWxPay(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsWxPay(ids: [WxPayId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsWxPay(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsWxPay(ids: [WxPayId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxPay(ids: [String!]!): Int!
+  revertByIdsWxPay(ids: [WxPayId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxPay(ids: [String!]!): Int!
+  forceDeleteByIdsWxPay(ids: [WxPayId!]!): Int!
 }
 
 `);

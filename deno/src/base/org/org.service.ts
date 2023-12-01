@@ -2,26 +2,36 @@ import {
   type Mutation,
 } from "/gen/types.ts"
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
+import {
+  findById as findByIdOrg,
+} from "/gen/base/usr/usr.dao.ts";
 
-import * as authService from "/lib/auth/auth.service.ts";
+import {
+  createToken,
+} from "/lib/auth/auth.dao.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
 
 export async function orgLoginSelect(
-  org_id: string,
+  org_id: OrgId,
 ): Promise<Mutation["orgLoginSelect"]> {
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel.org_id === org_id) {
     return "";
   }
-  const usrModel = await usrDao.findById(authModel.id);
+  const usrModel = await findByIdOrg(authModel.id);
   const org_ids = usrModel?.org_ids || [ ];
   if (!org_ids.includes(org_id)) {
-    throw `org_id: ${ org_id } dose not exit in login usr`;
+    throw `org_id: ${ org_id as unknown as string } dose not exit in login usr`;
   }
   authModel.org_id = org_id;
   // authModel.exp = undefined;
-  const { authorization } = await authService.createToken(authModel);
+  const { authorization } = await createToken(authModel);
   return authorization;
 }

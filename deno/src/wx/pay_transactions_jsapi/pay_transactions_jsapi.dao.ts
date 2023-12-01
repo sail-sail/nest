@@ -39,7 +39,24 @@ import type {
   RequestPaymentOptions,
 } from "/gen/types.ts";
 
+import {
+  PayTransactionsJsapiTradeState,
+  PayTransactionsJsapiCurrency,
+} from "/gen/types.ts";
+
 import WxPay from "wechatpay-node-v3";
+
+import type {
+  WxUsrId,
+} from "/gen/wx/wx_usr/wx_usr.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
 
 /** 订单金额信息 */
 interface Iamount {
@@ -163,13 +180,13 @@ export async function transactions_jsapi(
   result.orderInfo = obj.appid;
   log(`transactions_jsapi.result: ${ JSON.stringify(result) }`);
   const authModel = await getAuthModel();
-  const wx_usr_id = authModel.wx_usr_id;
+  const wx_usr_id: WxUsrId | undefined = authModel.wx_usr_id;
   
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(wx_usr_id),
   );
-  const tenant_id = wx_usrModel.tenant_id;
-  const org_id = wx_usrModel.org_id;
+  const tenant_id: TenantId = wx_usrModel.tenant_id;
+  const org_id: OrgId = wx_usrModel.org_id;
   
   await createPayTransactionsJsapi({
     appid: obj.appid,
@@ -177,7 +194,7 @@ export async function transactions_jsapi(
     description: params.description,
     out_trade_no: params.out_trade_no,
     transaction_id: "",
-    trade_state: "NOTPAY",
+    trade_state: PayTransactionsJsapiTradeState.Notpay,
     trade_state_desc: "未支付",
     time_expire: params.time_expire,
     attach: params.attach,
@@ -185,7 +202,7 @@ export async function transactions_jsapi(
     notify_url: params.notify_url,
     support_fapiao: params.detail?.invoice_id ? 1 : 0,
     total_fee: params.amount.total,
-    currency: params.amount.currency,
+    currency: params.amount.currency as unknown as PayTransactionsJsapiCurrency,
     openid: params.payer.openid,
     prepay_id: result.package,
     tenant_id,
@@ -219,7 +236,7 @@ export async function getJsapiObj(
   );
   await validateIsEnabledWxUsr(wx_usrModel);
   const openid = wx_usrModel.openid;
-  const tenant_id = wx_usrModel.tenant_id;
+  const tenant_id: TenantId = wx_usrModel.tenant_id;
   
   const tenantModel = await validateOptionTenant(
     await findByIdTenant(tenant_id),

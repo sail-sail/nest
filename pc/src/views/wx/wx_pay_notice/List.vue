@@ -578,6 +578,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  WxPayNoticeId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -616,13 +620,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    WxPayNoticeId[],
   ],
   add: [
-    string[],
+    WxPayNoticeId[],
   ],
   edit: [
-    string[],
+    WxPayNoticeId[],
   ],
   remove: [
     number,
@@ -689,9 +693,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: WxPayNoticeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: WxPayNoticeId; // ID
   appid?: string; // appid
   appid_like?: string; // appid
   mchid?: string; // 商户号
@@ -721,12 +725,6 @@ const props = defineProps<{
   rem_like?: string; // 备注
   raw?: string; // 原始数据
   raw_like?: string; // 原始数据
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -810,7 +808,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<WxPayNoticeModel>(
+} = $(useSelect<WxPayNoticeModel, WxPayNoticeId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

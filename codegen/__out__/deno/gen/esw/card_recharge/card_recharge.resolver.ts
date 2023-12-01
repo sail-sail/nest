@@ -9,16 +9,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  CardRechargeInput,
   CardRechargeModel,
   CardRechargeSearch,
   CardRechargeFieldComment,
+  CardRechargeId,
 } from "./card_recharge.model.ts";
 
 import {
@@ -86,7 +85,7 @@ export async function findOneCardRecharge(
  * 根据 id 查找一条数据
  */
 export async function findByIdCardRecharge(
-  id: string,
+  id: CardRechargeId,
 ): Promise<CardRechargeModel | undefined> {
   const { findById } = await import("./card_recharge.service.ts");
   const res = await findById(id);
@@ -97,7 +96,7 @@ export async function findByIdCardRecharge(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsCardRecharge(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   
   const {
@@ -120,7 +119,7 @@ export async function deleteByIdsCardRecharge(
  * 根据 ids 还原数据
  */
 export async function revertByIdsCardRecharge(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   
   const {
@@ -143,7 +142,7 @@ export async function revertByIdsCardRecharge(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsCardRecharge(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   const context = useContext();
   

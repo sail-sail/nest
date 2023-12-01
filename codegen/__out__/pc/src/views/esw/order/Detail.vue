@@ -268,6 +268,10 @@ import {
 } from "./Api";
 
 import type {
+  OrderId,
+} from "@/typings/ids";
+
+import type {
   OrderInput,
   UsrModel,
   CardModel,
@@ -278,11 +282,16 @@ import {
   getCardList,
 } from "./Api";
 
+import {
+  OrderStatus,
+  OrderType,
+} from "#/types";
+
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: OrderId,
     },
   ],
 }>();
@@ -310,9 +319,9 @@ let dialogNotice = $ref("");
 let dialogModel: OrderInput = $ref({
 } as OrderInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<OrderId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<OrderId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -366,7 +375,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: OrderId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -388,9 +397,9 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: OrderInput = {
-    status: "to_be_paid",
+    status: OrderStatus.To_be_paid,
     price: "0.00",
-    type: "pay",
+    type: OrderType.Pay,
     amt: "0.00",
     give_amt: "0.00",
     balance: "0.00",
@@ -413,8 +422,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: OrderId;
+      ids?: OrderId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -704,7 +713,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: OrderId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

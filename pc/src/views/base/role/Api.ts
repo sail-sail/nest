@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  RoleId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -14,7 +19,6 @@ import type {
   MenuSearch,
   PermitSearch,
   DataPermitSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
@@ -173,14 +177,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {RoleInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: RoleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<RoleId> {
   const data: {
     createRole: Mutation["createRole"];
   } = await mutation({
@@ -194,27 +198,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createRole;
-  return res;
+  const id: RoleId = data.createRole;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {RoleId} id
  * @param {RoleInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: RoleId,
   model: RoleInput,
   opt?: GqlOpt,
-) {
+): Promise<RoleId> {
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: RoleInput!) {
+      mutation($id: RoleId!, $model: RoleInput!) {
         updateByIdRole(id: $id, model: $model)
       }
     `,
@@ -223,25 +227,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdRole;
-  return res;
+  const id2: RoleId = data.updateByIdRole;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {RoleId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: RoleId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdRole: Query["findByIdRole"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: RoleId!) {
         findByIdRole(id: $id) {
           id
           lbl
@@ -280,18 +284,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: RoleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsRole: Mutation["deleteByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RoleId!]!) {
         deleteByIdsRole(ids: $ids)
       }
     `,
@@ -306,12 +310,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: RoleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -319,7 +323,7 @@ export async function enableByIds(
     enableByIdsRole: Mutation["enableByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [RoleId!]!, $is_enabled: Int!) {
         enableByIdsRole(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -335,12 +339,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: RoleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -348,7 +352,7 @@ export async function lockByIds(
     lockByIdsRole: Mutation["lockByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [RoleId!]!, $is_locked: Int!) {
         lockByIdsRole(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -364,18 +368,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: RoleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsRole: Mutation["revertByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RoleId!]!) {
         revertByIdsRole(ids: $ids)
       }
     `,
@@ -390,18 +394,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: RoleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsRole: Mutation["forceDeleteByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RoleId!]!) {
         forceDeleteByIdsRole(ids: $ids)
       }
     `,

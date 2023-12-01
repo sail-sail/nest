@@ -1,12 +1,18 @@
-import {
-  type I18Nmodel,
+import type {
+  I18Nmodel,
 } from "/gen/base/i18n/i18n.model.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import {
   useContext,
 } from "/lib/context.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
 
 const reg = /\{([\s\S]*?)\}/gm;
 
@@ -16,7 +22,7 @@ export async function n(
   // deno-lint-ignore no-explicit-any
   ...args: any[]
 ) {
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   let langCode = authModel?.lang;
   if (!langCode) {
     const context = useContext();
@@ -39,7 +45,7 @@ export async function ns(
   // deno-lint-ignore no-explicit-any
   ...args: any[]
 ) {
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   let langCode = authModel?.lang;
   if (!langCode) {
     const context = useContext();
@@ -70,7 +76,7 @@ export async function nLang(
     code: langCode,
     is_enabled: [ 1 ],
   });
-  let menu_id: string | undefined;
+  let menu_id: MenuId | undefined;
   if (routePath != null) {
     const menuModel = await findOneMenu({
       route_path: routePath,

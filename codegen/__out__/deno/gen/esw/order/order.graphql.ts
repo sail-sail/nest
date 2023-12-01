@@ -6,13 +6,31 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar OrderId
 
 "订单订单状态"
-scalar OrderStatus
+enum OrderStatus {
+  "待支付"
+  to_be_paid
+  "待审核"
+  to_be_reviewed
+  "办理中"
+  in_progress
+  "已完成"
+  completed
+}
 "订单订单类型"
-scalar OrderType
+enum OrderType {
+  "消费"
+  pay
+  "充值"
+  recharge
+  "赠送"
+  give
+  "活动"
+  activity
+}
 
 type OrderModel {
   "ID"
-  id: String!
+  id: OrderId!
   "订单号"
   lbl: String!
   "订单状态"
@@ -20,13 +38,13 @@ type OrderModel {
   "订单状态"
   status_lbl: String!
   "用户"
-  usr_id: String!
+  usr_id: UsrId!
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "会员卡"
-  card_id: String!
+  card_id: CardId!
   "会员卡"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "订单金额"
   price: Decimal!
   "订单类型"
@@ -54,17 +72,17 @@ type OrderModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -142,13 +160,13 @@ input OrderInput {
   "订单状态"
   status_lbl: String
   "用户"
-  usr_id: String
+  usr_id: UsrId
   "用户"
-  usr_id_lbl: UsrId
+  usr_id_lbl: String
   "会员卡"
-  card_id: String
+  card_id: CardId
   "会员卡"
-  card_id_lbl: CardId
+  card_id_lbl: String
   "订单金额"
   price: Decimal
   "订单类型"
@@ -176,17 +194,17 @@ input OrderInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -196,7 +214,7 @@ input OrderSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [OrderId!]
   "ID"
   id: OrderId
   "订单号"
@@ -252,23 +270,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneOrder(search: OrderSearch, sort: [SortInput!]): OrderModel
   "根据id查找一条数据"
-  findByIdOrder(id: String!): OrderModel
+  findByIdOrder(id: OrderId!): OrderModel
 }
 type Mutation {
   "创建一条数据"
-  createOrder(model: OrderInput!, unique_type: UniqueType): String!
+  createOrder(model: OrderInput!, unique_type: UniqueType): OrderId!
   "根据id修改一条数据"
-  updateByIdOrder(id: String!, model: OrderInput!): String!
+  updateByIdOrder(id: OrderId!, model: OrderInput!): OrderId!
   "根据 ids 删除数据"
-  deleteByIdsOrder(ids: [String!]!): Int!
+  deleteByIdsOrder(ids: [OrderId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsOrder(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsOrder(ids: [OrderId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsOrder(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsOrder(ids: [OrderId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsOrder(ids: [String!]!): Int!
+  revertByIdsOrder(ids: [OrderId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsOrder(ids: [String!]!): Int!
+  forceDeleteByIdsOrder(ids: [OrderId!]!): Int!
 }
 
 `);

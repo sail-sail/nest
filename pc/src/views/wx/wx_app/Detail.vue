@@ -222,6 +222,10 @@ import {
 } from "./Api";
 
 import type {
+  WxAppId,
+} from "@/typings/ids";
+
+import type {
   WxAppInput,
 } from "#/types";
 
@@ -229,7 +233,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: WxAppId,
     },
   ],
 }>();
@@ -257,9 +261,9 @@ let dialogNotice = $ref("");
 let dialogModel: WxAppInput = $ref({
 } as WxAppInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<WxAppId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<WxAppId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -321,7 +325,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: WxAppId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -361,8 +365,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: WxAppId;
+      ids?: WxAppId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -661,7 +665,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: WxAppId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

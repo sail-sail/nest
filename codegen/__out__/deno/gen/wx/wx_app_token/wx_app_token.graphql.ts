@@ -8,11 +8,11 @@ scalar WxAppTokenId
 
 type WxAppTokenModel {
   "ID"
-  id: String!
+  id: WxAppTokenId!
   "微信小程序"
-  wx_app_id: String!
+  wx_app_id: WxAppId!
   "微信小程序"
-  wx_app_id_lbl: WxAppId
+  wx_app_id_lbl: String
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -44,9 +44,9 @@ input WxAppTokenInput {
   ""
   id: WxAppTokenId
   "微信小程序"
-  wx_app_id: String
+  wx_app_id: WxAppId
   "微信小程序"
-  wx_app_id_lbl: WxAppId
+  wx_app_id_lbl: String
   "令牌"
   access_token: String
   "令牌创建时间"
@@ -60,7 +60,7 @@ input WxAppTokenSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [WxAppTokenId!]
   "ID"
   id: WxAppTokenId
   "微信小程序"
@@ -84,19 +84,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneWxAppToken(search: WxAppTokenSearch, sort: [SortInput!]): WxAppTokenModel
   "根据id查找一条数据"
-  findByIdWxAppToken(id: String!): WxAppTokenModel
+  findByIdWxAppToken(id: WxAppTokenId!): WxAppTokenModel
 }
 type Mutation {
   "创建一条数据"
-  createWxAppToken(model: WxAppTokenInput!, unique_type: UniqueType): String!
+  createWxAppToken(model: WxAppTokenInput!, unique_type: UniqueType): WxAppTokenId!
   "根据id修改一条数据"
-  updateByIdWxAppToken(id: String!, model: WxAppTokenInput!): String!
+  updateByIdWxAppToken(id: WxAppTokenId!, model: WxAppTokenInput!): WxAppTokenId!
   "根据 ids 删除数据"
-  deleteByIdsWxAppToken(ids: [String!]!): Int!
+  deleteByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsWxAppToken(ids: [String!]!): Int!
+  revertByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsWxAppToken(ids: [String!]!): Int!
+  forceDeleteByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
 }
 
 `);

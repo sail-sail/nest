@@ -510,6 +510,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  CardRechargeId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -551,13 +555,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    string[],
+    CardRechargeId[],
   ],
   add: [
-    string[],
+    CardRechargeId[],
   ],
   edit: [
-    string[],
+    CardRechargeId[],
   ],
   remove: [
     number,
@@ -624,13 +628,13 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: CardRechargeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: CardRechargeId; // ID
   card_id?: string|string[]; // 会员卡
-  card_id_lbl?: string|string[]; // 会员卡
+  card_id_lbl?: string; // 会员卡
   usr_id?: string|string[]; // 用户
-  usr_id_lbl?: string|string[]; // 用户
+  usr_id_lbl?: string; // 用户
   amt?: string; // 充值金额
   give_amt?: string; // 赠送金额
   balance?: string; // 充值后充值余额
@@ -638,12 +642,6 @@ const props = defineProps<{
   integral?: string; // 充值后积分
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -726,7 +724,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<CardRechargeModel>(
+} = $(useSelect<CardRechargeModel, CardRechargeId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

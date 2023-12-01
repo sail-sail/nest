@@ -8,15 +8,15 @@ scalar PtId
 
 type PtModel {
   "ID"
-  id: String!
+  id: PtId!
   "图片"
   img: String!
   "名称"
   lbl: String!
   "类型"
-  pt_type_id: String!
+  pt_type_id: PtTypeId!
   "类型"
-  pt_type_id_lbl: PtTypeId
+  pt_type_id_lbl: String
   "价格"
   price: Decimal!
   "原价"
@@ -42,17 +42,17 @@ type PtModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -120,9 +120,9 @@ input PtInput {
   "名称"
   lbl: String
   "类型"
-  pt_type_id: String
+  pt_type_id: PtTypeId
   "类型"
-  pt_type_id_lbl: PtTypeId
+  pt_type_id_lbl: String
   "价格"
   price: Decimal
   "原价"
@@ -148,17 +148,17 @@ input PtInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -168,7 +168,7 @@ input PtSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [PtId!]
   "ID"
   id: PtId
   "图片"
@@ -222,25 +222,25 @@ type Query {
   "根据条件查找第一条数据"
   findOnePt(search: PtSearch, sort: [SortInput!]): PtModel
   "根据id查找一条数据"
-  findByIdPt(id: String!): PtModel
+  findByIdPt(id: PtId!): PtModel
   "查找order_by字段的最大值"
   findLastOrderByPt: Int!
 }
 type Mutation {
   "创建一条数据"
-  createPt(model: PtInput!, unique_type: UniqueType): String!
+  createPt(model: PtInput!, unique_type: UniqueType): PtId!
   "根据id修改一条数据"
-  updateByIdPt(id: String!, model: PtInput!): String!
+  updateByIdPt(id: PtId!, model: PtInput!): PtId!
   "根据 ids 删除数据"
-  deleteByIdsPt(ids: [String!]!): Int!
+  deleteByIdsPt(ids: [PtId!]!): Int!
   "根据 ids 启用或者禁用数据"
-  enableByIdsPt(ids: [String!]!, is_enabled: Int!): Int!
+  enableByIdsPt(ids: [PtId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsPt(ids: [String!]!, is_locked: Int!): Int!
+  lockByIdsPt(ids: [PtId!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsPt(ids: [String!]!): Int!
+  revertByIdsPt(ids: [PtId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsPt(ids: [String!]!): Int!
+  forceDeleteByIdsPt(ids: [PtId!]!): Int!
 }
 
 `);

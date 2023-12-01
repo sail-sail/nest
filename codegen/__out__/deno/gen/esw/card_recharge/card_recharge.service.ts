@@ -11,6 +11,7 @@ import type {
   CardRechargeModel,
   CardRechargeSearch,
   CardRechargeFieldComment,
+  CardRechargeId,
 } from "./card_recharge.model.ts";
 
 import * as card_rechargeDao from "./card_recharge.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {CardRechargeId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: CardRechargeId | null,
 ): Promise<CardRechargeModel | undefined> {
   const model = await card_rechargeDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {CardRechargeId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: CardRechargeId | null,
 ): Promise<boolean> {
   const data = await card_rechargeDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {CardRechargeInput} input
- * @return {Promise<string>} id
+ * @return {Promise<CardRechargeId>} id
  */
 export async function create(
   input: CardRechargeInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await card_rechargeDao.create(input, options);
-  return data;
+): Promise<CardRechargeId> {
+  const id: CardRechargeId = await card_rechargeDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {CardRechargeId} id
  * @param {CardRechargeInput} input
- * @return {Promise<string>}
+ * @return {Promise<CardRechargeId>}
  */
 export async function updateById(
-  id: string,
+  id: CardRechargeId,
   input: CardRechargeInput,
-): Promise<string> {
+): Promise<CardRechargeId> {
   
-  const data = await card_rechargeDao.updateById(id, input);
-  return data;
+  const id2: CardRechargeId = await card_rechargeDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   
   const data = await card_rechargeDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   const data = await card_rechargeDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CardRechargeId[],
 ): Promise<number> {
   const data = await card_rechargeDao.forceDeleteByIds(ids);
   return data;

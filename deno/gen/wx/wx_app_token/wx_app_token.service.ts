@@ -11,6 +11,7 @@ import type {
   WxAppTokenModel,
   WxAppTokenSearch,
   WxAppTokenFieldComment,
+  WxAppTokenId,
 } from "./wx_app_token.model.ts";
 
 import * as wx_app_tokenDao from "./wx_app_token.dao.ts";
@@ -68,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxAppTokenId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxAppTokenId | null,
 ): Promise<WxAppTokenModel | undefined> {
   const model = await wx_app_tokenDao.findById(id);
   return model;
@@ -91,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {string} id
+ * @param {WxAppTokenId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxAppTokenId | null,
 ): Promise<boolean> {
   const data = await wx_app_tokenDao.existById(id);
   return data;
@@ -114,40 +115,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {WxAppTokenInput} input
- * @return {Promise<string>} id
+ * @return {Promise<WxAppTokenId>} id
  */
 export async function create(
   input: WxAppTokenInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await wx_app_tokenDao.create(input, options);
-  return data;
+): Promise<WxAppTokenId> {
+  const id: WxAppTokenId = await wx_app_tokenDao.create(input, options);
+  return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {string} id
+ * @param {WxAppTokenId} id
  * @param {WxAppTokenInput} input
- * @return {Promise<string>}
+ * @return {Promise<WxAppTokenId>}
  */
 export async function updateById(
-  id: string,
+  id: WxAppTokenId,
   input: WxAppTokenInput,
-): Promise<string> {
+): Promise<WxAppTokenId> {
   
-  const data = await wx_app_tokenDao.updateById(id, input);
-  return data;
+  const id2: WxAppTokenId = await wx_app_tokenDao.updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   
   const data = await wx_app_tokenDao.deleteByIds(ids);
@@ -156,11 +157,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   const data = await wx_app_tokenDao.revertByIds(ids);
   return data;
@@ -168,11 +169,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxAppTokenId[],
 ): Promise<number> {
   const data = await wx_app_tokenDao.forceDeleteByIds(ids);
   return data;

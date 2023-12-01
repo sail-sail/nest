@@ -17,6 +17,7 @@ import type {
   DomainModel,
   DomainSearch,
   DomainFieldComment,
+  DomainId,
 } from "./domain.model.ts";
 
 import {
@@ -84,7 +85,7 @@ export async function findOneDomain(
  * 根据 id 查找一条数据
  */
 export async function findByIdDomain(
-  id: string,
+  id: DomainId,
 ): Promise<DomainModel | undefined> {
   const { findById } = await import("./domain.service.ts");
   const res = await findById(id);
@@ -97,7 +98,7 @@ export async function findByIdDomain(
 export async function createDomain(
   input: DomainInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DomainId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDomain(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DomainId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  */
 export async function updateByIdDomain(
-  id: string,
+  id: DomainId,
   input: DomainInput,
-): Promise<string> {
+): Promise<DomainId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDomain(
     "/base/domain",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DomainId = await updateById(id, input);
+  return id2;
 }
 
 /**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDomain(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   
   const {
@@ -176,7 +177,7 @@ export async function deleteByIdsDomain(
  * 根据 id 设置默认记录
  */
 export async function defaultByIdDomain(
-  id: string,
+  id: DomainId,
 ): Promise<number> {
   
   const {
@@ -199,7 +200,7 @@ export async function defaultByIdDomain(
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsDomain(
-  ids: string[],
+  ids: DomainId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -226,7 +227,7 @@ export async function enableByIdsDomain(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDomain(
-  ids: string[],
+  ids: DomainId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -253,7 +254,7 @@ export async function lockByIdsDomain(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDomain(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   
   const {
@@ -276,7 +277,7 @@ export async function revertByIdsDomain(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDomain(
-  ids: string[],
+  ids: DomainId[],
 ): Promise<number> {
   const context = useContext();
   

@@ -63,13 +63,26 @@ import {
 import type {
   PageInput,
   SortInput,
+  WxPayNoticeTradeType,
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
 } from "/gen/types.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
 
 import type {
   WxPayNoticeInput,
   WxPayNoticeModel,
   WxPayNoticeSearch,
   WxPayNoticeFieldComment,
+  WxPayNoticeId,
 } from "./wx_pay_notice.model.ts";
 
 const route_path = "/wx/wx_pay_notice";
@@ -441,7 +454,7 @@ export async function findAll(
     const model = result[i];
     
     // 交易类型
-    let trade_type_lbl = model.trade_type;
+    let trade_type_lbl = model.trade_type as string;
     if (!isEmpty(model.trade_type)) {
       const dictItem = trade_typeDict.find((dictItem) => dictItem.val === model.trade_type);
       if (dictItem) {
@@ -451,7 +464,7 @@ export async function findAll(
     model.trade_type_lbl = trade_type_lbl;
     
     // 交易状态
-    let trade_state_lbl = model.trade_state;
+    let trade_state_lbl = model.trade_state as string;
     if (!isEmpty(model.trade_state)) {
       const dictItem = trade_stateDict.find((dictItem) => dictItem.val === model.trade_state);
       if (dictItem) {
@@ -473,7 +486,7 @@ export async function findAll(
     }
     
     // 货币类型
-    let currency_lbl = model.currency;
+    let currency_lbl = model.currency as string;
     if (!isEmpty(model.currency)) {
       const dictItem = currencyDict.find((dictItem) => dictItem.val === model.currency);
       if (dictItem) {
@@ -483,7 +496,7 @@ export async function findAll(
     model.currency_lbl = currency_lbl;
     
     // 用户支付币种
-    let payer_currency_lbl = model.payer_currency;
+    let payer_currency_lbl = model.payer_currency as string;
     if (!isEmpty(model.payer_currency)) {
       const dictItem = payer_currencyDict.find((dictItem) => dictItem.val === model.payer_currency);
       if (dictItem) {
@@ -559,7 +572,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
     const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
     if (val !== undefined) {
-      input.trade_type = val;
+      input.trade_type = val as WxPayNoticeTradeType;
     }
   }
   
@@ -567,7 +580,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
     const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
     if (val !== undefined) {
-      input.trade_state = val;
+      input.trade_state = val as WxPayNoticeTradeState;
     }
   }
   
@@ -581,7 +594,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
     const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
     if (val !== undefined) {
-      input.currency = val;
+      input.currency = val as WxPayNoticeCurrency;
     }
   }
   
@@ -589,7 +602,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
     const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
     if (val !== undefined) {
-      input.payer_currency = val;
+      input.payer_currency = val as WxPayNoticePayerCurrency;
     }
   }
 }
@@ -679,7 +692,7 @@ export function equalsByUnique(
  * @param {WxPayNoticeInput} input
  * @param {WxPayNoticeModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<WxPayNoticeId | undefined>}
  */
 export async function checkByUnique(
   input: WxPayNoticeInput,
@@ -687,14 +700,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<WxPayNoticeId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: WxPayNoticeId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -704,7 +717,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -734,14 +747,14 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {string} id
+ * @param {WxPayNoticeId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: WxPayNoticeId | null,
   options?: {
   },
 ): Promise<WxPayNoticeModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -764,15 +777,15 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {string} id
+ * @param {WxPayNoticeId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: WxPayNoticeId | null,
 ) {
   const table = "wx_wx_pay_notice";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -949,14 +962,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<WxPayNoticeId>} 
  */
 export async function create(
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<WxPayNoticeId> {
   const table = "wx_wx_pay_notice";
   const method = "create";
   
@@ -968,7 +981,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: WxPayNoticeId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -986,12 +999,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<WxPayNoticeId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -1106,7 +1119,7 @@ export async function create(
       sql += `,${ args.push(authModel?.org_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1114,7 +1127,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1185,15 +1198,15 @@ export async function create(
 
 /**
  * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * @param {WxPayNoticeId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: WxPayNoticeId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -1223,15 +1236,15 @@ export async function updateTenantById(
 /**
  * 根据id修改组织id
  * @export
- * @param {string} id
- * @param {string} org_id
+ * @param {WxPayNoticeId} id
+ * @param {OrgId} org_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateOrgById(
-  id: string,
-  org_id: string,
+  id: WxPayNoticeId,
+  org_id: OrgId,
   options?: {
   },
 ): Promise<number> {
@@ -1260,7 +1273,7 @@ export async function updateOrgById(
 
 /**
  * 根据id修改一行数据
- * @param {string} id
+ * @param {WxPayNoticeId} id
  * @param {WxPayNoticeInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -1268,15 +1281,15 @@ export async function updateOrgById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<WxPayNoticeId>}
  */
 export async function updateById(
-  id: string,
+  id: WxPayNoticeId,
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<WxPayNoticeId> {
   const table = "wx_wx_pay_notice";
   const method = "updateById";
   
@@ -1289,12 +1302,12 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   // 修改组织id
   if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id);
+    await updateOrgById(id, input.org_id as unknown as OrgId);
   }
   
   await setIdByLbl(input);
@@ -1435,7 +1448,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1461,11 +1474,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
   options?: {
   },
 ): Promise<number> {
@@ -1478,7 +1491,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxPayNoticeId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1503,11 +1516,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
   options?: {
   },
 ): Promise<number> {
@@ -1520,7 +1533,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: WxPayNoticeId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1556,11 +1569,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * @param {WxPayNoticeId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: WxPayNoticeId[],
   options?: {
   },
 ): Promise<number> {

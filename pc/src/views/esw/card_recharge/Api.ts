@@ -1,6 +1,8 @@
-import {
-  UniqueType,
-} from "#/types";
+
+
+import type {
+  CardRechargeId,
+} from "@/typings/ids";
 
 import type {
   Query,
@@ -151,18 +153,18 @@ export async function findCount(
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {CardRechargeId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: CardRechargeId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdCardRecharge: Query["findByIdCardRecharge"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: CardRechargeId!) {
         findByIdCardRecharge(id: $id) {
           id
           card_id
@@ -197,18 +199,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CardRechargeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsCardRecharge: Mutation["deleteByIdsCardRecharge"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CardRechargeId!]!) {
         deleteByIdsCardRecharge(ids: $ids)
       }
     `,
@@ -223,18 +225,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CardRechargeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsCardRecharge: Mutation["revertByIdsCardRecharge"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CardRechargeId!]!) {
         revertByIdsCardRecharge(ids: $ids)
       }
     `,
@@ -249,18 +251,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CardRechargeId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsCardRecharge: Mutation["forceDeleteByIdsCardRecharge"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CardRechargeId!]!) {
         forceDeleteByIdsCardRecharge(ids: $ids)
       }
     `,

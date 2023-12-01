@@ -2,6 +2,11 @@ import {
   UniqueType,
 } from "#/types";
 
+
+import type {
+  RechargeRuleId,
+} from "@/typings/ids";
+
 import type {
   Query,
   Mutation,
@@ -11,7 +16,6 @@ import type {
 } from "#/types";
 
 import type {
-  UsrSearch,
 } from "#/types";
 
 /**
@@ -148,14 +152,14 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {RechargeRuleInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: RechargeRuleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<RechargeRuleId> {
   const data: {
     createRechargeRule: Mutation["createRechargeRule"];
   } = await mutation({
@@ -169,27 +173,27 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createRechargeRule;
-  return res;
+  const id: RechargeRuleId = data.createRechargeRule;
+  return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {string} id
+ * @param {RechargeRuleId} id
  * @param {RechargeRuleInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: RechargeRuleId,
   model: RechargeRuleInput,
   opt?: GqlOpt,
-) {
+): Promise<RechargeRuleId> {
   const data: {
     updateByIdRechargeRule: Mutation["updateByIdRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: RechargeRuleInput!) {
+      mutation($id: RechargeRuleId!, $model: RechargeRuleInput!) {
         updateByIdRechargeRule(id: $id, model: $model)
       }
     `,
@@ -198,25 +202,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdRechargeRule;
-  return res;
+  const id2: RechargeRuleId = data.updateByIdRechargeRule;
+  return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {string} id
+ * @param {RechargeRuleId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: RechargeRuleId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdRechargeRule: Query["findByIdRechargeRule"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: RechargeRuleId!) {
         findByIdRechargeRule(id: $id) {
           id
           lbl
@@ -249,18 +253,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {string[]} ids
+ * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: RechargeRuleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsRechargeRule: Mutation["deleteByIdsRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RechargeRuleId!]!) {
         deleteByIdsRechargeRule(ids: $ids)
       }
     `,
@@ -275,12 +279,12 @@ export async function deleteByIds(
 /**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
- * @param {string[]} ids
+ * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: RechargeRuleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -288,7 +292,7 @@ export async function enableByIds(
     enableByIdsRechargeRule: Mutation["enableByIdsRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [RechargeRuleId!]!, $is_enabled: Int!) {
         enableByIdsRechargeRule(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -304,12 +308,12 @@ export async function enableByIds(
 /**
  * 根据 ids 锁定或解锁数据
  * @export lockByIds
- * @param {string[]} ids
+ * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: RechargeRuleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -317,7 +321,7 @@ export async function lockByIds(
     lockByIdsRechargeRule: Mutation["lockByIdsRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [RechargeRuleId!]!, $is_locked: Int!) {
         lockByIdsRechargeRule(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -333,18 +337,18 @@ export async function lockByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {string[]} ids
+ * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: RechargeRuleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsRechargeRule: Mutation["revertByIdsRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RechargeRuleId!]!) {
         revertByIdsRechargeRule(ids: $ids)
       }
     `,
@@ -359,18 +363,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {string[]} ids
+ * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: RechargeRuleId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsRechargeRule: Mutation["forceDeleteByIdsRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [RechargeRuleId!]!) {
         forceDeleteByIdsRechargeRule(ids: $ids)
       }
     `,
