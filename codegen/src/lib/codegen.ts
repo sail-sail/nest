@@ -284,6 +284,12 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/deno/lib/script/graphql_pc_ids.ts") {
         return;
       }
+      if (dir === "/rust/src/common/script/graphql_codegen_scalars.ts") {
+        return;
+      }
+      if (dir === "/rust/src/common/script/graphql_pc_ids.ts") {
+        return;
+      }
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
@@ -427,6 +433,8 @@ export async function genRouter(context: Context) {
     "deno/gen/graphql.ts",
     "deno/lib/script/graphql_codegen_scalars.ts",
     "deno/lib/script/graphql_pc_ids.ts",
+    "rust/src/common/script/graphql_codegen_scalars.ts",
+    "rust/src/common/script/graphql_pc_ids.ts",
     "pc/src/typings/ids.ts",
     "uni/src/typings/ids.ts",
   ];
