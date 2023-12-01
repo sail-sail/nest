@@ -5,10 +5,9 @@ use crate::gen::base::tenant::tenant_dao::{
   find_all as find_all_tenant,
   del_cache as del_cache_tenant,
 };
-use crate::gen::base::tenant::tenant_model::{
-  TenantSearch,
-  TenantModel,
-};
+use crate::gen::base::tenant::tenant_model::TenantSearch;
+
+use super::tenant_model::GetLoginTenants;
 
 use crate::gen::base::domain::domain_dao::{
   find_all as find_all_domain,
@@ -54,7 +53,7 @@ use crate::gen::base::domain::domain_model::{
 /// 根据 当前网址的域名+端口 获取 租户列表
 pub async fn get_login_tenants(
   domain: String,
-) -> Result<Vec<TenantModel>> {
+) -> Result<Vec<GetLoginTenants>> {
   
   let mut domain_models: Vec<DomainModel> = find_all_domain(
     DomainSearch {
@@ -115,7 +114,13 @@ pub async fn get_login_tenants(
     ).await?;
   }
   
-  let res: Vec<TenantModel> = tenant_models;
+  let res: Vec<GetLoginTenants> = tenant_models
+    .into_iter()
+    .map(|item| GetLoginTenants {
+      id: item.id,
+      lbl: item.lbl,
+    })
+    .collect();
   
   Ok(res)
 }

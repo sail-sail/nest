@@ -229,7 +229,7 @@ import {
 } from "./Api";
 
 import type {
-  I18NId,
+  I18nId,
 } from "@/typings/ids";
 
 import type {
@@ -249,7 +249,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: I18NId,
+      id: I18nId,
     },
   ],
 }>();
@@ -277,9 +277,9 @@ let dialogNotice = $ref("");
 let dialogModel: I18Ninput = $ref({
 } as I18Ninput);
 
-let ids = $ref<I18NId[]>([ ]);
+let ids = $ref<I18nId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<I18NId[]>([ ]);
+let changedIds = $ref<I18nId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -329,7 +329,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: I18NId[];
+  changedIds: I18nId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -366,8 +366,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: I18NId;
-      ids?: I18NId[];
+      id?: I18nId;
+      ids?: I18nId[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -636,7 +636,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: I18NId | undefined = undefined;
+  let id: I18nId | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {

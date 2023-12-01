@@ -323,6 +323,10 @@ import {
   getLoginLangs,
 } from "../Api";
 
+import type {
+  OrgId,
+} from "@/typings/ids";
+
 const router = useRouter();
 
 const {
@@ -530,7 +534,7 @@ async function selectLangClk(lang: string) {
   }
 }
 
-async function deptSelectClk(org_id: string) {
+async function deptSelectClk(org_id: OrgId) {
   if (!loginInfo) {
     return;
   }

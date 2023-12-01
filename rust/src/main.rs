@@ -143,7 +143,7 @@ async fn main() -> Result<(), std::io::Error> {
     std::process::Command::new("node")
       .arg("node_modules/@graphql-codegen/cli/cjs/bin.js")
       .arg("--config")
-      .arg("src/common/script/graphql_codegen_config.yml",)
+      .arg("src/common/script/graphql_codegen_config.ts",)
       .arg("--watch")
       .spawn()
       .unwrap();
