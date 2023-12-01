@@ -165,10 +165,14 @@ import {
   clearCache,
 } from "./Api";
 
-import {
-  type LangModel,
-  type MutationLoginArgs,
+import type {
+  LangModel,
+  MutationLoginArgs,
 } from "#/types";
+
+import type {
+  TenantId,
+} from "@/typings/ids";
 
 let i18n = $ref(useI18n("/base/usr"));
 
@@ -188,7 +192,7 @@ const inputStyle = {
 let model = $ref<MutationLoginArgs["input"]>({
   username: "",
   password: "",
-  tenant_id: "",
+  tenant_id: "" as unknown as TenantId,
   org_id: undefined,
   lang,
 });
@@ -268,7 +272,7 @@ async function onLogin() {
 }
 
 let tenants = $ref<{
-  id: string;
+  id: TenantId;
   lbl: string;
 }[]>([ ]);
 

@@ -15,11 +15,11 @@ for (let i = 0; i < allTables.length; i++) {
   }
   const mod = table_name.substring(0, table_name.indexOf("_"));
   const columns = tableSchema.columns;
-  if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  /* if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
   ) {
     Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  }
+  } */
 #>
 // <#=table_comment#>
 export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
