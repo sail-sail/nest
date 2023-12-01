@@ -9,7 +9,7 @@ import type {
   RoleFieldComment as RoleFieldCommentType,
 } from "/gen/types.ts";
 
-export const roleId = Symbol.for("RoleId");
+declare const roleId: unique symbol;
 export type RoleId = typeof roleId;
 
 import type {

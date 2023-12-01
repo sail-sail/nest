@@ -615,7 +615,7 @@
 import Detail from "./Detail.vue";
 
 import type {
-  I18NId,
+  I18nId,
 } from "@/typings/ids";
 
 import {
@@ -673,13 +673,13 @@ let inited = $ref(false);
 
 const emit = defineEmits<{
   selectedIdsChg: [
-    I18NId[],
+    I18nId[],
   ],
   add: [
-    I18NId[],
+    I18nId[],
   ],
   edit: [
-    I18NId[],
+    I18nId[],
   ],
   remove: [
     number,
@@ -748,9 +748,9 @@ const props = defineProps<{
   isPagination?: string;
   isLocked?: string;
   ids?: string[]; //ids
-  selectedIds?: I18NId[]; //已选择行的id列表
+  selectedIds?: I18nId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: I18NId; // ID
+  id?: I18nId; // ID
   lang_id?: string|string[]; // 语言
   lang_id_lbl?: string; // 语言
   menu_id?: string|string[]; // 菜单
@@ -838,7 +838,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<I18Nmodel, I18NId>(
+} = $(useSelect<I18Nmodel, I18nId>(
   $$(tableRef),
   {
     multiple: $$(multiple),

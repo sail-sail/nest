@@ -9,7 +9,7 @@ import type {
   DictDetailFieldComment as DictDetailFieldCommentType,
 } from "/gen/types.ts";
 
-export const dictDetailId = Symbol.for("DictDetailId");
+declare const dictDetailId: unique symbol;
 export type DictDetailId = typeof dictDetailId;
 
 import type {

@@ -9,7 +9,7 @@ import type {
   OptbizFieldComment as OptbizFieldCommentType,
 } from "/gen/types.ts";
 
-export const optbizId = Symbol.for("OptbizId");
+declare const optbizId: unique symbol;
 export type OptbizId = typeof optbizId;
 
 import type {

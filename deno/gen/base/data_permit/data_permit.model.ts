@@ -9,7 +9,7 @@ import type {
   DataPermitFieldComment as DataPermitFieldCommentType,
 } from "/gen/types.ts";
 
-export const dataPermitId = Symbol.for("DataPermitId");
+declare const dataPermitId: unique symbol;
 export type DataPermitId = typeof dataPermitId;
 
 import type {
