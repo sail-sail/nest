@@ -9,7 +9,7 @@ import type {
   I18NfieldComment as I18NfieldCommentType,
 } from "/gen/types.ts";
 
-export const i18nId = Symbol.for("I18nId");
+declare const i18nId: unique symbol;
 export type I18nId = typeof i18nId;
 
 import type {

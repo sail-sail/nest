@@ -9,7 +9,7 @@ import type {
   DomainFieldComment as DomainFieldCommentType,
 } from "/gen/types.ts";
 
-export const domainId = Symbol.for("DomainId");
+declare const domainId: unique symbol;
 export type DomainId = typeof domainId;
 
 import type {

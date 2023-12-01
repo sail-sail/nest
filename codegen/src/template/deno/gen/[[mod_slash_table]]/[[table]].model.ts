@@ -45,7 +45,7 @@ import type {
 const hasImportIds = [ ];
 #>
 
-export const <#=table_Up#>Id = Symbol.for("<#=Table_Up#>Id");
+declare const <#=table_Up#>Id: unique symbol;
 export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;<#
 hasImportIds.push(Table_Up + "Id");
 #><#

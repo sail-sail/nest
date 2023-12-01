@@ -9,7 +9,7 @@ import type {
   OperationRecordFieldComment as OperationRecordFieldCommentType,
 } from "/gen/types.ts";
 
-export const operationRecordId = Symbol.for("OperationRecordId");
+declare const operationRecordId: unique symbol;
 export type OperationRecordId = typeof operationRecordId;
 
 import type {

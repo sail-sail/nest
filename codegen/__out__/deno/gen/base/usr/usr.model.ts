@@ -9,7 +9,7 @@ import type {
   UsrFieldComment as UsrFieldCommentType,
 } from "/gen/types.ts";
 
-export const usrId = Symbol.for("UsrId");
+declare const usrId: unique symbol;
 export type UsrId = typeof usrId;
 
 import type {

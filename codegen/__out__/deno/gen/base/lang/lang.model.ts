@@ -9,7 +9,7 @@ import type {
   LangFieldComment as LangFieldCommentType,
 } from "/gen/types.ts";
 
-export const langId = Symbol.for("LangId");
+declare const langId: unique symbol;
 export type LangId = typeof langId;
 
 import type {
