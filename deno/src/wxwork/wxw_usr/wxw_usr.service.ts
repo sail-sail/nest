@@ -48,6 +48,26 @@ import {
 
 import * as authService from "/lib/auth/auth.service.ts";
 
+import type {
+  DomainId,
+} from "/gen/base/domain/domain.model.ts";
+
+import type {
+  WxwAppId,
+} from "/gen/wxwork/wxw_app/wxw_app.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 /**
  * 通过host获取appid, agentid
  * @param host 域名
@@ -63,7 +83,7 @@ export async function wxwGetAppid(
   );
   await validateIsEnabledDomain(domainModel);
   
-  const domain_id = domainModel.id;
+  const domain_id: DomainId = domainModel.id;
   
   // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
@@ -97,7 +117,7 @@ export async function wxwLoginByCode(
   );
   await validateIsEnabledDomain(domainModel);
   
-  const domain_id = domainModel.id;
+  const domain_id: DomainId = domainModel.id;
   
   // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
@@ -107,8 +127,8 @@ export async function wxwLoginByCode(
   );
   await validateIsEnabledWxwApp(wxw_appModel);
   
-  const wxw_app_id = wxw_appModel.id;
-  const tenant_id = wxw_appModel.tenant_id!;
+  const wxw_app_id: WxwAppId = wxw_appModel.id;
+  const tenant_id: TenantId = wxw_appModel.tenant_id!;
   
   const {
     userid,
@@ -175,21 +195,21 @@ export async function wxwLoginByCode(
       usrModel = (await findByIdUsr(usrModel.id))!;
     }
   } else {
-    const id = await createUsr({
+    const id: UsrId = await createUsr({
       username: name,
       lbl: name,
       tenant_id: wxw_appModel.tenant_id!,
     });
     usrModel = (await findByIdUsr(id))!;
   }
-  const org_ids = usrModel.org_ids || [ ];
-  let org_id = usrModel.default_org_id;
+  const org_ids: OrgId[] = usrModel.org_ids || [ ];
+  let org_id: OrgId = usrModel.default_org_id;
   if (!org_id) {
     org_id = org_ids[0];
   }
   if (org_id) {
     if (!org_ids.includes(org_id)) {
-      org_id = "";
+      org_id = "" as unknown as OrgId;
     }
   }
   const {
@@ -222,13 +242,13 @@ export async function wxwSyncUsr(
     throw "企微用户正在同步中, 请稍后再试";
   }
   wxwSyncUsrLock = true;
-  let wxw_app_id: string;
-  let tenant_id: string;
+  let wxw_app_id: WxwAppId;
+  let tenant_id: TenantId;
   let userids: string[];
   try {
     const res = await fetchUserIdList(host);
-    wxw_app_id = res.wxw_app_id;
-    tenant_id = res.tenant_id;
+    wxw_app_id = res.wxw_app_id as WxwAppId;
+    tenant_id = res.tenant_id as TenantId;
     userids = res.userids;
   } finally {
     wxwSyncUsrLock = false;
@@ -241,7 +261,7 @@ export async function wxwSyncUsr(
         userids,
       );
     } catch(err) {
-      error(`企微应用 ${ wxw_app_id } 同步企微用户失败: ${ err }`);
+      error(`企微应用 ${ wxw_app_id as unknown as string } 同步企微用户失败: ${ err }`);
     } finally {
       wxwSyncUsrLock = false;
     }
@@ -259,7 +279,7 @@ async function fetchUserIdList(
   );
   await validateIsEnabledDomain(domainModel);
   
-  const domain_id = domainModel.id;
+  const domain_id: DomainId = domainModel.id;
   
   // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
@@ -269,7 +289,7 @@ async function fetchUserIdList(
   );
   await validateIsEnabledWxwApp(wxw_appModel);
   
-  const wxw_app_id = wxw_appModel.id;
+  const wxw_app_id: WxwAppId = wxw_appModel.id;
   const tenant_id = wxw_appModel.tenant_id!;
   
   const userids = await getuseridlist(wxw_app_id);
@@ -282,14 +302,14 @@ async function fetchUserIdList(
 }
 
 async function _wxwSyncUsr(
-  wxw_app_id: string,
-  tenant_id: string,
+  wxw_app_id: WxwAppId,
+  tenant_id: TenantId,
   userids: string[],
 ) {
   const wxw_usrModels = await findAllWxwUsr();
   const userids4add = userids.filter((userid) => {
     return !wxw_usrModels.some((wxw_usrModel) => {
-      return wxw_usrModel.userid === userid;
+      return wxw_usrModel.userid === userid as unknown as string;
     });
   });
   const wxw_usrModels4add: WxwUsrInput[] = [ ];

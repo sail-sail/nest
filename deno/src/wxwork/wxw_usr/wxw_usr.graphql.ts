@@ -27,13 +27,13 @@ type WxwLoginByCode {
   "授权码"
   authorization: String!
   "组织id"
-  org_id: String
+  org_id: OrgId
   "用户名"
   username: String!
   "姓名"
   name: String!
   "租户id"
-  tenant_id: String!
+  tenant_id: TenantId!
   "语言"
   lang: String!
 }

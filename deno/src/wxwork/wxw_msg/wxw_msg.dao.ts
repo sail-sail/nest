@@ -17,8 +17,16 @@ import {
   create as createWxwMsg,
 } from "/gen/wxwork/wxw_msg/wxw_msg.dao.ts";
 
+import type {
+  WxwAppId,
+} from "/gen/wxwork/wxw_app/wxw_app.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
 export interface WxwCardMsg {
-  wxw_app_id: string;
+  wxw_app_id: WxwAppId;
   touser: string;
   title: string;
   description: string;
@@ -39,7 +47,7 @@ export async function sendCardMsg(
     await findByIdWxwApp(input.wxw_app_id),
   );
   await validateIsEnabledWxwApp(wxw_appModel);
-  const tenant_id = wxw_appModel.tenant_id;
+  const tenant_id: TenantId = wxw_appModel.tenant_id;
   const agentid = wxw_appModel.agentid;
   const access_token = await getAccessToken(
     input.wxw_app_id,
