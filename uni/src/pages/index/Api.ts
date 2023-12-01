@@ -4,13 +4,14 @@ import type {
   MutationLoginArgs,
   RoleSearch,
   PageInput,
+  GetLoginTenants,
 } from "#/types";
 
 /** 根据 当前网址的域名+端口 获取 租户列表 */
 export async function getLoginTenants(
   variables: { domain: string },
   opt?: GqlOpt,
-): Promise<{ id: string, lbl: string }[]> {
+): Promise<GetLoginTenants[]> {
   const data: {
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
