@@ -5,7 +5,7 @@ import * as usrResolver from "./usr.resolver.ts";
 defineGraphql(usrResolver, /* GraphQL */`
 
   type GetLoginInfoOrgIdModels {
-    id: UsrId!
+    id: OrgId!
     lbl: String!
   }
 

@@ -36,8 +36,8 @@ export const field_permitId = Symbol.for("FieldPermitId");
 export type FieldPermitId = typeof field_permitId;
 
 // 国际化
-export const i18nId = Symbol.for("I18NId");
-export type I18NId = typeof i18nId;
+export const i18nId = Symbol.for("I18nId");
+export type I18nId = typeof i18nId;
 
 // 语言
 export const langId = Symbol.for("LangId");
