@@ -145,27 +145,27 @@ input I18Nsearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountI18n(search: I18Nsearch): Int!
+  findCountI18N(search: I18Nsearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllI18n(search: I18Nsearch, page: PageInput, sort: [SortInput!]): [I18Nmodel!]!
+  findAllI18N(search: I18Nsearch, page: PageInput, sort: [SortInput!]): [I18Nmodel!]!
   "获取字段对应的名称"
-  getFieldCommentsI18n: I18NfieldComment!
+  getFieldCommentsI18N: I18NfieldComment!
   "根据条件查找第一条数据"
-  findOneI18n(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
+  findOneI18N(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
   "根据id查找一条数据"
-  findByIdI18n(id: I18nId!): I18Nmodel
+  findByIdI18N(id: I18nId!): I18Nmodel
 }
 type Mutation {
   "创建一条数据"
-  createI18n(model: I18Ninput!, unique_type: UniqueType): I18nId!
+  createI18N(model: I18Ninput!, unique_type: UniqueType): I18nId!
   "根据id修改一条数据"
-  updateByIdI18n(id: I18nId!, model: I18Ninput!): I18nId!
+  updateByIdI18N(id: I18nId!, model: I18Ninput!): I18nId!
   "根据 ids 删除数据"
-  deleteByIdsI18n(ids: [I18nId!]!): Int!
+  deleteByIdsI18N(ids: [I18nId!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsI18n(ids: [I18nId!]!): Int!
+  revertByIdsI18N(ids: [I18nId!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsI18n(ids: [I18nId!]!): Int!
+  forceDeleteByIdsI18N(ids: [I18nId!]!): Int!
 }
 
 `);

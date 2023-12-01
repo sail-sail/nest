@@ -10,6 +10,12 @@ const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+}
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -18,7 +24,6 @@ let modelNameTree = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
   modelName = Table_Up2 + "model";
   fieldCommentName = Table_Up2 + "fieldComment";
   inputName = Table_Up2 + "input";
@@ -198,11 +203,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Table_Up#>: Query["findAll<#=Table_Up#>"];
+    findAll<#=Table_Up2#>: Query["findAll<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=Table_Up#>(search: $search, page: $page, sort: $sort) {<#
+        findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -316,7 +321,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Table_Up#>;
+  const res = data.findAll<#=Table_Up2#>;
   for (let i = 0; i < res.length; i++) {
     const item = res[i];<#
   for (let i = 0; i < columns.length; i++) {
@@ -356,11 +361,11 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOne<#=Table_Up#>: Query["findOne<#=Table_Up#>"];
+    findOne<#=Table_Up2#>: Query["findOne<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
-        findOne<#=Table_Up#>(search: $search, sort: $sort) {<#
+        findOne<#=Table_Up2#>(search: $search, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -473,7 +478,7 @@ export async function findOne(
       sort,
     },
   }, opt);
-  const model = data.findOne<#=Table_Up#>;
+  const model = data.findOne<#=Table_Up2#>;
   if (model) {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -539,18 +544,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCount<#=Table_Up#>: Query["findCount<#=Table_Up#>"];
+    findCount<#=Table_Up2#>: Query["findCount<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>) {
-        findCount<#=Table_Up#>(search: $search)
+        findCount<#=Table_Up2#>(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const res = data.findCount<#=Table_Up#>;
+  const res = data.findCount<#=Table_Up2#>;
   return res;
 }<#
 if (hasSummary) {
@@ -566,11 +571,11 @@ export async function findSummary(
   opt?: GqlOpt,
 ) {
   const data: {
-    findSummary<#=Table_Up#>: Query["findSummary<#=Table_Up#>"];
+    findSummary<#=Table_Up2#>: Query["findSummary<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>) {
-        findSummary<#=Table_Up#>(search: $search) {<#
+        findSummary<#=Table_Up2#>(search: $search) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -592,7 +597,7 @@ export async function findSummary(
       search,
     },
   }, opt);
-  const res = data.findSummary<#=Table_Up#>;
+  const res = data.findSummary<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -613,11 +618,11 @@ export async function create(
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
   const data: {
-    create<#=Table_Up#>: Mutation["create<#=Table_Up#>"];
+    create<#=Table_Up2#>: Mutation["create<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($model: <#=inputName#>!, $unique_type: UniqueType) {
-        create<#=Table_Up#>(model: $model, unique_type: $unique_type)
+        create<#=Table_Up2#>(model: $model, unique_type: $unique_type)
       }
     `,
     variables: {
@@ -625,7 +630,7 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const id: <#=Table_Up#>Id = data.create<#=Table_Up#>;
+  const id: <#=Table_Up#>Id = data.create<#=Table_Up2#>;
   return id;
 }<#
 }
@@ -646,11 +651,11 @@ export async function updateById(
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
   const data: {
-    updateById<#=Table_Up#>: Mutation["updateById<#=Table_Up#>"];
+    updateById<#=Table_Up2#>: Mutation["updateById<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up#>Id!, $model: <#=inputName#>!) {
-        updateById<#=Table_Up#>(id: $id, model: $model)
+      mutation($id: <#=Table_Up2#>Id!, $model: <#=inputName#>!) {
+        updateById<#=Table_Up2#>(id: $id, model: $model)
       }
     `,
     variables: {
@@ -658,7 +663,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const id2: <#=Table_Up#>Id = data.updateById<#=Table_Up#>;
+  const id2: <#=Table_Up#>Id = data.updateById<#=Table_Up2#>;
   return id2;
 }<#
 }
@@ -675,11 +680,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findById<#=Table_Up#>: Query["findById<#=Table_Up#>"];
+    findById<#=Table_Up2#>: Query["findById<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query($id: <#=Table_Up#>Id!) {
-        findById<#=Table_Up#>(id: $id) {<#
+        findById<#=Table_Up2#>(id: $id) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -788,7 +793,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findById<#=Table_Up#>;<#
+  const res = data.findById<#=Table_Up2#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -819,18 +824,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIds<#=Table_Up#>: Mutation["deleteByIds<#=Table_Up#>"];
+    deleteByIds<#=Table_Up2#>: Mutation["deleteByIds<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [<#=Table_Up#>Id!]!) {
-        deleteByIds<#=Table_Up#>(ids: $ids)
+        deleteByIds<#=Table_Up2#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.deleteByIds<#=Table_Up#>;
+  const res = data.deleteByIds<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -849,18 +854,18 @@ export async function defaultById(
   opt?: GqlOpt,
 ) {
   const data: {
-    defaultById<#=Table_Up#>: Mutation["defaultById<#=Table_Up#>"];
+    defaultById<#=Table_Up2#>: Mutation["defaultById<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($id: <#=Table_Up#>Id!) {
-        defaultById<#=Table_Up#>(id: $id)
+        defaultById<#=Table_Up2#>(id: $id)
       }
     `,
     variables: {
       id,
     },
   }, opt);
-  const res = data.defaultById<#=Table_Up#>;
+  const res = data.defaultById<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -881,11 +886,11 @@ export async function enableByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    enableByIds<#=Table_Up#>: Mutation["enableByIds<#=Table_Up#>"];
+    enableByIds<#=Table_Up2#>: Mutation["enableByIds<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [<#=Table_Up#>Id!]!, $is_enabled: Int!) {
-        enableByIds<#=Table_Up#>(ids: $ids, is_enabled: $is_enabled)
+        enableByIds<#=Table_Up2#>(ids: $ids, is_enabled: $is_enabled)
       }
     `,
     variables: {
@@ -893,7 +898,7 @@ export async function enableByIds(
       is_enabled,
     },
   }, opt);
-  const res = data.enableByIds<#=Table_Up#>;
+  const res = data.enableByIds<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -914,11 +919,11 @@ export async function lockByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    lockByIds<#=Table_Up#>: Mutation["lockByIds<#=Table_Up#>"];
+    lockByIds<#=Table_Up2#>: Mutation["lockByIds<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [<#=Table_Up#>Id!]!, $is_locked: Int!) {
-        lockByIds<#=Table_Up#>(ids: $ids, is_locked: $is_locked)
+        lockByIds<#=Table_Up2#>(ids: $ids, is_locked: $is_locked)
       }
     `,
     variables: {
@@ -926,7 +931,7 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const res = data.lockByIds<#=Table_Up#>;
+  const res = data.lockByIds<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -945,18 +950,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIds<#=Table_Up#>: Mutation["revertByIds<#=Table_Up#>"];
+    revertByIds<#=Table_Up2#>: Mutation["revertByIds<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [<#=Table_Up#>Id!]!) {
-        revertByIds<#=Table_Up#>(ids: $ids)
+        revertByIds<#=Table_Up2#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.revertByIds<#=Table_Up#>;
+  const res = data.revertByIds<#=Table_Up2#>;
   return res;
 }
 
@@ -971,18 +976,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIds<#=Table_Up#>: Mutation["forceDeleteByIds<#=Table_Up#>"];
+    forceDeleteByIds<#=Table_Up2#>: Mutation["forceDeleteByIds<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [<#=Table_Up#>Id!]!) {
-        forceDeleteByIds<#=Table_Up#>(ids: $ids)
+        forceDeleteByIds<#=Table_Up2#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.forceDeleteByIds<#=Table_Up#>;
+  const res = data.forceDeleteByIds<#=Table_Up2#>;
   return res;
 }<#
 }
@@ -1015,23 +1020,29 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  let Foreign_Table_Up2 = Foreign_Table_Up;
+  if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+  ) {
+    Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+  }
   const defaultSort = foreignKey && foreignKey.defaultSort;
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #>
 
-export async function findAll<#=Foreign_Table_Up#>(
-  search?: <#=Foreign_Table_Up#>Search,
+export async function findAll<#=Foreign_Table_Up2#>(
+  search?: <#=Foreign_Table_Up2#>Search,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up2#>: Query["findAll<#=Foreign_Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
+      query($search: <#=Foreign_Table_Up2#>Search, $page: PageInput, $sort: [SortInput!]) {
+        findAll<#=Foreign_Table_Up2#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -1043,12 +1054,12 @@ export async function findAll<#=Foreign_Table_Up#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up#>;
+  const res = data.findAll<#=Foreign_Table_Up2#>;
   return res;
 }
 
-export async function get<#=Foreign_Table_Up#>List() {
-  const data = await findAll<#=Foreign_Table_Up#>(<#
+export async function get<#=Foreign_Table_Up2#>List() {
+  const data = await findAll<#=Foreign_Table_Up2#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
@@ -1090,6 +1101,12 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  let Foreign_Table_Up2 = Foreign_Table_Up;
+  if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+  ) {
+    Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+  }
   const defaultSort = foreignKey && foreignKey.defaultSort;
   let foreignSchema = undefined;
   if (foreignKey) {
@@ -1110,8 +1127,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 #>
 
-export async function get<#=Foreign_Table_Up#>Tree() {
-  const data = await find<#=Foreign_Table_Up#>Tree(<#
+export async function get<#=Foreign_Table_Up2#>Tree() {
+  const data = await find<#=Foreign_Table_Up2#>Tree(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1168,6 +1185,12 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    let Foreign_Table_Up2 = Foreign_Table_Up;
+    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+    ) {
+      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+    }
     if (foreignTableArr.includes(foreignTable)) continue;
     foreignTableArr.push(foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
@@ -1175,18 +1198,18 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #>
 
-export async function findAll<#=Foreign_Table_Up#>(
-  search?: <#=Foreign_Table_Up#>Search,
+export async function findAll<#=Foreign_Table_Up2#>(
+  search?: <#=Foreign_Table_Up2#>Search,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up2#>: Query["findAll<#=Foreign_Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
+      query($search: <#=Foreign_Table_Up2#>Search, $page: PageInput, $sort: [SortInput!]) {
+        findAll<#=Foreign_Table_Up2#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -1198,12 +1221,12 @@ export async function findAll<#=Foreign_Table_Up#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up#>;
+  const res = data.findAll<#=Foreign_Table_Up2#>;
   return res;
 }
 
-export async function get<#=Foreign_Table_Up#>List() {
-  const data = await findAll<#=Foreign_Table_Up#>(<#
+export async function get<#=Foreign_Table_Up2#>List() {
+  const data = await findAll<#=Foreign_Table_Up2#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
@@ -1252,6 +1275,12 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    let Foreign_Table_Up2 = Foreign_Table_Up;
+    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+    ) {
+      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+    }
     if (foreignTableTreeArr.includes(foreignTable)) continue;
     foreignTableTreeArr.push(foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
@@ -1274,8 +1303,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     }
 #>
 
-export async function get<#=Foreign_Table_Up#>Tree() {
-  const data = await find<#=Foreign_Table_Up#>Tree(<#
+export async function get<#=Foreign_Table_Up2#>Tree() {
+  const data = await find<#=Foreign_Table_Up2#>Tree(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1319,7 +1348,7 @@ export function useDownloadImportTemplate(routePath: string) {
     const data = await query({
       query: /* GraphQL */ `
         query {
-          getFieldComments<#=Table_Up#> {<#
+          getFieldComments<#=Table_Up2#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -1409,8 +1438,14 @@ export function useDownloadImportTemplate(routePath: string) {
             const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
             }).join("");
+            let Foreign_Table_Up2 = Foreign_Table_Up;
+            if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+              && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+            ) {
+              Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+            }
           #>
-          findAll<#=Foreign_Table_Up#> {
+          findAll<#=Foreign_Table_Up2#> {
             <#=foreignKey.column#>
             <#=foreignKey.lbl#>
           }<#
@@ -1615,7 +1650,7 @@ export function useExportExcel(routePath: string) {
     const data = await query({
       query: /* GraphQL */ `
         query($search: <#=searchName#>, $sort: [SortInput!]) {
-          findAll<#=Table_Up#>(search: $search, sort: $sort) {<#
+          findAll<#=Table_Up2#>(search: $search, sort: $sort) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -1654,7 +1689,7 @@ export function useExportExcel(routePath: string) {
             }
             #>
           }
-          getFieldComments<#=Table_Up#> {<#
+          getFieldComments<#=Table_Up2#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -1736,8 +1771,14 @@ export function useExportExcel(routePath: string) {
             const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
             }).join("");
+            let Foreign_Table_Up2 = Foreign_Table_Up;
+            if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+              && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+            ) {
+              Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+            }
           #>
-          findAll<#=Foreign_Table_Up#> {
+          findAll<#=Foreign_Table_Up2#> {
             <#=foreignKey.lbl#>
           }<#
           }
@@ -1976,15 +2017,15 @@ export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
   const data: {
-    findLastOrderBy<#=Table_Up#>: Query["findLastOrderBy<#=Table_Up#>"];
+    findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
       query {
-        findLastOrderBy<#=Table_Up#>
+        findLastOrderBy<#=Table_Up2#>
       }
     `,
   }, opt);
-  const res = data.findLastOrderBy<#=Table_Up#>;
+  const res = data.findLastOrderBy<#=Table_Up2#>;
   return res;
 }<#
 }

@@ -39,11 +39,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllI18n: Query["findAllI18n"];
+    findAllI18N: Query["findAllI18N"];
   } = await query({
     query: /* GraphQL */ `
       query($search: I18Nsearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllI18n(search: $search, page: $page, sort: $sort) {
+        findAllI18N(search: $search, page: $page, sort: $sort) {
           id
           lang_id
           lang_id_lbl
@@ -70,7 +70,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllI18n;
+  const res = data.findAllI18N;
   for (let i = 0; i < res.length; i++) {
     const item = res[i];
   }
@@ -90,11 +90,11 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneI18n: Query["findOneI18n"];
+    findOneI18N: Query["findOneI18N"];
   } = await query({
     query: /* GraphQL */ `
       query($search: I18Nsearch, $sort: [SortInput!]) {
-        findOneI18n(search: $search, sort: $sort) {
+        findOneI18N(search: $search, sort: $sort) {
           id
           lang_id
           lang_id_lbl
@@ -120,7 +120,7 @@ export async function findOne(
       sort,
     },
   }, opt);
-  const model = data.findOneI18n;
+  const model = data.findOneI18N;
   if (model) {
   }
   return model;
@@ -137,18 +137,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountI18n: Query["findCountI18n"];
+    findCountI18N: Query["findCountI18N"];
   } = await query({
     query: /* GraphQL */ `
       query($search: I18Nsearch) {
-        findCountI18n(search: $search)
+        findCountI18N(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const res = data.findCountI18n;
+  const res = data.findCountI18N;
   return res;
 }
 
@@ -165,11 +165,11 @@ export async function create(
   opt?: GqlOpt,
 ): Promise<I18nId> {
   const data: {
-    createI18n: Mutation["createI18n"];
+    createI18N: Mutation["createI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($model: I18Ninput!, $unique_type: UniqueType) {
-        createI18n(model: $model, unique_type: $unique_type)
+        createI18N(model: $model, unique_type: $unique_type)
       }
     `,
     variables: {
@@ -177,7 +177,7 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const id: I18nId = data.createI18n;
+  const id: I18nId = data.createI18N;
   return id;
 }
 
@@ -194,11 +194,11 @@ export async function updateById(
   opt?: GqlOpt,
 ): Promise<I18nId> {
   const data: {
-    updateByIdI18n: Mutation["updateByIdI18n"];
+    updateByIdI18N: Mutation["updateByIdI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: I18nId!, $model: I18Ninput!) {
-        updateByIdI18n(id: $id, model: $model)
+      mutation($id: I18NId!, $model: I18Ninput!) {
+        updateByIdI18N(id: $id, model: $model)
       }
     `,
     variables: {
@@ -206,7 +206,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const id2: I18nId = data.updateByIdI18n;
+  const id2: I18nId = data.updateByIdI18N;
   return id2;
 }
 
@@ -221,11 +221,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdI18n: Query["findByIdI18n"];
+    findByIdI18N: Query["findByIdI18N"];
   } = await query({
     query: /* GraphQL */ `
       query($id: I18nId!) {
-        findByIdI18n(id: $id) {
+        findByIdI18N(id: $id) {
           id
           lang_id
           lang_id_lbl
@@ -249,7 +249,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdI18n;
+  const res = data.findByIdI18N;
   return res;
 }
 
@@ -264,18 +264,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsI18n: Mutation["deleteByIdsI18n"];
+    deleteByIdsI18N: Mutation["deleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [I18nId!]!) {
-        deleteByIdsI18n(ids: $ids)
+        deleteByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.deleteByIdsI18n;
+  const res = data.deleteByIdsI18N;
   return res;
 }
 
@@ -290,18 +290,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsI18n: Mutation["revertByIdsI18n"];
+    revertByIdsI18N: Mutation["revertByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [I18nId!]!) {
-        revertByIdsI18n(ids: $ids)
+        revertByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.revertByIdsI18n;
+  const res = data.revertByIdsI18N;
   return res;
 }
 
@@ -316,18 +316,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
+    forceDeleteByIdsI18N: Mutation["forceDeleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [I18nId!]!) {
-        forceDeleteByIdsI18n(ids: $ids)
+        forceDeleteByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.forceDeleteByIdsI18n;
+  const res = data.forceDeleteByIdsI18N;
   return res;
 }
 
@@ -458,7 +458,7 @@ export function useDownloadImportTemplate(routePath: string) {
     const data = await query({
       query: /* GraphQL */ `
         query {
-          getFieldCommentsI18n {
+          getFieldCommentsI18N {
             lang_id_lbl
             menu_id_lbl
             code
@@ -514,7 +514,7 @@ export function useExportExcel(routePath: string) {
     const data = await query({
       query: /* GraphQL */ `
         query($search: I18Nsearch, $sort: [SortInput!]) {
-          findAllI18n(search: $search, sort: $sort) {
+          findAllI18N(search: $search, sort: $sort) {
             id
             lang_id
             lang_id_lbl
@@ -532,7 +532,7 @@ export function useExportExcel(routePath: string) {
             update_time
             update_time_lbl
           }
-          getFieldCommentsI18n {
+          getFieldCommentsI18N {
             lang_id_lbl
             menu_id_lbl
             code

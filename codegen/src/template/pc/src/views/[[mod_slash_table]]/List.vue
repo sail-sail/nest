@@ -7,6 +7,12 @@ const hasIsMonth = columns.some((column) => column.isMonth);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+}
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -14,7 +20,6 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
   modelName = Table_Up2 + "model";
   fieldCommentName = Table_Up2 + "fieldComment";
   inputName = Table_Up2 + "input";
@@ -106,6 +111,12 @@ const hasAtt = columns.some((item) => item.isAtt);
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        let Foreign_Table_Up2 = Foreign_Table_Up;
+        if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+          && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+        ) {
+          Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+        }
         let foreignSchema = undefined;
         if (foreignKey) {
           foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -130,8 +141,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomTreeSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up#>Tree"
-            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+            :method="get<#=Foreign_Table_Up2#>Tree"
+            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -181,8 +192,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up#>List"
-            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+            :method="get<#=Foreign_Table_Up2#>List"
+            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -1597,6 +1608,12 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  let Foreign_Table_Up2 = Foreign_Table_Up;
+  if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+  ) {
+    Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+  }
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   if (!foreignSchema) {
     continue;
@@ -1615,7 +1632,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,
+  get<#=Foreign_Table_Up2#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
 #><#

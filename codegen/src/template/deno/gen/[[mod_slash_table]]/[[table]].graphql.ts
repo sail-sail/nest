@@ -10,6 +10,12 @@ const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden")
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+}
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -17,7 +23,6 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
   modelName = Table_Up2 + "model";
   fieldCommentName = Table_Up2 + "fieldComment";
   inputName = Table_Up2 + "input";
@@ -609,7 +614,7 @@ input <#=searchName#> {
 }<#
 if (hasSummary) {
 #>
-type <#=Table_Up#>Summary {<#
+type <#=Table_Up2#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -645,25 +650,25 @@ type <#=Table_Up#>Summary {<#
 #>
 type Query {
   "根据条件查找据数总数"
-  findCount<#=Table_Up#>(search: <#=searchName#>): Int!
+  findCount<#=Table_Up2#>(search: <#=searchName#>): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=Table_Up#>(search: <#=searchName#>, page: PageInput, sort: [SortInput!]): [<#=modelName#>!]!
+  findAll<#=Table_Up2#>(search: <#=searchName#>, page: PageInput, sort: [SortInput!]): [<#=modelName#>!]!
   "获取字段对应的名称"
-  getFieldComments<#=Table_Up#>: <#=fieldCommentName#>!<#
+  getFieldComments<#=Table_Up2#>: <#=fieldCommentName#>!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"
-  findSummary<#=Table_Up#>(search: <#=searchName#>): <#=Table_Up#>Summary!<#
+  findSummary<#=Table_Up2#>(search: <#=searchName#>): <#=Table_Up2#>Summary!<#
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=Table_Up#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
+  findOne<#=Table_Up2#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
   "根据id查找一条数据"
-  findById<#=Table_Up#>(id: <#=Table_Up#>Id!): <#=modelName#><#
+  findById<#=Table_Up2#>(id: <#=Table_Up#>Id!): <#=modelName#><#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"
-  findLastOrderBy<#=Table_Up#>: Int!<#
+  findLastOrderBy<#=Table_Up2#>: Int!<#
   }
   #>
 }<#
@@ -676,45 +681,45 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=Table_Up#>(model: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
+  create<#=Table_Up2#>(model: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据id修改一条数据"
-  updateById<#=Table_Up#>(id: <#=Table_Up#>Id!, model: <#=inputName#>!): <#=Table_Up#>Id!<#
+  updateById<#=Table_Up2#>(id: <#=Table_Up#>Id!, model: <#=inputName#>!): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 删除数据"
-  deleteByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!<#
+  deleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
   if (hasDefault && opts.noEdit !== true) {
   #>
   "根据 id 设置默认记录"
-  defaultById<#=Table_Up#>(id: <#=Table_Up#>Id!): Int!<#
+  defaultById<#=Table_Up2#>(id: <#=Table_Up#>Id!): Int!<#
   }
   #><#
   if (hasEnabled && opts.noEdit !== true) {
   #>
   "根据 ids 启用或者禁用数据"
-  enableByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!, is_enabled: Int!): Int!<#
+  enableByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_enabled: Int!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {
   #>
   "根据 ids 锁定或者解锁数据"
-  lockByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
+  lockByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 还原数据"
-  revertByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!
+  revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIds<#=Table_Up#>(ids: [<#=Table_Up#>Id!]!): Int!<#
+  forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #>
 }<#
