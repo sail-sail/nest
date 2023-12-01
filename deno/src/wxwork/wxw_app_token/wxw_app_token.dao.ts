@@ -21,8 +21,16 @@ import {
   validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
+import type {
+  WxwAppId,
+} from "/gen/wxwork/wxw_app/wxw_app.model.ts";
+
+import type {
+  WxwAppTokenId,
+} from "/gen/wxwork/wxw_app_token/wxw_app_token.model.ts";
+
 export async function getAccessToken(
-  wxw_app_id: string,
+  wxw_app_id: WxwAppId,
   force = false,
 ) {
   // 获取企微应用
@@ -108,7 +116,7 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
     }
-    const id = wx_app_tokenModel.id;
+    const id: WxwAppTokenId = wx_app_tokenModel.id;
     await updateByIdWxwAppToken(
       id,
       {
@@ -126,7 +134,7 @@ export async function getAccessToken(
  * 获取企微通讯录token
  */
 export async function getContactAccessToken(
-  wxw_app_id: string,
+  wxw_app_id: WxwAppId,
   force = false,
 ) {
   // 获取企微应用
@@ -213,7 +221,7 @@ export async function getContactAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 通讯录密钥 失败: ${ url }`;
     }
-    const id = wx_app_tokenModel.id;
+    const id: WxwAppTokenId = wx_app_tokenModel.id;
     await updateByIdWxwAppToken(
       id,
       {
@@ -233,7 +241,7 @@ export async function getContactAccessToken(
  * @param code 通过成员授权获取到的code
  */
 export async function getuserinfoByCode(
-  wxw_app_id: string,
+  wxw_app_id: WxwAppId,
   code: string,
   force = false,
 ): Promise<{
@@ -282,7 +290,7 @@ export async function getuserinfoByCode(
  * 获取成员ID列表
  */
 export async function getuseridlist(
-  wxw_app_id: string,
+  wxw_app_id: WxwAppId,
   force = false,
 ): Promise<string[]> {
   const access_token = await getContactAccessToken(
@@ -337,7 +345,7 @@ export async function getuseridlist(
  * https://developer.work.weixin.qq.com/document/path/90196
  */
 export async function getuser(
-  wxw_app_id: string,
+  wxw_app_id: WxwAppId,
   userid: string,
   force = false,
 ): Promise<typeof data | undefined> {
@@ -348,7 +356,7 @@ export async function getuser(
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=${
     encodeURIComponent(access_token)
   }&userid=${
-    encodeURIComponent(userid)
+    encodeURIComponent(userid as unknown as string)
   }`;
   const res = await fetch(
     url,
