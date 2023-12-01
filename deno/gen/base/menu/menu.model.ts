@@ -9,7 +9,7 @@ import type {
   MenuFieldComment as MenuFieldCommentType,
 } from "/gen/types.ts";
 
-export const menuId = Symbol.for("MenuId");
+declare const menuId: unique symbol;
 export type MenuId = typeof menuId;
 
 import type {
