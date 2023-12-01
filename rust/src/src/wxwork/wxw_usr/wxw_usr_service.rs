@@ -6,7 +6,6 @@ use anyhow::{Result, anyhow};
 use crate::common::context::{
   get_now,
   get_server_tokentimeout,
-  get_short_uuid,
 };
 
 use super::wxw_usr_model::{
@@ -65,6 +64,8 @@ use crate::gen::base::domain::domain_dao::{
   validate_is_enabled as validate_is_enabled_domain,
 };
 use crate::gen::base::domain::domain_model::DomainSearch;
+
+use crate::gen::base::org::org_model::OrgId;
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
@@ -195,7 +196,7 @@ pub async fn wxw_login_by_code(
     if wxw_usr_model.userid != userid ||
       wxw_usr_model.lbl != name ||
       wxw_usr_model.position != position ||
-      wxw_usr_model.tenant_id != tenant_id.as_str()
+      wxw_usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_by_id_wxw_usr(
         id.clone(),
@@ -237,7 +238,7 @@ pub async fn wxw_login_by_code(
     id = usr_model.id;
     if usr_model.username != name ||
       usr_model.lbl != name ||
-      usr_model.tenant_id != tenant_id.as_str()
+      usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_usr_by_id(
         id.clone(),
@@ -278,7 +279,7 @@ pub async fn wxw_login_by_code(
     org_id = org_ids[0].clone();
   }
   if !org_id.is_empty() && !org_ids.contains(&org_id) {
-    org_id = "".to_string();
+    org_id = OrgId::default();
   }
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
@@ -399,7 +400,6 @@ async fn _wxw_sync_usr(
       ..
     } = get_user_res;
     wxw_usr_models4add.push(WxwUsrInput {
-      id: get_short_uuid().into(),
       userid: userid.clone().into(),
       lbl: name.clone().into(),
       position: position.clone().into(),
