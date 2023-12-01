@@ -11,7 +11,7 @@ import type {
   I18Nmodel,
   I18Nsearch,
   I18NfieldComment,
-  I18NId,
+  I18nId,
 } from "./i18n.model.ts";
 
 import * as i18nDao from "./i18n.dao.ts";
@@ -69,10 +69,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {I18NId} id
+ * @param {I18nId} id
  */
 export async function findById(
-  id?: I18NId | null,
+  id?: I18nId | null,
 ): Promise<I18Nmodel | undefined> {
   const model = await i18nDao.findById(id);
   return model;
@@ -92,10 +92,10 @@ export async function exist(
 
 /**
  * 根据id查找数据是否存在
- * @param {I18NId} id
+ * @param {I18nId} id
  */
 export async function existById(
-  id?: I18NId | null,
+  id?: I18nId | null,
 ): Promise<boolean> {
   const data = await i18nDao.existById(id);
   return data;
@@ -115,30 +115,30 @@ export async function validate(
 /**
  * 创建数据
  * @param {I18Ninput} input
- * @return {Promise<I18NId>} id
+ * @return {Promise<I18nId>} id
  */
 export async function create(
   input: I18Ninput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<I18NId> {
-  const id: I18NId = await i18nDao.create(input, options);
+): Promise<I18nId> {
+  const id: I18nId = await i18nDao.create(input, options);
   return id;
 }
 
 /**
  * 根据 id 修改数据
- * @param {I18NId} id
+ * @param {I18nId} id
  * @param {I18Ninput} input
- * @return {Promise<I18NId>}
+ * @return {Promise<I18nId>}
  */
 export async function updateById(
-  id: I18NId,
+  id: I18nId,
   input: I18Ninput,
-): Promise<I18NId> {
+): Promise<I18nId> {
   
-  const id2: I18NId = await i18nDao.updateById(id, input);
+  const id2: I18nId = await i18nDao.updateById(id, input);
   
   {
     const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
@@ -149,11 +149,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
 ): Promise<number> {
   
   const data = await i18nDao.deleteByIds(ids);
@@ -167,11 +167,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: I18NId[],
+  ids: I18nId[],
 ): Promise<number> {
   const data = await i18nDao.revertByIds(ids);
   return data;
@@ -179,11 +179,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
 ): Promise<number> {
   const data = await i18nDao.forceDeleteByIds(ids);
   return data;

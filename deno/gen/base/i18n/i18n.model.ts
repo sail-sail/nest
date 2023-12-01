@@ -9,8 +9,8 @@ import type {
   I18NfieldComment as I18NfieldCommentType,
 } from "/gen/types.ts";
 
-export const i18nId = Symbol.for("I18NId");
-export type I18NId = typeof i18nId;
+export const i18nId = Symbol.for("I18nId");
+export type I18nId = typeof i18nId;
 
 import type {
   UsrId,

@@ -444,6 +444,7 @@ export async function genRouter(context: Context) {
         if (file === "deno/lib/script/graphql_codegen_scalars.ts") {
           graphqlHasChanged = true;
         }
+        console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${file}`))}`);
         await writeFile(`${ out }/${ file }`, str2);
       }
     } catch(err) {

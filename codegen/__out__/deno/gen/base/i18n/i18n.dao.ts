@@ -65,7 +65,7 @@ import type {
   I18Nmodel,
   I18Nsearch,
   I18NfieldComment,
-  I18NId,
+  I18nId,
 } from "./i18n.model.ts";
 
 import * as langDao from "/gen/base/lang/lang.dao.ts";
@@ -489,7 +489,7 @@ export function equalsByUnique(
  * @param {I18Ninput} input
  * @param {I18Nmodel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<I18NId | undefined>}
+ * @return {Promise<I18nId | undefined>}
  */
 export async function checkByUnique(
   input: I18Ninput,
@@ -497,14 +497,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<I18NId | undefined> {
+): Promise<I18nId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const id: I18NId = await updateById(
+      const id: I18nId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -544,10 +544,10 @@ export async function findOne(
 
 /**
  * 根据id查找数据
- * @param {I18NId} id
+ * @param {I18nId} id
  */
 export async function findById(
-  id?: I18NId | null,
+  id?: I18nId | null,
   options?: {
   },
 ): Promise<I18Nmodel | undefined> {
@@ -574,10 +574,10 @@ export async function exist(
 
 /**
  * 根据id判断数据是否存在
- * @param {I18NId} id
+ * @param {I18nId} id
  */
 export async function existById(
-  id?: I18NId | null,
+  id?: I18nId | null,
 ) {
   const table = "base_i18n";
   const method = "existById";
@@ -699,14 +699,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<I18NId>} 
+ * @return {Promise<I18nId>} 
  */
 export async function create(
   input: I18Ninput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<I18NId> {
+): Promise<I18nId> {
   const table = "base_i18n";
   const method = "create";
   
@@ -718,7 +718,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: I18NId | undefined = undefined;
+    let id: I18nId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -736,7 +736,7 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4<I18NId>();
+    input.id = shortUuidV4<I18nId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
@@ -847,7 +847,7 @@ export async function delCache() {
 
 /**
  * 根据id修改一行数据
- * @param {I18NId} id
+ * @param {I18nId} id
  * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -855,15 +855,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<I18NId>}
+ * @return {Promise<I18nId>}
  */
 export async function updateById(
-  id: I18NId,
+  id: I18nId,
   input: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<I18NId> {
+): Promise<I18nId> {
   const table = "base_i18n";
   const method = "updateById";
   
@@ -966,11 +966,11 @@ export async function updateById(
 
 /**
  * 根据 ids 删除数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {
@@ -987,7 +987,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: I18NId = ids[i];
+    const id: I18nId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1014,11 +1014,11 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {
@@ -1035,7 +1035,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: I18NId = ids[i];
+    const id: I18nId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1073,11 +1073,11 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {

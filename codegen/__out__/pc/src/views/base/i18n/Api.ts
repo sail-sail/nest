@@ -4,7 +4,7 @@ import {
 
 
 import type {
-  I18NId,
+  I18nId,
 } from "@/typings/ids";
 
 import type {
@@ -163,7 +163,7 @@ export async function create(
   model: I18Ninput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-): Promise<I18NId> {
+): Promise<I18nId> {
   const data: {
     createI18N: Mutation["createI18N"];
   } = await mutation({
@@ -177,22 +177,22 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const id: I18NId = data.createI18N;
+  const id: I18nId = data.createI18N;
   return id;
 }
 
 /**
  * 根据id修改一条数据
  * @export updateById
- * @param {I18NId} id
+ * @param {I18nId} id
  * @param {I18Ninput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: I18NId,
+  id: I18nId,
   model: I18Ninput,
   opt?: GqlOpt,
-): Promise<I18NId> {
+): Promise<I18nId> {
   const data: {
     updateByIdI18N: Mutation["updateByIdI18N"];
   } = await mutation({
@@ -206,25 +206,25 @@ export async function updateById(
       model,
     },
   }, opt);
-  const id2: I18NId = data.updateByIdI18N;
+  const id2: I18nId = data.updateByIdI18N;
   return id2;
 }
 
 /**
  * 通过ID查找一条数据
  * @export findById
- * @param {I18NId} id
+ * @param {I18nId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: I18NId,
+  id: I18nId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdI18N: Query["findByIdI18N"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: I18NId!) {
+      query($id: I18nId!) {
         findByIdI18N(id: $id) {
           id
           lang_id
@@ -256,18 +256,18 @@ export async function findById(
 /**
  * 根据 ids 删除数据
  * @export deleteByIds
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsI18N: Mutation["deleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18NId!]!) {
+      mutation($ids: [I18nId!]!) {
         deleteByIdsI18N(ids: $ids)
       }
     `,
@@ -282,18 +282,18 @@ export async function deleteByIds(
 /**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsI18N: Mutation["revertByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18NId!]!) {
+      mutation($ids: [I18nId!]!) {
         revertByIdsI18N(ids: $ids)
       }
     `,
@@ -308,18 +308,18 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除数据
  * @export forceDeleteByIds
- * @param {I18NId[]} ids
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: I18NId[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsI18N: Mutation["forceDeleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18NId!]!) {
+      mutation($ids: [I18nId!]!) {
         forceDeleteByIdsI18N(ids: $ids)
       }
     `,
