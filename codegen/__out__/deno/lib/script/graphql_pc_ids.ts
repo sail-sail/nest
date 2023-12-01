@@ -57,9 +57,9 @@ export function getScalars() {
     },
     
     // 国际化
-    "I18NId": {
-      "input": `import("@/typings/ids.ts").I18NId`,
-      "output": `import("@/typings/ids.ts").I18NId`,
+    "I18nId": {
+      "input": `import("@/typings/ids.ts").I18nId`,
+      "output": `import("@/typings/ids.ts").I18nId`,
     },
     
     // 语言

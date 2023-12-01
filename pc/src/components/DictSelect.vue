@@ -83,11 +83,11 @@ import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
-export type DictModel = {
-  id: string;
-  lbl: string;
-  type: string;
-  val: string;
+import type {
+  GetDict,
+} from "@/typings/types";
+
+export type DictModel = GetDict & {
   __pinyin_label?: string;
 };
 
