@@ -605,8 +605,16 @@ async fn get_where_query(
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
       let enumColumnName = _data_type;
-      if (![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
         let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
         Column_Up = Column_Up.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
