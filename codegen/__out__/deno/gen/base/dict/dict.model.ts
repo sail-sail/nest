@@ -9,12 +9,12 @@ import type {
   DictFieldComment as DictFieldCommentType,
 } from "/gen/types.ts";
 
-declare const dictId: unique symbol;
-export type DictId = typeof dictId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const dictId: unique symbol;
+export type DictId = Distinct<string, typeof dictId>;
 
 export interface DictSearch extends DictSearchType {
   $extra?: SearchExtra[];

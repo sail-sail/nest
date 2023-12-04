@@ -9,9 +9,6 @@ import type {
   DeptFieldComment as DeptFieldCommentType,
 } from "/gen/types.ts";
 
-declare const deptId: unique symbol;
-export type DeptId = typeof deptId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const deptId: unique symbol;
+export type DeptId = Distinct<string, typeof deptId>;
 
 export interface DeptSearch extends DeptSearchType {
   tenant_id?: string | null;

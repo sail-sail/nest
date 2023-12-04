@@ -9,12 +9,12 @@ import type {
   PermitFieldComment as PermitFieldCommentType,
 } from "/gen/types.ts";
 
-declare const permitId: unique symbol;
-export type PermitId = typeof permitId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const permitId: unique symbol;
+export type PermitId = Distinct<string, typeof permitId>;
 
 export interface PermitSearch extends PermitSearchType {
   $extra?: SearchExtra[];

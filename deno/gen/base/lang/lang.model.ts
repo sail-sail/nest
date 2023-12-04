@@ -9,12 +9,12 @@ import type {
   LangFieldComment as LangFieldCommentType,
 } from "/gen/types.ts";
 
-declare const langId: unique symbol;
-export type LangId = typeof langId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const langId: unique symbol;
+export type LangId = Distinct<string, typeof langId>;
 
 export interface LangSearch extends LangSearchType {
   $extra?: SearchExtra[];
