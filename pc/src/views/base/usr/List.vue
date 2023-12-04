@@ -505,7 +505,7 @@
         @row-dblclick="openView"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
-        @keyup.enter="onRowEnter"
+        @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
