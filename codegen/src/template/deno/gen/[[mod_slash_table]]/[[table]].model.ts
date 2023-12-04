@@ -43,10 +43,7 @@ import type {
   <#=fieldCommentName#> as <#=fieldCommentName#>Type,
 } from "/gen/types.ts";<#
 const hasImportIds = [ ];
-#>
-
-declare const <#=table_Up#>Id: unique symbol;
-export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;<#
+#><#
 hasImportIds.push(Table_Up + "Id");
 #><#
 if (hasTenant_id) {
@@ -84,6 +81,9 @@ import type {
 } from "/gen/base/usr/usr.model.ts";<#
 }
 #>
+
+declare const <#=table_Up#>Id: unique symbol;
+export type <#=Table_Up#>Id = Distinct<string, typeof <#=table_Up#>Id>;
 
 export interface <#=searchName#> extends <#=searchName#>Type {<#
   for (let i = 0; i < columns.length; i++) {

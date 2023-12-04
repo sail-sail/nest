@@ -9,9 +9,6 @@ import type {
   OperationRecordFieldComment as OperationRecordFieldCommentType,
 } from "/gen/types.ts";
 
-declare const operationRecordId: unique symbol;
-export type OperationRecordId = typeof operationRecordId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const operationRecordId: unique symbol;
+export type OperationRecordId = Distinct<string, typeof operationRecordId>;
 
 export interface OperationRecordSearch extends OperationRecordSearchType {
   tenant_id?: string | null;

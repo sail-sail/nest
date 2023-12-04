@@ -9,9 +9,6 @@ import type {
   OptbizFieldComment as OptbizFieldCommentType,
 } from "/gen/types.ts";
 
-declare const optbizId: unique symbol;
-export type OptbizId = typeof optbizId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const optbizId: unique symbol;
+export type OptbizId = Distinct<string, typeof optbizId>;
 
 export interface OptbizSearch extends OptbizSearchType {
   tenant_id?: string | null;
