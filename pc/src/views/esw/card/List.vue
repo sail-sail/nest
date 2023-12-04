@@ -1005,8 +1005,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "卡号",
       prop: "lbl",
-      width: 200,
-      align: "left",
+      width: 140,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",

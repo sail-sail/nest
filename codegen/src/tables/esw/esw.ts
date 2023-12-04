@@ -15,6 +15,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
+        align: "center",
+        width: 140,
         readonly: true,
         readonlyPlaceholder: "(自动生成)",
       },
