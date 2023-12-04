@@ -18,6 +18,10 @@ import type {
 
 import * as cardDao from "./card.dao.ts";
 
+import {
+  updateSeqLbl,
+} from "/src/esw/card/card.dao.ts";
+
 /**
  * 根据条件查找总数
  * @param {CardSearch} search? 搜索条件
@@ -126,6 +130,7 @@ export async function create(
   },
 ): Promise<CardId> {
   const id: CardId = await cardDao.create(input, options);
+  await updateSeqLbl(id);
   return id;
 }
 
