@@ -9,9 +9,6 @@ import type {
   CardRechargeFieldComment as CardRechargeFieldCommentType,
 } from "/gen/types.ts";
 
-declare const cardRechargeId: unique symbol;
-export type CardRechargeId = typeof cardRechargeId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const cardRechargeId: unique symbol;
+export type CardRechargeId = Distinct<string, typeof cardRechargeId>;
 
 export interface CardRechargeSearch extends CardRechargeSearchType {
   /** 微信支付订单号 */

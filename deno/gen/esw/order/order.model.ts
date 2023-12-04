@@ -9,9 +9,6 @@ import type {
   OrderFieldComment as OrderFieldCommentType,
 } from "/gen/types.ts";
 
-declare const orderId: unique symbol;
-export type OrderId = typeof orderId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const orderId: unique symbol;
+export type OrderId = Distinct<string, typeof orderId>;
 
 export interface OrderSearch extends OrderSearchType {
   tenant_id?: string | null;
