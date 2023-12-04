@@ -9,9 +9,6 @@ import type {
   PtFieldComment as PtFieldCommentType,
 } from "/gen/types.ts";
 
-declare const ptId: unique symbol;
-export type PtId = typeof ptId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const ptId: unique symbol;
+export type PtId = Distinct<string, typeof ptId>;
 
 export interface PtSearch extends PtSearchType {
   tenant_id?: string | null;

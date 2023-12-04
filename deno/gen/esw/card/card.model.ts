@@ -9,9 +9,6 @@ import type {
   CardFieldComment as CardFieldCommentType,
 } from "/gen/types.ts";
 
-declare const cardId: unique symbol;
-export type CardId = typeof cardId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const cardId: unique symbol;
+export type CardId = Distinct<string, typeof cardId>;
 
 export interface CardSearch extends CardSearchType {
   /** 卡号-序列号 */

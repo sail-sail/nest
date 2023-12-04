@@ -9,9 +9,6 @@ import type {
   RechargeRuleFieldComment as RechargeRuleFieldCommentType,
 } from "/gen/types.ts";
 
-declare const rechargeRuleId: unique symbol;
-export type RechargeRuleId = typeof rechargeRuleId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const rechargeRuleId: unique symbol;
+export type RechargeRuleId = Distinct<string, typeof rechargeRuleId>;
 
 export interface RechargeRuleSearch extends RechargeRuleSearchType {
   tenant_id?: string | null;
