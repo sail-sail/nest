@@ -9,9 +9,6 @@ import type {
   WxPayNoticeFieldComment as WxPayNoticeFieldCommentType,
 } from "/gen/types.ts";
 
-declare const wxPayNoticeId: unique symbol;
-export type WxPayNoticeId = typeof wxPayNoticeId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -23,6 +20,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const wxPayNoticeId: unique symbol;
+export type WxPayNoticeId = Distinct<string, typeof wxPayNoticeId>;
 
 export interface WxPayNoticeSearch extends WxPayNoticeSearchType {
   tenant_id?: string | null;

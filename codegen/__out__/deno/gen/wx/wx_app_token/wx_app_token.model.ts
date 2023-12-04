@@ -9,12 +9,12 @@ import type {
   WxAppTokenFieldComment as WxAppTokenFieldCommentType,
 } from "/gen/types.ts";
 
-declare const wxAppTokenId: unique symbol;
-export type WxAppTokenId = typeof wxAppTokenId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const wxAppTokenId: unique symbol;
+export type WxAppTokenId = Distinct<string, typeof wxAppTokenId>;
 
 export interface WxAppTokenSearch extends WxAppTokenSearchType {
   $extra?: SearchExtra[];

@@ -9,12 +9,12 @@ import type {
   TenantFieldComment as TenantFieldCommentType,
 } from "/gen/types.ts";
 
-declare const tenantId: unique symbol;
-export type TenantId = typeof tenantId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const tenantId: unique symbol;
+export type TenantId = Distinct<string, typeof tenantId>;
 
 export interface TenantSearch extends TenantSearchType {
   $extra?: SearchExtra[];
