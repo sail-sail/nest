@@ -865,7 +865,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.delete="onDeleteByIds"<#
         }
         #>
-        @keyup.enter="onRowEnter"
+        @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
