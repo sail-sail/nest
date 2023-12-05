@@ -102,7 +102,7 @@ CREATE TABLE if not exists `esw_card_consume` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='会员卡消费记录';
 
------------------------------------------------------------------- 产品类型
+------------------------------------------------------------------ 产品类别
 drop table if exists `esw_pt_type`;
 CREATE TABLE if not exists `esw_pt_type` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -123,7 +123,7 @@ CREATE TABLE if not exists `esw_pt_type` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品类型';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品类别';
 
 ------------------------------------------------------------------ 产品
 drop table if exists `esw_pt`;
@@ -131,7 +131,6 @@ CREATE TABLE if not exists `esw_pt` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `img` varchar(100) NOT NULL DEFAULT '' COMMENT '图片',
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
-  `pt_type_id` varchar(10) NOT NULL DEFAULT '' COMMENT '类型',
   `price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '价格',
   `original_price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '原价',
   `is_new` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '新品,dict:yes_no',
@@ -151,8 +150,28 @@ CREATE TABLE if not exists `esw_pt` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品';
+
+------------------------------------------------------------------ 产品产品类别
+drop table if exists `esw_pt_pt_type`;
+CREATE TABLE if not exists `esw_pt_pt_type` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `pt_id` varchar(22) NOT NULL DEFAULT '' COMMENT '产品',
+  `pt_type_id` varchar(22) NOT NULL DEFAULT '' COMMENT '产品类别',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`pt_id`, `pt_type_id`, `org_id`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品产品类别';
 
 ------------------------------------------------------------------ 订单
 drop table if exists `esw_order`;
@@ -164,7 +183,7 @@ CREATE TABLE if not exists `esw_order` (
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `card_id` varchar(22) NOT NULL DEFAULT '' COMMENT '会员卡',
   `price` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '订单金额',
-  `type` varchar(22) NOT NULL DEFAULT 'pay' COMMENT '订单类型,dictbiz:order_type',
+  `type` varchar(22) NOT NULL DEFAULT 'pay' COMMENT '订单类别,dictbiz:order_type',
   `amt` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '消费充值金额',
   `give_amt` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '消费赠送金额',
   `balance` decimal(13,2) unsigned NOT NULL DEFAULT 0 COMMENT '消费后充值余额',

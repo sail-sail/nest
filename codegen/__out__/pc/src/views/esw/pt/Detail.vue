@@ -100,13 +100,14 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.pt_type_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.pt_type_ids == null)">
           <el-form-item
-            :label="n('类型')"
-            prop="pt_type_id"
+            :label="n('产品类别')"
+            prop="pt_type_ids"
           >
             <CustomSelect
-              v-model="dialogModel.pt_type_id"
+              :set="dialogModel.pt_type_ids = dialogModel.pt_type_ids ?? [ ]"
+              v-model="dialogModel.pt_type_ids"
               :method="getPtTypeList"
               :options-map="((item: PtTypeModel) => {
                 return {
@@ -114,7 +115,8 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              :placeholder="`${ ns('请选择') } ${ n('产品类别') }`"
+              multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -178,19 +180,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.detail == null)">
-          <el-form-item
-            :label="n('详情')"
-            prop="detail"
-          >
-            <CustomInput
-              v-model="dialogModel.detail"
-              :placeholder="`${ ns('请输入') } ${ n('详情') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -204,6 +193,23 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.detail == null)">
+          <el-form-item
+            :label="n('详情')"
+            prop="detail"
+            un-grid="col-span-2"
+          >
+            <CustomInput
+              v-model="dialogModel.detail"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 5 }"
+              @keyup.enter.stop
+              :placeholder="`${ ns('请输入') } ${ n('详情') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -213,7 +219,7 @@
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
@@ -346,6 +352,7 @@ let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel: PtInput = $ref({
+  pt_type_ids: [ ],
 } as PtInput);
 
 let ids = $ref<PtId[]>([ ]);
@@ -812,15 +819,15 @@ async function onInitI18ns() {
   const codes: string[] = [
     "图片",
     "名称",
-    "类型",
+    "产品类别",
     "价格",
     "原价",
     "新品",
     "简介",
-    "详情",
     "锁定",
     "启用",
     "排序",
+    "详情",
     "备注",
     "创建人",
     "创建时间",

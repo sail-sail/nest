@@ -100,7 +100,7 @@ declare const ptId: unique symbol;
 export type PtId = Distinct<string, typeof ptId>;
 
 declare const pt_typeId: unique symbol;
-/** 产品类型 */
+/** 产品类别 */
 export type PtTypeId = Distinct<string, typeof pt_typeId>;
 
 declare const recharge_ruleId: unique symbol;

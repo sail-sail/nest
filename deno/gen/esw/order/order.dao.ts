@@ -437,7 +437,7 @@ export async function findAll(
   
   const [
     statusDict, // 订单状态
-    typeDict, // 订单类型
+    typeDict, // 订单类别
   ] = await getDictbiz([
     "order_status",
     "order_type",
@@ -462,7 +462,7 @@ export async function findAll(
       model.price = new Decimal(model.price);
     }
     
-    // 订单类型
+    // 订单类别
     let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
@@ -555,7 +555,7 @@ export async function setIdByLbl(
   
   const [
     statusDict, // 订单状态
-    typeDict, // 订单类型
+    typeDict, // 订单类别
   ] = await getDictbiz([
     "order_status",
     "order_type",
@@ -587,7 +587,7 @@ export async function setIdByLbl(
     }
   }
   
-  // 订单类型
+  // 订单类别
   if (isNotEmpty(input.type_lbl) && input.type === undefined) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
@@ -627,8 +627,8 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
     card_id: await n("会员卡"),
     card_id_lbl: await n("会员卡"),
     price: await n("订单金额"),
-    type: await n("订单类型"),
-    type_lbl: await n("订单类型"),
+    type: await n("订单类别"),
+    type_lbl: await n("订单类别"),
     amt: await n("消费充值金额"),
     give_amt: await n("消费赠送金额"),
     balance: await n("消费后充值余额"),
@@ -893,7 +893,7 @@ export async function validate(
     fieldComments.card_id,
   );
   
-  // 订单类型
+  // 订单类别
   await validators.chars_max_length(
     input.type,
     22,

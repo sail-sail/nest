@@ -471,12 +471,17 @@
             </el-table-column>
           </template>
           
-          <!-- 类型 -->
-          <template v-else-if="'pt_type_id_lbl' === col.prop && (showBuildIn || builtInSearch?.pt_type_id == null)">
+          <!-- 产品类别 -->
+          <template v-else-if="'pt_type_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.pt_type_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
             </el-table-column>
           </template>
           
@@ -516,15 +521,6 @@
           
           <!-- 简介 -->
           <template v-else-if="'introduct' === col.prop && (showBuildIn || builtInSearch?.introduct == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 详情 -->
-          <template v-else-if="'detail' === col.prop && (showBuildIn || builtInSearch?.detail == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -578,6 +574,15 @@
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
                 ></CustomInputNumber>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 详情 -->
+          <template v-else-if="'detail' === col.prop && (showBuildIn || builtInSearch?.detail == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -814,18 +819,18 @@ const props = defineProps<{
   img_like?: string; // 图片
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  pt_type_id?: string|string[]; // 类型
-  pt_type_id_lbl?: string; // 类型
+  pt_type_ids?: string|string[]; // 产品类别
+  pt_type_ids_lbl?: string[]; // 产品类别
   price?: string; // 价格
   original_price?: string; // 原价
   is_new?: string|string[]; // 新品
   introduct?: string; // 简介
   introduct_like?: string; // 简介
-  detail?: string; // 详情
-  detail_like?: string; // 详情
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
+  detail?: string; // 详情
+  detail_like?: string; // 详情
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -836,8 +841,8 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
-  pt_type_id: "string[]",
-  pt_type_id_lbl: "string[]",
+  pt_type_ids: "string[]",
+  pt_type_ids_lbl: "string[]",
   price: "number",
   original_price: "number",
   is_new: "number[]",
@@ -987,13 +992,13 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "类型",
-      prop: "pt_type_id_lbl",
-      sortBy: "pt_type_id",
+      label: "产品类别",
+      prop: "pt_type_ids_lbl",
+      sortBy: "pt_type_ids",
       width: 160,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "价格",
@@ -1024,15 +1029,7 @@ function getTableColumns(): ColumnType[] {
       label: "简介",
       prop: "introduct",
       width: 280,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "详情",
-      prop: "detail",
-      width: 280,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1062,6 +1059,14 @@ function getTableColumns(): ColumnType[] {
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "详情",
+      prop: "detail",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "备注",
@@ -1386,15 +1391,15 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ await nAsync("图片") ]: "img",
     [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("类型") ]: "pt_type_id_lbl",
+    [ await nAsync("产品类别") ]: "pt_type_ids_lbl",
     [ await nAsync("价格") ]: "price",
     [ await nAsync("原价") ]: "original_price",
     [ await nAsync("新品") ]: "is_new_lbl",
     [ await nAsync("简介") ]: "introduct",
-    [ await nAsync("详情") ]: "detail",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("详情") ]: "detail",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1419,15 +1424,15 @@ async function onImportExcel() {
         key_types: {
           "img": "string",
           "lbl": "string",
-          "pt_type_id_lbl": "string",
+          "pt_type_ids_lbl": "string",
           "price": "string",
           "original_price": "string",
           "is_new_lbl": "string",
           "introduct": "string",
-          "detail": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
+          "detail": "string",
           "rem": "string",
         },
       },
@@ -1778,15 +1783,15 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "图片",
     "名称",
-    "类型",
+    "产品类别",
     "价格",
     "原价",
     "新品",
     "简介",
-    "详情",
     "锁定",
     "启用",
     "排序",
+    "详情",
     "备注",
     "创建人",
     "创建时间",

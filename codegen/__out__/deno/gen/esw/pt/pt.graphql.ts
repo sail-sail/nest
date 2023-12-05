@@ -13,10 +13,10 @@ type PtModel {
   img: String!
   "名称"
   lbl: String!
-  "类型"
-  pt_type_id: PtTypeId!
-  "类型"
-  pt_type_id_lbl: String
+  "产品类别"
+  pt_type_ids: [PtTypeId!]
+  "产品类别"
+  pt_type_ids_lbl: [String!]
   "价格"
   price: Decimal!
   "原价"
@@ -27,8 +27,6 @@ type PtModel {
   is_new_lbl: String!
   "简介"
   introduct: String!
-  "详情"
-  detail: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -39,6 +37,8 @@ type PtModel {
   is_enabled_lbl: String!
   "排序"
   order_by: Int!
+  "详情"
+  detail: String!
   "备注"
   rem: String!
   "创建人"
@@ -67,10 +67,10 @@ type PtFieldComment {
   img: String!
   "名称"
   lbl: String!
-  "类型"
-  pt_type_id: String!
-  "类型"
-  pt_type_id_lbl: String!
+  "产品类别"
+  pt_type_ids: String!
+  "产品类别"
+  pt_type_ids_lbl: String!
   "价格"
   price: String!
   "原价"
@@ -81,8 +81,6 @@ type PtFieldComment {
   is_new_lbl: String!
   "简介"
   introduct: String!
-  "详情"
-  detail: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -93,6 +91,8 @@ type PtFieldComment {
   is_enabled_lbl: String!
   "排序"
   order_by: String!
+  "详情"
+  detail: String!
   "备注"
   rem: String!
   "创建人"
@@ -119,10 +119,10 @@ input PtInput {
   img: String
   "名称"
   lbl: String
-  "类型"
-  pt_type_id: PtTypeId
-  "类型"
-  pt_type_id_lbl: String
+  "产品类别"
+  pt_type_ids: [PtTypeId!]
+  "产品类别"
+  pt_type_ids_lbl: [String!]
   "价格"
   price: Decimal
   "原价"
@@ -133,8 +133,6 @@ input PtInput {
   is_new_lbl: String
   "简介"
   introduct: String
-  "详情"
-  detail: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -145,6 +143,8 @@ input PtInput {
   is_enabled_lbl: String
   "排序"
   order_by: Int
+  "详情"
+  detail: String
   "备注"
   rem: String
   "创建人"
@@ -177,9 +177,9 @@ input PtSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "类型"
-  pt_type_id: [PtTypeId!]
-  pt_type_id_is_null: Boolean
+  "产品类别"
+  pt_type_ids: [PtTypeId!]
+  pt_type_ids_is_null: Boolean
   "价格"
   price: [Decimal!]
   "原价"
@@ -189,15 +189,15 @@ input PtSearch {
   "简介"
   introduct: String
   introduct_like: String
-  "详情"
-  detail: String
-  detail_like: String
   "锁定"
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
   "排序"
   order_by: [Int!]
+  "详情"
+  detail: String
+  detail_like: String
   "备注"
   rem: String
   rem_like: String
