@@ -578,7 +578,7 @@ for (let i = 0; i < columns.length; i++) {
               if (column.isTextarea) {
               #>
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop<#
               }
               #>
