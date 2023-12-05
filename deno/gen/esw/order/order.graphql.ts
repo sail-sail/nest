@@ -16,7 +16,7 @@ enum OrderStatus {
   "已完成"
   completed
 }
-"订单订单类型"
+"订单订单类别"
 enum OrderType {
   "消费"
   pay
@@ -47,9 +47,9 @@ type OrderModel {
   card_id_lbl: String
   "订单金额"
   price: Decimal!
-  "订单类型"
+  "订单类别"
   type: OrderType
-  "订单类型"
+  "订单类别"
   type_lbl: String!
   "消费充值金额"
   amt: Decimal!
@@ -109,9 +109,9 @@ type OrderFieldComment {
   card_id_lbl: String!
   "订单金额"
   price: String!
-  "订单类型"
+  "订单类别"
   type: String!
-  "订单类型"
+  "订单类别"
   type_lbl: String!
   "消费充值金额"
   amt: String!
@@ -169,9 +169,9 @@ input OrderInput {
   card_id_lbl: String
   "订单金额"
   price: Decimal
-  "订单类型"
+  "订单类别"
   type: OrderType
-  "订单类型"
+  "订单类别"
   type_lbl: String
   "消费充值金额"
   amt: Decimal
@@ -230,7 +230,7 @@ input OrderSearch {
   card_id_is_null: Boolean
   "订单金额"
   price: [Decimal!]
-  "订单类型"
+  "订单类别"
   type: [String!]
   "消费充值金额"
   amt: [Decimal!]

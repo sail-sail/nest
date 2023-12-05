@@ -59,6 +59,10 @@ import {
 import * as orgDao from "/gen/base/org/org.dao.ts";
 
 import {
+  many2manyUpdate,
+} from "/lib/util/dao_util.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -77,14 +81,16 @@ import type {
 } from "/gen/base/org/org.model.ts";
 
 import type {
+  PtTypeId,
+} from "/gen/esw/pt_type/pt_type.model.ts";
+
+import type {
   PtInput,
   PtModel,
   PtSearch,
   PtFieldComment,
   PtId,
 } from "./pt.model.ts";
-
-import * as pt_typeDao from "/gen/esw/pt_type/pt_type.dao.ts";
 
 const route_path = "/esw/pt";
 
@@ -141,17 +147,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.pt_type_id && !Array.isArray(search?.pt_type_id)) {
-    search.pt_type_id = [ search.pt_type_id ];
+  if (search?.pt_type_ids && !Array.isArray(search?.pt_type_ids)) {
+    search.pt_type_ids = [ search.pt_type_ids ];
   }
-  if (search?.pt_type_id && search?.pt_type_id.length > 0) {
-    whereQuery += ` and pt_type_id_lbl.id in ${ args.push(search.pt_type_id) }`;
+  if (search?.pt_type_ids && search?.pt_type_ids.length > 0) {
+    whereQuery += ` and esw_pt_type.id in ${ args.push(search.pt_type_ids) }`;
   }
-  if (search?.pt_type_id === null) {
-    whereQuery += ` and pt_type_id_lbl.id is null`;
+  if (search?.pt_type_ids === null) {
+    whereQuery += ` and esw_pt_type.id is null`;
   }
-  if (search?.pt_type_id_is_null) {
-    whereQuery += ` and pt_type_id_lbl.id is null`;
+  if (search?.pt_type_ids_is_null) {
+    whereQuery += ` and esw_pt_type.id is null`;
   }
   if (search?.price && search?.price?.length > 0) {
     if (search.price[0] != null) {
@@ -184,15 +190,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.introduct_like)) {
     whereQuery += ` and t.introduct like ${ args.push("%" + sqlLike(search?.introduct_like) + "%") }`;
   }
-  if (search?.detail !== undefined) {
-    whereQuery += ` and t.detail = ${ args.push(search.detail) }`;
-  }
-  if (search?.detail === null) {
-    whereQuery += ` and t.detail is null`;
-  }
-  if (isNotEmpty(search?.detail_like)) {
-    whereQuery += ` and t.detail like ${ args.push("%" + sqlLike(search?.detail_like) + "%") }`;
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -212,6 +209,15 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
+  }
+  if (search?.detail !== undefined) {
+    whereQuery += ` and t.detail = ${ args.push(search.detail) }`;
+  }
+  if (search?.detail === null) {
+    whereQuery += ` and t.detail is null`;
+  }
+  if (isNotEmpty(search?.detail_like)) {
+    whereQuery += ` and t.detail like ${ args.push("%" + sqlLike(search?.detail_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -278,8 +284,28 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     esw_pt t
-    left join esw_pt_type pt_type_id_lbl
-      on pt_type_id_lbl.id = t.pt_type_id
+    left join esw_pt_pt_type
+      on esw_pt_pt_type.pt_id = t.id
+      and esw_pt_pt_type.is_deleted = 0
+    left join esw_pt_type
+      on esw_pt_pt_type.pt_type_id = esw_pt_type.id
+      and esw_pt_type.is_deleted = 0
+    left join (
+      select
+        json_objectagg(esw_pt_pt_type.order_by, esw_pt_type.id) pt_type_ids,
+        json_objectagg(esw_pt_pt_type.order_by, esw_pt_type.lbl) pt_type_ids_lbl,
+        esw_pt.id pt_id
+      from esw_pt_pt_type
+      inner join esw_pt_type
+        on esw_pt_type.id = esw_pt_pt_type.pt_type_id
+        and esw_pt_type.is_deleted = 0
+      inner join esw_pt
+        on esw_pt.id = esw_pt_pt_type.pt_id
+      where
+        esw_pt_pt_type.is_deleted = 0
+      group by pt_id
+    ) _pt_type
+      on _pt_type.pt_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -347,7 +373,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,pt_type_id_lbl.lbl pt_type_id_lbl
+      ,max(pt_type_ids) pt_type_ids
+      ,max(pt_type_ids_lbl) pt_type_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -404,6 +431,28 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 产品类别
+    if (item.pt_type_ids) {
+      const obj = item.pt_type_ids;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.pt_type_ids = keys.map((key) => obj[key]);
+    }
+    if (item.pt_type_ids_lbl) {
+      const obj = item.pt_type_ids_lbl;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.pt_type_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     is_newDict, // 新品
@@ -501,13 +550,26 @@ export async function setIdByLbl(
     "is_enabled",
   ]);
   
-  // 类型
-  if (isNotEmpty(input.pt_type_id_lbl) && input.pt_type_id === undefined) {
-    input.pt_type_id_lbl = String(input.pt_type_id_lbl).trim();
-    const pt_typeModel = await pt_typeDao.findOne({ lbl: input.pt_type_id_lbl });
-    if (pt_typeModel) {
-      input.pt_type_id = pt_typeModel.id;
+  // 产品类别
+  if (!input.pt_type_ids && input.pt_type_ids_lbl) {
+    if (typeof input.pt_type_ids_lbl === "string" || input.pt_type_ids_lbl instanceof String) {
+      input.pt_type_ids_lbl = input.pt_type_ids_lbl.split(",");
     }
+    input.pt_type_ids_lbl = input.pt_type_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        esw_pt_type t
+      where
+        t.lbl in ${ args.push(input.pt_type_ids_lbl) }
+    `;
+    interface Result {
+      id: PtTypeId;
+    }
+    const models = await query<Result>(sql, args);
+    input.pt_type_ids = models.map((item: { id: PtTypeId }) => item.id);
   }
   
   // 新品
@@ -544,19 +606,19 @@ export async function getFieldComments(): Promise<PtFieldComment> {
     id: await n("ID"),
     img: await n("图片"),
     lbl: await n("名称"),
-    pt_type_id: await n("类型"),
-    pt_type_id_lbl: await n("类型"),
+    pt_type_ids: await n("产品类别"),
+    pt_type_ids_lbl: await n("产品类别"),
     price: await n("价格"),
     original_price: await n("原价"),
     is_new: await n("新品"),
     is_new_lbl: await n("新品"),
     introduct: await n("简介"),
-    detail: await n("详情"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
+    detail: await n("详情"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -801,13 +863,6 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 类型
-  await validators.chars_max_length(
-    input.pt_type_id,
-    10,
-    fieldComments.pt_type_id,
-  );
-  
   // 简介
   await validators.chars_max_length(
     input.introduct,
@@ -945,9 +1000,6 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (input.pt_type_id !== undefined) {
-    sql += `,pt_type_id`;
-  }
   if (input.price !== undefined) {
     sql += `,price`;
   }
@@ -960,9 +1012,6 @@ export async function create(
   if (input.introduct !== undefined) {
     sql += `,introduct`;
   }
-  if (input.detail !== undefined) {
-    sql += `,detail`;
-  }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -971,6 +1020,9 @@ export async function create(
   }
   if (input.order_by !== undefined) {
     sql += `,order_by`;
+  }
+  if (input.detail !== undefined) {
+    sql += `,detail`;
   }
   if (input.rem !== undefined) {
     sql += `,rem`;
@@ -1015,9 +1067,6 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.pt_type_id !== undefined) {
-    sql += `,${ args.push(input.pt_type_id) }`;
-  }
   if (input.price !== undefined) {
     sql += `,${ args.push(input.price) }`;
   }
@@ -1030,9 +1079,6 @@ export async function create(
   if (input.introduct !== undefined) {
     sql += `,${ args.push(input.introduct) }`;
   }
-  if (input.detail !== undefined) {
-    sql += `,${ args.push(input.detail) }`;
-  }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
   }
@@ -1042,6 +1088,9 @@ export async function create(
   if (input.order_by !== undefined) {
     sql += `,${ args.push(input.order_by) }`;
   }
+  if (input.detail !== undefined) {
+    sql += `,${ args.push(input.detail) }`;
+  }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
   }
@@ -1050,6 +1099,18 @@ export async function create(
   await delCache();
   const res = await execute(sql, args);
   log(JSON.stringify(res));
+  
+  // 产品类别
+  await many2manyUpdate(
+    input,
+    "pt_type_ids",
+    {
+      mod: "esw",
+      table: "pt_pt_type",
+      column1: "pt_id",
+      column2: "pt_type_id",
+    },
+  );
   
   await delCache();
   
@@ -1065,6 +1126,7 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "esw_pt_pt_type",
     "esw_pt_type",
     "base_usr",
   ];
@@ -1236,12 +1298,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.pt_type_id !== undefined) {
-    if (input.pt_type_id != oldModel.pt_type_id) {
-      sql += `pt_type_id = ${ args.push(input.pt_type_id) },`;
-      updateFldNum++;
-    }
-  }
   if (input.price !== undefined) {
     if (input.price != oldModel.price) {
       sql += `price = ${ args.push(input.price) },`;
@@ -1266,12 +1322,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.detail !== undefined) {
-    if (input.detail != oldModel.detail) {
-      sql += `detail = ${ args.push(input.detail) },`;
-      updateFldNum++;
-    }
-  }
   if (input.is_locked !== undefined) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
@@ -1287,6 +1337,12 @@ export async function updateById(
   if (input.order_by !== undefined) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.detail !== undefined) {
+    if (input.detail != oldModel.detail) {
+      sql += `detail = ${ args.push(input.detail) },`;
       updateFldNum++;
     }
   }
@@ -1313,6 +1369,23 @@ export async function updateById(
     const res = await execute(sql, args);
     log(JSON.stringify(res));
   }
+  
+  updateFldNum++;
+  
+  // 产品类别
+  await many2manyUpdate(
+    {
+      ...input,
+      id: id as unknown as string,
+    },
+    "pt_type_ids",
+    {
+      mod: "esw",
+      table: "pt_pt_type",
+      column1: "pt_id",
+      column2: "pt_type_id",
+    },
+  );
   
   if (updateFldNum > 0) {
     await delCache();

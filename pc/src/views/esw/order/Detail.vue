@@ -151,14 +151,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('订单类型')"
+            :label="n('订单类别')"
             prop="type"
           >
             <DictbizSelect
               :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               code="order_type"
-              :placeholder="`${ ns('请选择') } ${ n('订单类型') }`"
+              :placeholder="`${ ns('请选择') } ${ n('订单类别') }`"
               :readonly="isLocked || isReadonly"
             ></DictbizSelect>
           </el-form-item>
@@ -173,7 +173,7 @@
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
@@ -362,11 +362,11 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("订单金额") }`,
       },
     ],
-    // 订单类型
+    // 订单类别
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单类型") }`,
+        message: `${ await nsAsync("请输入") } ${ n("订单类别") }`,
       },
     ],
   };
@@ -797,7 +797,7 @@ async function onInitI18ns() {
     "用户",
     "会员卡",
     "订单金额",
-    "订单类型",
+    "订单类别",
     "消费充值金额",
     "消费赠送金额",
     "消费后充值余额",

@@ -437,7 +437,7 @@ export function useDownloadImportTemplate(routePath: string) {
         data,
       },
     );
-    saveAsExcel(buffer, `${ await nAsync("产品类型") }${ await nsAsync("导入") }`);
+    saveAsExcel(buffer, `${ await nAsync("产品类别") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -525,7 +525,7 @@ export function useExportExcel(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, await nAsync("产品类型"));
+      saveAsExcel(buffer, await nAsync("产品类别"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;

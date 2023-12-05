@@ -152,7 +152,7 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").PtId`,
     },
     
-    // 产品类型
+    // 产品类别
     "PtTypeId": {
       "input": `import("@/typings/ids.ts").PtTypeId`,
       "output": `import("@/typings/ids.ts").PtTypeId`,

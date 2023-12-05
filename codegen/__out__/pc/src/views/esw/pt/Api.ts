@@ -42,19 +42,19 @@ export async function findAll(
           id
           img
           lbl
-          pt_type_id
-          pt_type_id_lbl
+          pt_type_ids
+          pt_type_ids_lbl
           price
           original_price
           is_new
           is_new_lbl
           introduct
-          detail
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
+          detail
           rem
           create_usr_id
           create_usr_id_lbl
@@ -102,19 +102,19 @@ export async function findOne(
           id
           img
           lbl
-          pt_type_id
-          pt_type_id_lbl
+          pt_type_ids
+          pt_type_ids_lbl
           price
           original_price
           is_new
           is_new_lbl
           introduct
-          detail
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
+          detail
           rem
           create_usr_id
           create_usr_id_lbl
@@ -242,19 +242,19 @@ export async function findById(
           id
           img
           lbl
-          pt_type_id
-          pt_type_id_lbl
+          pt_type_ids
+          pt_type_ids_lbl
           price
           original_price
           is_new
           is_new_lbl
           introduct
-          detail
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
+          detail
           rem
           create_usr_id
           create_usr_id_lbl
@@ -477,13 +477,13 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsPt {
             img
             lbl
-            pt_type_id_lbl
+            pt_type_ids_lbl
             price
             original_price
             is_new_lbl
             introduct
-            detail
             order_by
+            detail
             rem
           }
           findAllPtType {
@@ -541,19 +541,19 @@ export function useExportExcel(routePath: string) {
             id
             img
             lbl
-            pt_type_id
-            pt_type_id_lbl
+            pt_type_ids
+            pt_type_ids_lbl
             price
             original_price
             is_new
             is_new_lbl
             introduct
-            detail
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
             order_by
+            detail
             rem
             create_usr_id
             create_usr_id_lbl
@@ -567,15 +567,15 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsPt {
             img
             lbl
-            pt_type_id_lbl
+            pt_type_ids_lbl
             price
             original_price
             is_new_lbl
             introduct
-            detail
             is_locked_lbl
             is_enabled_lbl
             order_by
+            detail
             rem
             create_usr_id_lbl
             create_time_lbl

@@ -493,7 +493,7 @@
             </el-table-column>
           </template>
           
-          <!-- 订单类型 -->
+          <!-- 订单类别 -->
           <template v-else-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -816,7 +816,7 @@ const props = defineProps<{
   card_id?: string|string[]; // 会员卡
   card_id_lbl?: string; // 会员卡
   price?: string; // 订单金额
-  type?: string|string[]; // 订单类型
+  type?: string|string[]; // 订单类别
   amt?: string; // 消费充值金额
   give_amt?: string; // 消费赠送金额
   balance?: string; // 消费后充值余额
@@ -1019,7 +1019,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "订单类型",
+      label: "订单类别",
       prop: "type_lbl",
       sortBy: "type",
       width: 120,
@@ -1410,7 +1410,7 @@ async function onImportExcel() {
     [ await nAsync("用户") ]: "usr_id_lbl",
     [ await nAsync("会员卡") ]: "card_id_lbl",
     [ await nAsync("订单金额") ]: "price",
-    [ await nAsync("订单类型") ]: "type_lbl",
+    [ await nAsync("订单类别") ]: "type_lbl",
     [ await nAsync("消费充值金额") ]: "amt",
     [ await nAsync("消费赠送金额") ]: "give_amt",
     [ await nAsync("消费后充值余额") ]: "balance",
@@ -1781,7 +1781,7 @@ async function initI18nsEfc() {
     "用户",
     "会员卡",
     "订单金额",
-    "订单类型",
+    "订单类别",
     "消费充值金额",
     "消费赠送金额",
     "消费后充值余额",

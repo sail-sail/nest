@@ -254,8 +254,8 @@ export default defineConfig({
       },
     ],
   },
-  // 产品
-  esw_pt: {
+  // 产品类别
+  esw_pt_type: {
     opts: {
       cache: true,
       uniques: [
@@ -264,32 +264,14 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "img",
-        fixed: "left",
-      },
-      {
         COLUMN_NAME: "lbl",
       },
       {
-        COLUMN_NAME: "pt_type_id",
-        width: 160,
+        COLUMN_NAME: "is_home",
+        width: 80,
       },
       {
-        COLUMN_NAME: "price",
-      },
-      {
-        COLUMN_NAME: "original_price",
-      },
-      {
-        COLUMN_NAME: "is_new",
-      },
-      {
-        COLUMN_NAME: "introduct",
-        width: 280,
-      },
-      {
-        COLUMN_NAME: "detail",
-        width: 280,
+        COLUMN_NAME: "is_recommend",
       },
       {
         COLUMN_NAME: "is_locked",
@@ -317,8 +299,8 @@ export default defineConfig({
       },
     ],
   },
-  // 产品类型
-  esw_pt_type: {
+  // 产品
+  esw_pt: {
     opts: {
       cache: true,
       uniques: [
@@ -327,14 +309,30 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "img",
+        fixed: "left",
+      },
+      {
         COLUMN_NAME: "lbl",
       },
       {
-        COLUMN_NAME: "is_home",
-        width: 80,
+        COLUMN_NAME: "pt_type_ids",
+        COLUMN_COMMENT: "产品类别",
+        width: 160,
       },
       {
-        COLUMN_NAME: "is_recommend",
+        COLUMN_NAME: "price",
+      },
+      {
+        COLUMN_NAME: "original_price",
+      },
+      {
+        COLUMN_NAME: "is_new",
+      },
+      {
+        COLUMN_NAME: "introduct",
+        align: "left",
+        width: 280,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -344,6 +342,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "detail",
+        align: "left",
+        width: 280,
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "rem",

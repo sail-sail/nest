@@ -665,7 +665,7 @@ import type {
 } from "#/types";
 
 defineOptions({
-  name: "产品类型",
+  name: "产品类别",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;

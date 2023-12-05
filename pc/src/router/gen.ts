@@ -308,7 +308,7 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "产品类型",
+        name: "产品类别",
         component: () => import("@/views/esw/pt_type/List.vue"),
         props: (route) => route.query,
       },
