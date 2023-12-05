@@ -26,6 +26,21 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null)">
+        <el-form-item
+          :label="n('原始ID')"
+          prop="code_like"
+        >
+          <el-input
+            v-model="search.code_like"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('原始ID') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template>
+      
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('名称')"
@@ -463,8 +478,17 @@
           :key="col.prop"
         >
           
+          <!-- 原始ID -->
+          <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -768,6 +792,8 @@ const props = defineProps<{
   selectedIds?: WxAppId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: WxAppId; // ID
+  code?: string; // 原始ID
+  code_like?: string; // 原始ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   appid?: string; // appid
@@ -912,6 +938,15 @@ let tableData = $ref<WxAppModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
+    {
+      label: "原始ID",
+      prop: "code",
+      width: 160,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
     {
       label: "名称",
       prop: "lbl",
@@ -1285,6 +1320,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ await nAsync("原始ID") ]: "code",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("appid") ]: "appid",
     [ await nAsync("appsecret") ]: "appsecret",
@@ -1313,6 +1349,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "code": "string",
           "lbl": "string",
           "appid": "string",
           "appsecret": "string",
@@ -1643,6 +1680,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "原始ID",
     "名称",
     "appid",
     "appsecret",

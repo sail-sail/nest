@@ -2,6 +2,7 @@
 drop table if exists `wx_wx_app`;
 CREATE TABLE `wx_wx_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `code` varchar(15) NOT NULL DEFAULT '' COMMENT '原始ID',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
   `appid` varchar(22) NOT NULL DEFAULT '' COMMENT 'appid',
   `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT 'appsecret',
