@@ -93,10 +93,11 @@
         </ElIcon>
         
         <ElIcon
+          v-if="urlList.length > 0"
           size="22"
           un-cursor-pointer
           un-rounded
-          @click="deleteClk"
+          @click="onDelete"
           :title="ns('删除')"
         >
           <ElIconDelete
@@ -122,7 +123,7 @@
           un-bg="white hover:[var(--el-color-primary)]"
           un-cursor-pointer
           un-rounded-full
-          @click="previousClk"
+          @click="onPrevious"
         >
           <ElIconArrowLeft />
         </ElIcon>
@@ -140,7 +141,7 @@
           un-bg="white hover:[yellowgreen]"
           un-cursor-pointer
           un-rounded-full
-          @click="nextClk"
+          @click="onNext"
         >
           <ElIconArrowRight />
         </ElIcon>
@@ -152,7 +153,7 @@
   <input
     type="file"
     :accept="accept"
-    @change="inputChg"
+    @change="onInput"
     style="display: none;"
     ref="fileRef"
   />
@@ -191,7 +192,7 @@ const props = withDefaults(
     readonly?: boolean;
   }>(),
   {
-    modelValue: "",
+    modelValue: undefined,
     maxFileSize: 1024 * 1024 * 50,
     maxSize: 1,
     accept: "image/webp,image/png,image/jpeg,image/svg+xml",
@@ -199,11 +200,11 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue || "");
+let modelValue = $ref(props.modelValue);
 
 watch(() => props.modelValue, (newVal) => {
   if (modelValue !== newVal) {
-    modelValue = newVal || "";
+    modelValue = newVal;
     nowIndex = 0;
   }
 });
@@ -211,7 +212,9 @@ watch(() => props.modelValue, (newVal) => {
 let nowIndex = $ref(0);
 
 let urlList = $computed(() => {
-  if (!modelValue) return [ ];
+  if (!modelValue) {
+    return [ ];
+  }
   const ids = modelValue.split(",").filter((x) => x);
   return ids.map((id) => {
     const url = getDownloadUrl({
@@ -226,11 +229,14 @@ let fileRef = $ref<HTMLInputElement>();
 
 let loading = $ref(false);
 
-async function inputChg() {
+async function onInput() {
   if (!fileRef) {
     return;
   }
-  let idArr = modelValue.split(",").filter((x) => x);
+  let idArr: string[] = [ ];
+  if (modelValue) {
+    idArr = modelValue.split(",").filter((x) => x);
+  }
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
       fileRef.value = "";
@@ -247,7 +253,7 @@ async function inputChg() {
     ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
     return;
   }
-  let id = "";
+  let id = undefined;
   loading = true;
   try {
     id = await uploadFile(file);
@@ -271,8 +277,13 @@ async function inputChg() {
 
 // 点击上传图片
 async function uploadClk() {
-  if (!fileRef) return;
-  const idArr = modelValue.split(",").filter((x) => x);
+  if (!fileRef) {
+    return;
+  }
+  let idArr: string[] = [ ];
+  if (modelValue) {
+    idArr = modelValue.split(",").filter((x) => x);
+  }
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
       fileRef.value = "";
@@ -284,13 +295,16 @@ async function uploadClk() {
 }
 
 // 删除图片
-async function deleteClk() {
+async function onDelete() {
   try {
     await ElMessageBox.confirm(await nsAsync("确定删除当前图片吗？"));
   } catch (err) {
     return;
   }
-  const idArr = modelValue.split(",").filter((x, i) => x).filter((_, i) => i !== nowIndex);
+  let idArr: string[] = [ ];
+  if (modelValue) {
+    idArr = modelValue.split(",").filter((x) => x).filter((_, i) => i !== nowIndex);
+  }
   modelValue = idArr.join(",");
   if (nowIndex >= idArr.length) {
     nowIndex = idArr.length - 1;
@@ -311,13 +325,13 @@ function imgMouseleave() {
   showUpload = false;
 }
 
-function previousClk() {
+function onPrevious() {
   if (nowIndex > 0) {
     nowIndex--;
   }
 }
 
-function nextClk() {
+function onNext() {
   if (nowIndex < urlList.length - 1) {
     nowIndex++;
   }
