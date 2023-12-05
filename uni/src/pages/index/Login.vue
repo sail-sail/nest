@@ -104,8 +104,6 @@
 </template>
 
 <script setup lang="ts">
-import useUsrStore from "@/store/usr";
-
 import cfg from "@/utils/config";
 
 import {
@@ -113,16 +111,26 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
 } from "./Api";
 
-import { lang } from "@/locales/index";
+import type {
+  LoginInput,
+} from "@/typings/types";
+
+import type {
+  TenantId,
+} from "@/typings/ids";
+
+import {
+  lang,
+} from "@/locales/index";
 
 const usrStore = useUsrStore();
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
-let model = $ref({
+let model = $ref<LoginInput>({
   username: "admin",
   password: "a",
-  tenant_id: "",
+  tenant_id: "" as unknown as TenantId,
   lang,
 });
 
