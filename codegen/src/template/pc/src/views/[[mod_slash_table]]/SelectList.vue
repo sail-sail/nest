@@ -32,6 +32,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     if (!list_tree) {
     #>
     <List
+      v-bind="$attrs"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
@@ -41,6 +42,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     } else {
     #>
     <TreeList
+      v-bind="$attrs"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
