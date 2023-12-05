@@ -941,8 +941,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "原始ID",
       prop: "code",
-      width: 160,
-      align: "left",
+      width: 140,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
