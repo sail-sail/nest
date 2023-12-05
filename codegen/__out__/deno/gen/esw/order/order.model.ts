@@ -25,12 +25,16 @@ declare const orderId: unique symbol;
 export type OrderId = Distinct<string, typeof orderId>;
 
 export interface OrderSearch extends OrderSearchType {
+  /** 订单号-序列号 */
+  seq_lbl?: number[];
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];
 }
 
 export interface OrderModel extends OrderModelType {
+  /** 订单号-序列号 */
+  seq_lbl: number;
   create_usr_id: UsrId;
   create_time?: string | null;
   update_usr_id: UsrId;
@@ -40,6 +44,8 @@ export interface OrderModel extends OrderModelType {
 }
 
 export interface OrderInput extends OrderInputType {
+  /** 订单号-序列号 */
+  seq_lbl?: number;
   create_usr_id?: UsrId | null;
   create_time?: string | null;
   update_usr_id?: UsrId | null;
