@@ -109,6 +109,15 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.code !== undefined) {
+    whereQuery += ` and t.code = ${ args.push(search.code) }`;
+  }
+  if (search?.code === null) {
+    whereQuery += ` and t.code is null`;
+  }
+  if (isNotEmpty(search?.code_like)) {
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -434,6 +443,7 @@ export async function getFieldComments(): Promise<WxAppFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxAppFieldComment = {
     id: await n("ID"),
+    code: await n("原始ID"),
     lbl: await n("名称"),
     appid: await n("appid"),
     appsecret: await n("appsecret"),
@@ -475,6 +485,16 @@ export async function findByUnique(
   }
   const models: WxAppModel[] = [ ];
   {
+    if (search0.code == null) {
+      return [ ];
+    }
+    const code = search0.code;
+    const modelTmps = await findAll({
+      code,
+    });
+    models.push(...modelTmps);
+  }
+  {
     if (search0.lbl == null) {
       return [ ];
     }
@@ -509,6 +529,11 @@ export function equalsByUnique(
 ): boolean {
   if (!oldModel || !input) {
     return false;
+  }
+  if (
+    oldModel.code === input.code
+  ) {
+    return true;
   }
   if (
     oldModel.lbl === input.lbl
@@ -689,6 +714,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 原始ID
+  await validators.chars_max_length(
+    input.code,
+    15,
+    fieldComments.code,
+  );
+  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -826,6 +858,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.code !== undefined) {
+    sql += `,code`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -872,6 +907,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.code !== undefined) {
+    sql += `,${ args.push(input.code) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -1032,6 +1070,12 @@ export async function updateById(
     update wx_wx_app set
   `;
   let updateFldNum = 0;
+  if (input.code !== undefined) {
+    if (input.code != oldModel.code) {
+      sql += `code = ${ args.push(input.code) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;

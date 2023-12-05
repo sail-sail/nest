@@ -70,6 +70,19 @@
         @keyup.enter="onSave"
       >
         
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
+          <el-form-item
+            :label="n('原始ID')"
+            prop="code"
+          >
+            <CustomInput
+              v-model="dialogModel.code"
+              :placeholder="`${ ns('请输入') } ${ n('原始ID') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
@@ -277,6 +290,18 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 原始ID
+    code: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("原始ID") }`,
+      },
+      {
+        type: "string",
+        max: 15,
+        message: `${ n("原始ID") } ${ await nsAsync("长度不能超过 {0}", 15) }`,
+      },
+    ],
     // 名称
     lbl: [
       {
@@ -737,6 +762,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "原始ID",
     "名称",
     "appid",
     "appsecret",

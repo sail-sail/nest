@@ -9,6 +9,8 @@ scalar WxAppId
 type WxAppModel {
   "ID"
   id: WxAppId!
+  "原始ID"
+  code: String!
   "名称"
   lbl: String!
   "appid"
@@ -49,6 +51,8 @@ type WxAppModel {
 type WxAppFieldComment {
   "ID"
   id: String!
+  "原始ID"
+  code: String!
   "名称"
   lbl: String!
   "appid"
@@ -87,6 +91,8 @@ type WxAppFieldComment {
 input WxAppInput {
   ""
   id: WxAppId
+  "原始ID"
+  code: String
   "名称"
   lbl: String
   "appid"
@@ -129,6 +135,9 @@ input WxAppSearch {
   ids: [WxAppId!]
   "ID"
   id: WxAppId
+  "原始ID"
+  code: String
+  code_like: String
   "名称"
   lbl: String
   lbl_like: String
