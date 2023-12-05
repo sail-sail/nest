@@ -127,7 +127,7 @@ const usrStore = useUsrStore();
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
-let model = $ref<LoginInput>({
+let model: LoginInput = $ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
