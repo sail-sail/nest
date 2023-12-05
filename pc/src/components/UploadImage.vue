@@ -2,7 +2,6 @@
 <div
   un-w="full"
   un-h="full"
-  un-m="l-1"
   un-pos-relative
   :class="{ 'border_wrap': urlList.length === 0 }"
   un-rounded
