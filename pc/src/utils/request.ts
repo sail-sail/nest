@@ -76,6 +76,12 @@ export async function request<T>(
     }
     usrStore.refreshToken(authorization);
   }
+  if (config.reqType === "graphql") {
+    if (err != null) {
+      throw err;
+    }
+    return res as T;
+  }
   
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
@@ -91,9 +97,6 @@ export async function request<T>(
     throw err;
   }
   const data = res!.data;
-  if (config.reqType === "graphql") {
-    return res as T;
-  }
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     indexStore.logout();
     return data;
