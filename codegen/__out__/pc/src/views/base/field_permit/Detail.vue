@@ -134,7 +134,7 @@
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
