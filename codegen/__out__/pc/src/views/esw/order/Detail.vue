@@ -124,18 +124,11 @@
             :label="n('会员卡')"
             prop="card_id"
           >
-            <CustomSelect
+            <SelectInputCard
               v-model="dialogModel.card_id"
-              :method="getCardList"
-              :options-map="((item: CardModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
               :placeholder="`${ ns('请选择') } ${ n('会员卡') }`"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></SelectInputCard>
           </el-form-item>
         </template>
         
@@ -274,13 +267,13 @@ import type {
 import type {
   OrderInput,
   UsrModel,
-  CardModel,
 } from "#/types";
 
 import {
   getUsrList,
-  getCardList,
 } from "./Api";
+
+import SelectInputCard from "@/views/esw/card/SelectInput.vue";
 
 import {
   OrderStatus,
@@ -397,7 +390,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: OrderInput = {
-    status: OrderStatus.To_be_paid,
+    status: OrderStatus.ToBePaid,
     price: "0.00",
     type: OrderType.Pay,
     amt: "0.00",

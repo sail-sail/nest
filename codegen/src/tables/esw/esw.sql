@@ -158,6 +158,7 @@ CREATE TABLE if not exists `esw_pt` (
 drop table if exists `esw_order`;
 CREATE TABLE if not exists `esw_order` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `seq_lbl` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '订单号-序列号',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '订单号',
   `status` varchar(22) NOT NULL DEFAULT 'to_be_paid' COMMENT '订单状态,dictbiz:order_status',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',

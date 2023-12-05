@@ -1,0 +1,267 @@
+<template>
+<div
+  v-if="!props.readonly"
+  class="select_input_wrapper"
+  :class="{
+    dialog_visible: dialog_visible,
+  }"
+>
+  <el-input
+    v-bind="$attrs"
+    ref="inputRef"
+    @click="onInput"
+    v-model="inputValue"
+    @clear="onClear"
+    readonly
+    clearable
+    :placeholder="props.placeholder"
+    @mouseenter="mouseEnter"
+    @mouseleave="mouseLeave"
+    @keydown.enter="onEnter"
+  >
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot
+        :name="key"
+      ></slot>
+    </template>
+    <template
+      #suffix
+      v-if="!$slots.suffix"
+    >
+      <template
+        v-if="!props.disabled"
+      >
+        <template
+          v-if="modelValue && modelValue.length > 0"
+        >
+          <el-icon
+            @click="onClear"
+            un-cursor-pointer
+            un-text="hover:red-500"
+            un-m="r-0.5"
+            size="14"
+          >
+            <ElIconCircleClose
+              v-if="isHover"
+            />
+            <ElIconArrowDown
+              v-else
+            />
+          </el-icon>
+        </template>
+        <template
+          v-else
+        >
+          <el-icon
+            @click="onInput"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
+          >
+            <ElIconArrowDown />
+          </el-icon>
+        </template>
+      </template>
+    </template>
+  </el-input>
+  <SelectList
+    ref="selectListRef"
+    @closed="dialog_visible = false;"
+    @change="selectListChg"
+  ></SelectList>
+</div>
+<template
+  v-else
+>
+  <div
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="x-2.75 y-1"
+    un-box-border
+    un-rounded
+    un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    {{ inputValue ?? "" }}
+  </div>
+</template>
+</template>
+
+<script lang="ts" setup>
+import SelectList from "./SelectList.vue";
+
+import {
+  findAll,
+} from "./Api";
+
+import type {
+  CardId,
+} from "@/typings/ids";
+
+import type {
+  CardModel,
+} from "#/types";
+
+let emit = defineEmits<{
+  (e: "update:modelValue", value?: CardId | CardId[] | null): void,
+  (e: "change", value?: CardModel | (CardModel | undefined)[] | null): void,
+  (e: "clear"): void,
+}>();
+
+const {
+  n,
+  ns,
+  nAsync,
+  nsAsync,
+} = useI18n("/esw/card");
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: CardId | CardId[] | null;
+    multiple?: boolean;
+    placeholder?: string;
+    disabled?: boolean;
+    readonly?: boolean;
+  }>(),
+  {
+    modelValue: undefined,
+    multiple: false,
+    placeholder: undefined,
+    disabled: false,
+    readonly: false,
+  },
+);
+
+let inputValue = $ref("");
+
+let modelValue = $ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  () => {
+    modelValue = props.modelValue;
+  },
+  {
+    immediate: true,
+  }
+);
+
+watch(
+  () => modelValue,
+  async () => {
+    await refreshInputValue();
+  },
+  {
+    immediate: true,
+  },
+);
+
+let isHover = $ref(false);
+
+function mouseEnter() {
+  isHover = true;
+}
+
+function mouseLeave() {
+  isHover = false;
+}
+
+async function onEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    return;
+  }
+  await onInput();
+}
+
+function getModelValueArr() {
+  let modelValueArr: CardId[] = [ ];
+  if (modelValue) {
+    if (Array.isArray(modelValue)) {
+      modelValueArr = modelValue;
+    } else {
+      modelValueArr = modelValue.split(",") as unknown as CardId[];
+    }
+  }
+  return modelValueArr;
+}
+
+async function getModelsByIds(ids: CardId[]) {
+  const res = await findAll(
+    {
+      ids,
+    },
+  );
+  return res;
+}
+
+/** 根据modelValue刷新输入框的值 */
+async function refreshInputValue() {
+  const modelValueArr = getModelValueArr();
+  if (modelValueArr.length === 0) {
+    inputValue = "";
+    return;
+  }
+  const models = await getModelsByIds(modelValueArr);
+  inputValue = models.map((item) => item?.lbl || "").join(", ");
+}
+
+function onClear() {
+  modelValue = undefined;
+  inputValue = "";
+  emit("update:modelValue", modelValue);
+  emit("change");
+  emit("clear");
+}
+
+let dialog_visible = $ref(false);
+
+let selectListRef = $ref<InstanceType<typeof SelectList>>();
+
+async function onInput() {
+  if (!selectListRef) {
+    return;
+  }
+  dialog_visible = true;
+  const modelValueArr = getModelValueArr();
+  const {
+    type,
+    selectedIds,
+  } = await selectListRef.showDialog({
+    title: `${ await nsAsync("选择") } ${ await nAsync("会员卡") }`,
+    action: "select",
+    multiple: props.multiple,
+    isReadonly: () => props.readonly,
+    model: {
+      ids: modelValueArr,
+    },
+  });
+  if (type === "cancel") {
+    return;
+  }
+  if (props.multiple) {
+    modelValue = selectedIds;
+  } else {
+    modelValue = selectedIds[0];
+  }
+  emit("update:modelValue", modelValue);
+}
+
+function selectListChg(value?: CardModel | (CardModel | undefined)[] | null) {
+  if (props.multiple) {
+    emit("change", value);
+    return;
+  }
+  if (!Array.isArray(value)) {
+    emit("change", value);
+    return;
+  }
+  emit("change", value[0]);
+}
+</script>

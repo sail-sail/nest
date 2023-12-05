@@ -371,7 +371,13 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "seq_lbl",
+        onlyCodegenDeno: true,
+      },
+      {
         COLUMN_NAME: "lbl",
+        align: "center",
+        width: 140,
         readonly: true,
         readonlyPlaceholder: "(自动生成)",
       },
@@ -389,6 +395,9 @@ export default defineConfig({
         COLUMN_NAME: "card_id",
         width: 180,
         require: true,
+        foreignKey: {
+          selectType: "selectInput",
+        },
       },
       {
         COLUMN_NAME: "price",

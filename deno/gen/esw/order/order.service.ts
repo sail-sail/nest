@@ -18,6 +18,10 @@ import type {
 
 import * as orderDao from "./order.dao.ts";
 
+import {
+  updateSeqLbl,
+} from "/src/esw/order/order.dao.ts";
+
 /**
  * 根据条件查找总数
  * @param {OrderSearch} search? 搜索条件
@@ -126,6 +130,7 @@ export async function create(
   },
 ): Promise<OrderId> {
   const id: OrderId = await orderDao.create(input, options);
+  await updateSeqLbl(id);
   return id;
 }
 

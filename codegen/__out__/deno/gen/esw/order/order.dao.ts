@@ -130,6 +130,14 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.seq_lbl && search?.seq_lbl?.length > 0) {
+    if (search.seq_lbl[0] != null) {
+      whereQuery += ` and t.seq_lbl >= ${ args.push(search.seq_lbl[0]) }`;
+    }
+    if (search.seq_lbl[1] != null) {
+      whereQuery += ` and t.seq_lbl <= ${ args.push(search.seq_lbl[1]) }`;
+    }
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -1009,6 +1017,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.seq_lbl !== undefined) {
+    sql += `,seq_lbl`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -1084,6 +1095,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.seq_lbl !== undefined) {
+    sql += `,${ args.push(input.seq_lbl) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -1277,6 +1291,12 @@ export async function updateById(
     update esw_order set
   `;
   let updateFldNum = 0;
+  if (input.seq_lbl !== undefined) {
+    if (input.seq_lbl != oldModel.seq_lbl) {
+      sql += `seq_lbl = ${ args.push(input.seq_lbl) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
