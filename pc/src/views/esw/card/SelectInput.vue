@@ -69,6 +69,7 @@
     </template>
   </el-input>
   <SelectList
+    v-bind="$attrs"
     ref="selectListRef"
     @closed="dialog_visible = false;"
     @change="selectListChg"

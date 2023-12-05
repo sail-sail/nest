@@ -8,6 +8,7 @@
     un-flex="~ [1_0_0] row basis-[inherit]"
   >
     <List
+      v-bind="$attrs"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
