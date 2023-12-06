@@ -9,7 +9,7 @@ scalar PtId
 type PtModel {
   "ID"
   id: PtId!
-  "图片"
+  "图标"
   img: String!
   "名称"
   lbl: String!
@@ -39,6 +39,10 @@ type PtModel {
   order_by: Int!
   "详情"
   detail: String!
+  "详情顶部图片"
+  detail_top_img: String!
+  "详情底部图片"
+  detail_bottom_img: String!
   "备注"
   rem: String!
   "创建人"
@@ -63,7 +67,7 @@ type PtModel {
 type PtFieldComment {
   "ID"
   id: String!
-  "图片"
+  "图标"
   img: String!
   "名称"
   lbl: String!
@@ -93,6 +97,10 @@ type PtFieldComment {
   order_by: String!
   "详情"
   detail: String!
+  "详情顶部图片"
+  detail_top_img: String!
+  "详情底部图片"
+  detail_bottom_img: String!
   "备注"
   rem: String!
   "创建人"
@@ -115,7 +123,7 @@ type PtFieldComment {
 input PtInput {
   ""
   id: PtId
-  "图片"
+  "图标"
   img: String
   "名称"
   lbl: String
@@ -145,6 +153,10 @@ input PtInput {
   order_by: Int
   "详情"
   detail: String
+  "详情顶部图片"
+  detail_top_img: String
+  "详情底部图片"
+  detail_bottom_img: String
   "备注"
   rem: String
   "创建人"
@@ -171,7 +183,7 @@ input PtSearch {
   ids: [PtId!]
   "ID"
   id: PtId
-  "图片"
+  "图标"
   img: String
   img_like: String
   "名称"
@@ -198,6 +210,12 @@ input PtSearch {
   "详情"
   detail: String
   detail_like: String
+  "详情顶部图片"
+  detail_top_img: String
+  detail_top_img_like: String
+  "详情底部图片"
+  detail_bottom_img: String
+  detail_bottom_img_like: String
   "备注"
   rem: String
   rem_like: String

@@ -448,8 +448,23 @@
           :key="col.prop"
         >
           
+          <!-- 图标 -->
+          <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -767,6 +782,8 @@ const props = defineProps<{
   selectedIds?: PtTypeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: PtTypeId; // ID
+  img?: string; // 图标
+  img_like?: string; // 图标
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   is_home?: string|string[]; // 首页显示
@@ -916,10 +933,18 @@ let tableData = $ref<PtTypeModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "图标",
+      prop: "img",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      fixed: "left",
+    },
+    {
       label: "名称",
       prop: "lbl",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -1290,6 +1315,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ await nAsync("图标") ]: "img",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("首页显示") ]: "is_home_lbl",
     [ await nAsync("推荐") ]: "is_recommend_lbl",
@@ -1318,6 +1344,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "img": "string",
           "lbl": "string",
           "is_home_lbl": "string",
           "is_recommend_lbl": "string",
@@ -1696,6 +1723,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "图标",
     "名称",
     "首页显示",
     "推荐",

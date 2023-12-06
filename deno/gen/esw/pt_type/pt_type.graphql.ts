@@ -9,6 +9,8 @@ scalar PtTypeId
 type PtTypeModel {
   "ID"
   id: PtTypeId!
+  "图标"
+  img: String!
   "名称"
   lbl: String!
   "首页显示"
@@ -53,6 +55,8 @@ type PtTypeModel {
 type PtTypeFieldComment {
   "ID"
   id: String!
+  "图标"
+  img: String!
   "名称"
   lbl: String!
   "首页显示"
@@ -95,6 +99,8 @@ type PtTypeFieldComment {
 input PtTypeInput {
   ""
   id: PtTypeId
+  "图标"
+  img: String
   "名称"
   lbl: String
   "首页显示"
@@ -141,6 +147,9 @@ input PtTypeSearch {
   ids: [PtTypeId!]
   "ID"
   id: PtTypeId
+  "图标"
+  img: String
+  img_like: String
   "名称"
   lbl: String
   lbl_like: String

@@ -264,7 +264,13 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "img",
+        align: "center",
+        fixed: "left",
+      },
+      {
         COLUMN_NAME: "lbl",
+        align: "center",
       },
       {
         COLUMN_NAME: "is_home",
@@ -346,8 +352,14 @@ export default defineConfig({
       {
         COLUMN_NAME: "detail",
         align: "left",
-        width: 280,
+        width: 180,
         isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "detail_top_img",
+      },
+      {
+        COLUMN_NAME: "detail_bottom_img",
       },
       {
         COLUMN_NAME: "rem",

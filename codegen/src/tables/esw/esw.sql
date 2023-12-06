@@ -106,6 +106,7 @@ CREATE TABLE if not exists `esw_card_consume` (
 drop table if exists `esw_pt_type`;
 CREATE TABLE if not exists `esw_pt_type` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `img` varchar(22) NOT NULL DEFAULT '' COMMENT '图标',
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `is_home` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '首页显示,dict:yes_no',
   `is_recommend` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '推荐,dict:yes_no',
@@ -129,7 +130,7 @@ CREATE TABLE if not exists `esw_pt_type` (
 drop table if exists `esw_pt`;
 CREATE TABLE if not exists `esw_pt` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `img` varchar(100) NOT NULL DEFAULT '' COMMENT '图片',
+  `img` varchar(100) NOT NULL DEFAULT '' COMMENT '图标',
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '价格',
   `original_price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '原价',
@@ -137,7 +138,7 @@ CREATE TABLE if not exists `esw_pt` (
   `introduct` varchar(100) NOT NULL DEFAULT '' COMMENT '简介',
   `detail` varchar(200) NOT NULL DEFAULT '' COMMENT '详情',
   `detail_top_img` varchar(200) NOT NULL DEFAULT '' COMMENT '详情顶部图片',
-  `detail_img` varchar(200) NOT NULL DEFAULT '' COMMENT '详情图片',
+  `detail_bottom_img` varchar(200) NOT NULL DEFAULT '' COMMENT '详情底部图片',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',

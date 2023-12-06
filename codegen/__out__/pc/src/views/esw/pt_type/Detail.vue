@@ -69,6 +69,22 @@
         :validate-on-rule-change="false"
       >
         
+        <template v-if="(showBuildIn || builtInModel?.img == null)">
+          <el-form-item
+            :label="n('图标')"
+            prop="img"
+            class="img_form_item"
+          >
+            <UploadImage
+              v-model="dialogModel.img"
+              :readonly="isLocked || isReadonly"
+            ></UploadImage>
+          </el-form-item>
+          
+          <div></div>
+          
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
@@ -732,6 +748,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "图标",
     "名称",
     "首页显示",
     "推荐",
