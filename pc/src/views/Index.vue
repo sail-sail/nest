@@ -26,6 +26,7 @@
       >
         <span>(暂未设置首页)</span>
         <el-button
+          v-if="tabLen > 1"
           plain
           size="small"
           @click="closeCurrentTab"
@@ -91,6 +92,8 @@ const usrStore = useUsrStore();
 const tabStore = useTabsStore();
 
 let inited = $ref(false);
+
+let tabLen = $computed(() => tabStore.tabs.length);
 
 let errMsg = $ref("正在加载...");
 
