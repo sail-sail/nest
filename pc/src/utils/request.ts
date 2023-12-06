@@ -32,7 +32,9 @@ export async function request<T>(
       if (isEmpty(config.url)) {
         throw new Error("config.url is empty");
       }
-      config.url = `${ baseURL }/${ config.url }`;
+      if (baseURL) {
+        config.url = `${ baseURL }/${ config.url }`;
+      }
     }
     if (!config.notLoading) {
       indexStore.addLoading();
@@ -44,9 +46,15 @@ export async function request<T>(
       config.header.set("authorization", authorization);
     }
     
-    config.header.set("content-type", "application/json; charset=utf-8");
-    
-    const body = JSON.stringify(config.data);
+    let body = config.data;
+    if (
+      body != null &&
+      !(body instanceof FormData) &&
+      typeof body === "object"
+    ) {
+      config.header.set("content-type", "application/json; charset=utf-8");
+      body = JSON.stringify(config.data);
+    }
     const resFt = await fetch(config.url!, {
       headers: config.header,
       method: config.method || "post",

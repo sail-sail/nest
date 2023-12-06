@@ -11,6 +11,7 @@
     "jose/": "https://deno.land/x/jose@v5.1.0/",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
+    "S3/S3Error": "https://deno.land/x/s3@0.5.0/src/error.ts",
     "comrak": "https://deno.land/x/comrak@0.1.1/mod.ts",
     "dayjs": "https://esm.sh/dayjs@1.11.10",
     "csv": "https://deno.land/x/csv@v0.9.2/mod.ts",
