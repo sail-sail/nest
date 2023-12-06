@@ -936,6 +936,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <LinkImage
                   v-model="row[column.property]"
+                  un-h="8"
                 ></LinkImage>
               </template>
             </el-table-column>
