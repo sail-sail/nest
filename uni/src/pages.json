@@ -18,6 +18,12 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
+		},
+		{
+			"path": "pages/wx/Bing",
+			"style": {
+				"navigationBarTitleText": "绑定微信"
+			}
 		}
 	],
 	"globalStyle": {
