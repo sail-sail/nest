@@ -6,9 +6,11 @@ import { uniqueID } from "@/utils/StringUtil";
 import { checkLogin } from "./pages/index/Api";
 // #endif
 
-onLaunch((async(options: any) => {
+onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
+  const systemInfo = uni.getSystemInfoSync();
+  indexStore.setSystemInfo(systemInfo);
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({
