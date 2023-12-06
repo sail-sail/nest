@@ -50,6 +50,7 @@ import type {
 export async function login(
   input: MutationLoginArgs["input"],
 ): Promise<{
+  usr_id: UsrId,
   authorization: string,
   org_id?: OrgId,
 }> {
@@ -73,6 +74,7 @@ export async function login(
   if (!model || !model.id) {
     throw await ns("用户名或密码错误");
   }
+  const usr_id = model.id;
   if (org_id === null) {
     org_id = undefined;
   }
@@ -96,6 +98,7 @@ export async function login(
     lang,
   });
   return {
+    usr_id,
     authorization,
     org_id,
   };

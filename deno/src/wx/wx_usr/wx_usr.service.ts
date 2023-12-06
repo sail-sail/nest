@@ -4,6 +4,7 @@ import {
 
 import {
   getAuthModel,
+  getPassword,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -26,6 +27,7 @@ import {
 
 import {
   create as createUsr,
+  updateById as updateByIdUsr,
   updateTenantById as updateTenantByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -48,6 +50,25 @@ import type {
 import type {
   WxUsrId,
 } from "/gen/wx/wx_usr/wx_usr.model.ts";
+
+import type {
+  LoginInput,
+  LoginModel,
+} from "/gen/types.ts";
+
+import {
+  findById as findByIdUsr,
+  validateOption as validateOptionUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
+import {
+  isEmpty,
+} from "/lib/util/string_util.ts";
+
+import {
+  findLoginUsr,
+  getOrgIdsById,
+} from "/src/base/usr/usr.dao.ts";
  
 export async function code2Session(
   model: {
@@ -146,6 +167,137 @@ export async function code2Session(
     lang: model.lang,
   });
   return tokenInfo;
+}
+
+/**
+ * 微信用户是否已绑定
+ */
+export async function checkBind() {
+  const authModel = await getAuthModel();
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(authModel.wx_usr_id),
+  );
+  if (!wx_usrModel.usr_id) {
+    return false;
+  }
+  const usrModel = await validateOptionUsr(
+    await findByIdUsr(wx_usrModel.usr_id),
+  );
+  return !usrModel.is_hidden;
+}
+
+/**
+ * 绑定微信用户
+ * 
+ * 找到这个用户, 如果这个用户是 is_hidden 为0, 代表它未绑定, 否则已被绑定
+ * 
+ * 未绑定的, 就找到当前的登录用户, 修改它的用户名, 密码, 跟 租户ID, 还有 is_hidden 变为 1
+ * 
+ * 之后再执行登录流程
+ */
+export async function bindWxUsr(
+  input: LoginInput,
+): Promise<LoginModel> {
+  const authModel = await getAuthModel();
+  
+  const authUsrModel = await validateOptionUsr(
+    await findByIdUsr(authModel.id),
+  );
+  if (!authUsrModel.is_hidden) {
+    throw await ns("此微信已被其它用户绑定");
+  }
+  
+  const wx_usr_id = authModel.wx_usr_id;
+  if (!wx_usr_id) {
+    throw "wx_usr_id can not be null";
+  }
+  
+  const username = input.username;
+  const password = input.password;
+  const tenant_id = input.tenant_id;
+  let org_id = input.org_id;
+  const lang = input.lang;
+  if (isEmpty(username) || isEmpty(password)) {
+    throw await ns("用户名或密码不能为空");
+  }
+  if (isEmpty(tenant_id)) {
+    throw await ns("请选择租户");
+  }
+  const password2 = await getPassword(password);
+  let model = await findLoginUsr(
+    username,
+    password2,
+    tenant_id,
+  );
+  if (!model || !model.id) {
+    model = {
+      id: authModel.id,
+      default_org_id: authUsrModel.default_org_id,
+      is_hidden: authUsrModel.is_hidden,
+    },
+    await updateTenantByIdUsr(model.id, tenant_id);
+    await updateByIdUsr(
+      model.id,
+      {
+        username,
+        password: password2,
+        is_hidden: 0,
+      },
+    );
+  } else {
+    if (model.is_hidden) {
+      await updateByIdUsr(
+        model.id,
+        {
+          is_hidden: 0,
+        },
+      );
+    }
+  }
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(wx_usr_id),
+  );
+  if (wx_usrModel.usr_id != model.id) {
+    await updateByIdWxUsr(
+      wx_usr_id,
+      {
+        usr_id: model.id,
+      },
+    );
+  }
+  const usr_id = model.id;
+  
+  if (org_id === null) {
+    org_id = undefined;
+  }
+  const org_ids = await getOrgIdsById(
+    model.id,
+  );
+  if (!org_id) {
+    org_id = model.default_org_id || org_ids[0];
+  }
+  if (org_id) {
+    if (!org_ids.includes(org_id)) {
+      org_id = undefined;
+    }
+  }
+  
+  const {
+    authorization,
+  } = await createTokenAuth({
+    id: usr_id,
+    org_id,
+    tenant_id,
+    lang,
+    wx_usr_id,
+  });
+  
+  const loginModel: LoginModel = {
+    authorization,
+    org_id,
+  };
+  
+  return loginModel;
 }
 
 async function fetchPhoneNumber(

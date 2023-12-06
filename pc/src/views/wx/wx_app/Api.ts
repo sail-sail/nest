@@ -39,6 +39,7 @@ export async function findAll(
       query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxApp(search: $search, page: $page, sort: $sort) {
           id
+          code
           lbl
           appid
           appsecret
@@ -92,6 +93,7 @@ export async function findOne(
       query($search: WxAppSearch, $sort: [SortInput!]) {
         findOneWxApp(search: $search, sort: $sort) {
           id
+          code
           lbl
           appid
           appsecret
@@ -225,6 +227,7 @@ export async function findById(
       query($id: WxAppId!) {
         findByIdWxApp(id: $id) {
           id
+          code
           lbl
           appid
           appsecret
@@ -407,6 +410,7 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxApp {
+            code
             lbl
             appid
             appsecret
@@ -456,6 +460,7 @@ export function useExportExcel(routePath: string) {
         query($search: WxAppSearch, $sort: [SortInput!]) {
           findAllWxApp(search: $search, sort: $sort) {
             id
+            code
             lbl
             appid
             appsecret
@@ -475,6 +480,7 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsWxApp {
+            code
             lbl
             appid
             appsecret

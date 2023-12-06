@@ -107,9 +107,12 @@
 import cfg from "@/utils/config";
 
 import {
-  login,
-  getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
+  bindWxUsr,
 } from "./Api";
+
+import {
+  getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
+} from "../index/Api";
 
 import type {
   LoginInput,
@@ -153,7 +156,7 @@ async function onLogin() {
     key: "oldLoginModel",
     data: model,
   });
-  const loginModel = await login(model);
+  const loginModel = await bindWxUsr(model);
   if (!loginModel.authorization) {
     return;
   }

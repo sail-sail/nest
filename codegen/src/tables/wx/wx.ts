@@ -6,11 +6,18 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
+        [ "code" ],
         [ "lbl" ],
         [ "appid" ],
       ],
     },
     columns: [
+      {
+        COLUMN_NAME: "code",
+        align: "center",
+        width: 140,
+        fixed: "left",
+      },
       {
         COLUMN_NAME: "lbl",
       },
