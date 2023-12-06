@@ -135,12 +135,7 @@ for (let i = 0; i < columns.length; i++) {
         
         :model="dialogModel"
         :rules="form_rules"
-        :validate-on-rule-change="false"<#
-        if (opts.noAdd !== true || opts.noEdit !== true) {
-        #>
-        @keyup.enter="onSave"<#
-        }
-        #>
+        :validate-on-rule-change="false"
       ><#
         const selectInputForeign_Table_Ups = [ ];
         for (let i = 0; i < columns.length; i++) {
