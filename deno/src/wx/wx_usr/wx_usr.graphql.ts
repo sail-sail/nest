@@ -6,7 +6,7 @@ defineGraphql(resolver, /* GraphQL */`
 
 type Query {
   "微信用户是否已绑定"
-  checkBind: Boolean!
+  checkBindWxUsr: Boolean!
 }
 
 type Mutation {
