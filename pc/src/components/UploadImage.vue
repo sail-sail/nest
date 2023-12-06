@@ -369,7 +369,7 @@ function onView() {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 .upload_padding {
   // margin-bottom: 5px;
