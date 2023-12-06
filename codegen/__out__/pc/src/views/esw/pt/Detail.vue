@@ -71,7 +71,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.img == null)">
           <el-form-item
-            :label="n('图片')"
+            :label="n('图标')"
             prop="img"
             class="img_form_item"
           >
@@ -207,6 +207,40 @@
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.detail_top_img == null)">
+          <el-form-item
+            :label="n('详情顶部图片')"
+            prop="detail_top_img"
+            class="img_form_item"
+          >
+            <UploadImage
+              v-model="dialogModel.detail_top_img"
+              :max-size="8"
+              :readonly="isLocked || isReadonly"
+            ></UploadImage>
+          </el-form-item>
+          
+          <div></div>
+          
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.detail_bottom_img == null)">
+          <el-form-item
+            :label="n('详情底部图片')"
+            prop="detail_bottom_img"
+            class="img_form_item"
+          >
+            <UploadImage
+              v-model="dialogModel.detail_bottom_img"
+              :max-size="8"
+              :readonly="isLocked || isReadonly"
+            ></UploadImage>
+          </el-form-item>
+          
+          <div></div>
+          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
@@ -816,7 +850,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "图片",
+    "图标",
     "名称",
     "产品类别",
     "价格",
@@ -827,6 +861,8 @@ async function onInitI18ns() {
     "启用",
     "排序",
     "详情",
+    "详情顶部图片",
+    "详情底部图片",
     "备注",
     "创建人",
     "创建时间",

@@ -119,6 +119,15 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.img !== undefined) {
+    whereQuery += ` and t.img = ${ args.push(search.img) }`;
+  }
+  if (search?.img === null) {
+    whereQuery += ` and t.img is null`;
+  }
+  if (isNotEmpty(search?.img_like)) {
+    whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -489,6 +498,7 @@ export async function getFieldComments(): Promise<PtTypeFieldComment> {
   const n = initN(route_path);
   const fieldComments: PtTypeFieldComment = {
     id: await n("ID"),
+    img: await n("图标"),
     lbl: await n("名称"),
     is_home: await n("首页显示"),
     is_home_lbl: await n("首页显示"),
@@ -729,6 +739,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 图标
+  await validators.chars_max_length(
+    input.img,
+    22,
+    fieldComments.img,
+  );
+  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -853,6 +870,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.img !== undefined) {
+    sql += `,img`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -907,6 +927,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.img !== undefined) {
+    sql += `,${ args.push(input.img) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -1107,6 +1130,12 @@ export async function updateById(
     update esw_pt_type set
   `;
   let updateFldNum = 0;
+  if (input.img !== undefined) {
+    if (input.img != oldModel.img) {
+      sql += `img = ${ args.push(input.img) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;

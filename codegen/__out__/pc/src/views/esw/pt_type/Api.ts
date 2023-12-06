@@ -39,6 +39,7 @@ export async function findAll(
       query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPtType(search: $search, page: $page, sort: $sort) {
           id
+          img
           lbl
           is_home
           is_home_lbl
@@ -94,6 +95,7 @@ export async function findOne(
       query($search: PtTypeSearch, $sort: [SortInput!]) {
         findOnePtType(search: $search, sort: $sort) {
           id
+          img
           lbl
           is_home
           is_home_lbl
@@ -229,6 +231,7 @@ export async function findById(
       query($id: PtTypeId!) {
         findByIdPtType(id: $id) {
           id
+          img
           lbl
           is_home
           is_home_lbl
@@ -413,6 +416,7 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsPtType {
+            img
             lbl
             is_home_lbl
             is_recommend_lbl
@@ -469,6 +473,7 @@ export function useExportExcel(routePath: string) {
         query($search: PtTypeSearch, $sort: [SortInput!]) {
           findAllPtType(search: $search, sort: $sort) {
             id
+            img
             lbl
             is_home
             is_home_lbl
@@ -490,6 +495,7 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsPtType {
+            img
             lbl
             is_home_lbl
             is_recommend_lbl

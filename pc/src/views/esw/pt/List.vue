@@ -448,7 +448,7 @@
           :key="col.prop"
         >
           
-          <!-- 图片 -->
+          <!-- 图标 -->
           <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -457,6 +457,7 @@
               <template #default="{ row, column }">
                 <LinkImage
                   v-model="row[column.property]"
+                  un-h="8"
                 ></LinkImage>
               </template>
             </el-table-column>
@@ -583,6 +584,36 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+            </el-table-column>
+          </template>
+          
+          <!-- 详情顶部图片 -->
+          <template v-else-if="'detail_top_img' === col.prop && (showBuildIn || builtInSearch?.detail_top_img == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 详情底部图片 -->
+          <template v-else-if="'detail_bottom_img' === col.prop && (showBuildIn || builtInSearch?.detail_bottom_img == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
             </el-table-column>
           </template>
           
@@ -815,8 +846,8 @@ const props = defineProps<{
   selectedIds?: PtId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: PtId; // ID
-  img?: string; // 图片
-  img_like?: string; // 图片
+  img?: string; // 图标
+  img_like?: string; // 图标
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   pt_type_ids?: string|string[]; // 产品类别
@@ -831,6 +862,10 @@ const props = defineProps<{
   order_by?: string; // 排序
   detail?: string; // 详情
   detail_like?: string; // 详情
+  detail_top_img?: string; // 详情顶部图片
+  detail_top_img_like?: string; // 详情顶部图片
+  detail_bottom_img?: string; // 详情底部图片
+  detail_bottom_img_like?: string; // 详情底部图片
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -975,7 +1010,7 @@ let tableData = $ref<PtModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "图片",
+      label: "图标",
       prop: "img",
       width: 100,
       align: "center",
@@ -1063,10 +1098,24 @@ function getTableColumns(): ColumnType[] {
     {
       label: "详情",
       prop: "detail",
-      width: 280,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+    },
+    {
+      label: "详情顶部图片",
+      prop: "detail_top_img",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      label: "详情底部图片",
+      prop: "detail_bottom_img",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
     },
     {
       label: "备注",
@@ -1389,7 +1438,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("图片") ]: "img",
+    [ await nAsync("图标") ]: "img",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("产品类别") ]: "pt_type_ids_lbl",
     [ await nAsync("价格") ]: "price",
@@ -1400,6 +1449,8 @@ async function onImportExcel() {
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("详情") ]: "detail",
+    [ await nAsync("详情顶部图片") ]: "detail_top_img",
+    [ await nAsync("详情底部图片") ]: "detail_bottom_img",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1433,6 +1484,8 @@ async function onImportExcel() {
           "is_enabled_lbl": "string",
           "order_by": "number",
           "detail": "string",
+          "detail_top_img": "string",
+          "detail_bottom_img": "string",
           "rem": "string",
         },
       },
@@ -1781,7 +1834,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "图片",
+    "图标",
     "名称",
     "产品类别",
     "价格",
@@ -1792,6 +1845,8 @@ async function initI18nsEfc() {
     "启用",
     "排序",
     "详情",
+    "详情顶部图片",
+    "详情底部图片",
     "备注",
     "创建人",
     "创建时间",

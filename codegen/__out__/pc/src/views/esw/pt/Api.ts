@@ -55,6 +55,8 @@ export async function findAll(
           is_enabled_lbl
           order_by
           detail
+          detail_top_img
+          detail_bottom_img
           rem
           create_usr_id
           create_usr_id_lbl
@@ -115,6 +117,8 @@ export async function findOne(
           is_enabled_lbl
           order_by
           detail
+          detail_top_img
+          detail_bottom_img
           rem
           create_usr_id
           create_usr_id_lbl
@@ -255,6 +259,8 @@ export async function findById(
           is_enabled_lbl
           order_by
           detail
+          detail_top_img
+          detail_bottom_img
           rem
           create_usr_id
           create_usr_id_lbl
@@ -484,6 +490,8 @@ export function useDownloadImportTemplate(routePath: string) {
             introduct
             order_by
             detail
+            detail_top_img
+            detail_bottom_img
             rem
           }
           findAllPtType {
@@ -554,6 +562,8 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             detail
+            detail_top_img
+            detail_bottom_img
             rem
             create_usr_id
             create_usr_id_lbl
@@ -576,6 +586,8 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             detail
+            detail_top_img
+            detail_bottom_img
             rem
             create_usr_id_lbl
             create_time_lbl

@@ -219,6 +219,24 @@ async function getWhereQuery(
   if (isNotEmpty(search?.detail_like)) {
     whereQuery += ` and t.detail like ${ args.push("%" + sqlLike(search?.detail_like) + "%") }`;
   }
+  if (search?.detail_top_img !== undefined) {
+    whereQuery += ` and t.detail_top_img = ${ args.push(search.detail_top_img) }`;
+  }
+  if (search?.detail_top_img === null) {
+    whereQuery += ` and t.detail_top_img is null`;
+  }
+  if (isNotEmpty(search?.detail_top_img_like)) {
+    whereQuery += ` and t.detail_top_img like ${ args.push("%" + sqlLike(search?.detail_top_img_like) + "%") }`;
+  }
+  if (search?.detail_bottom_img !== undefined) {
+    whereQuery += ` and t.detail_bottom_img = ${ args.push(search.detail_bottom_img) }`;
+  }
+  if (search?.detail_bottom_img === null) {
+    whereQuery += ` and t.detail_bottom_img is null`;
+  }
+  if (isNotEmpty(search?.detail_bottom_img_like)) {
+    whereQuery += ` and t.detail_bottom_img like ${ args.push("%" + sqlLike(search?.detail_bottom_img_like) + "%") }`;
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -604,7 +622,7 @@ export async function getFieldComments(): Promise<PtFieldComment> {
   const n = initN(route_path);
   const fieldComments: PtFieldComment = {
     id: await n("ID"),
-    img: await n("图片"),
+    img: await n("图标"),
     lbl: await n("名称"),
     pt_type_ids: await n("产品类别"),
     pt_type_ids_lbl: await n("产品类别"),
@@ -619,6 +637,8 @@ export async function getFieldComments(): Promise<PtFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     detail: await n("详情"),
+    detail_top_img: await n("详情顶部图片"),
+    detail_bottom_img: await n("详情底部图片"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -849,7 +869,7 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 图片
+  // 图标
   await validators.chars_max_length(
     input.img,
     100,
@@ -875,6 +895,20 @@ export async function validate(
     input.detail,
     200,
     fieldComments.detail,
+  );
+  
+  // 详情顶部图片
+  await validators.chars_max_length(
+    input.detail_top_img,
+    200,
+    fieldComments.detail_top_img,
+  );
+  
+  // 详情底部图片
+  await validators.chars_max_length(
+    input.detail_bottom_img,
+    200,
+    fieldComments.detail_bottom_img,
   );
   
   // 备注
@@ -1024,6 +1058,12 @@ export async function create(
   if (input.detail !== undefined) {
     sql += `,detail`;
   }
+  if (input.detail_top_img !== undefined) {
+    sql += `,detail_top_img`;
+  }
+  if (input.detail_bottom_img !== undefined) {
+    sql += `,detail_bottom_img`;
+  }
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
@@ -1090,6 +1130,12 @@ export async function create(
   }
   if (input.detail !== undefined) {
     sql += `,${ args.push(input.detail) }`;
+  }
+  if (input.detail_top_img !== undefined) {
+    sql += `,${ args.push(input.detail_top_img) }`;
+  }
+  if (input.detail_bottom_img !== undefined) {
+    sql += `,${ args.push(input.detail_bottom_img) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -1343,6 +1389,18 @@ export async function updateById(
   if (input.detail !== undefined) {
     if (input.detail != oldModel.detail) {
       sql += `detail = ${ args.push(input.detail) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.detail_top_img !== undefined) {
+    if (input.detail_top_img != oldModel.detail_top_img) {
+      sql += `detail_top_img = ${ args.push(input.detail_top_img) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.detail_bottom_img !== undefined) {
+    if (input.detail_bottom_img != oldModel.detail_bottom_img) {
+      sql += `detail_bottom_img = ${ args.push(input.detail_bottom_img) },`;
       updateFldNum++;
     }
   }
