@@ -67,7 +67,6 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="onSave"
       >
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
