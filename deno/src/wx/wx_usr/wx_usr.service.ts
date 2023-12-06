@@ -170,6 +170,23 @@ export async function code2Session(
 }
 
 /**
+ * 微信用户是否已绑定
+ */
+export async function checkBind() {
+  const authModel = await getAuthModel();
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(authModel.wx_usr_id),
+  );
+  if (!wx_usrModel.usr_id) {
+    return false;
+  }
+  const usrModel = await validateOptionUsr(
+    await findByIdUsr(wx_usrModel.usr_id),
+  );
+  return !usrModel.is_hidden;
+}
+
+/**
  * 绑定微信用户
  * 
  * 找到这个用户, 如果这个用户是 is_hidden 为0, 代表它未绑定, 否则已被绑定
