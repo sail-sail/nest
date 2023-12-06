@@ -3,14 +3,28 @@ import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
 // #ifdef MP
-import { checkLogin } from "./pages/index/Api";
+import {
+  checkLogin,
+} from "./pages/index/Api";
+// #endif
+
+// #ifdef H5
+import {
+  initWxoCfg,
+} from "./utils/WxoUtil";
 // #endif
 
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
+  
   const systemInfo = uni.getSystemInfoSync();
   indexStore.setSystemInfo(systemInfo);
+  
+  // #ifdef H5
+  await initWxoCfg();
+  // #endif
+  
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({

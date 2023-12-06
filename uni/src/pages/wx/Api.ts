@@ -4,17 +4,17 @@ import type {
   MutationBindWxUsrArgs,
 } from "#/types";
 
-export async function checkBind() {
+export async function checkBindWxUsr() {
   const res: {
-    checkBind: Query["checkBind"],
+    checkBindWxUsr: Query["checkBindWxUsr"],
   } = await query({
     query: /* GraphQL */ `
       query {
-        checkBind
+        checkBindWxUsr
       }
     `,
   });
-  const data = res.checkBind;
+  const data = res.checkBindWxUsr;
   return data;
 }
 
