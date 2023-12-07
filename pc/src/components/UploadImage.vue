@@ -60,7 +60,7 @@
   </el-image>
   <transition name="fade">
     <div
-      v-if="!readonly && showUpload"
+      v-if="showUpload"
       class="upload_div"
       un-rounded
     >
@@ -68,6 +68,7 @@
       <div class="upload_toolbar">
         
         <ElIcon
+          v-if="!readonly"
           size="22"
           un-cursor-pointer
           un-rounded
@@ -93,7 +94,7 @@
         </ElIcon>
         
         <ElIcon
-          v-if="urlList.length > 0"
+          v-if="!readonly && urlList.length > 0"
           size="22"
           un-cursor-pointer
           un-rounded
@@ -115,12 +116,14 @@
         un-justify-center
         un-items-center
         un-bg="[rgba(0,0,0,.3)]"
+        un-pos-absolute
+        un-bottom="0"
       >
         
         <ElIcon
           v-if="!(nowIndex <= 0)"
           size="14"
-          un-bg="white hover:[var(--el-color-primary)]"
+          un-bg="hover:[var(--el-color-primary)]"
           un-cursor-pointer
           un-rounded-full
           @click="onPrevious"
@@ -138,7 +141,7 @@
         <ElIcon
           v-if="!(nowIndex >= urlList.length - 1)"
           size="14"
-          un-bg="white hover:[yellowgreen]"
+          un-bg="hover:[var(--el-color-primary)]"
           un-cursor-pointer
           un-rounded-full
           @click="onNext"
