@@ -26,3 +26,4 @@ publish_cnf.js
 /pc/typings/auto-imports.d.ts
 /pc/vite.config.mts.timestamp-*.mjs
 database_crypto_key.txt
+uni/src/static/home1.png

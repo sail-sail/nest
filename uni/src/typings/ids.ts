@@ -107,6 +107,10 @@ declare const recharge_ruleId: unique symbol;
 /** 充值赠送规则 */
 export type RechargeRuleId = Distinct<string, typeof recharge_ruleId>;
 
+declare const wxapp_configId: unique symbol;
+/** 小程序配置 */
+export type WxappConfigId = Distinct<string, typeof wxapp_configId>;
+
 declare const pay_transactions_jsapiId: unique symbol;
 /** 微信JSAPI下单 */
 export type PayTransactionsJsapiId = Distinct<string, typeof pay_transactions_jsapiId>;

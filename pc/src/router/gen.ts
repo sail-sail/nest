@@ -327,6 +327,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/esw/wxapp_config",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "小程序配置",
+        component: () => import("@/views/esw/wxapp_config/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/wx/pay_transactions_jsapi",
     component: Layout1,
     children: [

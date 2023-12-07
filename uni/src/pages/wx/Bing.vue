@@ -177,7 +177,7 @@ async function getLoginTenantsEfc() {
   if (!model.tenant_id && tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   } else if (model.tenant_id && !tenants.some((item) => item.id === model.tenant_id)) {
-    model.tenant_id = tenants[0].id;
+    model.tenant_id = tenants[0]?.id;
   }
   return tenants;
 }

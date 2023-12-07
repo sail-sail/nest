@@ -8,6 +8,20 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/esw/index",
+			"style": {
+				"navigationBarTitleText": "祥和企服",
+        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#c5a05d"
+			}
+		},
+		{
+			"path": "pages/esw/PtType",
+			"style": {
+				"navigationBarTitleText": "服务"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "uni-app"
@@ -26,6 +40,32 @@
 			}
 		}
 	],
+  "tabBar": {
+    "color": "#333333",
+    "selectedColor": "#c5a05d",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/esw/index",
+        "text": "首页",
+        "iconPath": "static/tarbar/home.png",
+        "selectedIconPath": "static/tarbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/esw/PtType",
+        "text": "服务",
+        "iconPath": "static/tarbar/type.png",
+        "selectedIconPath": "static/tarbar/type-active.png"
+      },
+      {
+        "pagePath": "pages/index/Login",
+        "text": "我的",
+        "iconPath": "static/tarbar/user.png",
+        "selectedIconPath": "static/tarbar/user-active.png"
+      }
+    ]
+  },
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
