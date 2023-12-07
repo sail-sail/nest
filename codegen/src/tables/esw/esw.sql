@@ -204,3 +204,26 @@ CREATE TABLE if not exists `esw_order` (
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='订单';
+
+------------------------------------------------------------------ 小程序配置
+drop table if exists `esw_wxapp_config`;
+CREATE TABLE if not exists `esw_wxapp_config` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `img` varchar(100) NOT NULL DEFAULT '' COMMENT '图片',
+  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
+  `val` varchar(22) NOT NULL DEFAULT '' COMMENT '值',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `org_id`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='小程序配置';

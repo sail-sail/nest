@@ -163,6 +163,12 @@ export function getScalars() {
       "output": `import("/gen/esw/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
     },
     
+    // 小程序配置
+    "WxappConfigId": {
+      "input": `import("/gen/esw/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
+      "output": `import("/gen/esw/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
+    },
+    
     // 微信JSAPI下单
     "PayTransactionsJsapiId": {
       "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").PayTransactionsJsapiId`,

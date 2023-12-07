@@ -478,4 +478,47 @@ export default defineConfig({
       },
     ],
   },
+  // 小程序配置
+  esw_wxapp_config: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "lbl" ],
+      ],
+      sys_fields: [
+        "lbl",
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "img",
+        fixed: "left",
+        width: 200,
+      },
+      {
+        COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
 });

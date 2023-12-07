@@ -1,0 +1,173 @@
+import { defineGraphql } from "/lib/context.ts";
+
+import * as resolver from "./wxapp_config.resolver.ts";
+
+defineGraphql(resolver, /* GraphQL */ `
+scalar WxappConfigId
+
+
+type WxappConfigModel {
+  "ID"
+  id: WxappConfigId!
+  "图片"
+  img: String!
+  "名称"
+  lbl: String!
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String!
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: UsrId!
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: UsrId!
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
+}
+type WxappConfigFieldComment {
+  "ID"
+  id: String!
+  "图片"
+  img: String!
+  "名称"
+  lbl: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
+}
+input WxappConfigInput {
+  ""
+  id: WxappConfigId
+  "图片"
+  img: String
+  "名称"
+  lbl: String
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "备注"
+  rem: String
+  "创建人"
+  create_usr_id: UsrId
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: UsrId
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
+}
+input WxappConfigSearch {
+  "是否已删除"
+  is_deleted: Int
+  "ID列表"
+  ids: [WxappConfigId!]
+  "ID"
+  id: WxappConfigId
+  "图片"
+  img: String
+  img_like: String
+  "名称"
+  lbl: String
+  lbl_like: String
+  "锁定"
+  is_locked: [Int!]
+  "启用"
+  is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
+  "创建人"
+  create_usr_id: [UsrId!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [UsrId!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
+}
+type Query {
+  "根据条件查找据数总数"
+  findCountWxappConfig(search: WxappConfigSearch): Int!
+  "根据搜索条件和分页查找数据"
+  findAllWxappConfig(search: WxappConfigSearch, page: PageInput, sort: [SortInput!]): [WxappConfigModel!]!
+  "获取字段对应的名称"
+  getFieldCommentsWxappConfig: WxappConfigFieldComment!
+  "根据条件查找第一条数据"
+  findOneWxappConfig(search: WxappConfigSearch, sort: [SortInput!]): WxappConfigModel
+  "根据id查找一条数据"
+  findByIdWxappConfig(id: WxappConfigId!): WxappConfigModel
+}
+type Mutation {
+  "创建一条数据"
+  createWxappConfig(model: WxappConfigInput!, unique_type: UniqueType): WxappConfigId!
+  "根据id修改一条数据"
+  updateByIdWxappConfig(id: WxappConfigId!, model: WxappConfigInput!): WxappConfigId!
+  "根据 ids 删除数据"
+  deleteByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsWxappConfig(ids: [WxappConfigId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsWxappConfig(ids: [WxappConfigId!]!, is_locked: Int!): Int!
+  "根据 ids 还原数据"
+  revertByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
+}
+
+`);

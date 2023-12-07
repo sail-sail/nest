@@ -164,6 +164,12 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").RechargeRuleId`,
     },
     
+    // 小程序配置
+    "WxappConfigId": {
+      "input": `import("@/typings/ids.ts").WxappConfigId`,
+      "output": `import("@/typings/ids.ts").WxappConfigId`,
+    },
+    
     // 微信JSAPI下单
     "PayTransactionsJsapiId": {
       "input": `import("@/typings/ids.ts").PayTransactionsJsapiId`,
