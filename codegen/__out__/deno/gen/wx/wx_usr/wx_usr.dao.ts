@@ -367,7 +367,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找微信用户列表
  * @param {WxUsrSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -563,7 +563,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取微信用户字段注释
  */
 export async function getFieldComments(): Promise<WxUsrFieldComment> {
   const n = initN(route_path);
@@ -602,7 +602,7 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得微信用户列表
  * @param {WxUsrInput} search0
  */
 export async function findByUnique(
@@ -655,7 +655,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查微信用户是否已经存在
  * @param {WxUsrInput} input
  * @param {WxUsrModel} oldModel
  * @param {UniqueType} uniqueType
@@ -694,7 +694,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个微信用户
  * @param {WxUsrSearch} search?
  */
 export async function findOne(
@@ -713,7 +713,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找微信用户
  * @param {WxUsrId} id
  */
 export async function findById(
@@ -729,7 +729,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断微信用户是否存在
  * @param {WxUsrSearch} search?
  */
 export async function exist(
@@ -743,7 +743,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断微信用户是否存在
  * @param {WxUsrId} id
  */
 export async function existById(
@@ -783,7 +783,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验微信用户是否启用 */
 export async function validateIsEnabled(
   model: WxUsrModel,
 ) {
@@ -792,7 +792,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验微信用户是否存在 */
 export async function validateOption(
   model?: WxUsrModel,
 ) {
@@ -803,7 +803,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 微信用户增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -926,7 +926,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建微信用户
  * @param {WxUsrInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1179,7 +1179,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
+ * 微信用户根据id修改租户id
  * @param {WxUsrId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1218,7 +1218,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 微信用户根据id修改组织id
  * @export
  * @param {WxUsrId} id
  * @param {OrgId} org_id
@@ -1260,7 +1260,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改微信用户
  * @param {WxUsrId} id
  * @param {WxUsrInput} input
  * @param {({
@@ -1503,8 +1503,8 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找微信用户是否已启用
+ * 不存在则返回 undefined
  * @param {WxUsrId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1572,9 +1572,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找微信用户是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {WxUsrId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1642,7 +1642,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原微信用户
  * @param {WxUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -1701,7 +1701,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除微信用户
  * @param {WxUsrId[]} ids
  * @return {Promise<number>}
  */

@@ -1,5 +1,3 @@
-
-
 import type {
   WxPayNoticeId,
 } from "@/typings/ids";
@@ -11,11 +9,8 @@ import type {
   WxPayNoticeSearch,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找微信支付通知列表
  * @export findAll
  * @param {WxPayNoticeSearch} search?
  * @param {PageInput} page
@@ -84,7 +79,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个微信支付通知
  * @export findOne
  * @param {WxPayNoticeSearch} search?
  * @param {Sort[]} sort?
@@ -149,7 +144,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找微信支付通知总数
  * @export findCount
  * @param {WxPayNoticeSearch} search?
  * @param {GqlOpt} opt?
@@ -175,7 +170,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条微信支付通知
  * @export findById
  * @param {WxPayNoticeId} id
  * @param {GqlOpt} opt?
