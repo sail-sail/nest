@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   DomainId,
 } from "@/typings/ids";
@@ -15,11 +14,8 @@ import type {
   DomainInput,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找域名列表
  * @export findAll
  * @param {DomainSearch} search?
  * @param {PageInput} page
@@ -75,7 +71,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个域名
  * @export findOne
  * @param {DomainSearch} search?
  * @param {Sort[]} sort?
@@ -127,7 +123,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找域名总数
  * @export findCount
  * @param {DomainSearch} search?
  * @param {GqlOpt} opt?
@@ -153,7 +149,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条域名
  * @export create
  * @param {DomainInput} model
  * @param {UniqueType} unique_type?
@@ -182,7 +178,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条域名
  * @export updateById
  * @param {DomainId} id
  * @param {DomainInput} model
@@ -211,7 +207,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条域名
  * @export findById
  * @param {DomainId} id
  * @param {GqlOpt} opt?
@@ -257,7 +253,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除域名
  * @export deleteByIds
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
@@ -283,7 +279,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认域名
  * @export defaultById
  * @param {DomainId} id
  * @param {GqlOpt} opt?
@@ -309,7 +305,7 @@ export async function defaultById(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用域名
  * @export enableByIds
  * @param {DomainId[]} ids
  * @param {0 | 1} is_enabled
@@ -338,7 +334,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁域名
  * @export lockByIds
  * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
@@ -367,7 +363,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原域名
  * @export revertByIds
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
@@ -393,7 +389,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除域名
  * @export forceDeleteByIds
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
