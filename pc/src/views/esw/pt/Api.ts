@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   PtId,
 } from "@/typings/ids";
@@ -20,7 +19,7 @@ import type {
 } from "#/types";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找产品列表
  * @export findAll
  * @param {PtSearch} search?
  * @param {PageInput} page
@@ -84,7 +83,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个产品
  * @export findOne
  * @param {PtSearch} search?
  * @param {Sort[]} sort?
@@ -144,7 +143,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找产品总数
  * @export findCount
  * @param {PtSearch} search?
  * @param {GqlOpt} opt?
@@ -170,7 +169,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条产品
  * @export create
  * @param {PtInput} model
  * @param {UniqueType} unique_type?
@@ -199,7 +198,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条产品
  * @export updateById
  * @param {PtId} id
  * @param {PtInput} model
@@ -228,7 +227,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条产品
  * @export findById
  * @param {PtId} id
  * @param {GqlOpt} opt?
@@ -282,7 +281,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除产品
  * @export deleteByIds
  * @param {PtId[]} ids
  * @param {GqlOpt} opt?
@@ -308,7 +307,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用产品
  * @export enableByIds
  * @param {PtId[]} ids
  * @param {0 | 1} is_enabled
@@ -337,7 +336,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁产品
  * @export lockByIds
  * @param {PtId[]} ids
  * @param {0 | 1} is_locked
@@ -366,7 +365,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原产品
  * @export revertByIds
  * @param {PtId[]} ids
  * @param {GqlOpt} opt?
@@ -392,7 +391,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除产品
  * @export forceDeleteByIds
  * @param {PtId[]} ids
  * @param {GqlOpt} opt?

@@ -359,7 +359,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找订单列表
  * @param {OrderSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -613,7 +613,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取订单字段注释
  */
 export async function getFieldComments(): Promise<OrderFieldComment> {
   const n = initN(route_path);
@@ -652,7 +652,7 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得订单列表
  * @param {OrderInput} search0
  */
 export async function findByUnique(
@@ -705,7 +705,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查订单是否已经存在
  * @param {OrderInput} input
  * @param {OrderModel} oldModel
  * @param {UniqueType} uniqueType
@@ -744,7 +744,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个订单
  * @param {OrderSearch} search?
  */
 export async function findOne(
@@ -763,7 +763,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找订单
  * @param {OrderId} id
  */
 export async function findById(
@@ -779,7 +779,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断订单是否存在
  * @param {OrderSearch} search?
  */
 export async function exist(
@@ -793,7 +793,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断订单是否存在
  * @param {OrderId} id
  */
 export async function existById(
@@ -830,7 +830,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验订单是否启用 */
 export async function validateIsEnabled(
   model: OrderModel,
 ) {
@@ -839,7 +839,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验订单是否存在 */
 export async function validateOption(
   model?: OrderModel,
 ) {
@@ -850,7 +850,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 订单增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -924,7 +924,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建订单
  * @param {OrderInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1149,7 +1149,7 @@ export async function create(
 }
 
 /**
- * 根据id修改租户id
+ * 订单根据id修改租户id
  * @param {OrderId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1186,7 +1186,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 订单根据id修改组织id
  * @export
  * @param {OrderId} id
  * @param {OrgId} org_id
@@ -1224,7 +1224,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改订单
  * @param {OrderId} id
  * @param {OrderInput} input
  * @param {({
@@ -1449,8 +1449,8 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找订单是否已启用
+ * 不存在则返回 undefined
  * @param {OrderId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1512,9 +1512,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找订单是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {OrderId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1576,7 +1576,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
@@ -1629,7 +1629,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
