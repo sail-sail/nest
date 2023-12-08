@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   PermitId,
 } from "@/typings/ids";
@@ -24,7 +23,7 @@ import {
 } from "@/views/base/menu/Api";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找按钮权限列表
  * @export findAll
  * @param {PermitSearch} search?
  * @param {PageInput} page
@@ -75,7 +74,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个按钮权限
  * @export findOne
  * @param {PermitSearch} search?
  * @param {Sort[]} sort?
@@ -122,7 +121,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找按钮权限总数
  * @export findCount
  * @param {PermitSearch} search?
  * @param {GqlOpt} opt?
@@ -148,7 +147,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条按钮权限
  * @export create
  * @param {PermitInput} model
  * @param {UniqueType} unique_type?
@@ -177,7 +176,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条按钮权限
  * @export updateById
  * @param {PermitId} id
  * @param {PermitInput} model
@@ -206,7 +205,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条按钮权限
  * @export findById
  * @param {PermitId} id
  * @param {GqlOpt} opt?
@@ -247,7 +246,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除按钮权限
  * @export deleteByIds
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
@@ -273,7 +272,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原按钮权限
  * @export revertByIds
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
@@ -299,7 +298,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除按钮权限
  * @export forceDeleteByIds
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
