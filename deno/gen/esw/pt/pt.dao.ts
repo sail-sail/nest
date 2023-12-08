@@ -374,7 +374,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找产品列表
  * @param {PtSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -616,7 +616,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取产品字段注释
  */
 export async function getFieldComments(): Promise<PtFieldComment> {
   const n = initN(route_path);
@@ -653,7 +653,7 @@ export async function getFieldComments(): Promise<PtFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得产品列表
  * @param {PtInput} search0
  */
 export async function findByUnique(
@@ -706,7 +706,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查产品是否已经存在
  * @param {PtInput} input
  * @param {PtModel} oldModel
  * @param {UniqueType} uniqueType
@@ -745,7 +745,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个产品
  * @param {PtSearch} search?
  */
 export async function findOne(
@@ -764,7 +764,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找产品
  * @param {PtId} id
  */
 export async function findById(
@@ -780,7 +780,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断产品是否存在
  * @param {PtSearch} search?
  */
 export async function exist(
@@ -794,7 +794,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断产品是否存在
  * @param {PtId} id
  */
 export async function existById(
@@ -834,7 +834,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验产品是否启用 */
 export async function validateIsEnabled(
   model: PtModel,
 ) {
@@ -843,7 +843,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验产品是否存在 */
 export async function validateOption(
   model?: PtModel,
 ) {
@@ -854,7 +854,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 产品增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -935,7 +935,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建产品
  * @param {PtInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1184,7 +1184,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
+ * 产品根据id修改租户id
  * @param {PtId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1223,7 +1223,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 产品根据id修改组织id
  * @export
  * @param {PtId} id
  * @param {OrgId} org_id
@@ -1265,7 +1265,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改产品
  * @param {PtId} id
  * @param {PtInput} input
  * @param {({
@@ -1507,8 +1507,8 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找产品是否已启用
+ * 不存在则返回 undefined
  * @param {PtId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1576,9 +1576,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找产品是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {PtId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1646,7 +1646,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原产品
  * @param {PtId[]} ids
  * @return {Promise<number>}
  */
@@ -1705,7 +1705,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除产品
  * @param {PtId[]} ids
  * @return {Promise<number>}
  */
@@ -1760,7 +1760,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 产品 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

@@ -264,7 +264,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找小程序配置列表
  * @param {WxappConfigSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -428,7 +428,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取小程序配置字段注释
  */
 export async function getFieldComments(): Promise<WxappConfigFieldComment> {
   const n = initN(route_path);
@@ -454,7 +454,7 @@ export async function getFieldComments(): Promise<WxappConfigFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得小程序配置列表
  * @param {WxappConfigInput} search0
  */
 export async function findByUnique(
@@ -507,7 +507,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查小程序配置是否已经存在
  * @param {WxappConfigInput} input
  * @param {WxappConfigModel} oldModel
  * @param {UniqueType} uniqueType
@@ -546,7 +546,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个小程序配置
  * @param {WxappConfigSearch} search?
  */
 export async function findOne(
@@ -565,7 +565,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找小程序配置
  * @param {WxappConfigId} id
  */
 export async function findById(
@@ -581,7 +581,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断小程序配置是否存在
  * @param {WxappConfigSearch} search?
  */
 export async function exist(
@@ -595,7 +595,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断小程序配置是否存在
  * @param {WxappConfigId} id
  */
 export async function existById(
@@ -635,7 +635,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验小程序配置是否启用 */
 export async function validateIsEnabled(
   model: WxappConfigModel,
 ) {
@@ -644,7 +644,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验小程序配置是否存在 */
 export async function validateOption(
   model?: WxappConfigModel,
 ) {
@@ -655,7 +655,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 小程序配置增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -708,7 +708,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建小程序配置
  * @param {WxappConfigInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -901,7 +901,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
+ * 小程序配置根据id修改租户id
  * @param {WxappConfigId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -940,7 +940,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 小程序配置根据id修改组织id
  * @export
  * @param {WxappConfigId} id
  * @param {OrgId} org_id
@@ -982,7 +982,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改小程序配置
  * @param {WxappConfigId} id
  * @param {WxappConfigInput} input
  * @param {({
@@ -1165,8 +1165,8 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找小程序配置是否已启用
+ * 不存在则返回 undefined
  * @param {WxappConfigId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1234,9 +1234,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找小程序配置是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {WxappConfigId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1304,7 +1304,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原小程序配置
  * @param {WxappConfigId[]} ids
  * @return {Promise<number>}
  */
@@ -1363,7 +1363,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除小程序配置
  * @param {WxappConfigId[]} ids
  * @return {Promise<number>}
  */

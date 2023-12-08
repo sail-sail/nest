@@ -309,7 +309,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找会员卡消费记录列表
  * @param {CardConsumeSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -453,7 +453,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取会员卡消费记录字段注释
  */
 export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   const n = initN(route_path);
@@ -482,7 +482,7 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得会员卡消费记录列表
  * @param {CardConsumeInput} search0
  */
 export async function findByUnique(
@@ -520,7 +520,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查会员卡消费记录是否已经存在
  * @param {CardConsumeInput} input
  * @param {CardConsumeModel} oldModel
  * @param {UniqueType} uniqueType
@@ -559,7 +559,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个会员卡消费记录
  * @param {CardConsumeSearch} search?
  */
 export async function findOne(
@@ -578,7 +578,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找会员卡消费记录
  * @param {CardConsumeId} id
  */
 export async function findById(
@@ -594,7 +594,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断会员卡消费记录是否存在
  * @param {CardConsumeSearch} search?
  */
 export async function exist(
@@ -608,7 +608,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断会员卡消费记录是否存在
  * @param {CardConsumeId} id
  */
 export async function existById(
@@ -645,7 +645,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验会员卡消费记录是否存在 */
 export async function validateOption(
   model?: CardConsumeModel,
 ) {
@@ -656,7 +656,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 会员卡消费记录增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -709,7 +709,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建会员卡消费记录
  * @param {CardConsumeInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -898,7 +898,7 @@ export async function create(
 }
 
 /**
- * 根据id修改租户id
+ * 会员卡消费记录根据id修改租户id
  * @param {CardConsumeId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -935,7 +935,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 会员卡消费记录根据id修改组织id
  * @export
  * @param {CardConsumeId} id
  * @param {OrgId} org_id
@@ -973,7 +973,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改会员卡消费记录
  * @param {CardConsumeId} id
  * @param {CardConsumeInput} input
  * @param {({
@@ -1162,7 +1162,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原会员卡消费记录
  * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
@@ -1215,7 +1215,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡消费记录
  * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */

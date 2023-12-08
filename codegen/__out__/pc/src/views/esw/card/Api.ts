@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   CardId,
 } from "@/typings/ids";
@@ -20,7 +19,7 @@ import type {
 } from "#/types";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找会员卡列表
  * @export findAll
  * @param {CardSearch} search?
  * @param {PageInput} page
@@ -84,7 +83,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个会员卡
  * @export findOne
  * @param {CardSearch} search?
  * @param {Sort[]} sort?
@@ -144,7 +143,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找会员卡总数
  * @export findCount
  * @param {CardSearch} search?
  * @param {GqlOpt} opt?
@@ -170,7 +169,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条会员卡
  * @export create
  * @param {CardInput} model
  * @param {UniqueType} unique_type?
@@ -199,7 +198,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条会员卡
  * @export updateById
  * @param {CardId} id
  * @param {CardInput} model
@@ -228,7 +227,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条会员卡
  * @export findById
  * @param {CardId} id
  * @param {GqlOpt} opt?
@@ -282,7 +281,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡
  * @export deleteByIds
  * @param {CardId[]} ids
  * @param {GqlOpt} opt?
@@ -308,7 +307,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认会员卡
  * @export defaultById
  * @param {CardId} id
  * @param {GqlOpt} opt?
@@ -334,7 +333,7 @@ export async function defaultById(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用会员卡
  * @export enableByIds
  * @param {CardId[]} ids
  * @param {0 | 1} is_enabled
@@ -363,7 +362,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁会员卡
  * @export lockByIds
  * @param {CardId[]} ids
  * @param {0 | 1} is_locked
@@ -392,7 +391,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原会员卡
  * @export revertByIds
  * @param {CardId[]} ids
  * @param {GqlOpt} opt?
@@ -418,7 +417,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡
  * @export forceDeleteByIds
  * @param {CardId[]} ids
  * @param {GqlOpt} opt?
