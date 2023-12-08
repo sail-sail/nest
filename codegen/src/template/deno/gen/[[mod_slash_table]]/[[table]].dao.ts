@@ -903,7 +903,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找<#=table_comment#>列表
  * @param {<#=searchName#>} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -1928,7 +1928,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   const n = initN(route_path);
@@ -1990,7 +1990,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得<#=table_comment#>列表
  * @param {<#=inputName#>} search0
  */
 export async function findByUnique(
@@ -2162,7 +2162,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查<#=table_comment#>是否已经存在
  * @param {<#=inputName#>} input
  * @param {<#=modelName#>} oldModel
  * @param {UniqueType} uniqueType
@@ -2213,7 +2213,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找合计
+ * 根据搜索条件查找<#=table_comment#>合计
  * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
@@ -2267,7 +2267,7 @@ export async function findSummary(
 #>
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个<#=table_comment#>
  * @param {<#=searchName#>} search?
  */
 export async function findOne(
@@ -2286,7 +2286,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  */
 export async function findById(
@@ -2302,7 +2302,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断<#=table_comment#>是否存在
  * @param {<#=searchName#>} search?
  */
 export async function exist(
@@ -2316,7 +2316,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断<#=table_comment#>是否存在
  * @param {<#=Table_Up#>Id} id
  */
 export async function existById(
@@ -2366,7 +2366,7 @@ export async function existById(
 if (hasEnabled) {
 #>
 
-/** 校验记录是否启用 */
+/** 校验<#=table_comment#>是否启用 */
 export async function validateIsEnabled(
   model: <#=modelName#>,
 ) {
@@ -2377,7 +2377,7 @@ export async function validateIsEnabled(
 }
 #>
 
-/** 校验记录是否存在 */
+/** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
   model?: <#=modelName#>,
 ) {
@@ -2388,7 +2388,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * <#=table_comment#>增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -2570,7 +2570,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建<#=table_comment#>
  * @param {<#=inputName#>} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -3070,7 +3070,7 @@ if (hasTenant_id) {
 #>
 
 /**
- * 根据id修改租户id
+ * <#=table_comment#>根据id修改租户id
  * @param {<#=Table_Up#>Id} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -3123,7 +3123,7 @@ if (hasOrgId) {
 #>
 
 /**
- * 根据id修改组织id
+ * <#=table_comment#>根据id修改组织id
  * @export
  * @param {<#=Table_Up#>Id} id
  * @param {OrgId} org_id
@@ -3183,7 +3183,7 @@ if (hasVersion) {
 #>
 
 /**
- * 根据 id 获取版本号
+ * 根据 id 获取<#=table_comment#>版本号
  */
 export async function getVersionById(
   id: <#=Table_Up#>Id,
@@ -3199,7 +3199,7 @@ export async function getVersionById(
 #>
 
 /**
- * 根据id修改一行数据
+ * 根据id修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} input
  * @param {({
@@ -3665,7 +3665,7 @@ if (hasDefault) {
 #>
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @return {Promise<number>}
  */
@@ -3737,8 +3737,8 @@ if (hasEnabled) {
 #>
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找<#=table_comment#>是否已启用
+ * 不存在则返回 undefined
  * @param {<#=Table_Up#>Id} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -3824,9 +3824,9 @@ if (hasLocked) {
 #>
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找<#=table_comment#>是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {<#=Table_Up#>Id} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -3904,7 +3904,7 @@ export async function lockByIds(
 #>
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
@@ -3994,7 +3994,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
@@ -4076,7 +4076,7 @@ if (hasOrderBy) {
 #>
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 <#=table_comment#> order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

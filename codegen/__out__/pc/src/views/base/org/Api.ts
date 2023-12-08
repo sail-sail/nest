@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   OrgId,
 } from "@/typings/ids";
@@ -15,11 +14,8 @@ import type {
   OrgInput,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找组织列表
  * @export findAll
  * @param {OrgSearch} search?
  * @param {PageInput} page
@@ -72,7 +68,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个组织
  * @export findOne
  * @param {OrgSearch} search?
  * @param {Sort[]} sort?
@@ -121,7 +117,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找组织总数
  * @export findCount
  * @param {OrgSearch} search?
  * @param {GqlOpt} opt?
@@ -147,7 +143,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条组织
  * @export create
  * @param {OrgInput} model
  * @param {UniqueType} unique_type?
@@ -176,7 +172,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条组织
  * @export updateById
  * @param {OrgId} id
  * @param {OrgInput} model
@@ -205,7 +201,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条组织
  * @export findById
  * @param {OrgId} id
  * @param {GqlOpt} opt?
@@ -248,7 +244,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除组织
  * @export deleteByIds
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
@@ -274,7 +270,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用组织
  * @export enableByIds
  * @param {OrgId[]} ids
  * @param {0 | 1} is_enabled
@@ -303,7 +299,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁组织
  * @export lockByIds
  * @param {OrgId[]} ids
  * @param {0 | 1} is_locked
@@ -332,7 +328,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原组织
  * @export revertByIds
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
@@ -358,7 +354,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除组织
  * @export forceDeleteByIds
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
