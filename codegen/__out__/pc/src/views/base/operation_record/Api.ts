@@ -1,5 +1,3 @@
-
-
 import type {
   OperationRecordId,
 } from "@/typings/ids";
@@ -11,11 +9,8 @@ import type {
   OperationRecordSearch,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找操作记录列表
  * @export findAll
  * @param {OperationRecordSearch} search?
  * @param {PageInput} page
@@ -69,7 +64,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个操作记录
  * @export findOne
  * @param {OperationRecordSearch} search?
  * @param {Sort[]} sort?
@@ -119,7 +114,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找操作记录总数
  * @export findCount
  * @param {OperationRecordSearch} search?
  * @param {GqlOpt} opt?
@@ -145,7 +140,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条操作记录
  * @export findById
  * @param {OperationRecordId} id
  * @param {GqlOpt} opt?
@@ -189,7 +184,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除操作记录
  * @export deleteByIds
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
@@ -215,7 +210,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原操作记录
  * @export revertByIds
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
@@ -241,7 +236,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除操作记录
  * @export forceDeleteByIds
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
