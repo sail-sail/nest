@@ -1,5 +1,3 @@
-
-
 import type {
   PayTransactionsJsapiId,
 } from "@/typings/ids";
@@ -11,11 +9,8 @@ import type {
   PayTransactionsJsapiSearch,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找微信JSAPI下单列表
  * @export findAll
  * @param {PayTransactionsJsapiSearch} search?
  * @param {PageInput} page
@@ -82,7 +77,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个微信JSAPI下单
  * @export findOne
  * @param {PayTransactionsJsapiSearch} search?
  * @param {Sort[]} sort?
@@ -145,7 +140,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找微信JSAPI下单总数
  * @export findCount
  * @param {PayTransactionsJsapiSearch} search?
  * @param {GqlOpt} opt?
@@ -171,7 +166,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条微信JSAPI下单
  * @export findById
  * @param {PayTransactionsJsapiId} id
  * @param {GqlOpt} opt?

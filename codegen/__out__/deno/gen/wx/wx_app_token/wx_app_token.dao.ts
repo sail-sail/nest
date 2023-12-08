@@ -186,7 +186,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找小程序接口凭据列表
  * @param {WxAppTokenSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -314,7 +314,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取小程序接口凭据字段注释
  */
 export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
   const n = initN(route_path);
@@ -331,7 +331,7 @@ export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得小程序接口凭据列表
  * @param {WxAppTokenInput} search0
  */
 export async function findByUnique(
@@ -389,7 +389,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查小程序接口凭据是否已经存在
  * @param {WxAppTokenInput} input
  * @param {WxAppTokenModel} oldModel
  * @param {UniqueType} uniqueType
@@ -428,7 +428,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个小程序接口凭据
  * @param {WxAppTokenSearch} search?
  */
 export async function findOne(
@@ -447,7 +447,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找小程序接口凭据
  * @param {WxAppTokenId} id
  */
 export async function findById(
@@ -463,7 +463,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断小程序接口凭据是否存在
  * @param {WxAppTokenSearch} search?
  */
 export async function exist(
@@ -477,7 +477,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断小程序接口凭据是否存在
  * @param {WxAppTokenId} id
  */
 export async function existById(
@@ -517,7 +517,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验小程序接口凭据是否存在 */
 export async function validateOption(
   model?: WxAppTokenModel,
 ) {
@@ -528,7 +528,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 小程序接口凭据增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -560,7 +560,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建小程序接口凭据
  * @param {WxAppTokenInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -707,7 +707,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改小程序接口凭据
  * @param {WxAppTokenId} id
  * @param {WxAppTokenInput} input
  * @param {({
@@ -868,7 +868,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原小程序接口凭据
  * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
@@ -927,7 +927,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除小程序接口凭据
  * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */
