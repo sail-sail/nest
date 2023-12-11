@@ -215,6 +215,63 @@ export function getDownloadUrl(
   return url;
 }
 
+/**
+ * 获得压缩后图片的url
+ **/
+export function getImgUrl(
+  model: {
+    id: string;
+    authorization?: string;
+    format?: "webp" | "png" | "jpeg" | "jpg";
+    width?: number;
+    height?: number;
+    quality?: number;
+    filename?: string;
+    inline?: "0"|"1";
+  } | string,
+) {
+  let authorization: string | undefined = undefined;
+  if (typeof model !== "string") {
+    authorization = model.authorization;
+    if (!authorization) {
+      const usrStore = useUsrStore();
+      authorization = usrStore.authorization;
+    }
+  }
+  if (typeof model === "string") {
+    model = {
+      id: model,
+      format: "webp",
+    };
+  }
+  if (!model.id) {
+    return;
+  }
+  let params = `id=${ encodeURIComponent(model.id) }`;
+  if (model.filename) {
+    params += `&filename=${ encodeURIComponent(model.filename) }`;
+  }
+  if (model.inline != null) {
+    params += `&inline=${ encodeURIComponent(model.inline) }`;
+  }
+  if (model.format) {
+    params += `&f=${ encodeURIComponent(model.format) }`;
+  }
+  if (model.width) {
+    params += `&w=${ encodeURIComponent(model.width.toString()) }`;
+  }
+  if (model.height) {
+    params += `&h=${ encodeURIComponent(model.height.toString()) }`;
+  }
+  if (model.quality) {
+    params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
+  }
+  if (authorization) {
+    params += `&authorization=${ encodeURIComponent(authorization) }`;
+  }
+  return `${ cfg.url }/oss/img?${ params }`;
+}
+
 export async function request<T>(
   config: {
     url?: string;

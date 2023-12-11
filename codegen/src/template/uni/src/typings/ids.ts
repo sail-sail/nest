@@ -21,9 +21,9 @@ for (let i = 0; i < allTables.length; i++) {
     Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
   } */
 #>
-// <#=table_comment#>
 declare const <#=table_Up#>Id: unique symbol;
-export type <#=Table_Up#>Id = typeof <#=table_Up#>Id;
+/** <#=table_comment#> */
+export type <#=Table_Up#>Id = Distinct<string, typeof <#=table_Up#>Id>;
 <#
 }
 #>

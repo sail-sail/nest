@@ -32,7 +32,9 @@ export async function request<T>(
       if (isEmpty(config.url)) {
         throw new Error("config.url is empty");
       }
-      config.url = `${ baseURL }/${ config.url }`;
+      if (baseURL) {
+        config.url = `${ baseURL }/${ config.url }`;
+      }
     }
     if (!config.notLoading) {
       indexStore.addLoading();
@@ -44,9 +46,15 @@ export async function request<T>(
       config.header.set("authorization", authorization);
     }
     
-    config.header.set("content-type", "application/json; charset=utf-8");
-    
-    const body = JSON.stringify(config.data);
+    let body = config.data;
+    if (
+      body != null &&
+      !(body instanceof FormData) &&
+      typeof body === "object"
+    ) {
+      config.header.set("content-type", "application/json; charset=utf-8");
+      body = JSON.stringify(config.data);
+    }
     const resFt = await fetch(config.url!, {
       headers: config.header,
       method: config.method || "post",
@@ -76,6 +84,12 @@ export async function request<T>(
     }
     usrStore.refreshToken(authorization);
   }
+  if (config.reqType === "graphql") {
+    if (err != null) {
+      throw err;
+    }
+    return res as T;
+  }
   
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
@@ -91,9 +105,6 @@ export async function request<T>(
     throw err;
   }
   const data = res!.data;
-  if (config.reqType === "graphql") {
-    return res as T;
-  }
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     indexStore.logout();
     return data;

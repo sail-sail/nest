@@ -43,12 +43,12 @@
       <template
         v-if="!(modelValue ?? '')"
       >
-        {{ props.readonlyPlaceholder ?? "" }}
+        {{ props.readonlyPlaceholder ?? defaultLabel }}
       </template>
       <template
         v-else
       >
-        {{ modelValue ?? "" }}
+        {{ modelValue ?? defaultLabel }}
       </template>
     </div>
   </template>
@@ -62,12 +62,12 @@
       <template
         v-if="!(modelValue ?? '')"
       >
-        {{ props.readonlyPlaceholder ?? "" }}
+        {{ props.readonlyPlaceholder ?? defaultLabel }}
       </template>
       <template
         v-else
       >
-        {{ modelValue ?? "" }}
+        {{ modelValue ?? defaultLabel }}
       </template>
     </div>
   </template>
@@ -108,6 +108,11 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
   },
 );
+
+let defaultLabel = $computed(() => {
+  const val = 0;
+  return val.toFixed(props.precision);
+});
 
 let modelValue = $ref(props.modelValue);
 

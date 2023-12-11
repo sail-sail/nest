@@ -9,9 +9,6 @@ import type {
   DictbizFieldComment as DictbizFieldCommentType,
 } from "/gen/types.ts";
 
-declare const dictbizId: unique symbol;
-export type DictbizId = typeof dictbizId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const dictbizId: unique symbol;
+export type DictbizId = Distinct<string, typeof dictbizId>;
 
 export interface DictbizSearch extends DictbizSearchType {
   tenant_id?: string | null;

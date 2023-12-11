@@ -9,12 +9,12 @@ import type {
   I18NfieldComment as I18NfieldCommentType,
 } from "/gen/types.ts";
 
-declare const i18nId: unique symbol;
-export type I18nId = typeof i18nId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const i18nId: unique symbol;
+export type I18nId = Distinct<string, typeof i18nId>;
 
 export interface I18Nsearch extends I18NsearchType {
   $extra?: SearchExtra[];
