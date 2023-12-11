@@ -16,7 +16,7 @@
 			}
 		},
 		{
-			"path": "pages/esw/PtType",
+			"path": "pages/esw/pt_type/index",
 			"style": {
 				"navigationBarTitleText": "服务"
 			}
@@ -53,7 +53,7 @@
         "selectedIconPath": "static/tarbar/home-active.png"
       },
       {
-        "pagePath": "pages/esw/PtType",
+        "pagePath": "pages/esw/pt_type/index",
         "text": "服务",
         "iconPath": "static/tarbar/type.png",
         "selectedIconPath": "static/tarbar/type-active.png"
