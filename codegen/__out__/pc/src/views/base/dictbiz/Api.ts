@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   DictbizId,
 } from "@/typings/ids";
@@ -15,11 +14,8 @@ import type {
   DictbizInput,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找业务字典列表
  * @export findAll
  * @param {DictbizSearch} search?
  * @param {PageInput} page
@@ -94,7 +90,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个业务字典
  * @export findOne
  * @param {DictbizSearch} search?
  * @param {Sort[]} sort?
@@ -165,7 +161,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找业务字典总数
  * @export findCount
  * @param {DictbizSearch} search?
  * @param {GqlOpt} opt?
@@ -191,7 +187,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条业务字典
  * @export create
  * @param {DictbizInput} model
  * @param {UniqueType} unique_type?
@@ -220,7 +216,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条业务字典
  * @export updateById
  * @param {DictbizId} id
  * @param {DictbizInput} model
@@ -249,7 +245,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条业务字典
  * @export findById
  * @param {DictbizId} id
  * @param {GqlOpt} opt?
@@ -314,7 +310,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除业务字典
  * @export deleteByIds
  * @param {DictbizId[]} ids
  * @param {GqlOpt} opt?
@@ -340,7 +336,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用业务字典
  * @export enableByIds
  * @param {DictbizId[]} ids
  * @param {0 | 1} is_enabled
@@ -369,7 +365,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁业务字典
  * @export lockByIds
  * @param {DictbizId[]} ids
  * @param {0 | 1} is_locked
@@ -398,7 +394,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原业务字典
  * @export revertByIds
  * @param {DictbizId[]} ids
  * @param {GqlOpt} opt?
@@ -424,7 +420,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除业务字典
  * @export forceDeleteByIds
  * @param {DictbizId[]} ids
  * @param {GqlOpt} opt?

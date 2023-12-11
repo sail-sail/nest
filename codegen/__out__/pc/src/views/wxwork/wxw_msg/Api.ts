@@ -1,5 +1,3 @@
-
-
 import type {
   WxwMsgId,
 } from "@/typings/ids";
@@ -16,7 +14,7 @@ import type {
 } from "#/types";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找企微消息列表
  * @export findAll
  * @param {WxwMsgSearch} search?
  * @param {PageInput} page
@@ -65,7 +63,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个企微消息
  * @export findOne
  * @param {WxwMsgSearch} search?
  * @param {Sort[]} sort?
@@ -110,7 +108,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找企微消息总数
  * @export findCount
  * @param {WxwMsgSearch} search?
  * @param {GqlOpt} opt?
@@ -136,7 +134,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条企微消息
  * @export findById
  * @param {WxwMsgId} id
  * @param {GqlOpt} opt?
@@ -175,7 +173,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微消息
  * @export deleteByIds
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
@@ -201,7 +199,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原企微消息
  * @export revertByIds
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
@@ -227,7 +225,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微消息
  * @export forceDeleteByIds
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?

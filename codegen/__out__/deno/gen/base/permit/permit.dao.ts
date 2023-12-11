@@ -232,7 +232,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找按钮权限列表
  * @param {PermitSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -354,7 +354,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取按钮权限字段注释
  */
 export async function getFieldComments(): Promise<PermitFieldComment> {
   const n = initN(route_path);
@@ -378,7 +378,7 @@ export async function getFieldComments(): Promise<PermitFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得按钮权限列表
  * @param {PermitInput} search0
  */
 export async function findByUnique(
@@ -442,7 +442,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查按钮权限是否已经存在
  * @param {PermitInput} input
  * @param {PermitModel} oldModel
  * @param {UniqueType} uniqueType
@@ -481,7 +481,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个按钮权限
  * @param {PermitSearch} search?
  */
 export async function findOne(
@@ -500,7 +500,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找按钮权限
  * @param {PermitId} id
  */
 export async function findById(
@@ -516,7 +516,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断按钮权限是否存在
  * @param {PermitSearch} search?
  */
 export async function exist(
@@ -530,7 +530,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断按钮权限是否存在
  * @param {PermitId} id
  */
 export async function existById(
@@ -570,7 +570,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验按钮权限是否存在 */
 export async function validateOption(
   model?: PermitModel,
 ) {
@@ -581,7 +581,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 按钮权限增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -641,7 +641,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建按钮权限
  * @param {PermitInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -795,7 +795,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改按钮权限
  * @param {PermitId} id
  * @param {PermitInput} input
  * @param {({
@@ -962,7 +962,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原按钮权限
  * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
@@ -1021,7 +1021,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除按钮权限
  * @param {PermitId[]} ids
  * @return {Promise<number>}
  */

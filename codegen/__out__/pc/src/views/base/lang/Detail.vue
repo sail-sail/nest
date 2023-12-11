@@ -67,7 +67,6 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="onSave"
       >
         
         <template v-if="(showBuildIn || builtInModel?.code == null)">
@@ -118,7 +117,7 @@
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"

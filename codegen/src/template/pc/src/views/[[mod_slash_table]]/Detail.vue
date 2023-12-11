@@ -135,12 +135,7 @@ for (let i = 0; i < columns.length; i++) {
         
         :model="dialogModel"
         :rules="form_rules"
-        :validate-on-rule-change="false"<#
-        if (opts.noAdd !== true || opts.noEdit !== true) {
-        #>
-        @keyup.enter="onSave"<#
-        }
-        #>
+        :validate-on-rule-change="false"
       ><#
         const selectInputForeign_Table_Ups = [ ];
         for (let i = 0; i < columns.length; i++) {
@@ -578,7 +573,7 @@ for (let i = 0; i < columns.length; i++) {
               if (column.isTextarea) {
               #>
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop<#
               }
               #>
@@ -2075,7 +2070,11 @@ async function getDefaultInput() {
           Column_Up = Column_Up.split("_").map(function(item) {
             return item.substring(0, 1).toUpperCase() + item.substring(1);
           }).join("");
-          defaultValue = Table_Up + Column_Up + "." + column.COLUMN_DEFAULT.toString().substring(0, 1).toUpperCase() + column.COLUMN_DEFAULT.toString().substring(1);
+          let defaultValue_Up = column.COLUMN_DEFAULT.toString();
+          defaultValue_Up = defaultValue_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
         }
       }
     #>

@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   WxwAppId,
 } from "@/typings/ids";
@@ -20,7 +19,7 @@ import type {
 } from "#/types";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找企微应用列表
  * @export findAll
  * @param {WxwAppSearch} search?
  * @param {PageInput} page
@@ -71,7 +70,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个企微应用
  * @export findOne
  * @param {WxwAppSearch} search?
  * @param {Sort[]} sort?
@@ -118,7 +117,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找企微应用总数
  * @export findCount
  * @param {WxwAppSearch} search?
  * @param {GqlOpt} opt?
@@ -144,7 +143,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条企微应用
  * @export create
  * @param {WxwAppInput} model
  * @param {UniqueType} unique_type?
@@ -173,7 +172,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条企微应用
  * @export updateById
  * @param {WxwAppId} id
  * @param {WxwAppInput} model
@@ -202,7 +201,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条企微应用
  * @export findById
  * @param {WxwAppId} id
  * @param {GqlOpt} opt?
@@ -243,7 +242,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微应用
  * @export deleteByIds
  * @param {WxwAppId[]} ids
  * @param {GqlOpt} opt?
@@ -269,7 +268,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用企微应用
  * @export enableByIds
  * @param {WxwAppId[]} ids
  * @param {0 | 1} is_enabled
@@ -298,7 +297,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁企微应用
  * @export lockByIds
  * @param {WxwAppId[]} ids
  * @param {0 | 1} is_locked
@@ -327,7 +326,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原企微应用
  * @export revertByIds
  * @param {WxwAppId[]} ids
  * @param {GqlOpt} opt?
@@ -353,7 +352,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微应用
  * @export forceDeleteByIds
  * @param {WxwAppId[]} ids
  * @param {GqlOpt} opt?

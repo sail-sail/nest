@@ -9,9 +9,6 @@ import type {
   WxwAppTokenFieldComment as WxwAppTokenFieldCommentType,
 } from "/gen/types.ts";
 
-declare const wxwAppTokenId: unique symbol;
-export type WxwAppTokenId = typeof wxwAppTokenId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const wxwAppTokenId: unique symbol;
+export type WxwAppTokenId = Distinct<string, typeof wxwAppTokenId>;
 
 export interface WxwAppTokenSearch extends WxwAppTokenSearchType {
   tenant_id?: string | null;
