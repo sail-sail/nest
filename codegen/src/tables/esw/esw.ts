@@ -51,11 +51,13 @@ export default defineConfig({
       {
         COLUMN_NAME: "integral",
         width: 100,
+        sortable: true,
       },
       {
         COLUMN_NAME: "growth_amt",
         width: 100,
         readonly: true,
+        sortable: true,
       },
       {
         COLUMN_NAME: "is_default",
