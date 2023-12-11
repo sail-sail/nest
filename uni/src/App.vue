@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
@@ -15,11 +16,11 @@ import {
 // #endif
 
 onLaunch((async(options?: App.LaunchShowOption) => {
-  const indexStore = useIndexStore();
-  indexStore.setLaunchOptions(options);
+  const indexStore = useIndexStore(cfg.pinia);
+  indexStore.launchOptions = options;
   
   const systemInfo = uni.getSystemInfoSync();
-  indexStore.setSystemInfo(systemInfo);
+  indexStore.systemInfo = systemInfo;
   
   // #ifdef H5
   await initWxoCfg();
