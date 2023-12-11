@@ -1,9 +1,16 @@
 import type {
   WxappConfigSearch,
   WxappConfigModel as WxappConfigModel0,
+  PtTypeSearch,
+  PageInput,
+  PtTypeModel as PtTypeModel0,
 } from "#/types";
 
 type WxappConfigModel = WxappConfigModel0 & {
+  img_urls: string[];
+};
+
+type PtTypeModel = PtTypeModel0 & {
   img_urls: string[];
 };
 
@@ -47,7 +54,7 @@ export async function findOne(
         id: img_id,
         width: 750,
       });
-      model.img_urls.push(img_url);
+      model.img_urls.push(img_url || "");
     }
   }
   return model;
@@ -68,7 +75,7 @@ export async function findAllPtType(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPtType: Query["findAllPtType"];
+    findAllPtType: PtTypeModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -98,7 +105,7 @@ export async function findAllPtType(
         id: img_id,
         width: 750,
       });
-      model.img_urls.push(img_url);
+      model.img_urls.push(img_url || "");
     }
   }
   return res;
