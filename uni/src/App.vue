@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
@@ -7,8 +8,12 @@ import { checkLogin } from "./pages/index/Api";
 // #endif
 
 onLaunch((async(options: any) => {
-  const indexStore = useIndexStore();
-  indexStore.setLaunchOptions(options);
+  const indexStore = useIndexStore(cfg.pinia);
+  indexStore.launchOptions = options;
+  
+  const systemInfo = uni.getSystemInfoSync();
+  indexStore.systemInfo = systemInfo;
+  
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({
