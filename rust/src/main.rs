@@ -1,18 +1,14 @@
 #![forbid(unsafe_code)]
 
-// Use Jemalloc only for musl-64 bits platforms
-#[cfg(all(target_env = "musl", target_pointer_width = "64"))]
+#[cfg(not(target_env = "msvc"))]
 #[global_allocator]
-static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
 #[macro_use]
 extern crate derive_new;
 
 #[macro_use]
 extern crate lazy_static;
-
-// #[macro_use]
-// extern crate app_macro;
 
 mod common;
 mod gen;

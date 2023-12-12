@@ -5,7 +5,9 @@
     "target": true,
     "Cargo.lock": true,
     ".cargo": true,
-    "app_macro": true
+    "app_macro": true,
+    ".clippy.toml": true,
+    ".editorconfig": true
   },
   "search.exclude": {
     "node_modules": true,
@@ -13,7 +15,9 @@
     "target": true,
     "Cargo.lock": true,
     ".cargo": true,
-    "app_macro": true
+    "app_macro": true,
+    ".clippy.toml": true,
+    ".editorconfig": true
   },
   "deno.enable": false,
   "files.eol": "\n",
