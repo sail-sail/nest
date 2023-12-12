@@ -1,4 +1,6 @@
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -13,11 +15,12 @@ import type {
 } from "/gen/base/dept/dept.model.ts";
 
 export async function getAuthDeptIds() {
-  const authModel = await authDao.getAuthModel(false);
+  const authModel = await getAuthModel(false);
   if (!authModel) {
     return [ ];
   }
-  const usrModel = await findByIdUsr(authModel.id);
+  const usr_id = authModel.id;
+  const usrModel = await findByIdUsr(usr_id);
   if (!usrModel || !usrModel.is_enabled) {
     return [ ];
   }
@@ -25,7 +28,10 @@ export async function getAuthDeptIds() {
   return dept_ids;
 }
 
-export async function getParentsById(ids: DeptId[], parent_ids: DeptId[]) {
+export async function getParentsById(
+  ids: DeptId[],
+  parent_ids: DeptId[],
+) {
   if (ids.length === 0) {
     return;
   }
