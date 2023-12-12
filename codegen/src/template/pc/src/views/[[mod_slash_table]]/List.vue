@@ -327,13 +327,10 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <el-input-number
+          <CustomInputNumber
             v-model="search.<#=column_name#>"
-            un-w="full"
-            :controls="false"
-            clearable
             @clear="onSearchClear"
-          ></el-input-number>
+          ></CustomInputNumber>
         </el-form-item>
       </template><#
       } else {
@@ -343,13 +340,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
         >
-          <el-input
+          <CustomInput
             v-model="search.<#=column_name#>_like"
-            un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-            clearable
             @clear="onSearchClear"
-          ></el-input>
+          ></CustomInput>
         </el-form-item>
       </template><#
       }
@@ -846,6 +841,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         size="small"
         height="100%"
         row-key="id"
+        :default-sort="defaultSort"
         :empty-text="inited ? undefined : ns('加载中...')"<#
         if (hasSummary) {
         #>
@@ -2435,19 +2431,6 @@ let sort = $ref<Sort>({
   ...defaultSort,
 });
 
-let defaultSortBy = $computed(() => {
-  const column = tableColumns.find((item) => {
-    const sortBy = item.sortBy || item.prop || "";
-    return item.sortBy === sortBy;
-  });
-  const prop = column?.prop || "";
-  const order = sort.order;
-  return {
-    prop,
-    order,
-  } as Sort;
-});
-
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
@@ -2459,13 +2442,13 @@ async function onSortChange(
     await dataGrid();
     return;
   }
-  let sortBy = "";
+  let prop2 = "";
   if (Array.isArray(column.sortBy)) {
-    sortBy = column.sortBy[0];
+    prop2 = column.sortBy[0];
   } else {
-    sortBy = (column.sortBy as string) || prop || "";
+    prop2 = (column.sortBy as string) || prop || "";
   }
-  sort.prop = sortBy;
+  sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
 }<#

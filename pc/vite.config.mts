@@ -58,6 +58,9 @@ export default defineConfig({
           "@/components/CustomDialog.vue": [
             [ "default", "CustomDialog" ],
           ],
+          "@/components/CustomInput.vue": [
+            [ "default", "CustomInput" ],
+          ],
         },
         {
           "@/utils/common": [
