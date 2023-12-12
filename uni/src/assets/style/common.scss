@@ -12,3 +12,16 @@ tm-app.n-flex {
     overflow: hidden;
   }
 }
+
+tm-side-menu {
+  flex: 1 0 0;
+  overflow: hidden;
+  > view {
+    flex: 1 0 0;
+    overflow: hidden;
+  }
+}
+
+tm-sheet {
+  display: flex;
+}

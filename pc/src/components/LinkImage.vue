@@ -13,6 +13,7 @@
   >
     <el-image
       v-for="(url, i) in urlList"
+      v-bind="$attrs"
       :key="url"
       :src="url"
       fit="contain"

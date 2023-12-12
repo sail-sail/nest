@@ -9,9 +9,6 @@ import type {
   OrgFieldComment as OrgFieldCommentType,
 } from "/gen/types.ts";
 
-declare const orgId: unique symbol;
-export type OrgId = typeof orgId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const orgId: unique symbol;
+export type OrgId = Distinct<string, typeof orgId>;
 
 export interface OrgSearch extends OrgSearchType {
   tenant_id?: string | null;

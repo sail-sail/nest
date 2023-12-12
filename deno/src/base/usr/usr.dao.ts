@@ -34,7 +34,8 @@ export async function findLoginUsr(
   const sql = /*sql*/`
     select
       t.id,
-      t.default_org_id
+      t.default_org_id,
+      t.is_hidden
     from base_usr t
     where
       t.is_deleted = 0
@@ -47,6 +48,7 @@ export async function findLoginUsr(
   const model = await queryOne<{
     id: UsrId,
     default_org_id: OrgId,
+    is_hidden: 0|1,
   }>(sql, args);
   return model;
 }

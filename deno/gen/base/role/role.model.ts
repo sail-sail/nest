@@ -9,9 +9,6 @@ import type {
   RoleFieldComment as RoleFieldCommentType,
 } from "/gen/types.ts";
 
-declare const roleId: unique symbol;
-export type RoleId = typeof roleId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const roleId: unique symbol;
+export type RoleId = Distinct<string, typeof roleId>;
 
 export interface RoleSearch extends RoleSearchType {
   tenant_id?: string | null;

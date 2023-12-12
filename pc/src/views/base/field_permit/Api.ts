@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   FieldPermitId,
 } from "@/typings/ids";
@@ -24,7 +23,7 @@ import {
 } from "@/views/base/menu/Api";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找字段权限列表
  * @export findAll
  * @param {FieldPermitSearch} search?
  * @param {PageInput} page
@@ -77,7 +76,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个字段权限
  * @export findOne
  * @param {FieldPermitSearch} search?
  * @param {Sort[]} sort?
@@ -126,7 +125,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找字段权限总数
  * @export findCount
  * @param {FieldPermitSearch} search?
  * @param {GqlOpt} opt?
@@ -152,7 +151,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条字段权限
  * @export create
  * @param {FieldPermitInput} model
  * @param {UniqueType} unique_type?
@@ -181,7 +180,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条字段权限
  * @export updateById
  * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
@@ -210,7 +209,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条字段权限
  * @export findById
  * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
@@ -253,7 +252,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除字段权限
  * @export deleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
@@ -279,7 +278,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原字段权限
  * @export revertByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
@@ -305,7 +304,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除字段权限
  * @export forceDeleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?

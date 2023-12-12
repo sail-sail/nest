@@ -9,12 +9,12 @@ import type {
   MenuFieldComment as MenuFieldCommentType,
 } from "/gen/types.ts";
 
-declare const menuId: unique symbol;
-export type MenuId = typeof menuId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const menuId: unique symbol;
+export type MenuId = Distinct<string, typeof menuId>;
 
 export interface MenuSearch extends MenuSearchType {
   $extra?: SearchExtra[];
