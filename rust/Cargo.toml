@@ -19,7 +19,7 @@ futures-util = "0.3"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
-tokio = { version = "1.34", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+tokio = { version = "1.35", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "1.3", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics"], default-features = false }
 async-graphql = { version = "6.0", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.1", features = ["serde"] }
@@ -28,29 +28,29 @@ chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "1.4"
 anyhow = "1.0"
 sqlx = { version = "0.7", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
-dotenv = "0.15.0"
+dotenv = "0.15"
 rust-s3 = { version = "0.33", features = ["tokio-rustls-tls", "tokio-stream", "no-verify-ssl"], default-features = false }
 async-trait = "0.1"
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
 sha2 = "0.10"
 hmac = { version = "0.12", features = ["reset"] }
-# protobuf = "3.2"
+# protobuf = "3.3"
 hex-literal = "0.4"
 hex = "0.4"
 base64 = "0.21"
 utf8_slice = "1.0"
-derive-new = "0.5"
+derive-new = "0.6"
 reqwest = { version = "0.11", features = ["rustls-tls", "json", "serde_json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 sqlformat = "0.2"
 smallvec = { version = "1.11", features = ["union", "serde"] }
 # downcast-rs = "1.2"
-uuid = { version = "1.5", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.6", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.10"
 deadpool-redis = "0.13"
-redis = { version = "0.23", features = ["tokio-rustls-comp"], default-features = false }
+redis = { version = "0.24", features = ["tokio-rustls-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
@@ -78,8 +78,8 @@ derive_more = "0.99"
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"
 
-[target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
-version = "0.5"
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = "0.5"
 
 # [build.dependencies]
 # protobuf = "3.2"

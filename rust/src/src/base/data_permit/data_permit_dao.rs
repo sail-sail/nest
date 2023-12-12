@@ -28,10 +28,11 @@ pub async fn get_data_permits(
     return Ok(vec![]);
   }
   let menu_model = menu_model.unwrap();
+  let menu_id = menu_model.id;
   
   let data_permit_models = find_all_permit(
     DataPermitSearch {
-      menu_id: vec![menu_model.id].into(),
+      menu_id: vec![menu_id].into(),
       ..Default::default()
     }.into(),
     None,
