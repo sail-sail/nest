@@ -130,7 +130,7 @@
         
         <el-button
           plain
-          @click="searchReset"
+          @click="onSearchReset"
         >
           <template #icon>
             <ElIconDelete />
@@ -781,11 +781,12 @@ async function onRefresh() {
 }
 
 /** 重置搜索 */
-async function searchReset() {
+async function onSearchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
+  await nextTick();
   await dataGrid(true);
 }
 
