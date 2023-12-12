@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   TenantId,
 } from "@/typings/ids";
@@ -17,6 +16,9 @@ import type {
 
 import type {
   DomainSearch,
+} from "#/types";
+
+import type {
   MenuSearch,
 } from "#/types";
 
@@ -25,7 +27,7 @@ import {
 } from "@/views/base/menu/Api";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找租户列表
  * @export findAll
  * @param {TenantSearch} search?
  * @param {PageInput} page
@@ -82,7 +84,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个租户
  * @export findOne
  * @param {TenantSearch} search?
  * @param {Sort[]} sort?
@@ -135,7 +137,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找租户总数
  * @export findCount
  * @param {TenantSearch} search?
  * @param {GqlOpt} opt?
@@ -161,7 +163,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条租户
  * @export create
  * @param {TenantInput} model
  * @param {UniqueType} unique_type?
@@ -190,7 +192,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条租户
  * @export updateById
  * @param {TenantId} id
  * @param {TenantInput} model
@@ -219,7 +221,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条租户
  * @export findById
  * @param {TenantId} id
  * @param {GqlOpt} opt?
@@ -266,7 +268,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除租户
  * @export deleteByIds
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
@@ -292,7 +294,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用租户
  * @export enableByIds
  * @param {TenantId[]} ids
  * @param {0 | 1} is_enabled
@@ -321,7 +323,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁租户
  * @export lockByIds
  * @param {TenantId[]} ids
  * @param {0 | 1} is_locked
@@ -350,7 +352,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原租户
  * @export revertByIds
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
@@ -376,7 +378,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除租户
  * @export forceDeleteByIds
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?

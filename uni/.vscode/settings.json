@@ -46,7 +46,6 @@
   "less.validate": false,
   "scss.validate": false,
   "unocss.root": "",
-  "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "terminal.integrated.confirmOnKill": "never",

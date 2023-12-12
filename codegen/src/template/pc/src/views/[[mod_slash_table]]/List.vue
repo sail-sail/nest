@@ -865,7 +865,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.delete="onDeleteByIds"<#
         }
         #>
-        @keyup.enter="onRowEnter"
+        @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -936,6 +936,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <LinkImage
                   v-model="row[column.property]"
+                  un-h="8"
                 ></LinkImage>
               </template>
             </el-table-column>
