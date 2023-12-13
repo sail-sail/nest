@@ -25,7 +25,8 @@
     "**/__unconfig_vite.config.ts": true,
     "deno/tmp/**": true,
     "**/.eslintrc-auto-import.json": true,
-    "**/vite.config.mts.timestamp-*.mjs": true
+    "**/vite.config.mts.timestamp-*.mjs": true,
+    "**/.npmrc": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -55,7 +56,8 @@
     "web": true,
     "**/*/types.ts": true,
     "**/.eslintrc-auto-import.json": true,
-    "**/vite.config.mts.timestamp-*.mjs": true
+    "**/vite.config.mts.timestamp-*.mjs": true,
+    "**/.npmrc": true
   },
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",

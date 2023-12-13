@@ -19,7 +19,8 @@
     "**/@rsw": true,
     "**/__unconfig_vite.config.ts": true,
     "tmp/**": true,
-    "**/.eslintrc-auto-import.json": true
+    "**/.eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -43,7 +44,8 @@
     "**/@rsw": true,
     "**/.nuxt/**": true,
     "**/*/types.ts": true,
-    "**/.eslintrc-auto-import.json": true
+    "**/.eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
