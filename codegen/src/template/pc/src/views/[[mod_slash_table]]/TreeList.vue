@@ -54,10 +54,8 @@ if (typeof list_tree === "string") {
       un-p="y-1 x-0.5"
       un-box-border
     >
-      <el-input
+      <CustomInput
         v-model="search_value"
-        :clearable="true"
-        un-w="full"
         @clear="onSearchClear"
       >
         <template #prefix>
@@ -65,7 +63,7 @@ if (typeof list_tree === "string") {
             <ElIconSearch />
           </el-icon>
         </template>
-      </el-input>
+      </CustomInput>
     </div>
     <div
       un-flex="~ [1_0_0] col"
