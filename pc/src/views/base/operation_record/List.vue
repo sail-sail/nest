@@ -630,6 +630,9 @@ const emit = defineEmits<{
   ],
   refresh: [ ],
   beforeSearchReset: [ ],
+  rowEnter: [
+    KeyboardEvent,
+  ],
 }>();
 
 /** 表格 */
@@ -1101,6 +1104,10 @@ async function onCancelExport() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
+  if (props.selectedIds != null) {
+    emit("rowEnter", e);
+    return;
+  }
   if (e.ctrlKey) {
   } else if (e.shiftKey) {
   } else {
