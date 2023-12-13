@@ -14,7 +14,7 @@ use super::tmpfile_service;
 #[handler]
 pub async fn upload(
   mut multipart: Multipart,
-) -> Result<String> {
+) -> Result<Response> {
   let mut file_name = String::new();
   let mut content_type: Option<String> = None;
   let mut content: Option<Vec<u8>> = None;
@@ -31,13 +31,26 @@ pub async fn upload(
     }
   }
   if content.is_none() {
-    return Ok("".to_owned());
+    let mut response = Response::builder();
+    response = response.header("Content-Type", "application/json");
+    let response = response.body(json!({
+      "code": 1,
+      "msg": "上传失败",
+      "data": null,
+    }).to_string());
+    return Ok(response);
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
   let id = get_short_uuid();
   tmpfile_service::put_object(id.as_str(), &content, &content_type, &file_name).await?;
-  Ok(id.to_string())
+  let mut response = Response::builder();
+  response = response.header("Content-Type", "application/json");
+  let response = response.body(json!({
+    "code": 0,
+    "data": id,
+  }).to_string());
+  Ok(response)
 }
 
 #[handler]
