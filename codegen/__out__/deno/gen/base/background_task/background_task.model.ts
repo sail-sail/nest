@@ -9,9 +9,6 @@ import type {
   BackgroundTaskFieldComment as BackgroundTaskFieldCommentType,
 } from "/gen/types.ts";
 
-declare const backgroundTaskId: unique symbol;
-export type BackgroundTaskId = typeof backgroundTaskId;
-
 import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
@@ -19,6 +16,9 @@ import type {
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const backgroundTaskId: unique symbol;
+export type BackgroundTaskId = Distinct<string, typeof backgroundTaskId>;
 
 export interface BackgroundTaskSearch extends BackgroundTaskSearchType {
   tenant_id?: string | null;

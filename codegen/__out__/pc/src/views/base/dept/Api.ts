@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   DeptId,
 } from "@/typings/ids";
@@ -25,7 +24,7 @@ import {
 } from "@/views/base/dept/Api";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找部门列表
  * @export findAll
  * @param {DeptSearch} search?
  * @param {PageInput} page
@@ -82,7 +81,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个部门
  * @export findOne
  * @param {DeptSearch} search?
  * @param {Sort[]} sort?
@@ -139,7 +138,7 @@ export type DeptModelTree = DeptModel & {
 }
 
 /**
- * 查找树形数据
+ * 查找部门树形列表
  * @param sort 
  * @param opt 
  * @returns 
@@ -160,7 +159,7 @@ export async function findTree(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找部门总数
  * @export findCount
  * @param {DeptSearch} search?
  * @param {GqlOpt} opt?
@@ -186,7 +185,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条部门
  * @export create
  * @param {DeptInput} model
  * @param {UniqueType} unique_type?
@@ -215,7 +214,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条部门
  * @export updateById
  * @param {DeptId} id
  * @param {DeptInput} model
@@ -244,7 +243,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条部门
  * @export findById
  * @param {DeptId} id
  * @param {GqlOpt} opt?
@@ -291,7 +290,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除部门
  * @export deleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
@@ -317,7 +316,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用部门
  * @export enableByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
@@ -346,7 +345,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁部门
  * @export lockByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
@@ -375,7 +374,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原部门
  * @export revertByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
@@ -401,7 +400,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除部门
  * @export forceDeleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?

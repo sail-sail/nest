@@ -40,10 +40,6 @@ export default defineStore("index", function() {
   
   let launchOptions = $ref<{[key: string]: any}>({ });
   
-  function setLaunchOptions(options: typeof launchOptions) {
-    launchOptions = options;
-  }
-  
   let uid = $ref("");
   
   function setUid(uid0: typeof uid) {
@@ -54,9 +50,9 @@ export default defineStore("index", function() {
     loading,
     launchOptions,
     uid,
+    systemInfo: systemInfo as UniApp.GetSystemInfoResult,
     addLoading,
     minusLoading,
-    setLaunchOptions,
     setUid,
     setSystemInfo,
     getUserAgent,

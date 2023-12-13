@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   MenuId,
 } from "@/typings/ids";
@@ -16,15 +15,12 @@ import type {
   MenuModel,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找菜单列表
  * @export findAll
  * @param {MenuSearch} search?
  * @param {PageInput} page
@@ -83,7 +79,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个菜单
  * @export findOne
  * @param {MenuSearch} search?
  * @param {Sort[]} sort?
@@ -142,7 +138,7 @@ export type MenuModelTree = MenuModel & {
 }
 
 /**
- * 查找树形数据
+ * 查找菜单树形列表
  * @param sort 
  * @param opt 
  * @returns 
@@ -163,7 +159,7 @@ export async function findTree(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找菜单总数
  * @export findCount
  * @param {MenuSearch} search?
  * @param {GqlOpt} opt?
@@ -189,7 +185,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条菜单
  * @export create
  * @param {MenuInput} model
  * @param {UniqueType} unique_type?
@@ -218,7 +214,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条菜单
  * @export updateById
  * @param {MenuId} id
  * @param {MenuInput} model
@@ -247,7 +243,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条菜单
  * @export findById
  * @param {MenuId} id
  * @param {GqlOpt} opt?
@@ -296,7 +292,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除菜单
  * @export deleteByIds
  * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
@@ -322,7 +318,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用菜单
  * @export enableByIds
  * @param {MenuId[]} ids
  * @param {0 | 1} is_enabled
@@ -351,7 +347,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁菜单
  * @export lockByIds
  * @param {MenuId[]} ids
  * @param {0 | 1} is_locked
@@ -380,7 +376,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原菜单
  * @export revertByIds
  * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
@@ -406,7 +402,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除菜单
  * @export forceDeleteByIds
  * @param {MenuId[]} ids
  * @param {GqlOpt} opt?

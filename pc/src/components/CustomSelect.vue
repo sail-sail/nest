@@ -39,12 +39,13 @@
   <div
     v-if="props.multiple"
     un-flex="~ gap-1 wrap"
+    un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="y-0.75 x-1.5"
+    un-p="x-2"
     un-box-border
     un-rounded
     un-w="full"
-    un-min="h-7.5"
+    un-min="h-8"
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
@@ -59,7 +60,7 @@
       <span
         class="custom_select_placeholder"
       >
-        {{ placeholder ?? "" }}
+        {{ props.readonlyPlaceholder ?? "" }}
       </span>
     </template>
     <template
@@ -76,8 +77,10 @@
   </div>
   <div
     v-else
+    un-flex="~ gap-1 wrap"
+    un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2"
     un-box-border
     un-rounded
     un-w="full"

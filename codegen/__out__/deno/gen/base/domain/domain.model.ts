@@ -9,12 +9,12 @@ import type {
   DomainFieldComment as DomainFieldCommentType,
 } from "/gen/types.ts";
 
-declare const domainId: unique symbol;
-export type DomainId = typeof domainId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const domainId: unique symbol;
+export type DomainId = Distinct<string, typeof domainId>;
 
 export interface DomainSearch extends DomainSearchType {
   $extra?: SearchExtra[];

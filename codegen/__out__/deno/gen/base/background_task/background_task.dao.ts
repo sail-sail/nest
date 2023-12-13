@@ -272,7 +272,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找后台任务列表
  * @param {BackgroundTaskSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -500,7 +500,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取后台任务字段注释
  */
 export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
   const n = initN(route_path);
@@ -531,7 +531,7 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得后台任务列表
  * @param {BackgroundTaskInput} search0
  */
 export async function findByUnique(
@@ -569,7 +569,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查后台任务是否已经存在
  * @param {BackgroundTaskInput} input
  * @param {BackgroundTaskModel} oldModel
  * @param {UniqueType} uniqueType
@@ -608,7 +608,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个后台任务
  * @param {BackgroundTaskSearch} search?
  */
 export async function findOne(
@@ -627,7 +627,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找后台任务
  * @param {BackgroundTaskId} id
  */
 export async function findById(
@@ -643,7 +643,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断后台任务是否存在
  * @param {BackgroundTaskSearch} search?
  */
 export async function exist(
@@ -657,7 +657,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断后台任务是否存在
  * @param {BackgroundTaskId} id
  */
 export async function existById(
@@ -694,7 +694,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验后台任务是否存在 */
 export async function validateOption(
   model?: BackgroundTaskModel,
 ) {
@@ -705,7 +705,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 后台任务增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -779,7 +779,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建后台任务
  * @param {BackgroundTaskInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -946,7 +946,7 @@ export async function create(
 }
 
 /**
- * 根据id修改租户id
+ * 后台任务根据id修改租户id
  * @param {BackgroundTaskId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -983,7 +983,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改后台任务
  * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
  * @param {({
@@ -1161,7 +1161,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原后台任务
  * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
@@ -1214,7 +1214,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除后台任务
  * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */

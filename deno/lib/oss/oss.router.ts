@@ -177,15 +177,20 @@ router.get("img", async function(ctx) {
     let is_img = false;
     if (stats.contentType) {
       const contentType = stats.contentType.toLowerCase();
-      if (contentType.startsWith("image/")) {
+      if (contentType.startsWith("image/") && !contentType.startsWith("image/svg")) {
         is_img = true;
       }
     }
     if (!is_img) {
-      const err = new Error("NotFound");
-      // deno-lint-ignore no-explicit-any
-      (err as any).code = "NotFound";
-      throw err;
+      const objInfo = await ossServie.getObject(id);
+      if (!objInfo || !objInfo.body) {
+        const err = new Error("NotFound");
+        // deno-lint-ignore no-explicit-any
+        (err as any).code = "NotFound";
+        throw err;
+      }
+      response.body = objInfo.body;
+      return;
     }
     // 如果缩略图已经存在, 则直接返回
     let cache_id = id;

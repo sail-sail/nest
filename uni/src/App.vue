@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
+
+// #ifdef MP
+import { checkLogin } from "./pages/index/Api";
+// #endif
 
 // #ifdef H5
 import {
@@ -9,11 +14,11 @@ import {
 // #endif
 
 onLaunch((async(options: any) => {
-  const indexStore = useIndexStore();
-  indexStore.setLaunchOptions(options);
+  const indexStore = useIndexStore(cfg.pinia);
+  indexStore.launchOptions = options;
   
-  const systemInfo = await uni.getSystemInfo();
-  indexStore.setSystemInfo(systemInfo);
+  const systemInfo = uni.getSystemInfoSync();
+  indexStore.systemInfo = systemInfo;
   
   // #ifdef H5
   await initWxWorkCfg();
@@ -34,6 +39,10 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
+  
+  // #ifdef MP
+  await checkLogin();
+  // #endif
 }));
 </script>
 <style lang="scss">
