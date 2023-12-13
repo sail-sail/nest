@@ -43,7 +43,8 @@ export async function findAllPtTypeAndPt(
   for (const ptTypeModel of ptTypeModels) {
     ptTypeModel.ptModels = ptTypeModel.ptModels || [ ];
     for (const ptModel of ptModels) {
-      if (ptModel.pt_type_ids.includes(ptTypeModel.id)) {
+      const pt_type_ids = ptModel.pt_type_ids || [ ];
+      if (pt_type_ids.includes(ptTypeModel.id)) {
         ptTypeModel.ptModels.push(ptModel);
       }
     }
