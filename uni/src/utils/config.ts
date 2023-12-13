@@ -1,5 +1,9 @@
 import pages from "@/pages.json";
 
+import type {
+  Pinia,
+} from "pinia";
+
 let host = "";
 let port: string | undefined = undefined;
 let protocol = "http:";
@@ -61,7 +65,20 @@ if(port) {
   wss += `:${port}`;
 }
 
-const config = {
+const config: {
+  urlBase: string;
+  url: string;
+  wss: string;
+  host: string;
+  port: string | undefined;
+  protocol: string;
+  wsProt: string;
+  homePage: string;
+  domain: string;
+  appid: string;
+  agentid: string;
+  pinia: Pinia | undefined;
+} = {
   urlBase,
   url,
   wss,

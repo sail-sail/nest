@@ -28,14 +28,13 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     dialog_visible: dialog_visible,
   }"
 >
-  <el-input
+  <CustomInput
     v-bind="$attrs"
     ref="inputRef"
     @click="onInput"
     v-model="inputValue"
     @clear="onClear"
     readonly
-    clearable
     :placeholder="props.placeholder"
     @mouseenter="mouseEnter"
     @mouseleave="mouseLeave"
@@ -89,7 +88,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
       </template>
     </template>
-  </el-input>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
