@@ -65,7 +65,6 @@
 </template>
 
 <script lang="ts" setup>
-
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
   (e: "change", value?: any): void,
@@ -90,6 +89,8 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
   },
 );
+
+const t = getCurrentInstance()!.proxy!;
 
 let modelValue = $ref(props.modelValue);
 
@@ -123,4 +124,8 @@ function onClear() {
   emit("update:modelValue", modelValue);
   emit("clear");
 }
+
+defineExpose({
+  inputRef: $$(inputRef),
+});
 </script>

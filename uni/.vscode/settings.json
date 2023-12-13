@@ -18,7 +18,8 @@
     "**/node_modules/**": true,
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
-    ".eslintrc-auto-import.json": true
+    ".eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -39,7 +40,8 @@
     "**/node_modules/**": true,
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
-    ".eslintrc-auto-import.json": true
+    ".eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "deno.enable": false,
   "css.validate": false,
