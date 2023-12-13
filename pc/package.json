@@ -11,6 +11,7 @@
     "rsw:build": "rsw && npm run build",
     "typecheck": "vue-tsc --noEmit --skipLibCheck",
     "lint": "eslint --ext .ts,.vue src",
+    "codegen": "cd .. && npm run codegen",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node src/utils/postinstall.js"
   },

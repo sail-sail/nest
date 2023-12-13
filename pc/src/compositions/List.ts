@@ -310,6 +310,8 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向上按键
    */
   function onRowUp(e: KeyboardEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.ctrlKey) {
       onRowCtrlUp();
       return;
@@ -409,6 +411,8 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向下按键
    */
   function onRowDown(e: KeyboardEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.ctrlKey) {
       onRowCtrlDown();
       return;
