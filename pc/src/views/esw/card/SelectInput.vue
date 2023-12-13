@@ -6,14 +6,13 @@
     dialog_visible: dialog_visible,
   }"
 >
-  <el-input
+  <CustomInput
     v-bind="$attrs"
     ref="inputRef"
     @click="onInput"
     v-model="inputValue"
     @clear="onClear"
     readonly
-    clearable
     :placeholder="props.placeholder"
     @mouseenter="mouseEnter"
     @mouseleave="mouseLeave"
@@ -67,7 +66,7 @@
         </template>
       </template>
     </template>
-  </el-input>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
