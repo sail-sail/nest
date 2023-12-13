@@ -153,7 +153,7 @@
         
         <el-button
           plain
-          @click="searchReset"
+          @click="onSearchReset"
         >
           <template #icon>
             <ElIconDelete />
@@ -382,6 +382,7 @@
         size="small"
         height="100%"
         row-key="id"
+        :default-sort="defaultSort"
         :empty-text="inited ? undefined : ns('加载中...')"
         @select="selectChg"
         @select-all="selectChg"
@@ -598,6 +599,9 @@ const emit = defineEmits<{
   ],
   refresh: [ ],
   beforeSearchReset: [ ],
+  rowEnter: [
+    KeyboardEvent,
+  ],
 }>();
 
 /** 表格 */
@@ -632,11 +636,12 @@ async function onRefresh() {
 }
 
 /** 重置搜索 */
-async function searchReset() {
+async function onSearchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
+  await nextTick();
   await dataGrid(true);
 }
 
@@ -989,19 +994,6 @@ let sort = $ref<Sort>({
   ...defaultSort,
 });
 
-let defaultSortBy = $computed(() => {
-  const column = tableColumns.find((item) => {
-    const sortBy = item.sortBy || item.prop || "";
-    return item.sortBy === sortBy;
-  });
-  const prop = column?.prop || "";
-  const order = sort.order;
-  return {
-    prop,
-    order,
-  } as Sort;
-});
-
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<WxwMsgModel> } & Sort,
@@ -1013,13 +1005,13 @@ async function onSortChange(
     await dataGrid();
     return;
   }
-  let sortBy = "";
+  let prop2 = "";
   if (Array.isArray(column.sortBy)) {
-    sortBy = column.sortBy[0];
+    prop2 = column.sortBy[0];
   } else {
-    sortBy = (column.sortBy as string) || prop || "";
+    prop2 = (column.sortBy as string) || prop || "";
   }
-  sort.prop = sortBy;
+  sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
 }
@@ -1044,6 +1036,10 @@ async function onCancelExport() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
+  if (props.selectedIds != null) {
+    emit("rowEnter", e);
+    return;
+  }
   if (e.ctrlKey) {
   } else if (e.shiftKey) {
   } else {

@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ESNext",
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "declaration": false,
     "noImplicitAny": false,
     "strict": true,
