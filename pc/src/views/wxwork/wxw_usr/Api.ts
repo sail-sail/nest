@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   WxwUsrId,
 } from "@/typings/ids";
@@ -15,11 +14,8 @@ import type {
   WxwUsrInput,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找企微用户列表
  * @export findAll
  * @param {WxwUsrSearch} search?
  * @param {PageInput} page
@@ -60,7 +56,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个企微用户
  * @export findOne
  * @param {WxwUsrSearch} search?
  * @param {Sort[]} sort?
@@ -97,7 +93,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找企微用户总数
  * @export findCount
  * @param {WxwUsrSearch} search?
  * @param {GqlOpt} opt?
@@ -123,7 +119,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条企微用户
  * @export create
  * @param {WxwUsrInput} model
  * @param {UniqueType} unique_type?
@@ -152,7 +148,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条企微用户
  * @export updateById
  * @param {WxwUsrId} id
  * @param {WxwUsrInput} model
@@ -181,7 +177,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条企微用户
  * @export findById
  * @param {WxwUsrId} id
  * @param {GqlOpt} opt?
@@ -212,7 +208,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微用户
  * @export deleteByIds
  * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?
@@ -238,7 +234,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原企微用户
  * @export revertByIds
  * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?
@@ -264,7 +260,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微用户
  * @export forceDeleteByIds
  * @param {WxwUsrId[]} ids
  * @param {GqlOpt} opt?

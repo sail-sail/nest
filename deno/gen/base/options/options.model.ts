@@ -9,12 +9,12 @@ import type {
   OptionsFieldComment as OptionsFieldCommentType,
 } from "/gen/types.ts";
 
-declare const optionsId: unique symbol;
-export type OptionsId = typeof optionsId;
-
 import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
+
+declare const optionsId: unique symbol;
+export type OptionsId = Distinct<string, typeof optionsId>;
 
 export interface OptionsSearch extends OptionsSearchType {
   $extra?: SearchExtra[];

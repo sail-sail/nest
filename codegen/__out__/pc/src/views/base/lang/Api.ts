@@ -2,7 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-
 import type {
   LangId,
 } from "@/typings/ids";
@@ -15,11 +14,8 @@ import type {
   LangInput,
 } from "#/types";
 
-import type {
-} from "#/types";
-
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找语言列表
  * @export findAll
  * @param {LangSearch} search?
  * @param {PageInput} page
@@ -71,7 +67,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个语言
  * @export findOne
  * @param {LangSearch} search?
  * @param {Sort[]} sort?
@@ -119,7 +115,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找语言总数
  * @export findCount
  * @param {LangSearch} search?
  * @param {GqlOpt} opt?
@@ -145,7 +141,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
+ * 创建一条语言
  * @export create
  * @param {LangInput} model
  * @param {UniqueType} unique_type?
@@ -174,7 +170,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条语言
  * @export updateById
  * @param {LangId} id
  * @param {LangInput} model
@@ -203,7 +199,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条语言
  * @export findById
  * @param {LangId} id
  * @param {GqlOpt} opt?
@@ -245,7 +241,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除语言
  * @export deleteByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
@@ -271,7 +267,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用语言
  * @export enableByIds
  * @param {LangId[]} ids
  * @param {0 | 1} is_enabled
@@ -300,7 +296,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原语言
  * @export revertByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
@@ -326,7 +322,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除语言
  * @export forceDeleteByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?

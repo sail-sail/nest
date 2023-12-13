@@ -18,7 +18,8 @@
     "**/node_modules/**": true,
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
-    ".eslintrc-auto-import.json": true
+    ".eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -39,14 +40,14 @@
     "**/node_modules/**": true,
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
-    ".eslintrc-auto-import.json": true
+    ".eslintrc-auto-import.json": true,
+    "**/.npmrc": true
   },
   "deno.enable": false,
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
   "unocss.root": "",
-  "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "terminal.integrated.confirmOnKill": "never",

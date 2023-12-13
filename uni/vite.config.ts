@@ -73,6 +73,7 @@ export default defineConfig({
             "request",
             "uploadFile",
             "getDownloadUrl",
+            "getImgUrl",
             "getAttUrl",
             "downloadFile",
             "uniLogin",

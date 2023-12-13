@@ -28,16 +28,17 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     dialog_visible: dialog_visible,
   }"
 >
-  <el-input
+  <CustomInput
     v-bind="$attrs"
+    ref="inputRef"
     @click="onInput"
     v-model="inputValue"
     @clear="onClear"
     readonly
-    clearable
     :placeholder="props.placeholder"
-    @mouseenter="inputEnter"
-    @mouseleave="inputLeave"
+    @mouseenter="mouseEnter"
+    @mouseleave="mouseLeave"
+    @keydown.enter="onEnter"
   >
     <template
       v-for="(item, key, index) in $slots"
@@ -87,8 +88,9 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
       </template>
     </template>
-  </el-input>
+  </CustomInput>
   <SelectList
+    v-bind="$attrs"
     ref="selectListRef"
     @closed="dialog_visible = false;"
     @change="selectListChg"
@@ -102,7 +104,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-p="x-2.75 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
@@ -116,11 +117,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </template>
 
 <script lang="ts" setup>
-import type {
-  MaybeRefOrGetter,
-  WatchStopHandle,
-} from "vue";
-
 import SelectList from "./SelectList.vue";
 
 import {
@@ -191,12 +187,19 @@ watch(
 
 let isHover = $ref(false);
 
-function inputEnter() {
+function mouseEnter() {
   isHover = true;
 }
 
-function inputLeave() {
+function mouseLeave() {
   isHover = false;
+}
+
+async function onEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    return;
+  }
+  await onInput();
 }
 
 function getModelValueArr() {
@@ -205,7 +208,7 @@ function getModelValueArr() {
     if (Array.isArray(modelValue)) {
       modelValueArr = modelValue;
     } else {
-      modelValueArr = modelValue.split(",");
+      modelValueArr = modelValue.split(",") as unknown as <#=Table_Up#>Id[];
     }
   }
   return modelValueArr;
@@ -232,7 +235,7 @@ async function refreshInputValue() {
 }
 
 function onClear() {
-  modelValue = "";
+  modelValue = undefined;
   inputValue = "";
   emit("update:modelValue", modelValue);
   emit("change");
@@ -267,7 +270,7 @@ async function onInput() {
   if (props.multiple) {
     modelValue = selectedIds;
   } else {
-    modelValue = selectedIds[0] || "";
+    modelValue = selectedIds[0];
   }
   emit("update:modelValue", modelValue);
 }

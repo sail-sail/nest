@@ -252,7 +252,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找国际化列表
  * @param {I18Nsearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -384,7 +384,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取国际化字段注释
  */
 export async function getFieldComments(): Promise<I18NfieldComment> {
   const n = initN(route_path);
@@ -410,7 +410,7 @@ export async function getFieldComments(): Promise<I18NfieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得国际化列表
  * @param {I18Ninput} search0
  */
 export async function findByUnique(
@@ -485,7 +485,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查国际化是否已经存在
  * @param {I18Ninput} input
  * @param {I18Nmodel} oldModel
  * @param {UniqueType} uniqueType
@@ -524,7 +524,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个国际化
  * @param {I18Nsearch} search?
  */
 export async function findOne(
@@ -543,7 +543,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找国际化
  * @param {I18nId} id
  */
 export async function findById(
@@ -559,7 +559,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断国际化是否存在
  * @param {I18Nsearch} search?
  */
 export async function exist(
@@ -573,7 +573,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断国际化是否存在
  * @param {I18nId} id
  */
 export async function existById(
@@ -613,7 +613,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验国际化是否存在 */
 export async function validateOption(
   model?: I18Nmodel,
 ) {
@@ -624,7 +624,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 国际化增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -691,7 +691,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建国际化
  * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -846,7 +846,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改国际化
  * @param {I18nId} id
  * @param {I18Ninput} input
  * @param {({
@@ -1013,7 +1013,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
@@ -1072,7 +1072,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */

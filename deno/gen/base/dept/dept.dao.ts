@@ -322,7 +322,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找部门列表
  * @param {DeptSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -542,7 +542,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取部门字段注释
  */
 export async function getFieldComments(): Promise<DeptFieldComment> {
   const n = initN(route_path);
@@ -572,7 +572,7 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得部门列表
  * @param {DeptInput} search0
  */
 export async function findByUnique(
@@ -636,7 +636,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查部门是否已经存在
  * @param {DeptInput} input
  * @param {DeptModel} oldModel
  * @param {UniqueType} uniqueType
@@ -675,7 +675,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个部门
  * @param {DeptSearch} search?
  */
 export async function findOne(
@@ -694,7 +694,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据id查找部门
  * @param {DeptId} id
  */
 export async function findById(
@@ -710,7 +710,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断部门是否存在
  * @param {DeptSearch} search?
  */
 export async function exist(
@@ -724,7 +724,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
+ * 根据id判断部门是否存在
  * @param {DeptId} id
  */
 export async function existById(
@@ -764,7 +764,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验部门是否启用 */
 export async function validateIsEnabled(
   model: DeptModel,
 ) {
@@ -773,7 +773,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验部门是否存在 */
 export async function validateOption(
   model?: DeptModel,
 ) {
@@ -784,7 +784,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 部门增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -837,7 +837,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建部门
  * @param {DeptInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1044,7 +1044,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
+ * 部门根据id修改租户id
  * @param {DeptId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1083,7 +1083,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 部门根据id修改组织id
  * @export
  * @param {DeptId} id
  * @param {OrgId} org_id
@@ -1125,7 +1125,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
+ * 根据id修改部门
  * @param {DeptId} id
  * @param {DeptInput} input
  * @param {({
@@ -1325,8 +1325,8 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
+ * 根据 ID 查找部门是否已启用
+ * 不存在则返回 undefined
  * @param {DeptId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1394,9 +1394,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
+ * 根据 ID 查找部门是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
  * @param {DeptId} id
  * @return {Promise<0 | 1 | undefined>}
  */
@@ -1464,7 +1464,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原部门
  * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
@@ -1523,7 +1523,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除部门
  * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
@@ -1578,7 +1578,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 部门 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

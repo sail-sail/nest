@@ -41,11 +41,10 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
 } from "#/types";
+
 <#
 }
-#>
-
-import type {
+#>import type {
   <#=Table_Up#>Id,
 } from "@/typings/ids";
 
@@ -64,9 +63,7 @@ import type {
   <#=modelName#>,<#
   }
   #>
-} from "#/types";
-
-import type {<#
+} from "#/types";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
 for (let i = 0; i < columns.length; i++) {
@@ -98,10 +95,12 @@ for (let i = 0; i < columns.length; i++) {
   }
   importForeignTables.push(Foreign_Table_Up);
 #>
-  <#=Foreign_Table_Up#>Search,<#
-}
-#>
+
+import type {
+  <#=Foreign_Table_Up#>Search,
 } from "#/types";<#
+}
+#><#
 const importForeignTablesTree = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -189,7 +188,7 @@ import {
 #>
 
 /**
- * 根据搜索条件查找数据
+ * 根据搜索条件查找<#=table_comment#>列表
  * @export findAll
  * @param {<#=searchName#>} search?
  * @param {PageInput} page
@@ -349,7 +348,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一条记录
+ * 根据搜索条件查找第一个<#=table_comment#>
  * @export findOne
  * @param {<#=searchName#>} search?
  * @param {Sort[]} sort?
@@ -511,7 +510,7 @@ export type <#=modelNameTree#> = <#=modelName#> & {
 }
 
 /**
- * 查找树形数据
+ * 查找<#=table_comment#>树形列表
  * @param sort 
  * @param opt 
  * @returns 
@@ -534,7 +533,7 @@ export async function findTree(
 #>
 
 /**
- * 根据搜索条件查找数据总数
+ * 根据搜索条件查找<#=table_comment#>总数
  * @export findCount
  * @param {<#=searchName#>} search?
  * @param {GqlOpt} opt?
@@ -562,7 +561,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找合计
+ * 根据搜索条件查找<#=table_comment#>汇总
  * @param {<#=searchName#>} search
  * @param {GqlOpt} opt?
  */
@@ -606,7 +605,7 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建一条数据
+ * 创建一条<#=table_comment#>
  * @export create
  * @param {<#=inputName#>} model
  * @param {UniqueType} unique_type?
@@ -639,7 +638,7 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据id修改一条数据
+ * 根据id修改一条<#=table_comment#>
  * @export updateById
  * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} model
@@ -670,7 +669,7 @@ export async function updateById(
 #>
 
 /**
- * 通过ID查找一条数据
+ * 通过ID查找一条<#=table_comment#>
  * @export findById
  * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
@@ -814,7 +813,7 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除<#=table_comment#>
  * @export deleteByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
@@ -844,7 +843,7 @@ if (hasDefault && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认<#=table_comment#>
  * @export defaultById
  * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
@@ -874,7 +873,7 @@ if (hasEnabled && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或禁用<#=table_comment#>
  * @export enableByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_enabled
@@ -907,7 +906,7 @@ if (hasLocked && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或解锁<#=table_comment#>
  * @export lockByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
@@ -940,7 +939,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 #>
 
 /**
- * 根据 ids 从回收站还原数据
+ * 根据 ids 从回收站还原<#=table_comment#>
  * @export revertByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
@@ -966,7 +965,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除<#=table_comment#>
  * @export forceDeleteByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
