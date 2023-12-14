@@ -3,19 +3,13 @@ import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
-// #ifdef MP
-import {
-  checkLogin,
-} from "./pages/index/Api";
-// #endif
-
 // #ifdef H5
 import {
   initWxoCfg,
 } from "./utils/WxoUtil";
 // #endif
 
-onLaunch((async(options?: App.LaunchShowOption) => {
+onLaunch((async(options: any) => {
   const indexStore = useIndexStore(cfg.pinia);
   indexStore.launchOptions = options;
   
@@ -41,10 +35,6 @@ onLaunch((async(options?: App.LaunchShowOption) => {
     });
   }
   indexStore.setUid(_uid);
-  
-  // #ifdef MP
-  await checkLogin();
-  // #endif
 }));
 </script>
 <style lang="scss">
