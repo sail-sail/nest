@@ -179,11 +179,7 @@ export function getDownloadUrl(
   type: "oss" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
-  const authorization: string = usrStore.authorization;
   const params = new URLSearchParams();
-  if (authorization) {
-    params.set("authorization", authorization);
-  }
   if (typeof model === "string") {
     model = { id: model };
   }
@@ -203,7 +199,6 @@ export function getDownloadUrl(
 export function getImgUrl(
   model: {
     id: string;
-    authorization?: string;
     format?: "webp" | "png" | "jpeg" | "jpg";
     width?: number;
     height?: number;
@@ -212,14 +207,6 @@ export function getImgUrl(
     inline?: "0"|"1";
   } | string,
 ) {
-  let authorization: string | undefined = undefined;
-  if (typeof model !== "string") {
-    authorization = model.authorization;
-    if (!authorization) {
-      const usrStore = useUsrStore();
-      authorization = usrStore.authorization;
-    }
-  }
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = {
@@ -245,9 +232,6 @@ export function getImgUrl(
   }
   if (model.quality) {
     params.set("q", model.quality.toString());
-  }
-  if (authorization) {
-    params.set("authorization", authorization);
   }
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
 }
