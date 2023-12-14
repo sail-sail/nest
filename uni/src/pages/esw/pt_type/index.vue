@@ -91,6 +91,8 @@ import type {
 
 const indexStore = useIndexStore(cfg.pinia);
 
+const pagePath = "pages/esw/pt_type/index";
+
 let inited = $ref(false);
 
 let sideActiveIdx = $ref(0);
@@ -118,12 +120,31 @@ let sideTextHeight = 30;
 
 // 产品类别
 let ptTypeModels = $ref<Awaited<ReturnType<typeof findAllPtTypeAndPt>>>([ ]);
+
+uni.getStorage({
+  key: `${ pagePath }:ptTypeModels`,
+  success: ({ data }) => {
+    ptTypeModels = data;
+  },
+});
+
 let activePtModels = $computed(() => ptTypeModels[sideActiveIdx]?.ptModels || [ ]);
 
 async function findAllPtTypeAndPtEfc() {
-  ptTypeModels = await findAllPtTypeAndPt({
-    is_deleted: 0,
-    is_enabled: [ 1 ],
+  ptTypeModels = await findAllPtTypeAndPt(
+    {
+      is_deleted: 0,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    undefined,
+    {
+      notLoading: true,
+    },
+  );
+  uni.setStorage({
+    key: `${ pagePath }:ptTypeModels`,
+    data: ptTypeModels,
   });
 }
 

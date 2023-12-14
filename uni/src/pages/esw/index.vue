@@ -100,19 +100,45 @@ import {
 
 let inited = $ref(false);
 
+const pagePath = "/pages/esw/index";
+
 // 小程序配置
 let wxappConfigModel = $ref<Awaited<ReturnType<typeof findOneWxappConfig>>>();
 
+uni.getStorage({
+  key: `${ pagePath }:wxappConfigModel`,
+  success: ({ data }) => {
+    wxappConfigModel = data;
+  },
+});
+
 async function findOneWxappConfigEfc() {
-  wxappConfigModel = await findOneWxappConfig({
-    lbl: "小程序首页顶部轮播图",
-    is_deleted: 0,
-    is_enabled: [ 1 ],
+  wxappConfigModel = await findOneWxappConfig(
+    {
+      lbl: "小程序首页顶部轮播图",
+      is_deleted: 0,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    {
+      notLoading: true,
+    },
+  );
+  uni.setStorage({
+    key: `${ pagePath }:wxappConfigModel`,
+    data: wxappConfigModel,
   });
 }
 
 // 产品类别
 let ptTypeModels = $ref<Awaited<ReturnType<typeof findAllPtType>>>([ ]);
+
+uni.getStorage({
+  key: `${ pagePath }:ptTypeModels`,
+  success: ({ data }) => {
+    ptTypeModels = data;
+  },
+});
 
 let ptTypeModels1 = $computed(() => {
   return [
@@ -128,10 +154,21 @@ let ptTypeModels1 = $computed(() => {
 });
 
 async function findAllPtTypeEfc() {
-  ptTypeModels = await findAllPtType({
-    is_deleted: 0,
-    is_enabled: [ 1 ],
-    is_home: [ 1 ],
+  ptTypeModels = await findAllPtType(
+    {
+      is_deleted: 0,
+      is_enabled: [ 1 ],
+      is_home: [ 1 ],
+    },
+    undefined,
+    undefined,
+    {
+      notLoading: true,
+    },
+  );
+  uni.setStorage({
+    key: `${ pagePath }:ptTypeModels`,
+    data: ptTypeModels,
   });
 }
 
@@ -145,5 +182,6 @@ async function initFrame() {
     inited = true;
   }
 }
+
 initFrame();
 </script>
