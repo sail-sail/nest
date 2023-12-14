@@ -335,6 +335,9 @@ export default defineConfig({
         COLUMN_NAME: "original_price",
       },
       {
+        COLUMN_NAME: "unit",
+      },
+      {
         COLUMN_NAME: "is_new",
       },
       {

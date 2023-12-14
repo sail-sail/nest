@@ -175,6 +175,15 @@ async function getWhereQuery(
       whereQuery += ` and t.original_price <= ${ args.push(search.original_price[1]) }`;
     }
   }
+  if (search?.unit !== undefined) {
+    whereQuery += ` and t.unit = ${ args.push(search.unit) }`;
+  }
+  if (search?.unit === null) {
+    whereQuery += ` and t.unit is null`;
+  }
+  if (isNotEmpty(search?.unit_like)) {
+    whereQuery += ` and t.unit like ${ args.push("%" + sqlLike(search?.unit_like) + "%") }`;
+  }
   if (search?.is_new && !Array.isArray(search?.is_new)) {
     search.is_new = [ search.is_new ];
   }
@@ -628,6 +637,7 @@ export async function getFieldComments(): Promise<PtFieldComment> {
     pt_type_ids_lbl: await n("产品类别"),
     price: await n("价格"),
     original_price: await n("原价"),
+    unit: await n("单位"),
     is_new: await n("新品"),
     is_new_lbl: await n("新品"),
     introduct: await n("简介"),
@@ -883,6 +893,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 单位
+  await validators.chars_max_length(
+    input.unit,
+    10,
+    fieldComments.unit,
+  );
+  
   // 简介
   await validators.chars_max_length(
     input.introduct,
@@ -1040,6 +1057,9 @@ export async function create(
   if (input.original_price !== undefined) {
     sql += `,original_price`;
   }
+  if (input.unit !== undefined) {
+    sql += `,unit`;
+  }
   if (input.is_new !== undefined) {
     sql += `,is_new`;
   }
@@ -1112,6 +1132,9 @@ export async function create(
   }
   if (input.original_price !== undefined) {
     sql += `,${ args.push(input.original_price) }`;
+  }
+  if (input.unit !== undefined) {
+    sql += `,${ args.push(input.unit) }`;
   }
   if (input.is_new !== undefined) {
     sql += `,${ args.push(input.is_new) }`;
@@ -1353,6 +1376,12 @@ export async function updateById(
   if (input.original_price !== undefined) {
     if (input.original_price != oldModel.original_price) {
       sql += `original_price = ${ args.push(input.original_price) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.unit !== undefined) {
+    if (input.unit != oldModel.unit) {
+      sql += `unit = ${ args.push(input.unit) },`;
       updateFldNum++;
     }
   }
