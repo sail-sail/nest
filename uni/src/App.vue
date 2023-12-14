@@ -3,10 +3,6 @@ import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
-// #ifdef MP
-import { checkLogin } from "./pages/index/Api";
-// #endif
-
 onLaunch((async(options: any) => {
   const indexStore = useIndexStore(cfg.pinia);
   indexStore.launchOptions = options;
@@ -29,10 +25,6 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  
-  // #ifdef MP
-  await checkLogin();
-  // #endif
 }));
 </script>
 <style lang="scss">
