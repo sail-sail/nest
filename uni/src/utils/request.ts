@@ -1,7 +1,11 @@
 import cfg from "./config";
 import useIndexStore from "@/store/index";
 import useUsrStore from "@/store/usr";
-import { isEmpty } from "./StringUtil";
+
+import {
+  isEmpty,
+  uniqueID,
+} from "./StringUtil";
 
 export async function uploadFile(config: {
   url?: string;
@@ -396,15 +400,19 @@ export async function uniLogin() {
     const url = new URL(location.href);
     const code = url.searchParams.get("code");
     if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
+      const state = uniqueID();
+      localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
       if (cfg.appid && cfg.agentid) {
-        const url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+        let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
           encodeURIComponent(cfg.appid)
         }&redirect_uri=${
           encodeURIComponent(redirect_uri)
-        }&response_type=code&scope=snsapi_base&state=STATE&agentid=${
-          encodeURIComponent(cfg.agentid)
-        }#wechat_redirect`;
+        }&response_type=code&scope=snsapi_base&state=${ state }`;
+        if (cfg.agentid) {
+          url += `&agentid=${ encodeURIComponent(cfg.agentid) }`;
+        }
+        url += "#wechat_redirect";
         location.replace(url);
         return false;
       }
