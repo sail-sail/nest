@@ -17,61 +17,87 @@
       :height="sideHeight"
       :side-width="sideLeftWidth"
     >
-      <view
-        v-for="(_, i) of Math.ceil(activePtModels.length / 3)"
-        :key="i"
-        un-w="full"
-        :style="{
-          height: (sideItemWidth + sideTextHeight) + 'rpx',
-          paddingTop: sideItemMargin + 'rpx',
-          paddingLeft: sideItemMargin + 'rpx',
-          paddingRight: sideItemMargin + 'rpx',
-          gap: sideItemMargin + 'rpx',
-        }"
-        un-box-border
-        un-flex="~"
+      <temlate
+        v-if="!inited"
       >
         <view
-          v-for="ptModel of activePtModels.slice(i * 3, i * 3 + 3)"
-          :key="ptModel.id"
+          un-text="3 gray center"
+          un-m="t-[100rpx]"
+          un-w="full"
+        >
+          加载中, 请稍后...
+        </view>
+      </temlate>
+      <temlate
+        v-else-if="activePtModels.length === 0"
+      >
+        <view
+          un-text="4 gray center"
+          un-m="t-[100rpx]"
+          un-w="full"
+        >
+          {{ "(" + ptTypeModels[sideActiveIdx]?.lbl + "暂无服务)" }}
+        </view>
+      </temlate>
+      <template
+        v-else
+      >
+        <view
+          v-for="(_, i) of Math.ceil(activePtModels.length / 3)"
+          :key="i"
+          un-w="full"
           :style="{
-            width: (sideItemWidth - sideItemMargin) + 'rpx',
+            height: (sideItemWidth + sideTextHeight) + 'rpx',
+            paddingTop: sideItemMargin + 'rpx',
+            paddingLeft: sideItemMargin + 'rpx',
+            paddingRight: sideItemMargin + 'rpx',
+            gap: sideItemMargin + 'rpx',
           }"
-          un-h="full"
-          un-flex="~ col"
-          @click="onPtDetail(ptModel.id)"
+          un-box-border
+          un-flex="~"
         >
           <view
-            un-flex="~ [1_0_0]"
-            un-overflow-hidden
-            un-justify-center
-            un-items-center
+            v-for="ptModel of activePtModels.slice(i * 3, i * 3 + 3)"
+            :key="ptModel.id"
+            :style="{
+              width: (sideItemWidth - sideItemMargin) + 'rpx',
+            }"
+            un-h="full"
+            un-flex="~ col"
+            @click="onPtDetail(ptModel.id)"
           >
-            <image
-              v-if="ptModel.img_urls.length > 0"
-              width="100%"
-              mode="widthFix"
-              :src="ptModel.img_urls[0]"
-            ></image>
-            <text
-              v-else
-              un-text="3 gray"
+            <view
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-justify-center
+              un-items-center
+            >
+              <image
+                v-if="ptModel.img_urls.length > 0"
+                width="100%"
+                mode="widthFix"
+                :src="ptModel.img_urls[0]"
+              ></image>
+              <text
+                v-else
+                un-text="3 gray"
+              >
+                {{ ptModel.lbl }}
+              </text>
+            </view>
+            <view
+              :style="{
+                height: sideTextHeight + 'rpx',
+              }"
+              un-text="3 [#333333] ellipsis center"
+              un-whitespace-nowrap
+              un-overflow-hidden
             >
               {{ ptModel.lbl }}
-            </text>
-          </view>
-          <view
-            :style="{
-              height: sideTextHeight + 'rpx',
-            }"
-            un-text="3 [#333333] ellipsis center"
-            un-whitespace-nowrap
-            un-overflow-hidden
-          >
-            {{ ptModel.lbl }}
+            </view>
           </view>
         </view>
-      </view>
+      </template>
     </tm-side-menu>
   </view>
   <AppLoading></AppLoading>
@@ -87,11 +113,12 @@ import {
 
 import type {
   PtId,
+  PtTypeId,
 } from "@/typings/ids";
 
 const indexStore = useIndexStore(cfg.pinia);
 
-const pagePath = "pages/esw/pt_type/index";
+const pagePath = "/pages/esw/pt_type/index";
 
 let inited = $ref(false);
 
@@ -142,6 +169,13 @@ async function findAllPtTypeAndPtEfc() {
       notLoading: true,
     },
   );
+  if (fromOnPtTypeId) {
+    const idx = ptTypeModels.findIndex((ptTypeModel) => ptTypeModel.id === fromOnPtTypeId);
+    if (idx !== -1) {
+      sideActiveIdx = idx;
+    }
+    fromOnPtTypeId = undefined;
+  }
   uni.setStorage({
     key: `${ pagePath }:ptTypeModels`,
     data: ptTypeModels,
@@ -176,6 +210,21 @@ async function onPtDetail(id: PtId) {
   });
 }
 
+let fromOnPtTypeId: PtTypeId | undefined = undefined;
+
+uni.$on(pagePath + ":onPtType", (param?: AnyObject) => {
+  const id = param?.id;
+  fromOnPtTypeId = id;
+  if (!id) {
+    return;
+  }
+  const idx = ptTypeModels.findIndex((ptTypeModel) => ptTypeModel.id === id);
+  if (idx === -1) {
+    return;
+  }
+  sideActiveIdx = idx;
+});
+
 async function initFrame() {
   try {
     await Promise.all([
@@ -186,4 +235,8 @@ async function initFrame() {
   }
 }
 initFrame();
+
+onLoad(() => {
+  uni.$emit(pagePath + ":onLoad");
+});
 </script>

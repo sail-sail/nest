@@ -45,6 +45,7 @@ export async function findAll(
           pt_type_ids_lbl
           price
           original_price
+          unit
           is_new
           is_new_lbl
           introduct
@@ -107,6 +108,7 @@ export async function findOne(
           pt_type_ids_lbl
           price
           original_price
+          unit
           is_new
           is_new_lbl
           introduct
@@ -249,6 +251,7 @@ export async function findById(
           pt_type_ids_lbl
           price
           original_price
+          unit
           is_new
           is_new_lbl
           introduct
@@ -485,6 +488,7 @@ export function useDownloadImportTemplate(routePath: string) {
             pt_type_ids_lbl
             price
             original_price
+            unit
             is_new_lbl
             introduct
             order_by
@@ -552,6 +556,7 @@ export function useExportExcel(routePath: string) {
             pt_type_ids_lbl
             price
             original_price
+            unit
             is_new
             is_new_lbl
             introduct
@@ -579,6 +584,7 @@ export function useExportExcel(routePath: string) {
             pt_type_ids_lbl
             price
             original_price
+            unit
             is_new_lbl
             introduct
             is_locked_lbl

@@ -22,6 +22,12 @@
 			}
 		},
 		{
+			"path": "pages/esw/pt_detail/index",
+			"style": {
+				"navigationBarTitleText": "产品"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "uni-app"

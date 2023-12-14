@@ -503,6 +503,15 @@
             </el-table-column>
           </template>
           
+          <!-- 单位 -->
+          <template v-else-if="'unit' === col.prop && (showBuildIn || builtInSearch?.unit == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 新品 -->
           <template v-else-if="'is_new_lbl' === col.prop && (showBuildIn || builtInSearch?.is_new == null)">
             <el-table-column
@@ -857,6 +866,8 @@ const props = defineProps<{
   pt_type_ids_lbl?: string[]; // 产品类别
   price?: string; // 价格
   original_price?: string; // 原价
+  unit?: string; // 单位
+  unit_like?: string; // 单位
   is_new?: string|string[]; // 新品
   introduct?: string; // 简介
   introduct_like?: string; // 简介
@@ -1051,6 +1062,13 @@ function getTableColumns(): ColumnType[] {
       prop: "original_price",
       width: 100,
       align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "单位",
+      prop: "unit",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1433,6 +1451,7 @@ async function onImportExcel() {
     [ await nAsync("产品类别") ]: "pt_type_ids_lbl",
     [ await nAsync("价格") ]: "price",
     [ await nAsync("原价") ]: "original_price",
+    [ await nAsync("单位") ]: "unit",
     [ await nAsync("新品") ]: "is_new_lbl",
     [ await nAsync("简介") ]: "introduct",
     [ await nAsync("锁定") ]: "is_locked_lbl",
@@ -1468,6 +1487,7 @@ async function onImportExcel() {
           "pt_type_ids_lbl": "string",
           "price": "string",
           "original_price": "string",
+          "unit": "string",
           "is_new_lbl": "string",
           "introduct": "string",
           "is_locked_lbl": "string",
@@ -1833,6 +1853,7 @@ async function initI18nsEfc() {
     "产品类别",
     "价格",
     "原价",
+    "单位",
     "新品",
     "简介",
     "锁定",

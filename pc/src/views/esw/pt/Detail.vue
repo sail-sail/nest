@@ -152,6 +152,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.unit == null)">
+          <el-form-item
+            :label="n('单位')"
+            prop="unit"
+          >
+            <CustomInput
+              v-model="dialogModel.unit"
+              :placeholder="`${ ns('请输入') } ${ n('单位') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.is_new == null)">
           <el-form-item
             :label="n('新品')"
@@ -455,6 +468,7 @@ async function getDefaultInput() {
   const defaultInput: PtInput = {
     price: "0.00",
     original_price: "0.00",
+    unit: "次",
     is_new: 0,
     is_locked: 0,
     is_enabled: 1,
@@ -851,6 +865,7 @@ async function onInitI18ns() {
     "产品类别",
     "价格",
     "原价",
+    "单位",
     "新品",
     "简介",
     "锁定",

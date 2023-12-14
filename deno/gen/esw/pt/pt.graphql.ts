@@ -21,6 +21,8 @@ type PtModel {
   price: Decimal!
   "原价"
   original_price: Decimal!
+  "单位"
+  unit: String!
   "新品"
   is_new: Int!
   "新品"
@@ -79,6 +81,8 @@ type PtFieldComment {
   price: String!
   "原价"
   original_price: String!
+  "单位"
+  unit: String!
   "新品"
   is_new: String!
   "新品"
@@ -135,6 +139,8 @@ input PtInput {
   price: Decimal
   "原价"
   original_price: Decimal
+  "单位"
+  unit: String
   "新品"
   is_new: Int
   "新品"
@@ -196,6 +202,9 @@ input PtSearch {
   price: [Decimal!]
   "原价"
   original_price: [Decimal!]
+  "单位"
+  unit: String
+  unit_like: String
   "新品"
   is_new: [Int!]
   "简介"

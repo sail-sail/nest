@@ -51,6 +51,7 @@
             :key="ptTypeModel.id"
             un-w="[150rpx]"
             un-flex="~ col"
+            @click="onPtType(ptTypeModel.id)"
           >
             <view
               un-flex="~ [1_0_0] col"
@@ -98,6 +99,10 @@ import {
   findAllPtType,
 } from "./Api";
 
+import type {
+  PtTypeId,
+} from "@/typings/ids";
+
 let inited = $ref(false);
 
 const pagePath = "/pages/esw/index";
@@ -144,7 +149,7 @@ let ptTypeModels1 = $computed(() => {
   return [
     ...ptTypeModels,
     {
-      id: "0",
+      id: "" as PtTypeId,
       lbl: "更多服务",
       img_urls: [
         "/static/tarbar/type.png",
@@ -169,6 +174,21 @@ async function findAllPtTypeEfc() {
   uni.setStorage({
     key: `${ pagePath }:ptTypeModels`,
     data: ptTypeModels,
+  });
+}
+
+async function onPtType(id?: PtTypeId) {
+  const url = "/pages/esw/pt_type/index";
+  await uni.switchTab({
+    url,
+  });
+  uni.$once(url + ":onLoad", function() {
+    uni.$emit(url + ":onPtType", {
+      id,
+    });
+  });
+  uni.$emit(url + ":onPtType", {
+    id,
   });
 }
 

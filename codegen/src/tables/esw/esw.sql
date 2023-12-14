@@ -134,6 +134,7 @@ CREATE TABLE if not exists `esw_pt` (
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '价格',
   `original_price` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '原价',
+  `unit` varchar(10) NOT NULL DEFAULT '次' COMMENT '单位',
   `is_new` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '新品,dict:yes_no',
   `introduct` varchar(100) NOT NULL DEFAULT '' COMMENT '简介',
   `detail` varchar(200) NOT NULL DEFAULT '' COMMENT '详情',
