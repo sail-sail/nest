@@ -82,6 +82,9 @@ export default defineConfig({
             "query",
             "mutation",
           ],
+          "@/pages/index/Api": [
+            "checkLogin",
+          ],
           "@/utils/StringUtil": [
             "isEmpty",
             "isNotEmpty",

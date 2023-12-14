@@ -163,14 +163,9 @@ export async function downloadFile(
 }
 
 export function getAttUrl(id: string, action?: string) {
-  const usrStore = useUsrStore(cfg.pinia);
   action = action || "minio/download";
   let url = `${ action }?id=${ encodeURIComponent(id) }`;
   url = `${ cfg.url }/${ url }`;
-  const authorization = usrStore.authorization;
-  if (authorization) {
-    url += `&authorization=${ authorization }`;
-  }
   return url;
 }
 
@@ -225,7 +220,6 @@ export function getDownloadUrl(
 export function getImgUrl(
   model: {
     id: string;
-    authorization?: string;
     format?: "webp" | "png" | "jpeg" | "jpg";
     width?: number;
     height?: number;
@@ -234,14 +228,6 @@ export function getImgUrl(
     inline?: "0"|"1";
   } | string,
 ) {
-  let authorization: string | undefined = undefined;
-  if (typeof model !== "string") {
-    authorization = model.authorization;
-    if (!authorization) {
-      const usrStore = useUsrStore();
-      authorization = usrStore.authorization;
-    }
-  }
   if (typeof model === "string") {
     model = {
       id: model,
@@ -269,9 +255,6 @@ export function getImgUrl(
   }
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
-  }
-  if (authorization) {
-    params += `&authorization=${ encodeURIComponent(authorization) }`;
   }
   return `${ cfg.url }/oss/img?${ params }`;
 }
