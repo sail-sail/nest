@@ -138,6 +138,14 @@ async function getWhereQuery(
       whereQuery += ` and t.seq_lbl <= ${ args.push(search.seq_lbl[1]) }`;
     }
   }
+  if (search?.date_lbl && search?.date_lbl?.length > 0) {
+    if (search.date_lbl[0] != null) {
+      whereQuery += ` and t.date_lbl >= ${ args.push(search.date_lbl[0]) }`;
+    }
+    if (search.date_lbl[1] != null) {
+      whereQuery += ` and t.date_lbl <= ${ args.push(search.date_lbl[1]) }`;
+    }
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -146,6 +154,15 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.company !== undefined) {
+    whereQuery += ` and t.company = ${ args.push(search.company) }`;
+  }
+  if (search?.company === null) {
+    whereQuery += ` and t.company is null`;
+  }
+  if (isNotEmpty(search?.company_like)) {
+    whereQuery += ` and t.company like ${ args.push("%" + sqlLike(search?.company_like) + "%") }`;
   }
   if (search?.status && !Array.isArray(search?.status)) {
     search.status = [ search.status ];
@@ -447,6 +464,18 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 订单号-日期
+    if (model.date_lbl) {
+      const date_lbl = dayjs(model.date_lbl);
+      if (isNaN(date_lbl.toDate().getTime())) {
+        model.date_lbl_lbl = (model.date_lbl || "").toString();
+      } else {
+        model.date_lbl_lbl = date_lbl.format("YYYY-MM-DD");
+      }
+    } else {
+      model.date_lbl_lbl = "";
+    }
+    
     // 订单状态
     let status_lbl = model.status as string;
     if (!isEmpty(model.status)) {
@@ -544,6 +573,24 @@ export async function findAll(
 export async function setIdByLbl(
   input: OrderInput,
 ) {
+  // 订单号-日期
+  if (!input.date_lbl && input.date_lbl_lbl) {
+    const date_lbl_lbl = dayjs(input.date_lbl_lbl);
+    if (date_lbl_lbl.isValid()) {
+      input.date_lbl = date_lbl_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.date_lbl } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.date_lbl) {
+    const date_lbl = dayjs(input.date_lbl);
+    if (!date_lbl.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.date_lbl } ${ await ns("日期格式错误") }`;
+    }
+    input.date_lbl = dayjs(input.date_lbl).format("YYYY-MM-DD HH:mm:ss");
+  }
   
   const [
     is_lockedDict, // 锁定
@@ -560,6 +607,12 @@ export async function setIdByLbl(
     "order_status",
     "order_type",
   ]);
+  
+  // 订单号-日期
+  if (isNotEmpty(input.date_lbl_lbl) && input.date_lbl === undefined) {
+    input.date_lbl_lbl = String(input.date_lbl_lbl).trim();
+    input.date_lbl = input.date_lbl_lbl;
+  }
   
   // 订单状态
   if (isNotEmpty(input.status_lbl) && input.status === undefined) {
@@ -620,6 +673,7 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
   const fieldComments: OrderFieldComment = {
     id: await n("ID"),
     lbl: await n("订单号"),
+    company: await n("公司"),
     status: await n("订单状态"),
     status_lbl: await n("订单状态"),
     usr_id: await n("用户"),
@@ -872,6 +926,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 公司
+  await validators.chars_max_length(
+    input.company,
+    22,
+    fieldComments.company,
+  );
+  
   // 订单状态
   await validators.chars_max_length(
     input.status,
@@ -1020,8 +1081,14 @@ export async function create(
   if (input.seq_lbl !== undefined) {
     sql += `,seq_lbl`;
   }
+  if (input.date_lbl !== undefined) {
+    sql += `,date_lbl`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
+  }
+  if (input.company !== undefined) {
+    sql += `,company`;
   }
   if (input.status !== undefined) {
     sql += `,status`;
@@ -1099,8 +1166,14 @@ export async function create(
   if (input.seq_lbl !== undefined) {
     sql += `,${ args.push(input.seq_lbl) }`;
   }
+  if (input.date_lbl !== undefined) {
+    sql += `,${ args.push(input.date_lbl) }`;
+  }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.company !== undefined) {
+    sql += `,${ args.push(input.company) }`;
   }
   if (input.status !== undefined) {
     sql += `,${ args.push(input.status) }`;
@@ -1297,9 +1370,21 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.date_lbl !== undefined) {
+    if (input.date_lbl != oldModel.date_lbl) {
+      sql += `date_lbl = ${ args.push(input.date_lbl) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.company !== undefined) {
+    if (input.company != oldModel.company) {
+      sql += `company = ${ args.push(input.company) },`;
       updateFldNum++;
     }
   }

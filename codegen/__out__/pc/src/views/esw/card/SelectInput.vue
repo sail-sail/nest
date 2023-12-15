@@ -6,7 +6,7 @@
     dialog_visible: dialog_visible,
   }"
 >
-  <CustomInput
+  <el-input
     v-bind="$attrs"
     ref="inputRef"
     @click="onInput"
@@ -66,7 +66,7 @@
         </template>
       </template>
     </template>
-  </CustomInput>
+  </el-input>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"

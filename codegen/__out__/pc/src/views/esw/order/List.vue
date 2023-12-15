@@ -39,6 +39,19 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.company == null && (showBuildIn || builtInSearch?.company_like == null)">
+        <el-form-item
+          :label="n('公司')"
+          prop="company_like"
+        >
+          <CustomInput
+            v-model="search.company_like"
+            :placeholder="`${ ns('请输入') } ${ n('公司') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -456,6 +469,15 @@
             </el-table-column>
           </template>
           
+          <!-- 公司 -->
+          <template v-else-if="'company' === col.prop && (showBuildIn || builtInSearch?.company == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 订单状态 -->
           <template v-else-if="'status_lbl' === col.prop && (showBuildIn || builtInSearch?.status == null)">
             <el-table-column
@@ -813,6 +835,8 @@ const props = defineProps<{
   id?: OrderId; // ID
   lbl?: string; // 订单号
   lbl_like?: string; // 订单号
+  company?: string; // 公司
+  company_like?: string; // 公司
   status?: string|string[]; // 订单状态
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string; // 用户
@@ -985,6 +1009,14 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "公司",
+      prop: "company",
+      width: 260,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "订单状态",
@@ -1396,6 +1428,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ await nAsync("公司") ]: "company",
     [ await nAsync("订单状态") ]: "status_lbl",
     [ await nAsync("用户") ]: "usr_id_lbl",
     [ await nAsync("会员卡") ]: "card_id_lbl",
@@ -1430,6 +1463,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "company": "string",
           "status_lbl": "string",
           "usr_id_lbl": "string",
           "card_id_lbl": "string",
@@ -1771,6 +1805,7 @@ async function onRevertByIds() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "订单号",
+    "公司",
     "订单状态",
     "用户",
     "会员卡",
