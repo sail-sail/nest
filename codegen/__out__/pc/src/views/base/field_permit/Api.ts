@@ -24,7 +24,6 @@ import {
 
 /**
  * 根据搜索条件查找字段权限列表
- * @export findAll
  * @param {FieldPermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -77,7 +76,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个字段权限
- * @export findOne
  * @param {FieldPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -126,7 +124,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找字段权限总数
- * @export findCount
  * @param {FieldPermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -152,7 +149,6 @@ export async function findCount(
 
 /**
  * 创建一条字段权限
- * @export create
  * @param {FieldPermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -181,7 +177,6 @@ export async function create(
 
 /**
  * 根据id修改一条字段权限
- * @export updateById
  * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
  * @param {GqlOpt} opt?
@@ -210,7 +205,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条字段权限
- * @export findById
  * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
  */
@@ -253,7 +247,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除字段权限
- * @export deleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -279,7 +272,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 从回收站还原字段权限
- * @export revertByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -305,7 +297,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除字段权限
- * @export forceDeleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -536,7 +527,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {FieldPermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: FieldPermitInput[],
