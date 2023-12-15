@@ -135,8 +135,14 @@ export async function uploadFile(
     method?: string;
     type?: "oss"|"tmpfile",
     data?: FormData;
+    header?: Headers;
+    notLoading?: boolean;
+    showErrMsg?: boolean;
+    duration?: number;
   },
 ) {
+  const indexStore = useIndexStore(cfg.pinia);
+  const usrStore = useUsrStore(cfg.pinia);
   config = config || { };
   config.type = config.type || "oss";
   config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
@@ -151,11 +157,75 @@ export async function uploadFile(
     }
   }
   config.data = formData;
-  const res = await request<{
-    code: number;
-    msg: string;
-    data: string;
-  }>(config);
+  config.header = config.header || new Headers();
+    
+  {
+    const authorization = usrStore.authorization;
+    if (authorization) {
+      config.header.set("authorization", authorization);
+    }
+  }
+  let err: any = undefined;
+  let res: any = undefined;
+  try {
+    if (!config.notLoading) {
+      indexStore.addLoading();
+    }
+    res = await request<{
+      code: number;
+      msg: string;
+      data: string;
+    }>(config);
+  } catch(errTmp) {
+    err = (errTmp as Error);
+  } finally {
+    if (!config.notLoading) {
+      indexStore.minusLoading();
+    }
+  }
+  const header = res?.header || new Headers();
+  let authorization = header?.get("authorization");
+  if (authorization) {
+    if (authorization.startsWith("Bearer ")) {
+      authorization = authorization.substring(7);
+    }
+    usrStore.refreshToken(authorization);
+  }
+  if (err != null && (!config || config.showErrMsg !== false)) {
+    const errMsg = (err as any).errMsg || err.toString();
+    if (errMsg) {
+      ElMessage({
+        offset: 0,
+        type: "error",
+        showClose: true,
+        message: errMsg,
+        duration: config.duration,
+      });
+    }
+    throw err;
+  }
+  {
+    const data = res;
+    if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
+      indexStore.logout();
+      return data;
+    }
+    if (data && data.code !== 0) {
+      if (data.msg && (!config || config.showErrMsg !== false)) {
+        const errMsg = data.msg;
+        if (errMsg) {
+          ElMessage({
+            offset: 0,
+            type: "error",
+            showClose: true,
+            message: errMsg,
+            duration: config.duration,
+          });
+        }
+      }
+      throw data;
+    }
+  }
   const id = res.data;
   return id;
 }
