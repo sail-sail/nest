@@ -164,6 +164,15 @@ async function getWhereQuery(
   if (isNotEmpty(search?.company_like)) {
     whereQuery += ` and t.company like ${ args.push("%" + sqlLike(search?.company_like) + "%") }`;
   }
+  if (search?.phone !== undefined) {
+    whereQuery += ` and t.phone = ${ args.push(search.phone) }`;
+  }
+  if (search?.phone === null) {
+    whereQuery += ` and t.phone is null`;
+  }
+  if (isNotEmpty(search?.phone_like)) {
+    whereQuery += ` and t.phone like ${ args.push("%" + sqlLike(search?.phone_like) + "%") }`;
+  }
   if (search?.status && !Array.isArray(search?.status)) {
     search.status = [ search.status ];
   }
@@ -674,6 +683,7 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
     id: await n("ID"),
     lbl: await n("订单号"),
     company: await n("公司"),
+    phone: await n("联系电话"),
     status: await n("订单状态"),
     status_lbl: await n("订单状态"),
     usr_id: await n("用户"),
@@ -929,8 +939,15 @@ export async function validate(
   // 公司
   await validators.chars_max_length(
     input.company,
-    22,
+    50,
     fieldComments.company,
+  );
+  
+  // 联系电话
+  await validators.chars_max_length(
+    input.phone,
+    20,
+    fieldComments.phone,
   );
   
   // 订单状态
@@ -1090,6 +1107,9 @@ export async function create(
   if (input.company !== undefined) {
     sql += `,company`;
   }
+  if (input.phone !== undefined) {
+    sql += `,phone`;
+  }
   if (input.status !== undefined) {
     sql += `,status`;
   }
@@ -1174,6 +1194,9 @@ export async function create(
   }
   if (input.company !== undefined) {
     sql += `,${ args.push(input.company) }`;
+  }
+  if (input.phone !== undefined) {
+    sql += `,${ args.push(input.phone) }`;
   }
   if (input.status !== undefined) {
     sql += `,${ args.push(input.status) }`;
@@ -1385,6 +1408,12 @@ export async function updateById(
   if (input.company !== undefined) {
     if (input.company != oldModel.company) {
       sql += `company = ${ args.push(input.company) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.phone !== undefined) {
+    if (input.phone != oldModel.phone) {
+      sql += `phone = ${ args.push(input.phone) },`;
       updateFldNum++;
     }
   }

@@ -52,6 +52,19 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.phone == null && (showBuildIn || builtInSearch?.phone_like == null)">
+        <el-form-item
+          :label="n('联系电话')"
+          prop="phone_like"
+        >
+          <CustomInput
+            v-model="search.phone_like"
+            :placeholder="`${ ns('请输入') } ${ n('联系电话') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -478,6 +491,15 @@
             </el-table-column>
           </template>
           
+          <!-- 联系电话 -->
+          <template v-else-if="'phone' === col.prop && (showBuildIn || builtInSearch?.phone == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 订单状态 -->
           <template v-else-if="'status_lbl' === col.prop && (showBuildIn || builtInSearch?.status == null)">
             <el-table-column
@@ -837,6 +859,8 @@ const props = defineProps<{
   lbl_like?: string; // 订单号
   company?: string; // 公司
   company_like?: string; // 公司
+  phone?: string; // 联系电话
+  phone_like?: string; // 联系电话
   status?: string|string[]; // 订单状态
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string; // 用户
@@ -1014,6 +1038,14 @@ function getTableColumns(): ColumnType[] {
       label: "公司",
       prop: "company",
       width: 260,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "联系电话",
+      prop: "phone",
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1429,6 +1461,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("公司") ]: "company",
+    [ await nAsync("联系电话") ]: "phone",
     [ await nAsync("订单状态") ]: "status_lbl",
     [ await nAsync("用户") ]: "usr_id_lbl",
     [ await nAsync("会员卡") ]: "card_id_lbl",
@@ -1464,6 +1497,7 @@ async function onImportExcel() {
       {
         key_types: {
           "company": "string",
+          "phone": "string",
           "status_lbl": "string",
           "usr_id_lbl": "string",
           "card_id_lbl": "string",
@@ -1806,6 +1840,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "订单号",
     "公司",
+    "联系电话",
     "订单状态",
     "用户",
     "会员卡",

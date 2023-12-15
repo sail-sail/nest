@@ -413,6 +413,12 @@ export default defineConfig({
         search: true,
       },
       {
+        COLUMN_NAME: "phone",
+        width: 120,
+        require: true,
+        search: true,
+      },
+      {
         COLUMN_NAME: "status",
         width: 120,
         require: true,
