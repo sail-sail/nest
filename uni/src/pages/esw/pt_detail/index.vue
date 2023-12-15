@@ -123,11 +123,14 @@
             热线电话
           </view>
         </view>
-        <view
+        <button
           un-h="full"
           un-flex="~ col"
           un-justify-center
           un-items-center
+          open-type="contact"
+          plain
+          style="border: 0;padding: 0;outline: none;margin: 0;line-height: unset;"
         >
           <view>
             <i
@@ -141,7 +144,7 @@
           >
             在线咨询
           </view>
-        </view>
+        </button>
       </view>
       <view
         un-w="40"
