@@ -13,6 +13,8 @@ type WxappConfigModel {
   img: String!
   "名称"
   lbl: String!
+  "值"
+  val: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -49,6 +51,8 @@ type WxappConfigFieldComment {
   img: String!
   "名称"
   lbl: String!
+  "值"
+  val: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -83,6 +87,8 @@ input WxappConfigInput {
   img: String
   "名称"
   lbl: String
+  "值"
+  val: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -123,6 +129,9 @@ input WxappConfigSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "值"
+  val: String
+  val_like: String
   "锁定"
   is_locked: [Int!]
   "启用"

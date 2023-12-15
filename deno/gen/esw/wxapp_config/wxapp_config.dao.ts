@@ -137,6 +137,15 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.val !== undefined) {
+    whereQuery += ` and t.val = ${ args.push(search.val) }`;
+  }
+  if (search?.val === null) {
+    whereQuery += ` and t.val is null`;
+  }
+  if (isNotEmpty(search?.val_like)) {
+    whereQuery += ` and t.val like ${ args.push("%" + sqlLike(search?.val_like) + "%") }`;
+  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -436,6 +445,7 @@ export async function getFieldComments(): Promise<WxappConfigFieldComment> {
     id: await n("ID"),
     img: await n("图片"),
     lbl: await n("名称"),
+    val: await n("值"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -684,6 +694,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 值
+  await validators.chars_max_length(
+    input.val,
+    22,
+    fieldComments.val,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -807,6 +824,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (input.val !== undefined) {
+    sql += `,val`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -858,6 +878,9 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.val !== undefined) {
+    sql += `,${ args.push(input.val) }`;
   }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
@@ -1058,6 +1081,12 @@ export async function updateById(
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.val !== undefined) {
+    if (input.val != oldModel.val) {
+      sql += `val = ${ args.push(input.val) },`;
       updateFldNum++;
     }
   }

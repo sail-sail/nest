@@ -95,9 +95,12 @@
 
 <script lang="ts" setup>
 import {
-  findOne as findOneWxappConfig,
   findAllPtType,
 } from "./Api";
+
+import {
+  findOne as findOneWxappConfig,
+} from "./wxapp_config/Api";
 
 import type {
   PtTypeId,

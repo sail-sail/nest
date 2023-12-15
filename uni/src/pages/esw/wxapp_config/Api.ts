@@ -1,48 +1,43 @@
 import type {
-  PtTypeSearch,
-  PageInput,
-  PtTypeModel as PtTypeModel0,
+  WxappConfigSearch,
+  WxappConfigModel as WxappConfigModel0,
 } from "#/types";
 
-type PtTypeModel = PtTypeModel0 & {
+type WxappConfigModel = WxappConfigModel0 & {
   img_urls: string[];
 };
 
 /**
- * 根据搜索条件查找产品类别列表
- * @param {PtTypeSearch} search?
- * @param {PageInput} page
+ * 根据搜索条件查找第一个小程序配置
+ * @param {WxappConfigSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllPtType(
-  search?: PtTypeSearch,
-  page?: PageInput,
+export async function findOne(
+  search?: WxappConfigSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPtType: PtTypeModel[];
+    findOneWxappConfig: WxappConfigModel | undefined;
   } = await query({
     query: /* GraphQL */ `
-      query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllPtType(search: $search, page: $page, sort: $sort) {
+      query($search: WxappConfigSearch, $sort: [SortInput!]) {
+        findOneWxappConfig(search: $search, sort: $sort) {
           id
           img
           lbl
-          is_recommend
+          val
         }
       }
     `,
     variables: {
       search,
-      page,
       sort,
     },
   }, opt);
-  const res = data.findAllPtType;
-  for (let i = 0; i < res.length; i++) {
-    const model = res[i];
+  const model = data.findOneWxappConfig;
+  if (model) {
     model.img_urls = model.img_urls || [ ];
     for (const img_id of model.img.split(",")) {
       if (!img_id) {
@@ -55,5 +50,5 @@ export async function findAllPtType(
       model.img_urls.push(img_url || "");
     }
   }
-  return res;
+  return model;
 }
