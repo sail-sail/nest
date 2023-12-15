@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找小程序配置列表
- * @export findAll
  * @param {WxappConfigSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -69,7 +68,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个小程序配置
- * @export findOne
  * @param {WxappConfigSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -118,7 +116,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找小程序配置总数
- * @export findCount
  * @param {WxappConfigSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -144,7 +141,6 @@ export async function findCount(
 
 /**
  * 创建一条小程序配置
- * @export create
  * @param {WxappConfigInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -173,7 +169,6 @@ export async function create(
 
 /**
  * 根据id修改一条小程序配置
- * @export updateById
  * @param {WxappConfigId} id
  * @param {WxappConfigInput} model
  * @param {GqlOpt} opt?
@@ -202,7 +197,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条小程序配置
- * @export findById
  * @param {WxappConfigId} id
  * @param {GqlOpt} opt?
  */
@@ -245,7 +239,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除小程序配置
- * @export deleteByIds
  * @param {WxappConfigId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -271,7 +264,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用小程序配置
- * @export enableByIds
  * @param {WxappConfigId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -300,7 +292,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁小程序配置
- * @export lockByIds
  * @param {WxappConfigId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -329,7 +320,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原小程序配置
- * @export revertByIds
  * @param {WxappConfigId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -355,7 +345,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除小程序配置
- * @export forceDeleteByIds
  * @param {WxappConfigId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -508,7 +497,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {WxappConfigInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: WxappConfigInput[],

@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找充值赠送规则列表
- * @export findAll
  * @param {RechargeRuleSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -70,7 +69,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个充值赠送规则
- * @export findOne
  * @param {RechargeRuleSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -120,7 +118,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找充值赠送规则总数
- * @export findCount
  * @param {RechargeRuleSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -146,7 +143,6 @@ export async function findCount(
 
 /**
  * 创建一条充值赠送规则
- * @export create
  * @param {RechargeRuleInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -175,7 +171,6 @@ export async function create(
 
 /**
  * 根据id修改一条充值赠送规则
- * @export updateById
  * @param {RechargeRuleId} id
  * @param {RechargeRuleInput} model
  * @param {GqlOpt} opt?
@@ -204,7 +199,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条充值赠送规则
- * @export findById
  * @param {RechargeRuleId} id
  * @param {GqlOpt} opt?
  */
@@ -248,7 +242,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除充值赠送规则
- * @export deleteByIds
  * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -274,7 +267,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用充值赠送规则
- * @export enableByIds
  * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -303,7 +295,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁充值赠送规则
- * @export lockByIds
  * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -332,7 +323,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原充值赠送规则
- * @export revertByIds
  * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -358,7 +348,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除充值赠送规则
- * @export forceDeleteByIds
  * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -514,7 +503,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {RechargeRuleInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: RechargeRuleInput[],

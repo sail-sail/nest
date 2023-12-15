@@ -19,7 +19,6 @@ import type {
 
 /**
  * 根据搜索条件查找会员卡充值记录列表
- * @export findAll
  * @param {CardRechargeSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -75,7 +74,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个会员卡充值记录
- * @export findOne
  * @param {CardRechargeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -127,7 +125,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找会员卡充值记录总数
- * @export findCount
  * @param {CardRechargeSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -153,7 +150,6 @@ export async function findCount(
 
 /**
  * 通过ID查找一条会员卡充值记录
- * @export findById
  * @param {CardRechargeId} id
  * @param {GqlOpt} opt?
  */
@@ -199,7 +195,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除会员卡充值记录
- * @export deleteByIds
  * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -225,7 +220,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 从回收站还原会员卡充值记录
- * @export revertByIds
  * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -251,7 +245,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除会员卡充值记录
- * @export forceDeleteByIds
  * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */
