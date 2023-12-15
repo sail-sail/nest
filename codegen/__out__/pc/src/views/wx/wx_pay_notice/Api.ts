@@ -11,7 +11,6 @@ import type {
 
 /**
  * 根据搜索条件查找微信支付通知列表
- * @export findAll
  * @param {WxPayNoticeSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -80,7 +79,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个微信支付通知
- * @export findOne
  * @param {WxPayNoticeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -145,7 +143,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找微信支付通知总数
- * @export findCount
  * @param {WxPayNoticeSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -171,7 +168,6 @@ export async function findCount(
 
 /**
  * 通过ID查找一条微信支付通知
- * @export findById
  * @param {WxPayNoticeId} id
  * @param {GqlOpt} opt?
  */

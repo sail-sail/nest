@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找系统字典列表
- * @export findAll
  * @param {DictSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -91,7 +90,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个系统字典
- * @export findOne
  * @param {DictSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -162,7 +160,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找系统字典总数
- * @export findCount
  * @param {DictSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -188,7 +185,6 @@ export async function findCount(
 
 /**
  * 创建一条系统字典
- * @export create
  * @param {DictInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -217,7 +213,6 @@ export async function create(
 
 /**
  * 根据id修改一条系统字典
- * @export updateById
  * @param {DictId} id
  * @param {DictInput} model
  * @param {GqlOpt} opt?
@@ -246,7 +241,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条系统字典
- * @export findById
  * @param {DictId} id
  * @param {GqlOpt} opt?
  */
@@ -311,7 +305,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除系统字典
- * @export deleteByIds
  * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -337,7 +330,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用系统字典
- * @export enableByIds
  * @param {DictId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -366,7 +358,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁系统字典
- * @export lockByIds
  * @param {DictId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -395,7 +386,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原系统字典
- * @export revertByIds
  * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -421,7 +411,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除系统字典
- * @export forceDeleteByIds
  * @param {DictId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -634,7 +623,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DictInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DictInput[],
@@ -683,7 +671,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

@@ -32,7 +32,6 @@ import {
 
 /**
  * 根据搜索条件查找角色列表
- * @export findAll
  * @param {RoleSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -92,7 +91,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个角色
- * @export findOne
  * @param {RoleSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -148,7 +146,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找角色总数
- * @export findCount
  * @param {RoleSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -174,7 +171,6 @@ export async function findCount(
 
 /**
  * 创建一条角色
- * @export create
  * @param {RoleInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -203,7 +199,6 @@ export async function create(
 
 /**
  * 根据id修改一条角色
- * @export updateById
  * @param {RoleId} id
  * @param {RoleInput} model
  * @param {GqlOpt} opt?
@@ -232,7 +227,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条角色
- * @export findById
  * @param {RoleId} id
  * @param {GqlOpt} opt?
  */
@@ -282,7 +276,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除角色
- * @export deleteByIds
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -308,7 +301,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用角色
- * @export enableByIds
  * @param {RoleId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -337,7 +329,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁角色
- * @export lockByIds
  * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -366,7 +357,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原角色
- * @export revertByIds
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -392,7 +382,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除角色
- * @export forceDeleteByIds
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -731,7 +720,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {RoleInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: RoleInput[],
@@ -780,7 +768,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
