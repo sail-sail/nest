@@ -28,7 +28,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     dialog_visible: dialog_visible,
   }"
 >
-  <CustomInput
+  <el-input
     v-bind="$attrs"
     ref="inputRef"
     @click="onInput"
@@ -88,7 +88,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
       </template>
     </template>
-  </CustomInput>
+  </el-input>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
