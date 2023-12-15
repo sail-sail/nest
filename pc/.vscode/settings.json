@@ -44,6 +44,7 @@
     "**/.npmrc": true
   },
   "deno.enable": false,
+  "deno.enablePaths": [ ],
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
