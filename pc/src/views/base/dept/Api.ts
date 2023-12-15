@@ -25,7 +25,6 @@ import {
 
 /**
  * 根据搜索条件查找部门列表
- * @export findAll
  * @param {DeptSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -82,7 +81,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个部门
- * @export findOne
  * @param {DeptSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -160,7 +158,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找部门总数
- * @export findCount
  * @param {DeptSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -186,7 +183,6 @@ export async function findCount(
 
 /**
  * 创建一条部门
- * @export create
  * @param {DeptInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -215,7 +211,6 @@ export async function create(
 
 /**
  * 根据id修改一条部门
- * @export updateById
  * @param {DeptId} id
  * @param {DeptInput} model
  * @param {GqlOpt} opt?
@@ -244,7 +239,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条部门
- * @export findById
  * @param {DeptId} id
  * @param {GqlOpt} opt?
  */
@@ -291,7 +285,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除部门
- * @export deleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -317,7 +310,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用部门
- * @export enableByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -346,7 +338,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁部门
- * @export lockByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -375,7 +366,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原部门
- * @export revertByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -401,7 +391,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除部门
- * @export forceDeleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -682,7 +671,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DeptInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DeptInput[],
@@ -731,7 +719,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
