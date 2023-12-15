@@ -28,7 +28,6 @@ import {
 
 /**
  * 根据搜索条件查找国际化列表
- * @export findAll
  * @param {I18Nsearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -81,7 +80,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个国际化
- * @export findOne
  * @param {I18Nsearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -130,7 +128,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找国际化总数
- * @export findCount
  * @param {I18Nsearch} search?
  * @param {GqlOpt} opt?
  */
@@ -156,7 +153,6 @@ export async function findCount(
 
 /**
  * 创建一条国际化
- * @export create
  * @param {I18Ninput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -185,7 +181,6 @@ export async function create(
 
 /**
  * 根据id修改一条国际化
- * @export updateById
  * @param {I18nId} id
  * @param {I18Ninput} model
  * @param {GqlOpt} opt?
@@ -214,7 +209,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条国际化
- * @export findById
  * @param {I18nId} id
  * @param {GqlOpt} opt?
  */
@@ -257,7 +251,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除国际化
- * @export deleteByIds
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -283,7 +276,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 从回收站还原国际化
- * @export revertByIds
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -309,7 +301,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除国际化
- * @export forceDeleteByIds
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -581,7 +572,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {I18Ninput[]} models
- * @export importModels
  */
 export async function importModels(
   models: I18Ninput[],

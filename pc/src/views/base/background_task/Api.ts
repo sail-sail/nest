@@ -11,7 +11,6 @@ import type {
 
 /**
  * 根据搜索条件查找后台任务列表
- * @export findAll
  * @param {BackgroundTaskSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -69,7 +68,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个后台任务
- * @export findOne
  * @param {BackgroundTaskSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -123,7 +121,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找后台任务总数
- * @export findCount
  * @param {BackgroundTaskSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -149,7 +146,6 @@ export async function findCount(
 
 /**
  * 通过ID查找一条后台任务
- * @export findById
  * @param {BackgroundTaskId} id
  * @param {GqlOpt} opt?
  */
@@ -197,7 +193,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除后台任务
- * @export deleteByIds
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -223,7 +218,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 从回收站还原后台任务
- * @export revertByIds
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -249,7 +243,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除后台任务
- * @export forceDeleteByIds
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */

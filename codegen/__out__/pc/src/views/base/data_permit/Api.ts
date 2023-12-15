@@ -24,7 +24,6 @@ import {
 
 /**
  * 根据搜索条件查找数据权限列表
- * @export findAll
  * @param {DataPermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -78,7 +77,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个数据权限
- * @export findOne
  * @param {DataPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -128,7 +126,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找数据权限总数
- * @export findCount
  * @param {DataPermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -154,7 +151,6 @@ export async function findCount(
 
 /**
  * 创建一条数据权限
- * @export create
  * @param {DataPermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -183,7 +179,6 @@ export async function create(
 
 /**
  * 根据id修改一条数据权限
- * @export updateById
  * @param {DataPermitId} id
  * @param {DataPermitInput} model
  * @param {GqlOpt} opt?
@@ -212,7 +207,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条数据权限
- * @export findById
  * @param {DataPermitId} id
  * @param {GqlOpt} opt?
  */
@@ -256,7 +250,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除数据权限
- * @export deleteByIds
  * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -282,7 +275,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 从回收站还原数据权限
- * @export revertByIds
  * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -308,7 +300,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据权限
- * @export forceDeleteByIds
  * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -542,7 +533,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DataPermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DataPermitInput[],
