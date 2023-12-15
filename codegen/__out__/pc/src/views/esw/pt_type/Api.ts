@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找产品类别列表
- * @export findAll
  * @param {PtTypeSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -74,7 +73,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个产品类别
- * @export findOne
  * @param {PtTypeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -128,7 +126,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找产品类别总数
- * @export findCount
  * @param {PtTypeSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -154,7 +151,6 @@ export async function findCount(
 
 /**
  * 创建一条产品类别
- * @export create
  * @param {PtTypeInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -183,7 +179,6 @@ export async function create(
 
 /**
  * 根据id修改一条产品类别
- * @export updateById
  * @param {PtTypeId} id
  * @param {PtTypeInput} model
  * @param {GqlOpt} opt?
@@ -212,7 +207,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条产品类别
- * @export findById
  * @param {PtTypeId} id
  * @param {GqlOpt} opt?
  */
@@ -260,7 +254,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除产品类别
- * @export deleteByIds
  * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -286,7 +279,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用产品类别
- * @export enableByIds
  * @param {PtTypeId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -315,7 +307,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁产品类别
- * @export lockByIds
  * @param {PtTypeId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -344,7 +335,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原产品类别
- * @export revertByIds
  * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -370,7 +360,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除产品类别
- * @export forceDeleteByIds
  * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -543,7 +532,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {PtTypeInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: PtTypeInput[],
@@ -592,7 +580,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

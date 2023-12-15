@@ -24,7 +24,6 @@ import type {
 
 /**
  * 根据搜索条件查找订单列表
- * @export findAll
  * @param {OrderSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -90,7 +89,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个订单
- * @export findOne
  * @param {OrderSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -152,7 +150,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找订单总数
- * @export findCount
  * @param {OrderSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -178,7 +175,6 @@ export async function findCount(
 
 /**
  * 创建一条订单
- * @export create
  * @param {OrderInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -207,7 +203,6 @@ export async function create(
 
 /**
  * 根据id修改一条订单
- * @export updateById
  * @param {OrderId} id
  * @param {OrderInput} model
  * @param {GqlOpt} opt?
@@ -236,7 +231,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条订单
- * @export findById
  * @param {OrderId} id
  * @param {GqlOpt} opt?
  */
@@ -292,7 +286,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除订单
- * @export deleteByIds
  * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -318,7 +311,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用订单
- * @export enableByIds
  * @param {OrderId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -347,7 +339,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁订单
- * @export lockByIds
  * @param {OrderId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -376,7 +367,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原订单
- * @export revertByIds
  * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -402,7 +392,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除订单
- * @export forceDeleteByIds
  * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -700,7 +689,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {OrderInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: OrderInput[],
