@@ -21,10 +21,13 @@
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",
     "deno.enable": true,
+    "deno.enablePaths": [
+      "./"
+    ],
     "deno.lint": true,
     "deno.unstable": true,
     "deno.importMap": "./import_map.json",
-    "unocss.root": "",
+    "unocss.root": "uni",
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
     "rust-analyzer.inlayHints.parameterHints.enable": false,
