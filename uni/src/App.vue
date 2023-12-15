@@ -9,7 +9,7 @@ import {
 } from "./utils/WxoUtil";
 // #endif
 
-onLaunch((async(options: any) => {
+onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore(cfg.pinia);
   indexStore.launchOptions = options;
   
