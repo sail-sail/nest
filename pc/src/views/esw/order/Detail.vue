@@ -96,6 +96,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.phone == null)">
+          <el-form-item
+            :label="n('联系电话')"
+            prop="phone"
+          >
+            <CustomInput
+              v-model="dialogModel.phone"
+              :placeholder="`${ ns('请输入') } ${ n('联系电话') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.status == null)">
           <el-form-item
             :label="n('订单状态')"
@@ -354,8 +367,20 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 22,
-        message: `${ n("公司") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        max: 50,
+        message: `${ n("公司") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+      },
+    ],
+    // 联系电话
+    phone: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("联系电话") }`,
+      },
+      {
+        type: "string",
+        max: 20,
+        message: `${ n("联系电话") } ${ await nsAsync("长度不能超过 {0}", 20) }`,
       },
     ],
     // 订单状态
@@ -818,6 +843,7 @@ async function onInitI18ns() {
   const codes: string[] = [
     "订单号",
     "公司",
+    "联系电话",
     "订单状态",
     "用户",
     "会员卡",

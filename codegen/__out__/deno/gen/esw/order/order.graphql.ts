@@ -35,6 +35,8 @@ type OrderModel {
   lbl: String!
   "公司"
   company: String!
+  "联系电话"
+  phone: String!
   "订单状态"
   status: OrderStatus
   "订单状态"
@@ -99,6 +101,8 @@ type OrderFieldComment {
   lbl: String!
   "公司"
   company: String!
+  "联系电话"
+  phone: String!
   "订单状态"
   status: String!
   "订单状态"
@@ -161,6 +165,8 @@ input OrderInput {
   lbl: String
   "公司"
   company: String
+  "联系电话"
+  phone: String
   "订单状态"
   status: OrderStatus
   "订单状态"
@@ -229,6 +235,9 @@ input OrderSearch {
   "公司"
   company: String
   company_like: String
+  "联系电话"
+  phone: String
+  phone_like: String
   "订单状态"
   status: [String!]
   "用户"

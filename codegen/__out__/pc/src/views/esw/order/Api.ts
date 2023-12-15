@@ -44,6 +44,7 @@ export async function findAll(
           id
           lbl
           company
+          phone
           status
           status_lbl
           usr_id
@@ -108,6 +109,7 @@ export async function findOne(
           id
           lbl
           company
+          phone
           status
           status_lbl
           usr_id
@@ -249,6 +251,7 @@ export async function findById(
           id
           lbl
           company
+          phone
           status
           status_lbl
           usr_id
@@ -529,6 +532,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsOrder {
             company
+            phone
             status_lbl
             usr_id_lbl
             card_id_lbl
@@ -596,6 +600,7 @@ export function useExportExcel(routePath: string) {
             id
             lbl
             company
+            phone
             status
             status_lbl
             usr_id
@@ -627,6 +632,7 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsOrder {
             lbl
             company
+            phone
             status_lbl
             usr_id_lbl
             card_id_lbl
