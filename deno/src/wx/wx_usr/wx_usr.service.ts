@@ -249,6 +249,8 @@ export async function bindWxUsr(
       await updateByIdUsr(
         model.id,
         {
+          username,
+          password,
           is_hidden: 0,
         },
       );
