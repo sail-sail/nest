@@ -21,9 +21,6 @@
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",
     "deno.enable": true,
-    "deno.enablePaths": [
-      "./"
-    ],
     "deno.lint": true,
     "deno.unstable": true,
     "deno.importMap": "./import_map.json",
