@@ -32,7 +32,6 @@ import {
 
 /**
  * 根据搜索条件查找用户列表
- * @export findAll
  * @param {UsrSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -95,7 +94,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个用户
- * @export findOne
  * @param {UsrSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -154,7 +152,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找用户总数
- * @export findCount
  * @param {UsrSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -180,7 +177,6 @@ export async function findCount(
 
 /**
  * 创建一条用户
- * @export create
  * @param {UsrInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -209,7 +205,6 @@ export async function create(
 
 /**
  * 根据id修改一条用户
- * @export updateById
  * @param {UsrId} id
  * @param {UsrInput} model
  * @param {GqlOpt} opt?
@@ -238,7 +233,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条用户
- * @export findById
  * @param {UsrId} id
  * @param {GqlOpt} opt?
  */
@@ -292,7 +286,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除用户
- * @export deleteByIds
  * @param {UsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -318,7 +311,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用用户
- * @export enableByIds
  * @param {UsrId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -347,7 +339,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁用户
- * @export lockByIds
  * @param {UsrId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -376,7 +367,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原用户
- * @export revertByIds
  * @param {UsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -402,7 +392,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除用户
- * @export forceDeleteByIds
  * @param {UsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -753,7 +742,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {UsrInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: UsrInput[],
@@ -802,7 +790,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

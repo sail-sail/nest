@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找语言列表
- * @export findAll
  * @param {LangSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -68,7 +67,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个语言
- * @export findOne
  * @param {LangSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -116,7 +114,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找语言总数
- * @export findCount
  * @param {LangSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -142,7 +139,6 @@ export async function findCount(
 
 /**
  * 创建一条语言
- * @export create
  * @param {LangInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -171,7 +167,6 @@ export async function create(
 
 /**
  * 根据id修改一条语言
- * @export updateById
  * @param {LangId} id
  * @param {LangInput} model
  * @param {GqlOpt} opt?
@@ -200,7 +195,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条语言
- * @export findById
  * @param {LangId} id
  * @param {GqlOpt} opt?
  */
@@ -242,7 +236,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除语言
- * @export deleteByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -268,7 +261,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用语言
- * @export enableByIds
  * @param {LangId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -297,7 +289,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 从回收站还原语言
- * @export revertByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -323,7 +314,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除语言
- * @export forceDeleteByIds
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -475,7 +465,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {LangInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: LangInput[],
@@ -524,7 +513,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

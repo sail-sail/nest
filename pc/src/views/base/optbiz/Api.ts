@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找业务选项列表
- * @export findAll
  * @param {OptbizSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -72,7 +71,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个业务选项
- * @export findOne
  * @param {OptbizSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -124,7 +122,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找业务选项总数
- * @export findCount
  * @param {OptbizSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -150,7 +147,6 @@ export async function findCount(
 
 /**
  * 创建一条业务选项
- * @export create
  * @param {OptbizInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -179,7 +175,6 @@ export async function create(
 
 /**
  * 根据id修改一条业务选项
- * @export updateById
  * @param {OptbizId} id
  * @param {OptbizInput} model
  * @param {GqlOpt} opt?
@@ -208,7 +203,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条业务选项
- * @export findById
  * @param {OptbizId} id
  * @param {GqlOpt} opt?
  */
@@ -254,7 +248,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除业务选项
- * @export deleteByIds
  * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -280,7 +273,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用业务选项
- * @export enableByIds
  * @param {OptbizId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -309,7 +301,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁业务选项
- * @export lockByIds
  * @param {OptbizId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -338,7 +329,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原业务选项
- * @export revertByIds
  * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -364,7 +354,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除业务选项
- * @export forceDeleteByIds
  * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -526,7 +515,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {OptbizInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: OptbizInput[],
@@ -575,7 +563,6 @@ export async function importModels(
 
 /**
  * 查找order_by字段的最大值
- * @export findLastOrderBy
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
