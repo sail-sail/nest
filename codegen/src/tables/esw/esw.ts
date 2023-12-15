@@ -504,6 +504,11 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
       },
       {
+        COLUMN_NAME: "val",
+        width: 120,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {

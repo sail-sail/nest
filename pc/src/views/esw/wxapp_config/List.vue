@@ -471,6 +471,15 @@
             </el-table-column>
           </template>
           
+          <!-- 值 -->
+          <template v-else-if="'val' === col.prop && (showBuildIn || builtInSearch?.val == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
@@ -740,6 +749,8 @@ const props = defineProps<{
   img_like?: string; // 图片
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  val?: string; // 值
+  val_like?: string; // 值
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -894,6 +905,14 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "值",
+      prop: "val",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "锁定",
@@ -1223,6 +1242,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ await nAsync("图片") ]: "img",
     [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("值") ]: "val",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1249,6 +1269,7 @@ async function onImportExcel() {
         key_types: {
           "img": "string",
           "lbl": "string",
+          "val": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
@@ -1581,6 +1602,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "图片",
     "名称",
+    "值",
     "锁定",
     "启用",
     "备注",

@@ -89,58 +89,66 @@
     <view
       un-flex="~"
       un-w="full"
-      un-items-center
-      un-justify-evenly
       :style="{
         marginBottom: (safeAreaInsets?.bottom || 0) + 'px',
       }"
       un-h="[70px]"
-      un-p="x-8"
       un-box-border
-      un-gap="x-2"
       un-b-t="1 gray-300 solid"
     >
       <view
-        un-h="full"
-        un-flex="~ col"
-        un-justify-center
+        un-flex="~ [1_0_0]"
+        un-overflow-hidden
         un-items-center
+        un-justify-evenly
       >
-        <view>
-          <i
-            un-i="iconfont-phone"
-            un-text="4"
-          ></i>
+        <view
+          v-if="hotline"
+          un-h="full"
+          un-flex="~ col"
+          un-justify-center
+          un-items-center
+          @click="onMakePhoneCall"
+        >
+          <view>
+            <i
+              un-i="iconfont-phone"
+              un-text="4"
+            ></i>
+          </view>
+          <view
+            un-text="3 [#333333]"
+            un-m="t-1"
+          >
+            热线电话
+          </view>
         </view>
         <view
-          un-text="3 [#333333]"
-          un-m="t-1"
+          un-h="full"
+          un-flex="~ col"
+          un-justify-center
+          un-items-center
         >
-          热线电话
-        </view>
-      </view>
-      <view
-        un-h="full"
-        un-flex="~ col"
-        un-justify-center
-        un-items-center
-      >
-        <view>
-          <i
-            un-i="iconfont-talk"
-            un-text="4"
-          ></i>
-        </view>
-        <view
-          un-text="3 [#222222]"
-          un-m="t-1"
-        >
-          在线咨询
+          <view>
+            <i
+              un-i="iconfont-talk"
+              un-text="4"
+            ></i>
+          </view>
+          <view
+            un-text="3 [#222222]"
+            un-m="t-1"
+          >
+            在线咨询
+          </view>
         </view>
       </view>
       <view
         un-w="40"
-        un-m="l-4"
+        un-flex="~"
+        un-items-center
+        un-justify-evenly
+        un-m="r-4"
       >
         <button
           un-w="full"
@@ -172,6 +180,10 @@ import {
   findOnePt,
 } from "./Api";
 
+import {
+  findOne as findOneWxappConfig,
+} from "../wxapp_config/Api";
+
 const indexStore = useIndexStore(cfg.pinia);
 
 let safeAreaInsets = $ref(indexStore.systemInfo.safeAreaInsets);
@@ -189,6 +201,12 @@ async function findOnePtEfc() {
     ptModel = undefined;
     return;
   }
+  uni.getStorage({
+    key: `${ pagePath }:ptModel:${ id }`,
+    success: ({ data }) => {
+      ptModel = data;
+    },
+  });
   ptModel = await findOnePt(
     {
       id,
@@ -206,18 +224,50 @@ async function findOnePtEfc() {
   });
 }
 
-async function initFrame() {
-  if (!id) {
+let hotline = $ref<string>();
+
+uni.getStorage({
+  key: `${ pagePath }:hotline`,
+  success: ({ data }) => {
+    hotline = data;
+  },
+});
+
+async function findOneWxappConfigEfc() {
+  const wxappConfigModel = await findOneWxappConfig(
+    {
+      lbl: "小程序热线电话",
+      is_deleted: 0,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    {
+      notLoading: true,
+    },
+  );
+  hotline = wxappConfigModel?.val;
+  uni.setStorage({
+    key: `${ pagePath }:hotline`,
+    data: hotline,
+  });
+}
+
+/** 热线电话 */
+async function onMakePhoneCall() {
+  if (!hotline) {
     return;
   }
-  uni.getStorage({
-    key: `${ pagePath }:ptModel:${ id }`,
-    success: ({ data }) => {
-      ptModel = data;
-    },
+  await uni.makePhoneCall({
+    phoneNumber: hotline,
   });
+}
+
+async function initFrame() {
   try {
-    await findOnePtEfc();
+    await Promise.all([
+      findOnePtEfc(),
+      findOneWxappConfigEfc(),
+    ]);
   } finally {
     inited = true;
   }

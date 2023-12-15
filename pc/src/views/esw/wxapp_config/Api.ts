@@ -36,6 +36,7 @@ export async function findAll(
           id
           img
           lbl
+          val
           is_locked
           is_locked_lbl
           is_enabled
@@ -86,6 +87,7 @@ export async function findOne(
           id
           img
           lbl
+          val
           is_locked
           is_locked_lbl
           is_enabled
@@ -213,6 +215,7 @@ export async function findById(
           id
           img
           lbl
+          val
           is_locked
           is_locked_lbl
           is_enabled
@@ -388,6 +391,7 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsWxappConfig {
             img
             lbl
+            val
             rem
           }
         }
@@ -435,6 +439,7 @@ export function useExportExcel(routePath: string) {
             id
             img
             lbl
+            val
             is_locked
             is_locked_lbl
             is_enabled
@@ -452,6 +457,7 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsWxappConfig {
             img
             lbl
+            val
             is_locked_lbl
             is_enabled_lbl
             rem

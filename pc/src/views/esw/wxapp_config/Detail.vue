@@ -96,6 +96,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.val == null)">
+          <el-form-item
+            :label="n('值')"
+            prop="val"
+          >
+            <CustomInput
+              v-model="dialogModel.val"
+              :placeholder="`${ ns('请输入') } ${ n('值') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -671,6 +684,7 @@ async function onInitI18ns() {
   const codes: string[] = [
     "图片",
     "名称",
+    "值",
     "锁定",
     "启用",
     "备注",
