@@ -9333,7 +9333,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/phone?id=makephonecall](http://uniapp.dcloud.io/api/system/phone?id=makephonecall)
      */
-    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): void;
+    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): PromiseLike<void>;
     /**
      * 调用扫码界面，扫码成功后返回对应的结果
      *
