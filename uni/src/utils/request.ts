@@ -364,6 +364,7 @@ async function code2Session(
     },
     showErrMsg: true,
     notLogin: true,
+    notLoading: true,
   });
 }
 
