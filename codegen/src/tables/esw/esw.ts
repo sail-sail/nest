@@ -396,11 +396,21 @@ export default defineConfig({
         onlyCodegenDeno: true,
       },
       {
+        COLUMN_NAME: "date_lbl",
+        onlyCodegenDeno: true,
+      },
+      {
         COLUMN_NAME: "lbl",
         align: "center",
         width: 140,
         readonly: true,
         readonlyPlaceholder: "(自动生成)",
+      },
+      {
+        COLUMN_NAME: "company",
+        width: 260,
+        require: true,
+        search: true,
       },
       {
         COLUMN_NAME: "status",

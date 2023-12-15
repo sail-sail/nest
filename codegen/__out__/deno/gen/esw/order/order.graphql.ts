@@ -33,6 +33,8 @@ type OrderModel {
   id: OrderId!
   "订单号"
   lbl: String!
+  "公司"
+  company: String!
   "订单状态"
   status: OrderStatus
   "订单状态"
@@ -95,6 +97,8 @@ type OrderFieldComment {
   id: String!
   "订单号"
   lbl: String!
+  "公司"
+  company: String!
   "订单状态"
   status: String!
   "订单状态"
@@ -155,6 +159,8 @@ input OrderInput {
   id: OrderId
   "订单号"
   lbl: String
+  "公司"
+  company: String
   "订单状态"
   status: OrderStatus
   "订单状态"
@@ -220,6 +226,9 @@ input OrderSearch {
   "订单号"
   lbl: String
   lbl_like: String
+  "公司"
+  company: String
+  company_like: String
   "订单状态"
   status: [String!]
   "用户"

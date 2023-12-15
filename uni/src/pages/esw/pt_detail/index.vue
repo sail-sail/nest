@@ -4,20 +4,7 @@
   un-overflow-hidden
 >
   <view
-    v-if="!inited"
-    un-flex="~ [1_0_0] col"
-    un-overflow-hidden
-  >
-    <view
-      un-text="3 gray center"
-      un-m="t-[100rpx]"
-      un-w="full"
-    >
-      加载中, 请稍后...
-    </view>
-  </view>
-  <view
-    v-else-if="!ptModel"
+    v-if="inited && !ptModel"
     un-flex="~ [1_0_0] col"
     un-overflow-hidden
   >
@@ -30,7 +17,7 @@
     </view>
   </view>
   <view
-    v-else
+    v-else-if="ptModel"
     un-flex="~ [1_0_0] col"
     un-overflow-hidden
   >
@@ -145,19 +132,42 @@
             在线咨询
           </view>
         </button>
+        <button
+          un-h="full"
+          un-flex="~ col"
+          un-justify-center
+          un-items-center
+          open-type="share"
+          plain
+          style="border: 0;padding: 0;outline: none;margin: 0;line-height: unset;"
+        >
+          <view>
+            <i
+              un-i="iconfont-share"
+              un-text="4"
+            ></i>
+          </view>
+          <view
+            un-text="3 [#222222]"
+            un-m="t-1"
+          >
+            分享产品
+          </view>
+        </button>
       </view>
       <view
         un-w="40"
         un-flex="~"
         un-items-center
         un-justify-evenly
-        un-m="r-4"
+        un-m="r-2"
       >
         <button
           un-w="full"
           un-rounded="full"
           un-text="4 white"
           un-bg="[#c5a05d]"
+          @click="onBuy"
         >
           立即购买
         </button>
@@ -262,6 +272,16 @@ async function onMakePhoneCall() {
   }
   await uni.makePhoneCall({
     phoneNumber: hotline,
+  });
+}
+
+/** 立即购买 */
+async function onBuy() {
+  if (!ptModel) {
+    return;
+  }
+  await uni.navigateTo({
+    url: `/pages/esw/order/index?id=${ ptModel.id }`,
   });
 }
 

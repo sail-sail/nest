@@ -28,6 +28,12 @@
 			}
 		},
 		{
+			"path": "pages/esw/order/index",
+			"style": {
+				"navigationBarTitleText": "服务结算"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "uni-app"
@@ -74,7 +80,7 @@
   },
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "祥和企服",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	}

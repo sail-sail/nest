@@ -83,6 +83,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.company == null)">
+          <el-form-item
+            :label="n('公司')"
+            prop="company"
+          >
+            <CustomInput
+              v-model="dialogModel.company"
+              :placeholder="`${ ns('请输入') } ${ n('公司') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.status == null)">
           <el-form-item
             :label="n('订单状态')"
@@ -333,6 +346,18 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 公司
+    company: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("公司") }`,
+      },
+      {
+        type: "string",
+        max: 22,
+        message: `${ n("公司") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+      },
+    ],
     // 订单状态
     status: [
       {
@@ -792,6 +817,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "订单号",
+    "公司",
     "订单状态",
     "用户",
     "会员卡",

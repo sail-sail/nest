@@ -180,7 +180,9 @@ drop table if exists `esw_order`;
 CREATE TABLE if not exists `esw_order` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `seq_lbl` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '订单号-序列号',
+  `date_lbl` date DEFAULT NULL COMMENT '订单号-日期',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '订单号',
+  `company` varchar(22) NOT NULL DEFAULT '' COMMENT '公司',
   `status` varchar(22) NOT NULL DEFAULT 'to_be_paid' COMMENT '订单状态,dictbiz:order_status',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `card_id` varchar(22) NOT NULL DEFAULT '' COMMENT '会员卡',

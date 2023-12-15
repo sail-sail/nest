@@ -43,6 +43,7 @@ export async function findAll(
         findAllOrder(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          company
           status
           status_lbl
           usr_id
@@ -106,6 +107,7 @@ export async function findOne(
         findOneOrder(search: $search, sort: $sort) {
           id
           lbl
+          company
           status
           status_lbl
           usr_id
@@ -246,6 +248,7 @@ export async function findById(
         findByIdOrder(id: $id) {
           id
           lbl
+          company
           status
           status_lbl
           usr_id
@@ -525,6 +528,7 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsOrder {
+            company
             status_lbl
             usr_id_lbl
             card_id_lbl
@@ -591,6 +595,7 @@ export function useExportExcel(routePath: string) {
           findAllOrder(search: $search, sort: $sort) {
             id
             lbl
+            company
             status
             status_lbl
             usr_id
@@ -621,6 +626,7 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsOrder {
             lbl
+            company
             status_lbl
             usr_id_lbl
             card_id_lbl
