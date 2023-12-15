@@ -20,7 +20,6 @@ import type {
 
 /**
  * 根据搜索条件查找微信用户列表
- * @export findAll
  * @param {WxUsrSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -86,7 +85,6 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找第一个微信用户
- * @export findOne
  * @param {WxUsrSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -148,7 +146,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找微信用户总数
- * @export findCount
  * @param {WxUsrSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -174,7 +171,6 @@ export async function findCount(
 
 /**
  * 创建一条微信用户
- * @export create
  * @param {WxUsrInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -203,7 +199,6 @@ export async function create(
 
 /**
  * 根据id修改一条微信用户
- * @export updateById
  * @param {WxUsrId} id
  * @param {WxUsrInput} model
  * @param {GqlOpt} opt?
@@ -232,7 +227,6 @@ export async function updateById(
 
 /**
  * 通过ID查找一条微信用户
- * @export findById
  * @param {WxUsrId} id
  * @param {GqlOpt} opt?
  */
@@ -288,7 +282,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除微信用户
- * @export deleteByIds
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -314,7 +307,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用微信用户
- * @export enableByIds
  * @param {WxUsrId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -343,7 +335,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁微信用户
- * @export lockByIds
  * @param {WxUsrId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -372,7 +363,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 从回收站还原微信用户
- * @export revertByIds
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -398,7 +388,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除微信用户
- * @export forceDeleteByIds
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -646,7 +635,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {WxUsrInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: WxUsrInput[],
