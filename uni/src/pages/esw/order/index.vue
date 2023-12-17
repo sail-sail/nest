@@ -53,11 +53,64 @@
       >
         <CustomInput
           v-model="buyNowInput.company"
-          :type="'text'"
-          :show-clear="true"
           placeholder="请输入 公司名称"
+        ></CustomInput>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="联系电话"
+        field="phone"
+        :rules="{
+          required: true,
+          message: '请输入 联系电话',
+        }"
+        required
+      >
+        <CustomInput
+          v-model="buyNowInput.phone"
+          placeholder="请输入 联系电话"
+        ></CustomInput>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="产品名称"
+      >
+        <text
+          un-text="4 [#333333]"
         >
-        </CustomInput>
+          {{ ptModel.lbl }}
+        </text>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="产品价格"
+      >
+        <text
+          un-text="5 red"
+        >
+          ￥{{ ptModel.price }}
+        </text>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="可用余额"
+      >
+        <text
+          un-text="4 [#333333]"
+        >
+          ￥{{ balance }}
+        </text>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="备注"
+      >
+        <CustomInput
+          type="textarea"
+          v-model="buyNowInput.rem"
+          placeholder="请输入 备注"
+          auto-height
+        ></CustomInput>
       </tm-form-item>
       
     </tm-form>
@@ -80,6 +133,7 @@
           un-rounded="full"
           un-text="4 white"
           un-bg="[#c5a05d]"
+          @click="onPayNow"
         >
           立即支付
         </button>
@@ -116,7 +170,7 @@ import {
 
 import type {
   CardModel,
-  BuyNowInput,
+  PayNowInput,
 } from "@/typings/types";
 
 const indexStore = useIndexStore(cfg.pinia);
@@ -133,7 +187,7 @@ let ptModel = $ref<PtModel>();
 
 let cardModel = $ref<CardModel>();
 
-let buyNowInput = $ref<BuyNowInput>({ });
+let buyNowInput = $ref<PayNowInput>({ });
 
 async function findOnePtEfc() {
   if (!id) {
@@ -184,6 +238,26 @@ async function findAllCardEfc() {
     balance += Number(cardModel.give_balance);
     balance = Math.round(balance * 100) / 100;
   }
+}
+
+let formRef = $ref<InstanceType<typeof TmForm>>();
+
+/* 立即支付 */
+async function onPayNow() {
+  if (!formRef) {
+    return;
+  }
+  
+  const {
+    isPass,
+  } = formRef.validate();
+  
+  if (!isPass) {
+    formRef.submit();
+    return;
+  }
+  
+  // TODO: 调用支付接口
 }
 
 async function initFrame() {
