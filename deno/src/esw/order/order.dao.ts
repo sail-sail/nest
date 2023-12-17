@@ -18,21 +18,40 @@ export async function updateSeqLbl(id: OrderId) {
   const now = dayjs();
   const orderModel = await findOneOrder(
     undefined,
-    {
-      prop: "seq_lbl",
-      order: SortOrderEnum.Desc,
-    },
+    [
+      {
+        prop: "date_lbl",
+        order: SortOrderEnum.Desc,
+      },
+      {
+        prop: "seq_lbl",
+        order: SortOrderEnum.Desc,
+      },
+    ],
   );
-  let seq_lbl = 1;
-  if (orderModel) {
-    seq_lbl = orderModel.seq_lbl + 1;
+  const nowDate = now.startOf("day");
+  if (orderModel && dayjs(orderModel.date_lbl).isSame(nowDate)) {
+    // 当天已有订单
+    const seq_lbl = orderModel.seq_lbl + 1;
+    const lbl = "DD" + nowDate.format("YYYYMMDD") + seq_lbl.toString().padStart(3, "0");
+    await updateByIdOrder(
+      id,
+      {
+        lbl,
+        seq_lbl,
+      },
+    );
+    return;
   }
-  const lbl = "DD" + now.format("YYYYMMDD") + seq_lbl.toString().padStart(3, "0");
+  // 当天无订单
+  const seq_lbl = 1;
+  const lbl = "DD" + nowDate.format("YYYYMMDD") + seq_lbl.toString().padStart(3, "0");
   await updateByIdOrder(
     id,
     {
       lbl,
       seq_lbl,
+      date_lbl: nowDate.format("YYYY-MM-DD"),
     },
   );
 }
