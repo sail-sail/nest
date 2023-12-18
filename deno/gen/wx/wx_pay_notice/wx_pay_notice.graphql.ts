@@ -310,15 +310,15 @@ input WxPayNoticeSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找微信支付通知总数"
   findCountWxPayNotice(search: WxPayNoticeSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找微信支付通知列表"
   findAllWxPayNotice(search: WxPayNoticeSearch, page: PageInput, sort: [SortInput!]): [WxPayNoticeModel!]!
-  "获取字段对应的名称"
+  "获取微信支付通知字段注释"
   getFieldCommentsWxPayNotice: WxPayNoticeFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个微信支付通知"
   findOneWxPayNotice(search: WxPayNoticeSearch, sort: [SortInput!]): WxPayNoticeModel
-  "根据id查找一条数据"
+  "根据 id 查找微信支付通知"
   findByIdWxPayNotice(id: WxPayNoticeId!): WxPayNoticeModel
 }
 

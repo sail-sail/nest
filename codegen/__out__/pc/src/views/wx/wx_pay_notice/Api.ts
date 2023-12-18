@@ -78,7 +78,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个微信支付通知
+ * 根据条件查找第一个微信支付通知
  * @param {WxPayNoticeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -167,7 +167,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条微信支付通知
+ * 根据 id 查找微信支付通知
  * @param {WxPayNoticeId} id
  * @param {GqlOpt} opt?
  */

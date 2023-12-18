@@ -76,7 +76,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个微信JSAPI下单
+ * 根据条件查找第一个微信JSAPI下单
  * @param {PayTransactionsJsapiSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -163,7 +163,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条微信JSAPI下单
+ * 根据 id 查找微信JSAPI下单
  * @param {PayTransactionsJsapiId} id
  * @param {GqlOpt} opt?
  */

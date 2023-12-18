@@ -145,7 +145,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找小程序接口凭据总数
  * @param { WxAppTokenSearch } search?
  * @return {Promise<number>}
  */
@@ -447,7 +447,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找小程序接口凭据
+ * 根据 id 查找小程序接口凭据
  * @param {WxAppTokenId} id
  */
 export async function findById(
@@ -707,7 +707,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改小程序接口凭据
+ * 根据 id 修改小程序接口凭据
  * @param {WxAppTokenId} id
  * @param {WxAppTokenInput} input
  * @param {({
@@ -820,7 +820,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除小程序接口凭据
  * @param {WxAppTokenId[]} ids
  * @return {Promise<number>}
  */

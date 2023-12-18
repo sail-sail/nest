@@ -75,27 +75,27 @@ input WxAppTokenSearch {
   expires_in: [Int!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找小程序接口凭据总数"
   findCountWxAppToken(search: WxAppTokenSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找小程序接口凭据列表"
   findAllWxAppToken(search: WxAppTokenSearch, page: PageInput, sort: [SortInput!]): [WxAppTokenModel!]!
-  "获取字段对应的名称"
+  "获取小程序接口凭据字段注释"
   getFieldCommentsWxAppToken: WxAppTokenFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个小程序接口凭据"
   findOneWxAppToken(search: WxAppTokenSearch, sort: [SortInput!]): WxAppTokenModel
-  "根据id查找一条数据"
+  "根据 id 查找小程序接口凭据"
   findByIdWxAppToken(id: WxAppTokenId!): WxAppTokenModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建小程序接口凭据"
   createWxAppToken(model: WxAppTokenInput!, unique_type: UniqueType): WxAppTokenId!
-  "根据id修改一条数据"
+  "根据 id 修改小程序接口凭据"
   updateByIdWxAppToken(id: WxAppTokenId!, model: WxAppTokenInput!): WxAppTokenId!
-  "根据 ids 删除数据"
+  "根据 ids 删除小程序接口凭据"
   deleteByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原小程序接口凭据"
   revertByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除小程序接口凭据"
   forceDeleteByIdsWxAppToken(ids: [WxAppTokenId!]!): Int!
 }
 

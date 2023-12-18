@@ -23,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找微信支付通知总数
  */
 export async function findCountWxPayNotice(
   search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
@@ -38,7 +38,7 @@ export async function findCountWxPayNotice(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找微信支付通知列表
  */
 export async function findAllWxPayNotice(
   search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
@@ -55,7 +55,7 @@ export async function findAllWxPayNotice(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取微信支付通知字段注释
  */
 export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {
   const { getFieldComments } = await import("./wx_pay_notice.service.ts");
@@ -64,7 +64,7 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个微信支付通知
  */
 export async function findOneWxPayNotice(
   search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
@@ -80,7 +80,7 @@ export async function findOneWxPayNotice(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找微信支付通知
  */
 export async function findByIdWxPayNotice(
   id: WxPayNoticeId,

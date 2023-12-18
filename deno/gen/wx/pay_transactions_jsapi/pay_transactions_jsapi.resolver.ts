@@ -23,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找微信JSAPI下单总数
  */
 export async function findCountPayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
@@ -38,7 +38,7 @@ export async function findCountPayTransactionsJsapi(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找微信JSAPI下单列表
  */
 export async function findAllPayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
@@ -55,7 +55,7 @@ export async function findAllPayTransactionsJsapi(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取微信JSAPI下单字段注释
  */
 export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransactionsJsapiFieldComment> {
   const { getFieldComments } = await import("./pay_transactions_jsapi.service.ts");
@@ -64,7 +64,7 @@ export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransac
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个微信JSAPI下单
  */
 export async function findOnePayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
@@ -80,7 +80,7 @@ export async function findOnePayTransactionsJsapi(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找微信JSAPI下单
  */
 export async function findByIdPayTransactionsJsapi(
   id: PayTransactionsJsapiId,

@@ -70,7 +70,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个微信小程序
+ * 根据条件查找第一个微信小程序
  * @param {WxAppSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -146,7 +146,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条微信小程序
+ * 创建微信小程序
  * @param {WxAppInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -174,7 +174,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条微信小程序
+ * 根据 id 修改微信小程序
  * @param {WxAppId} id
  * @param {WxAppInput} model
  * @param {GqlOpt} opt?
@@ -202,7 +202,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条微信小程序
+ * 根据 id 查找微信小程序
  * @param {WxAppId} id
  * @param {GqlOpt} opt?
  */
@@ -328,7 +328,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原微信小程序
+ * 根据 ids 还原微信小程序
  * @param {WxAppId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -562,7 +562,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 微信小程序 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

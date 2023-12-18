@@ -204,33 +204,33 @@ input WxPaySearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找微信支付总数"
   findCountWxPay(search: WxPaySearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找微信支付列表"
   findAllWxPay(search: WxPaySearch, page: PageInput, sort: [SortInput!]): [WxPayModel!]!
-  "获取字段对应的名称"
+  "获取微信支付字段注释"
   getFieldCommentsWxPay: WxPayFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个微信支付"
   findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
-  "根据id查找一条数据"
+  "根据 id 查找微信支付"
   findByIdWxPay(id: WxPayId!): WxPayModel
-  "查找order_by字段的最大值"
+  "查找 微信支付 order_by 字段的最大值"
   findLastOrderByWxPay: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建微信支付"
   createWxPay(model: WxPayInput!, unique_type: UniqueType): WxPayId!
-  "根据id修改一条数据"
+  "根据 id 修改微信支付"
   updateByIdWxPay(id: WxPayId!, model: WxPayInput!): WxPayId!
-  "根据 ids 删除数据"
+  "根据 ids 删除微信支付"
   deleteByIdsWxPay(ids: [WxPayId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用微信支付"
   enableByIdsWxPay(ids: [WxPayId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁微信支付"
   lockByIdsWxPay(ids: [WxPayId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原微信支付"
   revertByIdsWxPay(ids: [WxPayId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除微信支付"
   forceDeleteByIdsWxPay(ids: [WxPayId!]!): Int!
 }
 
