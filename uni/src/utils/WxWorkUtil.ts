@@ -1,12 +1,9 @@
+// #ifdef H5
+import cfg from "./config";
+
 import {
   wxwLoginByCode,
 } from "./Api";
-
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
-
-// #ifdef H5
-import cfg from "./config";
 
 export async function wxwGetAppid() {
   const host = cfg.domain;
@@ -41,18 +38,10 @@ export async function wxwGetAppid() {
 }
 
 export async function initWxWorkCfg() {
-  const indexStore = useIndexStore();
-  const usrStore = useUsrStore();
+  const indexStore = useIndexStore(cfg.pinia);
+  const usrStore = useUsrStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
-    const wxwAppid = await wxwGetAppid();
-    if (!wxwAppid) {
-      return;
-    }
-    const appid = wxwAppid.appid;
-    const agentid = wxwAppid.agentid;
-    cfg.appid = appid;
-    cfg.agentid = agentid;
     const href = location.href;
     const url = new URL(href);
     const code = url.searchParams.get("code");
@@ -61,10 +50,10 @@ export async function initWxWorkCfg() {
       if (!loginModel || !loginModel.authorization) {
         return;
       }
-      usrStore.authorization = loginModel.authorization;
-      usrStore.username = loginModel.username;
-      usrStore.tenant_id = loginModel.tenant_id;
-      usrStore.lang = loginModel.lang;
+      usrStore.setAuthorization(loginModel.authorization);
+      usrStore.setUsername(loginModel.username);
+      usrStore.setTenantId(loginModel.tenant_id);
+      usrStore.setLang(loginModel.lang);
       const url = new URL(location.href);
       url.searchParams.delete("code");
       url.searchParams.delete("state");
