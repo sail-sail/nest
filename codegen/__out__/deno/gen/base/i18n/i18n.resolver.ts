@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找国际化总数
  */
 export async function findCountI18n(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountI18n(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找国际化列表
  */
 export async function findAllI18n(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllI18n(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取国际化字段注释
  */
 export async function getFieldCommentsI18n(): Promise<I18NfieldComment> {
   const { getFieldComments } = await import("./i18n.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsI18n(): Promise<I18NfieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个国际化
  */
 export async function findOneI18n(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneI18n(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找国际化
  */
 export async function findByIdI18n(
   id: I18nId,
@@ -93,7 +93,7 @@ export async function findByIdI18n(
 }
 
 /**
- * 创建一条数据
+ * 创建国际化
  */
 export async function createI18n(
   input: I18Ninput,
@@ -124,7 +124,7 @@ export async function createI18n(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改国际化
  */
 export async function updateByIdI18n(
   id: I18nId,
@@ -151,7 +151,7 @@ export async function updateByIdI18n(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除国际化
  */
 export async function deleteByIdsI18n(
   ids: I18nId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsI18n(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原国际化
  */
 export async function revertByIdsI18n(
   ids: I18nId[],
@@ -197,7 +197,7 @@ export async function revertByIdsI18n(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除国际化
  */
 export async function forceDeleteByIdsI18n(
   ids: I18nId[],

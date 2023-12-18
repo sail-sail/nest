@@ -201,23 +201,23 @@ input BackgroundTaskSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找后台任务总数"
   findCountBackgroundTask(search: BackgroundTaskSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找后台任务列表"
   findAllBackgroundTask(search: BackgroundTaskSearch, page: PageInput, sort: [SortInput!]): [BackgroundTaskModel!]!
-  "获取字段对应的名称"
+  "获取后台任务字段注释"
   getFieldCommentsBackgroundTask: BackgroundTaskFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个后台任务"
   findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
-  "根据id查找一条数据"
+  "根据 id 查找后台任务"
   findByIdBackgroundTask(id: BackgroundTaskId!): BackgroundTaskModel
 }
 type Mutation {
-  "根据 ids 删除数据"
+  "根据 ids 删除后台任务"
   deleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原后台任务"
   revertByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除后台任务"
   forceDeleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
 }
 

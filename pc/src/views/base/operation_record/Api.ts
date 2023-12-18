@@ -63,7 +63,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个操作记录
+ * 根据条件查找第一个操作记录
  * @param {OperationRecordSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -137,7 +137,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条操作记录
+ * 根据 id 查找操作记录
  * @param {OperationRecordId} id
  * @param {GqlOpt} opt?
  */
@@ -205,7 +205,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原操作记录
+ * 根据 ids 还原操作记录
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */

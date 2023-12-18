@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找数据权限总数
  */
 export async function findCountDataPermit(
   search?: DataPermitSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountDataPermit(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找数据权限列表
  */
 export async function findAllDataPermit(
   search?: DataPermitSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllDataPermit(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取数据权限字段注释
  */
 export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComment> {
   const { getFieldComments } = await import("./data_permit.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComme
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个数据权限
  */
 export async function findOneDataPermit(
   search?: DataPermitSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneDataPermit(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找数据权限
  */
 export async function findByIdDataPermit(
   id: DataPermitId,
@@ -93,7 +93,7 @@ export async function findByIdDataPermit(
 }
 
 /**
- * 创建一条数据
+ * 创建数据权限
  */
 export async function createDataPermit(
   input: DataPermitInput,
@@ -124,7 +124,7 @@ export async function createDataPermit(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改数据权限
  */
 export async function updateByIdDataPermit(
   id: DataPermitId,
@@ -151,7 +151,7 @@ export async function updateByIdDataPermit(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除数据权限
  */
 export async function deleteByIdsDataPermit(
   ids: DataPermitId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsDataPermit(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原数据权限
  */
 export async function revertByIdsDataPermit(
   ids: DataPermitId[],
@@ -197,7 +197,7 @@ export async function revertByIdsDataPermit(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除数据权限
  */
 export async function forceDeleteByIdsDataPermit(
   ids: DataPermitId[],

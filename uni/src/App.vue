@@ -3,7 +3,7 @@ import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
-onLaunch((async(options: any) => {
+onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore(cfg.pinia);
   indexStore.launchOptions = options;
   

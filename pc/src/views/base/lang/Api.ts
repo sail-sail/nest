@@ -66,7 +66,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个语言
+ * 根据条件查找第一个语言
  * @param {LangSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -138,7 +138,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条语言
+ * 创建语言
  * @param {LangInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -166,7 +166,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条语言
+ * 根据 id 修改语言
  * @param {LangId} id
  * @param {LangInput} model
  * @param {GqlOpt} opt?
@@ -194,7 +194,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条语言
+ * 根据 id 查找语言
  * @param {LangId} id
  * @param {GqlOpt} opt?
  */
@@ -288,7 +288,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 从回收站还原语言
+ * 根据 ids 还原语言
  * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -512,7 +512,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 语言 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
