@@ -123,7 +123,7 @@ import {
   lang,
 } from "@/locales/index";
 
-const usrStore = useUsrStore();
+const usrStore = useUsrStore(cfg.pinia);
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
