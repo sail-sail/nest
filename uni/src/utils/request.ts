@@ -30,7 +30,7 @@ export async function uploadFile(config: {
       config.name = "file";
     }
     config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -58,7 +58,7 @@ export async function uploadFile(config: {
   }
   const header = res.header || { };
   if (header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (config.reqType === "graphql") {
     return res;
@@ -76,7 +76,7 @@ export async function uploadFile(config: {
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -285,7 +285,7 @@ export async function request<T>(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -300,7 +300,7 @@ export async function request<T>(
   }
   const header = res?.header;
   if (header && header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
     let errMsg = (err as any).errMsg || err.toString();
@@ -318,7 +318,7 @@ export async function request<T>(
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;

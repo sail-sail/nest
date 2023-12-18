@@ -11,10 +11,10 @@ import {
 
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore(cfg.pinia);
-  indexStore.launchOptions = options;
+  indexStore.setLaunchOptions(options);
   
   const systemInfo = uni.getSystemInfoSync();
-  indexStore.systemInfo = systemInfo;
+  indexStore.setSystemInfo(systemInfo);
   
   // #ifdef H5
   await initWxWorkCfg();
