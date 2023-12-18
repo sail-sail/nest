@@ -166,23 +166,23 @@ input CardConsumeSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找会员卡消费记录总数"
   findCountCardConsume(search: CardConsumeSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找会员卡消费记录列表"
   findAllCardConsume(search: CardConsumeSearch, page: PageInput, sort: [SortInput!]): [CardConsumeModel!]!
-  "获取字段对应的名称"
+  "获取会员卡消费记录字段注释"
   getFieldCommentsCardConsume: CardConsumeFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个会员卡消费记录"
   findOneCardConsume(search: CardConsumeSearch, sort: [SortInput!]): CardConsumeModel
-  "根据id查找一条数据"
+  "根据 id 查找会员卡消费记录"
   findByIdCardConsume(id: CardConsumeId!): CardConsumeModel
 }
 type Mutation {
-  "根据 ids 删除数据"
+  "根据 ids 删除会员卡消费记录"
   deleteByIdsCardConsume(ids: [CardConsumeId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原会员卡消费记录"
   revertByIdsCardConsume(ids: [CardConsumeId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除会员卡消费记录"
   forceDeleteByIdsCardConsume(ids: [CardConsumeId!]!): Int!
 }
 

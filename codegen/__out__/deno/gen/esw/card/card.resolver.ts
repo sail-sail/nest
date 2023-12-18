@@ -27,7 +27,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找会员卡总数
  */
 export async function findCountCard(
   search?: CardSearch & { $extra?: SearchExtra[] },
@@ -42,7 +42,7 @@ export async function findCountCard(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找会员卡列表
  */
 export async function findAllCard(
   search?: CardSearch & { $extra?: SearchExtra[] },
@@ -59,7 +59,7 @@ export async function findAllCard(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取会员卡字段注释
  */
 export async function getFieldCommentsCard(): Promise<CardFieldComment> {
   const { getFieldComments } = await import("./card.service.ts");
@@ -68,7 +68,7 @@ export async function getFieldCommentsCard(): Promise<CardFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个会员卡
  */
 export async function findOneCard(
   search?: CardSearch & { $extra?: SearchExtra[] },
@@ -84,7 +84,7 @@ export async function findOneCard(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找会员卡
  */
 export async function findByIdCard(
   id: CardId,
@@ -95,7 +95,7 @@ export async function findByIdCard(
 }
 
 /**
- * 创建一条数据
+ * 创建会员卡
  */
 export async function createCard(
   input: CardInput,
@@ -141,7 +141,7 @@ export async function createCard(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改会员卡
  */
 export async function updateByIdCard(
   id: CardId,
@@ -183,7 +183,7 @@ export async function updateByIdCard(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡
  */
 export async function deleteByIdsCard(
   ids: CardId[],
@@ -206,7 +206,7 @@ export async function deleteByIdsCard(
 }
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认会员卡
  */
 export async function defaultByIdCard(
   id: CardId,
@@ -229,7 +229,7 @@ export async function defaultByIdCard(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用会员卡
  */
 export async function enableByIdsCard(
   ids: CardId[],
@@ -256,7 +256,7 @@ export async function enableByIdsCard(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁会员卡
  */
 export async function lockByIdsCard(
   ids: CardId[],
@@ -283,7 +283,7 @@ export async function lockByIdsCard(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原会员卡
  */
 export async function revertByIdsCard(
   ids: CardId[],
@@ -306,7 +306,7 @@ export async function revertByIdsCard(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡
  */
 export async function forceDeleteByIdsCard(
   ids: CardId[],

@@ -178,33 +178,33 @@ input PtTypeSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找产品类别总数"
   findCountPtType(search: PtTypeSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找产品类别列表"
   findAllPtType(search: PtTypeSearch, page: PageInput, sort: [SortInput!]): [PtTypeModel!]!
-  "获取字段对应的名称"
+  "获取产品类别字段注释"
   getFieldCommentsPtType: PtTypeFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个产品类别"
   findOnePtType(search: PtTypeSearch, sort: [SortInput!]): PtTypeModel
-  "根据id查找一条数据"
+  "根据 id 查找产品类别"
   findByIdPtType(id: PtTypeId!): PtTypeModel
-  "查找order_by字段的最大值"
+  "查找 产品类别 order_by 字段的最大值"
   findLastOrderByPtType: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建产品类别"
   createPtType(model: PtTypeInput!, unique_type: UniqueType): PtTypeId!
-  "根据id修改一条数据"
+  "根据 id 修改产品类别"
   updateByIdPtType(id: PtTypeId!, model: PtTypeInput!): PtTypeId!
-  "根据 ids 删除数据"
+  "根据 ids 删除产品类别"
   deleteByIdsPtType(ids: [PtTypeId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用产品类别"
   enableByIdsPtType(ids: [PtTypeId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁产品类别"
   lockByIdsPtType(ids: [PtTypeId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原产品类别"
   revertByIdsPtType(ids: [PtTypeId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除产品类别"
   forceDeleteByIdsPtType(ids: [PtTypeId!]!): Int!
 }
 

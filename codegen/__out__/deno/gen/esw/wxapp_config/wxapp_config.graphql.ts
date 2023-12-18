@@ -151,31 +151,31 @@ input WxappConfigSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找小程序配置总数"
   findCountWxappConfig(search: WxappConfigSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找小程序配置列表"
   findAllWxappConfig(search: WxappConfigSearch, page: PageInput, sort: [SortInput!]): [WxappConfigModel!]!
-  "获取字段对应的名称"
+  "获取小程序配置字段注释"
   getFieldCommentsWxappConfig: WxappConfigFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个小程序配置"
   findOneWxappConfig(search: WxappConfigSearch, sort: [SortInput!]): WxappConfigModel
-  "根据id查找一条数据"
+  "根据 id 查找小程序配置"
   findByIdWxappConfig(id: WxappConfigId!): WxappConfigModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建小程序配置"
   createWxappConfig(model: WxappConfigInput!, unique_type: UniqueType): WxappConfigId!
-  "根据id修改一条数据"
+  "根据 id 修改小程序配置"
   updateByIdWxappConfig(id: WxappConfigId!, model: WxappConfigInput!): WxappConfigId!
-  "根据 ids 删除数据"
+  "根据 ids 删除小程序配置"
   deleteByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用小程序配置"
   enableByIdsWxappConfig(ids: [WxappConfigId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁小程序配置"
   lockByIdsWxappConfig(ids: [WxappConfigId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原小程序配置"
   revertByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除小程序配置"
   forceDeleteByIdsWxappConfig(ids: [WxappConfigId!]!): Int!
 }
 

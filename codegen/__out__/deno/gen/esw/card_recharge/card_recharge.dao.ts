@@ -271,7 +271,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找会员卡充值记录总数
  * @param { CardRechargeSearch } search?
  * @return {Promise<number>}
  */
@@ -578,7 +578,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找会员卡充值记录
+ * 根据 id 查找会员卡充值记录
  * @param {CardRechargeId} id
  */
 export async function findById(
@@ -973,7 +973,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改会员卡充值记录
+ * 根据 id 修改会员卡充值记录
  * @param {CardRechargeId} id
  * @param {CardRechargeInput} input
  * @param {({
@@ -1120,7 +1120,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡充值记录
  * @param {CardRechargeId[]} ids
  * @return {Promise<number>}
  */

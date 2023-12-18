@@ -27,7 +27,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找充值赠送规则总数
  */
 export async function findCountRechargeRule(
   search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
@@ -42,7 +42,7 @@ export async function findCountRechargeRule(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找充值赠送规则列表
  */
 export async function findAllRechargeRule(
   search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
@@ -59,7 +59,7 @@ export async function findAllRechargeRule(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取充值赠送规则字段注释
  */
 export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldComment> {
   const { getFieldComments } = await import("./recharge_rule.service.ts");
@@ -68,7 +68,7 @@ export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldC
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个充值赠送规则
  */
 export async function findOneRechargeRule(
   search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
@@ -84,7 +84,7 @@ export async function findOneRechargeRule(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找充值赠送规则
  */
 export async function findByIdRechargeRule(
   id: RechargeRuleId,
@@ -95,7 +95,7 @@ export async function findByIdRechargeRule(
 }
 
 /**
- * 创建一条数据
+ * 创建充值赠送规则
  */
 export async function createRechargeRule(
   input: RechargeRuleInput,
@@ -136,7 +136,7 @@ export async function createRechargeRule(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改充值赠送规则
  */
 export async function updateByIdRechargeRule(
   id: RechargeRuleId,
@@ -173,7 +173,7 @@ export async function updateByIdRechargeRule(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除充值赠送规则
  */
 export async function deleteByIdsRechargeRule(
   ids: RechargeRuleId[],
@@ -196,7 +196,7 @@ export async function deleteByIdsRechargeRule(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用充值赠送规则
  */
 export async function enableByIdsRechargeRule(
   ids: RechargeRuleId[],
@@ -223,7 +223,7 @@ export async function enableByIdsRechargeRule(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁充值赠送规则
  */
 export async function lockByIdsRechargeRule(
   ids: RechargeRuleId[],
@@ -250,7 +250,7 @@ export async function lockByIdsRechargeRule(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原充值赠送规则
  */
 export async function revertByIdsRechargeRule(
   ids: RechargeRuleId[],
@@ -273,7 +273,7 @@ export async function revertByIdsRechargeRule(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除充值赠送规则
  */
 export async function forceDeleteByIdsRechargeRule(
   ids: RechargeRuleId[],

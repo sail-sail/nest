@@ -232,7 +232,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找充值赠送规则总数
  * @param { RechargeRuleSearch } search?
  * @return {Promise<number>}
  */
@@ -585,7 +585,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找充值赠送规则
+ * 根据 id 查找充值赠送规则
  * @param {RechargeRuleId} id
  */
 export async function findById(
@@ -995,7 +995,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改充值赠送规则
+ * 根据 id 修改充值赠送规则
  * @param {RechargeRuleId} id
  * @param {RechargeRuleInput} input
  * @param {({
@@ -1130,7 +1130,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除充值赠送规则
  * @param {RechargeRuleId[]} ids
  * @return {Promise<number>}
  */
@@ -1197,7 +1197,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用充值赠送规则
  * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1267,7 +1267,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁充值赠送规则
  * @param {RechargeRuleId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找产品类别总数
  */
 export async function findCountPtType(
   search?: PtTypeSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountPtType(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找产品类别列表
  */
 export async function findAllPtType(
   search?: PtTypeSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllPtType(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取产品类别字段注释
  */
 export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
   const { getFieldComments } = await import("./pt_type.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个产品类别
  */
 export async function findOnePtType(
   search?: PtTypeSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOnePtType(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找产品类别
  */
 export async function findByIdPtType(
   id: PtTypeId,
@@ -93,7 +93,7 @@ export async function findByIdPtType(
 }
 
 /**
- * 创建一条数据
+ * 创建产品类别
  */
 export async function createPtType(
   input: PtTypeInput,
@@ -124,7 +124,7 @@ export async function createPtType(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改产品类别
  */
 export async function updateByIdPtType(
   id: PtTypeId,
@@ -151,7 +151,7 @@ export async function updateByIdPtType(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除产品类别
  */
 export async function deleteByIdsPtType(
   ids: PtTypeId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsPtType(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用产品类别
  */
 export async function enableByIdsPtType(
   ids: PtTypeId[],
@@ -201,7 +201,7 @@ export async function enableByIdsPtType(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁产品类别
  */
 export async function lockByIdsPtType(
   ids: PtTypeId[],
@@ -228,7 +228,7 @@ export async function lockByIdsPtType(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原产品类别
  */
 export async function revertByIdsPtType(
   ids: PtTypeId[],
@@ -251,7 +251,7 @@ export async function revertByIdsPtType(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除产品类别
  */
 export async function forceDeleteByIdsPtType(
   ids: PtTypeId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsPtType(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 产品类别 order_by 字段的最大值
  */
 export async function findLastOrderByPtType(): Promise<number> {
   const { findLastOrderBy } = await import("./pt_type.service.ts");

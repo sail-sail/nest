@@ -82,7 +82,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个会员卡
+ * 根据条件查找第一个会员卡
  * @param {CardSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -166,7 +166,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条会员卡
+ * 创建会员卡
  * @param {CardInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -194,7 +194,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条会员卡
+ * 根据 id 修改会员卡
  * @param {CardId} id
  * @param {CardInput} model
  * @param {GqlOpt} opt?
@@ -222,7 +222,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条会员卡
+ * 根据 id 查找会员卡
  * @param {CardId} id
  * @param {GqlOpt} opt?
  */
@@ -381,7 +381,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原会员卡
+ * 根据 ids 还原会员卡
  * @param {CardId[]} ids
  * @param {GqlOpt} opt?
  */

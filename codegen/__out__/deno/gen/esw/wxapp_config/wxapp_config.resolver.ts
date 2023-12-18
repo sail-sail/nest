@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找小程序配置总数
  */
 export async function findCountWxappConfig(
   search?: WxappConfigSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxappConfig(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找小程序配置列表
  */
 export async function findAllWxappConfig(
   search?: WxappConfigSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxappConfig(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取小程序配置字段注释
  */
 export async function getFieldCommentsWxappConfig(): Promise<WxappConfigFieldComment> {
   const { getFieldComments } = await import("./wxapp_config.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxappConfig(): Promise<WxappConfigFieldCom
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个小程序配置
  */
 export async function findOneWxappConfig(
   search?: WxappConfigSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxappConfig(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找小程序配置
  */
 export async function findByIdWxappConfig(
   id: WxappConfigId,
@@ -93,7 +93,7 @@ export async function findByIdWxappConfig(
 }
 
 /**
- * 创建一条数据
+ * 创建小程序配置
  */
 export async function createWxappConfig(
   input: WxappConfigInput,
@@ -124,7 +124,7 @@ export async function createWxappConfig(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改小程序配置
  */
 export async function updateByIdWxappConfig(
   id: WxappConfigId,
@@ -151,7 +151,7 @@ export async function updateByIdWxappConfig(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除小程序配置
  */
 export async function deleteByIdsWxappConfig(
   ids: WxappConfigId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxappConfig(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用小程序配置
  */
 export async function enableByIdsWxappConfig(
   ids: WxappConfigId[],
@@ -201,7 +201,7 @@ export async function enableByIdsWxappConfig(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁小程序配置
  */
 export async function lockByIdsWxappConfig(
   ids: WxappConfigId[],
@@ -228,7 +228,7 @@ export async function lockByIdsWxappConfig(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原小程序配置
  */
 export async function revertByIdsWxappConfig(
   ids: WxappConfigId[],
@@ -251,7 +251,7 @@ export async function revertByIdsWxappConfig(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除小程序配置
  */
 export async function forceDeleteByIdsWxappConfig(
   ids: WxappConfigId[],

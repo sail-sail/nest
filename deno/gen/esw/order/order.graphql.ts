@@ -279,31 +279,31 @@ input OrderSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找订单总数"
   findCountOrder(search: OrderSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找订单列表"
   findAllOrder(search: OrderSearch, page: PageInput, sort: [SortInput!]): [OrderModel!]!
-  "获取字段对应的名称"
+  "获取订单字段注释"
   getFieldCommentsOrder: OrderFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个订单"
   findOneOrder(search: OrderSearch, sort: [SortInput!]): OrderModel
-  "根据id查找一条数据"
+  "根据 id 查找订单"
   findByIdOrder(id: OrderId!): OrderModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建订单"
   createOrder(model: OrderInput!, unique_type: UniqueType): OrderId!
-  "根据id修改一条数据"
+  "根据 id 修改订单"
   updateByIdOrder(id: OrderId!, model: OrderInput!): OrderId!
-  "根据 ids 删除数据"
+  "根据 ids 删除订单"
   deleteByIdsOrder(ids: [OrderId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用订单"
   enableByIdsOrder(ids: [OrderId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁订单"
   lockByIdsOrder(ids: [OrderId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原订单"
   revertByIdsOrder(ids: [OrderId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除订单"
   forceDeleteByIdsOrder(ids: [OrderId!]!): Int!
 }
 
