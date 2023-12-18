@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找企微应用总数
  */
 export async function findCountWxwApp(
   search?: WxwAppSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxwApp(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找企微应用列表
  */
 export async function findAllWxwApp(
   search?: WxwAppSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxwApp(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取企微应用字段注释
  */
 export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
   const { getFieldComments } = await import("./wxw_app.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个企微应用
  */
 export async function findOneWxwApp(
   search?: WxwAppSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxwApp(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找企微应用
  */
 export async function findByIdWxwApp(
   id: WxwAppId,
@@ -93,7 +93,7 @@ export async function findByIdWxwApp(
 }
 
 /**
- * 创建一条数据
+ * 创建企微应用
  */
 export async function createWxwApp(
   input: WxwAppInput,
@@ -124,7 +124,7 @@ export async function createWxwApp(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改企微应用
  */
 export async function updateByIdWxwApp(
   id: WxwAppId,
@@ -151,7 +151,7 @@ export async function updateByIdWxwApp(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微应用
  */
 export async function deleteByIdsWxwApp(
   ids: WxwAppId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxwApp(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用企微应用
  */
 export async function enableByIdsWxwApp(
   ids: WxwAppId[],
@@ -201,7 +201,7 @@ export async function enableByIdsWxwApp(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁企微应用
  */
 export async function lockByIdsWxwApp(
   ids: WxwAppId[],
@@ -228,7 +228,7 @@ export async function lockByIdsWxwApp(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原企微应用
  */
 export async function revertByIdsWxwApp(
   ids: WxwAppId[],
@@ -251,7 +251,7 @@ export async function revertByIdsWxwApp(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微应用
  */
 export async function forceDeleteByIdsWxwApp(
   ids: WxwAppId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsWxwApp(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 企微应用 order_by 字段的最大值
  */
 export async function findLastOrderByWxwApp(): Promise<number> {
   const { findLastOrderBy } = await import("./wxw_app.service.ts");

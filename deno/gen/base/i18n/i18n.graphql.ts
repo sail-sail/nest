@@ -144,27 +144,27 @@ input I18Nsearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找国际化总数"
   findCountI18N(search: I18Nsearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找国际化列表"
   findAllI18N(search: I18Nsearch, page: PageInput, sort: [SortInput!]): [I18Nmodel!]!
-  "获取字段对应的名称"
+  "获取国际化字段注释"
   getFieldCommentsI18N: I18NfieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个国际化"
   findOneI18N(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
-  "根据id查找一条数据"
+  "根据 id 查找国际化"
   findByIdI18N(id: I18nId!): I18Nmodel
 }
 type Mutation {
-  "创建一条数据"
+  "创建国际化"
   createI18N(model: I18Ninput!, unique_type: UniqueType): I18nId!
-  "根据id修改一条数据"
+  "根据 id 修改国际化"
   updateByIdI18N(id: I18nId!, model: I18Ninput!): I18nId!
-  "根据 ids 删除数据"
+  "根据 ids 删除国际化"
   deleteByIdsI18N(ids: [I18nId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原国际化"
   revertByIdsI18N(ids: [I18nId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除国际化"
   forceDeleteByIdsI18N(ids: [I18nId!]!): Int!
 }
 

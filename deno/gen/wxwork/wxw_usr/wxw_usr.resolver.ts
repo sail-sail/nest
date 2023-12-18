@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找企微用户总数
  */
 export async function findCountWxwUsr(
   search?: WxwUsrSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxwUsr(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找企微用户列表
  */
 export async function findAllWxwUsr(
   search?: WxwUsrSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxwUsr(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取企微用户字段注释
  */
 export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
   const { getFieldComments } = await import("./wxw_usr.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个企微用户
  */
 export async function findOneWxwUsr(
   search?: WxwUsrSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxwUsr(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找企微用户
  */
 export async function findByIdWxwUsr(
   id: WxwUsrId,
@@ -93,7 +93,7 @@ export async function findByIdWxwUsr(
 }
 
 /**
- * 创建一条数据
+ * 创建企微用户
  */
 export async function createWxwUsr(
   input: WxwUsrInput,
@@ -124,7 +124,7 @@ export async function createWxwUsr(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改企微用户
  */
 export async function updateByIdWxwUsr(
   id: WxwUsrId,
@@ -151,7 +151,7 @@ export async function updateByIdWxwUsr(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微用户
  */
 export async function deleteByIdsWxwUsr(
   ids: WxwUsrId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxwUsr(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原企微用户
  */
 export async function revertByIdsWxwUsr(
   ids: WxwUsrId[],
@@ -197,7 +197,7 @@ export async function revertByIdsWxwUsr(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微用户
  */
 export async function forceDeleteByIdsWxwUsr(
   ids: WxwUsrId[],

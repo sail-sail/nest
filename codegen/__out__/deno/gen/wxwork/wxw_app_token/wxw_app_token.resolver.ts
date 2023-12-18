@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找企微应用接口凭据总数
  */
 export async function findCountWxwAppToken(
   search?: WxwAppTokenSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxwAppToken(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找企微应用接口凭据列表
  */
 export async function findAllWxwAppToken(
   search?: WxwAppTokenSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxwAppToken(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取企微应用接口凭据字段注释
  */
 export async function getFieldCommentsWxwAppToken(): Promise<WxwAppTokenFieldComment> {
   const { getFieldComments } = await import("./wxw_app_token.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxwAppToken(): Promise<WxwAppTokenFieldCom
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个企微应用接口凭据
  */
 export async function findOneWxwAppToken(
   search?: WxwAppTokenSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxwAppToken(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找企微应用接口凭据
  */
 export async function findByIdWxwAppToken(
   id: WxwAppTokenId,
@@ -93,7 +93,7 @@ export async function findByIdWxwAppToken(
 }
 
 /**
- * 创建一条数据
+ * 创建企微应用接口凭据
  */
 export async function createWxwAppToken(
   input: WxwAppTokenInput,
@@ -124,7 +124,7 @@ export async function createWxwAppToken(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改企微应用接口凭据
  */
 export async function updateByIdWxwAppToken(
   id: WxwAppTokenId,
@@ -151,7 +151,7 @@ export async function updateByIdWxwAppToken(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微应用接口凭据
  */
 export async function deleteByIdsWxwAppToken(
   ids: WxwAppTokenId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxwAppToken(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原企微应用接口凭据
  */
 export async function revertByIdsWxwAppToken(
   ids: WxwAppTokenId[],
@@ -197,7 +197,7 @@ export async function revertByIdsWxwAppToken(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微应用接口凭据
  */
 export async function forceDeleteByIdsWxwAppToken(
   ids: WxwAppTokenId[],

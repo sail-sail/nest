@@ -200,7 +200,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找数据权限总数
  * @param { DataPermitSearch } search?
  * @return {Promise<number>}
  */
@@ -569,7 +569,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据权限
+ * 根据 id 查找数据权限
  * @param {DataPermitId} id
  */
 export async function findById(
@@ -877,7 +877,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改数据权限
+ * 根据 id 修改数据权限
  * @param {DataPermitId} id
  * @param {DataPermitInput} input
  * @param {({
@@ -1002,7 +1002,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除数据权限
  * @param {DataPermitId[]} ids
  * @return {Promise<number>}
  */

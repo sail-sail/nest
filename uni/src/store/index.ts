@@ -38,7 +38,7 @@ export default defineStore("index", function() {
     return userAgent;
   }
   
-  let launchOptions = $ref<{[key: string]: any}>({ });
+  let launchOptions = $ref<App.LaunchShowOption>();
   
   let uid = $ref("");
   

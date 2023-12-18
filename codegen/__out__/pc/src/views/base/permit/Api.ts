@@ -24,7 +24,6 @@ import {
 
 /**
  * 根据搜索条件查找按钮权限列表
- * @export findAll
  * @param {PermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -74,8 +73,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个按钮权限
- * @export findOne
+ * 根据条件查找第一个按钮权限
  * @param {PermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -122,7 +120,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找按钮权限总数
- * @export findCount
  * @param {PermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -147,8 +144,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条按钮权限
- * @export create
+ * 创建按钮权限
  * @param {PermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -176,8 +172,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条按钮权限
- * @export updateById
+ * 根据 id 修改按钮权限
  * @param {PermitId} id
  * @param {PermitInput} model
  * @param {GqlOpt} opt?
@@ -205,8 +200,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条按钮权限
- * @export findById
+ * 根据 id 查找按钮权限
  * @param {PermitId} id
  * @param {GqlOpt} opt?
  */
@@ -247,7 +241,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除按钮权限
- * @export deleteByIds
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -272,8 +265,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原按钮权限
- * @export revertByIds
+ * 根据 ids 还原按钮权限
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -299,7 +291,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除按钮权限
- * @export forceDeleteByIds
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -514,7 +505,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {PermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: PermitInput[],

@@ -202,7 +202,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找字段权限总数
  * @param { FieldPermitSearch } search?
  * @return {Promise<number>}
  */
@@ -543,7 +543,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找字段权限
+ * 根据 id 查找字段权限
  * @param {FieldPermitId} id
  */
 export async function findById(
@@ -851,7 +851,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改字段权限
+ * 根据 id 修改字段权限
  * @param {FieldPermitId} id
  * @param {FieldPermitInput} input
  * @param {({
@@ -976,7 +976,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除字段权限
  * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */

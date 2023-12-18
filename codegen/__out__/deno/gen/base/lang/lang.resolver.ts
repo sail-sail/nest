@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找语言总数
  */
 export async function findCountLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountLang(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找语言列表
  */
 export async function findAllLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllLang(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取语言字段注释
  */
 export async function getFieldCommentsLang(): Promise<LangFieldComment> {
   const { getFieldComments } = await import("./lang.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsLang(): Promise<LangFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个语言
  */
 export async function findOneLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneLang(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找语言
  */
 export async function findByIdLang(
   id: LangId,
@@ -93,7 +93,7 @@ export async function findByIdLang(
 }
 
 /**
- * 创建一条数据
+ * 创建语言
  */
 export async function createLang(
   input: LangInput,
@@ -124,7 +124,7 @@ export async function createLang(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改语言
  */
 export async function updateByIdLang(
   id: LangId,
@@ -151,7 +151,7 @@ export async function updateByIdLang(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除语言
  */
 export async function deleteByIdsLang(
   ids: LangId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsLang(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用语言
  */
 export async function enableByIdsLang(
   ids: LangId[],
@@ -201,7 +201,7 @@ export async function enableByIdsLang(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原语言
  */
 export async function revertByIdsLang(
   ids: LangId[],
@@ -224,7 +224,7 @@ export async function revertByIdsLang(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除语言
  */
 export async function forceDeleteByIdsLang(
   ids: LangId[],
@@ -246,7 +246,7 @@ export async function forceDeleteByIdsLang(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 语言 order_by 字段的最大值
  */
 export async function findLastOrderByLang(): Promise<number> {
   const { findLastOrderBy } = await import("./lang.service.ts");

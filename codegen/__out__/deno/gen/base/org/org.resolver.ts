@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找组织总数
  */
 export async function findCountOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountOrg(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找组织列表
  */
 export async function findAllOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllOrg(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取组织字段注释
  */
 export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
   const { getFieldComments } = await import("./org.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个组织
  */
 export async function findOneOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneOrg(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找组织
  */
 export async function findByIdOrg(
   id: OrgId,
@@ -93,7 +93,7 @@ export async function findByIdOrg(
 }
 
 /**
- * 创建一条数据
+ * 创建组织
  */
 export async function createOrg(
   input: OrgInput,
@@ -124,7 +124,7 @@ export async function createOrg(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改组织
  */
 export async function updateByIdOrg(
   id: OrgId,
@@ -151,7 +151,7 @@ export async function updateByIdOrg(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除组织
  */
 export async function deleteByIdsOrg(
   ids: OrgId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsOrg(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用组织
  */
 export async function enableByIdsOrg(
   ids: OrgId[],
@@ -201,7 +201,7 @@ export async function enableByIdsOrg(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁组织
  */
 export async function lockByIdsOrg(
   ids: OrgId[],
@@ -228,7 +228,7 @@ export async function lockByIdsOrg(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原组织
  */
 export async function revertByIdsOrg(
   ids: OrgId[],
@@ -251,7 +251,7 @@ export async function revertByIdsOrg(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除组织
  */
 export async function forceDeleteByIdsOrg(
   ids: OrgId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsOrg(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 组织 order_by 字段的最大值
  */
 export async function findLastOrderByOrg(): Promise<number> {
   const { findLastOrderBy } = await import("./org.service.ts");
