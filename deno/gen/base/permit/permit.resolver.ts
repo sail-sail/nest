@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找按钮权限总数
  */
 export async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountPermit(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找按钮权限列表
  */
 export async function findAllPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllPermit(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取按钮权限字段注释
  */
 export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
   const { getFieldComments } = await import("./permit.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个按钮权限
  */
 export async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOnePermit(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找按钮权限
  */
 export async function findByIdPermit(
   id: PermitId,
@@ -93,7 +93,7 @@ export async function findByIdPermit(
 }
 
 /**
- * 创建一条数据
+ * 创建按钮权限
  */
 export async function createPermit(
   input: PermitInput,
@@ -124,7 +124,7 @@ export async function createPermit(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改按钮权限
  */
 export async function updateByIdPermit(
   id: PermitId,
@@ -151,7 +151,7 @@ export async function updateByIdPermit(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除按钮权限
  */
 export async function deleteByIdsPermit(
   ids: PermitId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsPermit(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原按钮权限
  */
 export async function revertByIdsPermit(
   ids: PermitId[],
@@ -197,7 +197,7 @@ export async function revertByIdsPermit(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除按钮权限
  */
 export async function forceDeleteByIdsPermit(
   ids: PermitId[],

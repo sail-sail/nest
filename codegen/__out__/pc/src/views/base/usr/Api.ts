@@ -93,7 +93,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个用户
+ * 根据条件查找第一个用户
  * @param {UsrSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -176,7 +176,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条用户
+ * 创建用户
  * @param {UsrInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -204,7 +204,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条用户
+ * 根据 id 修改用户
  * @param {UsrId} id
  * @param {UsrInput} model
  * @param {GqlOpt} opt?
@@ -232,7 +232,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条用户
+ * 根据 id 查找用户
  * @param {UsrId} id
  * @param {GqlOpt} opt?
  */
@@ -366,7 +366,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原用户
+ * 根据 ids 还原用户
  * @param {UsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -789,7 +789,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 用户 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

@@ -19,7 +19,7 @@ import type {
 import * as roleDao from "./role.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找角色总数
  * @param {RoleSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -32,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找角色列表
  * @param {RoleSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -57,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个角色
  * @param {RoleSearch} search? 搜索条件
  */
 export async function findOne(
@@ -70,7 +70,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找角色
  * @param {RoleId} id
  */
 export async function findById(
@@ -81,7 +81,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找角色是否存在
  * @param {RoleSearch} search? 搜索条件
  */
 export async function exist(
@@ -93,7 +93,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找角色是否存在
  * @param {RoleId} id
  */
 export async function existById(
@@ -104,7 +104,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验角色
  * @param input 
  */
 export async function validate(
@@ -130,7 +130,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改角色
  * @param {RoleId} id
  * @param {RoleInput} input
  * @return {Promise<RoleId>}
@@ -150,7 +150,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除角色
  * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
@@ -178,7 +178,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或者禁用角色
  * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -192,7 +192,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或者解锁角色
  * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -206,7 +206,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原角色
  * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
@@ -218,7 +218,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除角色
  * @param {RoleId[]} ids
  * @return {Promise<number>}
  */
@@ -230,7 +230,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取角色字段注释
  */
 export async function getFieldComments(): Promise<RoleFieldComment> {
   const data = await roleDao.getFieldComments();
@@ -238,7 +238,7 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 角色 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

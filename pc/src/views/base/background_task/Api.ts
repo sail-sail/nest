@@ -67,7 +67,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个后台任务
+ * 根据条件查找第一个后台任务
  * @param {BackgroundTaskSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -145,7 +145,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条后台任务
+ * 根据 id 查找后台任务
  * @param {BackgroundTaskId} id
  * @param {GqlOpt} opt?
  */
@@ -217,7 +217,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原后台任务
+ * 根据 ids 还原后台任务
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */

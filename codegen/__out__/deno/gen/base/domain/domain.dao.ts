@@ -201,7 +201,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找域名总数
  * @param { DomainSearch } search?
  * @return {Promise<number>}
  */
@@ -568,7 +568,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找域名
+ * 根据 id 查找域名
  * @param {DomainId} id
  */
 export async function findById(
@@ -876,7 +876,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改域名
+ * 根据 id 修改域名
  * @param {DomainId} id
  * @param {DomainInput} input
  * @param {({
@@ -1007,7 +1007,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除域名
  * @param {DomainId[]} ids
  * @return {Promise<number>}
  */
@@ -1134,7 +1134,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用域名
  * @param {DomainId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1204,7 +1204,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁域名
  * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

@@ -17,7 +17,7 @@ import type {
 import * as i18nDao from "./i18n.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找国际化总数
  * @param {I18Nsearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -30,7 +30,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找国际化列表
  * @param {I18Nsearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -55,7 +55,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个国际化
  * @param {I18Nsearch} search? 搜索条件
  */
 export async function findOne(
@@ -68,7 +68,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找国际化
  * @param {I18nId} id
  */
 export async function findById(
@@ -79,7 +79,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找国际化是否存在
  * @param {I18Nsearch} search? 搜索条件
  */
 export async function exist(
@@ -91,7 +91,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找国际化是否存在
  * @param {I18nId} id
  */
 export async function existById(
@@ -102,7 +102,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验国际化
  * @param input 
  */
 export async function validate(
@@ -128,7 +128,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改国际化
  * @param {I18nId} id
  * @param {I18Ninput} input
  * @return {Promise<I18nId>}
@@ -148,7 +148,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
@@ -166,7 +166,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
@@ -178,7 +178,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
@@ -190,7 +190,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取国际化字段注释
  */
 export async function getFieldComments(): Promise<I18NfieldComment> {
   const data = await i18nDao.getFieldComments();

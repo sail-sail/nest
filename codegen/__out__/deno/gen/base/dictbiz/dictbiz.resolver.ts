@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找业务字典总数
  */
 export async function findCountDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountDictbiz(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找业务字典列表
  */
 export async function findAllDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllDictbiz(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取业务字典字段注释
  */
 export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
   const { getFieldComments } = await import("./dictbiz.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个业务字典
  */
 export async function findOneDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneDictbiz(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找业务字典
  */
 export async function findByIdDictbiz(
   id: DictbizId,
@@ -93,7 +93,7 @@ export async function findByIdDictbiz(
 }
 
 /**
- * 创建一条数据
+ * 创建业务字典
  */
 export async function createDictbiz(
   input: DictbizInput,
@@ -124,7 +124,7 @@ export async function createDictbiz(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改业务字典
  */
 export async function updateByIdDictbiz(
   id: DictbizId,
@@ -151,7 +151,7 @@ export async function updateByIdDictbiz(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除业务字典
  */
 export async function deleteByIdsDictbiz(
   ids: DictbizId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsDictbiz(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用业务字典
  */
 export async function enableByIdsDictbiz(
   ids: DictbizId[],
@@ -201,7 +201,7 @@ export async function enableByIdsDictbiz(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁业务字典
  */
 export async function lockByIdsDictbiz(
   ids: DictbizId[],
@@ -228,7 +228,7 @@ export async function lockByIdsDictbiz(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原业务字典
  */
 export async function revertByIdsDictbiz(
   ids: DictbizId[],
@@ -251,7 +251,7 @@ export async function revertByIdsDictbiz(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除业务字典
  */
 export async function forceDeleteByIdsDictbiz(
   ids: DictbizId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsDictbiz(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 业务字典 order_by 字段的最大值
  */
 export async function findLastOrderByDictbiz(): Promise<number> {
   const { findLastOrderBy } = await import("./dictbiz.service.ts");

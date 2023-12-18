@@ -165,33 +165,33 @@ input WxAppSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找微信小程序总数"
   findCountWxApp(search: WxAppSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找微信小程序列表"
   findAllWxApp(search: WxAppSearch, page: PageInput, sort: [SortInput!]): [WxAppModel!]!
-  "获取字段对应的名称"
+  "获取微信小程序字段注释"
   getFieldCommentsWxApp: WxAppFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个微信小程序"
   findOneWxApp(search: WxAppSearch, sort: [SortInput!]): WxAppModel
-  "根据id查找一条数据"
+  "根据 id 查找微信小程序"
   findByIdWxApp(id: WxAppId!): WxAppModel
-  "查找order_by字段的最大值"
+  "查找 微信小程序 order_by 字段的最大值"
   findLastOrderByWxApp: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建微信小程序"
   createWxApp(model: WxAppInput!, unique_type: UniqueType): WxAppId!
-  "根据id修改一条数据"
+  "根据 id 修改微信小程序"
   updateByIdWxApp(id: WxAppId!, model: WxAppInput!): WxAppId!
-  "根据 ids 删除数据"
+  "根据 ids 删除微信小程序"
   deleteByIdsWxApp(ids: [WxAppId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用微信小程序"
   enableByIdsWxApp(ids: [WxAppId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁微信小程序"
   lockByIdsWxApp(ids: [WxAppId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原微信小程序"
   revertByIdsWxApp(ids: [WxAppId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除微信小程序"
   forceDeleteByIdsWxApp(ids: [WxAppId!]!): Int!
 }
 

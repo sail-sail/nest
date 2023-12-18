@@ -70,7 +70,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个系统选项
+ * 根据条件查找第一个系统选项
  * @param {OptionsSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -146,7 +146,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条系统选项
+ * 创建系统选项
  * @param {OptionsInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -174,7 +174,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条系统选项
+ * 根据 id 修改系统选项
  * @param {OptionsId} id
  * @param {OptionsInput} model
  * @param {GqlOpt} opt?
@@ -202,7 +202,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条系统选项
+ * 根据 id 查找系统选项
  * @param {OptionsId} id
  * @param {GqlOpt} opt?
  */
@@ -328,7 +328,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原系统选项
+ * 根据 ids 还原系统选项
  * @param {OptionsId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -562,7 +562,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 系统选项 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
