@@ -243,7 +243,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找产品类别总数
  * @param { PtTypeSearch } search?
  * @return {Promise<number>}
  */
@@ -634,7 +634,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找产品类别
+ * 根据 id 查找产品类别
  * @param {PtTypeId} id
  */
 export async function findById(
@@ -1063,7 +1063,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改产品类别
+ * 根据 id 修改产品类别
  * @param {PtTypeId} id
  * @param {PtTypeInput} input
  * @param {({
@@ -1210,7 +1210,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除产品类别
  * @param {PtTypeId[]} ids
  * @return {Promise<number>}
  */
@@ -1277,7 +1277,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用产品类别
  * @param {PtTypeId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1347,7 +1347,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁产品类别
  * @param {PtTypeId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

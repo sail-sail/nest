@@ -27,7 +27,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找产品总数
  */
 export async function findCountPt(
   search?: PtSearch & { $extra?: SearchExtra[] },
@@ -42,7 +42,7 @@ export async function findCountPt(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找产品列表
  */
 export async function findAllPt(
   search?: PtSearch & { $extra?: SearchExtra[] },
@@ -59,7 +59,7 @@ export async function findAllPt(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取产品字段注释
  */
 export async function getFieldCommentsPt(): Promise<PtFieldComment> {
   const { getFieldComments } = await import("./pt.service.ts");
@@ -68,7 +68,7 @@ export async function getFieldCommentsPt(): Promise<PtFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个产品
  */
 export async function findOnePt(
   search?: PtSearch & { $extra?: SearchExtra[] },
@@ -84,7 +84,7 @@ export async function findOnePt(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找产品
  */
 export async function findByIdPt(
   id: PtId,
@@ -95,7 +95,7 @@ export async function findByIdPt(
 }
 
 /**
- * 创建一条数据
+ * 创建产品
  */
 export async function createPt(
   input: PtInput,
@@ -136,7 +136,7 @@ export async function createPt(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改产品
  */
 export async function updateByIdPt(
   id: PtId,
@@ -173,7 +173,7 @@ export async function updateByIdPt(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除产品
  */
 export async function deleteByIdsPt(
   ids: PtId[],
@@ -196,7 +196,7 @@ export async function deleteByIdsPt(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用产品
  */
 export async function enableByIdsPt(
   ids: PtId[],
@@ -223,7 +223,7 @@ export async function enableByIdsPt(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁产品
  */
 export async function lockByIdsPt(
   ids: PtId[],
@@ -250,7 +250,7 @@ export async function lockByIdsPt(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原产品
  */
 export async function revertByIdsPt(
   ids: PtId[],
@@ -273,7 +273,7 @@ export async function revertByIdsPt(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除产品
  */
 export async function forceDeleteByIdsPt(
   ids: PtId[],
@@ -295,7 +295,7 @@ export async function forceDeleteByIdsPt(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 产品 order_by 字段的最大值
  */
 export async function findLastOrderByPt(): Promise<number> {
   const { findLastOrderBy } = await import("./pt.service.ts");

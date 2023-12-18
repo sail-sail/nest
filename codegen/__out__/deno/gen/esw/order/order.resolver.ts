@@ -27,7 +27,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找订单总数
  */
 export async function findCountOrder(
   search?: OrderSearch & { $extra?: SearchExtra[] },
@@ -42,7 +42,7 @@ export async function findCountOrder(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找订单列表
  */
 export async function findAllOrder(
   search?: OrderSearch & { $extra?: SearchExtra[] },
@@ -59,7 +59,7 @@ export async function findAllOrder(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取订单字段注释
  */
 export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
   const { getFieldComments } = await import("./order.service.ts");
@@ -68,7 +68,7 @@ export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个订单
  */
 export async function findOneOrder(
   search?: OrderSearch & { $extra?: SearchExtra[] },
@@ -84,7 +84,7 @@ export async function findOneOrder(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找订单
  */
 export async function findByIdOrder(
   id: OrderId,
@@ -95,7 +95,7 @@ export async function findByIdOrder(
 }
 
 /**
- * 创建一条数据
+ * 创建订单
  */
 export async function createOrder(
   input: OrderInput,
@@ -151,7 +151,7 @@ export async function createOrder(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改订单
  */
 export async function updateByIdOrder(
   id: OrderId,
@@ -203,7 +203,7 @@ export async function updateByIdOrder(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除订单
  */
 export async function deleteByIdsOrder(
   ids: OrderId[],
@@ -226,7 +226,7 @@ export async function deleteByIdsOrder(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用订单
  */
 export async function enableByIdsOrder(
   ids: OrderId[],
@@ -253,7 +253,7 @@ export async function enableByIdsOrder(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁订单
  */
 export async function lockByIdsOrder(
   ids: OrderId[],
@@ -280,7 +280,7 @@ export async function lockByIdsOrder(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原订单
  */
 export async function revertByIdsOrder(
   ids: OrderId[],
@@ -303,7 +303,7 @@ export async function revertByIdsOrder(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除订单
  */
 export async function forceDeleteByIdsOrder(
   ids: OrderId[],

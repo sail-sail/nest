@@ -23,7 +23,7 @@ import {
 } from "/src/esw/order/order.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找订单总数
  * @param {OrderSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -36,7 +36,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找订单列表
  * @param {OrderSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -61,7 +61,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个订单
  * @param {OrderSearch} search? 搜索条件
  */
 export async function findOne(
@@ -74,7 +74,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找订单
  * @param {OrderId} id
  */
 export async function findById(
@@ -85,7 +85,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找订单是否存在
  * @param {OrderSearch} search? 搜索条件
  */
 export async function exist(
@@ -97,7 +97,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找订单是否存在
  * @param {OrderId} id
  */
 export async function existById(
@@ -108,7 +108,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验订单
  * @param input 
  */
 export async function validate(
@@ -135,7 +135,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改订单
  * @param {OrderId} id
  * @param {OrderInput} input
  * @return {Promise<OrderId>}
@@ -155,7 +155,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
@@ -183,7 +183,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或者禁用订单
  * @param {OrderId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -197,7 +197,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或者解锁订单
  * @param {OrderId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -211,7 +211,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
@@ -223,7 +223,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
@@ -235,7 +235,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取订单字段注释
  */
 export async function getFieldComments(): Promise<OrderFieldComment> {
   const data = await orderDao.getFieldComments();

@@ -166,23 +166,23 @@ input CardRechargeSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找会员卡充值记录总数"
   findCountCardRecharge(search: CardRechargeSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找会员卡充值记录列表"
   findAllCardRecharge(search: CardRechargeSearch, page: PageInput, sort: [SortInput!]): [CardRechargeModel!]!
-  "获取字段对应的名称"
+  "获取会员卡充值记录字段注释"
   getFieldCommentsCardRecharge: CardRechargeFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个会员卡充值记录"
   findOneCardRecharge(search: CardRechargeSearch, sort: [SortInput!]): CardRechargeModel
-  "根据id查找一条数据"
+  "根据 id 查找会员卡充值记录"
   findByIdCardRecharge(id: CardRechargeId!): CardRechargeModel
 }
 type Mutation {
-  "根据 ids 删除数据"
+  "根据 ids 删除会员卡充值记录"
   deleteByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原会员卡充值记录"
   revertByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除会员卡充值记录"
   forceDeleteByIdsCardRecharge(ids: [CardRechargeId!]!): Int!
 }
 

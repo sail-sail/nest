@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找会员卡消费记录总数
  */
 export async function findCountCardConsume(
   search?: CardConsumeSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountCardConsume(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找会员卡消费记录列表
  */
 export async function findAllCardConsume(
   search?: CardConsumeSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllCardConsume(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取会员卡消费记录字段注释
  */
 export async function getFieldCommentsCardConsume(): Promise<CardConsumeFieldComment> {
   const { getFieldComments } = await import("./card_consume.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsCardConsume(): Promise<CardConsumeFieldCom
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个会员卡消费记录
  */
 export async function findOneCardConsume(
   search?: CardConsumeSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneCardConsume(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找会员卡消费记录
  */
 export async function findByIdCardConsume(
   id: CardConsumeId,
@@ -93,7 +93,7 @@ export async function findByIdCardConsume(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡消费记录
  */
 export async function deleteByIdsCardConsume(
   ids: CardConsumeId[],
@@ -116,7 +116,7 @@ export async function deleteByIdsCardConsume(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原会员卡消费记录
  */
 export async function revertByIdsCardConsume(
   ids: CardConsumeId[],
@@ -139,7 +139,7 @@ export async function revertByIdsCardConsume(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡消费记录
  */
 export async function forceDeleteByIdsCardConsume(
   ids: CardConsumeId[],

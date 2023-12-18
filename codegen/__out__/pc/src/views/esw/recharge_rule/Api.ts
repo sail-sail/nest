@@ -68,7 +68,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个充值赠送规则
+ * 根据条件查找第一个充值赠送规则
  * @param {RechargeRuleSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -142,7 +142,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条充值赠送规则
+ * 创建充值赠送规则
  * @param {RechargeRuleInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -170,7 +170,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条充值赠送规则
+ * 根据 id 修改充值赠送规则
  * @param {RechargeRuleId} id
  * @param {RechargeRuleInput} model
  * @param {GqlOpt} opt?
@@ -198,7 +198,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条充值赠送规则
+ * 根据 id 查找充值赠送规则
  * @param {RechargeRuleId} id
  * @param {GqlOpt} opt?
  */
@@ -322,7 +322,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原充值赠送规则
+ * 根据 ids 还原充值赠送规则
  * @param {RechargeRuleId[]} ids
  * @param {GqlOpt} opt?
  */

@@ -68,7 +68,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个小程序配置
+ * 根据条件查找第一个小程序配置
  * @param {WxappConfigSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -142,7 +142,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条小程序配置
+ * 创建小程序配置
  * @param {WxappConfigInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -170,7 +170,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条小程序配置
+ * 根据 id 修改小程序配置
  * @param {WxappConfigId} id
  * @param {WxappConfigInput} model
  * @param {GqlOpt} opt?
@@ -198,7 +198,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条小程序配置
+ * 根据 id 查找小程序配置
  * @param {WxappConfigId} id
  * @param {GqlOpt} opt?
  */
@@ -322,7 +322,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原小程序配置
+ * 根据 ids 还原小程序配置
  * @param {WxappConfigId[]} ids
  * @param {GqlOpt} opt?
  */

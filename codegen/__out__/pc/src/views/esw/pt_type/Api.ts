@@ -72,7 +72,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个产品类别
+ * 根据条件查找第一个产品类别
  * @param {PtTypeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -150,7 +150,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条产品类别
+ * 创建产品类别
  * @param {PtTypeInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -178,7 +178,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条产品类别
+ * 根据 id 修改产品类别
  * @param {PtTypeId} id
  * @param {PtTypeInput} model
  * @param {GqlOpt} opt?
@@ -206,7 +206,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条产品类别
+ * 根据 id 查找产品类别
  * @param {PtTypeId} id
  * @param {GqlOpt} opt?
  */
@@ -334,7 +334,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原产品类别
+ * 根据 ids 还原产品类别
  * @param {PtTypeId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -579,7 +579,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 产品类别 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

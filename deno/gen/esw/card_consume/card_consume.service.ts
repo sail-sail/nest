@@ -17,7 +17,7 @@ import type {
 import * as card_consumeDao from "./card_consume.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找会员卡消费记录总数
  * @param {CardConsumeSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -30,7 +30,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找会员卡消费记录列表
  * @param {CardConsumeSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -55,7 +55,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个会员卡消费记录
  * @param {CardConsumeSearch} search? 搜索条件
  */
 export async function findOne(
@@ -68,7 +68,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找会员卡消费记录
  * @param {CardConsumeId} id
  */
 export async function findById(
@@ -79,7 +79,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找会员卡消费记录是否存在
  * @param {CardConsumeSearch} search? 搜索条件
  */
 export async function exist(
@@ -91,7 +91,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找会员卡消费记录是否存在
  * @param {CardConsumeId} id
  */
 export async function existById(
@@ -102,7 +102,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验会员卡消费记录
  * @param input 
  */
 export async function validate(
@@ -128,7 +128,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改会员卡消费记录
  * @param {CardConsumeId} id
  * @param {CardConsumeInput} input
  * @return {Promise<CardConsumeId>}
@@ -143,7 +143,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡消费记录
  * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
@@ -156,7 +156,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原会员卡消费记录
  * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
@@ -168,7 +168,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡消费记录
  * @param {CardConsumeId[]} ids
  * @return {Promise<number>}
  */
@@ -180,7 +180,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取会员卡消费记录字段注释
  */
 export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   const data = await card_consumeDao.getFieldComments();

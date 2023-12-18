@@ -90,7 +90,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个订单
+ * 根据条件查找第一个订单
  * @param {OrderSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -178,7 +178,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条订单
+ * 创建订单
  * @param {OrderInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -206,7 +206,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条订单
+ * 根据 id 修改订单
  * @param {OrderId} id
  * @param {OrderInput} model
  * @param {GqlOpt} opt?
@@ -234,7 +234,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条订单
+ * 根据 id 查找订单
  * @param {OrderId} id
  * @param {GqlOpt} opt?
  */
@@ -372,7 +372,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原订单
+ * 根据 ids 还原订单
  * @param {OrderId[]} ids
  * @param {GqlOpt} opt?
  */

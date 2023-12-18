@@ -347,7 +347,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找订单总数
  * @param { OrderSearch } search?
  * @return {Promise<number>}
  */
@@ -827,7 +827,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找订单
+ * 根据 id 查找订单
  * @param {OrderId} id
  */
 export async function findById(
@@ -1320,7 +1320,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改订单
+ * 根据 id 修改订单
  * @param {OrderId} id
  * @param {OrderInput} input
  * @param {({
@@ -1521,7 +1521,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除订单
  * @param {OrderId[]} ids
  * @return {Promise<number>}
  */
@@ -1582,7 +1582,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用订单
  * @param {OrderId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1646,7 +1646,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁订单
  * @param {OrderId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

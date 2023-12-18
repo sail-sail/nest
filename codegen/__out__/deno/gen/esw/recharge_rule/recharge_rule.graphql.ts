@@ -149,31 +149,31 @@ input RechargeRuleSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找充值赠送规则总数"
   findCountRechargeRule(search: RechargeRuleSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找充值赠送规则列表"
   findAllRechargeRule(search: RechargeRuleSearch, page: PageInput, sort: [SortInput!]): [RechargeRuleModel!]!
-  "获取字段对应的名称"
+  "获取充值赠送规则字段注释"
   getFieldCommentsRechargeRule: RechargeRuleFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个充值赠送规则"
   findOneRechargeRule(search: RechargeRuleSearch, sort: [SortInput!]): RechargeRuleModel
-  "根据id查找一条数据"
+  "根据 id 查找充值赠送规则"
   findByIdRechargeRule(id: RechargeRuleId!): RechargeRuleModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建充值赠送规则"
   createRechargeRule(model: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
-  "根据id修改一条数据"
+  "根据 id 修改充值赠送规则"
   updateByIdRechargeRule(id: RechargeRuleId!, model: RechargeRuleInput!): RechargeRuleId!
-  "根据 ids 删除数据"
+  "根据 ids 删除充值赠送规则"
   deleteByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用充值赠送规则"
   enableByIdsRechargeRule(ids: [RechargeRuleId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁充值赠送规则"
   lockByIdsRechargeRule(ids: [RechargeRuleId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原充值赠送规则"
   revertByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除充值赠送规则"
   forceDeleteByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
 }
 

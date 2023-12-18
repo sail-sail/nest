@@ -83,7 +83,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个产品
+ * 根据条件查找第一个产品
  * @param {PtSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -168,7 +168,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条产品
+ * 创建产品
  * @param {PtInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -196,7 +196,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条产品
+ * 根据 id 修改产品
  * @param {PtId} id
  * @param {PtInput} model
  * @param {GqlOpt} opt?
@@ -224,7 +224,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条产品
+ * 根据 id 查找产品
  * @param {PtId} id
  * @param {GqlOpt} opt?
  */
@@ -359,7 +359,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原产品
+ * 根据 ids 还原产品
  * @param {PtId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -676,7 +676,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 产品 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

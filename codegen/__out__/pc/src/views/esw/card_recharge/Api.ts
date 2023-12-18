@@ -73,7 +73,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个会员卡充值记录
+ * 根据条件查找第一个会员卡充值记录
  * @param {CardRechargeSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -149,7 +149,7 @@ export async function findCount(
 }
 
 /**
- * 通过ID查找一条会员卡充值记录
+ * 根据 id 查找会员卡充值记录
  * @param {CardRechargeId} id
  * @param {GqlOpt} opt?
  */
@@ -219,7 +219,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原会员卡充值记录
+ * 根据 ids 还原会员卡充值记录
  * @param {CardRechargeId[]} ids
  * @param {GqlOpt} opt?
  */

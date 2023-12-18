@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找会员卡充值记录总数
  */
 export async function findCountCardRecharge(
   search?: CardRechargeSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountCardRecharge(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找会员卡充值记录列表
  */
 export async function findAllCardRecharge(
   search?: CardRechargeSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllCardRecharge(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取会员卡充值记录字段注释
  */
 export async function getFieldCommentsCardRecharge(): Promise<CardRechargeFieldComment> {
   const { getFieldComments } = await import("./card_recharge.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsCardRecharge(): Promise<CardRechargeFieldC
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个会员卡充值记录
  */
 export async function findOneCardRecharge(
   search?: CardRechargeSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneCardRecharge(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找会员卡充值记录
  */
 export async function findByIdCardRecharge(
   id: CardRechargeId,
@@ -93,7 +93,7 @@ export async function findByIdCardRecharge(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除会员卡充值记录
  */
 export async function deleteByIdsCardRecharge(
   ids: CardRechargeId[],
@@ -116,7 +116,7 @@ export async function deleteByIdsCardRecharge(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原会员卡充值记录
  */
 export async function revertByIdsCardRecharge(
   ids: CardRechargeId[],
@@ -139,7 +139,7 @@ export async function revertByIdsCardRecharge(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除会员卡充值记录
  */
 export async function forceDeleteByIdsCardRecharge(
   ids: CardRechargeId[],

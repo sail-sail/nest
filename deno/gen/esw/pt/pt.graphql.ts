@@ -240,33 +240,33 @@ input PtSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找产品总数"
   findCountPt(search: PtSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找产品列表"
   findAllPt(search: PtSearch, page: PageInput, sort: [SortInput!]): [PtModel!]!
-  "获取字段对应的名称"
+  "获取产品字段注释"
   getFieldCommentsPt: PtFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个产品"
   findOnePt(search: PtSearch, sort: [SortInput!]): PtModel
-  "根据id查找一条数据"
+  "根据 id 查找产品"
   findByIdPt(id: PtId!): PtModel
-  "查找order_by字段的最大值"
+  "查找 产品 order_by 字段的最大值"
   findLastOrderByPt: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建产品"
   createPt(model: PtInput!, unique_type: UniqueType): PtId!
-  "根据id修改一条数据"
+  "根据 id 修改产品"
   updateByIdPt(id: PtId!, model: PtInput!): PtId!
-  "根据 ids 删除数据"
+  "根据 ids 删除产品"
   deleteByIdsPt(ids: [PtId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用产品"
   enableByIdsPt(ids: [PtId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁产品"
   lockByIdsPt(ids: [PtId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原产品"
   revertByIdsPt(ids: [PtId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除产品"
   forceDeleteByIdsPt(ids: [PtId!]!): Int!
 }
 

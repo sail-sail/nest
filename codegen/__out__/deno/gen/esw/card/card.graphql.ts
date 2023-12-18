@@ -237,33 +237,33 @@ input CardSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找会员卡总数"
   findCountCard(search: CardSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找会员卡列表"
   findAllCard(search: CardSearch, page: PageInput, sort: [SortInput!]): [CardModel!]!
-  "获取字段对应的名称"
+  "获取会员卡字段注释"
   getFieldCommentsCard: CardFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个会员卡"
   findOneCard(search: CardSearch, sort: [SortInput!]): CardModel
-  "根据id查找一条数据"
+  "根据 id 查找会员卡"
   findByIdCard(id: CardId!): CardModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建会员卡"
   createCard(model: CardInput!, unique_type: UniqueType): CardId!
-  "根据id修改一条数据"
+  "根据 id 修改会员卡"
   updateByIdCard(id: CardId!, model: CardInput!): CardId!
-  "根据 ids 删除数据"
+  "根据 ids 删除会员卡"
   deleteByIdsCard(ids: [CardId!]!): Int!
-  "根据 id 设置默认记录"
+  "根据 id 设置默认会员卡"
   defaultByIdCard(id: CardId!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用会员卡"
   enableByIdsCard(ids: [CardId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁会员卡"
   lockByIdsCard(ids: [CardId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原会员卡"
   revertByIdsCard(ids: [CardId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除会员卡"
   forceDeleteByIdsCard(ids: [CardId!]!): Int!
 }
 
