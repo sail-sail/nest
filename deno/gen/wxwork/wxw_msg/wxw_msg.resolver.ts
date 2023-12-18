@@ -23,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找企微消息总数
  */
 export async function findCountWxwMsg(
   search?: WxwMsgSearch & { $extra?: SearchExtra[] },
@@ -38,7 +38,7 @@ export async function findCountWxwMsg(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找企微消息列表
  */
 export async function findAllWxwMsg(
   search?: WxwMsgSearch & { $extra?: SearchExtra[] },
@@ -55,7 +55,7 @@ export async function findAllWxwMsg(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取企微消息字段注释
  */
 export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
   const { getFieldComments } = await import("./wxw_msg.service.ts");
@@ -64,7 +64,7 @@ export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个企微消息
  */
 export async function findOneWxwMsg(
   search?: WxwMsgSearch & { $extra?: SearchExtra[] },
@@ -80,7 +80,7 @@ export async function findOneWxwMsg(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找企微消息
  */
 export async function findByIdWxwMsg(
   id: WxwMsgId,
@@ -91,7 +91,7 @@ export async function findByIdWxwMsg(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微消息
  */
 export async function deleteByIdsWxwMsg(
   ids: WxwMsgId[],
@@ -114,7 +114,7 @@ export async function deleteByIdsWxwMsg(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原企微消息
  */
 export async function revertByIdsWxwMsg(
   ids: WxwMsgId[],
@@ -137,7 +137,7 @@ export async function revertByIdsWxwMsg(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微消息
  */
 export async function forceDeleteByIdsWxwMsg(
   ids: WxwMsgId[],

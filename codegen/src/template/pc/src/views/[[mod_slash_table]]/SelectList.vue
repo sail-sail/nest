@@ -38,6 +38,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       :is-multiple="multiple"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
+      @row-enter="onRowEnter"
     ></List><#
     } else {
     #>
@@ -111,7 +112,7 @@ import type {
 } from "#/types";
 
 const emit = defineEmits<{
-  (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "change", value?: <#=modelName#> | <#=modelName#>[] | null): void,
 }>();
 
 const {
@@ -190,6 +191,13 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
     },
   );
   return res;
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  await onSave();
 }
 
 /** 确定 */

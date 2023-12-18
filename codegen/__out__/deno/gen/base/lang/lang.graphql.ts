@@ -136,31 +136,31 @@ input LangSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找语言总数"
   findCountLang(search: LangSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找语言列表"
   findAllLang(search: LangSearch, page: PageInput, sort: [SortInput!]): [LangModel!]!
-  "获取字段对应的名称"
+  "获取语言字段注释"
   getFieldCommentsLang: LangFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个语言"
   findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
-  "根据id查找一条数据"
+  "根据 id 查找语言"
   findByIdLang(id: LangId!): LangModel
-  "查找order_by字段的最大值"
+  "查找 语言 order_by 字段的最大值"
   findLastOrderByLang: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建语言"
   createLang(model: LangInput!, unique_type: UniqueType): LangId!
-  "根据id修改一条数据"
+  "根据 id 修改语言"
   updateByIdLang(id: LangId!, model: LangInput!): LangId!
-  "根据 ids 删除数据"
+  "根据 ids 删除语言"
   deleteByIdsLang(ids: [LangId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用语言"
   enableByIdsLang(ids: [LangId!]!, is_enabled: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原语言"
   revertByIdsLang(ids: [LangId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除语言"
   forceDeleteByIdsLang(ids: [LangId!]!): Int!
 }
 

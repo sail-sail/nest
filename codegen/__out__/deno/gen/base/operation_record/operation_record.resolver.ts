@@ -23,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找操作记录总数
  */
 export async function findCountOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
@@ -38,7 +38,7 @@ export async function findCountOperationRecord(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找操作记录列表
  */
 export async function findAllOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
@@ -55,7 +55,7 @@ export async function findAllOperationRecord(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取操作记录字段注释
  */
 export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
   const { getFieldComments } = await import("./operation_record.service.ts");
@@ -64,7 +64,7 @@ export async function getFieldCommentsOperationRecord(): Promise<OperationRecord
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个操作记录
  */
 export async function findOneOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
@@ -80,7 +80,7 @@ export async function findOneOperationRecord(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找操作记录
  */
 export async function findByIdOperationRecord(
   id: OperationRecordId,
@@ -91,7 +91,7 @@ export async function findByIdOperationRecord(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除操作记录
  */
 export async function deleteByIdsOperationRecord(
   ids: OperationRecordId[],
@@ -114,7 +114,7 @@ export async function deleteByIdsOperationRecord(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原操作记录
  */
 export async function revertByIdsOperationRecord(
   ids: OperationRecordId[],
@@ -137,7 +137,7 @@ export async function revertByIdsOperationRecord(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除操作记录
  */
 export async function forceDeleteByIdsOperationRecord(
   ids: OperationRecordId[],

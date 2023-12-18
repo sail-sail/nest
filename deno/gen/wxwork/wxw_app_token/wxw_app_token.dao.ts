@@ -175,7 +175,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找企微应用接口凭据总数
  * @param { WxwAppTokenSearch } search?
  * @return {Promise<number>}
  */
@@ -499,7 +499,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找企微应用接口凭据
+ * 根据 id 查找企微应用接口凭据
  * @param {WxwAppTokenId} id
  */
 export async function findById(
@@ -829,7 +829,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改企微应用接口凭据
+ * 根据 id 修改企微应用接口凭据
  * @param {WxwAppTokenId} id
  * @param {WxwAppTokenInput} input
  * @param {({
@@ -953,7 +953,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微应用接口凭据
  * @param {WxwAppTokenId[]} ids
  * @return {Promise<number>}
  */

@@ -128,33 +128,33 @@ input WxwAppSearch {
   rem_like: String
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找企微应用总数"
   findCountWxwApp(search: WxwAppSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找企微应用列表"
   findAllWxwApp(search: WxwAppSearch, page: PageInput, sort: [SortInput!]): [WxwAppModel!]!
-  "获取字段对应的名称"
+  "获取企微应用字段注释"
   getFieldCommentsWxwApp: WxwAppFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个企微应用"
   findOneWxwApp(search: WxwAppSearch, sort: [SortInput!]): WxwAppModel
-  "根据id查找一条数据"
+  "根据 id 查找企微应用"
   findByIdWxwApp(id: WxwAppId!): WxwAppModel
-  "查找order_by字段的最大值"
+  "查找 企微应用 order_by 字段的最大值"
   findLastOrderByWxwApp: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建企微应用"
   createWxwApp(model: WxwAppInput!, unique_type: UniqueType): WxwAppId!
-  "根据id修改一条数据"
+  "根据 id 修改企微应用"
   updateByIdWxwApp(id: WxwAppId!, model: WxwAppInput!): WxwAppId!
-  "根据 ids 删除数据"
+  "根据 ids 删除企微应用"
   deleteByIdsWxwApp(ids: [WxwAppId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用企微应用"
   enableByIdsWxwApp(ids: [WxwAppId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁企微应用"
   lockByIdsWxwApp(ids: [WxwAppId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原企微应用"
   revertByIdsWxwApp(ids: [WxwAppId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除企微应用"
   forceDeleteByIdsWxwApp(ids: [WxwAppId!]!): Int!
 }
 

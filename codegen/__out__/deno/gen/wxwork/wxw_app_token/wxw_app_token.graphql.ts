@@ -84,27 +84,27 @@ input WxwAppTokenSearch {
   expires_in: [Int!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找企微应用接口凭据总数"
   findCountWxwAppToken(search: WxwAppTokenSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找企微应用接口凭据列表"
   findAllWxwAppToken(search: WxwAppTokenSearch, page: PageInput, sort: [SortInput!]): [WxwAppTokenModel!]!
-  "获取字段对应的名称"
+  "获取企微应用接口凭据字段注释"
   getFieldCommentsWxwAppToken: WxwAppTokenFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个企微应用接口凭据"
   findOneWxwAppToken(search: WxwAppTokenSearch, sort: [SortInput!]): WxwAppTokenModel
-  "根据id查找一条数据"
+  "根据 id 查找企微应用接口凭据"
   findByIdWxwAppToken(id: WxwAppTokenId!): WxwAppTokenModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建企微应用接口凭据"
   createWxwAppToken(model: WxwAppTokenInput!, unique_type: UniqueType): WxwAppTokenId!
-  "根据id修改一条数据"
+  "根据 id 修改企微应用接口凭据"
   updateByIdWxwAppToken(id: WxwAppTokenId!, model: WxwAppTokenInput!): WxwAppTokenId!
-  "根据 ids 删除数据"
+  "根据 ids 删除企微应用接口凭据"
   deleteByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原企微应用接口凭据"
   revertByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除企微应用接口凭据"
   forceDeleteByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
 }
 

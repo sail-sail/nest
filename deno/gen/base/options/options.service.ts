@@ -19,7 +19,7 @@ import type {
 import * as optionsDao from "./options.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找系统选项总数
  * @param {OptionsSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -32,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找系统选项列表
  * @param {OptionsSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -57,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个系统选项
  * @param {OptionsSearch} search? 搜索条件
  */
 export async function findOne(
@@ -70,7 +70,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找系统选项
  * @param {OptionsId} id
  */
 export async function findById(
@@ -81,7 +81,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找系统选项是否存在
  * @param {OptionsSearch} search? 搜索条件
  */
 export async function exist(
@@ -93,7 +93,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找系统选项是否存在
  * @param {OptionsId} id
  */
 export async function existById(
@@ -104,7 +104,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验系统选项
  * @param input 
  */
 export async function validate(
@@ -130,7 +130,7 @@ export async function create(
 }
 
 /**
- * 根据 id 获取版本号
+ * 根据 id 获取系统选项版本号
  */
 export async function getVersionById(id: OptionsId) {
   const version = await optionsDao.getVersionById(id);
@@ -138,7 +138,7 @@ export async function getVersionById(id: OptionsId) {
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改系统选项
  * @param {OptionsId} id
  * @param {OptionsInput} input
  * @return {Promise<OptionsId>}
@@ -167,7 +167,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除系统选项
  * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
@@ -211,7 +211,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
+ * 根据 ids 启用或者禁用系统选项
  * @param {OptionsId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -225,7 +225,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
+ * 根据 ids 锁定或者解锁系统选项
  * @param {OptionsId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -239,7 +239,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原系统选项
  * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
@@ -251,7 +251,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除系统选项
  * @param {OptionsId[]} ids
  * @return {Promise<number>}
  */
@@ -263,7 +263,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取系统选项字段注释
  */
 export async function getFieldComments(): Promise<OptionsFieldComment> {
   const data = await optionsDao.getFieldComments();
@@ -271,7 +271,7 @@ export async function getFieldComments(): Promise<OptionsFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 系统选项 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

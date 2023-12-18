@@ -56,27 +56,27 @@ input WxwUsrSearch {
   rem_like: String
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找企微用户总数"
   findCountWxwUsr(search: WxwUsrSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找企微用户列表"
   findAllWxwUsr(search: WxwUsrSearch, page: PageInput, sort: [SortInput!]): [WxwUsrModel!]!
-  "获取字段对应的名称"
+  "获取企微用户字段注释"
   getFieldCommentsWxwUsr: WxwUsrFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个企微用户"
   findOneWxwUsr(search: WxwUsrSearch, sort: [SortInput!]): WxwUsrModel
-  "根据id查找一条数据"
+  "根据 id 查找企微用户"
   findByIdWxwUsr(id: WxwUsrId!): WxwUsrModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建企微用户"
   createWxwUsr(model: WxwUsrInput!, unique_type: UniqueType): WxwUsrId!
-  "根据id修改一条数据"
+  "根据 id 修改企微用户"
   updateByIdWxwUsr(id: WxwUsrId!, model: WxwUsrInput!): WxwUsrId!
-  "根据 ids 删除数据"
+  "根据 ids 删除企微用户"
   deleteByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原企微用户"
   revertByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除企微用户"
   forceDeleteByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
 }
 
