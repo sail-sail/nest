@@ -10,7 +10,7 @@
     
     v-if="_blue_sheet"
     :blurEffect="_blurEffect"
-    @click="onClick"
+    @click="(onClick as any)"
     @longpress="(longpress as any)"
     @touchend="(touchend as any)"
     @touchstart="(touchstart as any)"
