@@ -21,10 +21,6 @@ export default defineStore("index", function() {
   
   let systemInfo: UniApp.GetSystemInfoResult | undefined;
   
-  function setSystemInfo(sys: UniApp.GetSystemInfoResult) {
-    systemInfo = sys;
-  }
-  
   let userAgent: UserAgent | undefined;
   
   function getUserAgent() {
@@ -54,7 +50,6 @@ export default defineStore("index", function() {
     addLoading,
     minusLoading,
     setUid,
-    setSystemInfo,
     getUserAgent,
   });
 });
