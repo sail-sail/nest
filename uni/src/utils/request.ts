@@ -1,6 +1,4 @@
 import cfg from "./config";
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
 
 import {
   isEmpty,
@@ -404,15 +402,21 @@ export async function uniLogin() {
       const state = uniqueID();
       localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      if (cfg.appid && cfg.agentid) {
+      const {
+        appid,
+        agentid,
+      } = await wxwGetAppid();
+      if (appid && agentid) {
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
-          encodeURIComponent(cfg.appid)
-        }&redirect_uri=${
-          encodeURIComponent(redirect_uri)
-        }&response_type=code&scope=snsapi_base&state=${ state }`;
-        if (cfg.agentid) {
-          url += `&agentid=${ encodeURIComponent(cfg.agentid) }`;
+          encodeURIComponent(appid)
+        }`;
+        if (agentid) {
+          url += `&agentid=${ encodeURIComponent(agentid) }`;
         }
+        url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+        url += `&response_type=code`;
+        url += `&scope=snsapi_base`;
+        url += `&state=${ encodeURIComponent(state) }`;
         url += "#wechat_redirect";
         location.replace(url);
         return false;
