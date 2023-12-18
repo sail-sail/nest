@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找小程序接口凭据总数
  */
 export async function findCountWxAppToken(
   search?: WxAppTokenSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxAppToken(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找小程序接口凭据列表
  */
 export async function findAllWxAppToken(
   search?: WxAppTokenSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxAppToken(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取小程序接口凭据字段注释
  */
 export async function getFieldCommentsWxAppToken(): Promise<WxAppTokenFieldComment> {
   const { getFieldComments } = await import("./wx_app_token.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxAppToken(): Promise<WxAppTokenFieldComme
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个小程序接口凭据
  */
 export async function findOneWxAppToken(
   search?: WxAppTokenSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxAppToken(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找小程序接口凭据
  */
 export async function findByIdWxAppToken(
   id: WxAppTokenId,
@@ -93,7 +93,7 @@ export async function findByIdWxAppToken(
 }
 
 /**
- * 创建一条数据
+ * 创建小程序接口凭据
  */
 export async function createWxAppToken(
   input: WxAppTokenInput,
@@ -124,7 +124,7 @@ export async function createWxAppToken(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改小程序接口凭据
  */
 export async function updateByIdWxAppToken(
   id: WxAppTokenId,
@@ -151,7 +151,7 @@ export async function updateByIdWxAppToken(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除小程序接口凭据
  */
 export async function deleteByIdsWxAppToken(
   ids: WxAppTokenId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxAppToken(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原小程序接口凭据
  */
 export async function revertByIdsWxAppToken(
   ids: WxAppTokenId[],
@@ -197,7 +197,7 @@ export async function revertByIdsWxAppToken(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除小程序接口凭据
  */
 export async function forceDeleteByIdsWxAppToken(
   ids: WxAppTokenId[],

@@ -84,7 +84,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个微信用户
+ * 根据条件查找第一个微信用户
  * @param {WxUsrSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -170,7 +170,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条微信用户
+ * 创建微信用户
  * @param {WxUsrInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -198,7 +198,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条微信用户
+ * 根据 id 修改微信用户
  * @param {WxUsrId} id
  * @param {WxUsrInput} model
  * @param {GqlOpt} opt?
@@ -226,7 +226,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条微信用户
+ * 根据 id 查找微信用户
  * @param {WxUsrId} id
  * @param {GqlOpt} opt?
  */
@@ -362,7 +362,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原微信用户
+ * 根据 ids 还原微信用户
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */

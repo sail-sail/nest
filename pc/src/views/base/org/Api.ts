@@ -67,7 +67,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个组织
+ * 根据条件查找第一个组织
  * @param {OrgSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -140,7 +140,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条组织
+ * 创建组织
  * @param {OrgInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -168,7 +168,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条组织
+ * 根据 id 修改组织
  * @param {OrgId} id
  * @param {OrgInput} model
  * @param {GqlOpt} opt?
@@ -196,7 +196,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条组织
+ * 根据 id 查找组织
  * @param {OrgId} id
  * @param {GqlOpt} opt?
  */
@@ -319,7 +319,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原组织
+ * 根据 ids 还原组织
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -544,7 +544,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 组织 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

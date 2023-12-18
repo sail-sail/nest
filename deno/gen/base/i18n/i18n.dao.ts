@@ -211,7 +211,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找国际化总数
  * @param { I18Nsearch } search?
  * @return {Promise<number>}
  */
@@ -543,7 +543,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找国际化
+ * 根据 id 查找国际化
  * @param {I18nId} id
  */
 export async function findById(
@@ -846,7 +846,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改国际化
+ * 根据 id 修改国际化
  * @param {I18nId} id
  * @param {I18Ninput} input
  * @param {({
@@ -965,7 +965,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除国际化
  * @param {I18nId[]} ids
  * @return {Promise<number>}
  */

@@ -649,25 +649,25 @@ type <#=Table_Up2#>Summary {<#
 }
 #>
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找<#=table_comment#>总数"
   findCount<#=Table_Up2#>(search: <#=searchName#>): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找<#=table_comment#>列表"
   findAll<#=Table_Up2#>(search: <#=searchName#>, page: PageInput, sort: [SortInput!]): [<#=modelName#>!]!
-  "获取字段对应的名称"
+  "获取<#=table_comment#>字段注释"
   getFieldComments<#=Table_Up2#>: <#=fieldCommentName#>!<#
   if (hasSummary) {
   #>
-  "根据搜索条件查找合计"
+  "根据搜索条件查找<#=table_comment#>合计"
   findSummary<#=Table_Up2#>(search: <#=searchName#>): <#=Table_Up2#>Summary!<#
   }
   #>
-  "根据条件查找第一条数据"
+  "根据条件查找第一个<#=table_comment#>"
   findOne<#=Table_Up2#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
-  "根据id查找一条数据"
+  "根据 id 查找<#=table_comment#>"
   findById<#=Table_Up2#>(id: <#=Table_Up#>Id!): <#=modelName#><#
   if (hasOrderBy) {
   #>
-  "查找order_by字段的最大值"
+  "查找 <#=table_comment#> order_by 字段的最大值"
   findLastOrderBy<#=Table_Up2#>: Int!<#
   }
   #>
@@ -680,45 +680,45 @@ if (opts.noAdd !== true
 type Mutation {<#
   if (opts.noAdd !== true) {
   #>
-  "创建一条数据"
+  "创建<#=table_comment#>"
   create<#=Table_Up2#>(model: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
-  "根据id修改一条数据"
+  "根据 id 修改<#=table_comment#>"
   updateById<#=Table_Up2#>(id: <#=Table_Up#>Id!, model: <#=inputName#>!): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
-  "根据 ids 删除数据"
+  "根据 ids 删除<#=table_comment#>"
   deleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
   if (hasDefault && opts.noEdit !== true) {
   #>
-  "根据 id 设置默认记录"
+  "根据 id 设置默认<#=table_comment#>"
   defaultById<#=Table_Up2#>(id: <#=Table_Up#>Id!): Int!<#
   }
   #><#
   if (hasEnabled && opts.noEdit !== true) {
   #>
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用<#=table_comment#>"
   enableByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_enabled: Int!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {
   #>
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁<#=table_comment#>"
   lockByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
-  "根据 ids 还原数据"
+  "根据 ids 还原<#=table_comment#>"
   revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除<#=table_comment#>"
   forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #>

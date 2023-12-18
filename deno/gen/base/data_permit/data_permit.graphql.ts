@@ -166,27 +166,27 @@ input DataPermitSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找数据权限总数"
   findCountDataPermit(search: DataPermitSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找数据权限列表"
   findAllDataPermit(search: DataPermitSearch, page: PageInput, sort: [SortInput!]): [DataPermitModel!]!
-  "获取字段对应的名称"
+  "获取数据权限字段注释"
   getFieldCommentsDataPermit: DataPermitFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个数据权限"
   findOneDataPermit(search: DataPermitSearch, sort: [SortInput!]): DataPermitModel
-  "根据id查找一条数据"
+  "根据 id 查找数据权限"
   findByIdDataPermit(id: DataPermitId!): DataPermitModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建数据权限"
   createDataPermit(model: DataPermitInput!, unique_type: UniqueType): DataPermitId!
-  "根据id修改一条数据"
+  "根据 id 修改数据权限"
   updateByIdDataPermit(id: DataPermitId!, model: DataPermitInput!): DataPermitId!
-  "根据 ids 删除数据"
+  "根据 ids 删除数据权限"
   deleteByIdsDataPermit(ids: [DataPermitId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原数据权限"
   revertByIdsDataPermit(ids: [DataPermitId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除数据权限"
   forceDeleteByIdsDataPermit(ids: [DataPermitId!]!): Int!
 }
 

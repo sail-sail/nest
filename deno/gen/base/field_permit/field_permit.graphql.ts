@@ -152,27 +152,27 @@ input FieldPermitSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找字段权限总数"
   findCountFieldPermit(search: FieldPermitSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找字段权限列表"
   findAllFieldPermit(search: FieldPermitSearch, page: PageInput, sort: [SortInput!]): [FieldPermitModel!]!
-  "获取字段对应的名称"
+  "获取字段权限字段注释"
   getFieldCommentsFieldPermit: FieldPermitFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个字段权限"
   findOneFieldPermit(search: FieldPermitSearch, sort: [SortInput!]): FieldPermitModel
-  "根据id查找一条数据"
+  "根据 id 查找字段权限"
   findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建字段权限"
   createFieldPermit(model: FieldPermitInput!, unique_type: UniqueType): FieldPermitId!
-  "根据id修改一条数据"
+  "根据 id 修改字段权限"
   updateByIdFieldPermit(id: FieldPermitId!, model: FieldPermitInput!): FieldPermitId!
-  "根据 ids 删除数据"
+  "根据 ids 删除字段权限"
   deleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原字段权限"
   revertByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除字段权限"
   forceDeleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
 }
 

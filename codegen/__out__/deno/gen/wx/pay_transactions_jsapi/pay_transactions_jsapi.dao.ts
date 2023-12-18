@@ -327,7 +327,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找微信JSAPI下单总数
  * @param { PayTransactionsJsapiSearch } search?
  * @return {Promise<number>}
  */
@@ -715,7 +715,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找微信JSAPI下单
+ * 根据 id 查找微信JSAPI下单
  * @param {PayTransactionsJsapiId} id
  */
 export async function findById(
@@ -1235,7 +1235,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改微信JSAPI下单
+ * 根据 id 修改微信JSAPI下单
  * @param {PayTransactionsJsapiId} id
  * @param {PayTransactionsJsapiInput} input
  * @param {({
@@ -1430,7 +1430,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除微信JSAPI下单
  * @param {PayTransactionsJsapiId[]} ids
  * @return {Promise<number>}
  */

@@ -281,15 +281,15 @@ input PayTransactionsJsapiSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找微信JSAPI下单总数"
   findCountPayTransactionsJsapi(search: PayTransactionsJsapiSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找微信JSAPI下单列表"
   findAllPayTransactionsJsapi(search: PayTransactionsJsapiSearch, page: PageInput, sort: [SortInput!]): [PayTransactionsJsapiModel!]!
-  "获取字段对应的名称"
+  "获取微信JSAPI下单字段注释"
   getFieldCommentsPayTransactionsJsapi: PayTransactionsJsapiFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个微信JSAPI下单"
   findOnePayTransactionsJsapi(search: PayTransactionsJsapiSearch, sort: [SortInput!]): PayTransactionsJsapiModel
-  "根据id查找一条数据"
+  "根据 id 查找微信JSAPI下单"
   findByIdPayTransactionsJsapi(id: PayTransactionsJsapiId!): PayTransactionsJsapiModel
 }
 

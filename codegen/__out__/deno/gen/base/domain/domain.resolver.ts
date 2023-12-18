@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找域名总数
  */
 export async function findCountDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountDomain(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找域名列表
  */
 export async function findAllDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllDomain(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取域名字段注释
  */
 export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
   const { getFieldComments } = await import("./domain.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个域名
  */
 export async function findOneDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneDomain(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找域名
  */
 export async function findByIdDomain(
   id: DomainId,
@@ -93,7 +93,7 @@ export async function findByIdDomain(
 }
 
 /**
- * 创建一条数据
+ * 创建域名
  */
 export async function createDomain(
   input: DomainInput,
@@ -124,7 +124,7 @@ export async function createDomain(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改域名
  */
 export async function updateByIdDomain(
   id: DomainId,
@@ -151,7 +151,7 @@ export async function updateByIdDomain(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除域名
  */
 export async function deleteByIdsDomain(
   ids: DomainId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsDomain(
 }
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认域名
  */
 export async function defaultByIdDomain(
   id: DomainId,
@@ -197,7 +197,7 @@ export async function defaultByIdDomain(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用域名
  */
 export async function enableByIdsDomain(
   ids: DomainId[],
@@ -224,7 +224,7 @@ export async function enableByIdsDomain(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁域名
  */
 export async function lockByIdsDomain(
   ids: DomainId[],
@@ -251,7 +251,7 @@ export async function lockByIdsDomain(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原域名
  */
 export async function revertByIdsDomain(
   ids: DomainId[],
@@ -274,7 +274,7 @@ export async function revertByIdsDomain(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除域名
  */
 export async function forceDeleteByIdsDomain(
   ids: DomainId[],
@@ -296,7 +296,7 @@ export async function forceDeleteByIdsDomain(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 域名 order_by 字段的最大值
  */
 export async function findLastOrderByDomain(): Promise<number> {
   const { findLastOrderBy } = await import("./domain.service.ts");

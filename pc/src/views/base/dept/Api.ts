@@ -80,7 +80,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个部门
+ * 根据条件查找第一个部门
  * @param {DeptSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -182,7 +182,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条部门
+ * 创建部门
  * @param {DeptInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -210,7 +210,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条部门
+ * 根据 id 修改部门
  * @param {DeptId} id
  * @param {DeptInput} model
  * @param {GqlOpt} opt?
@@ -238,7 +238,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条部门
+ * 根据 id 查找部门
  * @param {DeptId} id
  * @param {GqlOpt} opt?
  */
@@ -365,7 +365,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原部门
+ * 根据 ids 还原部门
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -718,7 +718,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 部门 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

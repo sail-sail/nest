@@ -270,7 +270,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找微信支付总数
  * @param { WxPaySearch } search?
  * @return {Promise<number>}
  */
@@ -634,7 +634,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找微信支付
+ * 根据 id 查找微信支付
  * @param {WxPayId} id
  */
 export async function findById(
@@ -1071,7 +1071,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改微信支付
+ * 根据 id 修改微信支付
  * @param {WxPayId} id
  * @param {WxPayInput} input
  * @param {({
@@ -1237,7 +1237,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除微信支付
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -1304,7 +1304,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用微信支付
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1374,7 +1374,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁微信支付
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

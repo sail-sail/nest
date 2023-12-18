@@ -183,33 +183,33 @@ input DictbizSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找业务字典总数"
   findCountDictbiz(search: DictbizSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找业务字典列表"
   findAllDictbiz(search: DictbizSearch, page: PageInput, sort: [SortInput!]): [DictbizModel!]!
-  "获取字段对应的名称"
+  "获取业务字典字段注释"
   getFieldCommentsDictbiz: DictbizFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个业务字典"
   findOneDictbiz(search: DictbizSearch, sort: [SortInput!]): DictbizModel
-  "根据id查找一条数据"
+  "根据 id 查找业务字典"
   findByIdDictbiz(id: DictbizId!): DictbizModel
-  "查找order_by字段的最大值"
+  "查找 业务字典 order_by 字段的最大值"
   findLastOrderByDictbiz: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建业务字典"
   createDictbiz(model: DictbizInput!, unique_type: UniqueType): DictbizId!
-  "根据id修改一条数据"
+  "根据 id 修改业务字典"
   updateByIdDictbiz(id: DictbizId!, model: DictbizInput!): DictbizId!
-  "根据 ids 删除数据"
+  "根据 ids 删除业务字典"
   deleteByIdsDictbiz(ids: [DictbizId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用业务字典"
   enableByIdsDictbiz(ids: [DictbizId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁业务字典"
   lockByIdsDictbiz(ids: [DictbizId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原业务字典"
   revertByIdsDictbiz(ids: [DictbizId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除业务字典"
   forceDeleteByIdsDictbiz(ids: [DictbizId!]!): Int!
 }
 

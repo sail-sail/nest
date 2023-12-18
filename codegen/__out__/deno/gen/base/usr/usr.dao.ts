@@ -363,7 +363,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找用户总数
  * @param { UsrSearch } search?
  * @return {Promise<number>}
  */
@@ -859,7 +859,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找用户
+ * 根据 id 查找用户
  * @param {UsrId} id
  */
 export async function findById(
@@ -1298,7 +1298,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改用户
+ * 根据 id 修改用户
  * @param {UsrId} id
  * @param {UsrInput} input
  * @param {({
@@ -1502,7 +1502,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除用户
  * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
@@ -1569,7 +1569,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用用户
  * @param {UsrId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1639,7 +1639,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁用户
  * @param {UsrId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

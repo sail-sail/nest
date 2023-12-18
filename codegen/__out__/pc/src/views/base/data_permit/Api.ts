@@ -76,7 +76,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个数据权限
+ * 根据条件查找第一个数据权限
  * @param {DataPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -150,7 +150,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据权限
+ * 创建数据权限
  * @param {DataPermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -178,7 +178,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条数据权限
+ * 根据 id 修改数据权限
  * @param {DataPermitId} id
  * @param {DataPermitInput} model
  * @param {GqlOpt} opt?
@@ -206,7 +206,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条数据权限
+ * 根据 id 查找数据权限
  * @param {DataPermitId} id
  * @param {GqlOpt} opt?
  */
@@ -274,7 +274,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据权限
+ * 根据 ids 还原数据权限
  * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
