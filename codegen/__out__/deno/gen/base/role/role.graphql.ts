@@ -195,33 +195,33 @@ input RoleSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找角色总数"
   findCountRole(search: RoleSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找角色列表"
   findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput!]): [RoleModel!]!
-  "获取字段对应的名称"
+  "获取角色字段注释"
   getFieldCommentsRole: RoleFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个角色"
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
-  "根据id查找一条数据"
+  "根据 id 查找角色"
   findByIdRole(id: RoleId!): RoleModel
-  "查找order_by字段的最大值"
+  "查找 角色 order_by 字段的最大值"
   findLastOrderByRole: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建角色"
   createRole(model: RoleInput!, unique_type: UniqueType): RoleId!
-  "根据id修改一条数据"
+  "根据 id 修改角色"
   updateByIdRole(id: RoleId!, model: RoleInput!): RoleId!
-  "根据 ids 删除数据"
+  "根据 ids 删除角色"
   deleteByIdsRole(ids: [RoleId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用角色"
   enableByIdsRole(ids: [RoleId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁角色"
   lockByIdsRole(ids: [RoleId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原角色"
   revertByIdsRole(ids: [RoleId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除角色"
   forceDeleteByIdsRole(ids: [RoleId!]!): Int!
 }
 

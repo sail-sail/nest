@@ -347,7 +347,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个<#=table_comment#>
+ * 根据条件查找第一个<#=table_comment#>
  * @param {<#=searchName#>} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -558,7 +558,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找<#=table_comment#>汇总
+ * 根据搜索条件查找<#=table_comment#>合计
  * @param {<#=searchName#>} search
  * @param {GqlOpt} opt?
  */
@@ -602,7 +602,7 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建一条<#=table_comment#>
+ * 创建<#=table_comment#>
  * @param {<#=inputName#>} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -634,7 +634,7 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据id修改一条<#=table_comment#>
+ * 根据 id 修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} model
  * @param {GqlOpt} opt?
@@ -664,7 +664,7 @@ export async function updateById(
 #>
 
 /**
- * 通过ID查找一条<#=table_comment#>
+ * 根据 id 查找<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
  */
@@ -929,7 +929,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 #>
 
 /**
- * 根据 ids 从回收站还原<#=table_comment#>
+ * 根据 ids 还原<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
@@ -1995,7 +1995,7 @@ if (hasOrderBy) {
 #>
 
 /**
- * 查找order_by字段的最大值
+ * 查找 <#=table_comment#> order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

@@ -78,7 +78,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个菜单
+ * 根据条件查找第一个菜单
  * @param {MenuSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -182,7 +182,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条菜单
+ * 创建菜单
  * @param {MenuInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -210,7 +210,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条菜单
+ * 根据 id 修改菜单
  * @param {MenuId} id
  * @param {MenuInput} model
  * @param {GqlOpt} opt?
@@ -238,7 +238,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条菜单
+ * 根据 id 查找菜单
  * @param {MenuId} id
  * @param {GqlOpt} opt?
  */
@@ -367,7 +367,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原菜单
+ * 根据 ids 还原菜单
  * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -680,7 +680,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 菜单 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

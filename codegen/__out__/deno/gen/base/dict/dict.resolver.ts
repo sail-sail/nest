@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找系统字典总数
  */
 export async function findCountDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountDict(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找系统字典列表
  */
 export async function findAllDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllDict(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取系统字典字段注释
  */
 export async function getFieldCommentsDict(): Promise<DictFieldComment> {
   const { getFieldComments } = await import("./dict.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsDict(): Promise<DictFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个系统字典
  */
 export async function findOneDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneDict(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找系统字典
  */
 export async function findByIdDict(
   id: DictId,
@@ -93,7 +93,7 @@ export async function findByIdDict(
 }
 
 /**
- * 创建一条数据
+ * 创建系统字典
  */
 export async function createDict(
   input: DictInput,
@@ -124,7 +124,7 @@ export async function createDict(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改系统字典
  */
 export async function updateByIdDict(
   id: DictId,
@@ -151,7 +151,7 @@ export async function updateByIdDict(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除系统字典
  */
 export async function deleteByIdsDict(
   ids: DictId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsDict(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用系统字典
  */
 export async function enableByIdsDict(
   ids: DictId[],
@@ -201,7 +201,7 @@ export async function enableByIdsDict(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁系统字典
  */
 export async function lockByIdsDict(
   ids: DictId[],
@@ -228,7 +228,7 @@ export async function lockByIdsDict(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原系统字典
  */
 export async function revertByIdsDict(
   ids: DictId[],
@@ -251,7 +251,7 @@ export async function revertByIdsDict(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除系统字典
  */
 export async function forceDeleteByIdsDict(
   ids: DictId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsDict(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 系统字典 order_by 字段的最大值
  */
 export async function findLastOrderByDict(): Promise<number> {
   const { findLastOrderBy } = await import("./dict.service.ts");

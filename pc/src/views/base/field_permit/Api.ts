@@ -75,7 +75,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个字段权限
+ * 根据条件查找第一个字段权限
  * @param {FieldPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -148,7 +148,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条字段权限
+ * 创建字段权限
  * @param {FieldPermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -176,7 +176,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条字段权限
+ * 根据 id 修改字段权限
  * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
  * @param {GqlOpt} opt?
@@ -204,7 +204,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条字段权限
+ * 根据 id 查找字段权限
  * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
  */
@@ -271,7 +271,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原字段权限
+ * 根据 ids 还原字段权限
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */

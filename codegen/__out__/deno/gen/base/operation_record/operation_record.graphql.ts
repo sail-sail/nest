@@ -159,23 +159,23 @@ input OperationRecordSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找操作记录总数"
   findCountOperationRecord(search: OperationRecordSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找操作记录列表"
   findAllOperationRecord(search: OperationRecordSearch, page: PageInput, sort: [SortInput!]): [OperationRecordModel!]!
-  "获取字段对应的名称"
+  "获取操作记录字段注释"
   getFieldCommentsOperationRecord: OperationRecordFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个操作记录"
   findOneOperationRecord(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
-  "根据id查找一条数据"
+  "根据 id 查找操作记录"
   findByIdOperationRecord(id: OperationRecordId!): OperationRecordModel
 }
 type Mutation {
-  "根据 ids 删除数据"
+  "根据 ids 删除操作记录"
   deleteByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原操作记录"
   revertByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除操作记录"
   forceDeleteByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
 }
 

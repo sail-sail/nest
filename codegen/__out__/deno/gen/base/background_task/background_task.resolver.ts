@@ -23,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找后台任务总数
  */
 export async function findCountBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
@@ -38,7 +38,7 @@ export async function findCountBackgroundTask(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找后台任务列表
  */
 export async function findAllBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
@@ -55,7 +55,7 @@ export async function findAllBackgroundTask(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取后台任务字段注释
  */
 export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFieldComment> {
   const { getFieldComments } = await import("./background_task.service.ts");
@@ -64,7 +64,7 @@ export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFi
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个后台任务
  */
 export async function findOneBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
@@ -80,7 +80,7 @@ export async function findOneBackgroundTask(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找后台任务
  */
 export async function findByIdBackgroundTask(
   id: BackgroundTaskId,
@@ -91,7 +91,7 @@ export async function findByIdBackgroundTask(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除后台任务
  */
 export async function deleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
@@ -114,7 +114,7 @@ export async function deleteByIdsBackgroundTask(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原后台任务
  */
 export async function revertByIdsBackgroundTask(
   ids: BackgroundTaskId[],
@@ -137,7 +137,7 @@ export async function revertByIdsBackgroundTask(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除后台任务
  */
 export async function forceDeleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
