@@ -157,10 +157,10 @@ async function onLogin() {
   if (!loginModel.authorization) {
     return;
   }
-  usrStore.authorization = loginModel.authorization;
-  usrStore.username = model.username;
-  usrStore.tenant_id = model.tenant_id;
-  usrStore.lang = model.lang;
+  usrStore.setAuthorization(loginModel.authorization);
+  usrStore.setUsername(model.username);
+  usrStore.setTenantId(model.tenant_id);
+  usrStore.setLang(model.lang);
   await uni.reLaunch({
     url: redirect_uri,
   });

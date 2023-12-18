@@ -5,10 +5,10 @@ import { uniqueID } from "@/utils/StringUtil";
 
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore(cfg.pinia);
-  indexStore.launchOptions = options;
+  indexStore.setLaunchOptions(options);
   
   const systemInfo = uni.getSystemInfoSync();
-  indexStore.systemInfo = systemInfo;
+  indexStore.setSystemInfo(systemInfo);
   
   let _uid: string | undefined = undefined;
   try {
