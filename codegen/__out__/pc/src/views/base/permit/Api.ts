@@ -73,7 +73,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个按钮权限
+ * 根据条件查找第一个按钮权限
  * @param {PermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -144,7 +144,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条按钮权限
+ * 创建按钮权限
  * @param {PermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -172,7 +172,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条按钮权限
+ * 根据 id 修改按钮权限
  * @param {PermitId} id
  * @param {PermitInput} model
  * @param {GqlOpt} opt?
@@ -200,7 +200,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条按钮权限
+ * 根据 id 查找按钮权限
  * @param {PermitId} id
  * @param {GqlOpt} opt?
  */
@@ -265,7 +265,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原按钮权限
+ * 根据 ids 还原按钮权限
  * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */

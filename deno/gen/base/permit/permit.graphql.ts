@@ -129,27 +129,27 @@ input PermitSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找按钮权限总数"
   findCountPermit(search: PermitSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找按钮权限列表"
   findAllPermit(search: PermitSearch, page: PageInput, sort: [SortInput!]): [PermitModel!]!
-  "获取字段对应的名称"
+  "获取按钮权限字段注释"
   getFieldCommentsPermit: PermitFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个按钮权限"
   findOnePermit(search: PermitSearch, sort: [SortInput!]): PermitModel
-  "根据id查找一条数据"
+  "根据 id 查找按钮权限"
   findByIdPermit(id: PermitId!): PermitModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建按钮权限"
   createPermit(model: PermitInput!, unique_type: UniqueType): PermitId!
-  "根据id修改一条数据"
+  "根据 id 修改按钮权限"
   updateByIdPermit(id: PermitId!, model: PermitInput!): PermitId!
-  "根据 ids 删除数据"
+  "根据 ids 删除按钮权限"
   deleteByIdsPermit(ids: [PermitId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原按钮权限"
   revertByIdsPermit(ids: [PermitId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除按钮权限"
   forceDeleteByIdsPermit(ids: [PermitId!]!): Int!
 }
 

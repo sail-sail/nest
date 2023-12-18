@@ -165,33 +165,33 @@ input DictDetailSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找系统字典明细总数"
   findCountDictDetail(search: DictDetailSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找系统字典明细列表"
   findAllDictDetail(search: DictDetailSearch, page: PageInput, sort: [SortInput!]): [DictDetailModel!]!
-  "获取字段对应的名称"
+  "获取系统字典明细字段注释"
   getFieldCommentsDictDetail: DictDetailFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个系统字典明细"
   findOneDictDetail(search: DictDetailSearch, sort: [SortInput!]): DictDetailModel
-  "根据id查找一条数据"
+  "根据 id 查找系统字典明细"
   findByIdDictDetail(id: DictDetailId!): DictDetailModel
-  "查找order_by字段的最大值"
+  "查找 系统字典明细 order_by 字段的最大值"
   findLastOrderByDictDetail: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建系统字典明细"
   createDictDetail(model: DictDetailInput!, unique_type: UniqueType): DictDetailId!
-  "根据id修改一条数据"
+  "根据 id 修改系统字典明细"
   updateByIdDictDetail(id: DictDetailId!, model: DictDetailInput!): DictDetailId!
-  "根据 ids 删除数据"
+  "根据 ids 删除系统字典明细"
   deleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用系统字典明细"
   enableByIdsDictDetail(ids: [DictDetailId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁系统字典明细"
   lockByIdsDictDetail(ids: [DictDetailId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原系统字典明细"
   revertByIdsDictDetail(ids: [DictDetailId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除系统字典明细"
   forceDeleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
 }
 

@@ -189,7 +189,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找语言总数
  * @param { LangSearch } search?
  * @return {Promise<number>}
  */
@@ -508,7 +508,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找语言
+ * 根据 id 查找语言
  * @param {LangId} id
  */
 export async function findById(
@@ -810,7 +810,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改语言
+ * 根据 id 修改语言
  * @param {LangId} id
  * @param {LangInput} input
  * @param {({
@@ -935,7 +935,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除语言
  * @param {LangId[]} ids
  * @return {Promise<number>}
  */
@@ -1002,7 +1002,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用语言
  * @param {LangId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}

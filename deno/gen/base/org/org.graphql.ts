@@ -141,33 +141,33 @@ input OrgSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找组织总数"
   findCountOrg(search: OrgSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找组织列表"
   findAllOrg(search: OrgSearch, page: PageInput, sort: [SortInput!]): [OrgModel!]!
-  "获取字段对应的名称"
+  "获取组织字段注释"
   getFieldCommentsOrg: OrgFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个组织"
   findOneOrg(search: OrgSearch, sort: [SortInput!]): OrgModel
-  "根据id查找一条数据"
+  "根据 id 查找组织"
   findByIdOrg(id: OrgId!): OrgModel
-  "查找order_by字段的最大值"
+  "查找 组织 order_by 字段的最大值"
   findLastOrderByOrg: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建组织"
   createOrg(model: OrgInput!, unique_type: UniqueType): OrgId!
-  "根据id修改一条数据"
+  "根据 id 修改组织"
   updateByIdOrg(id: OrgId!, model: OrgInput!): OrgId!
-  "根据 ids 删除数据"
+  "根据 ids 删除组织"
   deleteByIdsOrg(ids: [OrgId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用组织"
   enableByIdsOrg(ids: [OrgId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁组织"
   lockByIdsOrg(ids: [OrgId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原组织"
   revertByIdsOrg(ids: [OrgId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除组织"
   forceDeleteByIdsOrg(ids: [OrgId!]!): Int!
 }
 

@@ -74,7 +74,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个系统字典明细
+ * 根据条件查找第一个系统字典明细
  * @param {DictDetailSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -150,7 +150,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条系统字典明细
+ * 创建系统字典明细
  * @param {DictDetailInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -178,7 +178,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条系统字典明细
+ * 根据 id 修改系统字典明细
  * @param {DictDetailId} id
  * @param {DictDetailInput} model
  * @param {GqlOpt} opt?
@@ -206,7 +206,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条系统字典明细
+ * 根据 id 查找系统字典明细
  * @param {DictDetailId} id
  * @param {GqlOpt} opt?
  */
@@ -332,7 +332,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原系统字典明细
+ * 根据 ids 还原系统字典明细
  * @param {DictDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -617,7 +617,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 系统字典明细 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

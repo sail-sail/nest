@@ -70,7 +70,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个域名
+ * 根据条件查找第一个域名
  * @param {DomainSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -146,7 +146,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条域名
+ * 创建域名
  * @param {DomainInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -174,7 +174,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条域名
+ * 根据 id 修改域名
  * @param {DomainId} id
  * @param {DomainInput} model
  * @param {GqlOpt} opt?
@@ -202,7 +202,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条域名
+ * 根据 id 查找域名
  * @param {DomainId} id
  * @param {GqlOpt} opt?
  */
@@ -353,7 +353,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原域名
+ * 根据 ids 还原域名
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -585,7 +585,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 域名 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

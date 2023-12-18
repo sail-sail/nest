@@ -90,7 +90,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个角色
+ * 根据条件查找第一个角色
  * @param {RoleSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -170,7 +170,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条角色
+ * 创建角色
  * @param {RoleInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -198,7 +198,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条角色
+ * 根据 id 修改角色
  * @param {RoleId} id
  * @param {RoleInput} model
  * @param {GqlOpt} opt?
@@ -226,7 +226,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条角色
+ * 根据 id 查找角色
  * @param {RoleId} id
  * @param {GqlOpt} opt?
  */
@@ -356,7 +356,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原角色
+ * 根据 ids 还原角色
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -767,7 +767,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 查找 角色 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
