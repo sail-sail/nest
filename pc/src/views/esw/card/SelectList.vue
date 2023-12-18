@@ -14,6 +14,7 @@
       :is-multiple="multiple"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
+      @row-enter="onRowEnter"
     ></List>
   </div>
   <div
@@ -67,7 +68,7 @@ import type {
 } from "#/types";
 
 const emit = defineEmits<{
-  (e: "change", value?: CardModel | (CardModel | undefined)[] | null): void,
+  (e: "change", value?: CardModel | CardModel[] | null): void,
 }>();
 
 const {
@@ -146,6 +147,13 @@ async function getModelsByIds(ids: CardId[]) {
     },
   );
   return res;
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  await onSave();
 }
 
 /** 确定 */

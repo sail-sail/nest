@@ -71,7 +71,7 @@
     v-bind="$attrs"
     ref="selectListRef"
     @closed="dialog_visible = false;"
-    @change="selectListChg"
+    @change="onSelectList"
   ></SelectList>
 </div>
 <template
@@ -242,6 +242,7 @@ async function onInput() {
       ids: modelValueArr,
     },
   });
+  focus();
   if (type === "cancel") {
     return;
   }
@@ -253,7 +254,23 @@ async function onInput() {
   emit("update:modelValue", modelValue);
 }
 
-function selectListChg(value?: CardModel | (CardModel | undefined)[] | null) {
+let inputRef = $ref<InstanceType<typeof ElInput>>();
+
+function focus() {
+  if (!inputRef) {
+    return;
+  }
+  inputRef.focus();
+}
+
+function blur() {
+  if (!inputRef) {
+    return;
+  }
+  inputRef.blur();
+}
+
+function onSelectList(value?: CardModel | (CardModel | undefined)[] | null) {
   if (props.multiple) {
     emit("change", value);
     return;
@@ -264,4 +281,9 @@ function selectListChg(value?: CardModel | (CardModel | undefined)[] | null) {
   }
   emit("change", value[0]);
 }
+
+defineExpose({
+  focus,
+  blur,
+});
 </script>
