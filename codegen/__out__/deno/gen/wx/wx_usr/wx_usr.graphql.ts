@@ -252,31 +252,31 @@ input WxUsrSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找微信用户总数"
   findCountWxUsr(search: WxUsrSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找微信用户列表"
   findAllWxUsr(search: WxUsrSearch, page: PageInput, sort: [SortInput!]): [WxUsrModel!]!
-  "获取字段对应的名称"
+  "获取微信用户字段注释"
   getFieldCommentsWxUsr: WxUsrFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个微信用户"
   findOneWxUsr(search: WxUsrSearch, sort: [SortInput!]): WxUsrModel
-  "根据id查找一条数据"
+  "根据 id 查找微信用户"
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
 }
 type Mutation {
-  "创建一条数据"
+  "创建微信用户"
   createWxUsr(model: WxUsrInput!, unique_type: UniqueType): WxUsrId!
-  "根据id修改一条数据"
+  "根据 id 修改微信用户"
   updateByIdWxUsr(id: WxUsrId!, model: WxUsrInput!): WxUsrId!
-  "根据 ids 删除数据"
+  "根据 ids 删除微信用户"
   deleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用微信用户"
   enableByIdsWxUsr(ids: [WxUsrId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁微信用户"
   lockByIdsWxUsr(ids: [WxUsrId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原微信用户"
   revertByIdsWxUsr(ids: [WxUsrId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除微信用户"
   forceDeleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
 }
 
