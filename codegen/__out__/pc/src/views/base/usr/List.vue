@@ -499,7 +499,7 @@
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
         @keydown.enter="onRowEnter"
@@ -823,26 +823,15 @@ const permit = permitStore.getPermit("/base/usr");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    UsrId[],
-  ],
-  add: [
-    UsrId[],
-  ],
-  edit: [
-    UsrId[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ UsrId[] ],
+  add: [ UsrId[] ],
+  edit: [ UsrId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
-  rowEnter: [
-    KeyboardEvent,
-  ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ UsrModel ],
 }>();
 
 /** 表格 */
@@ -1640,6 +1629,17 @@ async function onRowEnter(e: KeyboardEvent) {
   } else {
     await openView();
   }
+}
+
+/** 双击行 */
+async function onRowDblclick(
+  row: UsrModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
 }
 
 /** 打开查看 */
