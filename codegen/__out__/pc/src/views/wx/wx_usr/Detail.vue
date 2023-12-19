@@ -734,6 +734,25 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.usr_id,
+    dialogModel.gender,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.usr_id) {
+      dialogModel.usr_id_lbl = "";
+    }
+    if (!dialogModel.gender) {
+      dialogModel.gender_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
