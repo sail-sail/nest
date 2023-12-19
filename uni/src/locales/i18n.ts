@@ -1,3 +1,5 @@
+import cfg from "@/utils/config";
+
 import {
   n0,
 } from "./Api";
@@ -65,8 +67,8 @@ async function initI18ns(
 }
 
 export function useI18n(routePath?: string | null) {
-  const usrStore = useUsrStore();
-  const lang = usrStore.lang;
+  const usrStore = useUsrStore(cfg.pinia);
+  const lang = usrStore.getLang();
   return {
     n(code: string, ...args: any[]) {
       if (routePath === undefined) {
@@ -98,8 +100,8 @@ export function useI18n(routePath?: string | null) {
 }
 
 function initI18nLblsLang() {
-  const usrStore = useUsrStore();
-  const lang = usrStore.lang;
+  const usrStore = useUsrStore(cfg.pinia);
+  const lang = usrStore.getLang();
   if (!i18nLblsLang) {
     const i18nsLangStr = uni.getStorageSync(`i18nLblsLang`);
     if (i18nsLangStr) {
