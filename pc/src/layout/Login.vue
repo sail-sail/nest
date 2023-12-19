@@ -261,6 +261,7 @@ async function onLogin() {
     tabsStore.closeOtherTabs();
   }
   usrStore.authorization = loginModel.authorization;
+  usrStore.usr_id = loginModel.usr_id;
   usrStore.username = model.username;
   usrStore.tenant_id = model.tenant_id;
   usrStore.lang = model.lang;

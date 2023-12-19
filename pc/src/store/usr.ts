@@ -4,6 +4,7 @@ import type {
 
 import type {
   TenantId,
+  UsrId,
 } from "@/typings/ids";
 
 export default defineStore("usr", function() {
@@ -18,6 +19,7 @@ export default defineStore("usr", function() {
   
   let tenant_id = $ref<TenantId>();
   let username = $ref<string>();
+  let usr_id = $ref<UsrId>();
   
   let loginInfo = $ref<GetLoginInfo>();
   
@@ -79,6 +81,7 @@ export default defineStore("usr", function() {
     loginInfo,
     username,
     tenant_id,
+    usr_id,
     lang,
     refreshToken,
     login,
