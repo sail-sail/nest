@@ -656,6 +656,25 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.is_home,
+    dialogModel.is_recommend,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.is_home) {
+      dialogModel.is_home_lbl = "";
+    }
+    if (!dialogModel.is_recommend) {
+      dialogModel.is_recommend_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();

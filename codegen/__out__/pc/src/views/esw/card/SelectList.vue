@@ -15,6 +15,7 @@
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
       @row-enter="onRowEnter"
+      @row-dblclick="onRowDblclick"
     ></List>
   </div>
   <div
@@ -150,9 +151,17 @@ async function getModelsByIds(ids: CardId[]) {
 }
 
 /** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
+async function onRowEnter(e?: KeyboardEvent) {
+  if (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+  await onSave();
+}
+
+/** 双击行 */
+async function onRowDblclick(row: { id: any }) {
+  selectedIds = [ row.id ];
   await onSave();
 }
 
