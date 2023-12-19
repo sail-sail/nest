@@ -199,7 +199,7 @@ import {
 
 const indexStore = useIndexStore(cfg.pinia);
 
-let safeAreaInsets = $ref(indexStore.systemInfo.safeAreaInsets);
+let safeAreaInsets = $ref(indexStore.getSystemInfo().safeAreaInsets);
 
 const pagePath = "/pages/esw/pt_detail/index";
 

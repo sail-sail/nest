@@ -134,8 +134,8 @@ let sideList = $computed(() => {
 });
 
 let sideHeight = $computed(() => {
-  const safeWidth = indexStore.systemInfo.safeArea!.width;
-  const safeHeight = indexStore.systemInfo.safeArea!.height;
+  const safeWidth = indexStore.getSystemInfo().safeArea!.width;
+  const safeHeight = indexStore.getSystemInfo().safeArea!.height;
   return Math.floor(750/safeWidth * safeHeight);
 });
 

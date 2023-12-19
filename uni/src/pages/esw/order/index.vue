@@ -174,8 +174,9 @@ import type {
 } from "@/typings/types";
 
 const indexStore = useIndexStore(cfg.pinia);
+const usrStore = useUsrStore(cfg.pinia);
 
-let safeAreaInsets = $ref(indexStore.systemInfo.safeAreaInsets);
+let safeAreaInsets = $ref(indexStore.getSystemInfo().safeAreaInsets);
 
 const pagePath = "/pages/esw/order/index";
 
@@ -222,8 +223,10 @@ async function findOnePtEfc() {
 let balance = $ref(0);
 
 async function findAllCardEfc() {
+  const usr_id = usrStore.getUsrId();
   const cardModels = await findAllCard(
     {
+      usr_id: [ usr_id ],
       is_enabled: [ 1 ],
       is_deleted: 0,
     },
