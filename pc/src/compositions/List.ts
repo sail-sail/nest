@@ -1048,14 +1048,15 @@ export function useTableColumns<T>(
 /**
  * 列表页中的月份控件搜索条件
  */
-export function monthrangeSearch(value?: Date[] | string[] | null, event?: Date[]) {
-  if (!value || !event || event.length === 0) {
-    value = [ ];
+export function monthrangeSearch(search: any, key: string, event?: Date[]) {
+  search[key] = search[key] || [ ];
+  if (!event || event.length === 0) {
+    search[key] = [ ];
     return;
   }
   if (event[0] && event[1]) {
-    value[0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
-    value[1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
+    search[key][0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
+    search[key][1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
   }
 }
 
