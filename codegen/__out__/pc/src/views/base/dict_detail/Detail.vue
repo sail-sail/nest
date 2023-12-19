@@ -651,6 +651,21 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.dict_id,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.dict_id) {
+      dialogModel.dict_id_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();

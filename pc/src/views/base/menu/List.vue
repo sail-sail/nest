@@ -459,7 +459,7 @@
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
         @keydown.enter="onRowEnter"
@@ -736,26 +736,15 @@ const permit = permitStore.getPermit("/base/menu");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    MenuId[],
-  ],
-  add: [
-    MenuId[],
-  ],
-  edit: [
-    MenuId[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ MenuId[] ],
+  add: [ MenuId[] ],
+  edit: [ MenuId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
-  rowEnter: [
-    KeyboardEvent,
-  ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ MenuModel ],
 }>();
 
 /** 表格 */
@@ -1520,6 +1509,17 @@ async function onRowEnter(e: KeyboardEvent) {
   } else {
     await openView();
   }
+}
+
+/** 双击行 */
+async function onRowDblclick(
+  row: MenuModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
 }
 
 /** 打开查看 */
