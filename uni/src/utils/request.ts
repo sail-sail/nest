@@ -1,6 +1,4 @@
 import cfg from "./config";
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
 
 import {
   isEmpty,
@@ -30,7 +28,7 @@ export async function uploadFile(config: {
       config.name = "file";
     }
     config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -58,7 +56,7 @@ export async function uploadFile(config: {
   }
   const header = res.header || { };
   if (header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (config.reqType === "graphql") {
     return res;
@@ -76,7 +74,7 @@ export async function uploadFile(config: {
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -285,7 +283,7 @@ export async function request<T>(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -300,7 +298,7 @@ export async function request<T>(
   }
   const header = res?.header;
   if (header && header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
     let errMsg = (err as any).errMsg || err.toString();
@@ -318,7 +316,7 @@ export async function request<T>(
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -404,15 +402,21 @@ export async function uniLogin() {
       const state = uniqueID();
       localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      if (cfg.appid && cfg.agentid) {
+      const {
+        appid,
+        agentid,
+      } = await wxwGetAppid();
+      if (appid && agentid) {
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
-          encodeURIComponent(cfg.appid)
-        }&redirect_uri=${
-          encodeURIComponent(redirect_uri)
-        }&response_type=code&scope=snsapi_base&state=${ state }`;
-        if (cfg.agentid) {
-          url += `&agentid=${ encodeURIComponent(cfg.agentid) }`;
+          encodeURIComponent(appid)
+        }`;
+        if (agentid) {
+          url += `&agentid=${ encodeURIComponent(agentid) }`;
         }
+        url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+        url += `&response_type=code`;
+        url += `&scope=snsapi_base`;
+        url += `&state=${ encodeURIComponent(state) }`;
         url += "#wechat_redirect";
         location.replace(url);
         return false;
