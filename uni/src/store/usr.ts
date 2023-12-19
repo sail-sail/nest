@@ -1,12 +1,17 @@
 import type {
+  TenantId,
+  UsrId,
+} from "@/typings/ids";
+
+import type {
   GetLoginInfo,
 } from "@/typings/types";
 
 export default defineStore("usr", function() {
   
   let authorization = $ref(uni.getStorageSync("authorization") || "");
-  
-  let tenant_id = $ref<string>(uni.getStorageSync("tenant_id"));
+  let usr_id = $ref<UsrId>(uni.getStorageSync("usr_id"));
+  let tenant_id = $ref<TenantId>(uni.getStorageSync("tenant_id"));
   let username = $ref<string>(uni.getStorageSync("username"));
   let loginInfo = $ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
@@ -19,6 +24,15 @@ export default defineStore("usr", function() {
   
   function getAuthorization() {
     return authorization;
+  }
+  
+  function setUsrId(usr_id0: typeof usr_id) {
+    usr_id = usr_id0;
+    uni.setStorageSync("usr_id", usr_id0);
+  }
+  
+  function getUsrId() {
+    return usr_id;
   }
   
   let showAuth = $ref(false);
@@ -71,6 +85,8 @@ export default defineStore("usr", function() {
   return $$({
     getAuthorization,
     setAuthorization,
+    getUsrId,
+    setUsrId,
     getShowAuth,
     setShowAuth,
     getLang,
