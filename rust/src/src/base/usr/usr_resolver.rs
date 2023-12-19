@@ -6,7 +6,7 @@ use super::usr_service;
 
 use super::usr_model::{
   LoginInput,
-  Login,
+  LoginModel,
   GetLoginInfo,
   ChangePasswordInput,
 };
@@ -14,7 +14,7 @@ use super::usr_model::{
 /// 登录, 获得token
 pub async fn login(
   input: LoginInput,
-) -> Result<Login> {
+) -> Result<LoginModel> {
   
   let res = usr_service::login(
     input,
