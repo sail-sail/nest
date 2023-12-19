@@ -18,8 +18,12 @@ defineGraphql(usrResolver, /* GraphQL */`
   }
   
   type LoginModel {
+    usr_id: UsrId!
+    username: String!
+    tenant_id: String!
     org_id: OrgId
     authorization: String!
+    lang: String
   }
   
   input LoginInput {

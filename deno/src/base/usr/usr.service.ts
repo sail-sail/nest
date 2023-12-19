@@ -20,6 +20,7 @@ import * as orgDaoGen from "/gen/base/org/org.dao.ts";
 import type {
   MutationLoginArgs,
   ChangePasswordInput,
+  LoginModel,
 } from "/gen/types.ts";
 
 import {
@@ -49,11 +50,7 @@ import type {
  */
 export async function login(
   input: MutationLoginArgs["input"],
-): Promise<{
-  usr_id: UsrId,
-  authorization: string,
-  org_id?: OrgId,
-}> {
+): Promise<LoginModel> {
   const username = input.username;
   const password = input.password;
   const tenant_id: TenantId = input.tenant_id;
@@ -99,8 +96,11 @@ export async function login(
   });
   return {
     usr_id,
+    username,
+    tenant_id,
     authorization,
     org_id,
+    lang,
   };
 }
 
