@@ -171,33 +171,33 @@ input DeptSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找部门总数"
   findCountDept(search: DeptSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找部门列表"
   findAllDept(search: DeptSearch, page: PageInput, sort: [SortInput!]): [DeptModel!]!
-  "获取字段对应的名称"
+  "获取部门字段注释"
   getFieldCommentsDept: DeptFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个部门"
   findOneDept(search: DeptSearch, sort: [SortInput!]): DeptModel
-  "根据id查找一条数据"
+  "根据 id 查找部门"
   findByIdDept(id: DeptId!): DeptModel
-  "查找order_by字段的最大值"
+  "查找 部门 order_by 字段的最大值"
   findLastOrderByDept: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建部门"
   createDept(model: DeptInput!, unique_type: UniqueType): DeptId!
-  "根据id修改一条数据"
+  "根据 id 修改部门"
   updateByIdDept(id: DeptId!, model: DeptInput!): DeptId!
-  "根据 ids 删除数据"
+  "根据 ids 删除部门"
   deleteByIdsDept(ids: [DeptId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用部门"
   enableByIdsDept(ids: [DeptId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁部门"
   lockByIdsDept(ids: [DeptId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原部门"
   revertByIdsDept(ids: [DeptId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除部门"
   forceDeleteByIdsDept(ids: [DeptId!]!): Int!
 }
 

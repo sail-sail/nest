@@ -195,33 +195,33 @@ input MenuSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找菜单总数"
   findCountMenu(search: MenuSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找菜单列表"
   findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput!]): [MenuModel!]!
-  "获取字段对应的名称"
+  "获取菜单字段注释"
   getFieldCommentsMenu: MenuFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个菜单"
   findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
-  "根据id查找一条数据"
+  "根据 id 查找菜单"
   findByIdMenu(id: MenuId!): MenuModel
-  "查找order_by字段的最大值"
+  "查找 菜单 order_by 字段的最大值"
   findLastOrderByMenu: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建菜单"
   createMenu(model: MenuInput!, unique_type: UniqueType): MenuId!
-  "根据id修改一条数据"
+  "根据 id 修改菜单"
   updateByIdMenu(id: MenuId!, model: MenuInput!): MenuId!
-  "根据 ids 删除数据"
+  "根据 ids 删除菜单"
   deleteByIdsMenu(ids: [MenuId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用菜单"
   enableByIdsMenu(ids: [MenuId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁菜单"
   lockByIdsMenu(ids: [MenuId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原菜单"
   revertByIdsMenu(ids: [MenuId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除菜单"
   forceDeleteByIdsMenu(ids: [MenuId!]!): Int!
 }
 

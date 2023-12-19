@@ -313,7 +313,7 @@ export async function gqlQuery(
       code = exception.message;
     }
     if (code === "token_empty" || code === "refresh_token_expired") {
-      const usrStore = useUsrStore();
+      const usrStore = useUsrStore(cfg.pinia);
       await usrStore.setAuthorization("");
       if (!config.notLogin) {
         if (await uniLogin()) {

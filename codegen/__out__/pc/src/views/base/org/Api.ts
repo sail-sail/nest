@@ -16,7 +16,6 @@ import type {
 
 /**
  * 根据搜索条件查找组织列表
- * @export findAll
  * @param {OrgSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -68,8 +67,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个组织
- * @export findOne
+ * 根据条件查找第一个组织
  * @param {OrgSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -118,7 +116,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找组织总数
- * @export findCount
  * @param {OrgSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -143,8 +140,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条组织
- * @export create
+ * 创建组织
  * @param {OrgInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -172,8 +168,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条组织
- * @export updateById
+ * 根据 id 修改组织
  * @param {OrgId} id
  * @param {OrgInput} model
  * @param {GqlOpt} opt?
@@ -201,8 +196,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条组织
- * @export findById
+ * 根据 id 查找组织
  * @param {OrgId} id
  * @param {GqlOpt} opt?
  */
@@ -245,7 +239,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除组织
- * @export deleteByIds
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -271,7 +264,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用组织
- * @export enableByIds
  * @param {OrgId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -300,7 +292,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁组织
- * @export lockByIds
  * @param {OrgId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -328,8 +319,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原组织
- * @export revertByIds
+ * 根据 ids 还原组织
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -355,7 +345,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除组织
- * @export forceDeleteByIds
  * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -508,7 +497,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {OrgInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: OrgInput[],
@@ -556,8 +544,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 组织 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
