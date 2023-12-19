@@ -306,7 +306,7 @@
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
@@ -616,26 +616,15 @@ const permit = permitStore.getPermit("/wx/wx_pay_notice");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    WxPayNoticeId[],
-  ],
-  add: [
-    WxPayNoticeId[],
-  ],
-  edit: [
-    WxPayNoticeId[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ WxPayNoticeId[] ],
+  add: [ WxPayNoticeId[] ],
+  edit: [ WxPayNoticeId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
-  rowEnter: [
-    KeyboardEvent,
-  ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ WxPayNoticeModel ],
 }>();
 
 /** 表格 */
@@ -1228,6 +1217,17 @@ async function onRowEnter(e: KeyboardEvent) {
   } else {
     await openView();
   }
+}
+
+/** 双击行 */
+async function onRowDblclick(
+  row: WxPayNoticeModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
 }
 
 /** 打开查看 */
