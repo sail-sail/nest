@@ -158,6 +158,7 @@ async function onLogin() {
     return;
   }
   usrStore.setAuthorization(loginModel.authorization);
+  usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(model.username);
   usrStore.setTenantId(model.tenant_id);
   usrStore.setLang(model.lang);

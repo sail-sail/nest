@@ -80,6 +80,7 @@
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
+            @change="onSearch"
           ></CustomDatePicker>
         </el-form-item>
       </template>

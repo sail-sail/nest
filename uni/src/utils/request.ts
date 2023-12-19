@@ -5,6 +5,10 @@ import {
   uniqueID,
 } from "./StringUtil";
 
+import {
+  LoginModel,
+} from "@/typings/types";
+
 export async function uploadFile(config: {
   url?: string;
   name?: string;
@@ -353,7 +357,7 @@ async function code2Session(
   },
 ) {
   const appid = getAppid();
-  await request({
+  const loginModel: LoginModel = await request({
     url: `wx_usr/code2Session`,
     method: "POST",
     data: {
@@ -364,9 +368,11 @@ async function code2Session(
     notLogin: true,
     notLoading: true,
   });
+  return loginModel;
 }
 
 export async function uniLogin() {
+  const usrStore = useUsrStore(cfg.pinia);
   let providers: string[] = [ ];
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });
@@ -384,10 +390,15 @@ export async function uniLogin() {
     const loginRes = await uni.login({ provider: "weixin" });
     const code = loginRes?.code;
     if (code) {
-      await code2Session({
+      const loginModel = await code2Session({
         code,
         lang: appLanguage,
       });
+      usrStore.setAuthorization(loginModel.authorization);
+      usrStore.setUsrId(loginModel.usr_id);
+      usrStore.setUsername(loginModel.username);
+      usrStore.setTenantId(loginModel.tenant_id);
+      usrStore.setLang(loginModel.lang);
       return true;
     }
     return false;
