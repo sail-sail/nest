@@ -597,6 +597,17 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
