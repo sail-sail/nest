@@ -200,21 +200,23 @@ pub async fn many2many_update(
       .position(|foreign_id| 
         foreign_id == &model.column2_id
       );
-    if idx.is_none() && !model.is_deleted {
-      let mut args = QueryArgs::new();
-      let sql = format!(r#"
-        update {mod_table}
-        set
-          is_deleted = 1
-          ,delete_time = ?
-        where
-          id = ?
-      "#);
-      args.push(get_now().into());
-      args.push(id.clone().into());
-      let args = args.into();
-      has_change = true;
-      execute(sql, args, None).await?;
+    if idx.is_none() {
+      if !model.is_deleted {
+        let mut args = QueryArgs::new();
+        let sql = format!(r#"
+          update {mod_table}
+          set
+            is_deleted = 1
+            ,delete_time = ?
+          where
+            id = ?
+        "#);
+        args.push(get_now().into());
+        args.push(id.clone().into());
+        let args = args.into();
+        has_change = true;
+        execute(sql, args, None).await?;
+      }
       continue;
     }
     let idx = idx.unwrap_or_default();
