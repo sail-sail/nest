@@ -26,9 +26,9 @@ router.post("/wx_usr/code2Session", async function(ctx) {
   context.notVerifyToken = true;
   context.lang = model.lang;
   try {
-    const tokenInfo = await wx_usrService.code2Session(model);
-    response.headers.set("authorization", tokenInfo.authorization);
-    response.body = resSuc(tokenInfo);
+    const loginModel = await wx_usrService.code2Session(model);
+    response.headers.set("authorization", loginModel.authorization);
+    response.body = resSuc(loginModel);
   } catch (err) {
     response.headers.set("authorization", "");
     response.status = 401;
