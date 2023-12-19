@@ -295,13 +295,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
             if (column.isMonth) {
             #>
-            @update:model-value="monthrangeSearch(search.<#=column_name#>, $event)"<#
+            @update:model-value="monthrangeSearch(search, '<#=column_name#>', $event)"<#
             } else {
             #>
             @update:model-value="search.<#=column_name#> = $event"<#
             }
             #>
             @clear="onSearchClear"
+            @change="onSearch"
           ></CustomDatePicker>
         </el-form-item>
       </template><#
