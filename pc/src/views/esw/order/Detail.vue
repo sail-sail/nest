@@ -741,6 +741,33 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.status,
+    dialogModel.usr_id,
+    dialogModel.card_id,
+    dialogModel.type,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.status) {
+      dialogModel.status_lbl = "";
+    }
+    if (!dialogModel.usr_id) {
+      dialogModel.usr_id_lbl = "";
+    }
+    if (!dialogModel.card_id) {
+      dialogModel.card_id_lbl = "";
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();

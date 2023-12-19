@@ -725,6 +725,29 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.usr_id,
+    dialogModel.grade,
+    dialogModel.is_default,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.usr_id) {
+      dialogModel.usr_id_lbl = "";
+    }
+    if (!dialogModel.grade) {
+      dialogModel.grade_lbl = "";
+    }
+    if (!dialogModel.is_default) {
+      dialogModel.is_default_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
