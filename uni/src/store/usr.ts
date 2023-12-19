@@ -4,20 +4,21 @@ import type {
 
 export default defineStore("usr", function() {
   
-  let authorization = $ref("");
+  let authorization = $ref(uni.getStorageSync("authorization") || "");
   
-  let tenant_id = $ref<string>();
-  let username = $ref<string>();
-  let loginInfo = $ref<GetLoginInfo>();
+  let tenant_id = $ref<string>(uni.getStorageSync("tenant_id"));
+  let username = $ref<string>(uni.getStorageSync("username"));
+  let loginInfo = $ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
-  async function setAuthorization(authorization1: typeof authorization) {
-    if (authorization !== authorization1) {
-      authorization = authorization1;
-      await uni.setStorage({
-        key: "authorization",
-        data: authorization1,
-      });
+  function setAuthorization(authorization0: typeof authorization) {
+    if (authorization !== authorization0) {
+      authorization = authorization0;
+      uni.setStorageSync("authorization", authorization0);
     }
+  }
+  
+  function getAuthorization() {
+    return authorization;
   }
   
   let showAuth = $ref(false);
@@ -26,31 +27,59 @@ export default defineStore("usr", function() {
     showAuth = showAuth1;
   }
   
+  function getShowAuth() {
+    return showAuth;
+  }
+  
   let lang = $ref("");
   
   function setLang(lang0: typeof lang) {
     lang = lang0;
   }
   
+  function getLang() {
+    return lang;
+  }
+  
+  function setLoginInfo(loginInfo0: typeof loginInfo) {
+    loginInfo = loginInfo0;
+    uni.setStorageSync("loginInfo", loginInfo0);
+  }
+  
+  function getLoginInfo() {
+    return loginInfo;
+  }
+  
+  function setUsername(username0: typeof username) {
+    username = username0;
+    uni.setStorageSync("username", username0);
+  }
+  
+  function getUsername() {
+    return username;
+  }
+  
+  function setTenantId(tenant_id0: typeof tenant_id) {
+    tenant_id = tenant_id0;
+    uni.setStorageSync("tenant_id", tenant_id0);
+  }
+  
+  function getTenantId() {
+    return tenant_id;
+  }
+  
   return $$({
-    authorization,
-    showAuth,
+    getAuthorization,
     setAuthorization,
+    getShowAuth,
     setShowAuth,
-    lang,
-    loginInfo,
-    username,
-    tenant_id,
+    getLang,
     setLang,
+    getLoginInfo,
+    setLoginInfo,
+    getUsername,
+    setUsername,
+    getTenantId,
+    setTenantId,
   });
-}, {
-  unistorage: {
-    paths: [
-      "authorization",
-      "username",
-      "tenant_id",
-      "loginInfo",
-      "lang",
-    ],
-  },
 });
