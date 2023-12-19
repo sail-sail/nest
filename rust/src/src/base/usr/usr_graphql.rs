@@ -7,7 +7,7 @@ use super::usr_resolver;
 
 use super::usr_model::{
   LoginInput,
-  Login,
+  LoginModel,
   GetLoginInfo,
   ChangePasswordInput,
 };
@@ -23,7 +23,7 @@ impl UsrMutation {
     &self,
     ctx: &Context<'_>,
     input: LoginInput,
-  ) -> Result<Login> {
+  ) -> Result<LoginModel> {
     Ctx::builder(ctx)
       .with_tran()?
       .build()
