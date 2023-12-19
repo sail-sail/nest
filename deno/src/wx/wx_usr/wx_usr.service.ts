@@ -69,6 +69,10 @@ import {
   findLoginUsr,
   getOrgIdsById,
 } from "/src/base/usr/usr.dao.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
  
 export async function code2Session(
   model: {
@@ -76,7 +80,7 @@ export async function code2Session(
     code: string;
     lang: string;
   },
-) {
+): Promise<LoginModel> {
   const wx_appModel = await validateOptionWxApp(
     await findOneWxApp(
       {
@@ -160,13 +164,43 @@ export async function code2Session(
       await findByIdWxUsr(wx_usrModel.id),
     );
   }
-  const tokenInfo = await createTokenAuth({
+  
+  const usrModel = await validateOptionUsr(
+    await findByIdUsr(wx_usrModel.usr_id),
+  );
+  const username = usrModel.username;
+  
+  let org_id: OrgId | undefined = undefined;
+  const org_ids = await getOrgIdsById(wx_usrModel.usr_id);
+  if (!org_id) {
+    org_id = org_ids[0];
+  }
+  if (org_id) {
+    if (!org_ids.includes(org_id)) {
+      org_id = undefined;
+    }
+  }
+  
+  const {
+    authorization,
+  } = await createTokenAuth({
     id: wx_usrModel.usr_id,
+    org_id,
     wx_usr_id: wx_usrModel.id,
     tenant_id: wx_appModel.tenant_id,
     lang: model.lang,
   });
-  return tokenInfo;
+  
+  const loginModel: LoginModel = {
+    usr_id: wx_usrModel.usr_id,
+    username,
+    tenant_id: wx_appModel.tenant_id,
+    org_id,
+    authorization,
+    lang: model.lang,
+  };
+  
+  return loginModel;
 }
 
 /**
@@ -295,8 +329,12 @@ export async function bindWxUsr(
   });
   
   const loginModel: LoginModel = {
+    usr_id,
+    username,
+    tenant_id,
     authorization,
     org_id,
+    lang,
   };
   
   return loginModel;
