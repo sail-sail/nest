@@ -43,6 +43,7 @@
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
+        @row-dblclick="onRowDblclick"
       ></slot>
     </div>
     <div
@@ -187,13 +188,20 @@ function selectedIdsChg(value: string[]) {
   selectedIds = value;
 }
 
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey || e.shiftKey) {
-    return;
+async function onRowEnter(e?: KeyboardEvent) {
+  if (e) {
+    if (e.ctrlKey || e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   }
-  e.preventDefault();
-  e.stopPropagation();
-  e.stopImmediatePropagation();
+  await onSave();
+}
+
+async function onRowDblclick(row: { id: any }) {
+  selectedIds = [ row.id ];
   await onSave();
 }
 

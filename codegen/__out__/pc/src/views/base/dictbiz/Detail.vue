@@ -777,6 +777,21 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.type,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
