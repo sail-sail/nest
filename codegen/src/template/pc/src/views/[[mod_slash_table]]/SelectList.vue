@@ -39,6 +39,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
       @row-enter="onRowEnter"
+      @row-dblclick="onRowDblclick"
     ></List><#
     } else {
     #>
@@ -194,9 +195,17 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
 }
 
 /** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
+async function onRowEnter(e?: KeyboardEvent) {
+  if (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+  await onSave();
+}
+
+/** 双击行 */
+async function onRowDblclick(row: { id: any }) {
+  selectedIds = [ row.id ];
   await onSave();
 }
 

@@ -761,6 +761,33 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.org_ids,
+    dialogModel.default_org_id,
+    dialogModel.dept_ids,
+    dialogModel.role_ids,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.org_ids) {
+      dialogModel.org_ids_lbl = "";
+    }
+    if (!dialogModel.default_org_id) {
+      dialogModel.default_org_id_lbl = "";
+    }
+    if (!dialogModel.dept_ids) {
+      dialogModel.dept_ids_lbl = "";
+    }
+    if (!dialogModel.role_ids) {
+      dialogModel.role_ids_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
