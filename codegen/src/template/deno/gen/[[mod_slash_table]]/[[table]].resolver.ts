@@ -103,7 +103,7 @@ import "./cron_job.service.ts";<#
 #>
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找<#=table_comment#>总数
  */
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -125,7 +125,7 @@ export async function findCount<#=Table_Up#>(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找<#=table_comment#>列表
  */
 export async function findAll<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -180,7 +180,7 @@ export async function findAll<#=Table_Up#>(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
@@ -191,7 +191,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找合计
+ * 根据搜索条件查找<#=table_comment#>合计
  */
 export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -204,7 +204,7 @@ export async function findSummary<#=Table_Up#>(
 #>
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个<#=table_comment#>
  */
 export async function findOne<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -254,7 +254,7 @@ export async function findOne<#=Table_Up#>(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找<#=table_comment#>
  */
 export async function findById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
@@ -294,7 +294,7 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建一条数据
+ * 创建<#=table_comment#>
  */
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
@@ -390,7 +390,7 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改<#=table_comment#>
  */
 export async function updateById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
@@ -483,7 +483,7 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除<#=table_comment#>
  */
 export async function deleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
@@ -538,7 +538,7 @@ export async function deleteByIds<#=Table_Up#>(
 #>
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认<#=table_comment#>
  */
 export async function defaultById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
@@ -585,7 +585,7 @@ export async function defaultById<#=Table_Up#>(
 #>
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用<#=table_comment#>
  */
 export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
@@ -636,7 +636,7 @@ export async function enableByIds<#=Table_Up#>(
 #>
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁<#=table_comment#>
  */
 export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
@@ -690,7 +690,7 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原<#=table_comment#>
  */
 export async function revertByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
@@ -733,7 +733,7 @@ export async function revertByIds<#=Table_Up#>(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除<#=table_comment#>
  */
 export async function forceDeleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
@@ -779,7 +779,7 @@ if (hasOrderBy) {
 #>
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(): Promise<number> {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");

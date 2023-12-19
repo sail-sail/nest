@@ -640,6 +640,25 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    inited,
+    dialogModel.parent_id,
+    dialogModel.usr_ids,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.parent_id) {
+      dialogModel.parent_id_lbl = "";
+    }
+    if (!dialogModel.usr_ids) {
+      dialogModel.usr_ids_lbl = "";
+    }
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();

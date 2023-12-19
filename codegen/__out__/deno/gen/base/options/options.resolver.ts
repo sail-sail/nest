@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找系统选项总数
  */
 export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountOptions(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找系统选项列表
  */
 export async function findAllOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllOptions(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取系统选项字段注释
  */
 export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
   const { getFieldComments } = await import("./options.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个系统选项
  */
 export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneOptions(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找系统选项
  */
 export async function findByIdOptions(
   id: OptionsId,
@@ -93,7 +93,7 @@ export async function findByIdOptions(
 }
 
 /**
- * 创建一条数据
+ * 创建系统选项
  */
 export async function createOptions(
   input: OptionsInput,
@@ -124,7 +124,7 @@ export async function createOptions(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改系统选项
  */
 export async function updateByIdOptions(
   id: OptionsId,
@@ -151,7 +151,7 @@ export async function updateByIdOptions(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除系统选项
  */
 export async function deleteByIdsOptions(
   ids: OptionsId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsOptions(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用系统选项
  */
 export async function enableByIdsOptions(
   ids: OptionsId[],
@@ -201,7 +201,7 @@ export async function enableByIdsOptions(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁系统选项
  */
 export async function lockByIdsOptions(
   ids: OptionsId[],
@@ -228,7 +228,7 @@ export async function lockByIdsOptions(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原系统选项
  */
 export async function revertByIdsOptions(
   ids: OptionsId[],
@@ -251,7 +251,7 @@ export async function revertByIdsOptions(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除系统选项
  */
 export async function forceDeleteByIdsOptions(
   ids: OptionsId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsOptions(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 系统选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptions(): Promise<number> {
   const { findLastOrderBy } = await import("./options.service.ts");

@@ -236,7 +236,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找操作记录总数
  * @param { OperationRecordSearch } search?
  * @return {Promise<number>}
  */
@@ -501,7 +501,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找操作记录
+ * 根据 id 查找操作记录
  * @param {OperationRecordId} id
  */
 export async function findById(
@@ -871,7 +871,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改操作记录
+ * 根据 id 修改操作记录
  * @param {OperationRecordId} id
  * @param {OperationRecordInput} input
  * @param {({
@@ -1007,7 +1007,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除操作记录
  * @param {OperationRecordId[]} ids
  * @return {Promise<number>}
  */

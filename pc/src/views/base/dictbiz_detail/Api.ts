@@ -20,7 +20,6 @@ import type {
 
 /**
  * 根据搜索条件查找业务字典明细列表
- * @export findAll
  * @param {DictbizDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -75,8 +74,7 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件查找第一个业务字典明细
- * @export findOne
+ * 根据条件查找第一个业务字典明细
  * @param {DictbizDetailSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -128,7 +126,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找业务字典明细总数
- * @export findCount
  * @param {DictbizDetailSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -153,8 +150,7 @@ export async function findCount(
 }
 
 /**
- * 创建一条业务字典明细
- * @export create
+ * 创建业务字典明细
  * @param {DictbizDetailInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -182,8 +178,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条业务字典明细
- * @export updateById
+ * 根据 id 修改业务字典明细
  * @param {DictbizDetailId} id
  * @param {DictbizDetailInput} model
  * @param {GqlOpt} opt?
@@ -211,8 +206,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条业务字典明细
- * @export findById
+ * 根据 id 查找业务字典明细
  * @param {DictbizDetailId} id
  * @param {GqlOpt} opt?
  */
@@ -258,7 +252,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除业务字典明细
- * @export deleteByIds
  * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -284,7 +277,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用业务字典明细
- * @export enableByIds
  * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -313,7 +305,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁业务字典明细
- * @export lockByIds
  * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -341,8 +332,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原业务字典明细
- * @export revertByIds
+ * 根据 ids 还原业务字典明细
  * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -368,7 +358,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除业务字典明细
- * @export forceDeleteByIds
  * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -581,7 +570,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DictbizDetailInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DictbizDetailInput[],
@@ -629,8 +617,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 业务字典明细 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

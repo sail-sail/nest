@@ -223,33 +223,33 @@ input UsrSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找用户总数"
   findCountUsr(search: UsrSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找用户列表"
   findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput!]): [UsrModel!]!
-  "获取字段对应的名称"
+  "获取用户字段注释"
   getFieldCommentsUsr: UsrFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个用户"
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
-  "根据id查找一条数据"
+  "根据 id 查找用户"
   findByIdUsr(id: UsrId!): UsrModel
-  "查找order_by字段的最大值"
+  "查找 用户 order_by 字段的最大值"
   findLastOrderByUsr: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建用户"
   createUsr(model: UsrInput!, unique_type: UniqueType): UsrId!
-  "根据id修改一条数据"
+  "根据 id 修改用户"
   updateByIdUsr(id: UsrId!, model: UsrInput!): UsrId!
-  "根据 ids 删除数据"
+  "根据 ids 删除用户"
   deleteByIdsUsr(ids: [UsrId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用用户"
   enableByIdsUsr(ids: [UsrId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁用户"
   lockByIdsUsr(ids: [UsrId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原用户"
   revertByIdsUsr(ids: [UsrId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除用户"
   forceDeleteByIdsUsr(ids: [UsrId!]!): Int!
 }
 

@@ -9333,7 +9333,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/phone?id=makephonecall](http://uniapp.dcloud.io/api/system/phone?id=makephonecall)
      */
-    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): void;
+    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): PromiseLike<void>;
     /**
      * 调用扫码界面，扫码成功后返回对应的结果
      *
@@ -9735,7 +9735,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=switchtab](http://uniapp.dcloud.io/api/router?id=switchtab)
      */
-    switchTab(options: UniNamespace.SwitchTabOptions): void;
+    switchTab(options: UniNamespace.SwitchTabOptions): PromiseLike<void>;
     /**
      * 关闭当前页面，返回上一页面或多级页面
      *

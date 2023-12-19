@@ -281,7 +281,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找部门总数
  * @param { DeptSearch } search?
  * @return {Promise<number>}
  */
@@ -694,7 +694,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找部门
+ * 根据 id 查找部门
  * @param {DeptId} id
  */
 export async function findById(
@@ -1125,7 +1125,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改部门
+ * 根据 id 修改部门
  * @param {DeptId} id
  * @param {DeptInput} input
  * @param {({
@@ -1277,7 +1277,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除部门
  * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
@@ -1344,7 +1344,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用部门
  * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1414,7 +1414,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁部门
  * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
