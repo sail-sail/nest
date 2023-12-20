@@ -87,6 +87,9 @@
   
   <view
     un-m="x-2"
+    :style="{
+      marginBottom: (safeAreaInsets?.bottom || 0) + 'px',
+    }"
   >
     <tm-button
       @click="onLogin"
@@ -126,7 +129,10 @@ import {
   lang,
 } from "@/locales/index";
 
-const usrStore = useUsrStore();
+const indexStore = useIndexStore(cfg.pinia);
+const usrStore = useUsrStore(cfg.pinia);
+
+let safeAreaInsets = $ref(indexStore.getSystemInfo().safeAreaInsets);
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
@@ -138,6 +144,7 @@ let model: LoginInput = $ref<LoginInput>({
 });
 
 let redirect_uri = cfg.homePage;
+let redirect_action = "reLaunch";
 
 async function onLogin() {
   if (!formRef) {
@@ -160,10 +167,15 @@ async function onLogin() {
   if (!loginModel.authorization) {
     return;
   }
-  usrStore.authorization = loginModel.authorization;
-  usrStore.username = model.username;
-  usrStore.tenant_id = model.tenant_id;
-  usrStore.lang = model.lang;
+  usrStore.setAuthorization(loginModel.authorization);
+  usrStore.setUsrId(loginModel.usr_id);
+  usrStore.setUsername(model.username);
+  usrStore.setTenantId(model.tenant_id);
+  usrStore.setLang(model.lang);
+  if (redirect_action === "navigateBack") {
+    await uni.navigateBack();
+    return;
+  }
   await uni.reLaunch({
     url: redirect_uri,
   });
@@ -209,6 +221,9 @@ async function initFrame() {
 onLoad(async function(query) {
   if (query?.redirect_uri) {
     redirect_uri = query.redirect_uri;
+  }
+  if (query?.redirect_action) {
+    redirect_action = query.redirect_action;
   }
   await initFrame();
 });
