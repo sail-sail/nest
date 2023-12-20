@@ -303,18 +303,19 @@ export async function gqlQuery(
     throw err;
   }
   const { data: { data, errors } } = rvData;
-  let exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
-  if (!exception) {
-    exception = errors?.[0];
-  }
-  if (exception) {
-    let code = exception.code;
-    if (!code) {
-      code = exception.message;
-    }
-    if (code === "token_empty" || code === "refresh_token_expired") {
+  if (errors && errors.length > 0) {
+    const is_token_expired = errors.some((item: any) => {
+      if (
+        item.code === "token_empty" || item.code === "refresh_token_expired" ||
+        item.message === "token_empty" || item.message === "refresh_token_expired"
+      ) {
+        return true;
+      }
+      return false;
+    });
+    if (is_token_expired) {
       const usrStore = useUsrStore(cfg.pinia);
-      await usrStore.setAuthorization("");
+      usrStore.setAuthorization("");
       if (!config.notLogin) {
         if (await uniLogin()) {
           config = config || { };
