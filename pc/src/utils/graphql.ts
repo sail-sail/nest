@@ -1,3 +1,4 @@
+import cfg from "@/utils/config";
 import { uniqueID, uuid } from "./StringUtil";
 import { ElMessage } from "element-plus";
 
@@ -336,29 +337,29 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     }
   }
   const { data: { data, errors } } = rvData;
-  let exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
-  if (!exception) {
-    exception = errors?.[0];
-  }
-  if (exception) {
-    const code = exception.code || exception.message;
-    const usrStore = useUsrStore();
-    if (code === "refresh_token_expired") {
+  if (errors && errors.length > 0) {
+    const is_token_expired = errors.some((item: any) => {
+      if (
+        item.code === "token_empty" || item.code === "refresh_token_expired" ||
+        item.message === "token_empty" || item.message === "refresh_token_expired"
+      ) {
+        return true;
+      }
+      return false;
+    });
+    if (is_token_expired) {
+      const usrStore = useUsrStore(cfg.pinia);
       usrStore.logout();
       return data;
     }
-    if (code === "token_empty") {
-      usrStore.logout();
-      return data;
-    }
-    if (code === "background_task") {
-      ElMessage.success(exception.message);
+    if (errors[0].code === "background_task" || errors[0].message === "background_task") {
+      ElMessage.success(errors[0].message);
       const background_taskStore = useBackground_taskStore();
       background_taskStore.listDialogVisible = true;
       return data;
     }
   }
-  if (errors && errors.length > 0) {
+  if (errors && errors.length > 0 && (!opt || opt.showErrMsg !== false)) {
     let errMsg = "";
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
