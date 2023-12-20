@@ -40,9 +40,9 @@
 			}
 		},
 		{
-			"path": "pages/index/Login",
+			"path": "pages/esw/card/My",
 			"style": {
-				"navigationBarTitleText": "登录"
+				"navigationBarTitleText": "我的"
 			}
 		},
 		{
@@ -71,7 +71,7 @@
         "selectedIconPath": "static/tarbar/type-active.png"
       },
       {
-        "pagePath": "pages/index/Login",
+        "pagePath": "pages/esw/card/My",
         "text": "我的",
         "iconPath": "static/tarbar/user.png",
         "selectedIconPath": "static/tarbar/user-active.png"
