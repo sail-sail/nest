@@ -290,18 +290,6 @@ export async function bindWxUsr(
       );
     }
   }
-  const wx_usrModel = await validateOptionWxUsr(
-    await findByIdWxUsr(wx_usr_id),
-  );
-  if (wx_usrModel.usr_id != model.id) {
-    await updateByIdWxUsr(
-      wx_usr_id,
-      {
-        usr_id: model.id,
-      },
-    );
-  }
-  const usr_id = model.id;
   
   if (org_id === null) {
     org_id = undefined;
@@ -317,6 +305,20 @@ export async function bindWxUsr(
       org_id = undefined;
     }
   }
+  
+  const wx_usrModel = await validateOptionWxUsr(
+    await findByIdWxUsr(wx_usr_id),
+  );
+  if (wx_usrModel.usr_id != model.id) {
+    await updateByIdWxUsr(
+      wx_usr_id,
+      {
+        usr_id: model.id,
+        org_id,
+      },
+    );
+  }
+  const usr_id = model.id;
   
   const {
     authorization,
