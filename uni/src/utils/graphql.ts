@@ -343,7 +343,11 @@ export async function gqlQuery(
         position: "center",
       });
     }
-    throw new Error(errMsg, { cause: errors });
+    if (errMsg && errMsg.startsWith("Error: ")) {
+      throw new Error(errMsg, { cause: errors });
+    } else {
+      throw errMsg;
+    }
   }
   return data;
 }
