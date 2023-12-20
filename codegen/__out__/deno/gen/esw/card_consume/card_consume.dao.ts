@@ -467,7 +467,7 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
     give_amt: await n("消费赠送金额"),
     balance: await n("消费后余额"),
     give_balance: await n("消费后赠送余额"),
-    integral: await n("消费后积分"),
+    integral: await n("获得积分"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),

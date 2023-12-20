@@ -365,13 +365,6 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 绑定用户
-    usr_id: [
-      {
-        required: true,
-        message: `${ await nsAsync("请选择") } ${ n("绑定用户") }`,
-      },
-    ],
     // 会员等级
     grade: [
       {

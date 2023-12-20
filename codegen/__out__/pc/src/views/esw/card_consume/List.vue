@@ -411,7 +411,7 @@
             </el-table-column>
           </template>
           
-          <!-- 消费后积分 -->
+          <!-- 获得积分 -->
           <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -634,7 +634,7 @@ const props = defineProps<{
   give_amt?: string; // 消费赠送金额
   balance?: string; // 消费后余额
   give_balance?: string; // 消费后赠送余额
-  integral?: string; // 消费后积分
+  integral?: string; // 获得积分
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -833,7 +833,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "消费后积分",
+      label: "获得积分",
       prop: "integral",
       width: 100,
       align: "right",
@@ -1208,7 +1208,7 @@ async function initI18nsEfc() {
     "消费赠送金额",
     "消费后余额",
     "消费后赠送余额",
-    "消费后积分",
+    "获得积分",
     "备注",
     "创建人",
     "创建时间",
