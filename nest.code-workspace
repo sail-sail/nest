@@ -33,6 +33,7 @@
         "source": "./deno/gen/**/*/*.ts",
         "target": "./codegen/template/<basename>"
       }
-    ]
+    ],
+    "diffEditor.wordWrap": "off"
   }
 }
