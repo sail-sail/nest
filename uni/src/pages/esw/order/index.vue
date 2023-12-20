@@ -4,7 +4,7 @@
   un-overflow-hidden
 >
   <view
-    v-if="!inited"
+    v-if="!inited || !payNowInput"
     un-flex="~ [1_0_0] col"
     un-overflow-hidden
   >
@@ -36,7 +36,7 @@
   >
     <tm-form
       ref="formRef"
-      v-model="buyNowInput"
+      v-model="payNowInput"
       :label-width="160"
       un-flex="~ [1_0_0] col"
       un-overflow-auto
@@ -52,7 +52,7 @@
         required
       >
         <CustomInput
-          v-model="buyNowInput.company"
+          v-model="payNowInput.company"
           placeholder="请输入 公司名称"
         ></CustomInput>
       </tm-form-item>
@@ -67,7 +67,7 @@
         required
       >
         <CustomInput
-          v-model="buyNowInput.phone"
+          v-model="payNowInput.phone"
           placeholder="请输入 联系电话"
         ></CustomInput>
       </tm-form-item>
@@ -107,7 +107,7 @@
       >
         <CustomInput
           type="textarea"
-          v-model="buyNowInput.rem"
+          v-model="payNowInput.rem"
           placeholder="请输入 备注"
           auto-height
         ></CustomInput>
@@ -173,6 +173,10 @@ import type {
   PayNowInput,
 } from "@/typings/types";
 
+import {
+  payNow,
+} from "./Api";
+
 const indexStore = useIndexStore(cfg.pinia);
 const usrStore = useUsrStore(cfg.pinia);
 
@@ -188,7 +192,7 @@ let ptModel = $ref<PtModel>();
 
 let cardModel = $ref<CardModel>();
 
-let buyNowInput = $ref<PayNowInput>({ });
+let payNowInput = $ref<PayNowInput>();
 
 async function findOnePtEfc() {
   if (!id) {
@@ -260,7 +264,25 @@ async function onPayNow() {
     return;
   }
   
-  // TODO: 调用支付接口
+  if (!payNowInput) {
+    return;
+  }
+  
+  // 调用支付接口
+  const isSucc = await payNow(payNowInput);
+  if (!isSucc) {
+    await uni.navigateTo({
+      url: "/pages/wx/Bing?redirect_action=navigateBack",
+    });
+    return;
+  }
+  await uni.showModal({
+    content: "支付成功!",
+    showCancel: false,
+  });
+  await uni.navigateBack({
+    delta: 1,
+  });
 }
 
 async function initFrame() {
@@ -277,6 +299,18 @@ async function initFrame() {
 watch(
   () => id,
   async () => {
+    if (!id) {
+      await uni.showModal({
+        title: "错误",
+        content: "产品ID 不能为空!",
+      });
+      return;
+    }
+    payNowInput = {
+      pt_id: id,
+      company: "",
+      phone: "",
+    };
     await initFrame();
   },
 );

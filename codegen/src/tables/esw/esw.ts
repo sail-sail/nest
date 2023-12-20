@@ -22,6 +22,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
+        require: false,
         width: 180,
       },
       {
