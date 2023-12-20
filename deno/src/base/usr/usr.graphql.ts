@@ -23,7 +23,7 @@ defineGraphql(usrResolver, /* GraphQL */`
     tenant_id: String!
     org_id: OrgId
     authorization: String!
-    lang: String
+    lang: String!
   }
   
   input LoginInput {
