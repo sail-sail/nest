@@ -9,7 +9,6 @@ import {
 import {
   findOne as findOneCard,
   updateById as updateByIdCard,
-  validateOption as validateOptionCard,
   validateIsEnabled as validateIsEnabledCard,
 } from "/gen/esw/card/card.dao.ts";
 
