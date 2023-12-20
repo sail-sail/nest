@@ -169,12 +169,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.integral == null)">
           <el-form-item
-            :label="n('消费后积分')"
+            :label="n('获得积分')"
             prop="integral"
           >
             <CustomInputNumber
               v-model="dialogModel.integral"
-              :placeholder="`${ ns('请输入') } ${ n('消费后积分') }`"
+              :placeholder="`${ ns('请输入') } ${ n('获得积分') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -655,7 +655,7 @@ async function onInitI18ns() {
     "消费赠送金额",
     "消费后余额",
     "消费后赠送余额",
-    "消费后积分",
+    "获得积分",
     "备注",
     "创建人",
     "创建时间",

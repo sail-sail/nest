@@ -25,7 +25,7 @@ type CardConsumeModel {
   balance: Decimal!
   "消费后赠送余额"
   give_balance: Decimal!
-  "消费后积分"
+  "获得积分"
   integral: Int!
   "备注"
   rem: String!
@@ -67,7 +67,7 @@ type CardConsumeFieldComment {
   balance: String!
   "消费后赠送余额"
   give_balance: String!
-  "消费后积分"
+  "获得积分"
   integral: String!
   "备注"
   rem: String!
@@ -107,7 +107,7 @@ input CardConsumeInput {
   balance: Decimal
   "消费后赠送余额"
   give_balance: Decimal
-  "消费后积分"
+  "获得积分"
   integral: Int
   "备注"
   rem: String
@@ -149,7 +149,7 @@ input CardConsumeSearch {
   balance: [Decimal!]
   "消费后赠送余额"
   give_balance: [Decimal!]
-  "消费后积分"
+  "获得积分"
   integral: [Int!]
   "备注"
   rem: String
