@@ -379,7 +379,11 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         });
       }
     }
-    throw errMsg;
+    if (errMsg && errMsg.startsWith("Error: ")) {
+      throw new Error(errMsg, { cause: errors });
+    } else {
+      throw errMsg;
+    }
   }
   return data;
 }
