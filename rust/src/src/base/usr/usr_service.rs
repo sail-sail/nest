@@ -77,10 +77,8 @@ pub async fn login(
   if org_id.is_none() {
     if !usr_model.default_org_id.is_empty() {
       org_id = usr_model.default_org_id.into();
-    } else {
-      if !org_ids.is_empty() {
-        org_id = org_ids[0].clone().into();
-      }
+    } else if !org_ids.is_empty() {
+      org_id = org_ids[0].clone().into();
     }
   }
   let org_id = org_id;
@@ -91,8 +89,8 @@ pub async fn login(
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_id.clone(),
-    tenant_id: tenant_id.to_string().into(),
-    org_id: org_id.clone().into(),
+    tenant_id: tenant_id.clone(),
+    org_id: org_id.clone(),
     lang: lang.clone(),
     exp,
     ..Default::default()
