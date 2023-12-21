@@ -14,6 +14,14 @@ import type {
   LangInput,
 } from "#/types";
 
+async function setLblById(
+  model?: LangModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找语言列表
  * @param {LangSearch} search?
@@ -58,11 +66,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllLang;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllLang;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -107,8 +116,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneLang;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -133,8 +141,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountLang;
-  return res;
+  const count = data.findCountLang;
+  return count;
 }
 
 /**
@@ -230,8 +238,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdLang;
-  return res;
+  const model = data.findByIdLang;
+  await setLblById(model);
+  return model;
 }
 
 /**

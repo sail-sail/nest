@@ -19,6 +19,14 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: MenuModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找菜单列表
  * @param {MenuSearch} search?
@@ -70,11 +78,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllMenu;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -126,8 +135,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneMenu;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -177,8 +185,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountMenu;
-  return res;
+  const count = data.findCountMenu;
+  return count;
 }
 
 /**
@@ -281,8 +289,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdMenu;
-  return res;
+  const model = data.findByIdMenu;
+  await setLblById(model);
+  return model;
 }
 
 /**

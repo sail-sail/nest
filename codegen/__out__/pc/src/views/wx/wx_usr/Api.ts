@@ -18,6 +18,14 @@ import type {
   UsrSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: WxUsrModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找微信用户列表
  * @param {WxUsrSearch} search?
@@ -76,11 +84,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxUsr;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxUsr;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -139,8 +148,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxUsr;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -165,8 +173,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxUsr;
-  return res;
+  const count = data.findCountWxUsr;
+  return count;
 }
 
 /**
@@ -276,8 +284,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxUsr;
-  return res;
+  const model = data.findByIdWxUsr;
+  await setLblById(model);
+  return model;
 }
 
 /**
