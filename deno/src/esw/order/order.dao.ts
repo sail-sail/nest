@@ -39,6 +39,7 @@ export async function updateSeqLbl(id: OrderId) {
       {
         lbl,
         lbl_seq,
+        lbl_date_seq: nowDate.format("YYYY-MM-DD"),
       },
     );
     return;
