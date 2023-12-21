@@ -14,6 +14,14 @@ import type {
   WxAppInput,
 } from "#/types";
 
+async function setLblById(
+  model?: WxAppModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找微信小程序列表
  * @param {WxAppSearch} search?
@@ -62,11 +70,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxApp;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxApp;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -115,8 +124,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxApp;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -141,8 +149,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxApp;
-  return res;
+  const count = data.findCountWxApp;
+  return count;
 }
 
 /**
@@ -242,8 +250,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxApp;
-  return res;
+  const model = data.findByIdWxApp;
+  await setLblById(model);
+  return model;
 }
 
 /**
