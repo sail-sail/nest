@@ -13,6 +13,14 @@ import type {
   WxwAppSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: WxwMsgModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找企微消息列表
  * @param {WxwMsgSearch} search?
@@ -54,11 +62,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxwMsg;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxwMsg;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -100,8 +109,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxwMsg;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -126,8 +134,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxwMsg;
-  return res;
+  const count = data.findCountWxwMsg;
+  return count;
 }
 
 /**
@@ -164,8 +172,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxwMsg;
-  return res;
+  const model = data.findByIdWxwMsg;
+  await setLblById(model);
+  return model;
 }
 
 /**
