@@ -1291,6 +1291,7 @@ export async function findAll(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -1453,6 +1454,7 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -1651,6 +1653,7 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if ([
       "id",
