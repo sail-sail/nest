@@ -22,7 +22,7 @@ pub struct FieldPermitGenQuery;
 #[Object(rename_args = "snake_case")]
 impl FieldPermitGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找字段权限列表
   async fn find_all_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -43,7 +43,7 @@ impl FieldPermitGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找字段权限总数
   async fn find_count_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -60,7 +60,7 @@ impl FieldPermitGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个字段权限
   async fn find_one_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -79,7 +79,7 @@ impl FieldPermitGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找字段权限
   async fn find_by_id_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -96,7 +96,7 @@ impl FieldPermitGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取字段权限字段注释
   async fn get_field_comments_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -118,7 +118,7 @@ pub struct FieldPermitGenMutation;
 #[Object(rename_args = "snake_case")]
 impl FieldPermitGenMutation {
   
-  /// 创建数据
+  /// 创建字段权限
   async fn create_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -141,7 +141,7 @@ impl FieldPermitGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改字段权限
   async fn update_by_id_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -161,7 +161,7 @@ impl FieldPermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除字段权限
   async fn delete_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -179,7 +179,7 @@ impl FieldPermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原字段权限
   async fn revert_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -197,7 +197,7 @@ impl FieldPermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除字段权限
   async fn force_delete_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
