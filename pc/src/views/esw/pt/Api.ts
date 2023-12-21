@@ -6,6 +6,8 @@ import type {
   PtId,
 } from "@/typings/ids";
 
+import Decimal from "decimal.js-light";
+
 import type {
   Query,
   Mutation,
@@ -17,6 +19,24 @@ import type {
 import type {
   PtTypeSearch,
 } from "#/types";
+
+async function setLblById(
+  model?: PtModel,
+) {
+  if (!model) {
+    return;
+  }
+  
+  // 价格
+  if (model.price != null) {
+    model.price = new Decimal(model.price);
+  }
+  
+  // 原价
+  if (model.original_price != null) {
+    model.original_price = new Decimal(model.original_price);
+  }
+}
 
 /**
  * 根据搜索条件查找产品列表
@@ -75,11 +95,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllPt;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllPt;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -137,8 +158,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOnePt;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -163,8 +183,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountPt;
-  return res;
+  const count = data.findCountPt;
+  return count;
 }
 
 /**
@@ -273,8 +293,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdPt;
-  return res;
+  const model = data.findByIdPt;
+  await setLblById(model);
+  return model;
 }
 
 /**

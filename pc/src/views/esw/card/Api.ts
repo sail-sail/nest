@@ -6,6 +6,8 @@ import type {
   CardId,
 } from "@/typings/ids";
 
+import Decimal from "decimal.js-light";
+
 import type {
   Query,
   Mutation,
@@ -17,6 +19,29 @@ import type {
 import type {
   UsrSearch,
 } from "#/types";
+
+async function setLblById(
+  model?: CardModel,
+) {
+  if (!model) {
+    return;
+  }
+  
+  // 充值余额
+  if (model.balance != null) {
+    model.balance = new Decimal(model.balance);
+  }
+  
+  // 赠送余额
+  if (model.give_balance != null) {
+    model.give_balance = new Decimal(model.give_balance);
+  }
+  
+  // 累计消费
+  if (model.growth_amt != null) {
+    model.growth_amt = new Decimal(model.growth_amt);
+  }
+}
 
 /**
  * 根据搜索条件查找会员卡列表
@@ -74,11 +99,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllCard;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllCard;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -135,8 +161,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneCard;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -161,8 +186,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountCard;
-  return res;
+  const count = data.findCountCard;
+  return count;
 }
 
 /**
@@ -270,8 +295,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdCard;
-  return res;
+  const model = data.findByIdCard;
+  await setLblById(model);
+  return model;
 }
 
 /**
