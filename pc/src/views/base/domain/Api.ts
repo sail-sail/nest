@@ -14,6 +14,14 @@ import type {
   DomainInput,
 } from "#/types";
 
+async function setLblById(
+  model?: DomainModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找域名列表
  * @param {DomainSearch} search?
@@ -62,11 +70,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDomain;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDomain;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -115,8 +124,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDomain;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -141,8 +149,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDomain;
-  return res;
+  const count = data.findCountDomain;
+  return count;
 }
 
 /**
@@ -242,8 +250,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDomain;
-  return res;
+  const model = data.findByIdDomain;
+  await setLblById(model);
+  return model;
 }
 
 /**
