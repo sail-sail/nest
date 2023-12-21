@@ -26,7 +26,7 @@ pub struct DeptGenQuery;
 #[Object(rename_args = "snake_case")]
 impl DeptGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找部门列表
   async fn find_all_dept(
     &self,
     ctx: &Context<'_>,
@@ -47,7 +47,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找部门总数
   async fn find_count_dept(
     &self,
     ctx: &Context<'_>,
@@ -64,7 +64,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个部门
   async fn find_one_dept(
     &self,
     ctx: &Context<'_>,
@@ -83,7 +83,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找部门
   async fn find_by_id_dept(
     &self,
     ctx: &Context<'_>,
@@ -100,7 +100,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找部门是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dept(
     &self,
@@ -118,7 +118,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找部门是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_dept(
@@ -137,7 +137,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取部门字段注释
   async fn get_field_comments_dept(
     &self,
     ctx: &Context<'_>,
@@ -151,7 +151,7 @@ impl DeptGenQuery {
       }).await
   }
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 部门 order_by 字段的最大值
   async fn find_last_order_by_dept(
     &self,
     ctx: &Context<'_>,
@@ -174,7 +174,7 @@ pub struct DeptGenMutation;
 #[Object(rename_args = "snake_case")]
 impl DeptGenMutation {
   
-  /// 创建数据
+  /// 创建部门
   async fn create_dept(
     &self,
     ctx: &Context<'_>,
@@ -197,7 +197,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据id修改租户id
+  /// 部门根据id修改租户id
   async fn update_tenant_by_id_dept(
     &self,
     ctx: &Context<'_>,
@@ -217,7 +217,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据id修改部门id
+  /// 部门根据id修改组织id
   async fn update_org_by_id_dept(
     &self,
     ctx: &Context<'_>,
@@ -237,7 +237,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改部门
   async fn update_by_id_dept(
     &self,
     ctx: &Context<'_>,
@@ -257,7 +257,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除部门
   async fn delete_by_ids_dept(
     &self,
     ctx: &Context<'_>,
@@ -275,7 +275,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用部门
   async fn enable_by_ids_dept(
     &self,
     ctx: &Context<'_>,
@@ -315,7 +315,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原部门
   async fn revert_by_ids_dept(
     &self,
     ctx: &Context<'_>,
@@ -333,7 +333,7 @@ impl DeptGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除部门
   async fn force_delete_by_ids_dept(
     &self,
     ctx: &Context<'_>,

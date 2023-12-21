@@ -7,7 +7,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::permit_model::*;
 use super::permit_service;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找按钮权限列表
 pub async fn find_all(
   search: Option<PermitSearch>,
   page: Option<PageInput>,
@@ -25,7 +25,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找按钮权限总数
 pub async fn find_count(
   search: Option<PermitSearch>,
   options: Option<Options>,
@@ -39,7 +39,7 @@ pub async fn find_count(
   Ok(num)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个按钮权限
 pub async fn find_one(
   search: Option<PermitSearch>,
   sort: Option<Vec<SortInput>>,
@@ -55,7 +55,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找按钮权限
 pub async fn find_by_id(
   id: PermitId,
   options: Option<Options>,
@@ -69,7 +69,7 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建数据
+/// 创建按钮权限
 #[allow(dead_code)]
 pub async fn create(
   input: PermitInput,
@@ -93,7 +93,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改按钮权限
 #[allow(dead_code)]
 pub async fn update_by_id(
   id: PermitId,
@@ -119,7 +119,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除按钮权限
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<PermitId>,
@@ -139,7 +139,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取按钮权限字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<PermitFieldComment> {
@@ -151,7 +151,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原按钮权限
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<PermitId>,
@@ -171,7 +171,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除按钮权限
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<PermitId>,

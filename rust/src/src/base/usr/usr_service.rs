@@ -31,8 +31,6 @@ use super::usr_model::{
 
 use crate::src::base::i18n::i18n_dao::NRoute;
 
-use crate::gen::base::org::org_model::OrgId;
-
 /// 登录, 获得token
 pub async fn login(
   input: LoginInput,

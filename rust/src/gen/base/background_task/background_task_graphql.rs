@@ -24,7 +24,7 @@ pub struct BackgroundTaskGenQuery;
 #[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找后台任务列表
   async fn find_all_background_task(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找后台任务总数
   async fn find_count_background_task(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个后台任务
   async fn find_one_background_task(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找后台任务
   async fn find_by_id_background_task(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取后台任务字段注释
   async fn get_field_comments_background_task(
     &self,
     ctx: &Context<'_>,
@@ -120,7 +120,7 @@ pub struct BackgroundTaskGenMutation;
 #[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenMutation {
   
-  /// 根据id修改租户id
+  /// 后台任务根据id修改租户id
   async fn update_tenant_by_id_background_task(
     &self,
     ctx: &Context<'_>,
@@ -140,7 +140,7 @@ impl BackgroundTaskGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除后台任务
   async fn delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
@@ -158,7 +158,7 @@ impl BackgroundTaskGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原后台任务
   async fn revert_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
@@ -176,7 +176,7 @@ impl BackgroundTaskGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除后台任务
   async fn force_delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,

@@ -24,7 +24,7 @@ pub struct DictbizGenQuery;
 #[Object(rename_args = "snake_case")]
 impl DictbizGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找业务字典列表
   async fn find_all_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找业务字典总数
   async fn find_count_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个业务字典
   async fn find_one_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找业务字典
   async fn find_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找业务字典是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dictbiz(
     &self,
@@ -116,7 +116,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找业务字典是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_dictbiz(
@@ -135,7 +135,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取业务字典字段注释
   async fn get_field_comments_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -149,7 +149,7 @@ impl DictbizGenQuery {
       }).await
   }
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 业务字典 order_by 字段的最大值
   async fn find_last_order_by_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -172,7 +172,7 @@ pub struct DictbizGenMutation;
 #[Object(rename_args = "snake_case")]
 impl DictbizGenMutation {
   
-  /// 创建数据
+  /// 创建业务字典
   async fn create_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -195,7 +195,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据id修改租户id
+  /// 业务字典根据id修改租户id
   async fn update_tenant_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -215,7 +215,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改业务字典
   async fn update_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -235,7 +235,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除业务字典
   async fn delete_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -253,7 +253,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用业务字典
   async fn enable_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -293,7 +293,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原业务字典
   async fn revert_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -311,7 +311,7 @@ impl DictbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除业务字典
   async fn force_delete_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,

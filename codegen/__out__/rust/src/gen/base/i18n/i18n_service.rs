@@ -11,7 +11,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 use super::i18n_model::*;
 use super::i18n_dao;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找国际化列表
 pub async fn find_all(
   search: Option<I18nSearch>,
   page: Option<PageInput>,
@@ -29,7 +29,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找国际化总数
 pub async fn find_count(
   search: Option<I18nSearch>,
   options: Option<Options>,
@@ -43,7 +43,7 @@ pub async fn find_count(
   Ok(res)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个国际化
 pub async fn find_one(
   search: Option<I18nSearch>,
   sort: Option<Vec<SortInput>>,
@@ -59,7 +59,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找国际化
 pub async fn find_by_id(
   id: I18nId,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建国际化
 #[allow(dead_code)]
 pub async fn create(
   input: I18nInput,
@@ -100,7 +100,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改国际化
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -118,7 +118,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除国际化
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<I18nId>,
@@ -133,7 +133,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取国际化字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<I18nFieldComment> {
@@ -145,7 +145,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原国际化
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<I18nId>,
@@ -160,7 +160,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除国际化
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<I18nId>,
