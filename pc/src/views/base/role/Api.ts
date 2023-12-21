@@ -34,6 +34,15 @@ import {
   getHomeUrlMap,
 } from "./Api2";
 
+async function setLblById(
+  model?: RoleModel,
+) {
+  if (!model) {
+    return;
+  }
+  (model as any).home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
+}
+
 /**
  * 根据搜索条件查找角色列表
  * @param {RoleSearch} search?
@@ -86,13 +95,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllRole;
-  const homeUrlMap = await getHomeUrlMap();
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
-    (item as any).home_url_lbl = homeUrlMap.find((item2) => item2.id === item.home_url)?.lbl || item.home_url;
+  const models = data.findAllRole;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -145,8 +153,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneRole;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -171,8 +178,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountRole;
-  return res;
+  const count = data.findCountRole;
+  return count;
 }
 
 /**
@@ -276,8 +283,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdRole;
-  return res;
+  const model = data.findByIdRole;
+  await setLblById(model);
+  return model;
 }
 
 /**

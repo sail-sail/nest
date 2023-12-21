@@ -14,6 +14,14 @@ import type {
   WxPayInput,
 } from "#/types";
 
+async function setLblById(
+  model?: WxPayModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找微信支付列表
  * @param {WxPaySearch} search?
@@ -66,11 +74,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxPay;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxPay;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -123,8 +132,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxPay;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -149,8 +157,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxPay;
-  return res;
+  const count = data.findCountWxPay;
+  return count;
 }
 
 /**
@@ -254,8 +262,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxPay;
-  return res;
+  const model = data.findByIdWxPay;
+  await setLblById(model);
+  return model;
 }
 
 /**

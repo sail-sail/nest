@@ -23,6 +23,14 @@ import {
   findTree as findDeptTree,
 } from "@/views/base/dept/Api";
 
+async function setLblById(
+  model?: DeptModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找部门列表
  * @param {DeptSearch} search?
@@ -72,11 +80,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDept;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDept;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -126,8 +135,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDept;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -177,8 +185,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDept;
-  return res;
+  const count = data.findCountDept;
+  return count;
 }
 
 /**
@@ -279,8 +287,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDept;
-  return res;
+  const model = data.findByIdDept;
+  await setLblById(model);
+  return model;
 }
 
 /**

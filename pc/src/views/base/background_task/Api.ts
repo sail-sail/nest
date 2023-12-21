@@ -9,6 +9,14 @@ import type {
   BackgroundTaskSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: BackgroundTaskModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找后台任务列表
  * @param {BackgroundTaskSearch} search?
@@ -59,11 +67,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllBackgroundTask;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllBackgroundTask;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -114,8 +123,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneBackgroundTask;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -140,8 +148,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountBackgroundTask;
-  return res;
+  const count = data.findCountBackgroundTask;
+  return count;
 }
 
 /**
@@ -187,8 +195,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdBackgroundTask;
-  return res;
+  const model = data.findByIdBackgroundTask;
+  await setLblById(model);
+  return model;
 }
 
 /**

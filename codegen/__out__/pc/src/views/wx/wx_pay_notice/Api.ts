@@ -9,6 +9,14 @@ import type {
   WxPayNoticeSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: WxPayNoticeModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找微信支付通知列表
  * @param {WxPayNoticeSearch} search?
@@ -70,11 +78,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxPayNotice;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxPayNotice;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -136,8 +145,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxPayNotice;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -162,8 +170,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxPayNotice;
-  return res;
+  const count = data.findCountWxPayNotice;
+  return count;
 }
 
 /**
@@ -220,8 +228,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxPayNotice;
-  return res;
+  const model = data.findByIdWxPayNotice;
+  await setLblById(model);
+  return model;
 }
 
 /**
