@@ -380,7 +380,7 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 消费金额
+    // 消费充值金额
     if (model.amt != null) {
       model.amt = new Decimal(model.amt);
     }
@@ -463,7 +463,7 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
     card_id_lbl: await n("卡号"),
     usr_id: await n("用户"),
     usr_id_lbl: await n("用户"),
-    amt: await n("消费金额"),
+    amt: await n("消费充值金额"),
     give_amt: await n("消费赠送金额"),
     integral: await n("获得积分"),
     balance: await n("消费后余额"),
