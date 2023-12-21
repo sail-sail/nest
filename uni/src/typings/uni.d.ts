@@ -9741,7 +9741,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateback](http://uniapp.dcloud.io/api/router?id=navigateback)
      */
-    navigateBack(options?: UniNamespace.NavigateBackOptions): void;
+    navigateBack(options?: UniNamespace.NavigateBackOptions): PromiseLike<void>;
     /**
      * 预加载页面
      *
