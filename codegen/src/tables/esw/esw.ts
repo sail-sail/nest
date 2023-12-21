@@ -10,7 +10,7 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "seq_lbl",
+        COLUMN_NAME: "lbl_seq",
         onlyCodegenDeno: true,
       },
       {
@@ -393,11 +393,11 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "seq_lbl",
+        COLUMN_NAME: "lbl_seq",
         onlyCodegenDeno: true,
       },
       {
-        COLUMN_NAME: "date_lbl",
+        COLUMN_NAME: "lbl_date_seq",
         onlyCodegenDeno: true,
       },
       {

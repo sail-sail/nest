@@ -20,38 +20,38 @@ export async function updateSeqLbl(id: OrderId) {
     undefined,
     [
       {
-        prop: "date_lbl",
+        prop: "lbl_date_seq",
         order: SortOrderEnum.Desc,
       },
       {
-        prop: "seq_lbl",
+        prop: "lbl_seq",
         order: SortOrderEnum.Desc,
       },
     ],
   );
   const nowDate = now.startOf("day");
-  if (orderModel && dayjs(orderModel.date_lbl).isSame(nowDate)) {
+  if (orderModel && dayjs(orderModel.lbl_date_seq).isSame(nowDate)) {
     // 当天已有订单
-    const seq_lbl = orderModel.seq_lbl + 1;
-    const lbl = "DD" + nowDate.format("YYYYMMDD") + seq_lbl.toString().padStart(3, "0");
+    const lbl_seq = orderModel.lbl_seq + 1;
+    const lbl = "DD" + nowDate.format("YYYYMMDD") + lbl_seq.toString().padStart(3, "0");
     await updateByIdOrder(
       id,
       {
         lbl,
-        seq_lbl,
+        lbl_seq,
       },
     );
     return;
   }
   // 当天无订单
-  const seq_lbl = 1;
-  const lbl = "DD" + nowDate.format("YYYYMMDD") + seq_lbl.toString().padStart(3, "0");
+  const lbl_seq = 1;
+  const lbl = "DD" + nowDate.format("YYYYMMDD") + lbl_seq.toString().padStart(3, "0");
   await updateByIdOrder(
     id,
     {
       lbl,
-      seq_lbl,
-      date_lbl: nowDate.format("YYYY-MM-DD"),
+      lbl_seq,
+      lbl_date_seq: nowDate.format("YYYY-MM-DD"),
     },
   );
 }

@@ -406,7 +406,7 @@ export async function uniLogin() {
   // #ifdef H5
   const indexStore = useIndexStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
-  if (userAgent.isWxwork || userAgent.isWechat) {
+  if (false && userAgent.isWxwork || userAgent.isWechat) {
     const url = new URL(location.href);
     const code = url.searchParams.get("code");
     if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
@@ -416,7 +416,10 @@ export async function uniLogin() {
       const {
         appid,
         agentid,
-      } = await wxwGetAppid();
+      } = {
+        appid: "",
+        agentid: "",
+      };
       if (appid && agentid) {
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
           encodeURIComponent(appid)

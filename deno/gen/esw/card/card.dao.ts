@@ -127,12 +127,12 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.seq_lbl && search?.seq_lbl?.length > 0) {
-    if (search.seq_lbl[0] != null) {
-      whereQuery += ` and t.seq_lbl >= ${ args.push(search.seq_lbl[0]) }`;
+  if (search?.lbl_seq && search?.lbl_seq?.length > 0) {
+    if (search.lbl_seq[0] != null) {
+      whereQuery += ` and t.lbl_seq >= ${ args.push(search.lbl_seq[0]) }`;
     }
-    if (search.seq_lbl[1] != null) {
-      whereQuery += ` and t.seq_lbl <= ${ args.push(search.seq_lbl[1]) }`;
+    if (search.lbl_seq[1] != null) {
+      whereQuery += ` and t.lbl_seq <= ${ args.push(search.lbl_seq[1]) }`;
     }
   }
   if (search?.lbl !== undefined) {
@@ -983,8 +983,8 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
-  if (input.seq_lbl !== undefined) {
-    sql += `,seq_lbl`;
+  if (input.lbl_seq !== undefined) {
+    sql += `,lbl_seq`;
   }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
@@ -1059,8 +1059,8 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.seq_lbl !== undefined) {
-    sql += `,${ args.push(input.seq_lbl) }`;
+  if (input.lbl_seq !== undefined) {
+    sql += `,${ args.push(input.lbl_seq) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -1251,9 +1251,9 @@ export async function updateById(
     update esw_card set
   `;
   let updateFldNum = 0;
-  if (input.seq_lbl !== undefined) {
-    if (input.seq_lbl != oldModel.seq_lbl) {
-      sql += `seq_lbl = ${ args.push(input.seq_lbl) },`;
+  if (input.lbl_seq !== undefined) {
+    if (input.lbl_seq != oldModel.lbl_seq) {
+      sql += `lbl_seq = ${ args.push(input.lbl_seq) },`;
       updateFldNum++;
     }
   }
