@@ -419,7 +419,7 @@
             </el-table-column>
           </template>
           
-          <!-- 消费金额 -->
+          <!-- 消费充值金额 -->
           <template v-else-if="'amt' === col.prop && (showBuildIn || builtInSearch?.amt == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -683,7 +683,7 @@ const props = defineProps<{
   card_id_lbl?: string; // 卡号
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string; // 用户
-  amt?: string; // 消费金额
+  amt?: string; // 消费充值金额
   give_amt?: string; // 消费赠送金额
   integral?: string; // 获得积分
   balance?: string; // 消费后余额
@@ -854,7 +854,7 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "消费金额",
+      label: "消费充值金额",
       prop: "amt",
       width: 100,
       align: "right",
@@ -1257,7 +1257,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "卡号",
     "用户",
-    "消费金额",
+    "消费充值金额",
     "消费赠送金额",
     "获得积分",
     "消费后余额",

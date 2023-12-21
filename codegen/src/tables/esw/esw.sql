@@ -84,7 +84,7 @@ CREATE TABLE if not exists `esw_card_consume` (
   `transaction_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信支付订单号',
   `card_id` varchar(22) NOT NULL DEFAULT '' COMMENT '卡号',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
-  `amt` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '消费金额',
+  `amt` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '消费充值金额',
   `give_amt` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '消费赠送金额',
   `integral` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '获得积分',
   `balance` decimal(13,2) NOT NULL DEFAULT 0 COMMENT '消费后余额',

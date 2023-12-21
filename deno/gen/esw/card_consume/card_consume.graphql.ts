@@ -17,7 +17,7 @@ type CardConsumeModel {
   usr_id: UsrId!
   "用户"
   usr_id_lbl: String
-  "消费金额"
+  "消费充值金额"
   amt: Decimal!
   "消费赠送金额"
   give_amt: Decimal!
@@ -59,7 +59,7 @@ type CardConsumeFieldComment {
   usr_id: String!
   "用户"
   usr_id_lbl: String!
-  "消费金额"
+  "消费充值金额"
   amt: String!
   "消费赠送金额"
   give_amt: String!
@@ -99,7 +99,7 @@ input CardConsumeInput {
   usr_id: UsrId
   "用户"
   usr_id_lbl: String
-  "消费金额"
+  "消费充值金额"
   amt: Decimal
   "消费赠送金额"
   give_amt: Decimal
@@ -141,7 +141,7 @@ input CardConsumeSearch {
   "用户"
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
-  "消费金额"
+  "消费充值金额"
   amt: [Decimal!]
   "消费赠送金额"
   give_amt: [Decimal!]

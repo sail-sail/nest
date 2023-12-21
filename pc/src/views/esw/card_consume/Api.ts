@@ -26,7 +26,7 @@ async function setLblById(
     return;
   }
   
-  // 消费金额
+  // 消费充值金额
   if (model.amt != null) {
     model.amt = new Decimal(model.amt);
   }

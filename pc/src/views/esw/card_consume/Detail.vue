@@ -109,14 +109,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.amt == null)">
           <el-form-item
-            :label="n('消费金额')"
+            :label="n('消费充值金额')"
             prop="amt"
           >
             <CustomInputNumber
               v-model="dialogModel.amt"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费金额') }`"
+              :placeholder="`${ ns('请输入') } ${ n('消费充值金额') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -651,7 +651,7 @@ async function onInitI18ns() {
   const codes: string[] = [
     "卡号",
     "用户",
-    "消费金额",
+    "消费充值金额",
     "消费赠送金额",
     "获得积分",
     "消费后余额",
