@@ -37,6 +37,27 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   modelNameTree = Table_Up + "ModelTree";
 }
 #><#
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  if (!column_type) {
+    continue;
+  }
+  if (!column_type.startsWith("decimal")) {
+    continue;
+  }
+  hasDecimal = true;
+}
+#><#
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
@@ -46,7 +67,13 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 }
 #>import type {
   <#=Table_Up#>Id,
-} from "@/typings/ids";
+} from "@/typings/ids";<#
+if (hasDecimal) {
+#>
+
+import Decimal from "decimal.js-light";<#
+}
+#>
 
 import type {
   Query,
@@ -187,6 +214,49 @@ import {
 }
 #>
 
+async function setLblById(
+  model?: <#=modelName#>,
+) {
+  if (!model) {
+    return;
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_sys") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "is_hidden") continue;
+    const data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    let formatter = column.formatter;
+    if (!formatter) {
+      if (data_type === "json") {
+        formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
+      }
+    }
+    const column_type = column.COLUMN_TYPE;
+  #><#
+    if (formatter) {
+  #>
+  <#=formatter#><#
+    }
+  #><#
+    if (column_type && column_type.startsWith("decimal")) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    model.<#=column_name#> = new Decimal(model.<#=column_name#>);
+  }<#
+    }
+  #><#
+  }
+  #>
+}
+
 /**
  * 根据搜索条件查找<#=table_comment#>列表
  * @param {<#=searchName#>} search?
@@ -319,31 +389,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Table_Up2#>;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const data_type = column.DATA_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let formatter = column.formatter;
-    if (!formatter) {
-      if (data_type === "json") {
-        formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
-      }
-    }
-    if (formatter) {
-  #>
-    <#=formatter#><#
-    }
-  #><#
+  const models = data.findAll<#=Table_Up2#>;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  #>
-  }
-  return res;
+  return models;
 }
 
 /**
@@ -476,28 +527,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOne<#=Table_Up2#>;
-  if (model) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      const data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let formatter = column.formatter;
-      if (!formatter) {
-        if (data_type === "json") {
-          formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
-        }
-      }
-      if (formatter) {
-    #>
-      <#=formatter#><#
-      }
-    #><#
-    }
-    #>
-  }
+  await setLblById(model);
   return model;
 }<#
 if (list_tree === true) {
@@ -551,8 +581,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCount<#=Table_Up2#>;
-  return res;
+  const count = data.findCount<#=Table_Up2#>;
+  return count;
 }<#
 if (hasSummary) {
 #>
@@ -786,22 +816,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findById<#=Table_Up2#>;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    let data_type = column.DATA_TYPE;
-    if (data_type === "json") {
-  #>
-  if (res?.<#=column_name#>) {
-    res.<#=column_name#> = JSON.stringify(res.<#=column_name#>);
-  }<#
-    }
-  }
-  #>
-  return res;
+  const model = data.findById<#=Table_Up2#>;
+  await setLblById(model);
+  return model;
 }<#
 if (opts.noDelete !== true) {
 #>

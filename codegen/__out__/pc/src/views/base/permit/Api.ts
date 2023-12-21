@@ -22,6 +22,14 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: PermitModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找按钮权限列表
  * @param {PermitSearch} search?
@@ -65,11 +73,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllPermit;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -113,8 +122,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOnePermit;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -139,8 +147,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountPermit;
-  return res;
+  const count = data.findCountPermit;
+  return count;
 }
 
 /**
@@ -235,8 +243,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdPermit;
-  return res;
+  const model = data.findByIdPermit;
+  await setLblById(model);
+  return model;
 }
 
 /**
