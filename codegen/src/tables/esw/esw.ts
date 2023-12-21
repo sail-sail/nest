@@ -22,7 +22,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
-        require: false,
         width: 180,
       },
       {
@@ -61,7 +60,7 @@ export default defineConfig({
         sortable: true,
       },
       {
-        COLUMN_NAME: "is_default",
+        COLUMN_NAME: "is_default_card",
       },
       {
         COLUMN_NAME: "is_locked",

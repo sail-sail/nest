@@ -49,8 +49,8 @@ export async function findAll(
           give_balance
           integral
           growth_amt
-          is_default
-          is_default_lbl
+          is_default_card
+          is_default_card_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -110,8 +110,8 @@ export async function findOne(
           give_balance
           integral
           growth_amt
-          is_default
-          is_default_lbl
+          is_default_card
+          is_default_card_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -248,8 +248,8 @@ export async function findById(
           give_balance
           integral
           growth_amt
-          is_default
-          is_default_lbl
+          is_default_card
+          is_default_card_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -296,31 +296,6 @@ export async function deleteByIds(
     },
   }, opt);
   const res = data.deleteByIdsCard;
-  return res;
-}
-
-/**
- * 根据 id 设置默认会员卡
- * @param {CardId} id
- * @param {GqlOpt} opt?
- */
-export async function defaultById(
-  id: CardId,
-  opt?: GqlOpt,
-) {
-  const data: {
-    defaultByIdCard: Mutation["defaultByIdCard"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($id: CardId!) {
-        defaultByIdCard(id: $id)
-      }
-    `,
-    variables: {
-      id,
-    },
-  }, opt);
-  const res = data.defaultByIdCard;
   return res;
 }
 
@@ -501,10 +476,17 @@ export function useDownloadImportTemplate(routePath: string) {
             balance
             give_balance
             integral
+            is_default_card_lbl
             rem
           }
           findAllUsr {
             id
+            lbl
+          }
+          getDict(codes: [
+            "is_default",
+          ]) {
+            code
             lbl
           }
           getDictbiz(codes: [
@@ -567,8 +549,8 @@ export function useExportExcel(routePath: string) {
             give_balance
             integral
             growth_amt
-            is_default
-            is_default_lbl
+            is_default_card
+            is_default_card_lbl
             is_locked
             is_locked_lbl
             is_enabled
@@ -593,7 +575,7 @@ export function useExportExcel(routePath: string) {
             give_balance
             integral
             growth_amt
-            is_default_lbl
+            is_default_card_lbl
             is_locked_lbl
             is_enabled_lbl
             rem

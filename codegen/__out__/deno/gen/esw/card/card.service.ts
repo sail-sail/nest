@@ -178,18 +178,6 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 id 设置默认会员卡
- * @param {CardId} id
- * @return {Promise<number>}
- */
-export async function defaultById(
-  id: CardId,
-): Promise<number> {
-  const data = await cardDao.defaultById(id);
-  return data;
-}
-
-/**
  * 根据 ids 启用或者禁用会员卡
  * @param {CardId[]} ids
  * @param {0 | 1} is_locked

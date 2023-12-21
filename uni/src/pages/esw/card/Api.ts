@@ -33,8 +33,7 @@ export async function findOne(
           give_balance
           integral
           growth_amt
-          is_default
-          is_default_lbl
+          is_default_card
         }
       }
     `,
@@ -78,8 +77,7 @@ export async function findAll(
           give_balance
           integral
           growth_amt
-          is_default
-          is_default_lbl
+          is_default_card
         }
       }
     `,

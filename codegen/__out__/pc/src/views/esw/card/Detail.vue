@@ -202,6 +202,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_default_card == null)">
+          <el-form-item
+            :label="n('默认')"
+            prop="is_default_card"
+          >
+            <DictSelect
+              :set="dialogModel.is_default_card = dialogModel.is_default_card ?? undefined"
+              v-model="dialogModel.is_default_card"
+              code="is_default"
+              :placeholder="`${ ns('请选择') } ${ n('默认') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -365,6 +380,13 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 绑定用户
+    usr_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("绑定用户") }`,
+      },
+    ],
     // 会员等级
     grade: [
       {
@@ -394,6 +416,13 @@ watchEffect(async () => {
         type: "string",
         max: 22,
         message: `${ n("电话") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+      },
+    ],
+    // 默认
+    is_default_card: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("默认") }`,
       },
     ],
   };
@@ -428,7 +457,8 @@ async function getDefaultInput() {
     give_balance: "0.00",
     integral: 0,
     growth_amt: "0.00",
-    is_locked: 0,
+    is_default_card: 1,
+    is_locked: 1,
     is_enabled: 1,
   };
   return defaultInput;
@@ -521,8 +551,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_default: undefined,
-        is_default_lbl: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
       };
@@ -723,7 +751,7 @@ watch(
     inited,
     dialogModel.usr_id,
     dialogModel.grade,
-    dialogModel.is_default,
+    dialogModel.is_default_card,
   ],
   () => {
     if (!inited) {
@@ -735,8 +763,8 @@ watch(
     if (!dialogModel.grade) {
       dialogModel.grade_lbl = "";
     }
-    if (!dialogModel.is_default) {
-      dialogModel.is_default_lbl = "";
+    if (!dialogModel.is_default_card) {
+      dialogModel.is_default_card_lbl = "";
     }
   },
 );
