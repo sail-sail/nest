@@ -28,8 +28,12 @@ export async function bindWxUsr(
     query: /* GraphQL */ `
       mutation($input: LoginInput!) {
         bindWxUsr(input: $input) {
-          authorization
+          usr_id
+          username
+          tenant_id
           org_id
+          authorization
+          lang
         }
       }
     `,
