@@ -31,6 +31,10 @@ import {
 
 import { Decimal } from "decimal.js";
 
+import {
+  updateSeqLbl as updateSeqLblOrder,
+} from "/src/esw/order/order.dao.ts";
+
 /** 立即支付 */
 export async function payNow(
   input: PayNowInput,
@@ -77,8 +81,8 @@ export async function payNow(
   const growth_amt = cardModel.growth_amt.add(price);
   
   if (balance.gte(price)) {
+    amt = price;
     balance = balance.sub(price);
-    amt = balance;
   } else {
     amt = balance;
     give_balance = balance.add(give_balance).sub(price);
@@ -96,7 +100,7 @@ export async function payNow(
     },
   );
   
-  await createOrder({
+  const order_id = await createOrder({
     usr_id,
     card_id: cardModel.id,
     status: OrderStatus.InProgress,
@@ -111,6 +115,7 @@ export async function payNow(
     balance,
     give_balance,
   });
+  await updateSeqLblOrder(order_id);
   
   // 会员卡消费记录
   await createCardConsume({

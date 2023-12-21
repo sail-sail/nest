@@ -91,9 +91,9 @@ export async function findAll(
           type_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           is_locked
           is_locked_lbl
           is_enabled
@@ -157,9 +157,9 @@ export async function findOne(
           type_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           is_locked
           is_locked_lbl
           is_enabled
@@ -298,9 +298,9 @@ export async function findById(
           type_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           is_locked
           is_locked_lbl
           is_enabled
@@ -648,9 +648,9 @@ export function useExportExcel(routePath: string) {
             type_lbl
             amt
             give_amt
+            integral
             balance
             give_balance
-            integral
             is_locked
             is_locked_lbl
             is_enabled
@@ -676,9 +676,9 @@ export function useExportExcel(routePath: string) {
             type_lbl
             amt
             give_amt
+            integral
             balance
             give_balance
-            integral
             is_locked_lbl
             is_enabled_lbl
             rem
