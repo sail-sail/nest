@@ -20,7 +20,7 @@ defineGraphql(usrResolver, /* GraphQL */`
   type LoginModel {
     usr_id: UsrId!
     username: String!
-    tenant_id: String!
+    tenant_id: TenantId!
     org_id: OrgId
     authorization: String!
     lang: String!
