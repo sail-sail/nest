@@ -130,20 +130,20 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.seq_lbl && search?.seq_lbl?.length > 0) {
-    if (search.seq_lbl[0] != null) {
-      whereQuery += ` and t.seq_lbl >= ${ args.push(search.seq_lbl[0]) }`;
+  if (search?.lbl_seq && search?.lbl_seq?.length > 0) {
+    if (search.lbl_seq[0] != null) {
+      whereQuery += ` and t.lbl_seq >= ${ args.push(search.lbl_seq[0]) }`;
     }
-    if (search.seq_lbl[1] != null) {
-      whereQuery += ` and t.seq_lbl <= ${ args.push(search.seq_lbl[1]) }`;
+    if (search.lbl_seq[1] != null) {
+      whereQuery += ` and t.lbl_seq <= ${ args.push(search.lbl_seq[1]) }`;
     }
   }
-  if (search?.date_lbl && search?.date_lbl?.length > 0) {
-    if (search.date_lbl[0] != null) {
-      whereQuery += ` and t.date_lbl >= ${ args.push(search.date_lbl[0]) }`;
+  if (search?.lbl_date_seq && search?.lbl_date_seq?.length > 0) {
+    if (search.lbl_date_seq[0] != null) {
+      whereQuery += ` and t.lbl_date_seq >= ${ args.push(search.lbl_date_seq[0]) }`;
     }
-    if (search.date_lbl[1] != null) {
-      whereQuery += ` and t.date_lbl <= ${ args.push(search.date_lbl[1]) }`;
+    if (search.lbl_date_seq[1] != null) {
+      whereQuery += ` and t.lbl_date_seq <= ${ args.push(search.lbl_date_seq[1]) }`;
     }
   }
   if (search?.lbl !== undefined) {
@@ -473,18 +473,6 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 订单号-日期
-    if (model.date_lbl) {
-      const date_lbl = dayjs(model.date_lbl);
-      if (isNaN(date_lbl.toDate().getTime())) {
-        model.date_lbl_lbl = (model.date_lbl || "").toString();
-      } else {
-        model.date_lbl_lbl = date_lbl.format("YYYY-MM-DD");
-      }
-    } else {
-      model.date_lbl_lbl = "";
-    }
-    
     // 订单状态
     let status_lbl = model.status as string;
     if (!isEmpty(model.status)) {
@@ -582,24 +570,6 @@ export async function findAll(
 export async function setIdByLbl(
   input: OrderInput,
 ) {
-  // 订单号-日期
-  if (!input.date_lbl && input.date_lbl_lbl) {
-    const date_lbl_lbl = dayjs(input.date_lbl_lbl);
-    if (date_lbl_lbl.isValid()) {
-      input.date_lbl = date_lbl_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.date_lbl } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.date_lbl) {
-    const date_lbl = dayjs(input.date_lbl);
-    if (!date_lbl.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.date_lbl } ${ await ns("日期格式错误") }`;
-    }
-    input.date_lbl = dayjs(input.date_lbl).format("YYYY-MM-DD HH:mm:ss");
-  }
   
   const [
     is_lockedDict, // 锁定
@@ -616,12 +586,6 @@ export async function setIdByLbl(
     "order_status",
     "order_type",
   ]);
-  
-  // 订单号-日期
-  if (isNotEmpty(input.date_lbl_lbl) && input.date_lbl === undefined) {
-    input.date_lbl_lbl = String(input.date_lbl_lbl).trim();
-    input.date_lbl = input.date_lbl_lbl;
-  }
   
   // 订单状态
   if (isNotEmpty(input.status_lbl) && input.status === undefined) {
@@ -1095,11 +1059,11 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
-  if (input.seq_lbl !== undefined) {
-    sql += `,seq_lbl`;
+  if (input.lbl_seq !== undefined) {
+    sql += `,lbl_seq`;
   }
-  if (input.date_lbl !== undefined) {
-    sql += `,date_lbl`;
+  if (input.lbl_date_seq !== undefined) {
+    sql += `,lbl_date_seq`;
   }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
@@ -1183,11 +1147,11 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.seq_lbl !== undefined) {
-    sql += `,${ args.push(input.seq_lbl) }`;
+  if (input.lbl_seq !== undefined) {
+    sql += `,${ args.push(input.lbl_seq) }`;
   }
-  if (input.date_lbl !== undefined) {
-    sql += `,${ args.push(input.date_lbl) }`;
+  if (input.lbl_date_seq !== undefined) {
+    sql += `,${ args.push(input.lbl_date_seq) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -1387,15 +1351,15 @@ export async function updateById(
     update esw_order set
   `;
   let updateFldNum = 0;
-  if (input.seq_lbl !== undefined) {
-    if (input.seq_lbl != oldModel.seq_lbl) {
-      sql += `seq_lbl = ${ args.push(input.seq_lbl) },`;
+  if (input.lbl_seq !== undefined) {
+    if (input.lbl_seq != oldModel.lbl_seq) {
+      sql += `lbl_seq = ${ args.push(input.lbl_seq) },`;
       updateFldNum++;
     }
   }
-  if (input.date_lbl !== undefined) {
-    if (input.date_lbl != oldModel.date_lbl) {
-      sql += `date_lbl = ${ args.push(input.date_lbl) },`;
+  if (input.lbl_date_seq !== undefined) {
+    if (input.lbl_date_seq != oldModel.lbl_date_seq) {
+      sql += `lbl_date_seq = ${ args.push(input.lbl_date_seq) },`;
       updateFldNum++;
     }
   }

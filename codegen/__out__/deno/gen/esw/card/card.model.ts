@@ -26,7 +26,7 @@ export type CardId = Distinct<string, typeof cardId>;
 
 export interface CardSearch extends CardSearchType {
   /** 卡号-序列号 */
-  seq_lbl?: number[];
+  lbl_seq?: number[];
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];
@@ -34,7 +34,7 @@ export interface CardSearch extends CardSearchType {
 
 export interface CardModel extends CardModelType {
   /** 卡号-序列号 */
-  seq_lbl: number;
+  lbl_seq: number;
   create_usr_id: UsrId;
   create_time?: string | null;
   update_usr_id: UsrId;
@@ -45,7 +45,7 @@ export interface CardModel extends CardModelType {
 
 export interface CardInput extends CardInputType {
   /** 卡号-序列号 */
-  seq_lbl?: number;
+  lbl_seq?: number;
   create_usr_id?: UsrId | null;
   create_time?: string | null;
   update_usr_id?: UsrId | null;

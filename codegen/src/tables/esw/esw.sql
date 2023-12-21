@@ -2,7 +2,7 @@
 drop table if exists `esw_card`;
 CREATE TABLE if not exists `esw_card` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `seq_lbl` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '卡号-序列号',
+  `lbl_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '卡号-序列号',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '卡号',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '绑定用户',
   `grade` varchar(10) NOT NULL DEFAULT 'normal' COMMENT '会员等级,dictbiz:card_grade',
@@ -179,8 +179,8 @@ CREATE TABLE if not exists `esw_pt_pt_type` (
 drop table if exists `esw_order`;
 CREATE TABLE if not exists `esw_order` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `seq_lbl` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '订单号-序列号',
-  `date_lbl` date DEFAULT NULL COMMENT '订单号-日期',
+  `lbl_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '订单号-序列号',
+  `lbl_date_seq` date DEFAULT NULL COMMENT '订单号-日期',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '订单号',
   `company` varchar(50) NOT NULL DEFAULT '' COMMENT '公司',
   `phone` varchar(20) NOT NULL DEFAULT '' COMMENT '联系电话',

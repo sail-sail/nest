@@ -26,9 +26,9 @@ export type OrderId = Distinct<string, typeof orderId>;
 
 export interface OrderSearch extends OrderSearchType {
   /** 订单号-序列号 */
-  seq_lbl?: number[];
+  lbl_seq?: number[];
   /** 订单号-日期 */
-  date_lbl?: string[];
+  lbl_date_seq?: string[];
   tenant_id?: string | null;
   org_id?: string | null;
   $extra?: SearchExtra[];
@@ -36,9 +36,9 @@ export interface OrderSearch extends OrderSearchType {
 
 export interface OrderModel extends OrderModelType {
   /** 订单号-序列号 */
-  seq_lbl: number;
+  lbl_seq: number;
   /** 订单号-日期 */
-  date_lbl?: string | null;
+  lbl_date_seq?: string | null;
   create_usr_id: UsrId;
   create_time?: string | null;
   update_usr_id: UsrId;
@@ -49,9 +49,9 @@ export interface OrderModel extends OrderModelType {
 
 export interface OrderInput extends OrderInputType {
   /** 订单号-序列号 */
-  seq_lbl?: number;
+  lbl_seq?: number;
   /** 订单号-日期 */
-  date_lbl?: string | null;
+  lbl_date_seq?: string | null;
   create_usr_id?: UsrId | null;
   create_time?: string | null;
   update_usr_id?: UsrId | null;

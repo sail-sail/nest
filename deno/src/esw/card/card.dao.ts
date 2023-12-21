@@ -16,20 +16,20 @@ export async function updateSeqLbl(id: CardId) {
   const cardModel = await findOneCard(
     undefined,
     {
-      prop: "seq_lbl",
+      prop: "lbl_seq",
       order: SortOrderEnum.Desc,
     },
   );
-  let seq_lbl = 1;
+  let lbl_seq = 1;
   if (cardModel) {
-    seq_lbl = cardModel.seq_lbl + 1;
+    lbl_seq = cardModel.lbl_seq + 1;
   }
-  const lbl = seq_lbl.toString().padStart(6, "0");
+  const lbl = lbl_seq.toString().padStart(6, "0");
   await updateByIdCard(
     id,
     {
       lbl,
-      seq_lbl,
+      lbl_seq,
     },
   );
 }
