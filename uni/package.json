@@ -54,6 +54,7 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-3090820231124001",
     "@vueuse/core": "10.7.0",
     "dayjs": "1.11.10",
+    "decimal.js-light": "2.5.1",
     "graphql": "16.8.1",
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
