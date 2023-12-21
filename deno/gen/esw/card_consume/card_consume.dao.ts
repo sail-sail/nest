@@ -169,6 +169,14 @@ async function getWhereQuery(
       whereQuery += ` and t.give_amt <= ${ args.push(search.give_amt[1]) }`;
     }
   }
+  if (search?.integral && search?.integral?.length > 0) {
+    if (search.integral[0] != null) {
+      whereQuery += ` and t.integral >= ${ args.push(search.integral[0]) }`;
+    }
+    if (search.integral[1] != null) {
+      whereQuery += ` and t.integral <= ${ args.push(search.integral[1]) }`;
+    }
+  }
   if (search?.balance && search?.balance?.length > 0) {
     if (search.balance[0] != null) {
       whereQuery += ` and t.balance >= ${ args.push(search.balance[0]) }`;
@@ -183,14 +191,6 @@ async function getWhereQuery(
     }
     if (search.give_balance[1] != null) {
       whereQuery += ` and t.give_balance <= ${ args.push(search.give_balance[1]) }`;
-    }
-  }
-  if (search?.integral && search?.integral?.length > 0) {
-    if (search.integral[0] != null) {
-      whereQuery += ` and t.integral >= ${ args.push(search.integral[0]) }`;
-    }
-    if (search.integral[1] != null) {
-      whereQuery += ` and t.integral <= ${ args.push(search.integral[1]) }`;
     }
   }
   if (search?.rem !== undefined) {
@@ -465,9 +465,9 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
     usr_id_lbl: await n("用户"),
     amt: await n("消费金额"),
     give_amt: await n("消费赠送金额"),
+    integral: await n("获得积分"),
     balance: await n("消费后余额"),
     give_balance: await n("消费后赠送余额"),
-    integral: await n("获得积分"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -817,14 +817,14 @@ export async function create(
   if (input.give_amt !== undefined) {
     sql += `,give_amt`;
   }
+  if (input.integral !== undefined) {
+    sql += `,integral`;
+  }
   if (input.balance !== undefined) {
     sql += `,balance`;
   }
   if (input.give_balance !== undefined) {
     sql += `,give_balance`;
-  }
-  if (input.integral !== undefined) {
-    sql += `,integral`;
   }
   if (input.rem !== undefined) {
     sql += `,rem`;
@@ -878,14 +878,14 @@ export async function create(
   if (input.give_amt !== undefined) {
     sql += `,${ args.push(input.give_amt) }`;
   }
+  if (input.integral !== undefined) {
+    sql += `,${ args.push(input.integral) }`;
+  }
   if (input.balance !== undefined) {
     sql += `,${ args.push(input.balance) }`;
   }
   if (input.give_balance !== undefined) {
     sql += `,${ args.push(input.give_balance) }`;
-  }
-  if (input.integral !== undefined) {
-    sql += `,${ args.push(input.integral) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -1070,6 +1070,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.integral !== undefined) {
+    if (input.integral != oldModel.integral) {
+      sql += `integral = ${ args.push(input.integral) },`;
+      updateFldNum++;
+    }
+  }
   if (input.balance !== undefined) {
     if (input.balance != oldModel.balance) {
       sql += `balance = ${ args.push(input.balance) },`;
@@ -1079,12 +1085,6 @@ export async function updateById(
   if (input.give_balance !== undefined) {
     if (input.give_balance != oldModel.give_balance) {
       sql += `give_balance = ${ args.push(input.give_balance) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.integral !== undefined) {
-    if (input.integral != oldModel.integral) {
-      sql += `integral = ${ args.push(input.integral) },`;
       updateFldNum++;
     }
   }

@@ -137,6 +137,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.integral == null)">
+          <el-form-item
+            :label="n('获得积分')"
+            prop="integral"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.integral"
+              :placeholder="`${ ns('请输入') } ${ n('获得积分') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.balance == null)">
           <el-form-item
             :label="n('消费后余额')"
@@ -162,19 +175,6 @@
               :max="99999999999.99"
               :precision="2"
               :placeholder="`${ ns('请输入') } ${ n('消费后赠送余额') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.integral == null)">
-          <el-form-item
-            :label="n('获得积分')"
-            prop="integral"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.integral"
-              :placeholder="`${ ns('请输入') } ${ n('获得积分') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -357,9 +357,9 @@ async function getDefaultInput() {
   const defaultInput: CardConsumeInput = {
     amt: "0.00",
     give_amt: "0.00",
+    integral: 0,
     balance: "0.00",
     give_balance: "0.00",
-    integral: 0,
   };
   return defaultInput;
 }
@@ -653,9 +653,9 @@ async function onInitI18ns() {
     "用户",
     "消费金额",
     "消费赠送金额",
+    "获得积分",
     "消费后余额",
     "消费后赠送余额",
-    "获得积分",
     "备注",
     "创建人",
     "创建时间",

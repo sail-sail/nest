@@ -212,11 +212,13 @@ export default defineConfig({
       {
         COLUMN_NAME: "card_id",
         width: 180,
+        search: true,
         fixed: "left",
       },
       {
         COLUMN_NAME: "usr_id",
         width: 180,
+        search: true,
         fixed: "left",
       },
       {
@@ -228,16 +230,16 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "integral",
+        width: 100,
+      },
+      {
         COLUMN_NAME: "balance",
         width: 100,
       },
       {
         COLUMN_NAME: "give_balance",
         width: 120,
-      },
-      {
-        COLUMN_NAME: "integral",
-        width: 100,
       },
       {
         COLUMN_NAME: "rem",
@@ -459,6 +461,12 @@ export default defineConfig({
         noEdit: true,
       },
       {
+        COLUMN_NAME: "integral",
+        width: 100,
+        noAdd: true,
+        noEdit: true,
+      },
+      {
         COLUMN_NAME: "balance",
         width: 120,
         noAdd: true,
@@ -467,12 +475,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "give_balance",
         width: 120,
-        noAdd: true,
-        noEdit: true,
-      },
-      {
-        COLUMN_NAME: "integral",
-        width: 100,
         noAdd: true,
         noEdit: true,
       },

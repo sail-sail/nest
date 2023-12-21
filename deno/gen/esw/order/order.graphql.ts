@@ -59,12 +59,12 @@ type OrderModel {
   amt: Decimal!
   "消费赠送金额"
   give_amt: Decimal!
+  "获得积分"
+  integral: Int!
   "消费后充值余额"
   balance: Decimal!
   "消费后赠送余额"
   give_balance: Decimal!
-  "获得积分"
-  integral: Int!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -125,12 +125,12 @@ type OrderFieldComment {
   amt: String!
   "消费赠送金额"
   give_amt: String!
+  "获得积分"
+  integral: String!
   "消费后充值余额"
   balance: String!
   "消费后赠送余额"
   give_balance: String!
-  "获得积分"
-  integral: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -189,12 +189,12 @@ input OrderInput {
   amt: Decimal
   "消费赠送金额"
   give_amt: Decimal
+  "获得积分"
+  integral: Int
   "消费后充值余额"
   balance: Decimal
   "消费后赠送余额"
   give_balance: Decimal
-  "获得积分"
-  integral: Int
   "锁定"
   is_locked: Int
   "锁定"
@@ -254,12 +254,12 @@ input OrderSearch {
   amt: [Decimal!]
   "消费赠送金额"
   give_amt: [Decimal!]
+  "获得积分"
+  integral: [Int!]
   "消费后充值余额"
   balance: [Decimal!]
   "消费后赠送余额"
   give_balance: [Decimal!]
-  "获得积分"
-  integral: [Int!]
   "锁定"
   is_locked: [Int!]
   "启用"

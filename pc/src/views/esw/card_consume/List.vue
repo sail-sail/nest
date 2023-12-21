@@ -26,6 +26,50 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="showBuildIn || builtInSearch?.card_id == null">
+        <el-form-item
+          label="卡号"
+          prop="card_id"
+        >
+          <CustomSelect
+            :set="search.card_id = search.card_id || [ ]"
+            v-model="search.card_id"
+            :method="getCardList"
+            :options-map="((item: CardModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('卡号') }`"
+            multiple
+            @change="onSearch"
+          ></CustomSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.usr_id == null">
+        <el-form-item
+          label="用户"
+          prop="usr_id"
+        >
+          <CustomSelect
+            :set="search.usr_id = search.usr_id || [ ]"
+            v-model="search.usr_id"
+            :method="getUsrList"
+            :options-map="((item: UsrModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+            multiple
+            @change="onSearch"
+          ></CustomSelect>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -393,6 +437,15 @@
             </el-table-column>
           </template>
           
+          <!-- 获得积分 -->
+          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 消费后余额 -->
           <template v-else-if="'balance' === col.prop && (showBuildIn || builtInSearch?.balance == null)">
             <el-table-column
@@ -404,15 +457,6 @@
           
           <!-- 消费后赠送余额 -->
           <template v-else-if="'give_balance' === col.prop && (showBuildIn || builtInSearch?.give_balance == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 获得积分 -->
-          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,7 +571,14 @@ import {
 import type {
   CardConsumeModel,
   CardConsumeSearch,
+  CardModel,
+  UsrModel,
 } from "#/types";
+
+import {
+  getCardList, // 卡号
+  getUsrList, // 用户
+} from "./Api";
 
 defineOptions({
   name: "会员卡消费记录",
@@ -573,6 +624,8 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
+    card_id: [ ],
+    usr_id: [ ],
   } as CardConsumeSearch;
 }
 
@@ -632,9 +685,9 @@ const props = defineProps<{
   usr_id_lbl?: string; // 用户
   amt?: string; // 消费金额
   give_amt?: string; // 消费赠送金额
+  integral?: string; // 获得积分
   balance?: string; // 消费后余额
   give_balance?: string; // 消费后赠送余额
-  integral?: string; // 获得积分
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -652,9 +705,9 @@ const builtInSearchType: { [key: string]: string } = {
   usr_id_lbl: "string[]",
   amt: "number",
   give_amt: "number",
+  integral: "number",
   balance: "number",
   give_balance: "number",
-  integral: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -817,6 +870,14 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "获得积分",
+      prop: "integral",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "消费后余额",
       prop: "balance",
       width: 100,
@@ -828,14 +889,6 @@ function getTableColumns(): ColumnType[] {
       label: "消费后赠送余额",
       prop: "give_balance",
       width: 120,
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "获得积分",
-      prop: "integral",
-      width: 100,
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1206,9 +1259,9 @@ async function initI18nsEfc() {
     "用户",
     "消费金额",
     "消费赠送金额",
+    "获得积分",
     "消费后余额",
     "消费后赠送余额",
-    "获得积分",
     "备注",
     "创建人",
     "创建时间",

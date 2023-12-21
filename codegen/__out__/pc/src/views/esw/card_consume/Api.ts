@@ -73,9 +73,9 @@ export async function findAll(
           usr_id_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           rem
           create_usr_id
           create_usr_id_lbl
@@ -127,9 +127,9 @@ export async function findOne(
           usr_id_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           rem
           create_usr_id
           create_usr_id_lbl
@@ -200,9 +200,9 @@ export async function findById(
           usr_id_lbl
           amt
           give_amt
+          integral
           balance
           give_balance
-          integral
           rem
           create_usr_id
           create_usr_id_lbl
@@ -413,9 +413,9 @@ export function useDownloadImportTemplate(routePath: string) {
             usr_id_lbl
             amt
             give_amt
+            integral
             balance
             give_balance
-            integral
             rem
           }
           findAllCard {
@@ -475,9 +475,9 @@ export function useExportExcel(routePath: string) {
             usr_id_lbl
             amt
             give_amt
+            integral
             balance
             give_balance
-            integral
             rem
             create_usr_id
             create_usr_id_lbl
@@ -493,9 +493,9 @@ export function useExportExcel(routePath: string) {
             usr_id_lbl
             amt
             give_amt
+            integral
             balance
             give_balance
-            integral
             rem
             create_usr_id_lbl
             create_time_lbl

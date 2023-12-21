@@ -21,12 +21,12 @@ type CardConsumeModel {
   amt: Decimal!
   "消费赠送金额"
   give_amt: Decimal!
+  "获得积分"
+  integral: Int!
   "消费后余额"
   balance: Decimal!
   "消费后赠送余额"
   give_balance: Decimal!
-  "获得积分"
-  integral: Int!
   "备注"
   rem: String!
   "创建人"
@@ -63,12 +63,12 @@ type CardConsumeFieldComment {
   amt: String!
   "消费赠送金额"
   give_amt: String!
+  "获得积分"
+  integral: String!
   "消费后余额"
   balance: String!
   "消费后赠送余额"
   give_balance: String!
-  "获得积分"
-  integral: String!
   "备注"
   rem: String!
   "创建人"
@@ -103,12 +103,12 @@ input CardConsumeInput {
   amt: Decimal
   "消费赠送金额"
   give_amt: Decimal
+  "获得积分"
+  integral: Int
   "消费后余额"
   balance: Decimal
   "消费后赠送余额"
   give_balance: Decimal
-  "获得积分"
-  integral: Int
   "备注"
   rem: String
   "创建人"
@@ -145,12 +145,12 @@ input CardConsumeSearch {
   amt: [Decimal!]
   "消费赠送金额"
   give_amt: [Decimal!]
+  "获得积分"
+  integral: [Int!]
   "消费后余额"
   balance: [Decimal!]
   "消费后赠送余额"
   give_balance: [Decimal!]
-  "获得积分"
-  integral: [Int!]
   "备注"
   rem: String
   rem_like: String

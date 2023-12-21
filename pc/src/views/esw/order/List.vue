@@ -563,6 +563,15 @@
             </el-table-column>
           </template>
           
+          <!-- 获得积分 -->
+          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 消费后充值余额 -->
           <template v-else-if="'balance' === col.prop && (showBuildIn || builtInSearch?.balance == null)">
             <el-table-column
@@ -574,15 +583,6 @@
           
           <!-- 消费后赠送余额 -->
           <template v-else-if="'give_balance' === col.prop && (showBuildIn || builtInSearch?.give_balance == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 获得积分 -->
-          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -860,9 +860,9 @@ const props = defineProps<{
   type?: string|string[]; // 订单类别
   amt?: string; // 消费充值金额
   give_amt?: string; // 消费赠送金额
+  integral?: string; // 获得积分
   balance?: string; // 消费后充值余额
   give_balance?: string; // 消费后赠送余额
-  integral?: string; // 获得积分
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -887,9 +887,9 @@ const builtInSearchType: { [key: string]: string } = {
   type_lbl: "string[]",
   amt: "number",
   give_amt: "number",
+  integral: "number",
   balance: "number",
   give_balance: "number",
-  integral: "number",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -1105,6 +1105,14 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "获得积分",
+      prop: "integral",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "消费后充值余额",
       prop: "balance",
       width: 120,
@@ -1116,14 +1124,6 @@ function getTableColumns(): ColumnType[] {
       label: "消费后赠送余额",
       prop: "give_balance",
       width: 120,
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "获得积分",
-      prop: "integral",
-      width: 100,
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1463,9 +1463,9 @@ async function onImportExcel() {
     [ await nAsync("订单类别") ]: "type_lbl",
     [ await nAsync("消费充值金额") ]: "amt",
     [ await nAsync("消费赠送金额") ]: "give_amt",
+    [ await nAsync("获得积分") ]: "integral",
     [ await nAsync("消费后充值余额") ]: "balance",
     [ await nAsync("消费后赠送余额") ]: "give_balance",
-    [ await nAsync("获得积分") ]: "integral",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1499,9 +1499,9 @@ async function onImportExcel() {
           "type_lbl": "string",
           "amt": "string",
           "give_amt": "string",
+          "integral": "number",
           "balance": "string",
           "give_balance": "string",
-          "integral": "number",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
@@ -1853,9 +1853,9 @@ async function initI18nsEfc() {
     "订单类别",
     "消费充值金额",
     "消费赠送金额",
+    "获得积分",
     "消费后充值余额",
     "消费后赠送余额",
-    "获得积分",
     "锁定",
     "启用",
     "备注",
