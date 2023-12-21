@@ -206,29 +206,6 @@ export async function deleteByIdsCard(
 }
 
 /**
- * 根据 id 设置默认会员卡
- */
-export async function defaultByIdCard(
-  id: CardId,
-): Promise<number> {
-  
-  const {
-    defaultById,
-  } = await import("./card.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/esw/card",
-    "default",
-  );
-  const res = await defaultById(id);
-  return res;
-}
-
-/**
  * 根据 ids 启用或者禁用会员卡
  */
 export async function enableByIdsCard(

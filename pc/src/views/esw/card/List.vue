@@ -555,7 +555,7 @@
           </template>
           
           <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
+          <template v-else-if="'is_default_card_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default_card == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,9 +563,8 @@
               <template #default="{ row }">
                 <CustomSwitch
                   v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_default"
-                  :before-change="() => row.is_default == 0"
-                  @change="onIs_default(row.id)"
+                  v-model="row.is_default_card"
+                  @change="onIs_default_card(row.id, row.is_default_card)"
                 ></CustomSwitch>
               </template>
             </el-table-column>
@@ -715,7 +714,6 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
-  defaultById,
   enableByIds,
   lockByIds,
   useExportExcel,
@@ -840,7 +838,7 @@ const props = defineProps<{
   give_balance?: string; // 赠送余额
   integral?: string; // 积分
   growth_amt?: string; // 累计消费
-  is_default?: string|string[]; // 默认
+  is_default_card?: string|string[]; // 默认
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -862,8 +860,8 @@ const builtInSearchType: { [key: string]: string } = {
   give_balance: "number",
   integral: "number",
   growth_amt: "number",
-  is_default: "number[]",
-  is_default_lbl: "string[]",
+  is_default_card: "number[]",
+  is_default_card_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -1074,8 +1072,8 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "默认",
-      prop: "is_default_lbl",
-      sortBy: "is_default",
+      prop: "is_default_card_lbl",
+      sortBy: "is_default_card",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1422,6 +1420,7 @@ async function onImportExcel() {
     [ await nAsync("充值余额") ]: "balance",
     [ await nAsync("赠送余额") ]: "give_balance",
     [ await nAsync("积分") ]: "integral",
+    [ await nAsync("默认") ]: "is_default_card_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1454,6 +1453,7 @@ async function onImportExcel() {
           "balance": "string",
           "give_balance": "string",
           "integral": "number",
+          "is_default_card_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
@@ -1488,13 +1488,16 @@ async function stopImport() {
 }
 
 /** 默认 */
-async function onIs_default(id: CardId) {
+async function onIs_default_card(id: CardId, is_default_card: 0 | 1) {
   if (isLocked) {
     return;
   }
   const notLoading = true;
-  await defaultById(
+  await updateById(
     id,
+    {
+      is_default_card,
+    },
     {
       notLoading,
     },

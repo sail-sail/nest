@@ -212,11 +212,11 @@ async function getWhereQuery(
       whereQuery += ` and t.growth_amt <= ${ args.push(search.growth_amt[1]) }`;
     }
   }
-  if (search?.is_default && !Array.isArray(search?.is_default)) {
-    search.is_default = [ search.is_default ];
+  if (search?.is_default_card && !Array.isArray(search?.is_default_card)) {
+    search.is_default_card = [ search.is_default_card ];
   }
-  if (search?.is_default && search?.is_default?.length > 0) {
-    whereQuery += ` and t.is_default in ${ args.push(search.is_default) }`;
+  if (search?.is_default_card && search?.is_default_card?.length > 0) {
+    whereQuery += ` and t.is_default_card in ${ args.push(search.is_default_card) }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -415,7 +415,7 @@ export async function findAll(
   );
   
   const [
-    is_defaultDict, // 默认
+    is_default_cardDict, // 默认
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
@@ -460,14 +460,14 @@ export async function findAll(
     }
     
     // 默认
-    let is_default_lbl = model.is_default?.toString() || "";
-    if (model.is_default !== undefined && model.is_default !== null) {
-      const dictItem = is_defaultDict.find((dictItem) => dictItem.val === model.is_default.toString());
+    let is_default_card_lbl = model.is_default_card?.toString() || "";
+    if (model.is_default_card !== undefined && model.is_default_card !== null) {
+      const dictItem = is_default_cardDict.find((dictItem) => dictItem.val === model.is_default_card.toString());
       if (dictItem) {
-        is_default_lbl = dictItem.lbl;
+        is_default_card_lbl = dictItem.lbl;
       }
     }
-    model.is_default_lbl = is_default_lbl;
+    model.is_default_card_lbl = is_default_card_lbl;
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -523,7 +523,7 @@ export async function setIdByLbl(
 ) {
   
   const [
-    is_defaultDict, // 默认
+    is_default_cardDict, // 默认
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
@@ -556,10 +556,10 @@ export async function setIdByLbl(
   }
   
   // 默认
-  if (isNotEmpty(input.is_default_lbl) && input.is_default === undefined) {
-    const val = is_defaultDict.find((itemTmp) => itemTmp.lbl === input.is_default_lbl)?.val;
+  if (isNotEmpty(input.is_default_card_lbl) && input.is_default_card === undefined) {
+    const val = is_default_cardDict.find((itemTmp) => itemTmp.lbl === input.is_default_card_lbl)?.val;
     if (val !== undefined) {
-      input.is_default = Number(val);
+      input.is_default_card = Number(val);
     }
   }
   
@@ -598,8 +598,8 @@ export async function getFieldComments(): Promise<CardFieldComment> {
     give_balance: await n("赠送余额"),
     integral: await n("积分"),
     growth_amt: await n("累计消费"),
-    is_default: await n("默认"),
-    is_default_lbl: await n("默认"),
+    is_default_card: await n("默认"),
+    is_default_card_lbl: await n("默认"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -1013,8 +1013,8 @@ export async function create(
   if (input.growth_amt !== undefined) {
     sql += `,growth_amt`;
   }
-  if (input.is_default !== undefined) {
-    sql += `,is_default`;
+  if (input.is_default_card !== undefined) {
+    sql += `,is_default_card`;
   }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
@@ -1089,8 +1089,8 @@ export async function create(
   if (input.growth_amt !== undefined) {
     sql += `,${ args.push(input.growth_amt) }`;
   }
-  if (input.is_default !== undefined) {
-    sql += `,${ args.push(input.is_default) }`;
+  if (input.is_default_card !== undefined) {
+    sql += `,${ args.push(input.is_default_card) }`;
   }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
@@ -1311,9 +1311,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.is_default !== undefined) {
-    if (input.is_default != oldModel.is_default) {
-      sql += `is_default = ${ args.push(input.is_default) },`;
+  if (input.is_default_card !== undefined) {
+    if (input.is_default_card != oldModel.is_default_card) {
+      sql += `is_default_card = ${ args.push(input.is_default_card) },`;
       updateFldNum++;
     }
   }
@@ -1398,62 +1398,6 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
-  
-  return num;
-}
-
-/**
- * 根据 id 设置默认会员卡
- * @param {CardId} id
- * @return {Promise<number>}
- */
-export async function defaultById(
-  id: CardId,
-  options?: {
-  },
-): Promise<number> {
-  const table = "esw_card";
-  const method = "defaultById";
-  
-  if (!id) {
-    throw new Error("defaultById: id cannot be empty");
-  }
-  
-  {
-    const args = new QueryArgs();
-    let sql = `
-      update
-        esw_card
-      set
-        is_default = 0
-      where
-        is_default = 1
-        and id != ${ args.push(id) }
-    `;
-    await execute(sql, args);
-  }
-  
-  const args = new QueryArgs();
-  let sql = `
-    update
-      esw_card
-    set
-      is_default = 1
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id = ${ args.push(id) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
   
   return num;
 }

@@ -43,9 +43,9 @@ type CardModel {
   "累计消费"
   growth_amt: Decimal!
   "默认"
-  is_default: Int!
+  is_default_card: Int!
   "默认"
-  is_default_lbl: String!
+  is_default_card_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -101,9 +101,9 @@ type CardFieldComment {
   "累计消费"
   growth_amt: String!
   "默认"
-  is_default: String!
+  is_default_card: String!
   "默认"
-  is_default_lbl: String!
+  is_default_card_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -157,9 +157,9 @@ input CardInput {
   "累计消费"
   growth_amt: Decimal
   "默认"
-  is_default: Int
+  is_default_card: Int
   "默认"
-  is_default_lbl: String
+  is_default_card_lbl: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -217,7 +217,7 @@ input CardSearch {
   "累计消费"
   growth_amt: [Decimal!]
   "默认"
-  is_default: [Int!]
+  is_default_card: [Int!]
   "锁定"
   is_locked: [Int!]
   "启用"
@@ -255,8 +255,6 @@ type Mutation {
   updateByIdCard(id: CardId!, model: CardInput!): CardId!
   "根据 ids 删除会员卡"
   deleteByIdsCard(ids: [CardId!]!): Int!
-  "根据 id 设置默认会员卡"
-  defaultByIdCard(id: CardId!): Int!
   "根据 ids 启用或者禁用会员卡"
   enableByIdsCard(ids: [CardId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁会员卡"

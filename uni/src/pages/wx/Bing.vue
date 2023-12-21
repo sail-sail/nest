@@ -93,7 +93,7 @@
   >
     <tm-button
       @click="onLogin"
-      label="登录"
+      label="绑定微信"
       block
     ></tm-button>
   </view>
@@ -167,6 +167,10 @@ async function onLogin() {
   if (!loginModel.authorization) {
     return;
   }
+  uni.showToast({
+    title: "绑定成功",
+    icon: "success",
+  });
   usrStore.setAuthorization(loginModel.authorization);
   usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(model.username);

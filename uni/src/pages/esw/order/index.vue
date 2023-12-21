@@ -165,7 +165,7 @@ import {
 } from "../pt_detail/Api";
 
 import {
-  findAll as findAllCard,
+  findOne as findOneCard,
 } from "../card/Api";
 
 import type {
@@ -176,6 +176,8 @@ import type {
 import {
   payNow,
 } from "./Api";
+
+import Decimal from "decimal.js-light";
 
 const indexStore = useIndexStore(cfg.pinia);
 const usrStore = useUsrStore(cfg.pinia);
@@ -224,27 +226,29 @@ async function findOnePtEfc() {
 }
 
 // 余额
-let balance = $ref(0);
+const balance = $computed(() => {
+  if (!cardModel) {
+    return 0;
+  }
+  let balance = new Decimal(0);
+  balance = balance.add(cardModel.balance);
+  balance = balance.add(cardModel.give_balance);
+  return balance.toFixed(2);
+});
 
 async function findAllCardEfc() {
   const usr_id = usrStore.getUsrId();
-  const cardModels = await findAllCard(
+  cardModel = (await findOneCard(
     {
       usr_id: [ usr_id ],
       is_enabled: [ 1 ],
       is_deleted: 0,
     },
     undefined,
-    undefined,
     {
       notLoading: true,
     },
-  );
-  for (const cardModel of cardModels) {
-    balance += Number(cardModel.balance);
-    balance += Number(cardModel.give_balance);
-    balance = Math.round(balance * 100) / 100;
-  }
+  )) || undefined;
 }
 
 let formRef = $ref<InstanceType<typeof TmForm>>();
@@ -280,9 +284,7 @@ async function onPayNow() {
     content: "支付成功!",
     showCancel: false,
   });
-  await uni.navigateBack({
-    delta: 1,
-  });
+  await uni.navigateBack();
 }
 
 async function initFrame() {

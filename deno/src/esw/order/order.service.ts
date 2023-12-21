@@ -40,12 +40,12 @@ export async function payNow(
   const cardModel = await findOneCard(
     {
       usr_id: [ usr_id ],
-      is_default: [ 1 ],
+      is_default_card: [ 1 ],
       is_enabled: [ 1 ],
       is_deleted: 0,
     },
     {
-      prop: "seq_lbl",
+      prop: "lbl_seq",
       order: SortOrderEnum.Asc,
     },
   );
