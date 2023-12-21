@@ -6,6 +6,8 @@ import type {
   RechargeRuleId,
 } from "@/typings/ids";
 
+import Decimal from "decimal.js-light";
+
 import type {
   Query,
   Mutation,
@@ -13,6 +15,24 @@ import type {
   RechargeRuleSearch,
   RechargeRuleInput,
 } from "#/types";
+
+async function setLblById(
+  model?: RechargeRuleModel,
+) {
+  if (!model) {
+    return;
+  }
+  
+  // 充值金额
+  if (model.amt != null) {
+    model.amt = new Decimal(model.amt);
+  }
+  
+  // 赠送金额
+  if (model.give_amt != null) {
+    model.give_amt = new Decimal(model.give_amt);
+  }
+}
 
 /**
  * 根据搜索条件查找充值赠送规则列表
@@ -60,11 +80,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllRechargeRule;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllRechargeRule;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -111,8 +132,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneRechargeRule;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -137,8 +157,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountRechargeRule;
-  return res;
+  const count = data.findCountRechargeRule;
+  return count;
 }
 
 /**
@@ -236,8 +256,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdRechargeRule;
-  return res;
+  const model = data.findByIdRechargeRule;
+  await setLblById(model);
+  return model;
 }
 
 /**
