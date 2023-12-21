@@ -14,6 +14,14 @@ import type {
   DictbizInput,
 } from "#/types";
 
+async function setLblById(
+  model?: DictbizModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找业务字典列表
  * @param {DictbizSearch} search?
@@ -81,11 +89,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDictbiz;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDictbiz;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -153,8 +162,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDictbiz;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -179,8 +187,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDictbiz;
-  return res;
+  const count = data.findCountDictbiz;
+  return count;
 }
 
 /**
@@ -299,8 +307,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDictbiz;
-  return res;
+  const model = data.findByIdDictbiz;
+  await setLblById(model);
+  return model;
 }
 
 /**

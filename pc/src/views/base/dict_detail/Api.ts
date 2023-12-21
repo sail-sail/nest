@@ -18,6 +18,14 @@ import type {
   DictSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: DictDetailModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找系统字典明细列表
  * @param {DictDetailSearch} search?
@@ -66,11 +74,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDictDetail;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDictDetail;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
@@ -119,8 +128,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDictDetail;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -145,8 +153,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDictDetail;
-  return res;
+  const count = data.findCountDictDetail;
+  return count;
 }
 
 /**
@@ -246,8 +254,9 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDictDetail;
-  return res;
+  const model = data.findByIdDictDetail;
+  await setLblById(model);
+  return model;
 }
 
 /**

@@ -16,7 +16,7 @@ import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
 import { tableDataSortable } from "./components/TableDataSortable";
 
-import cfg from "./utils/config";
+import cfg from "@/utils/config";
 
 const app = createApp(App);
 const pinia = createPinia();
