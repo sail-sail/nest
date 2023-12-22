@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
-    name: "xh4esw",
-    script: "./xh4esw",
+    name: "wshop",
+    script: "./wshop",
     instances: 1,
     autorestart: true,
     watch: false,

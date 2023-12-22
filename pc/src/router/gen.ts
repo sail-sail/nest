@@ -243,97 +243,97 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/esw/card",
+    path: "/wshop/card",
     component: Layout1,
     children: [
       {
         path: "",
         name: "会员卡",
-        component: () => import("@/views/esw/card/List.vue"),
+        component: () => import("@/views/wshop/card/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/card_consume",
+    path: "/wshop/card_consume",
     component: Layout1,
     children: [
       {
         path: "",
         name: "会员卡消费记录",
-        component: () => import("@/views/esw/card_consume/List.vue"),
+        component: () => import("@/views/wshop/card_consume/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/card_recharge",
+    path: "/wshop/card_recharge",
     component: Layout1,
     children: [
       {
         path: "",
         name: "会员卡充值记录",
-        component: () => import("@/views/esw/card_recharge/List.vue"),
+        component: () => import("@/views/wshop/card_recharge/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/order",
+    path: "/wshop/order",
     component: Layout1,
     children: [
       {
         path: "",
         name: "订单",
-        component: () => import("@/views/esw/order/List.vue"),
+        component: () => import("@/views/wshop/order/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/pt",
+    path: "/wshop/pt",
     component: Layout1,
     children: [
       {
         path: "",
         name: "产品",
-        component: () => import("@/views/esw/pt/List.vue"),
+        component: () => import("@/views/wshop/pt/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/pt_type",
+    path: "/wshop/pt_type",
     component: Layout1,
     children: [
       {
         path: "",
         name: "产品类别",
-        component: () => import("@/views/esw/pt_type/List.vue"),
+        component: () => import("@/views/wshop/pt_type/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/recharge_rule",
+    path: "/wshop/recharge_rule",
     component: Layout1,
     children: [
       {
         path: "",
         name: "充值赠送规则",
-        component: () => import("@/views/esw/recharge_rule/List.vue"),
+        component: () => import("@/views/wshop/recharge_rule/List.vue"),
         props: (route) => route.query,
       },
     ],
   },
   {
-    path: "/esw/wxapp_config",
+    path: "/wshop/wxapp_config",
     component: Layout1,
     children: [
       {
         path: "",
         name: "小程序配置",
-        component: () => import("@/views/esw/wxapp_config/List.vue"),
+        component: () => import("@/views/wshop/wxapp_config/List.vue"),
         props: (route) => route.query,
       },
     ],
