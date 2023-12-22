@@ -317,7 +317,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "support_fapiao",
-        width: 140,
+        require: true,
+        width: 100,
       },
       {
         COLUMN_NAME: "total_fee",
