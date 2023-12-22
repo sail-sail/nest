@@ -2,7 +2,7 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.208.0/",
+    "std/": "https://deno.land/std@0.210.0/",
     "oak": "https://deno.land/x/oak@v12.6.1/mod.ts",
     "graphql": "https://esm.sh/graphql@16.8.1",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
