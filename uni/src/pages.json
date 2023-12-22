@@ -8,7 +8,7 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/esw/index",
+			"path": "pages/wshop/index",
 			"style": {
 				"navigationBarTitleText": "祥和企服",
         "navigationBarTextStyle": "white",
@@ -16,19 +16,19 @@
 			}
 		},
 		{
-			"path": "pages/esw/pt_type/index",
+			"path": "pages/wshop/pt_type/index",
 			"style": {
 				"navigationBarTitleText": "服务"
 			}
 		},
 		{
-			"path": "pages/esw/pt_detail/index",
+			"path": "pages/wshop/pt_detail/index",
 			"style": {
 				"navigationBarTitleText": "产品"
 			}
 		},
 		{
-			"path": "pages/esw/order/index",
+			"path": "pages/wshop/order/index",
 			"style": {
 				"navigationBarTitleText": "服务结算"
 			}
@@ -40,7 +40,7 @@
 			}
 		},
 		{
-			"path": "pages/esw/card/My",
+			"path": "pages/wshop/card/My",
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
@@ -59,19 +59,19 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/esw/index",
+        "pagePath": "pages/wshop/index",
         "text": "首页",
         "iconPath": "static/tarbar/home.png",
         "selectedIconPath": "static/tarbar/home-active.png"
       },
       {
-        "pagePath": "pages/esw/pt_type/index",
+        "pagePath": "pages/wshop/pt_type/index",
         "text": "服务",
         "iconPath": "static/tarbar/type.png",
         "selectedIconPath": "static/tarbar/type-active.png"
       },
       {
-        "pagePath": "pages/esw/card/My",
+        "pagePath": "pages/wshop/card/My",
         "text": "我的",
         "iconPath": "static/tarbar/user.png",
         "selectedIconPath": "static/tarbar/user-active.png"

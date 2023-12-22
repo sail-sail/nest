@@ -123,50 +123,50 @@ export function getScalars() {
     
     // 会员卡
     "CardId": {
-      "input": `import("/gen/esw/card/card.model.ts").CardId`,
-      "output": `import("/gen/esw/card/card.model.ts").CardId`,
+      "input": `import("/gen/wshop/card/card.model.ts").CardId`,
+      "output": `import("/gen/wshop/card/card.model.ts").CardId`,
     },
     
     // 会员卡消费记录
     "CardConsumeId": {
-      "input": `import("/gen/esw/card_consume/card_consume.model.ts").CardConsumeId`,
-      "output": `import("/gen/esw/card_consume/card_consume.model.ts").CardConsumeId`,
+      "input": `import("/gen/wshop/card_consume/card_consume.model.ts").CardConsumeId`,
+      "output": `import("/gen/wshop/card_consume/card_consume.model.ts").CardConsumeId`,
     },
     
     // 会员卡充值记录
     "CardRechargeId": {
-      "input": `import("/gen/esw/card_recharge/card_recharge.model.ts").CardRechargeId`,
-      "output": `import("/gen/esw/card_recharge/card_recharge.model.ts").CardRechargeId`,
+      "input": `import("/gen/wshop/card_recharge/card_recharge.model.ts").CardRechargeId`,
+      "output": `import("/gen/wshop/card_recharge/card_recharge.model.ts").CardRechargeId`,
     },
     
     // 订单
     "OrderId": {
-      "input": `import("/gen/esw/order/order.model.ts").OrderId`,
-      "output": `import("/gen/esw/order/order.model.ts").OrderId`,
+      "input": `import("/gen/wshop/order/order.model.ts").OrderId`,
+      "output": `import("/gen/wshop/order/order.model.ts").OrderId`,
     },
     
     // 产品
     "PtId": {
-      "input": `import("/gen/esw/pt/pt.model.ts").PtId`,
-      "output": `import("/gen/esw/pt/pt.model.ts").PtId`,
+      "input": `import("/gen/wshop/pt/pt.model.ts").PtId`,
+      "output": `import("/gen/wshop/pt/pt.model.ts").PtId`,
     },
     
     // 产品类别
     "PtTypeId": {
-      "input": `import("/gen/esw/pt_type/pt_type.model.ts").PtTypeId`,
-      "output": `import("/gen/esw/pt_type/pt_type.model.ts").PtTypeId`,
+      "input": `import("/gen/wshop/pt_type/pt_type.model.ts").PtTypeId`,
+      "output": `import("/gen/wshop/pt_type/pt_type.model.ts").PtTypeId`,
     },
     
     // 充值赠送规则
     "RechargeRuleId": {
-      "input": `import("/gen/esw/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
-      "output": `import("/gen/esw/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
+      "input": `import("/gen/wshop/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
+      "output": `import("/gen/wshop/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
     },
     
     // 小程序配置
     "WxappConfigId": {
-      "input": `import("/gen/esw/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
-      "output": `import("/gen/esw/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
+      "input": `import("/gen/wshop/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
+      "output": `import("/gen/wshop/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
     },
     
     // 微信JSAPI下单

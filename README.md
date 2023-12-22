@@ -7,15 +7,15 @@ git config --global core.autocrlf false
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS xh4esw CHARSET utf8mb4;
+CREATE DATABASE IF NOT EXISTS wshop CHARSET utf8mb4;
 -- 创建用户
-create user 'xh4esw'@'%' identified by 'l1zx6Cfo2k1Z95SO';
+create user 'wshop'@'%' identified by 'l1zx6Cfo2k1Z95SO';
 -- 设置用户密码不过期
-ALTER USER 'xh4esw'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
+ALTER USER 'wshop'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
 -- 修改密码策略
-ALTER USER 'xh4esw'@'%' IDENTIFIED WITH mysql_native_password BY 'l1zx6Cfo2k1Z95SO';
+ALTER USER 'wshop'@'%' IDENTIFIED WITH mysql_native_password BY 'l1zx6Cfo2k1Z95SO';
 -- 给用户授权
-grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on xh4esw.* to 'xh4esw'@'%';
+grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on wshop.* to 'wshop'@'%';
 -- 刷新权限
 flush privileges;
 ```
