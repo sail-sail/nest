@@ -937,7 +937,7 @@ function getTableColumns(): ColumnType[] {
       label: "是否支持发票",
       prop: "support_fapiao_lbl",
       sortBy: "support_fapiao",
-      width: 140,
+      width: 100,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
