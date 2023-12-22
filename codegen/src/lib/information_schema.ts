@@ -257,7 +257,7 @@ async function getSchema0(
         item.showOverflowTooltip = false;
       }
     }
-    if (column_name.startsWith("is_") || record?.COLUMN_TYPE === "tinyint(1) unsigned") {
+    if (column_name.startsWith("is_") || record?.COLUMN_TYPE.toLowerCase() === "tinyint(1) unsigned") {
       if (item.width == null) {
         item.width = 60;
       }
