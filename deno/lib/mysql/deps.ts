@@ -1,11 +1,11 @@
-export {
-  deferred,
-  delay,
-  type Deferred,
-} from "std/async/mod.ts";
+// export {
+//   deferred,
+//   delay,
+//   type Deferred,
+// } from "std/async/mod.ts";
 
 export {
-  decode as base64Decode,
+  decodeBase64 as base64Decode,
 } from "std/encoding/base64.ts";
 
 export {
