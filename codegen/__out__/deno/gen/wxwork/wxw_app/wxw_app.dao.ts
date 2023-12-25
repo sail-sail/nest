@@ -206,7 +206,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找企微应用总数
  * @param { WxwAppSearch } search?
  * @return {Promise<number>}
  */
@@ -573,7 +573,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找企微应用
+ * 根据 id 查找企微应用
  * @param {WxwAppId} id
  */
 export async function findById(
@@ -981,7 +981,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改企微应用
+ * 根据 id 修改企微应用
  * @param {WxwAppId} id
  * @param {WxwAppInput} input
  * @param {({
@@ -1146,7 +1146,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微应用
  * @param {WxwAppId[]} ids
  * @return {Promise<number>}
  */
@@ -1213,7 +1213,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用企微应用
  * @param {WxwAppId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1283,7 +1283,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁企微应用
  * @param {WxwAppId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

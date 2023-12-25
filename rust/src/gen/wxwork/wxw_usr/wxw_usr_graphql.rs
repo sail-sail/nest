@@ -24,7 +24,7 @@ pub struct WxwUsrGenQuery;
 #[Object(rename_args = "snake_case")]
 impl WxwUsrGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找企微用户列表
   async fn find_all_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl WxwUsrGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找企微用户总数
   async fn find_count_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl WxwUsrGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个企微用户
   async fn find_one_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl WxwUsrGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找企微用户
   async fn find_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl WxwUsrGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取企微用户字段注释
   async fn get_field_comments_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -120,7 +120,7 @@ pub struct WxwUsrGenMutation;
 #[Object(rename_args = "snake_case")]
 impl WxwUsrGenMutation {
   
-  /// 创建数据
+  /// 创建企微用户
   async fn create_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -143,7 +143,7 @@ impl WxwUsrGenMutation {
       }).await
   }
   
-  /// 根据id修改租户id
+  /// 企微用户根据id修改租户id
   async fn update_tenant_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -163,7 +163,7 @@ impl WxwUsrGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改企微用户
   async fn update_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -183,7 +183,7 @@ impl WxwUsrGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除企微用户
   async fn delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -201,7 +201,7 @@ impl WxwUsrGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原企微用户
   async fn revert_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -219,7 +219,7 @@ impl WxwUsrGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除企微用户
   async fn force_delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
