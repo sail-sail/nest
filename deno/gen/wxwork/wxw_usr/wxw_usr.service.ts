@@ -17,7 +17,7 @@ import type {
 import * as wxw_usrDao from "./wxw_usr.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找企微用户总数
  * @param {WxwUsrSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -30,7 +30,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找企微用户列表
  * @param {WxwUsrSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -55,7 +55,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个企微用户
  * @param {WxwUsrSearch} search? 搜索条件
  */
 export async function findOne(
@@ -68,7 +68,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
+ * 根据 id 查找企微用户
  * @param {WxwUsrId} id
  */
 export async function findById(
@@ -79,7 +79,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找企微用户是否存在
  * @param {WxwUsrSearch} search? 搜索条件
  */
 export async function exist(
@@ -91,7 +91,7 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
+ * 根据 id 查找企微用户是否存在
  * @param {WxwUsrId} id
  */
 export async function existById(
@@ -102,7 +102,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验企微用户
  * @param input 
  */
 export async function validate(
@@ -128,7 +128,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改数据
+ * 根据 id 修改企微用户
  * @param {WxwUsrId} id
  * @param {WxwUsrInput} input
  * @return {Promise<WxwUsrId>}
@@ -143,7 +143,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微用户
  * @param {WxwUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -156,7 +156,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原企微用户
  * @param {WxwUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -168,7 +168,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除企微用户
  * @param {WxwUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -180,7 +180,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取企微用户字段注释
  */
 export async function getFieldComments(): Promise<WxwUsrFieldComment> {
   const data = await wxw_usrDao.getFieldComments();

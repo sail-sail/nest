@@ -24,7 +24,7 @@ pub struct WxwAppGenQuery;
 #[Object(rename_args = "snake_case")]
 impl WxwAppGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找企微应用列表
   async fn find_all_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找企微应用总数
   async fn find_count_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个企微应用
   async fn find_one_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找企微应用
   async fn find_by_id_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找企微应用是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_wxw_app(
     &self,
@@ -116,7 +116,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找企微应用是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_wxw_app(
@@ -135,7 +135,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取企微应用字段注释
   async fn get_field_comments_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -149,7 +149,7 @@ impl WxwAppGenQuery {
       }).await
   }
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 企微应用 order_by 字段的最大值
   async fn find_last_order_by_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -172,7 +172,7 @@ pub struct WxwAppGenMutation;
 #[Object(rename_args = "snake_case")]
 impl WxwAppGenMutation {
   
-  /// 创建数据
+  /// 创建企微应用
   async fn create_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -195,7 +195,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据id修改租户id
+  /// 企微应用根据id修改租户id
   async fn update_tenant_by_id_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -215,7 +215,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改企微应用
   async fn update_by_id_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -235,7 +235,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除企微应用
   async fn delete_by_ids_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -253,7 +253,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用企微应用
   async fn enable_by_ids_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -293,7 +293,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原企微应用
   async fn revert_by_ids_wxw_app(
     &self,
     ctx: &Context<'_>,
@@ -311,7 +311,7 @@ impl WxwAppGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除企微应用
   async fn force_delete_by_ids_wxw_app(
     &self,
     ctx: &Context<'_>,

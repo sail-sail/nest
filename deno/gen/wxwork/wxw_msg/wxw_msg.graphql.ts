@@ -117,23 +117,23 @@ input WxwMsgSearch {
   errmsg_like: String
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找企微消息总数"
   findCountWxwMsg(search: WxwMsgSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找企微消息列表"
   findAllWxwMsg(search: WxwMsgSearch, page: PageInput, sort: [SortInput!]): [WxwMsgModel!]!
-  "获取字段对应的名称"
+  "获取企微消息字段注释"
   getFieldCommentsWxwMsg: WxwMsgFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个企微消息"
   findOneWxwMsg(search: WxwMsgSearch, sort: [SortInput!]): WxwMsgModel
-  "根据id查找一条数据"
+  "根据 id 查找企微消息"
   findByIdWxwMsg(id: WxwMsgId!): WxwMsgModel
 }
 type Mutation {
-  "根据 ids 删除数据"
+  "根据 ids 删除企微消息"
   deleteByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原企微消息"
   revertByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除企微消息"
   forceDeleteByIdsWxwMsg(ids: [WxwMsgId!]!): Int!
 }
 

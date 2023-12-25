@@ -24,7 +24,7 @@ pub struct WxwMsgGenQuery;
 #[Object(rename_args = "snake_case")]
 impl WxwMsgGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找企微消息列表
   async fn find_all_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl WxwMsgGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找企微消息总数
   async fn find_count_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl WxwMsgGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个企微消息
   async fn find_one_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl WxwMsgGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找企微消息
   async fn find_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl WxwMsgGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取企微消息字段注释
   async fn get_field_comments_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -120,7 +120,7 @@ pub struct WxwMsgGenMutation;
 #[Object(rename_args = "snake_case")]
 impl WxwMsgGenMutation {
   
-  /// 根据id修改租户id
+  /// 企微消息根据id修改租户id
   async fn update_tenant_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -140,7 +140,7 @@ impl WxwMsgGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除企微消息
   async fn delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -158,7 +158,7 @@ impl WxwMsgGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原企微消息
   async fn revert_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -176,7 +176,7 @@ impl WxwMsgGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除企微消息
   async fn force_delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,

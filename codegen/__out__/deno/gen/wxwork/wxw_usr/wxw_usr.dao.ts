@@ -229,7 +229,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找企微用户总数
  * @param { WxwUsrSearch } search?
  * @return {Promise<number>}
  */
@@ -492,7 +492,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找企微用户
+ * 根据 id 查找企微用户
  * @param {WxwUsrId} id
  */
 export async function findById(
@@ -863,7 +863,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改企微用户
+ * 根据 id 修改企微用户
  * @param {WxwUsrId} id
  * @param {WxwUsrInput} input
  * @param {({
@@ -1029,7 +1029,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除企微用户
  * @param {WxwUsrId[]} ids
  * @return {Promise<number>}
  */

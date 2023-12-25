@@ -13,9 +13,16 @@ import type {
   WxwAppSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: WxwMsgModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找企微消息列表
- * @export findAll
  * @param {WxwMsgSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -55,16 +62,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxwMsg;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllWxwMsg;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个企微消息
- * @export findOne
+ * 根据条件查找第一个企微消息
  * @param {WxwMsgSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -102,14 +109,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneWxwMsg;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找企微消息总数
- * @export findCount
  * @param {WxwMsgSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -129,13 +134,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountWxwMsg;
-  return res;
+  const count = data.findCountWxwMsg;
+  return count;
 }
 
 /**
- * 通过ID查找一条企微消息
- * @export findById
+ * 根据 id 查找企微消息
  * @param {WxwMsgId} id
  * @param {GqlOpt} opt?
  */
@@ -168,13 +172,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxwMsg;
-  return res;
+  const model = data.findByIdWxwMsg;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除企微消息
- * @export deleteByIds
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -199,8 +203,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原企微消息
- * @export revertByIds
+ * 根据 ids 还原企微消息
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -226,7 +229,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微消息
- * @export forceDeleteByIds
  * @param {WxwMsgId[]} ids
  * @param {GqlOpt} opt?
  */

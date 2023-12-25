@@ -7,15 +7,13 @@ git config --global core.autocrlf false
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS deno4wxwork CHARSET utf8mb4;
+CREATE DATABASE IF NOT EXISTS nest CHARSET utf8mb4;
 -- 创建用户
-create user 'deno4wxwork'@'%' identified by 'iJGVDdqsHW0vCfut';
+create user 'nest'@'%' identified by 'umbdflXHI0osat2v';
 -- 设置用户密码不过期
-ALTER USER 'deno4wxwork'@'%' IDENTIFIED BY 'iJGVDdqsHW0vCfut' PASSWORD EXPIRE NEVER;
--- 修改密码策略
-ALTER USER 'deno4wxwork'@'%' IDENTIFIED WITH mysql_native_password BY 'iJGVDdqsHW0vCfut';
+ALTER USER 'nest'@'%' IDENTIFIED BY 'umbdflXHI0osat2v' PASSWORD EXPIRE NEVER;
 -- 给用户授权
-grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on deno4wxwork.* to 'deno4wxwork'@'%';
+grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on nest.* to 'nest'@'%';
 -- 刷新权限
 flush privileges;
 ```

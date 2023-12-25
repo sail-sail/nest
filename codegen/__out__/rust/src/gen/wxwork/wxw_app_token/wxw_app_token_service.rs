@@ -16,7 +16,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_dao;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找企微应用接口凭据列表
 pub async fn find_all(
   search: Option<WxwAppTokenSearch>,
   page: Option<PageInput>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找企微应用接口凭据总数
 pub async fn find_count(
   search: Option<WxwAppTokenSearch>,
   options: Option<Options>,
@@ -48,7 +48,7 @@ pub async fn find_count(
   Ok(res)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个企微应用接口凭据
 pub async fn find_one(
   search: Option<WxwAppTokenSearch>,
   sort: Option<Vec<SortInput>>,
@@ -64,7 +64,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找企微应用接口凭据
 pub async fn find_by_id(
   id: WxwAppTokenId,
   options: Option<Options>,
@@ -90,7 +90,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建企微应用接口凭据
 #[allow(dead_code)]
 pub async fn create(
   input: WxwAppTokenInput,
@@ -105,7 +105,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改租户id
+/// 企微应用接口凭据根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
   id: WxwAppTokenId,
@@ -122,7 +122,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改企微应用接口凭据
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -140,7 +140,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除企微应用接口凭据
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<WxwAppTokenId>,
@@ -155,7 +155,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取企微应用接口凭据字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<WxwAppTokenFieldComment> {
@@ -167,7 +167,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原企微应用接口凭据
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<WxwAppTokenId>,
@@ -182,7 +182,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除企微应用接口凭据
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<WxwAppTokenId>,
