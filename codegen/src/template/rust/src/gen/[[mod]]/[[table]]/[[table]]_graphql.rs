@@ -68,7 +68,7 @@ pub struct <#=tableUP#>GenQuery;
 #[Object(rename_args = "snake_case")]
 impl <#=tableUP#>GenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找<#=table_comment#>列表
   async fn find_all_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -89,7 +89,7 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找<#=table_comment#>总数
   async fn find_count_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -106,7 +106,7 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个<#=table_comment#>
   async fn find_one_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -125,7 +125,7 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找<#=table_comment#>
   async fn find_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -144,7 +144,7 @@ impl <#=tableUP#>GenQuery {
   if (hasEnabled) {
   #>
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找<#=table_comment#>是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_<#=table#>(
     &self,
@@ -166,7 +166,7 @@ impl <#=tableUP#>GenQuery {
   if (hasLocked) {
   #>
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找<#=table_comment#>是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_<#=table#>(
@@ -187,7 +187,7 @@ impl <#=tableUP#>GenQuery {
   }
   #>
   
-  /// 获取字段对应的名称
+  /// 获取<#=table_comment#>字段注释
   async fn get_field_comments_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -203,7 +203,7 @@ impl <#=tableUP#>GenQuery {
   if (hasOrderBy) {
   #>
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 <#=table_comment#> order_by 字段的最大值
   async fn find_last_order_by_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -230,7 +230,7 @@ impl <#=tableUP#>GenMutation {<#
     if (opts.noAdd !== true) {
   #>
   
-  /// 创建数据
+  /// 创建<#=table_comment#>
   async fn create_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -257,7 +257,7 @@ impl <#=tableUP#>GenMutation {<#
   if (hasTenant_id) {
   #>
   
-  /// 根据id修改租户id
+  /// <#=table_comment#>根据id修改租户id
   async fn update_tenant_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -281,7 +281,7 @@ impl <#=tableUP#>GenMutation {<#
   if (hasOrgId) {
   #>
   
-  /// 根据id修改部门id
+  /// <#=table_comment#>根据id修改组织id
   async fn update_org_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -305,7 +305,7 @@ impl <#=tableUP#>GenMutation {<#
     if (opts.noEdit !== true) {
   #>
   
-  /// 根据id修改数据
+  /// 根据 id 修改<#=table_comment#>
   async fn update_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -329,7 +329,7 @@ impl <#=tableUP#>GenMutation {<#
     if (opts.noDelete !== true) {
   #>
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除<#=table_comment#>
   async fn delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -351,7 +351,7 @@ impl <#=tableUP#>GenMutation {<#
     if (hasDefault && opts.noEdit !== true) {
   #>
   
-  /// 根据 id 设置默认记录
+  /// 根据 id 设置默认<#=table_comment#>
   async fn default_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -373,7 +373,7 @@ impl <#=tableUP#>GenMutation {<#
     if (hasEnabled && opts.noEdit !== true) {
   #>
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用<#=table_comment#>
   async fn enable_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -421,7 +421,7 @@ impl <#=tableUP#>GenMutation {<#
     if (opts.noDelete !== true) {
   #>
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原<#=table_comment#>
   async fn revert_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
@@ -439,7 +439,7 @@ impl <#=tableUP#>GenMutation {<#
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除<#=table_comment#>
   async fn force_delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,

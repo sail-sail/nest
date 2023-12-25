@@ -183,33 +183,33 @@ input DictSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找系统字典总数"
   findCountDict(search: DictSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找系统字典列表"
   findAllDict(search: DictSearch, page: PageInput, sort: [SortInput!]): [DictModel!]!
-  "获取字段对应的名称"
+  "获取系统字典字段注释"
   getFieldCommentsDict: DictFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个系统字典"
   findOneDict(search: DictSearch, sort: [SortInput!]): DictModel
-  "根据id查找一条数据"
+  "根据 id 查找系统字典"
   findByIdDict(id: DictId!): DictModel
-  "查找order_by字段的最大值"
+  "查找 系统字典 order_by 字段的最大值"
   findLastOrderByDict: Int!
 }
 type Mutation {
-  "创建一条数据"
+  "创建系统字典"
   createDict(model: DictInput!, unique_type: UniqueType): DictId!
-  "根据id修改一条数据"
+  "根据 id 修改系统字典"
   updateByIdDict(id: DictId!, model: DictInput!): DictId!
-  "根据 ids 删除数据"
+  "根据 ids 删除系统字典"
   deleteByIdsDict(ids: [DictId!]!): Int!
-  "根据 ids 启用或者禁用数据"
+  "根据 ids 启用或者禁用系统字典"
   enableByIdsDict(ids: [DictId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
+  "根据 ids 锁定或者解锁系统字典"
   lockByIdsDict(ids: [DictId!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
+  "根据 ids 还原系统字典"
   revertByIdsDict(ids: [DictId!]!): Int!
-  "根据 ids 彻底删除数据"
+  "根据 ids 彻底删除系统字典"
   forceDeleteByIdsDict(ids: [DictId!]!): Int!
 }
 

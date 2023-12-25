@@ -14,9 +14,16 @@ import type {
   DomainInput,
 } from "#/types";
 
+async function setLblById(
+  model?: DomainModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找域名列表
- * @export findAll
  * @param {DomainSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -63,16 +70,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDomain;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDomain;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个域名
- * @export findOne
+ * 根据条件查找第一个域名
  * @param {DomainSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -117,14 +124,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDomain;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找域名总数
- * @export findCount
  * @param {DomainSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -144,13 +149,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDomain;
-  return res;
+  const count = data.findCountDomain;
+  return count;
 }
 
 /**
- * 创建一条域名
- * @export create
+ * 创建域名
  * @param {DomainInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -178,8 +182,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条域名
- * @export updateById
+ * 根据 id 修改域名
  * @param {DomainId} id
  * @param {DomainInput} model
  * @param {GqlOpt} opt?
@@ -207,8 +210,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条域名
- * @export findById
+ * 根据 id 查找域名
  * @param {DomainId} id
  * @param {GqlOpt} opt?
  */
@@ -248,13 +250,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDomain;
-  return res;
+  const model = data.findByIdDomain;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除域名
- * @export deleteByIds
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -280,7 +282,6 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认域名
- * @export defaultById
  * @param {DomainId} id
  * @param {GqlOpt} opt?
  */
@@ -306,7 +307,6 @@ export async function defaultById(
 
 /**
  * 根据 ids 启用或禁用域名
- * @export enableByIds
  * @param {DomainId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -335,7 +335,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁域名
- * @export lockByIds
  * @param {DomainId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -363,8 +362,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原域名
- * @export revertByIds
+ * 根据 ids 还原域名
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -390,7 +388,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除域名
- * @export forceDeleteByIds
  * @param {DomainId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -550,7 +547,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DomainInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DomainInput[],
@@ -598,8 +594,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 域名 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

@@ -8,3 +8,6 @@ rustflags = ["-Clinker-flavor=ld.lld"]
 
 # [build]
 # rustc-wrapper = "C:\\Users\\15126\\.cargo\\bin\\sccache.exe"
+
+[unstable]
+gc = true

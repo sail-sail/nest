@@ -24,7 +24,7 @@ pub struct OperationRecordGenQuery;
 #[Object(rename_args = "snake_case")]
 impl OperationRecordGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找操作记录列表
   async fn find_all_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl OperationRecordGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找操作记录总数
   async fn find_count_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl OperationRecordGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个操作记录
   async fn find_one_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl OperationRecordGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找操作记录
   async fn find_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl OperationRecordGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取操作记录字段注释
   async fn get_field_comments_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -120,7 +120,7 @@ pub struct OperationRecordGenMutation;
 #[Object(rename_args = "snake_case")]
 impl OperationRecordGenMutation {
   
-  /// 根据id修改租户id
+  /// 操作记录根据id修改租户id
   async fn update_tenant_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -140,7 +140,7 @@ impl OperationRecordGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除操作记录
   async fn delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -158,7 +158,7 @@ impl OperationRecordGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原操作记录
   async fn revert_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -176,7 +176,7 @@ impl OperationRecordGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除操作记录
   async fn force_delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,

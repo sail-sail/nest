@@ -360,7 +360,7 @@ async fn get_from_query() -> Result<String> {
   Ok(from_query)
 }
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找业务字典列表
 #[allow(unused_variables)]
 pub async fn find_all(
   search: Option<DictbizSearch>,
@@ -497,7 +497,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查询数据总数
+/// 根据条件查找业务字典总数
 pub async fn find_count(
   search: Option<DictbizSearch>,
   options: Option<Options>,
@@ -561,7 +561,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
-/// 获取字段对应的国家化后的名称
+/// 获取业务字典字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<DictbizFieldComment> {
@@ -626,7 +626,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个业务字典
 pub async fn find_one(
   search: Option<DictbizSearch>,
   sort: Option<Vec<SortInput>>,
@@ -650,7 +650,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找业务字典
 pub async fn find_by_id(
   id: DictbizId,
   options: Option<Options>,
@@ -670,7 +670,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
-/// 根据搜索条件判断数据是否存在
+/// 根据搜索条件判断业务字典是否存在
 pub async fn exists(
   search: Option<DictbizSearch>,
   options: Option<Options>,
@@ -684,7 +684,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-/// 根据ID判断数据是否存在
+/// 根据 id 判断业务字典是否存在
 pub async fn exists_by_id(
   id: DictbizId,
   options: Option<Options>,
@@ -862,7 +862,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建业务字典
 #[allow(unused_mut)]
 pub async fn create(
   mut input: DictbizInput,
@@ -1052,7 +1052,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改租户id
+/// 业务字典根据id修改租户id
 pub async fn update_tenant_by_id(
   id: DictbizId,
   tenant_id: TenantId,
@@ -1092,7 +1092,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改业务字典
 #[allow(unused_mut)]
 pub async fn update_by_id(
   id: DictbizId,
@@ -1329,7 +1329,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除业务字典
 pub async fn delete_by_ids(
   ids: Vec<DictbizId>,
   options: Option<Options>,
@@ -1389,7 +1389,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找业务字典是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
   id: DictbizId,
@@ -1409,7 +1409,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或禁用数据
+/// 根据 ids 启用或者禁用业务字典
 pub async fn enable_by_ids(
   ids: Vec<DictbizId>,
   is_enabled: u8,
@@ -1449,7 +1449,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找业务字典是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
@@ -1470,7 +1470,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或者解锁业务字典
 pub async fn lock_by_ids(
   ids: Vec<DictbizId>,
   is_locked: u8,
@@ -1510,7 +1510,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原业务字典
 pub async fn revert_by_ids(
   ids: Vec<DictbizId>,
   options: Option<Options>,
@@ -1606,7 +1606,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除业务字典
 pub async fn force_delete_by_ids(
   ids: Vec<DictbizId>,
   options: Option<Options>,
@@ -1682,7 +1682,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 order_by 字段的最大值
+/// 查找 业务字典 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
@@ -1732,7 +1732,7 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-/// 校验记录是否启用
+/// 校验业务字典是否启用
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
@@ -1753,7 +1753,7 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-/// 校验记录是否存在
+/// 校验业务字典是否存在
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(

@@ -65,7 +65,7 @@ use crate::gen::base::org::org_model::OrgId;<#
 use super::<#=table#>_model::*;
 use super::<#=table#>_dao;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找<#=table_comment#>列表
 pub async fn find_all(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
@@ -83,7 +83,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找<#=table_comment#>总数
 pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
@@ -97,7 +97,7 @@ pub async fn find_count(
   Ok(res)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个<#=table_comment#>
 pub async fn find_one(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
@@ -113,7 +113,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找<#=table_comment#>
 pub async fn find_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
@@ -139,7 +139,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建<#=table_comment#>
 #[allow(dead_code)]
 pub async fn create(
   input: <#=tableUP#>Input,
@@ -156,7 +156,7 @@ pub async fn create(
 if (hasTenant_id) {
 #>
 
-/// 根据id修改租户id
+/// <#=table_comment#>根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
   id: <#=Table_Up#>Id,
@@ -177,7 +177,7 @@ pub async fn update_tenant_by_id(
 if (hasOrgId) {
 #>
 
-/// 根据id修改组织id
+/// <#=table_comment#>根据id修改组织id
 #[allow(dead_code)]
 pub async fn update_org_by_id(
   id: <#=Table_Up#>Id,
@@ -196,7 +196,7 @@ pub async fn update_org_by_id(
 }
 #>
 
-/// 根据id修改数据
+/// 根据 id 修改<#=table_comment#>
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -287,7 +287,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除<#=table_comment#>
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
@@ -358,7 +358,7 @@ pub async fn delete_by_ids(
 if (hasDefault) {
 #>
 
-/// 根据 id 设置默认记录
+/// 根据 id 设置默认<#=table_comment#>
 #[allow(dead_code)]
 pub async fn default_by_id(
   id: <#=Table_Up#>Id,
@@ -377,7 +377,7 @@ pub async fn default_by_id(
 if (hasEnabled) {
 #>
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找<#=table_comment#>是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
@@ -393,7 +393,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用数据
+/// 根据 ids 启用或者禁用<#=table_comment#>
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
@@ -414,7 +414,7 @@ pub async fn enable_by_ids(
 if (hasLocked) {
 #>
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找<#=table_comment#>是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
@@ -431,7 +431,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或者解锁<#=table_comment#>
 #[allow(dead_code)]
 pub async fn lock_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
@@ -450,7 +450,7 @@ pub async fn lock_by_ids(
 }
 #>
 
-/// 获取字段对应的名称
+/// 获取<#=table_comment#>字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {
@@ -462,7 +462,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原<#=table_comment#>
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
@@ -477,7 +477,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除<#=table_comment#>
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
@@ -494,7 +494,7 @@ pub async fn force_delete_by_ids(
 if (hasOrderBy) {
 #>
 
-/// 查找 order_by 字段的最大值
+/// 查找 <#=table_comment#> order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {

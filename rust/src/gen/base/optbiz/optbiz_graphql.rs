@@ -24,7 +24,7 @@ pub struct OptbizGenQuery;
 #[Object(rename_args = "snake_case")]
 impl OptbizGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找业务选项列表
   async fn find_all_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -45,7 +45,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找业务选项总数
   async fn find_count_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -62,7 +62,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个业务选项
   async fn find_one_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -81,7 +81,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找业务选项
   async fn find_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -98,7 +98,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找业务选项是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_optbiz(
     &self,
@@ -116,7 +116,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找业务选项是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_optbiz(
@@ -135,7 +135,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取业务选项字段注释
   async fn get_field_comments_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -149,7 +149,7 @@ impl OptbizGenQuery {
       }).await
   }
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 业务选项 order_by 字段的最大值
   async fn find_last_order_by_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -172,7 +172,7 @@ pub struct OptbizGenMutation;
 #[Object(rename_args = "snake_case")]
 impl OptbizGenMutation {
   
-  /// 创建数据
+  /// 创建业务选项
   async fn create_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -195,7 +195,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据id修改租户id
+  /// 业务选项根据id修改租户id
   async fn update_tenant_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -215,7 +215,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改业务选项
   async fn update_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -235,7 +235,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除业务选项
   async fn delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -253,7 +253,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用业务选项
   async fn enable_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -293,7 +293,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原业务选项
   async fn revert_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -311,7 +311,7 @@ impl OptbizGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除业务选项
   async fn force_delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,

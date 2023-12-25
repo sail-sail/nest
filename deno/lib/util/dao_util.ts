@@ -118,25 +118,27 @@ export async function many2manyUpdate(
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       const idx = column2Ids.indexOf(model.column2Id);
-      if (idx === -1 && model.is_deleted === 0) {
-        const sql = `
-          update
-            ${ escapeId(many.mod + "_" + many.table) }
-          set
-            is_deleted = ?
-            ,delete_time = ?
-          where
-            id = ?
-        `;
-        hasChange = true;
-        await execute(
-          sql,
-          [
-            1,
-            reqDate(),
-            model.id,
-          ],
-        );
+      if (idx === -1) {
+        if (model.is_deleted === 0) {
+          const sql = `
+            update
+              ${ escapeId(many.mod + "_" + many.table) }
+            set
+              is_deleted = ?
+              ,delete_time = ?
+            where
+              id = ?
+          `;
+          hasChange = true;
+          await execute(
+            sql,
+            [
+              1,
+              reqDate(),
+              model.id,
+            ],
+          );
+        }
         continue;
       }
       if (model.is_deleted === 1 || model.order_by !== idx + 1) {

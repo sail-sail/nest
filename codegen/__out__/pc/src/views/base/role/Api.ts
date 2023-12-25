@@ -30,9 +30,16 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: RoleModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找角色列表
- * @export findAll
  * @param {RoleSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -83,16 +90,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllRole;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllRole;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个角色
- * @export findOne
+ * 根据条件查找第一个角色
  * @param {RoleSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -141,14 +148,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneRole;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找角色总数
- * @export findCount
  * @param {RoleSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -168,13 +173,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountRole;
-  return res;
+  const count = data.findCountRole;
+  return count;
 }
 
 /**
- * 创建一条角色
- * @export create
+ * 创建角色
  * @param {RoleInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -202,8 +206,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条角色
- * @export updateById
+ * 根据 id 修改角色
  * @param {RoleId} id
  * @param {RoleInput} model
  * @param {GqlOpt} opt?
@@ -231,8 +234,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条角色
- * @export findById
+ * 根据 id 查找角色
  * @param {RoleId} id
  * @param {GqlOpt} opt?
  */
@@ -276,13 +278,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdRole;
-  return res;
+  const model = data.findByIdRole;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除角色
- * @export deleteByIds
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -308,7 +310,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用角色
- * @export enableByIds
  * @param {RoleId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -337,7 +338,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁角色
- * @export lockByIds
  * @param {RoleId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -365,8 +365,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原角色
- * @export revertByIds
+ * 根据 ids 还原角色
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -392,7 +391,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除角色
- * @export forceDeleteByIds
  * @param {RoleId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -731,7 +729,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {RoleInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: RoleInput[],
@@ -779,8 +776,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 角色 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

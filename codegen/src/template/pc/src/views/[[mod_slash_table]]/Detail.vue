@@ -2499,6 +2499,77 @@ async function nextId() {
 if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 
+watch(
+  () => [
+    inited,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let column_type = column.COLUMN_TYPE;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      if (column.readonly) continue;
+      if (column.noEdit) continue;
+    #><#
+      if (foreignKey || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    dialogModel.<#=column_name#>,<#
+      }
+    #><#
+    }
+    #>
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let column_type = column.COLUMN_TYPE;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      if (column.readonly) continue;
+      if (column.noEdit) continue;
+    #><#
+      if (foreignKey || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    if (!dialogModel.<#=column_name#>) {
+      dialogModel.<#=column_name#>_lbl = "";
+    }<#
+      }
+    #><#
+    }
+    #>
+  },
+);
+
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();

@@ -377,7 +377,7 @@ async fn get_from_query() -> Result<String> {
   Ok(from_query)
 }
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找操作记录列表
 #[allow(unused_variables)]
 pub async fn find_all(
   search: Option<OperationRecordSearch>,
@@ -447,7 +447,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查询数据总数
+/// 根据条件查找操作记录总数
 pub async fn find_count(
   search: Option<OperationRecordSearch>,
   options: Option<Options>,
@@ -509,7 +509,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
-/// 获取字段对应的国家化后的名称
+/// 获取操作记录字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<OperationRecordFieldComment> {
@@ -570,7 +570,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个操作记录
 pub async fn find_one(
   search: Option<OperationRecordSearch>,
   sort: Option<Vec<SortInput>>,
@@ -594,7 +594,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找操作记录
 pub async fn find_by_id(
   id: OperationRecordId,
   options: Option<Options>,
@@ -614,7 +614,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
-/// 根据搜索条件判断数据是否存在
+/// 根据搜索条件判断操作记录是否存在
 pub async fn exists(
   search: Option<OperationRecordSearch>,
   options: Option<Options>,
@@ -628,7 +628,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-/// 根据ID判断数据是否存在
+/// 根据 id 判断操作记录是否存在
 pub async fn exists_by_id(
   id: OperationRecordId,
   options: Option<Options>,
@@ -726,7 +726,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建操作记录
 #[allow(unused_mut)]
 pub async fn create(
   mut input: OperationRecordInput,
@@ -903,7 +903,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改租户id
+/// 操作记录根据id修改租户id
 pub async fn update_tenant_by_id(
   id: OperationRecordId,
   tenant_id: TenantId,
@@ -943,7 +943,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改操作记录
 #[allow(unused_mut)]
 pub async fn update_by_id(
   id: OperationRecordId,
@@ -1122,7 +1122,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除操作记录
 pub async fn delete_by_ids(
   ids: Vec<OperationRecordId>,
   options: Option<Options>,
@@ -1161,7 +1161,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原操作记录
 pub async fn revert_by_ids(
   ids: Vec<OperationRecordId>,
   options: Option<Options>,
@@ -1236,7 +1236,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除操作记录
 pub async fn force_delete_by_ids(
   ids: Vec<OperationRecordId>,
   options: Option<Options>,
@@ -1291,7 +1291,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 校验记录是否存在
+/// 校验操作记录是否存在
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(

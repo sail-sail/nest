@@ -420,7 +420,7 @@
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
         @keydown.enter="onRowEnter"
@@ -684,26 +684,15 @@ const permit = permitStore.getPermit("/base/domain");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    DomainId[],
-  ],
-  add: [
-    DomainId[],
-  ],
-  edit: [
-    DomainId[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ DomainId[] ],
+  add: [ DomainId[] ],
+  edit: [ DomainId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
-  rowEnter: [
-    KeyboardEvent,
-  ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ DomainModel ],
 }>();
 
 /** 表格 */
@@ -761,6 +750,7 @@ const props = defineProps<{
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
+  isFocus?: string;
   ids?: string[]; //ids
   selectedIds?: DomainId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -782,6 +772,7 @@ const builtInSearchType: { [key: string]: string } = {
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
+  isFocus: "0|1",
   ids: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
@@ -802,6 +793,7 @@ const propsNotInSearch: string[] = [
   "showBuildIn",
   "isPagination",
   "isLocked",
+  "isFocus",
 ];
 
 /** 内置搜索条件 */
@@ -826,6 +818,8 @@ const showBuildIn = $computed(() => props.showBuildIn === "1");
 const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
 /** 是否只读模式 */
 const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -1454,6 +1448,17 @@ async function onRowEnter(e: KeyboardEvent) {
   }
 }
 
+/** 双击行 */
+async function onRowDblclick(
+  row: DomainModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
+}
+
 /** 打开查看 */
 async function openView() {
   if (!detailRef) {
@@ -1673,10 +1678,27 @@ async function initI18nsEfc() {
   ]);
 }
 
-async function initFrame() {
-  if (!usrStore.authorization) {
+async function focus() {
+  if (!inited || !tableRef || !tableRef.$el) {
     return;
   }
+  tableRef.$el.focus();
+}
+
+watch(
+  () => [
+    props.isFocus,
+    inited,
+  ],
+  () => {
+    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+      return;
+    }
+    tableRef.$el.focus();
+  },
+);
+
+async function initFrame() {
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),
@@ -1709,5 +1731,6 @@ initFrame();
 
 defineExpose({
   refresh: onRefresh,
+  focus,
 });
 </script>

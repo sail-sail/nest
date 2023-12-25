@@ -9,9 +9,16 @@ import type {
   OperationRecordSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: OperationRecordModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找操作记录列表
- * @export findAll
  * @param {OperationRecordSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -56,16 +63,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllOperationRecord;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllOperationRecord;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个操作记录
- * @export findOne
+ * 根据条件查找第一个操作记录
  * @param {OperationRecordSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -108,14 +115,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneOperationRecord;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找操作记录总数
- * @export findCount
  * @param {OperationRecordSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -135,13 +140,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountOperationRecord;
-  return res;
+  const count = data.findCountOperationRecord;
+  return count;
 }
 
 /**
- * 通过ID查找一条操作记录
- * @export findById
+ * 根据 id 查找操作记录
  * @param {OperationRecordId} id
  * @param {GqlOpt} opt?
  */
@@ -179,13 +183,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdOperationRecord;
-  return res;
+  const model = data.findByIdOperationRecord;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除操作记录
- * @export deleteByIds
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -210,8 +214,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原操作记录
- * @export revertByIds
+ * 根据 ids 还原操作记录
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -237,7 +240,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除操作记录
- * @export forceDeleteByIds
  * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */

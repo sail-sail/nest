@@ -191,7 +191,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找按钮权限总数
  * @param { PermitSearch } search?
  * @return {Promise<number>}
  */
@@ -500,7 +500,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找按钮权限
+ * 根据 id 查找按钮权限
  * @param {PermitId} id
  */
 export async function findById(
@@ -795,7 +795,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改按钮权限
+ * 根据 id 修改按钮权限
  * @param {PermitId} id
  * @param {PermitInput} input
  * @param {({
@@ -914,7 +914,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除按钮权限
  * @param {PermitId[]} ids
  * @return {Promise<number>}
  */

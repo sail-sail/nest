@@ -9,7 +9,7 @@ use super::background_task_service;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找后台任务列表
 pub async fn find_all(
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,
@@ -27,7 +27,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找后台任务总数
 pub async fn find_count(
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
@@ -41,7 +41,7 @@ pub async fn find_count(
   Ok(num)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个后台任务
 pub async fn find_one(
   search: Option<BackgroundTaskSearch>,
   sort: Option<Vec<SortInput>>,
@@ -57,7 +57,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找后台任务
 pub async fn find_by_id(
   id: BackgroundTaskId,
   options: Option<Options>,
@@ -71,7 +71,7 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建数据
+/// 创建后台任务
 #[allow(dead_code)]
 pub async fn create(
   input: BackgroundTaskInput,
@@ -95,7 +95,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改租户id
+/// 后台任务根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
   id: BackgroundTaskId,
@@ -112,7 +112,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改后台任务
 #[allow(dead_code)]
 pub async fn update_by_id(
   id: BackgroundTaskId,
@@ -138,7 +138,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除后台任务
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<BackgroundTaskId>,
@@ -158,7 +158,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取后台任务字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
@@ -170,7 +170,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原后台任务
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<BackgroundTaskId>,
@@ -190,7 +190,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除后台任务
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<BackgroundTaskId>,

@@ -215,7 +215,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找系统字典明细总数
  * @param { DictDetailSearch } search?
  * @return {Promise<number>}
  */
@@ -581,7 +581,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找系统字典明细
+ * 根据 id 查找系统字典明细
  * @param {DictDetailId} id
  */
 export async function findById(
@@ -903,7 +903,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改系统字典明细
+ * 根据 id 修改系统字典明细
  * @param {DictDetailId} id
  * @param {DictDetailInput} input
  * @param {({
@@ -1040,7 +1040,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除系统字典明细
  * @param {DictDetailId[]} ids
  * @return {Promise<number>}
  */
@@ -1107,7 +1107,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用系统字典明细
  * @param {DictDetailId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1177,7 +1177,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁系统字典明细
  * @param {DictDetailId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

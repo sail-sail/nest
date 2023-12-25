@@ -7,7 +7,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::dict_model::*;
 use super::dict_service;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找系统字典列表
 pub async fn find_all(
   search: Option<DictSearch>,
   page: Option<PageInput>,
@@ -25,7 +25,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找系统字典总数
 pub async fn find_count(
   search: Option<DictSearch>,
   options: Option<Options>,
@@ -39,7 +39,7 @@ pub async fn find_count(
   Ok(num)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个系统字典
 pub async fn find_one(
   search: Option<DictSearch>,
   sort: Option<Vec<SortInput>>,
@@ -55,7 +55,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找系统字典
 pub async fn find_by_id(
   id: DictId,
   options: Option<Options>,
@@ -69,7 +69,7 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建数据
+/// 创建系统字典
 #[allow(dead_code)]
 pub async fn create(
   input: DictInput,
@@ -93,7 +93,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改系统字典
 #[allow(dead_code)]
 pub async fn update_by_id(
   id: DictId,
@@ -119,7 +119,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除系统字典
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<DictId>,
@@ -139,7 +139,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找系统字典是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
@@ -155,7 +155,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或禁用数据
+/// 根据 ids 启用或者禁用系统字典
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<DictId>,
@@ -177,7 +177,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找系统字典是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
@@ -194,7 +194,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或解锁数据
+/// 根据 ids 锁定或者解锁系统字典
 #[allow(dead_code)]
 pub async fn lock_by_ids(
   ids: Vec<DictId>,
@@ -216,7 +216,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取系统字典字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<DictFieldComment> {
@@ -228,7 +228,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原系统字典
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<DictId>,
@@ -248,7 +248,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除系统字典
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<DictId>,
@@ -268,7 +268,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 order_by 字段的最大值
+/// 查找 系统字典 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {

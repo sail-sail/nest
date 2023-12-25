@@ -234,7 +234,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找后台任务总数
  * @param { BackgroundTaskSearch } search?
  * @return {Promise<number>}
  */
@@ -627,7 +627,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找后台任务
+ * 根据 id 查找后台任务
  * @param {BackgroundTaskId} id
  */
 export async function findById(
@@ -983,7 +983,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改后台任务
+ * 根据 id 修改后台任务
  * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
  * @param {({
@@ -1119,7 +1119,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除后台任务
  * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */

@@ -22,9 +22,16 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: FieldPermitModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找字段权限列表
- * @export findAll
  * @param {FieldPermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -68,16 +75,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllFieldPermit;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllFieldPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个字段权限
- * @export findOne
+ * 根据条件查找第一个字段权限
  * @param {FieldPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -119,14 +126,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneFieldPermit;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找字段权限总数
- * @export findCount
  * @param {FieldPermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -146,13 +151,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountFieldPermit;
-  return res;
+  const count = data.findCountFieldPermit;
+  return count;
 }
 
 /**
- * 创建一条字段权限
- * @export create
+ * 创建字段权限
  * @param {FieldPermitInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -180,8 +184,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条字段权限
- * @export updateById
+ * 根据 id 修改字段权限
  * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
  * @param {GqlOpt} opt?
@@ -209,8 +212,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条字段权限
- * @export findById
+ * 根据 id 查找字段权限
  * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
  */
@@ -247,13 +249,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdFieldPermit;
-  return res;
+  const model = data.findByIdFieldPermit;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除字段权限
- * @export deleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -278,8 +280,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原字段权限
- * @export revertByIds
+ * 根据 ids 还原字段权限
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -305,7 +306,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除字段权限
- * @export forceDeleteByIds
  * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -536,7 +536,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {FieldPermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: FieldPermitInput[],

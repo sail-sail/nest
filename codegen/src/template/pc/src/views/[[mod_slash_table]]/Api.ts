@@ -37,6 +37,27 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   modelNameTree = Table_Up + "ModelTree";
 }
 #><#
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  if (!column_type) {
+    continue;
+  }
+  if (!column_type.startsWith("decimal")) {
+    continue;
+  }
+  hasDecimal = true;
+}
+#><#
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
@@ -46,7 +67,13 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 }
 #>import type {
   <#=Table_Up#>Id,
-} from "@/typings/ids";
+} from "@/typings/ids";<#
+if (hasDecimal) {
+#>
+
+import Decimal from "decimal.js-light";<#
+}
+#>
 
 import type {
   Query,
@@ -187,9 +214,51 @@ import {
 }
 #>
 
+async function setLblById(
+  model?: <#=modelName#>,
+) {
+  if (!model) {
+    return;
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_sys") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "is_hidden") continue;
+    const data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    let formatter = column.formatter;
+    if (!formatter) {
+      if (data_type === "json") {
+        formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
+      }
+    }
+    const column_type = column.COLUMN_TYPE;
+  #><#
+    if (formatter) {
+  #>
+  <#=formatter#><#
+    }
+  #><#
+    if (column_type && column_type.startsWith("decimal")) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    model.<#=column_name#> = new Decimal(model.<#=column_name#>);
+  }<#
+    }
+  #><#
+  }
+  #>
+}
+
 /**
  * 根据搜索条件查找<#=table_comment#>列表
- * @export findAll
  * @param {<#=searchName#>} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -320,36 +389,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Table_Up2#>;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const data_type = column.DATA_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let formatter = column.formatter;
-    if (!formatter) {
-      if (data_type === "json") {
-        formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
-      }
-    }
-    if (formatter) {
-  #>
-    <#=formatter#><#
-    }
-  #><#
+  const models = data.findAll<#=Table_Up2#>;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  #>
-  }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个<#=table_comment#>
- * @export findOne
+ * 根据条件查找第一个<#=table_comment#>
  * @param {<#=searchName#>} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -478,28 +527,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOne<#=Table_Up2#>;
-  if (model) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      const data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let formatter = column.formatter;
-      if (!formatter) {
-        if (data_type === "json") {
-          formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
-        }
-      }
-      if (formatter) {
-    #>
-      <#=formatter#><#
-      }
-    #><#
-    }
-    #>
-  }
+  await setLblById(model);
   return model;
 }<#
 if (list_tree === true) {
@@ -534,7 +562,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找<#=table_comment#>总数
- * @export findCount
  * @param {<#=searchName#>} search?
  * @param {GqlOpt} opt?
  */
@@ -554,14 +581,14 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCount<#=Table_Up2#>;
-  return res;
+  const count = data.findCount<#=Table_Up2#>;
+  return count;
 }<#
 if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找<#=table_comment#>汇总
+ * 根据搜索条件查找<#=table_comment#>合计
  * @param {<#=searchName#>} search
  * @param {GqlOpt} opt?
  */
@@ -605,8 +632,7 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建一条<#=table_comment#>
- * @export create
+ * 创建<#=table_comment#>
  * @param {<#=inputName#>} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -638,8 +664,7 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据id修改一条<#=table_comment#>
- * @export updateById
+ * 根据 id 修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} model
  * @param {GqlOpt} opt?
@@ -669,8 +694,7 @@ export async function updateById(
 #>
 
 /**
- * 通过ID查找一条<#=table_comment#>
- * @export findById
+ * 根据 id 查找<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
  */
@@ -792,29 +816,15 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findById<#=Table_Up2#>;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    let data_type = column.DATA_TYPE;
-    if (data_type === "json") {
-  #>
-  if (res?.<#=column_name#>) {
-    res.<#=column_name#> = JSON.stringify(res.<#=column_name#>);
-  }<#
-    }
-  }
-  #>
-  return res;
+  const model = data.findById<#=Table_Up2#>;
+  await setLblById(model);
+  return model;
 }<#
 if (opts.noDelete !== true) {
 #>
 
 /**
  * 根据 ids 删除<#=table_comment#>
- * @export deleteByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
@@ -844,7 +854,6 @@ if (hasDefault && opts.noEdit !== true) {
 
 /**
  * 根据 id 设置默认<#=table_comment#>
- * @export defaultById
  * @param {<#=Table_Up#>Id} id
  * @param {GqlOpt} opt?
  */
@@ -874,7 +883,6 @@ if (hasEnabled && opts.noEdit !== true) {
 
 /**
  * 根据 ids 启用或禁用<#=table_comment#>
- * @export enableByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -907,7 +915,6 @@ if (hasLocked && opts.noEdit !== true) {
 
 /**
  * 根据 ids 锁定或解锁<#=table_comment#>
- * @export lockByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -939,8 +946,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 #>
 
 /**
- * 根据 ids 从回收站还原<#=table_comment#>
- * @export revertByIds
+ * 根据 ids 还原<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
@@ -966,7 +972,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
- * @export forceDeleteByIds
  * @param {<#=Table_Up#>Id[]} ids
  * @param {GqlOpt} opt?
  */
@@ -1956,7 +1961,6 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 /**
  * 批量导入
  * @param {<#=inputName#>[]} models
- * @export importModels
  */
 export async function importModels(
   models: <#=inputName#>[],
@@ -2008,8 +2012,7 @@ if (hasOrderBy) {
 #>
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 <#=table_comment#> order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

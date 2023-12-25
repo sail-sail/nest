@@ -9,9 +9,16 @@ import type {
   BackgroundTaskSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: BackgroundTaskModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找后台任务列表
- * @export findAll
  * @param {BackgroundTaskSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -60,16 +67,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllBackgroundTask;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllBackgroundTask;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个后台任务
- * @export findOne
+ * 根据条件查找第一个后台任务
  * @param {BackgroundTaskSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -116,14 +123,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneBackgroundTask;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找后台任务总数
- * @export findCount
  * @param {BackgroundTaskSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -143,13 +148,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountBackgroundTask;
-  return res;
+  const count = data.findCountBackgroundTask;
+  return count;
 }
 
 /**
- * 通过ID查找一条后台任务
- * @export findById
+ * 根据 id 查找后台任务
  * @param {BackgroundTaskId} id
  * @param {GqlOpt} opt?
  */
@@ -191,13 +195,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdBackgroundTask;
-  return res;
+  const model = data.findByIdBackgroundTask;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除后台任务
- * @export deleteByIds
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -222,8 +226,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原后台任务
- * @export revertByIds
+ * 根据 ids 还原后台任务
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -249,7 +252,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除后台任务
- * @export forceDeleteByIds
  * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
