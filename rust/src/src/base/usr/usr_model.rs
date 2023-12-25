@@ -10,23 +10,19 @@ use async_graphql::{
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::org::org_model::OrgId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
-  
   /// 用户名
   pub username: String,
-  
   /// 密码
   pub password: String,
-  
   /// 租户ID
   pub tenant_id: TenantId,
-  
   /// 组织ID
   pub org_id: Option<OrgId>,
-  
   /// 语言
   pub lang: String,
   
@@ -49,11 +45,13 @@ pub struct ChangePasswordInput {
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
-pub struct Login {
-  
+pub struct LoginModel {
+  pub usr_id: UsrId,
+  pub username: String,
+  pub tenant_id: TenantId,
   pub authorization: String,
-  pub org_id: OrgId,
-  
+  pub org_id: Option<OrgId>,
+  pub lang: String,
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]

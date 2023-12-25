@@ -23,9 +23,16 @@ import {
   findTree as findDeptTree,
 } from "@/views/base/dept/Api";
 
+async function setLblById(
+  model?: DeptModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找部门列表
- * @export findAll
  * @param {DeptSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -73,16 +80,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDept;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDept;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个部门
- * @export findOne
+ * 根据条件查找第一个部门
  * @param {DeptSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -128,8 +135,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDept;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -160,7 +166,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找部门总数
- * @export findCount
  * @param {DeptSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -180,13 +185,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDept;
-  return res;
+  const count = data.findCountDept;
+  return count;
 }
 
 /**
- * 创建一条部门
- * @export create
+ * 创建部门
  * @param {DeptInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -214,8 +218,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条部门
- * @export updateById
+ * 根据 id 修改部门
  * @param {DeptId} id
  * @param {DeptInput} model
  * @param {GqlOpt} opt?
@@ -243,8 +246,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条部门
- * @export findById
+ * 根据 id 查找部门
  * @param {DeptId} id
  * @param {GqlOpt} opt?
  */
@@ -285,13 +287,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDept;
-  return res;
+  const model = data.findByIdDept;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除部门
- * @export deleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -317,7 +319,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用部门
- * @export enableByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -346,7 +347,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁部门
- * @export lockByIds
  * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -374,8 +374,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原部门
- * @export revertByIds
+ * 根据 ids 还原部门
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -401,7 +400,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除部门
- * @export forceDeleteByIds
  * @param {DeptId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -682,7 +680,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DeptInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DeptInput[],
@@ -730,8 +727,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 部门 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

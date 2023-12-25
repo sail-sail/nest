@@ -337,7 +337,7 @@ async fn get_from_query() -> Result<String> {
   Ok(from_query)
 }
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找系统字典明细列表
 #[allow(unused_variables)]
 pub async fn find_all(
   search: Option<DictDetailSearch>,
@@ -439,7 +439,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查询数据总数
+/// 根据条件查找系统字典明细总数
 pub async fn find_count(
   search: Option<DictDetailSearch>,
   options: Option<Options>,
@@ -503,7 +503,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
-/// 获取字段对应的国家化后的名称
+/// 获取系统字典明细字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<DictDetailFieldComment> {
@@ -568,7 +568,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个系统字典明细
 pub async fn find_one(
   search: Option<DictDetailSearch>,
   sort: Option<Vec<SortInput>>,
@@ -592,7 +592,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找系统字典明细
 pub async fn find_by_id(
   id: DictDetailId,
   options: Option<Options>,
@@ -612,7 +612,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
-/// 根据搜索条件判断数据是否存在
+/// 根据搜索条件判断系统字典明细是否存在
 pub async fn exists(
   search: Option<DictDetailSearch>,
   options: Option<Options>,
@@ -626,7 +626,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-/// 根据ID判断数据是否存在
+/// 根据 id 判断系统字典明细是否存在
 pub async fn exists_by_id(
   id: DictDetailId,
   options: Option<Options>,
@@ -812,7 +812,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建系统字典明细
 #[allow(unused_mut)]
 pub async fn create(
   mut input: DictDetailInput,
@@ -981,7 +981,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改系统字典明细
 #[allow(unused_mut)]
 pub async fn update_by_id(
   id: DictDetailId,
@@ -1157,7 +1157,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除系统字典明细
 pub async fn delete_by_ids(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
@@ -1198,7 +1198,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找系统字典明细是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
   id: DictDetailId,
@@ -1218,7 +1218,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或禁用数据
+/// 根据 ids 启用或者禁用系统字典明细
 pub async fn enable_by_ids(
   ids: Vec<DictDetailId>,
   is_enabled: u8,
@@ -1258,7 +1258,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找系统字典明细是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
@@ -1279,7 +1279,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或者解锁系统字典明细
 pub async fn lock_by_ids(
   ids: Vec<DictDetailId>,
   is_locked: u8,
@@ -1319,7 +1319,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原系统字典明细
 pub async fn revert_by_ids(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
@@ -1396,7 +1396,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除系统字典明细
 pub async fn force_delete_by_ids(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
@@ -1453,7 +1453,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 order_by 字段的最大值
+/// 查找 系统字典明细 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
@@ -1498,7 +1498,7 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-/// 校验记录是否启用
+/// 校验系统字典明细是否启用
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
@@ -1519,7 +1519,7 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-/// 校验记录是否存在
+/// 校验系统字典明细是否存在
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(

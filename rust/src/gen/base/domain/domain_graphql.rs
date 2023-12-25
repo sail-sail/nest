@@ -22,7 +22,7 @@ pub struct DomainGenQuery;
 #[Object(rename_args = "snake_case")]
 impl DomainGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找域名列表
   async fn find_all_domain(
     &self,
     ctx: &Context<'_>,
@@ -43,7 +43,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找域名总数
   async fn find_count_domain(
     &self,
     ctx: &Context<'_>,
@@ -60,7 +60,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个域名
   async fn find_one_domain(
     &self,
     ctx: &Context<'_>,
@@ -79,7 +79,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找域名
   async fn find_by_id_domain(
     &self,
     ctx: &Context<'_>,
@@ -96,7 +96,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已启用
+  /// 根据 id 查找域名是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_domain(
     &self,
@@ -114,7 +114,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 根据 id 查找是否已锁定
+  /// 根据 id 查找域名是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
   async fn get_is_locked_by_id_domain(
@@ -133,7 +133,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取域名字段注释
   async fn get_field_comments_domain(
     &self,
     ctx: &Context<'_>,
@@ -147,7 +147,7 @@ impl DomainGenQuery {
       }).await
   }
   
-  /// 查找 order_by 字段的最大值
+  /// 查找 域名 order_by 字段的最大值
   async fn find_last_order_by_domain(
     &self,
     ctx: &Context<'_>,
@@ -170,7 +170,7 @@ pub struct DomainGenMutation;
 #[Object(rename_args = "snake_case")]
 impl DomainGenMutation {
   
-  /// 创建数据
+  /// 创建域名
   async fn create_domain(
     &self,
     ctx: &Context<'_>,
@@ -193,7 +193,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改域名
   async fn update_by_id_domain(
     &self,
     ctx: &Context<'_>,
@@ -213,7 +213,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除域名
   async fn delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,
@@ -231,7 +231,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 id 设置默认记录
+  /// 根据 id 设置默认域名
   async fn default_by_id_domain(
     &self,
     ctx: &Context<'_>,
@@ -249,7 +249,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 ids 启用或禁用数据
+  /// 根据 ids 启用或者禁用域名
   async fn enable_by_ids_domain(
     &self,
     ctx: &Context<'_>,
@@ -289,7 +289,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原域名
   async fn revert_by_ids_domain(
     &self,
     ctx: &Context<'_>,
@@ -307,7 +307,7 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除域名
   async fn force_delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,

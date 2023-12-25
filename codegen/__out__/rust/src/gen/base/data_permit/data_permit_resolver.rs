@@ -7,7 +7,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::data_permit_model::*;
 use super::data_permit_service;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找数据权限列表
 pub async fn find_all(
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
@@ -25,7 +25,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找数据权限总数
 pub async fn find_count(
   search: Option<DataPermitSearch>,
   options: Option<Options>,
@@ -39,7 +39,7 @@ pub async fn find_count(
   Ok(num)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个数据权限
 pub async fn find_one(
   search: Option<DataPermitSearch>,
   sort: Option<Vec<SortInput>>,
@@ -55,7 +55,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找数据权限
 pub async fn find_by_id(
   id: DataPermitId,
   options: Option<Options>,
@@ -69,7 +69,7 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建数据
+/// 创建数据权限
 #[allow(dead_code)]
 pub async fn create(
   input: DataPermitInput,
@@ -93,7 +93,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改数据权限
 #[allow(dead_code)]
 pub async fn update_by_id(
   id: DataPermitId,
@@ -119,7 +119,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除数据权限
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<DataPermitId>,
@@ -139,7 +139,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取数据权限字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<DataPermitFieldComment> {
@@ -151,7 +151,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原数据权限
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<DataPermitId>,
@@ -171,7 +171,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除数据权限
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<DataPermitId>,

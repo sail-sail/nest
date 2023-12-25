@@ -26,9 +26,16 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: I18Nmodel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找国际化列表
- * @export findAll
  * @param {I18Nsearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -72,16 +79,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllI18N;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllI18N;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个国际化
- * @export findOne
+ * 根据条件查找第一个国际化
  * @param {I18Nsearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -123,14 +130,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneI18N;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找国际化总数
- * @export findCount
  * @param {I18Nsearch} search?
  * @param {GqlOpt} opt?
  */
@@ -150,13 +155,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountI18N;
-  return res;
+  const count = data.findCountI18N;
+  return count;
 }
 
 /**
- * 创建一条国际化
- * @export create
+ * 创建国际化
  * @param {I18Ninput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -184,8 +188,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条国际化
- * @export updateById
+ * 根据 id 修改国际化
  * @param {I18nId} id
  * @param {I18Ninput} model
  * @param {GqlOpt} opt?
@@ -213,8 +216,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条国际化
- * @export findById
+ * 根据 id 查找国际化
  * @param {I18nId} id
  * @param {GqlOpt} opt?
  */
@@ -251,13 +253,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdI18N;
-  return res;
+  const model = data.findByIdI18N;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除国际化
- * @export deleteByIds
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -282,8 +284,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原国际化
- * @export revertByIds
+ * 根据 ids 还原国际化
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -309,7 +310,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除国际化
- * @export forceDeleteByIds
  * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -581,7 +581,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {I18Ninput[]} models
- * @export importModels
  */
 export async function importModels(
   models: I18Ninput[],

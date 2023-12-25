@@ -228,7 +228,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找菜单总数
  * @param { MenuSearch } search?
  * @return {Promise<number>}
  */
@@ -619,7 +619,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找菜单
+ * 根据 id 查找菜单
  * @param {MenuId} id
  */
 export async function findById(
@@ -961,7 +961,7 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改菜单
+ * 根据 id 修改菜单
  * @param {MenuId} id
  * @param {MenuInput} input
  * @param {({
@@ -1104,7 +1104,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除菜单
  * @param {MenuId[]} ids
  * @return {Promise<number>}
  */
@@ -1171,7 +1171,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用菜单
  * @param {MenuId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1241,7 +1241,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁菜单
  * @param {MenuId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

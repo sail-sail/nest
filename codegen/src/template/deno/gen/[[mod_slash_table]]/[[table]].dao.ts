@@ -854,7 +854,7 @@ async function getFromQuery() {<#
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找<#=table_comment#>总数
  * @param { <#=searchName#> } search?
  * @return {Promise<number>}
  */
@@ -1291,6 +1291,7 @@ export async function findAll(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -1453,6 +1454,7 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -1651,6 +1653,7 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if ([
       "id",
@@ -2286,7 +2289,7 @@ export async function findOne(
 }
 
 /**
- * 根据id查找<#=table_comment#>
+ * 根据 id 查找<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  */
 export async function findById(
@@ -3199,7 +3202,7 @@ export async function getVersionById(
 #>
 
 /**
- * 根据id修改<#=table_comment#>
+ * 根据 id 修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} input
  * @param {({
@@ -3584,7 +3587,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
@@ -3756,7 +3759,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -3844,7 +3847,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁<#=table_comment#>
  * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

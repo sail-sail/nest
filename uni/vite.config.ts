@@ -82,6 +82,9 @@ export default defineConfig({
             "query",
             "mutation",
           ],
+          "@/pages/index/Api": [
+            "checkLogin",
+          ],
           "@/utils/StringUtil": [
             "isEmpty",
             "isNotEmpty",
@@ -95,6 +98,10 @@ export default defineConfig({
           ],
           "@/components/CustomForm/CustomForm.vue": [
             [ "default", "CustomForm" ]
+          ],
+          "@/utils/WxWorkUtil": [
+            "wxwGetAppid",
+            "initWxWorkCfg",
           ],
         },
       ],

@@ -325,7 +325,7 @@ async fn get_from_query() -> Result<String> {
   Ok(from_query)
 }
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找域名列表
 #[allow(unused_variables)]
 pub async fn find_all(
   search: Option<DomainSearch>,
@@ -437,7 +437,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查询数据总数
+/// 根据条件查找域名总数
 pub async fn find_count(
   search: Option<DomainSearch>,
   options: Option<Options>,
@@ -501,7 +501,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
-/// 获取字段对应的国家化后的名称
+/// 获取域名字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<DomainFieldComment> {
@@ -566,7 +566,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个域名
 pub async fn find_one(
   search: Option<DomainSearch>,
   sort: Option<Vec<SortInput>>,
@@ -590,7 +590,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据ID查找第一条数据
+/// 根据 id 查找域名
 pub async fn find_by_id(
   id: DomainId,
   options: Option<Options>,
@@ -610,7 +610,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
-/// 根据搜索条件判断数据是否存在
+/// 根据搜索条件判断域名是否存在
 pub async fn exists(
   search: Option<DomainSearch>,
   options: Option<Options>,
@@ -624,7 +624,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-/// 根据ID判断数据是否存在
+/// 根据 id 判断域名是否存在
 pub async fn exists_by_id(
   id: DomainId,
   options: Option<Options>,
@@ -802,7 +802,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建域名
 #[allow(unused_mut)]
 pub async fn create(
   mut input: DomainInput,
@@ -965,7 +965,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改域名
 #[allow(unused_mut)]
 pub async fn update_by_id(
   id: DomainId,
@@ -1134,7 +1134,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除域名
 pub async fn delete_by_ids(
   ids: Vec<DomainId>,
   options: Option<Options>,
@@ -1175,7 +1175,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 设置默认记录
+/// 根据 id 设置默认域名
 pub async fn default_by_id(
   id: DomainId,
   options: Option<Options>,
@@ -1233,7 +1233,7 @@ pub async fn default_by_id(
   Ok(num)
 }
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找域名是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
   id: DomainId,
@@ -1253,7 +1253,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或禁用数据
+/// 根据 ids 启用或者禁用域名
 pub async fn enable_by_ids(
   ids: Vec<DomainId>,
   is_enabled: u8,
@@ -1293,7 +1293,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找域名是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id(
@@ -1314,7 +1314,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或者解锁域名
 pub async fn lock_by_ids(
   ids: Vec<DomainId>,
   is_locked: u8,
@@ -1354,7 +1354,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原域名
 pub async fn revert_by_ids(
   ids: Vec<DomainId>,
   options: Option<Options>,
@@ -1431,7 +1431,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除域名
 pub async fn force_delete_by_ids(
   ids: Vec<DomainId>,
   options: Option<Options>,
@@ -1488,7 +1488,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 order_by 字段的最大值
+/// 查找 域名 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
@@ -1533,7 +1533,7 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-/// 校验记录是否启用
+/// 校验域名是否启用
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
@@ -1554,7 +1554,7 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-/// 校验记录是否存在
+/// 校验域名是否存在
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(

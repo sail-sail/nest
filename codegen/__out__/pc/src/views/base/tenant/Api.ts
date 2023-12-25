@@ -26,9 +26,16 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: TenantModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找租户列表
- * @export findAll
  * @param {TenantSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -76,16 +83,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllTenant;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllTenant;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个租户
- * @export findOne
+ * 根据条件查找第一个租户
  * @param {TenantSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -131,14 +138,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneTenant;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找租户总数
- * @export findCount
  * @param {TenantSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -158,13 +163,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountTenant;
-  return res;
+  const count = data.findCountTenant;
+  return count;
 }
 
 /**
- * 创建一条租户
- * @export create
+ * 创建租户
  * @param {TenantInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -192,8 +196,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条租户
- * @export updateById
+ * 根据 id 修改租户
  * @param {TenantId} id
  * @param {TenantInput} model
  * @param {GqlOpt} opt?
@@ -221,8 +224,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条租户
- * @export findById
+ * 根据 id 查找租户
  * @param {TenantId} id
  * @param {GqlOpt} opt?
  */
@@ -263,13 +265,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdTenant;
-  return res;
+  const model = data.findByIdTenant;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除租户
- * @export deleteByIds
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -295,7 +297,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用租户
- * @export enableByIds
  * @param {TenantId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -324,7 +325,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁租户
- * @export lockByIds
  * @param {TenantId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -352,8 +352,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原租户
- * @export revertByIds
+ * 根据 ids 还原租户
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -379,7 +378,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除租户
- * @export forceDeleteByIds
  * @param {TenantId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -662,7 +660,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {TenantInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: TenantInput[],
@@ -710,8 +707,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 租户 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

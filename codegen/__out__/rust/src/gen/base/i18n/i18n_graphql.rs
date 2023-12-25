@@ -22,7 +22,7 @@ pub struct I18nGenQuery;
 #[Object(rename_args = "snake_case")]
 impl I18nGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找国际化列表
   async fn find_all_i18n(
     &self,
     ctx: &Context<'_>,
@@ -43,7 +43,7 @@ impl I18nGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找国际化总数
   async fn find_count_i18n(
     &self,
     ctx: &Context<'_>,
@@ -60,7 +60,7 @@ impl I18nGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个国际化
   async fn find_one_i18n(
     &self,
     ctx: &Context<'_>,
@@ -79,7 +79,7 @@ impl I18nGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找国际化
   async fn find_by_id_i18n(
     &self,
     ctx: &Context<'_>,
@@ -96,7 +96,7 @@ impl I18nGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取国际化字段注释
   async fn get_field_comments_i18n(
     &self,
     ctx: &Context<'_>,
@@ -118,7 +118,7 @@ pub struct I18nGenMutation;
 #[Object(rename_args = "snake_case")]
 impl I18nGenMutation {
   
-  /// 创建数据
+  /// 创建国际化
   async fn create_i18n(
     &self,
     ctx: &Context<'_>,
@@ -141,7 +141,7 @@ impl I18nGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改国际化
   async fn update_by_id_i18n(
     &self,
     ctx: &Context<'_>,
@@ -161,7 +161,7 @@ impl I18nGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除国际化
   async fn delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
@@ -179,7 +179,7 @@ impl I18nGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原国际化
   async fn revert_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
@@ -197,7 +197,7 @@ impl I18nGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除国际化
   async fn force_delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,

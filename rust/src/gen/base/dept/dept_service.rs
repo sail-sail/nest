@@ -18,7 +18,7 @@ use crate::gen::base::org::org_model::OrgId;
 use super::dept_model::*;
 use super::dept_dao;
 
-/// 根据搜索条件和分页查找数据
+/// 根据搜索条件和分页查找部门列表
 pub async fn find_all(
   search: Option<DeptSearch>,
   page: Option<PageInput>,
@@ -36,7 +36,7 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据搜索条件查找总数
+/// 根据条件查找部门总数
 pub async fn find_count(
   search: Option<DeptSearch>,
   options: Option<Options>,
@@ -50,7 +50,7 @@ pub async fn find_count(
   Ok(res)
 }
 
-/// 根据条件查找第一条数据
+/// 根据条件查找第一个部门
 pub async fn find_one(
   search: Option<DeptSearch>,
   sort: Option<Vec<SortInput>>,
@@ -66,7 +66,7 @@ pub async fn find_one(
   Ok(model)
 }
 
-/// 根据 id 查找第一条数据
+/// 根据 id 查找部门
 pub async fn find_by_id(
   id: DeptId,
   options: Option<Options>,
@@ -92,7 +92,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建数据
+/// 创建部门
 #[allow(dead_code)]
 pub async fn create(
   input: DeptInput,
@@ -107,7 +107,7 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据id修改租户id
+/// 部门根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
   id: DeptId,
@@ -124,7 +124,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据id修改组织id
+/// 部门根据id修改组织id
 #[allow(dead_code)]
 pub async fn update_org_by_id(
   id: DeptId,
@@ -141,7 +141,7 @@ pub async fn update_org_by_id(
   Ok(num)
 }
 
-/// 根据id修改数据
+/// 根据 id 修改部门
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -169,7 +169,7 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除数据
+/// 根据 ids 删除部门
 #[allow(dead_code)]
 pub async fn delete_by_ids(
   ids: Vec<DeptId>,
@@ -208,7 +208,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已启用
+/// 根据 id 查找部门是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
@@ -224,7 +224,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用数据
+/// 根据 ids 启用或者禁用部门
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<DeptId>,
@@ -241,7 +241,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找是否已锁定
+/// 根据 id 查找部门是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
@@ -258,7 +258,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或者解锁部门
 #[allow(dead_code)]
 pub async fn lock_by_ids(
   ids: Vec<DeptId>,
@@ -275,7 +275,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-/// 获取字段对应的名称
+/// 获取部门字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<DeptFieldComment> {
@@ -287,7 +287,7 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据
+/// 根据 ids 还原部门
 #[allow(dead_code)]
 pub async fn revert_by_ids(
   ids: Vec<DeptId>,
@@ -302,7 +302,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据
+/// 根据 ids 彻底删除部门
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
   ids: Vec<DeptId>,
@@ -317,7 +317,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 order_by 字段的最大值
+/// 查找 部门 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {

@@ -7,7 +7,7 @@ use crate::common::context::{
   get_server_tokentimeout,
 };
 
-use super::usr_model::Login;
+use super::usr_model::LoginModel;
 
 use crate::common::auth::auth_dao::{
   get_password,
@@ -31,17 +31,15 @@ use super::usr_model::{
 
 use crate::src::base::i18n::i18n_dao::NRoute;
 
-use crate::gen::base::org::org_model::OrgId;
-
 /// 登录, 获得token
 pub async fn login(
   input: LoginInput,
-) -> Result<Login> {
+) -> Result<LoginModel> {
   let LoginInput {
     username,
     password,
     tenant_id,
-    mut org_id,
+    org_id,
     lang,
   } = input;
   if username.is_empty() || password.is_empty() {
@@ -70,38 +68,41 @@ pub async fn login(
   if usr_model.password != get_password(password)? {
     return Err(anyhow::anyhow!("用户名或密码错误"));
   }
+  let usr_id = usr_model.id;
+  let username = usr_model.username;
   
   let org_ids = usr_model.org_ids;
   
+  let mut org_id = org_id;
   if org_id.is_none() {
     if !usr_model.default_org_id.is_empty() {
       org_id = usr_model.default_org_id.into();
-    } else {
-      if org_ids.is_empty() {
-        return Err(anyhow::anyhow!("用户没有部门"));
-      }
+    } else if !org_ids.is_empty() {
       org_id = org_ids[0].clone().into();
     }
   }
-  
-  let org_id: OrgId = org_id.unwrap();
+  let org_id = org_id;
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
   let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_model.id,
-    tenant_id: tenant_id.to_string().into(),
-    org_id: org_id.clone().into(),
-    lang,
+    id: usr_id.clone(),
+    tenant_id: tenant_id.clone(),
+    org_id: org_id.clone(),
+    lang: lang.clone(),
     exp,
     ..Default::default()
   })?;
   
-  Ok(Login {
+  Ok(LoginModel {
+    usr_id,
+    username,
+    tenant_id,
     authorization,
     org_id,
+    lang,
   })
 }
 

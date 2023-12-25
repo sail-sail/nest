@@ -123,7 +123,7 @@ import {
   lang,
 } from "@/locales/index";
 
-const usrStore = useUsrStore();
+const usrStore = useUsrStore(cfg.pinia);
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
@@ -157,10 +157,11 @@ async function onLogin() {
   if (!loginModel.authorization) {
     return;
   }
-  usrStore.authorization = loginModel.authorization;
-  usrStore.username = model.username;
-  usrStore.tenant_id = model.tenant_id;
-  usrStore.lang = model.lang;
+  usrStore.setAuthorization(loginModel.authorization);
+  usrStore.setUsrId(loginModel.usr_id);
+  usrStore.setUsername(model.username);
+  usrStore.setTenantId(model.tenant_id);
+  usrStore.setLang(model.lang);
   await uni.reLaunch({
     url: redirect_uri,
   });

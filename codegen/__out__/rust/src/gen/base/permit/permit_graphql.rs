@@ -22,7 +22,7 @@ pub struct PermitGenQuery;
 #[Object(rename_args = "snake_case")]
 impl PermitGenQuery {
   
-  /// 根据搜索条件和分页查找数据
+  /// 根据搜索条件和分页查找按钮权限列表
   async fn find_all_permit(
     &self,
     ctx: &Context<'_>,
@@ -43,7 +43,7 @@ impl PermitGenQuery {
       }).await
   }
   
-  /// 根据搜索条件查询数据总数
+  /// 根据条件查找按钮权限总数
   async fn find_count_permit(
     &self,
     ctx: &Context<'_>,
@@ -60,7 +60,7 @@ impl PermitGenQuery {
       }).await
   }
   
-  /// 根据条件查找第一条数据
+  /// 根据条件查找第一个按钮权限
   async fn find_one_permit(
     &self,
     ctx: &Context<'_>,
@@ -79,7 +79,7 @@ impl PermitGenQuery {
       }).await
   }
   
-  /// 根据 id 查找第一条数据
+  /// 根据 id 查找按钮权限
   async fn find_by_id_permit(
     &self,
     ctx: &Context<'_>,
@@ -96,7 +96,7 @@ impl PermitGenQuery {
       }).await
   }
   
-  /// 获取字段对应的名称
+  /// 获取按钮权限字段注释
   async fn get_field_comments_permit(
     &self,
     ctx: &Context<'_>,
@@ -118,7 +118,7 @@ pub struct PermitGenMutation;
 #[Object(rename_args = "snake_case")]
 impl PermitGenMutation {
   
-  /// 创建数据
+  /// 创建按钮权限
   async fn create_permit(
     &self,
     ctx: &Context<'_>,
@@ -141,7 +141,7 @@ impl PermitGenMutation {
       }).await
   }
   
-  /// 根据id修改数据
+  /// 根据 id 修改按钮权限
   async fn update_by_id_permit(
     &self,
     ctx: &Context<'_>,
@@ -161,7 +161,7 @@ impl PermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据
+  /// 根据 ids 删除按钮权限
   async fn delete_by_ids_permit(
     &self,
     ctx: &Context<'_>,
@@ -179,7 +179,7 @@ impl PermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 还原数据
+  /// 根据 ids 还原按钮权限
   async fn revert_by_ids_permit(
     &self,
     ctx: &Context<'_>,
@@ -197,7 +197,7 @@ impl PermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 彻底删除数据
+  /// 根据 ids 彻底删除按钮权限
   async fn force_delete_by_ids_permit(
     &self,
     ctx: &Context<'_>,

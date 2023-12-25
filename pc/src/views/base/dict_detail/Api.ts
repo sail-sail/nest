@@ -18,9 +18,16 @@ import type {
   DictSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: DictDetailModel,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
  * 根据搜索条件查找系统字典明细列表
- * @export findAll
  * @param {DictDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -67,16 +74,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDictDetail;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDictDetail;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一个系统字典明细
- * @export findOne
+ * 根据条件查找第一个系统字典明细
  * @param {DictDetailSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -121,14 +128,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDictDetail;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
  * 根据搜索条件查找系统字典明细总数
- * @export findCount
  * @param {DictDetailSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -148,13 +153,12 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDictDetail;
-  return res;
+  const count = data.findCountDictDetail;
+  return count;
 }
 
 /**
- * 创建一条系统字典明细
- * @export create
+ * 创建系统字典明细
  * @param {DictDetailInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -182,8 +186,7 @@ export async function create(
 }
 
 /**
- * 根据id修改一条系统字典明细
- * @export updateById
+ * 根据 id 修改系统字典明细
  * @param {DictDetailId} id
  * @param {DictDetailInput} model
  * @param {GqlOpt} opt?
@@ -211,8 +214,7 @@ export async function updateById(
 }
 
 /**
- * 通过ID查找一条系统字典明细
- * @export findById
+ * 根据 id 查找系统字典明细
  * @param {DictDetailId} id
  * @param {GqlOpt} opt?
  */
@@ -252,13 +254,13 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDictDetail;
-  return res;
+  const model = data.findByIdDictDetail;
+  await setLblById(model);
+  return model;
 }
 
 /**
  * 根据 ids 删除系统字典明细
- * @export deleteByIds
  * @param {DictDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -284,7 +286,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用系统字典明细
- * @export enableByIds
  * @param {DictDetailId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -313,7 +314,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁系统字典明细
- * @export lockByIds
  * @param {DictDetailId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -341,8 +341,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原系统字典明细
- * @export revertByIds
+ * 根据 ids 还原系统字典明细
  * @param {DictDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -368,7 +367,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除系统字典明细
- * @export forceDeleteByIds
  * @param {DictDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -581,7 +579,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DictDetailInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DictDetailInput[],
@@ -629,8 +626,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 系统字典明细 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

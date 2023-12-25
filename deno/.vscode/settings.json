@@ -57,7 +57,7 @@
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
-  "unocss.root": "pc",
+  "unocss.root": "",
   "terminal.integrated.confirmOnKill": "never",
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"

@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找部门总数
  */
 export async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountDept(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找部门列表
  */
 export async function findAllDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllDept(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取部门字段注释
  */
 export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
   const { getFieldComments } = await import("./dept.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个部门
  */
 export async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneDept(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找部门
  */
 export async function findByIdDept(
   id: DeptId,
@@ -93,7 +93,7 @@ export async function findByIdDept(
 }
 
 /**
- * 创建一条数据
+ * 创建部门
  */
 export async function createDept(
   input: DeptInput,
@@ -124,7 +124,7 @@ export async function createDept(
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改部门
  */
 export async function updateByIdDept(
   id: DeptId,
@@ -151,7 +151,7 @@ export async function updateByIdDept(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除部门
  */
 export async function deleteByIdsDept(
   ids: DeptId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsDept(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用部门
  */
 export async function enableByIdsDept(
   ids: DeptId[],
@@ -201,7 +201,7 @@ export async function enableByIdsDept(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁部门
  */
 export async function lockByIdsDept(
   ids: DeptId[],
@@ -228,7 +228,7 @@ export async function lockByIdsDept(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原部门
  */
 export async function revertByIdsDept(
   ids: DeptId[],
@@ -251,7 +251,7 @@ export async function revertByIdsDept(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除部门
  */
 export async function forceDeleteByIdsDept(
   ids: DeptId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsDept(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 部门 order_by 字段的最大值
  */
 export async function findLastOrderByDept(): Promise<number> {
   const { findLastOrderBy } = await import("./dept.service.ts");

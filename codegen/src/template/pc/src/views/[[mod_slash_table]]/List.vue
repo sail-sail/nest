@@ -295,13 +295,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
             if (column.isMonth) {
             #>
-            @update:model-value="monthrangeSearch(search.<#=column_name#>, $event)"<#
+            @update:model-value="monthrangeSearch(search, '<#=column_name#>', $event)"<#
             } else {
             #>
             @update:model-value="search.<#=column_name#> = $event"<#
             }
             #>
             @clear="onSearchClear"
+            @change="onSearch"
           ></CustomDatePicker>
         </el-form-item>
       </template><#
@@ -854,7 +855,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"<#
         if (opts.noDelete !== true) {
         #>
@@ -1671,26 +1672,15 @@ const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    <#=Table_Up#>Id[],
-  ],
-  add: [
-    <#=Table_Up#>Id[],
-  ],
-  edit: [
-    <#=Table_Up#>Id[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ <#=Table_Up#>Id[] ],
+  add: [ <#=Table_Up#>Id[] ],
+  edit: [ <#=Table_Up#>Id[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
-  rowEnter: [
-    KeyboardEvent,
-  ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ <#=modelName#> ],
 }>();
 
 /** 表格 */
@@ -1779,6 +1769,7 @@ const props = defineProps<{
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
+  isFocus?: string;
   ids?: string[]; //ids
   selectedIds?: <#=Table_Up#>Id[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -1901,6 +1892,7 @@ const builtInSearchType: { [key: string]: string } = {
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
+  isFocus: "0|1",
   ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1958,6 +1950,7 @@ const propsNotInSearch: string[] = [
   "showBuildIn",
   "isPagination",
   "isLocked",
+  "isFocus",
 ];
 
 /** 内置搜索条件 */
@@ -1982,6 +1975,8 @@ const showBuildIn = $computed(() => props.showBuildIn === "1");
 const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
 /** 是否只读模式 */
 const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -2965,6 +2960,17 @@ async function onRowEnter(e: KeyboardEvent) {
   }
 }
 
+/** 双击行 */
+async function onRowDblclick(
+  row: <#=modelName#>,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
+}
+
 /** 打开查看 */
 async function openView() {
   if (!detailRef) {
@@ -3252,10 +3258,27 @@ async function initI18nsEfc() {
   ]);
 }
 
-async function initFrame() {
-  if (!usrStore.authorization) {
+async function focus() {
+  if (!inited || !tableRef || !tableRef.$el) {
     return;
   }
+  tableRef.$el.focus();
+}
+
+watch(
+  () => [
+    props.isFocus,
+    inited,
+  ],
+  () => {
+    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+      return;
+    }
+    tableRef.$el.focus();
+  },
+);
+
+async function initFrame() {
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),
@@ -3387,5 +3410,6 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: 
 
 defineExpose({
   refresh: onRefresh,
+  focus,
 });
 </script>
