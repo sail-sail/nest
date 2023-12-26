@@ -2215,6 +2215,29 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,<#
+        for (let i = 0; i < columns.length; i++) {
+          const column = columns[i];
+          if (column.ignoreCodegen) continue;
+          if (column.onlyCodegenDeno) continue;
+          if (column.noAdd && column.noEdit) continue;
+          if (column.isAtt) continue;
+          const column_name = column.COLUMN_NAME;
+          if (column_name === "id") continue;
+          if (column_name === "is_locked") continue;
+          if (column_name === "is_deleted") continue;
+          if (column_name === "version") continue;
+          if (column_name === "tenant_id") continue;
+          if (column_name === "org_id") continue;
+          let data_type = column.DATA_TYPE;
+          let column_type = column.COLUMN_TYPE;
+          let column_comment = column.COLUMN_COMMENT || "";
+          if (!column.readonly) {
+            continue;
+          }
+        #>
+        <#=column_name#>: undefined,<#
+        }
+        #><#
         if (hasDefault) {
         #>
         is_default: undefined,
