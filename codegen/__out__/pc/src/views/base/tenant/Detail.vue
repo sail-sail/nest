@@ -640,11 +640,11 @@ watch(
     if (!inited) {
       return;
     }
-    if (!dialogModel.domain_ids) {
-      dialogModel.domain_ids_lbl = "";
+    if (!dialogModel.domain_ids || dialogModel.domain_ids.length === 0) {
+      dialogModel.domain_ids_lbl = [ ];
     }
-    if (!dialogModel.menu_ids) {
-      dialogModel.menu_ids_lbl = "";
+    if (!dialogModel.menu_ids || dialogModel.menu_ids.length === 0) {
+      dialogModel.menu_ids_lbl = [ ];
     }
   },
 );

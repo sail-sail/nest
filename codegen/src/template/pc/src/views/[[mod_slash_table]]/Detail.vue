@@ -52,6 +52,14 @@ for (let i = 0; i < columns.length; i++) {
   }
   columnNum++;
 }
+let detailCustomDialogType = opts.detailCustomDialogType;
+if (!detailCustomDialogType) {
+  if (columnNum > 20 || hasInlineForeignTabs) {
+    detailCustomDialogType = "default";
+  } else {
+    detailCustomDialogType = "auto";
+  }
+}
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -633,13 +641,13 @@ for (let i = 0; i < columns.length; i++) {
         ><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
           #>
           
           <el-tab-pane
@@ -1422,13 +1430,13 @@ if (hasInlineForeignTabs) {
 import type {<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
     if (!inlineForeignSchema) {
       throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
       process.exit(1);
     }
-    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -2034,7 +2042,7 @@ async function getDefaultInput() {
         } else {
           defaultValue = defaultValue;
         }
-      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
+      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
         defaultValue = defaultValue;
       } else if (data_type === "datetime" || data_type === "date") {
         let valueFormat = "YYYY-MM-DD HH:mm:ss";
@@ -2050,10 +2058,9 @@ async function getDefaultInput() {
         } else {
           defaultValue = `"${ defaultValue }"`;
         }
+      } else if (data_type === "decimal") {
+        defaultValue = `new Decimal(${ defaultValue })`;
       } else {
-        defaultValue = `"${ defaultValue }"`;
-      }
-      if (data_type === "decimal") {
         defaultValue = `"${ defaultValue }"`;
       }
       if (column.dict || column.dictbiz) {
@@ -2106,15 +2113,8 @@ async function showDialog(
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
-  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({<#
-    if (columnNum > 20 || hasInlineForeignTabs) {
-    #>
-    type: "default",<#
-    } else {
-    #>
-    type: "auto",<#
-    }
-    #>
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "<#=detailCustomDialogType#>",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
@@ -2579,12 +2579,17 @@ watch(
       if (column.readonly) continue;
       if (column.noEdit) continue;
     #><#
-      if (foreignKey || column.dict || column.dictbiz
+      if ((foreignKey && !foreignKey.multiple) || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
     if (!dialogModel.<#=column_name#>) {
       dialogModel.<#=column_name#>_lbl = "";
+    }<#
+      } else if (foreignKey && foreignKey.multiple) {
+    #>
+    if (!dialogModel.<#=column_name#> || dialogModel.<#=column_name#>.length === 0) {
+      dialogModel.<#=column_name#>_lbl = [ ];
     }<#
       }
     #><#
@@ -2622,14 +2627,14 @@ async function onSave() {
       ...dialogModel,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-        if (!inlineForeignSchema) {
-          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-          process.exit(1);
-        }
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
         const hasOrderBy = columns.some((item) => item.COLUMN_NAME === "order_by");
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
       #>
       <#=table#>_models: [
         ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
@@ -2669,14 +2674,14 @@ async function onSave() {
       ...dialogModel,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-        if (!inlineForeignSchema) {
-          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-          process.exit(1);
-        }
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
         const hasOrderBy = columns.some((item) => item.COLUMN_NAME === "order_by");
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
       #>
       <#=table#>_models: [
         ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
