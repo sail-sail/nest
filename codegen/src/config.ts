@@ -778,6 +778,11 @@ export interface TablesConfigItem {
       column: string;
     }[],
     
+    /**
+     * Detail页面中的自定义弹窗类型, 默认为: auto
+     */
+    detailCustomDialogType?: "auto" | "medium" | "large" | "default";
+    
   },
   columns?: TableCloumn[];
 }

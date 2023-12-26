@@ -185,6 +185,9 @@ export default defineConfig({
           "@/locales/i18n": [
             "useI18n",
           ],
+          "decimal.js-light": [
+            [ "default", "Decimal" ],
+          ],
         },
       ],
       resolvers: [
