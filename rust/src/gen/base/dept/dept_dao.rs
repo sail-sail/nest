@@ -889,7 +889,10 @@ pub async fn set_id_by_lbl(
   }
   
   // 部门负责人
-  if input.usr_ids_lbl.is_some() && input.usr_ids.is_none() {
+  if input.usr_ids_lbl.is_some() &&
+    !input.usr_ids_lbl.clone().unwrap().is_empty() &&
+    input.usr_ids.is_none()
+  {
     input.usr_ids_lbl = input.usr_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
