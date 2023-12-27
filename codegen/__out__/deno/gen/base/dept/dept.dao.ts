@@ -503,7 +503,7 @@ export async function setIdByLbl(
   }
   
   // 部门负责人
-  if (!input.usr_ids && input.usr_ids_lbl) {
+  if (!input.usr_ids && input.usr_ids_lbl && input.usr_ids_lbl.length > 0) {
     if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
       input.usr_ids_lbl = input.usr_ids_lbl.split(",");
     }
