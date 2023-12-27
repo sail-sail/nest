@@ -844,7 +844,10 @@ pub async fn set_id_by_lbl(
   }
   
   // 所属域名
-  if input.domain_ids_lbl.is_some() && input.domain_ids.is_none() {
+  if input.domain_ids_lbl.is_some() &&
+    !input.domain_ids_lbl.clone().unwrap().is_empty() &&
+    input.domain_ids.is_none()
+  {
     input.domain_ids_lbl = input.domain_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -873,7 +876,10 @@ pub async fn set_id_by_lbl(
   }
   
   // 菜单权限
-  if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
+  if input.menu_ids_lbl.is_some() &&
+    !input.menu_ids_lbl.clone().unwrap().is_empty() &&
+    input.menu_ids.is_none()
+  {
     input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
