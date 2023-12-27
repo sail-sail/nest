@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  TenantModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   TenantSearch,
   TenantInput,
+  TenantModel,
 } from "#/types";
 
 import type {

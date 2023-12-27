@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  DataPermitModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   DataPermitSearch,
   DataPermitInput,
+  DataPermitModel,
 } from "#/types";
 
 import type {

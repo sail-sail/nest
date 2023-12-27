@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  OptionsModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   OptionsSearch,
   OptionsInput,
+  OptionsModel,
 } from "#/types";
 
 async function setLblById(
