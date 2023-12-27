@@ -12,10 +12,11 @@ import type {
   PageInput,
   DomainSearch,
   DomainInput,
+  DomainModel,
 } from "#/types";
 
 async function setLblById(
-  model?: DomainModel,
+  model?: DomainModel | null,
 ) {
   if (!model) {
     return;

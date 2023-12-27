@@ -23,23 +23,16 @@ import dayjs from "dayjs";
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows: T[] = [ ];
   const data: any = XLSX.utils.sheet_to_json(worksheet);
-  const keys = Object.keys(data[0]);
+  const keys = Object.keys(data[0])
+    .map((key) => key.trim())
+    .filter((key) => key);
   for (let i = 0; i < data.length; i++) {
     const vals = data[i];
     const row = <T>{ };
     for (let k = 0; k < keys.length; k++) {
-      const key = String(keys[k]).trim();
-      if (!key) continue;
+      const key = keys[k];
       let val = vals[key];
       const headerKey = header && header[key] || key;
-      if (val !== "-") {
-        if (headerKey) {
-          (row as any)[headerKey] = val;
-        }
-        // else {
-        //   (row as any)[key] = val;
-        // }
-      }
       const type = opt?.key_types[headerKey] || "string";
       if (type === "number") {
         (row as any)[headerKey] = Number(val);
@@ -63,7 +56,9 @@ import dayjs from "dayjs";
         if (val instanceof Date) {
           val = dayjs(val).format("YYYY-MM-DD HH:mm:ss");
         } else {
-          (row as any)[headerKey] = String(val);
+          if (val != null && val !== "-") {
+            (row as any)[headerKey] = String(val);
+          }
         }
       }
     }

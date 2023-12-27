@@ -20,7 +20,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: MenuModel,
+  model?: MenuModel | null,
 ) {
   if (!model) {
     return;

@@ -590,7 +590,7 @@ export async function setIdByLbl(
   ]);
   
   // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl) {
+  if (!input.menu_ids && input.menu_ids_lbl && input.menu_ids_lbl.length > 0) {
     if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
       input.menu_ids_lbl = input.menu_ids_lbl.split(",");
     }
@@ -612,7 +612,7 @@ export async function setIdByLbl(
   }
   
   // 按钮权限
-  if (!input.permit_ids && input.permit_ids_lbl) {
+  if (!input.permit_ids && input.permit_ids_lbl && input.permit_ids_lbl.length > 0) {
     if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
       input.permit_ids_lbl = input.permit_ids_lbl.split(",");
     }
@@ -634,7 +634,7 @@ export async function setIdByLbl(
   }
   
   // 数据权限
-  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
+  if (!input.data_permit_ids && input.data_permit_ids_lbl && input.data_permit_ids_lbl.length > 0) {
     if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
       input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
     }

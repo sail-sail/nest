@@ -12,10 +12,11 @@ import type {
   PageInput,
   OrgSearch,
   OrgInput,
+  OrgModel,
 } from "#/types";
 
 async function setLblById(
-  model?: OrgModel,
+  model?: OrgModel | null,
 ) {
   if (!model) {
     return;

@@ -84,12 +84,8 @@ import type {
   #>
   <#=inputName#>,<#
   }
-  #><#
-  if (list_tree === true) {
   #>
-  <#=modelName#>,<#
-  }
-  #>
+  <#=modelName#>,
 } from "#/types";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
@@ -215,7 +211,7 @@ import {
 #>
 
 async function setLblById(
-  model?: <#=modelName#>,
+  model?: <#=modelName#> | null,
 ) {
   if (!model) {
     return;
@@ -314,13 +310,13 @@ export async function findAll(
           is_deleted<#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -452,13 +448,13 @@ export async function findOne(
           is_deleted<#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -743,13 +739,13 @@ export async function findById(
           #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);

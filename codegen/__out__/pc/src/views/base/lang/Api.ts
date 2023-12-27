@@ -12,10 +12,11 @@ import type {
   PageInput,
   LangSearch,
   LangInput,
+  LangModel,
 } from "#/types";
 
 async function setLblById(
-  model?: LangModel,
+  model?: LangModel | null,
 ) {
   if (!model) {
     return;

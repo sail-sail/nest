@@ -24,7 +24,7 @@ import {
 } from "@/views/base/dept/Api";
 
 async function setLblById(
-  model?: DeptModel,
+  model?: DeptModel | null,
 ) {
   if (!model) {
     return;
