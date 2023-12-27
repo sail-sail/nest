@@ -61,6 +61,7 @@ for (let i = 0; i < columns.length; i++) {
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
+  <#=modelName#>,
 } from "#/types";
 
 <#
@@ -215,7 +216,7 @@ import {
 #>
 
 async function setLblById(
-  model?: <#=modelName#>,
+  model?: <#=modelName#> | null,
 ) {
   if (!model) {
     return;

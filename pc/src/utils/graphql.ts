@@ -359,8 +359,8 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       return data;
     }
   }
-  if (errors && errors.length > 0 && (!opt || opt.showErrMsg !== false)) {
-    let errMsg = "";
+  let errMsg = "";
+  if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
       errMsg += item.message;
@@ -368,18 +368,18 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         errMsg += "\n";
       }
     }
+  }
+  if (errMsg) {
     if (!opt || opt.showErrMsg !== false) {
-      if (errMsg) {
-        ElMessage({
-          offset: 0,
-          type: "error",
-          showClose: true,
-          message: errMsg,
-          duration,
-        });
-      }
+      ElMessage({
+        offset: 0,
+        type: "error",
+        showClose: true,
+        message: errMsg,
+        duration,
+      });
     }
-    if (errMsg && errMsg.startsWith("Error: ")) {
+    if (errMsg.startsWith("Error: ")) {
       throw new Error(errMsg, { cause: errors });
     } else {
       throw errMsg;
