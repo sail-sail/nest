@@ -10,7 +10,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: BackgroundTaskModel,
+  model?: BackgroundTaskModel | null,
 ) {
   if (!model) {
     return;

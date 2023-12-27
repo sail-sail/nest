@@ -10,7 +10,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: OperationRecordModel,
+  model?: OperationRecordModel | null,
 ) {
   if (!model) {
     return;

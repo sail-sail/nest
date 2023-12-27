@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  LangModel,
 } from "#/types";
 
 import type {
@@ -15,7 +16,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: LangModel,
+  model?: LangModel | null,
 ) {
   if (!model) {
     return;
