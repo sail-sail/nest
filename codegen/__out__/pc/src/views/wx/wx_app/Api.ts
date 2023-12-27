@@ -12,10 +12,11 @@ import type {
   PageInput,
   WxAppSearch,
   WxAppInput,
+  WxAppModel,
 } from "#/types";
 
 async function setLblById(
-  model?: WxAppModel,
+  model?: WxAppModel | null,
 ) {
   if (!model) {
     return;

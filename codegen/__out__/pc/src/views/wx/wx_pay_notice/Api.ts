@@ -7,10 +7,11 @@ import type {
   Mutation,
   PageInput,
   WxPayNoticeSearch,
+  WxPayNoticeModel,
 } from "#/types";
 
 async function setLblById(
-  model?: WxPayNoticeModel,
+  model?: WxPayNoticeModel | null,
 ) {
   if (!model) {
     return;
