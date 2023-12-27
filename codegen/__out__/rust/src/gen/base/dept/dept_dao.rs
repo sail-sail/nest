@@ -889,10 +889,7 @@ pub async fn set_id_by_lbl(
   }
   
   // 部门负责人
-  if input.usr_ids_lbl.is_some() &&
-    !input.usr_ids_lbl.clone().unwrap().is_empty() &&
-    input.usr_ids.is_none()
-  {
+  if input.usr_ids_lbl.is_some() && input.usr_ids.is_none() {
     input.usr_ids_lbl = input.usr_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -912,12 +909,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.usr_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<UsrId>>()
-        .into();
-    }
+    input.usr_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<UsrId>>()
+      .into();
   }
   
   Ok(input)
