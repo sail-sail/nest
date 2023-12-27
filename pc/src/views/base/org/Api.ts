@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  OrgModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   OrgSearch,
   OrgInput,
+  OrgModel,
 } from "#/types";
 
 async function setLblById(

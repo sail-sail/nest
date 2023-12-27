@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  I18Nmodel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   I18Nsearch,
   I18Ninput,
+  I18Nmodel,
 } from "#/types";
 
 import type {

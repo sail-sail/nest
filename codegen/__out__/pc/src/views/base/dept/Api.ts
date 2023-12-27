@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  DeptModel,
 } from "#/types";
 
 import type {

@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  RoleModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   RoleSearch,
   RoleInput,
+  RoleModel,
 } from "#/types";
 
 import type {

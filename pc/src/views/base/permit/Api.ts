@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  PermitModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   PermitSearch,
   PermitInput,
+  PermitModel,
 } from "#/types";
 
 import type {

@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  MenuModel,
 } from "#/types";
 
 import type {

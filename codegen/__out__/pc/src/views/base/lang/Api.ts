@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  LangModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   LangSearch,
   LangInput,
+  LangModel,
 } from "#/types";
 
 async function setLblById(

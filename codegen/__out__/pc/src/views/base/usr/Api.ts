@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  UsrModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   UsrSearch,
   UsrInput,
+  UsrModel,
 } from "#/types";
 
 import type {

@@ -61,7 +61,6 @@ for (let i = 0; i < columns.length; i++) {
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import {
   UniqueType,
-  <#=modelName#>,
 } from "#/types";
 
 <#
@@ -85,12 +84,8 @@ import type {
   #>
   <#=inputName#>,<#
   }
-  #><#
-  if (list_tree === true) {
   #>
-  <#=modelName#>,<#
-  }
-  #>
+  <#=modelName#>,
 } from "#/types";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);

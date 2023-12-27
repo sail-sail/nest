@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  DictbizDetailModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   DictbizDetailSearch,
   DictbizDetailInput,
+  DictbizDetailModel,
 } from "#/types";
 
 import type {
