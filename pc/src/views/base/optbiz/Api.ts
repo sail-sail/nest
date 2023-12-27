@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  OptbizModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   OptbizSearch,
   OptbizInput,
+  OptbizModel,
 } from "#/types";
 
 async function setLblById(

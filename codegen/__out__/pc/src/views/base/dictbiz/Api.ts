@@ -1,6 +1,5 @@
 import {
   UniqueType,
-  DictbizModel,
 } from "#/types";
 
 import type {
@@ -13,6 +12,7 @@ import type {
   PageInput,
   DictbizSearch,
   DictbizInput,
+  DictbizModel,
 } from "#/types";
 
 async function setLblById(

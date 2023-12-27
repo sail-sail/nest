@@ -7,6 +7,7 @@ import type {
   Mutation,
   PageInput,
   OperationRecordSearch,
+  OperationRecordModel,
 } from "#/types";
 
 async function setLblById(
