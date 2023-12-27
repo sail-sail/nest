@@ -1773,7 +1773,7 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl && input.<#=column_name#>_lbl.length > 0) {
     if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
       input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
     }
