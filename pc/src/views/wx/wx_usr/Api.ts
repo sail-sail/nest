@@ -12,6 +12,7 @@ import type {
   PageInput,
   WxUsrSearch,
   WxUsrInput,
+  WxUsrModel,
 } from "#/types";
 
 import type {
@@ -19,7 +20,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: WxUsrModel,
+  model?: WxUsrModel | null,
 ) {
   if (!model) {
     return;

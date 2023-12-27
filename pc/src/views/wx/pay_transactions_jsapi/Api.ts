@@ -7,10 +7,11 @@ import type {
   Mutation,
   PageInput,
   PayTransactionsJsapiSearch,
+  PayTransactionsJsapiModel,
 } from "#/types";
 
 async function setLblById(
-  model?: PayTransactionsJsapiModel,
+  model?: PayTransactionsJsapiModel | null,
 ) {
   if (!model) {
     return;
