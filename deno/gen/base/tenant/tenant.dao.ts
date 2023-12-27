@@ -500,47 +500,59 @@ export async function setIdByLbl(
   ]);
   
   // 所属域名
-  if (!input.domain_ids && input.domain_ids_lbl && input.domain_ids_lbl.length > 0) {
+  if (!input.domain_ids && input.domain_ids_lbl) {
     if (typeof input.domain_ids_lbl === "string" || input.domain_ids_lbl instanceof String) {
       input.domain_ids_lbl = input.domain_ids_lbl.split(",");
     }
-    input.domain_ids_lbl = input.domain_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_domain t
-      where
-        t.lbl in ${ args.push(input.domain_ids_lbl) }
-    `;
-    interface Result {
-      id: DomainId;
+    input.domain_ids_lbl = input.domain_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.domain_ids_lbl.length === 0) {
+      input.domain_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_domain t
+        where
+          t.lbl in ${ args.push(input.domain_ids_lbl) }
+      `;
+      interface Result {
+        id: DomainId;
+      }
+      const models = await query<Result>(sql, args);
+      input.domain_ids = models.map((item: { id: DomainId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.domain_ids = models.map((item: { id: DomainId }) => item.id);
   }
   
   // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl && input.menu_ids_lbl.length > 0) {
+  if (!input.menu_ids && input.menu_ids_lbl) {
     if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
       input.menu_ids_lbl = input.menu_ids_lbl.split(",");
     }
-    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_menu t
-      where
-        t.lbl in ${ args.push(input.menu_ids_lbl) }
-    `;
-    interface Result {
-      id: MenuId;
+    input.menu_ids_lbl = input.menu_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.menu_ids_lbl.length === 0) {
+      input.menu_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_menu t
+        where
+          t.lbl in ${ args.push(input.menu_ids_lbl) }
+      `;
+      interface Result {
+        id: MenuId;
+      }
+      const models = await query<Result>(sql, args);
+      input.menu_ids = models.map((item: { id: MenuId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: MenuId }) => item.id);
   }
   
   // 锁定

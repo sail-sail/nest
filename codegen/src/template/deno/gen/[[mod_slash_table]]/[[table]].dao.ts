@@ -1773,25 +1773,31 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl && input.<#=column_name#>_lbl.length > 0) {
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
     if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
       input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
     }
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        <#=foreignKey.mod#>_<#=foreignTable#> t
-      where
-        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
-    `;
-    interface Result {
-      id: <#=foreignTable_Up#>Id;
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.<#=column_name#>_lbl.length === 0) {
+      input.<#=column_name#> = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          <#=foreignKey.mod#>_<#=foreignTable#> t
+        where
+          t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
+      `;
+      interface Result {
+        id: <#=foreignTable_Up#>Id;
+      }
+      const models = await query<Result>(sql, args);
+      input.<#=column_name#> = models.map((item: { id: <#=foreignTable_Up#>Id }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.<#=column_name#> = models.map((item: { id: <#=foreignTable_Up#>Id }) => item.id);
   }<#
   } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>

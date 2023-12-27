@@ -620,25 +620,31 @@ export async function setIdByLbl(
   ]);
   
   // 所属组织
-  if (!input.org_ids && input.org_ids_lbl && input.org_ids_lbl.length > 0) {
+  if (!input.org_ids && input.org_ids_lbl) {
     if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
       input.org_ids_lbl = input.org_ids_lbl.split(",");
     }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: OrgId;
+    input.org_ids_lbl = input.org_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.org_ids_lbl.length === 0) {
+      input.org_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_org t
+        where
+          t.lbl in ${ args.push(input.org_ids_lbl) }
+      `;
+      interface Result {
+        id: OrgId;
+      }
+      const models = await query<Result>(sql, args);
+      input.org_ids = models.map((item: { id: OrgId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: OrgId }) => item.id);
   }
   
   // 默认组织
@@ -667,47 +673,59 @@ export async function setIdByLbl(
   }
   
   // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl && input.dept_ids_lbl.length > 0) {
+  if (!input.dept_ids && input.dept_ids_lbl) {
     if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
       input.dept_ids_lbl = input.dept_ids_lbl.split(",");
     }
-    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(input.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: DeptId;
+    input.dept_ids_lbl = input.dept_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.dept_ids_lbl.length === 0) {
+      input.dept_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_dept t
+        where
+          t.lbl in ${ args.push(input.dept_ids_lbl) }
+      `;
+      interface Result {
+        id: DeptId;
+      }
+      const models = await query<Result>(sql, args);
+      input.dept_ids = models.map((item: { id: DeptId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: DeptId }) => item.id);
   }
   
   // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl && input.role_ids_lbl.length > 0) {
+  if (!input.role_ids && input.role_ids_lbl) {
     if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
       input.role_ids_lbl = input.role_ids_lbl.split(",");
     }
-    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_role t
-      where
-        t.lbl in ${ args.push(input.role_ids_lbl) }
-    `;
-    interface Result {
-      id: RoleId;
+    input.role_ids_lbl = input.role_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.role_ids_lbl.length === 0) {
+      input.role_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_role t
+        where
+          t.lbl in ${ args.push(input.role_ids_lbl) }
+      `;
+      interface Result {
+        id: RoleId;
+      }
+      const models = await query<Result>(sql, args);
+      input.role_ids = models.map((item: { id: RoleId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: RoleId }) => item.id);
   }
 }
 

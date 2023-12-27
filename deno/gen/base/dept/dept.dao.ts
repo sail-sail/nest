@@ -503,25 +503,31 @@ export async function setIdByLbl(
   }
   
   // 部门负责人
-  if (!input.usr_ids && input.usr_ids_lbl && input.usr_ids_lbl.length > 0) {
+  if (!input.usr_ids && input.usr_ids_lbl) {
     if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
       input.usr_ids_lbl = input.usr_ids_lbl.split(",");
     }
-    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_usr t
-      where
-        t.lbl in ${ args.push(input.usr_ids_lbl) }
-    `;
-    interface Result {
-      id: UsrId;
+    input.usr_ids_lbl = input.usr_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    if (input.usr_ids_lbl.length === 0) {
+      input.usr_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_usr t
+        where
+          t.lbl in ${ args.push(input.usr_ids_lbl) }
+      `;
+      interface Result {
+        id: UsrId;
+      }
+      const models = await query<Result>(sql, args);
+      input.usr_ids = models.map((item: { id: UsrId }) => item.id);
     }
-    const models = await query<Result>(sql, args);
-    input.usr_ids = models.map((item: { id: UsrId }) => item.id);
   }
   
   // 锁定
