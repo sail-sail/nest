@@ -1860,10 +1860,7 @@ pub async fn set_id_by_lbl(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name#>_lbl.is_some() &&
-    !input.<#=column_name#>_lbl.clone().unwrap().is_empty() &&
-    input.<#=column_name_rust#>.is_none()
-  {
+  if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
     input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -1883,12 +1880,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.<#=column_name_rust#> = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<<#=foreignTable_Up#>Id>>()
-        .into();
-    }
+    input.<#=column_name_rust#> = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<<#=foreignTable_Up#>Id>>()
+      .into();
   }<#
     }
   #><#

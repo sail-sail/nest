@@ -944,10 +944,7 @@ pub async fn set_id_by_lbl(
   }
   
   // 菜单权限
-  if input.menu_ids_lbl.is_some() &&
-    !input.menu_ids_lbl.clone().unwrap().is_empty() &&
-    input.menu_ids.is_none()
-  {
+  if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
     input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -967,19 +964,14 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.menu_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<MenuId>>()
-        .into();
-    }
+    input.menu_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<MenuId>>()
+      .into();
   }
   
   // 按钮权限
-  if input.permit_ids_lbl.is_some() &&
-    !input.permit_ids_lbl.clone().unwrap().is_empty() &&
-    input.permit_ids.is_none()
-  {
+  if input.permit_ids_lbl.is_some() && input.permit_ids.is_none() {
     input.permit_ids_lbl = input.permit_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -999,19 +991,14 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.permit_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<PermitId>>()
-        .into();
-    }
+    input.permit_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<PermitId>>()
+      .into();
   }
   
   // 数据权限
-  if input.data_permit_ids_lbl.is_some() &&
-    !input.data_permit_ids_lbl.clone().unwrap().is_empty() &&
-    input.data_permit_ids.is_none()
-  {
+  if input.data_permit_ids_lbl.is_some() && input.data_permit_ids.is_none() {
     input.data_permit_ids_lbl = input.data_permit_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -1031,12 +1018,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.data_permit_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<DataPermitId>>()
-        .into();
-    }
+    input.data_permit_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DataPermitId>>()
+      .into();
   }
   
   Ok(input)

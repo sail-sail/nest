@@ -1018,10 +1018,7 @@ pub async fn set_id_by_lbl(
   }
   
   // 所属组织
-  if input.org_ids_lbl.is_some() &&
-    !input.org_ids_lbl.clone().unwrap().is_empty() &&
-    input.org_ids.is_none()
-  {
+  if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -1041,12 +1038,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.org_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<OrgId>>()
-        .into();
-    }
+    input.org_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<OrgId>>()
+      .into();
   }
   
   // 默认组织
@@ -1071,10 +1066,7 @@ pub async fn set_id_by_lbl(
   }
   
   // 所属部门
-  if input.dept_ids_lbl.is_some() &&
-    !input.dept_ids_lbl.clone().unwrap().is_empty() &&
-    input.dept_ids.is_none()
-  {
+  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -1094,19 +1086,14 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.dept_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<DeptId>>()
-        .into();
-    }
+    input.dept_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DeptId>>()
+      .into();
   }
   
   // 拥有角色
-  if input.role_ids_lbl.is_some() &&
-    !input.role_ids_lbl.clone().unwrap().is_empty() &&
-    input.role_ids.is_none()
-  {
+  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
     input.role_ids_lbl = input.role_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
@@ -1126,12 +1113,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.role_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<RoleId>>()
-        .into();
-    }
+    input.role_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<RoleId>>()
+      .into();
   }
   
   Ok(input)
