@@ -936,11 +936,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 180,
-        align: "left",
-        fixed: "left",
+        width: 280,
       },
       {
         COLUMN_NAME: "is_locked",

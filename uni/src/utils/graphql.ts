@@ -325,8 +325,8 @@ export async function gqlQuery(
       }
     }
   }
-  if (errors && (!config || config.showErrMsg !== false)) {
-    let errMsg = "";
+  let errMsg = "";
+  if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
       errMsg += item.message;
@@ -334,7 +334,9 @@ export async function gqlQuery(
         errMsg += "\n";
       }
     }
-    if (errMsg) {
+  }
+  if (errMsg) {
+    if (!config || config.showErrMsg !== false) {
       uni.showToast({
         title: errMsg,
         icon: "none",
@@ -343,7 +345,7 @@ export async function gqlQuery(
         position: "center",
       });
     }
-    if (errMsg && errMsg.startsWith("Error: ")) {
+    if (errMsg.startsWith("Error: ")) {
       throw new Error(errMsg, { cause: errors });
     } else {
       throw errMsg;

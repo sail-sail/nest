@@ -12,10 +12,11 @@ import type {
   PageInput,
   DictSearch,
   DictInput,
+  DictModel,
 } from "#/types";
 
 async function setLblById(
-  model?: DictModel,
+  model?: DictModel | null,
 ) {
   if (!model) {
     return;

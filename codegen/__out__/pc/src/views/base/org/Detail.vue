@@ -258,8 +258,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 22,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        max: 50,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
       },
     ],
     // 排序

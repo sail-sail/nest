@@ -1266,12 +1266,12 @@ export async function findAll(
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
     if (!inlineForeignSchema) {
       throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
       process.exit(1);
     }
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1423,12 +1423,12 @@ export async function findAll(
     #><#
     for (const inlineForeignTab of inlineForeignTabs) {
       const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
       if (!inlineForeignSchema) {
         throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
         process.exit(1);
       }
-      const table = inlineForeignTab.table;
-      const mod = inlineForeignTab.mod;
       const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1773,7 +1773,7 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl && input.<#=column_name#>_lbl.length > 0) {
     if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
       input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
     }
@@ -2983,12 +2983,12 @@ export async function create(
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
     if (!inlineForeignSchema) {
       throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
       process.exit(1);
     }
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);

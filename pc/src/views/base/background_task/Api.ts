@@ -7,10 +7,11 @@ import type {
   Mutation,
   PageInput,
   BackgroundTaskSearch,
+  BackgroundTaskModel,
 } from "#/types";
 
 async function setLblById(
-  model?: BackgroundTaskModel,
+  model?: BackgroundTaskModel | null,
 ) {
   if (!model) {
     return;

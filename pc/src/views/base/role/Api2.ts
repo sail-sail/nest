@@ -2,7 +2,7 @@ import {
   getRouterPaths,
 } from "@/router/util";
 
-export async function getHomeUrlMap() {
+export function getHomeUrlMap() {
   const routers = getRouterPaths((router) => {
     if (router.meta?.isIndex === true) {
       return true;

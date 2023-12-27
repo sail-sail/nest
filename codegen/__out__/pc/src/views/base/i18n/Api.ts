@@ -12,6 +12,7 @@ import type {
   PageInput,
   I18Nsearch,
   I18Ninput,
+  I18Nmodel,
 } from "#/types";
 
 import type {
@@ -27,7 +28,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: I18Nmodel,
+  model?: I18Nmodel | null,
 ) {
   if (!model) {
     return;
