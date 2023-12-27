@@ -1864,6 +1864,7 @@ pub async fn set_id_by_lbl(
     input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
     let mut models = vec![];
