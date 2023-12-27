@@ -936,6 +936,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
+        width: 280,
       },
       {
         COLUMN_NAME: "is_locked",
