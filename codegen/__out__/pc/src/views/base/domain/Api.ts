@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  DomainModel,
 } from "#/types";
 
 import type {
@@ -15,7 +16,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: DomainModel,
+  model?: DomainModel | null,
 ) {
   if (!model) {
     return;

@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  DeptModel,
 } from "#/types";
 
 import type {
@@ -24,7 +25,7 @@ import {
 } from "@/views/base/dept/Api";
 
 async function setLblById(
-  model?: DeptModel,
+  model?: DeptModel | null,
 ) {
   if (!model) {
     return;

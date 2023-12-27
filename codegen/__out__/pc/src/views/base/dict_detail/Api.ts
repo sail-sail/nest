@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  DictDetailModel,
 } from "#/types";
 
 import type {
@@ -19,7 +20,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: DictDetailModel,
+  model?: DictDetailModel | null,
 ) {
   if (!model) {
     return;

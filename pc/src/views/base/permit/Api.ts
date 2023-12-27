@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  PermitModel,
 } from "#/types";
 
 import type {
@@ -23,7 +24,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: PermitModel,
+  model?: PermitModel | null,
 ) {
   if (!model) {
     return;

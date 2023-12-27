@@ -1,5 +1,6 @@
 import {
   UniqueType,
+  RoleModel,
 } from "#/types";
 
 import type {
@@ -34,8 +35,10 @@ import {
   getHomeUrlMap,
 } from "./Api2";
 
+const homeUrlMap = getHomeUrlMap();
+
 async function setLblById(
-  model?: RoleModel,
+  model?: RoleModel | null,
 ) {
   if (!model) {
     return;
