@@ -675,7 +675,7 @@ export async function setIdByLbl(
     input.dept_ids_lbl = input.dept_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.dept_ids_lbl = Array.from(new Set(input.dept_ids_lbl));
     if (input.dept_ids_lbl.length === 0) {
       input.dept_ids = [ ];
     } else {
@@ -701,7 +701,7 @@ export async function setIdByLbl(
     input.role_ids_lbl = input.role_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.role_ids_lbl = Array.from(new Set(input.role_ids_lbl));
     if (input.role_ids_lbl.length === 0) {
       input.role_ids = [ ];
     } else {

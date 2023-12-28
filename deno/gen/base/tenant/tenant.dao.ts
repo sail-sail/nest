@@ -504,7 +504,7 @@ export async function setIdByLbl(
     input.domain_ids_lbl = input.domain_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.domain_ids_lbl = Array.from(new Set(input.domain_ids_lbl));
     if (input.domain_ids_lbl.length === 0) {
       input.domain_ids = [ ];
     } else {
@@ -530,7 +530,7 @@ export async function setIdByLbl(
     input.menu_ids_lbl = input.menu_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.menu_ids_lbl = Array.from(new Set(input.menu_ids_lbl));
     if (input.menu_ids_lbl.length === 0) {
       input.menu_ids = [ ];
     } else {
