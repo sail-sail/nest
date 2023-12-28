@@ -22,6 +22,9 @@
     @update:model-value="modelValueUpdate"
     :loading="!inited"
     class="custom_select"
+    :class="{
+      'custom_select_space_normal': inited && !props.multiple && options4SelectV2.length > 0,
+    }"
     @change="onChange"
     :multiple="props.multiple"
     :clearable="!props.disabled"
@@ -381,16 +384,17 @@ async function refreshWrapperHeight() {
   if (height === 0) {
     return;
   }
+  wrapper.style.transition = "none";
   wrapper.style.height = `${ (height + 12) }px`;
 }
 
 watch(
-  () => modelValue,
+  () => [ modelValue, inited ],
   () => {
+    if (!modelValue || !inited || options4SelectV2.length === 0 || props.multiple) {
+      return;
+    }
     refreshWrapperHeight();
-  },
-  {
-    immediate: true,
   },
 );
 
@@ -408,3 +412,13 @@ defineExpose({
   refresh: refreshEfc,
 });
 </script>
+
+<style scoped lang="scss">
+.custom_select_space_normal {
+  :deep(.el-select-v2__placeholder) {
+    line-height: normal;
+    white-space: normal;
+    top: calc(50% - 1px);
+  }
+}
+</style>
