@@ -340,12 +340,10 @@ body .el-input-number.is-without-controls .el-input__inner {
 .select_input_wrapper.dialog_visible {
   box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
 }
-// .el-form-item:has(.select_input_wrapper.dialog_visible) {
-//   .el-form-item__label-wrap {
-//     position: relative;
-//     left: 1px;
-//   }
-// }
+.el-select-v2 .el-select-v2__placeholder {
+  line-height: normal;
+  white-space: normal;
+}
 
 .el-tree {
   .el-tree-node.is-current>.el-tree-node__content {

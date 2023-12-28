@@ -1,38 +1,43 @@
 <template>
-<ElSelectV2
+<div
   v-if="readonly !== true"
-  :options="options4SelectV2"
-  filterable
-  collapse-tags
-  collapse-tags-tooltip
-  default-first-option
-  :height="props.height"
-  :remote="props.pinyinFilterable"
-  :remote-method="filterMethod"
-  @visible-change="handleVisibleChange"
-  @clear="onClear"
+  ref="selectDivRef"
   un-w="full"
-  v-bind="$attrs"
-  :model-value="modelValue !== '' ? modelValue : undefined"
-  @update:model-value="modelValueUpdate"
-  :loading="!inited"
-  class="custom_select"
-  @change="onChange"
-  :multiple="props.multiple"
-  :clearable="!props.disabled"
-  :disabled="props.disabled"
-  :readonly="props.readonly"
-  :placeholder="props.placeholder"
-  @keyup.enter.stop
 >
-  <template
-    v-for="(item, key, index) in $slots"
-    :key="index"
-    #[key]
+  <ElSelectV2
+    :options="options4SelectV2"
+    filterable
+    collapse-tags
+    collapse-tags-tooltip
+    default-first-option
+    :height="props.height"
+    :remote="props.pinyinFilterable"
+    :remote-method="filterMethod"
+    @visible-change="handleVisibleChange"
+    @clear="onClear"
+    un-w="full"
+    v-bind="$attrs"
+    :model-value="modelValue !== '' ? modelValue : undefined"
+    @update:model-value="modelValueUpdate"
+    :loading="!inited"
+    class="custom_select"
+    @change="onChange"
+    :multiple="props.multiple"
+    :clearable="!props.disabled"
+    :disabled="props.disabled"
+    :readonly="props.readonly"
+    :placeholder="props.placeholder"
+    @keyup.enter.stop
   >
-    <slot :name="key"></slot>
-  </template>
-</ElSelectV2>
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot :name="key"></slot>
+    </template>
+  </ElSelectV2>
+</div>
 <template
   v-else
 >
@@ -210,7 +215,7 @@ const modelLabels = $computed(() => {
     }
     return [ props.optionsMap(model).label || "" ];
   }
-  let labels: string[] = [ ];
+  const labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.find((item) => props.optionsMap(item).value === value);
@@ -355,11 +360,48 @@ function onChange() {
   emit("change", models);
 }
 
+
+let selectDivRef = $ref<HTMLDivElement>();
+
+async function refreshWrapperHeight() {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (!selectDivRef) {
+    return;
+  }
+  const phder = selectDivRef?.querySelector(".el-select-v2__placeholder") as HTMLDivElement | null | undefined;
+  if (!phder) {
+    return;
+  }
+  const wrapper = selectDivRef?.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null | undefined;
+  if (!wrapper) {
+    return;
+  }
+  const height = phder.offsetHeight;
+  if (height === 0) {
+    return;
+  }
+  wrapper.style.height = `${ (height + 12) }px`;
+}
+
+watch(
+  () => modelValue,
+  () => {
+    refreshWrapperHeight();
+  },
+  {
+    immediate: true,
+  },
+);
+
 if (props.init) {
   refreshEfc();
 }
 
 usrStore.onLogin(refreshEfc);
+
+onMounted(() => {
+  refreshWrapperHeight();
+});
 
 defineExpose({
   refresh: refreshEfc,
