@@ -848,8 +848,15 @@ pub async fn set_id_by_lbl(
     input.domain_ids_lbl = input.domain_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.domain_ids_lbl = input.domain_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.domain_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::domain::domain_dao::find_one(
@@ -875,8 +882,15 @@ pub async fn set_id_by_lbl(
     input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.menu_ids_lbl = input.menu_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::menu::menu_dao::find_one(

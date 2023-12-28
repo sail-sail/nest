@@ -1867,6 +1867,12 @@ pub async fn set_id_by_lbl(
         .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
       let model = <#=daoStr#>find_one(
