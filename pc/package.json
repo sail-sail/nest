@@ -67,7 +67,7 @@
     "spark-md5": "3.0.2",
     "stylus": "0.62.0",
     "typescript": "5.3.3",
-    "unocss": "0.58.1",
+    "unocss": "0.58.2",
     "unplugin-auto-import": "0.17.3",
     "unplugin-icons": "0.18.1",
     "unplugin-vue-components": "0.26.0",
