@@ -653,8 +653,8 @@ watch(
     if (!dialogModel.parent_id) {
       dialogModel.parent_id_lbl = "";
     }
-    if (!dialogModel.usr_ids) {
-      dialogModel.usr_ids_lbl = "";
+    if (!dialogModel.usr_ids || dialogModel.usr_ids.length === 0) {
+      dialogModel.usr_ids_lbl = [ ];
     }
   },
 );

@@ -2731,6 +2731,9 @@ async function onImportExcel() {
             } else if (data_type === "varchar" || data_type === "text" || data_type === "char" || data_type === "decimal") {
               data_type2 = "string";
             }
+            if (foreignKey && foreignKey.multiple) {
+              data_type2 = "string[]";
+            }
           #>
           "<#=column_name2#>": "<#=data_type2#>",<#
           }

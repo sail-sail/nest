@@ -463,7 +463,7 @@ CREATE TABLE if not exists `base_operation_record` (
 drop table if exists `base_org`;
 CREATE TABLE if not exists `base_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
+  `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
