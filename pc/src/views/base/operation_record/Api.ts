@@ -7,10 +7,11 @@ import type {
   Mutation,
   PageInput,
   OperationRecordSearch,
+  OperationRecordModel,
 } from "#/types";
 
 async function setLblById(
-  model?: OperationRecordModel,
+  model?: OperationRecordModel | null,
 ) {
   if (!model) {
     return;

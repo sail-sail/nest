@@ -12,6 +12,7 @@ import type {
   PageInput,
   RoleSearch,
   RoleInput,
+  RoleModel,
 } from "#/types";
 
 import type {
@@ -31,7 +32,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: RoleModel,
+  model?: RoleModel | null,
 ) {
   if (!model) {
     return;

@@ -657,7 +657,7 @@ export async function validate(
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    22,
+    50,
     fieldComments.lbl,
   );
   

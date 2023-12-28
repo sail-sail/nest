@@ -12,6 +12,7 @@ import type {
   PageInput,
   UsrSearch,
   UsrInput,
+  UsrModel,
 } from "#/types";
 
 import type {
@@ -31,7 +32,7 @@ import {
 } from "@/views/base/dept/Api";
 
 async function setLblById(
-  model?: UsrModel,
+  model?: UsrModel | null,
 ) {
   if (!model) {
     return;

@@ -621,14 +621,14 @@ watch(
     if (!inited) {
       return;
     }
-    if (!dialogModel.menu_ids) {
-      dialogModel.menu_ids_lbl = "";
+    if (!dialogModel.menu_ids || dialogModel.menu_ids.length === 0) {
+      dialogModel.menu_ids_lbl = [ ];
     }
-    if (!dialogModel.permit_ids) {
-      dialogModel.permit_ids_lbl = "";
+    if (!dialogModel.permit_ids || dialogModel.permit_ids.length === 0) {
+      dialogModel.permit_ids_lbl = [ ];
     }
-    if (!dialogModel.data_permit_ids) {
-      dialogModel.data_permit_ids_lbl = "";
+    if (!dialogModel.data_permit_ids || dialogModel.data_permit_ids.length === 0) {
+      dialogModel.data_permit_ids_lbl = [ ];
     }
   },
 );

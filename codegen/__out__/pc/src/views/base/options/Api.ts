@@ -12,10 +12,11 @@ import type {
   PageInput,
   OptionsSearch,
   OptionsInput,
+  OptionsModel,
 } from "#/types";
 
 async function setLblById(
-  model?: OptionsModel,
+  model?: OptionsModel | null,
 ) {
   if (!model) {
     return;
