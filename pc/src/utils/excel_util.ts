@@ -10,7 +10,7 @@ import dayjs from "dayjs";
   header?: {[key: string]: string},
   opt?: {
     type?: "xlsx" | "csv";
-    key_types: { [key: string]: "string" | "number" | "date" };
+    key_types: { [key: string]: "string" | "number" | "date" | "string[]" };
   },
 ): Promise<T[]> {
   const XLSX = await import("xlsx");
@@ -22,22 +22,33 @@ import dayjs from "dayjs";
   });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows: T[] = [ ];
-  const data: any = XLSX.utils.sheet_to_json(worksheet);
-  const keys = Object.keys(data[0])
-    .map((key) => key.trim())
-    .filter((key) => key);
-  for (let i = 0; i < data.length; i++) {
+  
+  const data: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  
+  const keys = data[0];
+  for (let i = 1; i < data.length; i++) {
     const vals = data[i];
     const row = <T>{ };
     for (let k = 0; k < keys.length; k++) {
       const key = keys[k];
-      let val = vals[key];
+      let val = vals[k];
       const headerKey = header && header[key] || key;
       const type = opt?.key_types[headerKey] || "string";
       if (type === "number") {
         (row as any)[headerKey] = Number(val);
         if (isNaN((row as any)[headerKey])) {
           (row as any)[headerKey] = undefined;
+        }
+      } else if (type === "string[]") {
+        if (typeof val === "string") {
+          val = val.split(",").map((v) => v.trim());
+        }
+        if (Array.isArray(val)) {
+          (row as any)[headerKey] = val;
+        } else if (val != null) {
+          (row as any)[headerKey] = [ val.toString() ];
+        } else {
+          (row as any)[headerKey] = [ ];
         }
       } else if (type === "date") {
         if (val instanceof Date) {

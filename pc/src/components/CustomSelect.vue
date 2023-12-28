@@ -223,7 +223,13 @@ const modelLabels = $computed(() => {
 });
 
 function onClear() {
-  modelValue = "";
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
   emit("update:modelValue", modelValue);
   emit("clear");
 }
