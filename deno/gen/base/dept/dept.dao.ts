@@ -507,7 +507,7 @@ export async function setIdByLbl(
     input.usr_ids_lbl = input.usr_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.usr_ids_lbl = Array.from(new Set(input.usr_ids_lbl));
     if (input.usr_ids_lbl.length === 0) {
       input.usr_ids = [ ];
     } else {

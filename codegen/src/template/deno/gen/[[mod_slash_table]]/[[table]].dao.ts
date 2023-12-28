@@ -1777,7 +1777,7 @@ export async function setIdByLbl(
     input.<#=column_name#>_lbl = input.<#=column_name#>_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
+    input.<#=column_name#>_lbl = Array.from(new Set(input.<#=column_name#>_lbl));
     if (input.<#=column_name#>_lbl.length === 0) {
       input.<#=column_name#> = [ ];
     } else {
