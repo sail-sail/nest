@@ -3,6 +3,7 @@
   v-if="readonly !== true"
   ref="selectDivRef"
   un-w="full"
+  class="custom_select_div"
 >
   <ElSelectV2
     :options="options4SelectV2"
