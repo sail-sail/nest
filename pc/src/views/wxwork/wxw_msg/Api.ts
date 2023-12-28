@@ -7,6 +7,7 @@ import type {
   Mutation,
   PageInput,
   WxwMsgSearch,
+  WxwMsgModel,
 } from "#/types";
 
 import type {
@@ -14,7 +15,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: WxwMsgModel,
+  model?: WxwMsgModel | null,
 ) {
   if (!model) {
     return;
