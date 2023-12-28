@@ -621,12 +621,10 @@ export async function setIdByLbl(
   
   // 所属组织
   if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
     input.org_ids_lbl = input.org_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.org_ids_lbl.length === 0) {
       input.org_ids = [ ];
     } else {
@@ -674,12 +672,10 @@ export async function setIdByLbl(
   
   // 所属部门
   if (!input.dept_ids && input.dept_ids_lbl) {
-    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
-      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
-    }
     input.dept_ids_lbl = input.dept_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.dept_ids_lbl.length === 0) {
       input.dept_ids = [ ];
     } else {
@@ -702,12 +698,10 @@ export async function setIdByLbl(
   
   // 拥有角色
   if (!input.role_ids && input.role_ids_lbl) {
-    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
-      input.role_ids_lbl = input.role_ids_lbl.split(",");
-    }
     input.role_ids_lbl = input.role_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.role_ids_lbl.length === 0) {
       input.role_ids = [ ];
     } else {

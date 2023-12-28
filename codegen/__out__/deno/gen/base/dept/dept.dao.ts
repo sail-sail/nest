@@ -504,12 +504,10 @@ export async function setIdByLbl(
   
   // 部门负责人
   if (!input.usr_ids && input.usr_ids_lbl) {
-    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
-      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
-    }
     input.usr_ids_lbl = input.usr_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.usr_ids_lbl.length === 0) {
       input.usr_ids = [ ];
     } else {

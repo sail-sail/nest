@@ -1774,12 +1774,10 @@ export async function setIdByLbl(
   
   // <#=column_comment#>
   if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
-      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
-    }
     input.<#=column_name#>_lbl = input.<#=column_name#>_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.<#=column_name#>_lbl.length === 0) {
       input.<#=column_name#> = [ ];
     } else {

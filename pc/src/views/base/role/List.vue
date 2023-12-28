@@ -1436,9 +1436,9 @@ async function onImportExcel() {
         key_types: {
           "lbl": "string",
           "home_url": "string",
-          "menu_ids_lbl": "string",
-          "permit_ids_lbl": "string",
-          "data_permit_ids_lbl": "string",
+          "menu_ids_lbl": "string[]",
+          "permit_ids_lbl": "string[]",
+          "data_permit_ids_lbl": "string[]",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",

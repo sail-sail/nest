@@ -501,12 +501,10 @@ export async function setIdByLbl(
   
   // 所属域名
   if (!input.domain_ids && input.domain_ids_lbl) {
-    if (typeof input.domain_ids_lbl === "string" || input.domain_ids_lbl instanceof String) {
-      input.domain_ids_lbl = input.domain_ids_lbl.split(",");
-    }
     input.domain_ids_lbl = input.domain_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.domain_ids_lbl.length === 0) {
       input.domain_ids = [ ];
     } else {
@@ -529,12 +527,10 @@ export async function setIdByLbl(
   
   // 菜单权限
   if (!input.menu_ids && input.menu_ids_lbl) {
-    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
-      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
-    }
     input.menu_ids_lbl = input.menu_ids_lbl
       .map((item: string) => item.trim())
       .filter((item: string) => item);
+    input.org_ids_lbl = Array.from(new Set(input.org_ids_lbl));
     if (input.menu_ids_lbl.length === 0) {
       input.menu_ids = [ ];
     } else {
