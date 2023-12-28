@@ -39,7 +39,6 @@
       <slot
         v-bind="$attrs"
         :selected-ids="selectedIds"
-        :is-locked="'1'"
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
