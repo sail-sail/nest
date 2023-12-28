@@ -590,69 +590,81 @@ export async function setIdByLbl(
   ]);
   
   // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl && input.menu_ids_lbl.length > 0) {
-    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
-      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
+  if (!input.menu_ids && input.menu_ids_lbl) {
+    input.menu_ids_lbl = input.menu_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.menu_ids_lbl = Array.from(new Set(input.menu_ids_lbl));
+    if (input.menu_ids_lbl.length === 0) {
+      input.menu_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_menu t
+        where
+          t.lbl in ${ args.push(input.menu_ids_lbl) }
+      `;
+      interface Result {
+        id: MenuId;
+      }
+      const models = await query<Result>(sql, args);
+      input.menu_ids = models.map((item: { id: MenuId }) => item.id);
     }
-    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_menu t
-      where
-        t.lbl in ${ args.push(input.menu_ids_lbl) }
-    `;
-    interface Result {
-      id: MenuId;
-    }
-    const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: MenuId }) => item.id);
   }
   
   // 按钮权限
-  if (!input.permit_ids && input.permit_ids_lbl && input.permit_ids_lbl.length > 0) {
-    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
-      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
+  if (!input.permit_ids && input.permit_ids_lbl) {
+    input.permit_ids_lbl = input.permit_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.permit_ids_lbl = Array.from(new Set(input.permit_ids_lbl));
+    if (input.permit_ids_lbl.length === 0) {
+      input.permit_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_permit t
+        where
+          t.lbl in ${ args.push(input.permit_ids_lbl) }
+      `;
+      interface Result {
+        id: PermitId;
+      }
+      const models = await query<Result>(sql, args);
+      input.permit_ids = models.map((item: { id: PermitId }) => item.id);
     }
-    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_permit t
-      where
-        t.lbl in ${ args.push(input.permit_ids_lbl) }
-    `;
-    interface Result {
-      id: PermitId;
-    }
-    const models = await query<Result>(sql, args);
-    input.permit_ids = models.map((item: { id: PermitId }) => item.id);
   }
   
   // 数据权限
-  if (!input.data_permit_ids && input.data_permit_ids_lbl && input.data_permit_ids_lbl.length > 0) {
-    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
-      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
+  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
+    input.data_permit_ids_lbl = input.data_permit_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.data_permit_ids_lbl = Array.from(new Set(input.data_permit_ids_lbl));
+    if (input.data_permit_ids_lbl.length === 0) {
+      input.data_permit_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_data_permit t
+        where
+          t.scope in ${ args.push(input.data_permit_ids_lbl) }
+      `;
+      interface Result {
+        id: DataPermitId;
+      }
+      const models = await query<Result>(sql, args);
+      input.data_permit_ids = models.map((item: { id: DataPermitId }) => item.id);
     }
-    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_data_permit t
-      where
-        t.scope in ${ args.push(input.data_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: DataPermitId;
-    }
-    const models = await query<Result>(sql, args);
-    input.data_permit_ids = models.map((item: { id: DataPermitId }) => item.id);
   }
   
   // 锁定
