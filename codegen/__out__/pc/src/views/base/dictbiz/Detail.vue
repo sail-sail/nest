@@ -346,6 +346,7 @@ import {
   findOne,
   findLastOrderBy,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -362,8 +363,8 @@ import type {
 } from "#/types";
 
 import {
-  DictbizType,
-} from "#/types";
+  getDefaultInput as getDefaultInputDictbizDetail,
+} from "@/views/base/dictbiz_detail/Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -476,17 +477,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: DictbizInput = {
-    type: DictbizType.String,
-    is_locked: 0,
-    is_enabled: 1,
-    order_by: 1,
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -582,6 +572,10 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
+        dictbiz_detail_models: data.dictbiz_detail_models?.map((item) => ({
+          ...item,
+          id: undefined,
+        })) || [ ],
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -893,11 +887,12 @@ let dictbiz_detailData = $computed(() => {
   return dialogModel.dictbiz_detail_models ?? [ ];
 });
 
-function dictbiz_detailAdd() {
+async function dictbiz_detailAdd() {
   if (!dialogModel.dictbiz_detail_models) {
     dialogModel.dictbiz_detail_models = [ ];
   }
-  dialogModel.dictbiz_detail_models.push({ });
+  const defaultModel = await getDefaultInputDictbizDetail();
+  dialogModel.dictbiz_detail_models.push(defaultModel);
   dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 

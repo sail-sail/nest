@@ -222,6 +222,7 @@ import {
   create,
   findOne,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -235,11 +236,6 @@ import type {
 import {
   getMenuTree,
 } from "@/views/base/menu/Api";
-
-import {
-  DataPermitScope,
-  DataPermitType,
-} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
@@ -346,15 +342,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: DataPermitInput = {
-    scope: DataPermitScope.Tenant,
-    type: DataPermitType.Editable,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 

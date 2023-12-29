@@ -6,6 +6,11 @@ import type {
   DataPermitId,
 } from "@/typings/ids";
 
+import {
+  DataPermitScope,
+  DataPermitType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -587,4 +592,13 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DataPermitInput = {
+    scope: DataPermitScope.Tenant,
+    type: DataPermitType.Editable,
+  };
+  return defaultInput;
 }

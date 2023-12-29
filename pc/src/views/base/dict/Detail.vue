@@ -346,6 +346,7 @@ import {
   findOne,
   findLastOrderBy,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -362,8 +363,8 @@ import type {
 } from "#/types";
 
 import {
-  DictType,
-} from "#/types";
+  getDefaultInput as getDefaultInputDictDetail,
+} from "@/views/base/dict_detail/Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -476,17 +477,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: DictInput = {
-    type: DictType.String,
-    is_locked: 0,
-    is_enabled: 1,
-    order_by: 1,
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -582,6 +572,10 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
+        dict_detail_models: data.dict_detail_models?.map((item) => ({
+          ...item,
+          id: undefined,
+        })) || [ ],
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -893,11 +887,12 @@ let dict_detailData = $computed(() => {
   return dialogModel.dict_detail_models ?? [ ];
 });
 
-function dict_detailAdd() {
+async function dict_detailAdd() {
   if (!dialogModel.dict_detail_models) {
     dialogModel.dict_detail_models = [ ];
   }
-  dialogModel.dict_detail_models.push({ });
+  const defaultModel = await getDefaultInputDictDetail();
+  dialogModel.dict_detail_models.push(defaultModel);
   dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 

@@ -228,6 +228,7 @@ import {
   findOne,
   findLastOrderBy,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -339,16 +340,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: DeptInput = {
-    is_locked: 0,
-    is_enabled: 1,
-    order_by: 1,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 

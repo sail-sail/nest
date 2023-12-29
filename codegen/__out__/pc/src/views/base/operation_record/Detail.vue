@@ -240,6 +240,7 @@ import type {
 
 import {
   findOne,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -247,9 +248,8 @@ import type {
 } from "@/typings/ids";
 
 import type {
+  OperationRecordInput,
 } from "#/types";
-
-type OperationRecordInput = any;
 
 const emit = defineEmits<{
   nextId: [
@@ -335,13 +335,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: OperationRecordInput = {
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 

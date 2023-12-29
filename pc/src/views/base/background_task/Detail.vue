@@ -250,6 +250,7 @@ import type {
 
 import {
   findOne,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -257,13 +258,7 @@ import type {
 } from "@/typings/ids";
 
 import type {
-} from "#/types";
-
-type BackgroundTaskInput = any;
-
-import {
-  BackgroundTaskState,
-  BackgroundTaskType,
+  BackgroundTaskInput,
 } from "#/types";
 
 const emit = defineEmits<{
@@ -364,15 +359,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: BackgroundTaskInput = {
-    state: BackgroundTaskState.Running,
-    type: BackgroundTaskType.Text,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
