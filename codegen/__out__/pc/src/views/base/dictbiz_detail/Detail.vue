@@ -257,6 +257,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/dictbiz_detail");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/dictbiz_detail");

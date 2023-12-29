@@ -232,6 +232,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/role");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/role");

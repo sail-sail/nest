@@ -283,6 +283,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/background_task");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/background_task");

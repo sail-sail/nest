@@ -1763,6 +1763,7 @@ const {
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
@@ -2049,8 +2050,14 @@ async function getDefaultInput() {
         if (data_type === "date") {
           valueFormat = "YYYY-MM-DD";
         }
-        if (defaultValue === "now") {
-          defaultValue = "new Date()";
+        if (defaultValue === "CURRENT_DATE") {
+          if (data_type === "datetime") {
+            defaultValue = "dayjs().format('YYYY-MM-DD 00:00:00')";
+          } else {
+            defaultValue = "dayjs().format('YYYY-MM-DD')";
+          }
+        } else if (defaultValue === "CURRENT_DATETIME") {
+          defaultValue = `dayjs().format('${ valueFormat }')`;
         } else if (defaultValue.startsWith("start_of_")) {
           defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
         } else if (defaultValue.startsWith("end_of_")) {
@@ -2060,6 +2067,16 @@ async function getDefaultInput() {
         }
       } else if (data_type === "decimal") {
         defaultValue = `new Decimal(${ defaultValue })`;
+      } else if (data_type === "varchar" || data_type === "text") {
+        if (defaultValue === "CURRENT_USR_ID") {
+          defaultValue = "usrStore.usr_id";
+        } else if (defaultValue === "CURRENT_ORG_ID") {
+          defaultValue = "usrStore.loginInfo?.org_id";
+        } else if (defaultValue === "CURRENT_TENANT_ID") {
+          defaultValue = "usrStore.tenant_id";
+        } else if (defaultValue === "CURRENT_USERNAME") {
+          defaultValue = "usrStore.username";
+        }
       } else {
         defaultValue = `"${ defaultValue }"`;
       }

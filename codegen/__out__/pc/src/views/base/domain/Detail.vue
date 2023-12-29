@@ -232,6 +232,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/domain");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/domain");
@@ -309,7 +310,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 新增时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
-    protocol: "https",
+    protocol: https,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

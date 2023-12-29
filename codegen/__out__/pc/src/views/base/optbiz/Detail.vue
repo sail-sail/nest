@@ -245,6 +245,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/optbiz");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/optbiz");

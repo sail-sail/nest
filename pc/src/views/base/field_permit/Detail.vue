@@ -255,6 +255,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/field_permit");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/field_permit");

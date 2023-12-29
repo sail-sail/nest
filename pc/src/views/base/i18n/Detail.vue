@@ -261,6 +261,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/i18n");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/i18n");
