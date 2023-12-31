@@ -23,7 +23,7 @@
     :loading="!inited"
     class="custom_select"
     :class="{
-      'custom_select_space_normal': inited && !props.multiple && options4SelectV2.length > 0,
+      'custom_select_space_normal': true,
     }"
     @change="onChange"
     :multiple="props.multiple"
@@ -385,13 +385,13 @@ async function refreshWrapperHeight() {
     return;
   }
   wrapper.style.transition = "none";
-  wrapper.style.height = `${ (height + 12) }px`;
+  wrapper.style.height = `${ (height + 14) }px`;
 }
 
 watch(
-  () => [ modelValue, inited ],
-  () => {
-    if (!modelValue || !inited || options4SelectV2.length === 0 || props.multiple) {
+  () => modelValue && inited && !props.multiple && options4SelectV2.length > 0,
+  (val) => {
+    if (!val) {
       return;
     }
     refreshWrapperHeight();
@@ -418,7 +418,7 @@ defineExpose({
   :deep(.el-select-v2__placeholder) {
     line-height: normal;
     white-space: normal;
-    top: calc(50% - 1px);
+    top: calc(50% - 2px);
   }
 }
 </style>

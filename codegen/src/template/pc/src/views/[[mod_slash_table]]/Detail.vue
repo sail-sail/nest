@@ -1085,11 +1085,27 @@ if (!detailCustomDialogType) {
         </template>
         <span>{{ n('关闭') }}</span>
       </el-button><#
-      if (opts.noAdd !== true || opts.noEdit !== true) {
+      if (!opts.noAdd) {
       #>
       
       <el-button
-        v-if="!isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSaveAndCopy"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存并继续') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -1097,7 +1113,23 @@ if (!detailCustomDialogType) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ n('保存') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noEdit) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'edit') &&permit('edit') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSave"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存') }}</span>
       </el-button><#
       }
       #>
@@ -2426,15 +2458,24 @@ async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
   customDialogRef?.focus();
-  await onSave();
+  await onSaveAndCopy();
 }
 
-/** 确定 */
-async function onSave() {
+/** 保持并返回id */
+async function save() {
   if (isReadonly) {
     return;
   }
   if (!formRef) {
+    return;
+  }
+  if (dialogAction === "view") {
+    return;
+  }
+  if (dialogAction === "edit" && !permit("edit")) {
+    return;
+  }
+  if (dialogAction === "add" && !permit("add")) {
     return;
   }
   try {
@@ -2481,7 +2522,7 @@ async function onSave() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("添加成功");
+    msg = await nsAsync("新增成功");
   }<#
   }
   #><#
@@ -2539,16 +2580,116 @@ async function onSave() {
     if (!changedIds.includes(id)) {
       changedIds.push(id);
     }
-    ElMessage.success(msg);
-    const hasNext = await nextId();
-    if (hasNext) {
-      return;
-    }
-    onCloseResolve({
-      type: "ok",
-      changedIds,
-    });
   }
+  if (msg) {
+    ElMessage.success(msg);
+  }
+  return id;
+}
+
+/** 保存并继续 */
+async function onSaveAndCopy() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  dialogAction = "copy";
+  const [
+    data,<#
+    if (hasOrderBy) {
+    #>
+    order_by,<#
+    }
+    #>
+  ] = await Promise.all([
+    findOne({
+      id,
+      is_deleted,
+    }),<#
+    if (hasOrderBy) {
+    #>
+    findLastOrderBy(),<#
+    }
+    #>
+  ]);
+  if (!data) {
+    return;
+  }
+  dialogModel = {
+    ...data,
+    id: undefined,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      if (column.noAdd && column.noEdit) continue;
+      if (column.isAtt) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (!column.readonly) {
+        continue;
+      }
+    #>
+    <#=column_name#>: undefined,<#
+    }
+    #><#
+    if (hasDefault) {
+    #>
+    is_default: undefined,
+    is_default_lbl: undefined,<#
+    }
+    #><#
+    if (hasLocked) {
+    #>
+    is_locked: undefined,
+    is_locked_lbl: undefined,<#
+    }
+    #><#
+    if (hasOrderBy) {
+    #>
+    order_by: order_by + 1,<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+      ...item,
+      id: undefined,
+    })) || [ ],<#
+    }
+    #>
+  };
+  Object.assign(dialogModel, { is_deleted: undefined });
+}
+
+/** 确定 */
+async function onSave() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }<#
 }
 #><#
