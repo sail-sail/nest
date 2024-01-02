@@ -1,5 +1,10 @@
+import type {
+  BackgroundTaskId,
+} from "@/typings/ids";
+
 import {
-  UniqueType,
+  BackgroundTaskState,
+  BackgroundTaskType,
 } from "#/types";
 
 import type {
@@ -7,15 +12,20 @@ import type {
   Mutation,
   PageInput,
   BackgroundTaskSearch,
+  BackgroundTaskInput,
+  BackgroundTaskModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: BackgroundTaskModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找后台任务列表
  * @param {BackgroundTaskSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -64,16 +74,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllBackgroundTask;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllBackgroundTask;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个后台任务
  * @param {BackgroundTaskSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -120,14 +130,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneBackgroundTask;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找后台任务总数
  * @param {BackgroundTaskSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -147,25 +155,24 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountBackgroundTask;
-  return res;
+  const count = data.findCountBackgroundTask;
+  return count;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找后台任务
+ * @param {BackgroundTaskId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: BackgroundTaskId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdBackgroundTask: Query["findByIdBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
           id
           lbl
@@ -195,25 +202,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdBackgroundTask;
-  return res;
+  const model = data.findByIdBackgroundTask;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除后台任务
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsBackgroundTask: Mutation["deleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         deleteByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -226,20 +233,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原后台任务
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsBackgroundTask: Mutation["revertByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         revertByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -252,20 +258,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除后台任务
+ * @param {BackgroundTaskId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsBackgroundTask: Mutation["forceDeleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [BackgroundTaskId!]!) {
         forceDeleteByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -421,4 +426,13 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: BackgroundTaskInput = {
+    state: BackgroundTaskState.Running,
+    type: BackgroundTaskType.Text,
+  };
+  return defaultInput;
 }

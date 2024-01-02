@@ -303,18 +303,19 @@ export async function gqlQuery(
     throw err;
   }
   const { data: { data, errors } } = rvData;
-  let exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
-  if (!exception) {
-    exception = errors?.[0];
-  }
-  if (exception) {
-    let code = exception.code;
-    if (!code) {
-      code = exception.message;
-    }
-    if (code === "token_empty" || code === "refresh_token_expired") {
-      const usrStore = useUsrStore();
-      await usrStore.setAuthorization("");
+  if (errors && errors.length > 0) {
+    const is_token_expired = errors.some((item: any) => {
+      if (
+        item.code === "token_empty" || item.code === "refresh_token_expired" ||
+        item.message === "token_empty" || item.message === "refresh_token_expired"
+      ) {
+        return true;
+      }
+      return false;
+    });
+    if (is_token_expired) {
+      const usrStore = useUsrStore(cfg.pinia);
+      usrStore.setAuthorization("");
       if (!config.notLogin) {
         if (await uniLogin()) {
           config = config || { };
@@ -324,8 +325,8 @@ export async function gqlQuery(
       }
     }
   }
-  if (errors && (!config || config.showErrMsg !== false)) {
-    let errMsg = "";
+  let errMsg = "";
+  if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
       errMsg += item.message;
@@ -333,7 +334,9 @@ export async function gqlQuery(
         errMsg += "\n";
       }
     }
-    if (errMsg) {
+  }
+  if (errMsg) {
+    if (!config || config.showErrMsg !== false) {
       uni.showToast({
         title: errMsg,
         icon: "none",
@@ -342,7 +345,11 @@ export async function gqlQuery(
         position: "center",
       });
     }
-    throw new Error(errMsg, { cause: errors });
+    if (errMsg.startsWith("Error: ")) {
+      throw new Error(errMsg, { cause: errors });
+    } else {
+      throw errMsg;
+    }
   }
   return data;
 }

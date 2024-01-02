@@ -70,6 +70,10 @@ import {
   findCount as findCountCron_job_log,
 } from "@/views/cron/cron_job_log/Api";
 
+import type {
+  CronJobId,
+} from "@/typings/ids";
+
 const {
   n,
   initI18ns,
@@ -80,7 +84,7 @@ let inited = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
-  id?: string,
+  id?: CronJobId,
   is_deleted?: number | null,
 }>({ });
 
@@ -89,7 +93,7 @@ let tabName = $ref("任务执行日志");
 let cron_job_logTotal = $ref<number>();
 
 async function useFindCountCron_job_log() {
-  const cron_job_id = [ dialogModel.id! ];
+  const cron_job_id: CronJobId[] = [ dialogModel.id! ];
   cron_job_logTotal = await findCountCron_job_log(
     {
       is_deleted: dialogModel.is_deleted,
@@ -124,7 +128,7 @@ async function showDialog(
   arg?: {
     title?: string;
     model?: {
-      id?: string;
+      id?: CronJobId;
       is_deleted?: number | null;
     };
     action?: typeof dialogAction;

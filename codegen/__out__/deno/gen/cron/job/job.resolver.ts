@@ -17,6 +17,7 @@ import type {
   JobModel,
   JobSearch,
   JobFieldComment,
+  JobId,
 } from "./job.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找任务总数
  */
 export async function findCountJob(
   search?: JobSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountJob(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找任务列表
  */
 export async function findAllJob(
   search?: JobSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllJob(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取任务字段注释
  */
 export async function getFieldCommentsJob(): Promise<JobFieldComment> {
   const { getFieldComments } = await import("./job.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsJob(): Promise<JobFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个任务
  */
 export async function findOneJob(
   search?: JobSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneJob(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找任务
  */
 export async function findByIdJob(
-  id: string,
+  id: JobId,
 ): Promise<JobModel | undefined> {
   const { findById } = await import("./job.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdJob(
 }
 
 /**
- * 创建一条数据
+ * 创建任务
  */
 export async function createJob(
   input: JobInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<JobId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createJob(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: JobId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改任务
  */
 export async function updateByIdJob(
-  id: string,
+  id: JobId,
   input: JobInput,
-): Promise<string> {
+): Promise<JobId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdJob(
     "/cron/job",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: JobId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除任务
  */
 export async function deleteByIdsJob(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsJob(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用任务
  */
 export async function enableByIdsJob(
-  ids: string[],
+  ids: JobId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsJob(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁任务
  */
 export async function lockByIdsJob(
-  ids: string[],
+  ids: JobId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsJob(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原任务
  */
 export async function revertByIdsJob(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsJob(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除任务
  */
 export async function forceDeleteByIdsJob(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsJob(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 任务 order_by 字段的最大值
  */
 export async function findLastOrderByJob(): Promise<number> {
   const { findLastOrderBy } = await import("./job.service.ts");

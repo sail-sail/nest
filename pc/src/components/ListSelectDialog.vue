@@ -7,6 +7,7 @@
   :class="'custom_dialog ListSelectDialog'"
   top="0"
   :before-close="beforeClose"
+  ref="dialogRef"
 >
   <template #header>
     <div
@@ -38,9 +39,10 @@
       <slot
         v-bind="$attrs"
         :selected-ids="selectedIds"
-        :is-locked="'1'"
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
+        @row-enter="onRowEnter"
+        @row-dblclick="onRowDblclick"
       ></slot>
     </div>
     <div
@@ -72,7 +74,7 @@
         v-if="!isLocked"
         plain
         type="primary"
-        @click="saveClk"
+        @click="onSave"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -98,6 +100,8 @@ let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let inited = $ref(false);
 
+let dialogRef = $ref<InstanceType<typeof ElDialog>>();
+
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref<"select" | "close" | "cancel">("select");
@@ -113,7 +117,7 @@ let argIsLocked = $ref<boolean>();
 
 type OnCloseResolveType = {
   action: typeof dialogAction;
-  selectedIds?: string[];
+  selectedIds?: any[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -123,7 +127,7 @@ async function showDialog(
   arg?: {
     title?: string;
     action?: "select";
-    selectedIds: string[];
+    selectedIds: any[];
     isLocked?: boolean;
   },
 ) {
@@ -152,15 +156,55 @@ async function showDialog(
   if (arg?.isLocked != null) {
     argIsLocked = arg?.isLocked;
   }
+  focus();
   inited = true;
   return await dialogPrm;
+}
+
+async function focus() {
+  const activeElement = document.activeElement;
+  if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")) {
+    (activeElement as HTMLInputElement).blur();
+    (activeElement as HTMLInputElement).focus();
+    return;
+  }
+  await nextTick();
+  if (!dialogRef) {
+    return;
+  }
+  const el = dialogRef.dialogContentRef.$el as (HTMLElement | undefined);
+  if (el) {
+    const tableEl = el.querySelector(".el-table") as (HTMLTableElement | undefined);
+    if (tableEl) {
+      await nextTick();
+      await nextTick();
+      tableEl.focus();
+    }
+  }
 }
 
 function selectedIdsChg(value: string[]) {
   selectedIds = value;
 }
 
-async function saveClk() {
+async function onRowEnter(e?: KeyboardEvent) {
+  if (e) {
+    if (e.ctrlKey || e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+  await onSave();
+}
+
+async function onRowDblclick(row: { id: any }) {
+  selectedIds = [ row.id ];
+  await onSave();
+}
+
+async function onSave() {
   if (props.isLocked) {
     return;
   }

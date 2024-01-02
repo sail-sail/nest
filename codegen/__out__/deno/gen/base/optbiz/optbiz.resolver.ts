@@ -17,6 +17,7 @@ import type {
   OptbizModel,
   OptbizSearch,
   OptbizFieldComment,
+  OptbizId,
 } from "./optbiz.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找业务选项总数
  */
 export async function findCountOptbiz(
   search?: OptbizSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountOptbiz(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找业务选项列表
  */
 export async function findAllOptbiz(
   search?: OptbizSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllOptbiz(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取业务选项字段注释
  */
 export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
   const { getFieldComments } = await import("./optbiz.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个业务选项
  */
 export async function findOneOptbiz(
   search?: OptbizSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneOptbiz(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找业务选项
  */
 export async function findByIdOptbiz(
-  id: string,
+  id: OptbizId,
 ): Promise<OptbizModel | undefined> {
   const { findById } = await import("./optbiz.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdOptbiz(
 }
 
 /**
- * 创建一条数据
+ * 创建业务选项
  */
 export async function createOptbiz(
   input: OptbizInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<OptbizId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createOptbiz(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: OptbizId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改业务选项
  */
 export async function updateByIdOptbiz(
-  id: string,
+  id: OptbizId,
   input: OptbizInput,
-): Promise<string> {
+): Promise<OptbizId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdOptbiz(
     "/base/optbiz",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: OptbizId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除业务选项
  */
 export async function deleteByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsOptbiz(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用业务选项
  */
 export async function enableByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsOptbiz(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁业务选项
  */
 export async function lockByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsOptbiz(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原业务选项
  */
 export async function revertByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsOptbiz(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除业务选项
  */
 export async function forceDeleteByIdsOptbiz(
-  ids: string[],
+  ids: OptbizId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsOptbiz(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 业务选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptbiz(): Promise<number> {
   const { findLastOrderBy } = await import("./optbiz.service.ts");

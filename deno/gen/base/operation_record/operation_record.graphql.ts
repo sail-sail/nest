@@ -8,7 +8,7 @@ scalar OperationRecordId
 
 type OperationRecordModel {
   "ID"
-  id: String!
+  id: OperationRecordId!
   "模块"
   module: String!
   "模块名称"
@@ -26,17 +26,17 @@ type OperationRecordModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -100,17 +100,17 @@ input OperationRecordInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -120,7 +120,7 @@ input OperationRecordSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [OperationRecordId!]
   "ID"
   id: OperationRecordId
   "模块"
@@ -159,24 +159,24 @@ input OperationRecordSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找操作记录总数"
   findCountOperationRecord(search: OperationRecordSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找操作记录列表"
   findAllOperationRecord(search: OperationRecordSearch, page: PageInput, sort: [SortInput!]): [OperationRecordModel!]!
-  "获取字段对应的名称"
+  "获取操作记录字段注释"
   getFieldCommentsOperationRecord: OperationRecordFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个操作记录"
   findOneOperationRecord(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
-  "根据id查找一条数据"
-  findByIdOperationRecord(id: String!): OperationRecordModel
+  "根据 id 查找操作记录"
+  findByIdOperationRecord(id: OperationRecordId!): OperationRecordModel
 }
 type Mutation {
-  "根据 ids 删除数据"
-  deleteByIdsOperationRecord(ids: [String!]!): Int!
-  "根据 ids 还原数据"
-  revertByIdsOperationRecord(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsOperationRecord(ids: [String!]!): Int!
+  "根据 ids 删除操作记录"
+  deleteByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
+  "根据 ids 还原操作记录"
+  revertByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
+  "根据 ids 彻底删除操作记录"
+  forceDeleteByIdsOperationRecord(ids: [OperationRecordId!]!): Int!
 }
 
 `);

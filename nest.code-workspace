@@ -24,11 +24,16 @@
     "deno.lint": true,
     "deno.unstable": true,
     "deno.importMap": "./import_map.json",
-    "unocss.root": "",
+    "unocss.root": "uni",
     "unocss.colorPreview": false,
-    "volar.updateImportsOnFileMove.enabled": false,
-    "volar.codeLens.references": false,
     "references.preferredLocation": "peek",
-    "deno.suggest.autoImports": false
+    "rust-analyzer.inlayHints.parameterHints.enable": false,
+    "pair-diff.patterns": [
+      {
+        "source": "./deno/gen/**/*/*.ts",
+        "target": "./codegen/template/<basename>"
+      }
+    ],
+    "diffEditor.wordWrap": "off"
   }
 }

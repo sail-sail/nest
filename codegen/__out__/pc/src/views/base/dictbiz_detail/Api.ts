@@ -3,21 +3,32 @@ import {
 } from "#/types";
 
 import type {
+  DictbizDetailId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   DictbizDetailSearch,
   DictbizDetailInput,
+  DictbizDetailModel,
 } from "#/types";
 
 import type {
   DictbizSearch,
-  UsrSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: DictbizDetailModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找业务字典明细列表
  * @param {DictbizDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -64,16 +75,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDictbizDetail;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDictbizDetail;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个业务字典明细
  * @param {DictbizDetailSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -118,14 +129,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDictbizDetail;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找业务字典明细总数
  * @param {DictbizDetailSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -145,22 +154,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDictbizDetail;
-  return res;
+  const count = data.findCountDictbizDetail;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建业务字典明细
  * @param {DictbizDetailInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: DictbizDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<DictbizDetailId> {
   const data: {
     createDictbizDetail: Mutation["createDictbizDetail"];
   } = await mutation({
@@ -174,27 +182,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createDictbizDetail;
-  return res;
+  const id: DictbizDetailId = data.createDictbizDetail;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改业务字典明细
+ * @param {DictbizDetailId} id
  * @param {DictbizDetailInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: DictbizDetailId,
   model: DictbizDetailInput,
   opt?: GqlOpt,
-) {
+): Promise<DictbizDetailId> {
   const data: {
     updateByIdDictbizDetail: Mutation["updateByIdDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: DictbizDetailInput!) {
+      mutation($id: DictbizDetailId!, $model: DictbizDetailInput!) {
         updateByIdDictbizDetail(id: $id, model: $model)
       }
     `,
@@ -203,25 +210,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdDictbizDetail;
-  return res;
+  const id2: DictbizDetailId = data.updateByIdDictbizDetail;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找业务字典明细
+ * @param {DictbizDetailId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: DictbizDetailId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdDictbizDetail: Query["findByIdDictbizDetail"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: DictbizDetailId!) {
         findByIdDictbizDetail(id: $id) {
           id
           dictbiz_id
@@ -249,25 +255,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDictbizDetail;
-  return res;
+  const model = data.findByIdDictbizDetail;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsDictbizDetail: Mutation["deleteByIdsDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictbizDetailId!]!) {
         deleteByIdsDictbizDetail(ids: $ids)
       }
     `,
@@ -280,14 +286,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -295,7 +300,7 @@ export async function enableByIds(
     enableByIdsDictbizDetail: Mutation["enableByIdsDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [DictbizDetailId!]!, $is_enabled: Int!) {
         enableByIdsDictbizDetail(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -309,14 +314,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -324,7 +328,7 @@ export async function lockByIds(
     lockByIdsDictbizDetail: Mutation["lockByIdsDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [DictbizDetailId!]!, $is_locked: Int!) {
         lockByIdsDictbizDetail(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -338,20 +342,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsDictbizDetail: Mutation["revertByIdsDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictbizDetailId!]!) {
         revertByIdsDictbizDetail(ids: $ids)
       }
     `,
@@ -364,20 +367,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsDictbizDetail: Mutation["forceDeleteByIdsDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DictbizDetailId!]!) {
         forceDeleteByIdsDictbizDetail(ids: $ids)
       }
     `,
@@ -578,7 +580,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DictbizDetailInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DictbizDetailInput[],
@@ -626,8 +627,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 业务字典明细 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -644,4 +644,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByDictbizDetail;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DictbizDetailInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

@@ -1,5 +1,6 @@
-
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import type {
   UniqueType,
@@ -12,12 +13,13 @@ import type {
   BackgroundTaskModel,
   BackgroundTaskSearch,
   BackgroundTaskFieldComment,
+  BackgroundTaskId,
 } from "./background_task.model.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找后台任务总数
  * @param {BackgroundTaskSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -26,7 +28,7 @@ export async function findCount(
 ): Promise<number> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -35,7 +37,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找后台任务列表
  * @param {BackgroundTaskSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -48,7 +50,7 @@ export async function findAll(
 ): Promise<BackgroundTaskModel[]> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -65,7 +67,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个后台任务
  * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function findOne(
@@ -74,7 +76,7 @@ export async function findOne(
 ): Promise<BackgroundTaskModel | undefined> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -83,18 +85,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找后台任务
+ * @param {BackgroundTaskId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
 ): Promise<BackgroundTaskModel | undefined> {
   const model = await background_taskDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找后台任务是否存在
  * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function exist(
@@ -102,7 +104,7 @@ export async function exist(
 ): Promise<boolean> {
   search = search || { };
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
@@ -111,18 +113,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找后台任务是否存在
+ * @param {BackgroundTaskId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: BackgroundTaskId | null,
 ): Promise<boolean> {
   const data = await background_taskDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验后台任务
  * @param input 
  */
 export async function validate(
@@ -135,40 +137,40 @@ export async function validate(
 /**
  * 创建数据
  * @param {BackgroundTaskInput} input
- * @return {Promise<string>} id
+ * @return {Promise<BackgroundTaskId>} id
  */
 export async function create(
   input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await background_taskDao.create(input, options);
-  return data;
+): Promise<BackgroundTaskId> {
+  const id: BackgroundTaskId = await background_taskDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改后台任务
+ * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
- * @return {Promise<string>}
+ * @return {Promise<BackgroundTaskId>}
  */
 export async function updateById(
-  id: string,
+  id: BackgroundTaskId,
   input: BackgroundTaskInput,
-): Promise<string> {
+): Promise<BackgroundTaskId> {
   
-  const data = await background_taskDao.updateById(id, input);
-  return data;
+  const id2: BackgroundTaskId = await background_taskDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除后台任务
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   
   const data = await background_taskDao.deleteByIds(ids);
@@ -176,31 +178,31 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原后台任务
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   const data = await background_taskDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除后台任务
+ * @param {BackgroundTaskId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: BackgroundTaskId[],
 ): Promise<number> {
   const data = await background_taskDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取后台任务字段注释
  */
 export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
   const data = await background_taskDao.getFieldComments();

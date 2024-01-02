@@ -6,15 +6,22 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobLogId
 
 "任务执行日志执行状态"
-scalar CronJobLogExecState
+enum CronJobLogExecState {
+  "执行中"
+  running
+  "成功"
+  success
+  "失败"
+  fail
+}
 
 type CronJobLogModel {
   "ID"
-  id: String!
+  id: CronJobLogId!
   "定时任务"
-  cron_job_id: String!
+  cron_job_id: CronJobId!
   "定时任务"
-  cron_job_id_lbl: CronJobId
+  cron_job_id_lbl: String
   "执行状态"
   exec_state: CronJobLogExecState
   "执行状态"
@@ -70,9 +77,9 @@ input CronJobLogInput {
   ""
   id: CronJobLogId
   "定时任务"
-  cron_job_id: String
+  cron_job_id: CronJobId
   "定时任务"
-  cron_job_id_lbl: CronJobId
+  cron_job_id_lbl: String
   "执行状态"
   exec_state: CronJobLogExecState
   "执行状态"
@@ -98,7 +105,7 @@ input CronJobLogSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [CronJobLogId!]
   "ID"
   id: CronJobLogId
   "定时任务"
@@ -120,24 +127,24 @@ input CronJobLogSearch {
   create_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找任务执行日志总数"
   findCountCronJobLog(search: CronJobLogSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找任务执行日志列表"
   findAllCronJobLog(search: CronJobLogSearch, page: PageInput, sort: [SortInput!]): [CronJobLogModel!]!
-  "获取字段对应的名称"
+  "获取任务执行日志字段注释"
   getFieldCommentsCronJobLog: CronJobLogFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个任务执行日志"
   findOneCronJobLog(search: CronJobLogSearch, sort: [SortInput!]): CronJobLogModel
-  "根据id查找一条数据"
-  findByIdCronJobLog(id: String!): CronJobLogModel
+  "根据 id 查找任务执行日志"
+  findByIdCronJobLog(id: CronJobLogId!): CronJobLogModel
 }
 type Mutation {
-  "根据 ids 删除数据"
-  deleteByIdsCronJobLog(ids: [String!]!): Int!
-  "根据 ids 还原数据"
-  revertByIdsCronJobLog(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsCronJobLog(ids: [String!]!): Int!
+  "根据 ids 删除任务执行日志"
+  deleteByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
+  "根据 ids 还原任务执行日志"
+  revertByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
+  "根据 ids 彻底删除任务执行日志"
+  forceDeleteByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
 }
 
 `);

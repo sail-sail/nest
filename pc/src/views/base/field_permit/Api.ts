@@ -3,25 +3,40 @@ import {
 } from "#/types";
 
 import type {
+  FieldPermitId,
+} from "@/typings/ids";
+
+import {
+  FieldPermitType,
+} from "#/types";
+
+import type {
   Query,
   Mutation,
   PageInput,
   FieldPermitSearch,
   FieldPermitInput,
+  FieldPermitModel,
 } from "#/types";
 
 import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: FieldPermitModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找字段权限列表
  * @param {FieldPermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -65,16 +80,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllFieldPermit;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllFieldPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个字段权限
  * @param {FieldPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -116,14 +131,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneFieldPermit;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找字段权限总数
  * @param {FieldPermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -143,22 +156,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountFieldPermit;
-  return res;
+  const count = data.findCountFieldPermit;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建字段权限
  * @param {FieldPermitInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: FieldPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<FieldPermitId> {
   const data: {
     createFieldPermit: Mutation["createFieldPermit"];
   } = await mutation({
@@ -172,27 +184,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createFieldPermit;
-  return res;
+  const id: FieldPermitId = data.createFieldPermit;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改字段权限
+ * @param {FieldPermitId} id
  * @param {FieldPermitInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: FieldPermitId,
   model: FieldPermitInput,
   opt?: GqlOpt,
-) {
+): Promise<FieldPermitId> {
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: FieldPermitInput!) {
+      mutation($id: FieldPermitId!, $model: FieldPermitInput!) {
         updateByIdFieldPermit(id: $id, model: $model)
       }
     `,
@@ -201,25 +212,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdFieldPermit;
-  return res;
+  const id2: FieldPermitId = data.updateByIdFieldPermit;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找字段权限
+ * @param {FieldPermitId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: FieldPermitId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdFieldPermit: Query["findByIdFieldPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: FieldPermitId!) {
         findByIdFieldPermit(id: $id) {
           id
           menu_id
@@ -244,25 +254,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdFieldPermit;
-  return res;
+  const model = data.findByIdFieldPermit;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除字段权限
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsFieldPermit: Mutation["deleteByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         deleteByIdsFieldPermit(ids: $ids)
       }
     `,
@@ -275,20 +285,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原字段权限
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsFieldPermit: Mutation["revertByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         revertByIdsFieldPermit(ids: $ids)
       }
     `,
@@ -301,20 +310,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除字段权限
+ * @param {FieldPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsFieldPermit: Mutation["forceDeleteByIdsFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [FieldPermitId!]!) {
         forceDeleteByIdsFieldPermit(ids: $ids)
       }
     `,
@@ -533,7 +541,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {FieldPermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: FieldPermitInput[],
@@ -578,4 +585,12 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: FieldPermitInput = {
+    type: FieldPermitType.Editable,
+  };
+  return defaultInput;
 }

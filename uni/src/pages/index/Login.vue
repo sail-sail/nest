@@ -104,8 +104,6 @@
 </template>
 
 <script setup lang="ts">
-import useUsrStore from "@/store/usr";
-
 import cfg from "@/utils/config";
 
 import {
@@ -113,16 +111,26 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
 } from "./Api";
 
-import { lang } from "@/locales/index";
+import type {
+  LoginInput,
+} from "@/typings/types";
 
-const usrStore = useUsrStore();
+import type {
+  TenantId,
+} from "@/typings/ids";
+
+import {
+  lang,
+} from "@/locales/index";
+
+const usrStore = useUsrStore(cfg.pinia);
 
 let formRef = $ref<InstanceType<typeof CustomForm>>();
 
-let model = $ref({
+let model: LoginInput = $ref<LoginInput>({
   username: "admin",
   password: "a",
-  tenant_id: "",
+  tenant_id: "" as unknown as TenantId,
   lang,
 });
 
@@ -149,10 +157,11 @@ async function onLogin() {
   if (!loginModel.authorization) {
     return;
   }
-  usrStore.authorization = loginModel.authorization;
-  usrStore.username = model.username;
-  usrStore.tenant_id = model.tenant_id;
-  usrStore.lang = model.lang;
+  usrStore.setAuthorization(loginModel.authorization);
+  usrStore.setUsrId(loginModel.usr_id);
+  usrStore.setUsername(model.username);
+  usrStore.setTenantId(model.tenant_id);
+  usrStore.setLang(model.lang);
   await uni.reLaunch({
     url: redirect_uri,
   });

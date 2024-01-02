@@ -13,12 +13,13 @@ import type {
   FieldPermitModel,
   FieldPermitSearch,
   FieldPermitFieldComment,
+  FieldPermitId,
 } from "./field_permit.model.ts";
 
 import * as field_permitDao from "./field_permit.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找字段权限总数
  * @param {FieldPermitSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找字段权限列表
  * @param {FieldPermitSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个字段权限
  * @param {FieldPermitSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找字段权限
+ * @param {FieldPermitId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: FieldPermitId | null,
 ): Promise<FieldPermitModel | undefined> {
   const model = await field_permitDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找字段权限是否存在
  * @param {FieldPermitSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找字段权限是否存在
+ * @param {FieldPermitId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: FieldPermitId | null,
 ): Promise<boolean> {
   const data = await field_permitDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验字段权限
  * @param input 
  */
 export async function validate(
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {FieldPermitInput} input
- * @return {Promise<string>} id
+ * @return {Promise<FieldPermitId>} id
  */
 export async function create(
   input: FieldPermitInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await field_permitDao.create(input, options);
-  return data;
+): Promise<FieldPermitId> {
+  const id: FieldPermitId = await field_permitDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改字段权限
+ * @param {FieldPermitId} id
  * @param {FieldPermitInput} input
- * @return {Promise<string>}
+ * @return {Promise<FieldPermitId>}
  */
 export async function updateById(
-  id: string,
+  id: FieldPermitId,
   input: FieldPermitInput,
-): Promise<string> {
+): Promise<FieldPermitId> {
   
   // 不能修改系统记录的系统字段
   const model = await field_permitDao.findById(id);
@@ -149,23 +150,23 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const data = await field_permitDao.updateById(id, input);
-  return data;
+  const id2: FieldPermitId = await field_permitDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除字段权限
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: FieldPermitId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: FieldPermitId = ids[i];
       const model = await field_permitDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -183,31 +184,31 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原字段权限
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   const data = await field_permitDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除字段权限
+ * @param {FieldPermitId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   const data = await field_permitDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取字段权限字段注释
  */
 export async function getFieldComments(): Promise<FieldPermitFieldComment> {
   const data = await field_permitDao.getFieldComments();

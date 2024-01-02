@@ -5,7 +5,7 @@ import * as usrResolver from "./usr.resolver.ts";
 defineGraphql(usrResolver, /* GraphQL */`
 
   type GetLoginInfoOrgIdModels {
-    id: String!
+    id: OrgId!
     lbl: String!
   }
 
@@ -13,20 +13,24 @@ defineGraphql(usrResolver, /* GraphQL */`
     lbl: String!
     username: String!
     lang: String!
-    org_id: String
+    org_id: OrgId
     org_id_models: [GetLoginInfoOrgIdModels!]!
   }
   
   type LoginModel {
-    org_id: String
+    usr_id: UsrId!
+    username: String!
+    tenant_id: TenantId!
+    org_id: OrgId
     authorization: String!
+    lang: String!
   }
   
   input LoginInput {
     username: String!
     password: String!
-    tenant_id: String!
-    org_id: String
+    tenant_id: TenantId!
+    org_id: OrgId
     lang: String!
   }
   

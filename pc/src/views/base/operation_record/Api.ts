@@ -1,21 +1,26 @@
-import {
-  UniqueType,
-} from "#/types";
+import type {
+  OperationRecordId,
+} from "@/typings/ids";
 
 import type {
   Query,
   Mutation,
   PageInput,
   OperationRecordSearch,
+  OperationRecordInput,
+  OperationRecordModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: OperationRecordModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找操作记录列表
  * @param {OperationRecordSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -60,16 +65,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllOperationRecord;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllOperationRecord;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个操作记录
  * @param {OperationRecordSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -112,14 +117,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneOperationRecord;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找操作记录总数
  * @param {OperationRecordSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -139,25 +142,24 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountOperationRecord;
-  return res;
+  const count = data.findCountOperationRecord;
+  return count;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找操作记录
+ * @param {OperationRecordId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: OperationRecordId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdOperationRecord: Query["findByIdOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
           id
           module
@@ -183,25 +185,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdOperationRecord;
-  return res;
+  const model = data.findByIdOperationRecord;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除操作记录
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsOperationRecord: Mutation["deleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         deleteByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -214,20 +216,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原操作记录
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsOperationRecord: Mutation["revertByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         revertByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -240,20 +241,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除操作记录
+ * @param {OperationRecordId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsOperationRecord: Mutation["forceDeleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OperationRecordId!]!) {
         forceDeleteByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -391,4 +391,11 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OperationRecordInput = {
+  };
+  return defaultInput;
 }

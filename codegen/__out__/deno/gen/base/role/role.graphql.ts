@@ -8,23 +8,23 @@ scalar RoleId
 
 type RoleModel {
   "ID"
-  id: String!
+  id: RoleId!
   "名称"
   lbl: String!
   "首页"
   home_url: String!
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   "菜单权限"
-  menu_ids_lbl: [MenuId!]
+  menu_ids_lbl: [String!]
   "按钮权限"
-  permit_ids: [String!]
+  permit_ids: [PermitId!]
   "按钮权限"
-  permit_ids_lbl: [PermitId!]
+  permit_ids_lbl: [String!]
   "数据权限"
-  data_permit_ids: [String!]
+  data_permit_ids: [DataPermitId!]
   "数据权限"
-  data_permit_ids_lbl: [DataPermitId!]
+  data_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -38,17 +38,17 @@ type RoleModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input RoleInput {
   "首页"
   home_url: String
   "菜单权限"
-  menu_ids: [String!]
+  menu_ids: [MenuId!]
   "菜单权限"
-  menu_ids_lbl: [MenuId!]
+  menu_ids_lbl: [String!]
   "按钮权限"
-  permit_ids: [String!]
+  permit_ids: [PermitId!]
   "按钮权限"
-  permit_ids_lbl: [PermitId!]
+  permit_ids_lbl: [String!]
   "数据权限"
-  data_permit_ids: [String!]
+  data_permit_ids: [DataPermitId!]
   "数据权限"
-  data_permit_ids_lbl: [DataPermitId!]
+  data_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -136,17 +136,17 @@ input RoleInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -156,7 +156,7 @@ input RoleSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [RoleId!]
   "ID"
   id: RoleId
   "名称"
@@ -195,34 +195,34 @@ input RoleSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找角色总数"
   findCountRole(search: RoleSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找角色列表"
   findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput!]): [RoleModel!]!
-  "获取字段对应的名称"
+  "获取角色字段注释"
   getFieldCommentsRole: RoleFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个角色"
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
-  "根据id查找一条数据"
-  findByIdRole(id: String!): RoleModel
-  "查找order_by字段的最大值"
+  "根据 id 查找角色"
+  findByIdRole(id: RoleId!): RoleModel
+  "查找 角色 order_by 字段的最大值"
   findLastOrderByRole: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createRole(model: RoleInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdRole(id: String!, model: RoleInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsRole(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsRole(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsRole(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsRole(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsRole(ids: [String!]!): Int!
+  "创建角色"
+  createRole(model: RoleInput!, unique_type: UniqueType): RoleId!
+  "根据 id 修改角色"
+  updateByIdRole(id: RoleId!, model: RoleInput!): RoleId!
+  "根据 ids 删除角色"
+  deleteByIdsRole(ids: [RoleId!]!): Int!
+  "根据 ids 启用或者禁用角色"
+  enableByIdsRole(ids: [RoleId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁角色"
+  lockByIdsRole(ids: [RoleId!]!, is_locked: Int!): Int!
+  "根据 ids 还原角色"
+  revertByIdsRole(ids: [RoleId!]!): Int!
+  "根据 ids 彻底删除角色"
+  forceDeleteByIdsRole(ids: [RoleId!]!): Int!
 }
 
 `);

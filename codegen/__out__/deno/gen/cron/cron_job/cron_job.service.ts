@@ -13,12 +13,13 @@ import type {
   CronJobModel,
   CronJobSearch,
   CronJobFieldComment,
+  CronJobId,
 } from "./cron_job.model.ts";
 
 import * as cron_jobDao from "./cron_job.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找定时任务总数
  * @param {CronJobSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找定时任务列表
  * @param {CronJobSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个定时任务
  * @param {CronJobSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找定时任务
+ * @param {CronJobId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: CronJobId | null,
 ): Promise<CronJobModel | undefined> {
   const model = await cron_jobDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找定时任务是否存在
  * @param {CronJobSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找定时任务是否存在
+ * @param {CronJobId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: CronJobId | null,
 ): Promise<boolean> {
   const data = await cron_jobDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验定时任务
  * @param input 
  */
 export async function validate(
@@ -116,51 +117,51 @@ export async function validate(
 /**
  * 创建数据
  * @param {CronJobInput} input
- * @return {Promise<string>} id
+ * @return {Promise<CronJobId>} id
  */
 export async function create(
   input: CronJobInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await cron_jobDao.create(input, options);
-  return data;
+): Promise<CronJobId> {
+  const id: CronJobId = await cron_jobDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改定时任务
+ * @param {CronJobId} id
  * @param {CronJobInput} input
- * @return {Promise<string>}
+ * @return {Promise<CronJobId>}
  */
 export async function updateById(
-  id: string,
+  id: CronJobId,
   input: CronJobInput,
-): Promise<string> {
+): Promise<CronJobId> {
   
   const is_locked = await cron_jobDao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const data = await cron_jobDao.updateById(id, input);
-  return data;
+  const id2: CronJobId = await cron_jobDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除定时任务
+ * @param {CronJobId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CronJobId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: CronJobId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: CronJobId = ids[i];
       const is_locked = await cron_jobDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -177,13 +178,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用定时任务
+ * @param {CronJobId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: CronJobId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await cron_jobDao.enableByIds(ids, is_enabled);
@@ -191,13 +192,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁定时任务
+ * @param {CronJobId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: CronJobId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await cron_jobDao.lockByIds(ids, is_locked);
@@ -205,31 +206,31 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原定时任务
+ * @param {CronJobId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CronJobId[],
 ): Promise<number> {
   const data = await cron_jobDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除定时任务
+ * @param {CronJobId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CronJobId[],
 ): Promise<number> {
   const data = await cron_jobDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取定时任务字段注释
  */
 export async function getFieldComments(): Promise<CronJobFieldComment> {
   const data = await cron_jobDao.getFieldComments();
@@ -237,7 +238,7 @@ export async function getFieldComments(): Promise<CronJobFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 定时任务 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

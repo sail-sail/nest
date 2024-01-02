@@ -19,10 +19,21 @@ export default defineStore("index", function() {
     }
   }
   
+  function getLoading() {
+    return loading;
+  }
+  
   let systemInfo: UniApp.GetSystemInfoResult | undefined;
   
   function setSystemInfo(sys: UniApp.GetSystemInfoResult) {
     systemInfo = sys;
+  }
+  
+  function getSystemInfo() {
+    if (!systemInfo) {
+      throw new Error("systemInfo is not set!");
+    }
+    return systemInfo;
   }
   
   let userAgent: UserAgent | undefined;
@@ -38,10 +49,14 @@ export default defineStore("index", function() {
     return userAgent;
   }
   
-  let launchOptions = $ref<{[key: string]: any}>({ });
+  let launchOptions = $ref<App.LaunchShowOption>();
   
-  function setLaunchOptions(options: typeof launchOptions) {
+  function setLaunchOptions(options?: App.LaunchShowOption) {
     launchOptions = options;
+  }
+  
+  function getLaunchOptions() {
+    return launchOptions!;
   }
   
   let uid = $ref("");
@@ -50,14 +65,19 @@ export default defineStore("index", function() {
     uid = uid0;
   }
   
+  function getUid() {
+    return uid;
+  }
+  
   return $$({
-    loading,
-    launchOptions,
-    uid,
+    getUid,
+    getLoading,
     addLoading,
     minusLoading,
-    setLaunchOptions,
     setUid,
+    setLaunchOptions,
+    getLaunchOptions,
+    getSystemInfo,
     setSystemInfo,
     getUserAgent,
   });

@@ -9,8 +9,12 @@ import type {
   DataPermitFieldComment as DataPermitFieldCommentType,
 } from "/gen/types.ts";
 
-export const dataPermitId = Symbol.for("DataPermitId");
-export type DataPermitId = typeof dataPermitId;
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+declare const dataPermitId: unique symbol;
+export type DataPermitId = Distinct<string, typeof dataPermitId>;
 
 export interface DataPermitSearch extends DataPermitSearchType {
   $extra?: SearchExtra[];
@@ -19,18 +23,18 @@ export interface DataPermitSearch extends DataPermitSearchType {
 export interface DataPermitModel extends DataPermitModelType {
   /** 系统字段 */
   is_sys: number;
-  create_usr_id: string;
+  create_usr_id: UsrId;
   create_time?: string | null;
-  update_usr_id: string;
+  update_usr_id: UsrId;
   update_time?: string | null;
 }
 
 export interface DataPermitInput extends DataPermitInputType {
   /** 系统字段 */
   is_sys?: number;
-  create_usr_id?: string | null;
+  create_usr_id?: UsrId | null;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id?: UsrId | null;
   update_time?: string | null;
   is_deleted?: number | null;
 }

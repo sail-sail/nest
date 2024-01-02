@@ -17,6 +17,7 @@ import type {
   UsrModel,
   UsrSearch,
   UsrFieldComment,
+  UsrId,
 } from "./usr.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找用户总数
  */
 export async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
@@ -42,7 +43,7 @@ export async function findCountUsr(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找用户列表
  */
 export async function findAllUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
@@ -67,7 +68,7 @@ export async function findAllUsr(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取用户字段注释
  */
 export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
   const { getFieldComments } = await import("./usr.service.ts");
@@ -76,7 +77,7 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个用户
  */
 export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
@@ -100,10 +101,10 @@ export async function findOneUsr(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找用户
  */
 export async function findByIdUsr(
-  id: string,
+  id: UsrId,
 ): Promise<UsrModel | undefined> {
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
@@ -116,12 +117,12 @@ export async function findByIdUsr(
 }
 
 /**
- * 创建一条数据
+ * 创建用户
  */
 export async function createUsr(
   input: UsrInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<UsrId> {
   
   const {
     validate,
@@ -142,17 +143,17 @@ export async function createUsr(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: UsrId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改用户
  */
 export async function updateByIdUsr(
-  id: string,
+  id: UsrId,
   input: UsrInput,
-): Promise<string> {
+): Promise<UsrId> {
   
   const {
     setIdByLbl,
@@ -169,15 +170,15 @@ export async function updateByIdUsr(
     "/base/usr",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: UsrId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除用户
  */
 export async function deleteByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   
   const {
@@ -197,10 +198,10 @@ export async function deleteByIdsUsr(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用用户
  */
 export async function enableByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -224,10 +225,10 @@ export async function enableByIdsUsr(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁用户
  */
 export async function lockByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -251,10 +252,10 @@ export async function lockByIdsUsr(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原用户
  */
 export async function revertByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   
   const {
@@ -274,10 +275,10 @@ export async function revertByIdsUsr(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除用户
  */
 export async function forceDeleteByIdsUsr(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -296,7 +297,7 @@ export async function forceDeleteByIdsUsr(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(): Promise<number> {
   const { findLastOrderBy } = await import("./usr.service.ts");

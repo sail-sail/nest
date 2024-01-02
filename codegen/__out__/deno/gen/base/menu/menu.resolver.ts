@@ -17,6 +17,7 @@ import type {
   MenuModel,
   MenuSearch,
   MenuFieldComment,
+  MenuId,
 } from "./menu.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找菜单总数
  */
 export async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountMenu(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找菜单列表
  */
 export async function findAllMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllMenu(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取菜单字段注释
  */
 export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
   const { getFieldComments } = await import("./menu.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个菜单
  */
 export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneMenu(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找菜单
  */
 export async function findByIdMenu(
-  id: string,
+  id: MenuId,
 ): Promise<MenuModel | undefined> {
   const { findById } = await import("./menu.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdMenu(
 }
 
 /**
- * 创建一条数据
+ * 创建菜单
  */
 export async function createMenu(
   input: MenuInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<MenuId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createMenu(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: MenuId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改菜单
  */
 export async function updateByIdMenu(
-  id: string,
+  id: MenuId,
   input: MenuInput,
-): Promise<string> {
+): Promise<MenuId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdMenu(
     "/base/menu",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: MenuId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除菜单
  */
 export async function deleteByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsMenu(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用菜单
  */
 export async function enableByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsMenu(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁菜单
  */
 export async function lockByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsMenu(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原菜单
  */
 export async function revertByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsMenu(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除菜单
  */
 export async function forceDeleteByIdsMenu(
-  ids: string[],
+  ids: MenuId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsMenu(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 菜单 order_by 字段的最大值
  */
 export async function findLastOrderByMenu(): Promise<number> {
   const { findLastOrderBy } = await import("./menu.service.ts");

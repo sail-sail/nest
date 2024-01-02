@@ -5,22 +5,20 @@ import * as resolver from "./cron_job.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobId
 
-"定时任务时区"
-scalar CronJobTimezone
 
 type CronJobModel {
   "ID"
-  id: String!
+  id: CronJobId!
   "名称"
   lbl: String!
   "任务"
-  job_id: String!
+  job_id: JobId!
   "任务"
-  job_id_lbl: JobId
+  job_id_lbl: String
   "Cron表达式"
   cron: String!
   "时区"
-  timezone: CronJobTimezone
+  timezone: String!
   "时区"
   timezone_lbl: String!
   "锁定"
@@ -36,17 +34,17 @@ type CronJobModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -104,13 +102,13 @@ input CronJobInput {
   "名称"
   lbl: String
   "任务"
-  job_id: String
+  job_id: JobId
   "任务"
-  job_id_lbl: JobId
+  job_id_lbl: String
   "Cron表达式"
   cron: String
   "时区"
-  timezone: CronJobTimezone
+  timezone: String
   "时区"
   timezone_lbl: String
   "锁定"
@@ -126,17 +124,17 @@ input CronJobInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -146,7 +144,7 @@ input CronJobSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [CronJobId!]
   "ID"
   id: CronJobId
   "名称"
@@ -181,34 +179,34 @@ input CronJobSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找定时任务总数"
   findCountCronJob(search: CronJobSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找定时任务列表"
   findAllCronJob(search: CronJobSearch, page: PageInput, sort: [SortInput!]): [CronJobModel!]!
-  "获取字段对应的名称"
+  "获取定时任务字段注释"
   getFieldCommentsCronJob: CronJobFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个定时任务"
   findOneCronJob(search: CronJobSearch, sort: [SortInput!]): CronJobModel
-  "根据id查找一条数据"
-  findByIdCronJob(id: String!): CronJobModel
-  "查找order_by字段的最大值"
+  "根据 id 查找定时任务"
+  findByIdCronJob(id: CronJobId!): CronJobModel
+  "查找 定时任务 order_by 字段的最大值"
   findLastOrderByCronJob: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createCronJob(model: CronJobInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdCronJob(id: String!, model: CronJobInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsCronJob(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsCronJob(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsCronJob(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsCronJob(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsCronJob(ids: [String!]!): Int!
+  "创建定时任务"
+  createCronJob(model: CronJobInput!, unique_type: UniqueType): CronJobId!
+  "根据 id 修改定时任务"
+  updateByIdCronJob(id: CronJobId!, model: CronJobInput!): CronJobId!
+  "根据 ids 删除定时任务"
+  deleteByIdsCronJob(ids: [CronJobId!]!): Int!
+  "根据 ids 启用或者禁用定时任务"
+  enableByIdsCronJob(ids: [CronJobId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁定时任务"
+  lockByIdsCronJob(ids: [CronJobId!]!, is_locked: Int!): Int!
+  "根据 ids 还原定时任务"
+  revertByIdsCronJob(ids: [CronJobId!]!): Int!
+  "根据 ids 彻底删除定时任务"
+  forceDeleteByIdsCronJob(ids: [CronJobId!]!): Int!
 }
 
 `);

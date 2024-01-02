@@ -80,15 +80,14 @@
 import { pinyin } from "pinyin-pro";
 
 import type {
+  GetDictbiz,
+} from "@/typings/types";
+
+import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
-export type DictbizModel = {
-  id: string;
-  code: string;
-  lbl: string;
-  type: string;
-  val: string;
+export type DictbizModel = GetDictbiz & {
   __pinyin_label?: string;
 };
 

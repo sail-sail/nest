@@ -53,10 +53,19 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  LangId,
+} from "/gen/base/lang/lang.model.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
+
+import type {
   I18Ninput,
   I18Nmodel,
   I18Nsearch,
   I18NfieldComment,
+  I18nId,
 } from "./i18n.model.ts";
 
 import * as langDao from "/gen/base/lang/lang.dao.ts";
@@ -202,7 +211,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找国际化总数
  * @param { I18Nsearch } search?
  * @return {Promise<number>}
  */
@@ -243,7 +252,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找国际化列表
  * @param {I18Nsearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -375,7 +384,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取国际化字段注释
  */
 export async function getFieldComments(): Promise<I18NfieldComment> {
   const n = initN(route_path);
@@ -401,7 +410,7 @@ export async function getFieldComments(): Promise<I18NfieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得国际化列表
  * @param {I18Ninput} search0
  */
 export async function findByUnique(
@@ -423,7 +432,7 @@ export async function findByUnique(
     if (search0.lang_id == null) {
       return [ ];
     }
-    let lang_id: string[] = [ ];
+    let lang_id: LangId[] = [ ];
     if (!Array.isArray(search0.lang_id)) {
       lang_id.push(search0.lang_id, search0.lang_id);
     } else {
@@ -432,7 +441,7 @@ export async function findByUnique(
     if (search0.menu_id == null) {
       return [ ];
     }
-    let menu_id: string[] = [ ];
+    let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
       menu_id.push(search0.menu_id, search0.menu_id);
     } else {
@@ -476,11 +485,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查国际化是否已经存在
  * @param {I18Ninput} input
  * @param {I18Nmodel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<I18nId | undefined>}
  */
 export async function checkByUnique(
   input: I18Ninput,
@@ -488,14 +497,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<I18nId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: I18nId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -505,7 +514,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -515,7 +524,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个国际化
  * @param {I18Nsearch} search?
  */
 export async function findOne(
@@ -534,15 +543,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找国际化
+ * @param {I18nId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: I18nId | null,
   options?: {
   },
 ): Promise<I18Nmodel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -550,7 +559,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断国际化是否存在
  * @param {I18Nsearch} search?
  */
 export async function exist(
@@ -564,16 +573,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断国际化是否存在
+ * @param {I18nId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: I18nId | null,
 ) {
   const table = "base_i18n";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -604,7 +613,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验国际化是否存在 */
 export async function validateOption(
   model?: I18Nmodel,
 ) {
@@ -615,7 +624,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 国际化增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -682,7 +691,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建国际化
  * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -690,14 +699,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<I18nId>} 
  */
 export async function create(
   input: I18Ninput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<I18nId> {
   const table = "base_i18n";
   const method = "create";
   
@@ -709,7 +718,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: I18nId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -727,12 +736,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<I18nId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -774,7 +783,7 @@ export async function create(
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -782,7 +791,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -837,8 +846,8 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改国际化
+ * @param {I18nId} id
  * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -846,15 +855,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<I18nId>}
  */
 export async function updateById(
-  id: string,
+  id: I18nId,
   input: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<I18nId> {
   const table = "base_i18n";
   const method = "updateById";
   
@@ -925,7 +934,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -956,12 +965,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除国际化
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {
@@ -978,7 +987,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: I18nId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1004,12 +1013,12 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原国际化
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {
@@ -1026,7 +1035,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: I18nId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1063,12 +1072,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除国际化
+ * @param {I18nId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: I18nId[],
   options?: {
   },
 ): Promise<number> {

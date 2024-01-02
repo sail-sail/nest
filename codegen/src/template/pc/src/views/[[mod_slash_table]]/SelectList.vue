@@ -9,11 +9,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -32,15 +32,19 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     if (!list_tree) {
     #>
     <List
+      v-bind="$attrs"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
+      @row-enter="onRowEnter"
+      @row-dblclick="onRowDblclick"
     ></List><#
     } else {
     #>
     <TreeList
+      v-bind="$attrs"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
@@ -101,11 +105,15 @@ import TreeList from "./TreeList.vue";<#
 #>
 
 import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
+import type {
   <#=modelName#>,
 } from "#/types";
 
 const emit = defineEmits<{
-  (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "change", value?: <#=modelName#> | <#=modelName#>[] | null): void,
 }>();
 
 const {
@@ -119,14 +127,14 @@ let dialogAction = $ref("select");
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  selectedIds: string[];
+  selectedIds: <#=Table_Up#>Id[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
-let selectedIds = $ref<string[]>([ ]);
+let selectedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
 let multiple = $ref(false);
 
@@ -141,7 +149,7 @@ async function showDialog(
     multiple?: boolean;
     isReadonly?: MaybeRefOrGetter<boolean>;
     model?: {
-      ids?: string[];
+      ids?: <#=Table_Up#>Id[];
     };
     action?: typeof dialogAction;
   },
@@ -173,17 +181,32 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
-function selectedIdsChg(value: string[]) {
+function selectedIdsChg(value: <#=Table_Up#>Id[]) {
   selectedIds = value;
 }
 
-async function getModelsByIds(ids: string[]) {
+async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const res = await findAll(
     {
       ids,
     },
   );
   return res;
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e?: KeyboardEvent) {
+  if (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
+  await onSave();
+}
+
+/** 双击行 */
+async function onRowDblclick(row: { id: any }) {
+  selectedIds = [ row.id ];
+  await onSave();
 }
 
 /** 确定 */

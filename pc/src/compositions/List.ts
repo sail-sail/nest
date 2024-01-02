@@ -143,7 +143,7 @@ export function usePage<T>(
   });
 }
 
-export function useSelect<T = any>(
+export function useSelect<T = any, Id = string>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
@@ -179,8 +179,8 @@ export function useSelect<T = any>(
   }
   
   /** 当前多行选中的数据 */
-  let selectedIds: string[] = $ref([ ]);
-  let prevSelectedIds: string[] = $ref([ ]);
+  let selectedIds: Id[] = $ref([ ]);
+  let prevSelectedIds: Id[] = $ref([ ]);
   
   function useSelectedIds() {
     if (!tableRef.value || !tableRef.value.data) {
@@ -234,7 +234,7 @@ export function useSelect<T = any>(
   
   const watch2Stop = watch(
     () => selectedIds,
-    (_newSelectIds: string[], oldSelectIds: string[]) => {
+    (_newSelectIds: Id[], oldSelectIds: Id[]) => {
       if (!tableRef.value?.data) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
@@ -310,6 +310,8 @@ export function useSelect<T = any>(
    * 键盘按键向上按键
    */
   function onRowUp(e: KeyboardEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.ctrlKey) {
       onRowCtrlUp();
       return;
@@ -409,6 +411,8 @@ export function useSelect<T = any>(
    * 键盘按键向下按键
    */
   function onRowDown(e: KeyboardEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.ctrlKey) {
       onRowCtrlDown();
       return;
@@ -1044,14 +1048,15 @@ export function useTableColumns<T>(
 /**
  * 列表页中的月份控件搜索条件
  */
-export function monthrangeSearch(value?: Date[] | string[] | null, event?: Date[]) {
-  if (!value || !event || event.length === 0) {
-    value = [ ];
+export function monthrangeSearch(search: any, key: string, event?: Date[]) {
+  search[key] = search[key] || [ ];
+  if (!event || event.length === 0) {
+    search[key] = [ ];
     return;
   }
   if (event[0] && event[1]) {
-    value[0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
-    value[1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
+    search[key][0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
+    search[key][1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
   }
 }
 

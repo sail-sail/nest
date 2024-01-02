@@ -17,6 +17,7 @@ import type {
   DictbizDetailModel,
   DictbizDetailSearch,
   DictbizDetailFieldComment,
+  DictbizDetailId,
 } from "./dictbiz_detail.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找业务字典明细总数
  */
 export async function findCountDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountDictbizDetail(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找业务字典明细列表
  */
 export async function findAllDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllDictbizDetail(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取业务字典明细字段注释
  */
 export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFieldComment> {
   const { getFieldComments } = await import("./dictbiz_detail.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFiel
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个业务字典明细
  */
 export async function findOneDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneDictbizDetail(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找业务字典明细
  */
 export async function findByIdDictbizDetail(
-  id: string,
+  id: DictbizDetailId,
 ): Promise<DictbizDetailModel | undefined> {
   const { findById } = await import("./dictbiz_detail.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdDictbizDetail(
 }
 
 /**
- * 创建一条数据
+ * 创建业务字典明细
  */
 export async function createDictbizDetail(
   input: DictbizDetailInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<DictbizDetailId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createDictbizDetail(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: DictbizDetailId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改业务字典明细
  */
 export async function updateByIdDictbizDetail(
-  id: string,
+  id: DictbizDetailId,
   input: DictbizDetailInput,
-): Promise<string> {
+): Promise<DictbizDetailId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdDictbizDetail(
     "/base/dictbiz_detail",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: DictbizDetailId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除业务字典明细
  */
 export async function deleteByIdsDictbizDetail(
-  ids: string[],
+  ids: DictbizDetailId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsDictbizDetail(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用业务字典明细
  */
 export async function enableByIdsDictbizDetail(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsDictbizDetail(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁业务字典明细
  */
 export async function lockByIdsDictbizDetail(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsDictbizDetail(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原业务字典明细
  */
 export async function revertByIdsDictbizDetail(
-  ids: string[],
+  ids: DictbizDetailId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsDictbizDetail(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除业务字典明细
  */
 export async function forceDeleteByIdsDictbizDetail(
-  ids: string[],
+  ids: DictbizDetailId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsDictbizDetail(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 业务字典明细 order_by 字段的最大值
  */
 export async function findLastOrderByDictbizDetail(): Promise<number> {
   const { findLastOrderBy } = await import("./dictbiz_detail.service.ts");

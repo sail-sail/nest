@@ -13,7 +13,8 @@ import {
  * @param label 字段名称描述
  */
 export async function chars_max_length(
-  value?: string | null,
+  // deno-lint-ignore no-explicit-any
+  value?: any | null,
   len?: number,
   label?: string,
 ) {

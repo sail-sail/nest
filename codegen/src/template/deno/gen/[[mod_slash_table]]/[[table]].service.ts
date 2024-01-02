@@ -15,11 +15,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -36,8 +36,9 @@ if (hasLocked || hasIsSys) {
 }
 #><#
 if (opts.filterDataByCreateUsr) {
-#>
-import * as authDao from "/lib/auth/auth.dao.ts";<#
+#>import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";<#
 }
 #>
 
@@ -52,6 +53,7 @@ import type {
   <#=modelName#>,
   <#=searchName#>,
   <#=fieldCommentName#>,
+  <#=Table_Up#>Id,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -65,7 +67,7 @@ import {
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找<#=table_comment#>总数
  * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -76,7 +78,7 @@ export async function findCount(
     if (opts.filterDataByCreateUsr) {
   #>
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
@@ -87,7 +89,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找<#=table_comment#>列表
  * @param {<#=searchName#>} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -102,7 +104,7 @@ export async function findAll(
     if (opts.filterDataByCreateUsr) {
   #>
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
@@ -123,7 +125,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件查找<#=table_comment#>合计
  * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>} 
  */
@@ -134,7 +136,7 @@ export async function findSummary(
     if (opts.filterDataByCreateUsr) {
   #>
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
@@ -147,7 +149,7 @@ export async function findSummary(
 #>
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个<#=table_comment#>
  * @param {<#=searchName#>} search? 搜索条件
  */
 export async function findOne(
@@ -158,7 +160,7 @@ export async function findOne(
     if (opts.filterDataByCreateUsr) {
   #>
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
@@ -169,18 +171,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找<#=table_comment#>
+ * @param {<#=Table_Up#>Id} id
  */
 export async function findById(
-  id?: string | null,
+  id?: <#=Table_Up#>Id | null,
 ): Promise<<#=modelName#> | undefined> {
   const model = await <#=table#>Dao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找<#=table_comment#>是否存在
  * @param {<#=searchName#>} search? 搜索条件
  */
 export async function exist(
@@ -190,7 +192,7 @@ export async function exist(
     if (opts.filterDataByCreateUsr) {
   #>
   
-  const authModel = await authDao.getAuthModel();
+  const authModel = await getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
@@ -201,18 +203,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找<#=table_comment#>是否存在
+ * @param {<#=Table_Up#>Id} id
  */
 export async function existById(
-  id?: string | null,
+  id?: <#=Table_Up#>Id | null,
 ): Promise<boolean> {
   const data = await <#=table#>Dao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验<#=table_comment#>
  * @param input 
  */
 export async function validate(
@@ -225,24 +227,24 @@ export async function validate(
 /**
  * 创建数据
  * @param {<#=inputName#>} input
- * @return {Promise<string>} id
+ * @return {Promise<<#=Table_Up#>Id>} id
  */
 export async function create(
   input: <#=inputName#>,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await <#=table#>Dao.create(input, options);
-  return data;
+): Promise<<#=Table_Up#>Id> {
+  const id: <#=Table_Up#>Id = await <#=table#>Dao.create(input, options);
+  return id;
 }<#
 if (hasVersion) {
 #>
 
 /**
- * 根据 id 获取版本号
+ * 根据 id 获取<#=table_comment#>版本号
  */
-export async function getVersionById(id: string) {
+export async function getVersionById(id: <#=Table_Up#>Id) {
   const version = await <#=table#>Dao.getVersionById(id);
   return version;
 }<#
@@ -250,15 +252,15 @@ export async function getVersionById(id: string) {
 #>
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改<#=table_comment#>
+ * @param {<#=Table_Up#>Id} id
  * @param {<#=inputName#>} input
- * @return {Promise<string>}
+ * @return {Promise<<#=Table_Up#>Id>}
  */
 export async function updateById(
-  id: string,
+  id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<string> {<#
+): Promise<<#=Table_Up#>Id> {<#
   if (hasLocked) {
   #>
   
@@ -323,7 +325,7 @@ export async function updateById(
   }
   #>
   
-  const data = await <#=table#>Dao.updateById(id, input);<#
+  const id2: <#=Table_Up#>Id = await <#=table#>Dao.updateById(id, input);<#
   if (table === "i18n") {
   #>
   
@@ -333,24 +335,24 @@ export async function updateById(
   }<#
   }
   #>
-  return data;
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除<#=table_comment#>
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
   if (hasLocked) {
   #>
   
   {
-    const ids2: string[] = [ ];
+    const ids2: <#=Table_Up#>Id[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: <#=Table_Up#>Id = ids[i];
       const is_locked = await <#=table#>Dao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -367,9 +369,9 @@ export async function deleteByIds(
   #>
   
   {
-    const ids2: string[] = [ ];
+    const ids2: <#=Table_Up#>Id[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: <#=Table_Up#>Id = ids[i];
       const model = await <#=table#>Dao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -400,12 +402,12 @@ export async function deleteByIds(
 #>
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string} id
+ * 根据 id 设置默认<#=table_comment#>
+ * @param {<#=Table_Up#>Id} id
  * @return {Promise<number>}
  */
 export async function defaultById(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<number> {
   const data = await <#=table#>Dao.defaultById(id);
   return data;
@@ -416,13 +418,13 @@ export async function defaultById(
 #>
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用<#=table_comment#>
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await <#=table#>Dao.enableByIds(ids, is_enabled);
@@ -434,13 +436,13 @@ export async function enableByIds(
 #>
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁<#=table_comment#>
+ * @param {<#=Table_Up#>Id[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await <#=table#>Dao.lockByIds(ids, is_locked);
@@ -450,31 +452,31 @@ export async function lockByIds(
 #>
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原<#=table_comment#>
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const data = await <#=table#>Dao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除<#=table_comment#>
+ * @param {<#=Table_Up#>Id[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const data = await <#=table#>Dao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   const data = await <#=table#>Dao.getFieldComments();
@@ -484,7 +486,7 @@ if (hasOrderBy) {
 #>
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 <#=table_comment#> order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

@@ -13,12 +13,13 @@ import type {
   UsrModel,
   UsrSearch,
   UsrFieldComment,
+  UsrId,
 } from "./usr.model.ts";
 
 import * as usrDao from "./usr.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找用户总数
  * @param {UsrSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找用户列表
  * @param {UsrSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个用户
  * @param {UsrSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找用户
+ * @param {UsrId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: UsrId | null,
 ): Promise<UsrModel | undefined> {
   const model = await usrDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找用户是否存在
  * @param {UsrSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找用户是否存在
+ * @param {UsrId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: UsrId | null,
 ): Promise<boolean> {
   const data = await usrDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验用户
  * @param input 
  */
 export async function validate(
@@ -116,51 +117,51 @@ export async function validate(
 /**
  * 创建数据
  * @param {UsrInput} input
- * @return {Promise<string>} id
+ * @return {Promise<UsrId>} id
  */
 export async function create(
   input: UsrInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await usrDao.create(input, options);
-  return data;
+): Promise<UsrId> {
+  const id: UsrId = await usrDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改用户
+ * @param {UsrId} id
  * @param {UsrInput} input
- * @return {Promise<string>}
+ * @return {Promise<UsrId>}
  */
 export async function updateById(
-  id: string,
+  id: UsrId,
   input: UsrInput,
-): Promise<string> {
+): Promise<UsrId> {
   
   const is_locked = await usrDao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const data = await usrDao.updateById(id, input);
-  return data;
+  const id2: UsrId = await usrDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除用户
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: UsrId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: UsrId = ids[i];
       const is_locked = await usrDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -177,13 +178,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用用户
+ * @param {UsrId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: UsrId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await usrDao.enableByIds(ids, is_enabled);
@@ -191,13 +192,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁用户
+ * @param {UsrId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: UsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await usrDao.lockByIds(ids, is_locked);
@@ -205,31 +206,31 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原用户
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   const data = await usrDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除用户
+ * @param {UsrId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: UsrId[],
 ): Promise<number> {
   const data = await usrDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取用户字段注释
  */
 export async function getFieldComments(): Promise<UsrFieldComment> {
   const data = await usrDao.getFieldComments();
@@ -237,7 +238,7 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 用户 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

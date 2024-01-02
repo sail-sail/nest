@@ -32,7 +32,9 @@ export async function request<T>(
       if (isEmpty(config.url)) {
         throw new Error("config.url is empty");
       }
-      config.url = `${ baseURL }/${ config.url }`;
+      if (baseURL) {
+        config.url = `${ baseURL }/${ config.url }`;
+      }
     }
     if (!config.notLoading) {
       indexStore.addLoading();
@@ -44,9 +46,15 @@ export async function request<T>(
       config.header.set("authorization", authorization);
     }
     
-    config.header.set("content-type", "application/json; charset=utf-8");
-    
-    const body = JSON.stringify(config.data);
+    let body = config.data;
+    if (
+      body != null &&
+      !(body instanceof FormData) &&
+      typeof body === "object"
+    ) {
+      config.header.set("content-type", "application/json; charset=utf-8");
+      body = JSON.stringify(config.data);
+    }
     const resFt = await fetch(config.url!, {
       headers: config.header,
       method: config.method || "post",
@@ -76,6 +84,12 @@ export async function request<T>(
     }
     usrStore.refreshToken(authorization);
   }
+  if (config.reqType === "graphql") {
+    if (err != null) {
+      throw err;
+    }
+    return res as T;
+  }
   
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
@@ -91,9 +105,6 @@ export async function request<T>(
     throw err;
   }
   const data = res!.data;
-  if (config.reqType === "graphql") {
-    return res as T;
-  }
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     indexStore.logout();
     return data;
@@ -124,8 +135,14 @@ export async function uploadFile(
     method?: string;
     type?: "oss"|"tmpfile",
     data?: FormData;
+    header?: Headers;
+    notLoading?: boolean;
+    showErrMsg?: boolean;
+    duration?: number;
   },
 ) {
+  const indexStore = useIndexStore(cfg.pinia);
+  const usrStore = useUsrStore(cfg.pinia);
   config = config || { };
   config.type = config.type || "oss";
   config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
@@ -140,11 +157,75 @@ export async function uploadFile(
     }
   }
   config.data = formData;
-  const res = await request<{
-    code: number;
-    msg: string;
-    data: string;
-  }>(config);
+  config.header = config.header || new Headers();
+    
+  {
+    const authorization = usrStore.authorization;
+    if (authorization) {
+      config.header.set("authorization", authorization);
+    }
+  }
+  let err: any = undefined;
+  let res: any = undefined;
+  try {
+    if (!config.notLoading) {
+      indexStore.addLoading();
+    }
+    res = await request<{
+      code: number;
+      msg: string;
+      data: string;
+    }>(config);
+  } catch(errTmp) {
+    err = (errTmp as Error);
+  } finally {
+    if (!config.notLoading) {
+      indexStore.minusLoading();
+    }
+  }
+  const header = res?.header || new Headers();
+  let authorization = header?.get("authorization");
+  if (authorization) {
+    if (authorization.startsWith("Bearer ")) {
+      authorization = authorization.substring(7);
+    }
+    usrStore.refreshToken(authorization);
+  }
+  if (err != null && (!config || config.showErrMsg !== false)) {
+    const errMsg = (err as any).errMsg || err.toString();
+    if (errMsg) {
+      ElMessage({
+        offset: 0,
+        type: "error",
+        showClose: true,
+        message: errMsg,
+        duration: config.duration,
+      });
+    }
+    throw err;
+  }
+  {
+    const data = res;
+    if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
+      indexStore.logout();
+      return data;
+    }
+    if (data && data.code !== 0) {
+      if (data.msg && (!config || config.showErrMsg !== false)) {
+        const errMsg = data.msg;
+        if (errMsg) {
+          ElMessage({
+            offset: 0,
+            type: "error",
+            showClose: true,
+            message: errMsg,
+            duration: config.duration,
+          });
+        }
+      }
+      throw data;
+    }
+  }
   const id = res.data;
   return id;
 }
@@ -168,11 +249,7 @@ export function getDownloadUrl(
   type: "oss" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
-  const authorization: string = usrStore.authorization;
   const params = new URLSearchParams();
-  if (authorization) {
-    params.set("authorization", authorization);
-  }
   if (typeof model === "string") {
     model = { id: model };
   }
@@ -192,7 +269,6 @@ export function getDownloadUrl(
 export function getImgUrl(
   model: {
     id: string;
-    authorization?: string;
     format?: "webp" | "png" | "jpeg" | "jpg";
     width?: number;
     height?: number;
@@ -201,14 +277,6 @@ export function getImgUrl(
     inline?: "0"|"1";
   } | string,
 ) {
-  let authorization: string | undefined = undefined;
-  if (typeof model !== "string") {
-    authorization = model.authorization;
-    if (!authorization) {
-      const usrStore = useUsrStore();
-      authorization = usrStore.authorization;
-    }
-  }
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = {
@@ -234,9 +302,6 @@ export function getImgUrl(
   }
   if (model.quality) {
     params.set("q", model.quality.toString());
-  }
-  if (authorization) {
-    params.set("authorization", authorization);
   }
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
 }

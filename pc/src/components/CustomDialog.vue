@@ -171,11 +171,18 @@ async function focus() {
   }
   const el = dialogRef.dialogContentRef.$el as (HTMLElement | undefined);
   if (el) {
-    const firstInput = el.querySelector("textarea:not([disabled]), input:not([disabled]):not([type='file']") as (HTMLInputElement | undefined);
-    if (firstInput) {
-      firstInput.focus();
+    const tableEl = el.querySelector(".el-table") as (HTMLTableElement | undefined);
+    if (tableEl) {
+      await nextTick();
+      await nextTick();
+      tableEl.focus();
     } else {
-      el.focus();
+      const firstInput = el.querySelector("textarea:not([disabled]), input:not([disabled]):not([type='file']") as (HTMLInputElement | undefined);
+      if (firstInput) {
+        firstInput.focus();
+      } else {
+        el.focus();
+      }
     }
   }
 }

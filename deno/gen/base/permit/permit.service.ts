@@ -13,12 +13,13 @@ import type {
   PermitModel,
   PermitSearch,
   PermitFieldComment,
+  PermitId,
 } from "./permit.model.ts";
 
 import * as permitDao from "./permit.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找按钮权限总数
  * @param {PermitSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找按钮权限列表
  * @param {PermitSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个按钮权限
  * @param {PermitSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找按钮权限
+ * @param {PermitId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: PermitId | null,
 ): Promise<PermitModel | undefined> {
   const model = await permitDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找按钮权限是否存在
  * @param {PermitSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找按钮权限是否存在
+ * @param {PermitId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: PermitId | null,
 ): Promise<boolean> {
   const data = await permitDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验按钮权限
  * @param input 
  */
 export async function validate(
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {PermitInput} input
- * @return {Promise<string>} id
+ * @return {Promise<PermitId>} id
  */
 export async function create(
   input: PermitInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await permitDao.create(input, options);
-  return data;
+): Promise<PermitId> {
+  const id: PermitId = await permitDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改按钮权限
+ * @param {PermitId} id
  * @param {PermitInput} input
- * @return {Promise<string>}
+ * @return {Promise<PermitId>}
  */
 export async function updateById(
-  id: string,
+  id: PermitId,
   input: PermitInput,
-): Promise<string> {
+): Promise<PermitId> {
   
   // 不能修改系统记录的系统字段
   const model = await permitDao.findById(id);
@@ -149,23 +150,23 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const data = await permitDao.updateById(id, input);
-  return data;
+  const id2: PermitId = await permitDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除按钮权限
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: PermitId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: PermitId = ids[i];
       const model = await permitDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -183,31 +184,31 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原按钮权限
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   const data = await permitDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除按钮权限
+ * @param {PermitId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   const data = await permitDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取按钮权限字段注释
  */
 export async function getFieldComments(): Promise<PermitFieldComment> {
   const data = await permitDao.getFieldComments();

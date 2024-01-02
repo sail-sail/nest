@@ -25,7 +25,7 @@ import defineOptions from "unplugin-vue-define-options/vite";
 // @ts-ignore
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import VueDevTools from "vite-plugin-vue-devtools";
+// import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,7 +33,7 @@ export default defineConfig({
     Inspector({
       toggleButtonPos: "top-left",
     }),
-    VueDevTools(),
+    // VueDevTools(),
     vue(),
     reactivityTransform(),
     defineOptions(),
@@ -57,6 +57,9 @@ export default defineConfig({
         {
           "@/components/CustomDialog.vue": [
             [ "default", "CustomDialog" ],
+          ],
+          "@/components/CustomInput.vue": [
+            [ "default", "CustomInput" ],
           ],
         },
         {
@@ -182,6 +185,9 @@ export default defineConfig({
           "@/locales/i18n": [
             "useI18n",
           ],
+          "decimal.js-light": [
+            [ "default", "Decimal" ],
+          ],
         },
       ],
       resolvers: [
@@ -266,6 +272,9 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+    },
+    fs: {
+      cachedChecks: true,
     },
   },
 });

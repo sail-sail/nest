@@ -1,50 +1,60 @@
 <template>
-<ElSelectV2
+<div
   v-if="readonly !== true"
-  :options="options4SelectV2"
-  filterable
-  collapse-tags
-  collapse-tags-tooltip
-  default-first-option
-  :height="props.height"
-  :remote="props.pinyinFilterable"
-  :remote-method="filterMethod"
-  @visible-change="handleVisibleChange"
-  @clear="onClear"
+  ref="selectDivRef"
   un-w="full"
-  v-bind="$attrs"
-  :model-value="modelValue !== '' ? modelValue : undefined"
-  @update:model-value="modelValueUpdate"
-  :loading="!inited"
-  class="custom_select"
-  @change="onChange"
-  :multiple="props.multiple"
-  :clearable="!props.disabled"
-  :disabled="props.disabled"
-  :readonly="props.readonly"
-  :placeholder="props.placeholder"
-  @keyup.enter.stop
+  class="custom_select_div"
 >
-  <template
-    v-for="(item, key, index) in $slots"
-    :key="index"
-    #[key]
+  <ElSelectV2
+    :options="options4SelectV2"
+    filterable
+    collapse-tags
+    collapse-tags-tooltip
+    default-first-option
+    :height="props.height"
+    :remote="props.pinyinFilterable"
+    :remote-method="filterMethod"
+    @visible-change="handleVisibleChange"
+    @clear="onClear"
+    un-w="full"
+    v-bind="$attrs"
+    :model-value="modelValue !== '' ? modelValue : undefined"
+    @update:model-value="modelValueUpdate"
+    :loading="!inited"
+    class="custom_select"
+    :class="{
+      'custom_select_space_normal': true,
+    }"
+    @change="onChange"
+    :multiple="props.multiple"
+    :clearable="!props.disabled"
+    :disabled="props.disabled"
+    :readonly="props.readonly"
+    :placeholder="props.placeholder"
+    @keyup.enter.stop
   >
-    <slot :name="key"></slot>
-  </template>
-</ElSelectV2>
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot :name="key"></slot>
+    </template>
+  </ElSelectV2>
+</div>
 <template
   v-else
 >
   <div
     v-if="props.multiple"
     un-flex="~ gap-1 wrap"
+    un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="y-0.75 x-1.5"
+    un-p="x-2"
     un-box-border
     un-rounded
     un-w="full"
-    un-min="h-7.5"
+    un-min="h-8"
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
@@ -59,7 +69,7 @@
       <span
         class="custom_select_placeholder"
       >
-        {{ placeholder ?? "" }}
+        {{ props.readonlyPlaceholder ?? "" }}
       </span>
     </template>
     <template
@@ -76,8 +86,10 @@
   </div>
   <div
     v-else
+    un-flex="~ gap-1 wrap"
+    un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2"
     un-box-border
     un-rounded
     un-w="full"
@@ -207,7 +219,7 @@ const modelLabels = $computed(() => {
     }
     return [ props.optionsMap(model).label || "" ];
   }
-  let labels: string[] = [ ];
+  const labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.find((item) => props.optionsMap(item).value === value);
@@ -220,7 +232,13 @@ const modelLabels = $computed(() => {
 });
 
 function onClear() {
-  modelValue = "";
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
   emit("update:modelValue", modelValue);
   emit("clear");
 }
@@ -346,13 +364,61 @@ function onChange() {
   emit("change", models);
 }
 
+
+let selectDivRef = $ref<HTMLDivElement>();
+
+async function refreshWrapperHeight() {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (!selectDivRef) {
+    return;
+  }
+  const phder = selectDivRef?.querySelector(".el-select-v2__placeholder") as HTMLDivElement | null | undefined;
+  if (!phder) {
+    return;
+  }
+  const wrapper = selectDivRef?.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null | undefined;
+  if (!wrapper) {
+    return;
+  }
+  const height = phder.offsetHeight;
+  if (height === 0) {
+    return;
+  }
+  wrapper.style.transition = "none";
+  wrapper.style.height = `${ (height + 14) }px`;
+}
+
+watch(
+  () => modelValue && inited && !props.multiple && options4SelectV2.length > 0,
+  (val) => {
+    if (!val) {
+      return;
+    }
+    refreshWrapperHeight();
+  },
+);
+
 if (props.init) {
   refreshEfc();
 }
 
 usrStore.onLogin(refreshEfc);
 
+onMounted(() => {
+  refreshWrapperHeight();
+});
+
 defineExpose({
   refresh: refreshEfc,
 });
 </script>
+
+<style scoped lang="scss">
+.custom_select_space_normal {
+  :deep(.el-select-v2__placeholder) {
+    line-height: normal;
+    white-space: normal;
+    top: calc(50% - 2px);
+  }
+}
+</style>

@@ -3,25 +3,36 @@ import {
 } from "#/types";
 
 import type {
+  PermitId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   PermitSearch,
   PermitInput,
+  PermitModel,
 } from "#/types";
 
 import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: PermitModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找按钮权限列表
  * @param {PermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -63,16 +74,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllPermit;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个按钮权限
  * @param {PermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -112,14 +123,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOnePermit;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找按钮权限总数
  * @param {PermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -139,22 +148,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountPermit;
-  return res;
+  const count = data.findCountPermit;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建按钮权限
  * @param {PermitInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: PermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<PermitId> {
   const data: {
     createPermit: Mutation["createPermit"];
   } = await mutation({
@@ -168,27 +176,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createPermit;
-  return res;
+  const id: PermitId = data.createPermit;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改按钮权限
+ * @param {PermitId} id
  * @param {PermitInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: PermitId,
   model: PermitInput,
   opt?: GqlOpt,
-) {
+): Promise<PermitId> {
   const data: {
     updateByIdPermit: Mutation["updateByIdPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: PermitInput!) {
+      mutation($id: PermitId!, $model: PermitInput!) {
         updateByIdPermit(id: $id, model: $model)
       }
     `,
@@ -197,25 +204,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdPermit;
-  return res;
+  const id2: PermitId = data.updateByIdPermit;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找按钮权限
+ * @param {PermitId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: PermitId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdPermit: Query["findByIdPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: PermitId!) {
         findByIdPermit(id: $id) {
           id
           menu_id
@@ -238,25 +244,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdPermit;
-  return res;
+  const model = data.findByIdPermit;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除按钮权限
+ * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: PermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsPermit: Mutation["deleteByIdsPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PermitId!]!) {
         deleteByIdsPermit(ids: $ids)
       }
     `,
@@ -269,20 +275,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原按钮权限
+ * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: PermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsPermit: Mutation["revertByIdsPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PermitId!]!) {
         revertByIdsPermit(ids: $ids)
       }
     `,
@@ -295,20 +300,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除按钮权限
+ * @param {PermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: PermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsPermit: Mutation["forceDeleteByIdsPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [PermitId!]!) {
         forceDeleteByIdsPermit(ids: $ids)
       }
     `,
@@ -511,7 +515,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {PermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: PermitInput[],
@@ -556,4 +559,11 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: PermitInput = {
+  };
+  return defaultInput;
 }

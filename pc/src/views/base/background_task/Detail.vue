@@ -47,7 +47,8 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -177,7 +178,7 @@
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
@@ -205,36 +206,43 @@
       </el-button>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -250,18 +258,22 @@ import type {
 
 import {
   findOne,
+  getDefaultInput,
 } from "./Api";
 
 import type {
-} from "#/types";
+  BackgroundTaskId,
+} from "@/typings/ids";
 
-type BackgroundTaskInput = any;
+import type {
+  BackgroundTaskInput,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: BackgroundTaskId,
     },
   ],
 }>();
@@ -274,6 +286,7 @@ const {
   initSysI18ns,
 } = useI18n("/base/background_task");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/background_task");
@@ -289,9 +302,9 @@ let dialogNotice = $ref("");
 let dialogModel: BackgroundTaskInput = $ref({
 } as BackgroundTaskInput);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<BackgroundTaskId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<BackgroundTaskId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -336,7 +349,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: BackgroundTaskId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -355,15 +368,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: BackgroundTaskInput = {
-    state: "running",
-    type: "text",
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -375,8 +379,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: BackgroundTaskId;
+      ids?: BackgroundTaskId[];
       is_deleted?: number | null;
     };
     action: DialogAction;

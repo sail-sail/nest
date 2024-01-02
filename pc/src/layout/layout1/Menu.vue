@@ -28,17 +28,21 @@ import type {
   LocationQueryRaw,
 } from "vue-router";
 
+import type {
+  MenuId,
+} from "@/typings/ids";
+
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 const tabsStore = useTabsStore();
 
-let openedIndex = $ref<string[]>([ ]);
+let openedIndex = $ref<MenuId[]>([ ]);
 let selectedRouteNext = $ref(false);
 
 const route = useRoute();
 const router = useRouter();
 
-let defaultActive = $ref<string>();
+let defaultActive = $ref<MenuId>();
 
 watch(
   [
@@ -59,15 +63,15 @@ function setDefaultActiveByRouter(path: string, query: typeof route.query) {
   defaultActive = menu ? menu.id : undefined;
 }
 
-function menuOpen(index: string, _indexPath: string[]) {
+function menuOpen(index: MenuId, _indexPath: string[]) {
   openedIndex = [ index, ...menuStore.getParentIds(index) ];
 }
 
-function menuClose(index: string, _indexPath: string[]) {
+function menuClose(index: MenuId, _indexPath: string[]) {
   openedIndex = openedIndex.filter((item) => item !== index);
 }
 
-async function menuSelect(id: string) {
+async function menuSelect(id: MenuId) {
   selectedRouteNext = true;
   const model = menuStore.getMenuById(id);
   if (model) {

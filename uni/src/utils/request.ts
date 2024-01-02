@@ -1,7 +1,13 @@
 import cfg from "./config";
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
-import { isEmpty } from "./StringUtil";
+
+import {
+  isEmpty,
+  uniqueID,
+} from "./StringUtil";
+
+import {
+  LoginModel,
+} from "@/typings/types";
 
 export async function uploadFile(config: {
   url?: string;
@@ -26,7 +32,7 @@ export async function uploadFile(config: {
       config.name = "file";
     }
     config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -54,7 +60,7 @@ export async function uploadFile(config: {
   }
   const header = res.header || { };
   if (header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (config.reqType === "graphql") {
     return res;
@@ -72,7 +78,7 @@ export async function uploadFile(config: {
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -159,14 +165,9 @@ export async function downloadFile(
 }
 
 export function getAttUrl(id: string, action?: string) {
-  const usrStore = useUsrStore(cfg.pinia);
   action = action || "minio/download";
   let url = `${ action }?id=${ encodeURIComponent(id) }`;
   url = `${ cfg.url }/${ url }`;
-  const authorization = usrStore.authorization;
-  if (authorization) {
-    url += `&authorization=${ authorization }`;
-  }
   return url;
 }
 
@@ -215,6 +216,51 @@ export function getDownloadUrl(
   return url;
 }
 
+/**
+ * 获得压缩后图片的url
+ **/
+export function getImgUrl(
+  model: {
+    id: string;
+    format?: "webp" | "png" | "jpeg" | "jpg";
+    width?: number;
+    height?: number;
+    quality?: number;
+    filename?: string;
+    inline?: "0"|"1";
+  } | string,
+) {
+  if (typeof model === "string") {
+    model = {
+      id: model,
+      format: "webp",
+    };
+  }
+  if (!model.id) {
+    return;
+  }
+  let params = `id=${ encodeURIComponent(model.id) }`;
+  if (model.filename) {
+    params += `&filename=${ encodeURIComponent(model.filename) }`;
+  }
+  if (model.inline != null) {
+    params += `&inline=${ encodeURIComponent(model.inline) }`;
+  }
+  if (model.format) {
+    params += `&f=${ encodeURIComponent(model.format) }`;
+  }
+  if (model.width) {
+    params += `&w=${ encodeURIComponent(model.width.toString()) }`;
+  }
+  if (model.height) {
+    params += `&h=${ encodeURIComponent(model.height.toString()) }`;
+  }
+  if (model.quality) {
+    params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
+  }
+  return `${ cfg.url }/oss/img?${ params }`;
+}
+
 export async function request<T>(
   config: {
     url?: string;
@@ -241,7 +287,7 @@ export async function request<T>(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    const authorization = usrStore.authorization;
+    const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
       config.header.authorization = authorization;
@@ -256,7 +302,7 @@ export async function request<T>(
   }
   const header = res?.header;
   if (header && header["authorization"]) {
-    await usrStore.setAuthorization(header["authorization"]);
+    usrStore.setAuthorization(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
     let errMsg = (err as any).errMsg || err.toString();
@@ -274,7 +320,7 @@ export async function request<T>(
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAuthorization("");
+    usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -311,7 +357,7 @@ async function code2Session(
   },
 ) {
   const appid = getAppid();
-  await request({
+  const loginModel: LoginModel = await request({
     url: `wx_usr/code2Session`,
     method: "POST",
     data: {
@@ -320,10 +366,13 @@ async function code2Session(
     },
     showErrMsg: true,
     notLogin: true,
+    notLoading: true,
   });
+  return loginModel;
 }
 
 export async function uniLogin() {
+  const usrStore = useUsrStore(cfg.pinia);
   let providers: string[] = [ ];
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });
@@ -341,10 +390,15 @@ export async function uniLogin() {
     const loginRes = await uni.login({ provider: "weixin" });
     const code = loginRes?.code;
     if (code) {
-      await code2Session({
+      const loginModel = await code2Session({
         code,
         lang: appLanguage,
       });
+      usrStore.setAuthorization(loginModel.authorization);
+      usrStore.setUsrId(loginModel.usr_id);
+      usrStore.setUsername(loginModel.username);
+      usrStore.setTenantId(loginModel.tenant_id);
+      usrStore.setLang(loginModel.lang);
       return true;
     }
     return false;
@@ -356,15 +410,25 @@ export async function uniLogin() {
     const url = new URL(location.href);
     const code = url.searchParams.get("code");
     if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
+      const state = uniqueID();
+      localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      if (cfg.appid && cfg.agentid) {
-        const url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
-          encodeURIComponent(cfg.appid)
-        }&redirect_uri=${
-          encodeURIComponent(redirect_uri)
-        }&response_type=code&scope=snsapi_base&state=STATE&agentid=${
-          encodeURIComponent(cfg.agentid)
-        }#wechat_redirect`;
+      const {
+        appid,
+        agentid,
+      } = await wxwGetAppid();
+      if (appid && agentid) {
+        let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+          encodeURIComponent(appid)
+        }`;
+        if (agentid) {
+          url += `&agentid=${ encodeURIComponent(agentid) }`;
+        }
+        url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+        url += `&response_type=code`;
+        url += `&scope=snsapi_base`;
+        url += `&state=${ encodeURIComponent(state) }`;
+        url += "#wechat_redirect";
         location.replace(url);
         return false;
       }

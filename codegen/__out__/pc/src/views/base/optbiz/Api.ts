@@ -3,20 +3,28 @@ import {
 } from "#/types";
 
 import type {
+  OptbizId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   OptbizSearch,
   OptbizInput,
+  OptbizModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: OptbizModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找业务选项列表
  * @param {OptbizSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -63,16 +71,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllOptbiz;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllOptbiz;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个业务选项
  * @param {OptbizSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -117,14 +125,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneOptbiz;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找业务选项总数
  * @param {OptbizSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -144,22 +150,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountOptbiz;
-  return res;
+  const count = data.findCountOptbiz;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建业务选项
  * @param {OptbizInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: OptbizInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<OptbizId> {
   const data: {
     createOptbiz: Mutation["createOptbiz"];
   } = await mutation({
@@ -173,27 +178,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createOptbiz;
-  return res;
+  const id: OptbizId = data.createOptbiz;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改业务选项
+ * @param {OptbizId} id
  * @param {OptbizInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: OptbizId,
   model: OptbizInput,
   opt?: GqlOpt,
-) {
+): Promise<OptbizId> {
   const data: {
     updateByIdOptbiz: Mutation["updateByIdOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: OptbizInput!) {
+      mutation($id: OptbizId!, $model: OptbizInput!) {
         updateByIdOptbiz(id: $id, model: $model)
       }
     `,
@@ -202,25 +206,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdOptbiz;
-  return res;
+  const id2: OptbizId = data.updateByIdOptbiz;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找业务选项
+ * @param {OptbizId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: OptbizId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdOptbiz: Query["findByIdOptbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: OptbizId!) {
         findByIdOptbiz(id: $id) {
           id
           lbl
@@ -248,25 +251,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdOptbiz;
-  return res;
+  const model = data.findByIdOptbiz;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除业务选项
+ * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OptbizId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsOptbiz: Mutation["deleteByIdsOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OptbizId!]!) {
         deleteByIdsOptbiz(ids: $ids)
       }
     `,
@@ -279,14 +282,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用业务选项
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -294,7 +296,7 @@ export async function enableByIds(
     enableByIdsOptbiz: Mutation["enableByIdsOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [OptbizId!]!, $is_enabled: Int!) {
         enableByIdsOptbiz(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -308,14 +310,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁业务选项
+ * @param {OptbizId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OptbizId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -323,7 +324,7 @@ export async function lockByIds(
     lockByIdsOptbiz: Mutation["lockByIdsOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [OptbizId!]!, $is_locked: Int!) {
         lockByIdsOptbiz(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -337,20 +338,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原业务选项
+ * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OptbizId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsOptbiz: Mutation["revertByIdsOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OptbizId!]!) {
         revertByIdsOptbiz(ids: $ids)
       }
     `,
@@ -363,20 +363,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除业务选项
+ * @param {OptbizId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OptbizId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsOptbiz: Mutation["forceDeleteByIdsOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OptbizId!]!) {
         forceDeleteByIdsOptbiz(ids: $ids)
       }
     `,
@@ -526,7 +525,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {OptbizInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: OptbizInput[],
@@ -574,8 +572,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 业务选项 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -592,4 +589,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByOptbiz;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OptbizInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+    version: 1,
+  };
+  return defaultInput;
 }

@@ -3,6 +3,14 @@ import {
 } from "#/types";
 
 import type {
+  MenuId,
+} from "@/typings/ids";
+
+import {
+  MenuType,
+} from "#/types";
+
+import type {
   Query,
   Mutation,
   PageInput,
@@ -11,17 +19,20 @@ import type {
   MenuModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
-
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: MenuModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找菜单列表
  * @param {MenuSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -71,16 +82,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllMenu;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个菜单
  * @param {MenuSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -128,8 +139,7 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneMenu;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
@@ -138,7 +148,7 @@ export type MenuModelTree = MenuModel & {
 }
 
 /**
- * 查找树形数据
+ * 查找菜单树形列表
  * @param sort 
  * @param opt 
  * @returns 
@@ -159,8 +169,7 @@ export async function findTree(
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找菜单总数
  * @param {MenuSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -180,22 +189,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountMenu;
-  return res;
+  const count = data.findCountMenu;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建菜单
  * @param {MenuInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: MenuInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<MenuId> {
   const data: {
     createMenu: Mutation["createMenu"];
   } = await mutation({
@@ -209,27 +217,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createMenu;
-  return res;
+  const id: MenuId = data.createMenu;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改菜单
+ * @param {MenuId} id
  * @param {MenuInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: MenuId,
   model: MenuInput,
   opt?: GqlOpt,
-) {
+): Promise<MenuId> {
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: MenuInput!) {
+      mutation($id: MenuId!, $model: MenuInput!) {
         updateByIdMenu(id: $id, model: $model)
       }
     `,
@@ -238,25 +245,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdMenu;
-  return res;
+  const id2: MenuId = data.updateByIdMenu;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找菜单
+ * @param {MenuId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: MenuId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdMenu: Query["findByIdMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: MenuId!) {
         findByIdMenu(id: $id) {
           id
           type
@@ -287,25 +293,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdMenu;
-  return res;
+  const model = data.findByIdMenu;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除菜单
+ * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: MenuId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsMenu: Mutation["deleteByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [MenuId!]!) {
         deleteByIdsMenu(ids: $ids)
       }
     `,
@@ -318,14 +324,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用菜单
+ * @param {MenuId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: MenuId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -333,7 +338,7 @@ export async function enableByIds(
     enableByIdsMenu: Mutation["enableByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [MenuId!]!, $is_enabled: Int!) {
         enableByIdsMenu(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -347,14 +352,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁菜单
+ * @param {MenuId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: MenuId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -362,7 +366,7 @@ export async function lockByIds(
     lockByIdsMenu: Mutation["lockByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [MenuId!]!, $is_locked: Int!) {
         lockByIdsMenu(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -376,20 +380,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原菜单
+ * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: MenuId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsMenu: Mutation["revertByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [MenuId!]!) {
         revertByIdsMenu(ids: $ids)
       }
     `,
@@ -402,20 +405,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除菜单
+ * @param {MenuId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: MenuId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [MenuId!]!) {
         forceDeleteByIdsMenu(ids: $ids)
       }
     `,
@@ -644,7 +646,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {MenuInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: MenuInput[],
@@ -692,8 +693,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 菜单 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -710,4 +710,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByMenu;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: MenuInput = {
+    type: MenuType.Pc,
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

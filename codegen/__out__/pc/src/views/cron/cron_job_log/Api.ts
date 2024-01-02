@@ -1,5 +1,9 @@
+import type {
+  CronJobLogId,
+} from "@/typings/ids";
+
 import {
-  UniqueType,
+  CronJobLogExecState,
 } from "#/types";
 
 import type {
@@ -7,15 +11,24 @@ import type {
   Mutation,
   PageInput,
   CronJobLogSearch,
+  CronJobLogInput,
+  CronJobLogModel,
 } from "#/types";
 
 import type {
   CronJobSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: CronJobLogModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找任务执行日志列表
  * @param {CronJobLogSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -56,16 +69,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllCronJobLog;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllCronJobLog;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个任务执行日志
  * @param {CronJobLogSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -104,14 +117,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneCronJobLog;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找任务执行日志总数
  * @param {CronJobLogSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -131,25 +142,24 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountCronJobLog;
-  return res;
+  const count = data.findCountCronJobLog;
+  return count;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找任务执行日志
+ * @param {CronJobLogId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: CronJobLogId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdCronJobLog: Query["findByIdCronJobLog"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: CronJobLogId!) {
         findByIdCronJobLog(id: $id) {
           id
           cron_job_id
@@ -171,25 +181,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdCronJobLog;
-  return res;
+  const model = data.findByIdCronJobLog;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除任务执行日志
+ * @param {CronJobLogId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CronJobLogId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsCronJobLog: Mutation["deleteByIdsCronJobLog"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobLogId!]!) {
         deleteByIdsCronJobLog(ids: $ids)
       }
     `,
@@ -202,20 +212,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原任务执行日志
+ * @param {CronJobLogId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CronJobLogId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsCronJobLog: Mutation["revertByIdsCronJobLog"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobLogId!]!) {
         revertByIdsCronJobLog(ids: $ids)
       }
     `,
@@ -228,20 +237,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除任务执行日志
+ * @param {CronJobLogId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CronJobLogId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsCronJobLog: Mutation["forceDeleteByIdsCronJobLog"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobLogId!]!) {
         forceDeleteByIdsCronJobLog(ids: $ids)
       }
     `,
@@ -433,4 +441,12 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: CronJobLogInput = {
+    exec_state: CronJobLogExecState.Running,
+  };
+  return defaultInput;
 }

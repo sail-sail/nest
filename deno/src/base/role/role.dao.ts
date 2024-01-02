@@ -1,4 +1,6 @@
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -8,7 +10,7 @@ import {
  * 获取当前用户拥有的角色id列表
  */
 export async function getAuthRoleIds() {
-  const authModel = await authDao.getAuthModel(false);
+  const authModel = await getAuthModel(false);
   if (!authModel) {
     return [ ];
   }

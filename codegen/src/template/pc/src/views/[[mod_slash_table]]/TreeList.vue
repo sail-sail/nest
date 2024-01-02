@@ -11,12 +11,12 @@ let modelNameTree = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
-  modelNameTree = Table_Up + "modelTree";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
+  modelNameTree = Table_Up2 + "modelTree";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -54,10 +54,8 @@ if (typeof list_tree === "string") {
       un-p="y-1 x-0.5"
       un-box-border
     >
-      <el-input
+      <CustomInput
         v-model="search_value"
-        :clearable="true"
-        un-w="full"
         @clear="onSearchClear"
       >
         <template #prefix>
@@ -65,7 +63,7 @@ if (typeof list_tree === "string") {
             <ElIconSearch />
           </el-icon>
         </template>
-      </el-input>
+      </CustomInput>
     </div>
     <div
       un-flex="~ [1_0_0] col"
@@ -131,6 +129,9 @@ import {
   findTree,
 } from "./Api";<#
 } else {
+  Table_Up = list_treeForeignKey.table.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
 #>
 
 import {
@@ -140,7 +141,12 @@ import {
 #>
 
 import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
+import type {
   TreeNodeData,
+  TreeKey,
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
@@ -148,7 +154,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  parent_id?: string;
+  parent_id?: <#=Table_Up#>Id;
   showBuildIn?: string;
 }>();
 
@@ -166,7 +172,7 @@ watch(
   () => props.parent_id,
   async () => {
     parent_id = props.parent_id;
-    treeRef?.setCurrentKey(parent_id);
+    treeRef?.setCurrentKey(parent_id as unknown as TreeKey);
   },
   {
     immediate: true,
@@ -215,7 +221,7 @@ function nodeClass(data: TreeNodeData, _: any): string {
 }
 
 function getById(
-  id: string,
+  id: <#=Table_Up#>Id,
   data: ModelTree[],
 ): ModelTree | undefined {
   for (const item of data) {
@@ -239,7 +245,7 @@ async function onFindTree() {
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {
-      parent_id = "";
+      parent_id = undefined;
     }
   }
 }
@@ -250,7 +256,7 @@ async function onNode(model: ModelTree) {
 
 function beforeSearchReset() {
   search_value = "";
-  parent_id = "";
+  parent_id = undefined;
   treeRef?.setCurrentKey(undefined);
 }
 

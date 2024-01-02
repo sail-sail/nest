@@ -8,7 +8,7 @@ scalar JobId
 
 type JobModel {
   "ID"
-  id: String!
+  id: JobId!
   "编码"
   code: String!
   "名称"
@@ -26,17 +26,17 @@ type JobModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -100,17 +100,17 @@ input JobInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -120,7 +120,7 @@ input JobSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [JobId!]
   "ID"
   id: JobId
   "编码"
@@ -150,34 +150,34 @@ input JobSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找任务总数"
   findCountJob(search: JobSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找任务列表"
   findAllJob(search: JobSearch, page: PageInput, sort: [SortInput!]): [JobModel!]!
-  "获取字段对应的名称"
+  "获取任务字段注释"
   getFieldCommentsJob: JobFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个任务"
   findOneJob(search: JobSearch, sort: [SortInput!]): JobModel
-  "根据id查找一条数据"
-  findByIdJob(id: String!): JobModel
-  "查找order_by字段的最大值"
+  "根据 id 查找任务"
+  findByIdJob(id: JobId!): JobModel
+  "查找 任务 order_by 字段的最大值"
   findLastOrderByJob: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createJob(model: JobInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdJob(id: String!, model: JobInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsJob(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsJob(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsJob(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsJob(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsJob(ids: [String!]!): Int!
+  "创建任务"
+  createJob(model: JobInput!, unique_type: UniqueType): JobId!
+  "根据 id 修改任务"
+  updateByIdJob(id: JobId!, model: JobInput!): JobId!
+  "根据 ids 删除任务"
+  deleteByIdsJob(ids: [JobId!]!): Int!
+  "根据 ids 启用或者禁用任务"
+  enableByIdsJob(ids: [JobId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁任务"
+  lockByIdsJob(ids: [JobId!]!, is_locked: Int!): Int!
+  "根据 ids 还原任务"
+  revertByIdsJob(ids: [JobId!]!): Int!
+  "根据 ids 彻底删除任务"
+  forceDeleteByIdsJob(ids: [JobId!]!): Int!
 }
 
 `);

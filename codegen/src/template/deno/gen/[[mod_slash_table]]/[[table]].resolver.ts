@@ -15,11 +15,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -62,17 +62,26 @@ import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import type {
-  UniqueType,
+import type {<#
+  if (opts.noAdd !== true) {
+  #>
+  UniqueType,<#
+  }
+  #>
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  <#=inputName#>,
+import type {<#
+  if (opts.noAdd !== true && opts.noEdit !== true) {
+  #>
+  <#=inputName#>,<#
+  }
+  #>
   <#=modelName#>,
   <#=searchName#>,
   <#=fieldCommentName#>,
+  <#=Table_Up#>Id,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -94,7 +103,7 @@ import "./cron_job.service.ts";<#
 #>
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找<#=table_comment#>总数
  */
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -116,7 +125,7 @@ export async function findCount<#=Table_Up#>(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找<#=table_comment#>列表
  */
 export async function findAll<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -171,7 +180,7 @@ export async function findAll<#=Table_Up#>(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
@@ -182,7 +191,7 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找合计
+ * 根据搜索条件查找<#=table_comment#>合计
  */
 export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -195,7 +204,7 @@ export async function findSummary<#=Table_Up#>(
 #>
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个<#=table_comment#>
  */
 export async function findOne<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
@@ -245,10 +254,10 @@ export async function findOne<#=Table_Up#>(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找<#=table_comment#>
  */
 export async function findById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
   const res = await findById(id);<#
@@ -285,12 +294,12 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建一条数据
+ * 创建<#=table_comment#>
  */
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
-): Promise<string> {<#
+): Promise<<#=Table_Up#>Id> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -356,11 +365,11 @@ export async function create<#=Table_Up#>(
   }
   #>
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });<#
+  const id: <#=Table_Up#>Id = await create(input, { uniqueType });<#
   if (log) {
   #>
   
-  const new_data = await findById(res);
+  const new_data = await findById(id);
   
   await log({
     module: "<#=mod#>_<#=table#>",
@@ -373,7 +382,7 @@ export async function create<#=Table_Up#>(
   });<#
   }
   #>
-  return res;
+  return id;
 }<#
 }
 #><#
@@ -381,12 +390,12 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改<#=table_comment#>
  */
 export async function updateById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<string> {<#
+): Promise<<#=Table_Up#>Id> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -449,11 +458,11 @@ export async function updateById<#=Table_Up#>(
   const old_data = await findById<#=Table_Up#>(id);<#
   }
   #>
-  const res = await updateById(id, input);<#
+  const id2: <#=Table_Up#>Id = await updateById(id, input);<#
   if (log) {
   #>
   
-  const new_data = await findById(res);
+  const new_data = await findById(id2);
   
   await log({
     module: "<#=mod#>_<#=table#>",
@@ -466,7 +475,7 @@ export async function updateById<#=Table_Up#>(
   });<#
   }
   #>
-  return res;
+  return id2;
 }<#
 }
 #><#
@@ -474,10 +483,10 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除<#=table_comment#>
  */
 export async function deleteByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
   const {<#
@@ -529,10 +538,10 @@ export async function deleteByIds<#=Table_Up#>(
 #>
 
 /**
- * 根据 id 设置默认记录
+ * 根据 id 设置默认<#=table_comment#>
  */
 export async function defaultById<#=Table_Up#>(
-  id: string,
+  id: <#=Table_Up#>Id,
 ): Promise<number> {
   
   const {
@@ -576,10 +585,10 @@ export async function defaultById<#=Table_Up#>(
 #>
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用<#=table_comment#>
  */
 export async function enableByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -627,10 +636,10 @@ export async function enableByIds<#=Table_Up#>(
 #>
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁<#=table_comment#>
  */
 export async function lockByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -681,10 +690,10 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原<#=table_comment#>
  */
 export async function revertByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
   const {
@@ -724,10 +733,10 @@ export async function revertByIds<#=Table_Up#>(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除<#=table_comment#>
  */
 export async function forceDeleteByIds<#=Table_Up#>(
-  ids: string[],
+  ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const context = useContext();
   
@@ -770,7 +779,7 @@ if (hasOrderBy) {
 #>
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(): Promise<number> {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");

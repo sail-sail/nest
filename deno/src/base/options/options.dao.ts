@@ -1,4 +1,8 @@
-import * as optionsDao from "/gen/base/options/options.dao.ts";
+import {
+  findAll as findAllOptions,
+  create as createOptions,
+  updateById as updateOptionsById,
+} from "/gen/base/options/options.dao.ts";
 
 /**
  * 获取系统选项
@@ -7,7 +11,7 @@ import * as optionsDao from "/gen/base/options/options.dao.ts";
 export async function getOptionsByLbl(
   lbl: string,
 ) {
-  const optionsModels = await optionsDao.findAll({
+  const optionsModels = await findAllOptions({
     lbl,
   });
   return optionsModels;
@@ -21,7 +25,7 @@ export async function updateI18n_version() {
   const optionsModel = models.find((m) => m.ky === "i18n_version");
   if (!optionsModel) {
     const i18n_version = "1";
-    await optionsDao.create({
+    await createOptions({
       lbl: "国际化版本号",
       ky: "i18n_version",
       val: i18n_version,
@@ -32,7 +36,7 @@ export async function updateI18n_version() {
     return i18n_version;
   }
   const i18n_version = ((Number(optionsModel.val) || 0) + 1).toString();
-  await optionsDao.updateById(
+  await updateOptionsById(
     optionsModel.id,
     {
       val: i18n_version,
