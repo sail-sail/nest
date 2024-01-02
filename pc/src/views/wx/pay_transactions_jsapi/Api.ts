@@ -2,11 +2,16 @@ import type {
   PayTransactionsJsapiId,
 } from "@/typings/ids";
 
+import {
+  PayTransactionsJsapiTradeState,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
   PageInput,
   PayTransactionsJsapiSearch,
+  PayTransactionsJsapiInput,
   PayTransactionsJsapiModel,
 } from "#/types";
 
@@ -401,4 +406,15 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: PayTransactionsJsapiInput = {
+    trade_state: PayTransactionsJsapiTradeState.NOTPAY,
+    trade_state_desc: 未支付,
+    support_fapiao: 0,
+    total_fee: 0,
+  };
+  return defaultInput;
 }
