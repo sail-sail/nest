@@ -6,15 +6,22 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar FieldPermitId
 
 "字段权限类型"
-scalar FieldPermitType
+enum FieldPermitType {
+  "可改"
+  editable
+  "隐藏"
+  hidden
+  "只读"
+  readonly
+}
 
 type FieldPermitModel {
   "ID"
-  id: String!
+  id: FieldPermitId!
   "菜单"
-  menu_id: String!
+  menu_id: MenuId!
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String!
   "名称"
@@ -26,17 +33,17 @@ type FieldPermitModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -82,9 +89,9 @@ input FieldPermitInput {
   ""
   id: FieldPermitId
   "菜单"
-  menu_id: String
+  menu_id: MenuId
   "菜单"
-  menu_id_lbl: MenuId
+  menu_id_lbl: String
   "编码"
   code: String
   "名称"
@@ -96,17 +103,17 @@ input FieldPermitInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -116,7 +123,7 @@ input FieldPermitSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [FieldPermitId!]
   "ID"
   id: FieldPermitId
   "菜单"
@@ -145,28 +152,28 @@ input FieldPermitSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找字段权限总数"
   findCountFieldPermit(search: FieldPermitSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找字段权限列表"
   findAllFieldPermit(search: FieldPermitSearch, page: PageInput, sort: [SortInput!]): [FieldPermitModel!]!
-  "获取字段对应的名称"
+  "获取字段权限字段注释"
   getFieldCommentsFieldPermit: FieldPermitFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个字段权限"
   findOneFieldPermit(search: FieldPermitSearch, sort: [SortInput!]): FieldPermitModel
-  "根据id查找一条数据"
-  findByIdFieldPermit(id: String!): FieldPermitModel
+  "根据 id 查找字段权限"
+  findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
 }
 type Mutation {
-  "创建一条数据"
-  createFieldPermit(model: FieldPermitInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdFieldPermit(id: String!, model: FieldPermitInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsFieldPermit(ids: [String!]!): Int!
-  "根据 ids 还原数据"
-  revertByIdsFieldPermit(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsFieldPermit(ids: [String!]!): Int!
+  "创建字段权限"
+  createFieldPermit(model: FieldPermitInput!, unique_type: UniqueType): FieldPermitId!
+  "根据 id 修改字段权限"
+  updateByIdFieldPermit(id: FieldPermitId!, model: FieldPermitInput!): FieldPermitId!
+  "根据 ids 删除字段权限"
+  deleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
+  "根据 ids 还原字段权限"
+  revertByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
+  "根据 ids 彻底删除字段权限"
+  forceDeleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
 }
 
 `);

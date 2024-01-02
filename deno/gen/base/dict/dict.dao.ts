@@ -54,6 +54,7 @@ import {
 import type {
   PageInput,
   SortInput,
+  DictType,
 } from "/gen/types.ts";
 
 import type {
@@ -61,6 +62,7 @@ import type {
   DictModel,
   DictSearch,
   DictFieldComment,
+  DictId,
 } from "./dict.model.ts";
 
 import {
@@ -209,7 +211,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找系统字典总数
  * @param { DictSearch } search?
  * @return {Promise<number>}
  */
@@ -250,7 +252,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找系统字典列表
  * @param {DictSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -344,7 +346,7 @@ export async function findAll(
     const model = result[i];
     
     // 数据类型
-    let type_lbl = model.type;
+    let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
       if (dictItem) {
@@ -424,7 +426,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.type_lbl) && input.type === undefined) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      input.type = val;
+      input.type = val as DictType;
     }
   }
   
@@ -446,7 +448,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取系统字典字段注释
  */
 export async function getFieldComments(): Promise<DictFieldComment> {
   const n = initN(route_path);
@@ -475,7 +477,7 @@ export async function getFieldComments(): Promise<DictFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得系统字典列表
  * @param {DictInput} search0
  */
 export async function findByUnique(
@@ -543,11 +545,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查系统字典是否已经存在
  * @param {DictInput} input
  * @param {DictModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<DictId | undefined>}
  */
 export async function checkByUnique(
   input: DictInput,
@@ -555,14 +557,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<DictId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: DictId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -572,7 +574,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -582,7 +584,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个系统字典
  * @param {DictSearch} search?
  */
 export async function findOne(
@@ -601,15 +603,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找系统字典
+ * @param {DictId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DictId | null,
   options?: {
   },
 ): Promise<DictModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -617,7 +619,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断系统字典是否存在
  * @param {DictSearch} search?
  */
 export async function exist(
@@ -631,16 +633,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断系统字典是否存在
+ * @param {DictId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DictId | null,
 ) {
   const table = "base_dict";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -671,7 +673,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验系统字典是否启用 */
 export async function validateIsEnabled(
   model: DictModel,
 ) {
@@ -680,7 +682,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验系统字典是否存在 */
 export async function validateOption(
   model?: DictModel,
 ) {
@@ -691,7 +693,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 系统字典增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -751,7 +753,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建系统字典
  * @param {DictInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -759,14 +761,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<DictId>} 
  */
 export async function create(
   input: DictInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<DictId> {
   const table = "base_dict";
   const method = "create";
   
@@ -778,7 +780,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: DictId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -796,12 +798,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<DictId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -852,7 +854,7 @@ export async function create(
     sql += `,is_sys`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -860,7 +862,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -931,8 +933,8 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改系统字典
+ * @param {DictId} id
  * @param {DictInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -940,15 +942,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<DictId>}
  */
 export async function updateById(
-  id: string,
+  id: DictId,
   input: DictInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<DictId> {
   const table = "base_dict";
   const method = "updateById";
   
@@ -1037,7 +1039,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1097,12 +1099,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DictId[],
   options?: {
   },
 ): Promise<number> {
@@ -1119,7 +1121,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DictId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1152,13 +1154,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找系统字典是否已启用
+ * 不存在则返回 undefined
+ * @param {DictId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: DictId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1171,13 +1173,13 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用系统字典
+ * @param {DictId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DictId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1221,14 +1223,14 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找系统字典是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
+ * @param {DictId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: DictId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1241,13 +1243,13 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁系统字典
+ * @param {DictId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DictId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1291,12 +1293,12 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DictId[],
   options?: {
   },
 ): Promise<number> {
@@ -1313,7 +1315,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DictId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1357,12 +1359,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DictId[],
   options?: {
   },
 ): Promise<number> {
@@ -1419,7 +1421,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 系统字典 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

@@ -31,13 +31,11 @@
           :label="n('模块名称')"
           prop="module_lbl_like"
         >
-          <el-input
+          <CustomInput
             v-model="search.module_lbl_like"
-            un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
-            clearable
             @clear="onSearchClear"
-          ></el-input>
+          ></CustomInput>
         </el-form-item>
       </template>
       
@@ -46,13 +44,11 @@
           :label="n('方法名称')"
           prop="method_lbl_like"
         >
-          <el-input
+          <CustomInput
             v-model="search.method_lbl_like"
-            un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
-            clearable
             @clear="onSearchClear"
-          ></el-input>
+          ></CustomInput>
         </el-form-item>
       </template>
       
@@ -61,13 +57,11 @@
           :label="n('操作')"
           prop="lbl_like"
         >
-          <el-input
+          <CustomInput
             v-model="search.lbl_like"
-            un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('操作') }`"
-            clearable
             @clear="onSearchClear"
-          ></el-input>
+          ></CustomInput>
         </el-form-item>
       </template>
       
@@ -86,6 +80,7 @@
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
+            @change="onSearch"
           ></CustomDatePicker>
         </el-form-item>
       </template>
@@ -159,7 +154,7 @@
         
         <el-button
           plain
-          @click="searchReset"
+          @click="onSearchReset"
         >
           <template #icon>
             <ElIconDelete />
@@ -388,16 +383,17 @@
         size="small"
         height="100%"
         row-key="id"
+        :default-sort="defaultSort"
         :empty-text="inited ? undefined : ns('加载中...')"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
-        @keyup.enter="onRowEnter"
+        @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -574,6 +570,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  OperationRecordId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -614,23 +614,15 @@ const permit = permitStore.getPermit("/base/operation_record");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    string[],
-  ],
-  add: [
-    string[],
-  ],
-  edit: [
-    string[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ OperationRecordId[] ],
+  add: [ OperationRecordId[] ],
+  edit: [ OperationRecordId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ OperationRecordModel ],
 }>();
 
 /** 表格 */
@@ -664,11 +656,12 @@ async function onRefresh() {
 }
 
 /** 重置搜索 */
-async function searchReset() {
+async function onSearchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
+  await nextTick();
   await dataGrid(true);
 }
 
@@ -687,10 +680,11 @@ const props = defineProps<{
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
+  isFocus?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: OperationRecordId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: OperationRecordId; // ID
   module?: string; // 模块
   module_like?: string; // 模块
   module_lbl?: string; // 模块名称
@@ -707,12 +701,6 @@ const props = defineProps<{
   new_data_like?: string; // 操作后数据
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -720,6 +708,7 @@ const builtInSearchType: { [key: string]: string } = {
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
+  isFocus: "0|1",
   ids: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
@@ -733,6 +722,7 @@ const propsNotInSearch: string[] = [
   "showBuildIn",
   "isPagination",
   "isLocked",
+  "isFocus",
 ];
 
 /** 内置搜索条件 */
@@ -757,6 +747,8 @@ const showBuildIn = $computed(() => props.showBuildIn === "1");
 const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
 /** 是否只读模式 */
 const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -786,7 +778,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<OperationRecordModel>(
+} = $(useSelect<OperationRecordModel, OperationRecordId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1065,19 +1057,6 @@ let sort = $ref<Sort>({
   ...defaultSort,
 });
 
-let defaultSortBy = $computed(() => {
-  const column = tableColumns.find((item) => {
-    const sortBy = item.sortBy || item.prop || "";
-    return item.sortBy === sortBy;
-  });
-  const prop = column?.prop || "";
-  const order = sort.order;
-  return {
-    prop,
-    order,
-  } as Sort;
-});
-
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<OperationRecordModel> } & Sort,
@@ -1089,13 +1068,13 @@ async function onSortChange(
     await dataGrid();
     return;
   }
-  let sortBy = "";
+  let prop2 = "";
   if (Array.isArray(column.sortBy)) {
-    sortBy = column.sortBy[0];
+    prop2 = column.sortBy[0];
   } else {
-    sortBy = (column.sortBy as string) || prop || "";
+    prop2 = (column.sortBy as string) || prop || "";
   }
-  sort.prop = sortBy;
+  sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
 }
@@ -1120,11 +1099,26 @@ async function onCancelExport() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
+  if (props.selectedIds != null) {
+    emit("rowEnter", e);
+    return;
+  }
   if (e.ctrlKey) {
   } else if (e.shiftKey) {
   } else {
     await openView();
   }
+}
+
+/** 双击行 */
+async function onRowDblclick(
+  row: OperationRecordModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
 }
 
 /** 打开查看 */
@@ -1279,10 +1273,27 @@ async function initI18nsEfc() {
   ]);
 }
 
-async function initFrame() {
-  if (!usrStore.authorization) {
+async function focus() {
+  if (!inited || !tableRef || !tableRef.$el) {
     return;
   }
+  tableRef.$el.focus();
+}
+
+watch(
+  () => [
+    props.isFocus,
+    inited,
+  ],
+  () => {
+    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+      return;
+    }
+    tableRef.$el.focus();
+  },
+);
+
+async function initFrame() {
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),
@@ -1315,5 +1326,6 @@ initFrame();
 
 defineExpose({
   refresh: onRefresh,
+  focus,
 });
 </script>

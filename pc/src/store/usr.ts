@@ -2,6 +2,11 @@ import type {
   GetLoginInfo,
 } from "@/typings/types";
 
+import type {
+  TenantId,
+  UsrId,
+} from "@/typings/ids";
+
 export default defineStore("usr", function() {
   
   const tabsStore = useTabsStore();
@@ -12,8 +17,9 @@ export default defineStore("usr", function() {
   
   let isLogining = $ref(false);
   
-  let tenant_id = $ref<string>();
+  let tenant_id = $ref<TenantId>();
   let username = $ref<string>();
+  let usr_id = $ref<UsrId>();
   
   let loginInfo = $ref<GetLoginInfo>();
   
@@ -75,6 +81,7 @@ export default defineStore("usr", function() {
     loginInfo,
     username,
     tenant_id,
+    usr_id,
     lang,
     refreshToken,
     login,
@@ -90,6 +97,7 @@ export default defineStore("usr", function() {
     paths: [
       "authorization",
       "username",
+      "usr_id",
       "tenant_id",
       "loginInfo",
       "lang",

@@ -258,15 +258,14 @@ async function handleGraphql(
     }
     const errors = result.errors as GraphQLError[];
     if (errors && errors.length > 0) {
-      if (errors.length === 1) {
-        const err = errors[0];
+      result.errors = [ ];
+      for (let i = 0; i < errors.length; i++) {
+        const err: GraphQLError = errors[i];
         if (err.originalError instanceof ServiceException) {
-          result.errors = [
-            {
-              code: err.originalError.code,
-              message: err.originalError.message,
-            }
-          ];
+          result.errors.push({
+            code: err.originalError.code,
+            message: err.originalError.message,
+          });
           if (err.originalError.message) {
             log(err.originalError.message);
           }
@@ -277,25 +276,21 @@ async function handleGraphql(
           }
         } else if (isValidationError) {
           const message = errors[0].message;
-          result.errors = [
-            {
-              message,
-            }
-          ];
+          result.errors.push({
+            message,
+          });
           log(`GraphQL Query Error: ${ message }`);
         } else if (err.originalError?.name === "NonErrorThrown") {
+          await rollback();
           // deno-lint-ignore no-explicit-any
           const message = (err.originalError as any).thrownValue;
-          result.errors = [
-            {
-              message,
-            }
-          ];
-          await rollback();
+          result.errors.push({
+            message,
+          });
           log(message);
         } else {
-          error(err);
           await rollback();
+          error(err);
           let msg = "";
           const errLen = errors.length;
           for (let i = 0; i < errLen; i++) {
@@ -305,20 +300,10 @@ async function handleGraphql(
               msg += "\n";
             }
           }
-          result.errors = [
-            {
-              message: msg,
-            },
-          ];
+          result.errors.push({
+            message: msg,
+          });
         }
-      } else {
-        await rollback();
-        let msg = "";
-        for (let i = 0; i < errors.length; i++) {
-          const error: GraphQLError = errors[i];
-          msg += error.toString() + "\n";
-        }
-        error(msg);
       }
     } else {
       await commit();

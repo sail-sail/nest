@@ -65,10 +65,19 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  DictbizId,
+} from "/gen/base/dictbiz/dictbiz.model.ts";
+
+import type {
   DictbizDetailInput,
   DictbizDetailModel,
   DictbizDetailSearch,
   DictbizDetailFieldComment,
+  DictbizDetailId,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";
@@ -227,7 +236,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找业务字典明细总数
  * @param { DictbizDetailSearch } search?
  * @return {Promise<number>}
  */
@@ -268,7 +277,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找业务字典明细列表
  * @param {DictbizDetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -442,7 +451,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取业务字典明细字段注释
  */
 export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
   const n = initN(route_path);
@@ -471,7 +480,7 @@ export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得业务字典明细列表
  * @param {DictbizDetailInput} search0
  */
 export async function findByUnique(
@@ -493,7 +502,7 @@ export async function findByUnique(
     if (search0.dictbiz_id == null) {
       return [ ];
     }
-    let dictbiz_id: string[] = [ ];
+    let dictbiz_id: DictbizId[] = [ ];
     if (!Array.isArray(search0.dictbiz_id)) {
       dictbiz_id.push(search0.dictbiz_id, search0.dictbiz_id);
     } else {
@@ -535,11 +544,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查业务字典明细是否已经存在
  * @param {DictbizDetailInput} input
  * @param {DictbizDetailModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<DictbizDetailId | undefined>}
  */
 export async function checkByUnique(
   input: DictbizDetailInput,
@@ -547,14 +556,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<DictbizDetailId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: DictbizDetailId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -564,7 +573,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -574,7 +583,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个业务字典明细
  * @param {DictbizDetailSearch} search?
  */
 export async function findOne(
@@ -593,15 +602,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找业务字典明细
+ * @param {DictbizDetailId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DictbizDetailId | null,
   options?: {
   },
 ): Promise<DictbizDetailModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -609,7 +618,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断业务字典明细是否存在
  * @param {DictbizDetailSearch} search?
  */
 export async function exist(
@@ -623,16 +632,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断业务字典明细是否存在
+ * @param {DictbizDetailId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DictbizDetailId | null,
 ) {
   const table = "base_dictbiz_detail";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -663,7 +672,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验业务字典明细是否启用 */
 export async function validateIsEnabled(
   model: DictbizDetailModel,
 ) {
@@ -672,7 +681,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验业务字典明细是否存在 */
 export async function validateOption(
   model?: DictbizDetailModel,
 ) {
@@ -683,7 +692,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 业务字典明细增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -743,7 +752,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建业务字典明细
  * @param {DictbizDetailInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -751,14 +760,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<DictbizDetailId>} 
  */
 export async function create(
   input: DictbizDetailInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<DictbizDetailId> {
   const table = "base_dictbiz_detail";
   const method = "create";
   
@@ -770,7 +779,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: DictbizDetailId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -788,12 +797,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<DictbizDetailId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -862,7 +871,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -870,7 +879,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -933,16 +942,16 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * 业务字典明细根据id修改租户id
+ * @param {DictbizDetailId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: DictbizDetailId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -972,8 +981,8 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改业务字典明细
+ * @param {DictbizDetailId} id
  * @param {DictbizDetailInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -981,15 +990,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<DictbizDetailId>}
  */
 export async function updateById(
-  id: string,
+  id: DictbizDetailId,
   input: DictbizDetailInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<DictbizDetailId> {
   const table = "base_dictbiz_detail";
   const method = "updateById";
   
@@ -1002,7 +1011,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -1083,7 +1092,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1114,12 +1123,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   options?: {
   },
 ): Promise<number> {
@@ -1136,7 +1145,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DictbizDetailId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1162,13 +1171,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找业务字典明细是否已启用
+ * 不存在则返回 undefined
+ * @param {DictbizDetailId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: DictbizDetailId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1181,13 +1190,13 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1231,14 +1240,14 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找业务字典明细是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
+ * @param {DictbizDetailId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: DictbizDetailId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1251,13 +1260,13 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1301,12 +1310,12 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   options?: {
   },
 ): Promise<number> {
@@ -1323,7 +1332,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DictbizDetailId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1360,12 +1369,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除业务字典明细
+ * @param {DictbizDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DictbizDetailId[],
   options?: {
   },
 ): Promise<number> {
@@ -1415,7 +1424,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 业务字典明细 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

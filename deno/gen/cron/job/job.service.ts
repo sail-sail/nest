@@ -13,12 +13,13 @@ import type {
   JobModel,
   JobSearch,
   JobFieldComment,
+  JobId,
 } from "./job.model.ts";
 
 import * as jobDao from "./job.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找任务总数
  * @param {JobSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找任务列表
  * @param {JobSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个任务
  * @param {JobSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找任务
+ * @param {JobId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: JobId | null,
 ): Promise<JobModel | undefined> {
   const model = await jobDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找任务是否存在
  * @param {JobSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找任务是否存在
+ * @param {JobId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: JobId | null,
 ): Promise<boolean> {
   const data = await jobDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验任务
  * @param input 
  */
 export async function validate(
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {JobInput} input
- * @return {Promise<string>} id
+ * @return {Promise<JobId>} id
  */
 export async function create(
   input: JobInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await jobDao.create(input, options);
-  return data;
+): Promise<JobId> {
+  const id: JobId = await jobDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改任务
+ * @param {JobId} id
  * @param {JobInput} input
- * @return {Promise<string>}
+ * @return {Promise<JobId>}
  */
 export async function updateById(
-  id: string,
+  id: JobId,
   input: JobInput,
-): Promise<string> {
+): Promise<JobId> {
   
   const is_locked = await jobDao.getIsLockedById(id);
   if (is_locked) {
@@ -151,23 +152,23 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const data = await jobDao.updateById(id, input);
-  return data;
+  const id2: JobId = await jobDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除任务
+ * @param {JobId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: JobId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: JobId = ids[i];
       const is_locked = await jobDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -180,9 +181,9 @@ export async function deleteByIds(
   }
   
   {
-    const ids2: string[] = [ ];
+    const ids2: JobId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: JobId = ids[i];
       const model = await jobDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -200,13 +201,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用任务
+ * @param {JobId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: JobId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await jobDao.enableByIds(ids, is_enabled);
@@ -214,13 +215,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁任务
+ * @param {JobId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: JobId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await jobDao.lockByIds(ids, is_locked);
@@ -228,31 +229,31 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原任务
+ * @param {JobId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   const data = await jobDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除任务
+ * @param {JobId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: JobId[],
 ): Promise<number> {
   const data = await jobDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取任务字段注释
  */
 export async function getFieldComments(): Promise<JobFieldComment> {
   const data = await jobDao.getFieldComments();
@@ -260,7 +261,7 @@ export async function getFieldComments(): Promise<JobFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 任务 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

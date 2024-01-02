@@ -6,13 +6,31 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar BackgroundTaskId
 
 "后台任务状态"
-scalar BackgroundTaskState
+enum BackgroundTaskState {
+  "运行中"
+  running
+  "成功"
+  success
+  "失败"
+  fail
+  "取消"
+  cancel
+}
 "后台任务类型"
-scalar BackgroundTaskType
+enum BackgroundTaskType {
+  "文本"
+  text
+  "下载"
+  download
+  "查看"
+  inline
+  "标签"
+  tag
+}
 
 type BackgroundTaskModel {
   "ID"
-  id: String!
+  id: BackgroundTaskId!
   "名称"
   lbl: String!
   "状态"
@@ -38,17 +56,17 @@ type BackgroundTaskModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -128,17 +146,17 @@ input BackgroundTaskInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -148,7 +166,7 @@ input BackgroundTaskSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [BackgroundTaskId!]
   "ID"
   id: BackgroundTaskId
   "名称"
@@ -183,24 +201,24 @@ input BackgroundTaskSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找后台任务总数"
   findCountBackgroundTask(search: BackgroundTaskSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找后台任务列表"
   findAllBackgroundTask(search: BackgroundTaskSearch, page: PageInput, sort: [SortInput!]): [BackgroundTaskModel!]!
-  "获取字段对应的名称"
+  "获取后台任务字段注释"
   getFieldCommentsBackgroundTask: BackgroundTaskFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个后台任务"
   findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
-  "根据id查找一条数据"
-  findByIdBackgroundTask(id: String!): BackgroundTaskModel
+  "根据 id 查找后台任务"
+  findByIdBackgroundTask(id: BackgroundTaskId!): BackgroundTaskModel
 }
 type Mutation {
-  "根据 ids 删除数据"
-  deleteByIdsBackgroundTask(ids: [String!]!): Int!
-  "根据 ids 还原数据"
-  revertByIdsBackgroundTask(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsBackgroundTask(ids: [String!]!): Int!
+  "根据 ids 删除后台任务"
+  deleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
+  "根据 ids 还原后台任务"
+  revertByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
+  "根据 ids 彻底删除后台任务"
+  forceDeleteByIdsBackgroundTask(ids: [BackgroundTaskId!]!): Int!
 }
 
 `);

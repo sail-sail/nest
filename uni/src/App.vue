@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import cfg from "@/utils/config";
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
-onLaunch((async(options: any) => {
-  const indexStore = useIndexStore();
+onLaunch((async(options?: App.LaunchShowOption) => {
+  const indexStore = useIndexStore(cfg.pinia);
   indexStore.setLaunchOptions(options);
+  
+  const systemInfo = uni.getSystemInfoSync();
+  indexStore.setSystemInfo(systemInfo);
+  
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({

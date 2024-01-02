@@ -8,7 +8,7 @@ scalar DomainId
 
 type DomainModel {
   "ID"
-  id: String!
+  id: DomainId!
   "协议"
   protocol: String!
   "名称"
@@ -30,17 +30,17 @@ type DomainModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input DomainInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input DomainSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DomainId!]
   "ID"
   id: DomainId
   "协议"
@@ -164,36 +164,36 @@ input DomainSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找域名总数"
   findCountDomain(search: DomainSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找域名列表"
   findAllDomain(search: DomainSearch, page: PageInput, sort: [SortInput!]): [DomainModel!]!
-  "获取字段对应的名称"
+  "获取域名字段注释"
   getFieldCommentsDomain: DomainFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个域名"
   findOneDomain(search: DomainSearch, sort: [SortInput!]): DomainModel
-  "根据id查找一条数据"
-  findByIdDomain(id: String!): DomainModel
-  "查找order_by字段的最大值"
+  "根据 id 查找域名"
+  findByIdDomain(id: DomainId!): DomainModel
+  "查找 域名 order_by 字段的最大值"
   findLastOrderByDomain: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createDomain(model: DomainInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdDomain(id: String!, model: DomainInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsDomain(ids: [String!]!): Int!
-  "根据 id 设置默认记录"
-  defaultByIdDomain(id: String!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsDomain(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsDomain(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsDomain(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsDomain(ids: [String!]!): Int!
+  "创建域名"
+  createDomain(model: DomainInput!, unique_type: UniqueType): DomainId!
+  "根据 id 修改域名"
+  updateByIdDomain(id: DomainId!, model: DomainInput!): DomainId!
+  "根据 ids 删除域名"
+  deleteByIdsDomain(ids: [DomainId!]!): Int!
+  "根据 id 设置默认域名"
+  defaultByIdDomain(id: DomainId!): Int!
+  "根据 ids 启用或者禁用域名"
+  enableByIdsDomain(ids: [DomainId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁域名"
+  lockByIdsDomain(ids: [DomainId!]!, is_locked: Int!): Int!
+  "根据 ids 还原域名"
+  revertByIdsDomain(ids: [DomainId!]!): Int!
+  "根据 ids 彻底删除域名"
+  forceDeleteByIdsDomain(ids: [DomainId!]!): Int!
 }
 
 `);

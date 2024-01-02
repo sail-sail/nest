@@ -8,7 +8,7 @@ scalar OptbizId
 
 type OptbizModel {
   "ID"
-  id: String!
+  id: OptbizId!
   "名称"
   lbl: String!
   "键"
@@ -30,17 +30,17 @@ type OptbizModel {
   "版本号"
   version: Int!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input OptbizInput {
   "版本号"
   version: Int
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input OptbizSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [OptbizId!]
   "ID"
   id: OptbizId
   "名称"
@@ -167,34 +167,34 @@ input OptbizSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找业务选项总数"
   findCountOptbiz(search: OptbizSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找业务选项列表"
   findAllOptbiz(search: OptbizSearch, page: PageInput, sort: [SortInput!]): [OptbizModel!]!
-  "获取字段对应的名称"
+  "获取业务选项字段注释"
   getFieldCommentsOptbiz: OptbizFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个业务选项"
   findOneOptbiz(search: OptbizSearch, sort: [SortInput!]): OptbizModel
-  "根据id查找一条数据"
-  findByIdOptbiz(id: String!): OptbizModel
-  "查找order_by字段的最大值"
+  "根据 id 查找业务选项"
+  findByIdOptbiz(id: OptbizId!): OptbizModel
+  "查找 业务选项 order_by 字段的最大值"
   findLastOrderByOptbiz: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createOptbiz(model: OptbizInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdOptbiz(id: String!, model: OptbizInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsOptbiz(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsOptbiz(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsOptbiz(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsOptbiz(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsOptbiz(ids: [String!]!): Int!
+  "创建业务选项"
+  createOptbiz(model: OptbizInput!, unique_type: UniqueType): OptbizId!
+  "根据 id 修改业务选项"
+  updateByIdOptbiz(id: OptbizId!, model: OptbizInput!): OptbizId!
+  "根据 ids 删除业务选项"
+  deleteByIdsOptbiz(ids: [OptbizId!]!): Int!
+  "根据 ids 启用或者禁用业务选项"
+  enableByIdsOptbiz(ids: [OptbizId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁业务选项"
+  lockByIdsOptbiz(ids: [OptbizId!]!, is_locked: Int!): Int!
+  "根据 ids 还原业务选项"
+  revertByIdsOptbiz(ids: [OptbizId!]!): Int!
+  "根据 ids 彻底删除业务选项"
+  forceDeleteByIdsOptbiz(ids: [OptbizId!]!): Int!
 }
 
 `);

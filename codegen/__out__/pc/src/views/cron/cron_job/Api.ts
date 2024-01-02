@@ -3,21 +3,32 @@ import {
 } from "#/types";
 
 import type {
+  CronJobId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   CronJobSearch,
   CronJobInput,
+  CronJobModel,
 } from "#/types";
 
 import type {
   JobSearch,
-  UsrSearch,
 } from "#/types";
 
+async function setLblById(
+  model?: CronJobModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找定时任务列表
  * @param {CronJobSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -66,16 +77,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllCronJob;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllCronJob;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个定时任务
  * @param {CronJobSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -122,14 +133,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneCronJob;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找定时任务总数
  * @param {CronJobSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -149,22 +158,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountCronJob;
-  return res;
+  const count = data.findCountCronJob;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建定时任务
  * @param {CronJobInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: CronJobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<CronJobId> {
   const data: {
     createCronJob: Mutation["createCronJob"];
   } = await mutation({
@@ -178,27 +186,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createCronJob;
-  return res;
+  const id: CronJobId = data.createCronJob;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改定时任务
+ * @param {CronJobId} id
  * @param {CronJobInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: CronJobId,
   model: CronJobInput,
   opt?: GqlOpt,
-) {
+): Promise<CronJobId> {
   const data: {
     updateByIdCronJob: Mutation["updateByIdCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: CronJobInput!) {
+      mutation($id: CronJobId!, $model: CronJobInput!) {
         updateByIdCronJob(id: $id, model: $model)
       }
     `,
@@ -207,25 +214,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdCronJob;
-  return res;
+  const id2: CronJobId = data.updateByIdCronJob;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找定时任务
+ * @param {CronJobId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: CronJobId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdCronJob: Query["findByIdCronJob"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: CronJobId!) {
         findByIdCronJob(id: $id) {
           id
           lbl
@@ -255,25 +261,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdCronJob;
-  return res;
+  const model = data.findByIdCronJob;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除定时任务
+ * @param {CronJobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: CronJobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsCronJob: Mutation["deleteByIdsCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobId!]!) {
         deleteByIdsCronJob(ids: $ids)
       }
     `,
@@ -286,14 +292,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用定时任务
+ * @param {CronJobId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: CronJobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -301,7 +306,7 @@ export async function enableByIds(
     enableByIdsCronJob: Mutation["enableByIdsCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [CronJobId!]!, $is_enabled: Int!) {
         enableByIdsCronJob(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -315,14 +320,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁定时任务
+ * @param {CronJobId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: CronJobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -330,7 +334,7 @@ export async function lockByIds(
     lockByIdsCronJob: Mutation["lockByIdsCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [CronJobId!]!, $is_locked: Int!) {
         lockByIdsCronJob(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -344,20 +348,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原定时任务
+ * @param {CronJobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: CronJobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsCronJob: Mutation["revertByIdsCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobId!]!) {
         revertByIdsCronJob(ids: $ids)
       }
     `,
@@ -370,20 +373,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除定时任务
+ * @param {CronJobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: CronJobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsCronJob: Mutation["forceDeleteByIdsCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [CronJobId!]!) {
         forceDeleteByIdsCronJob(ids: $ids)
       }
     `,
@@ -595,7 +597,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {CronJobInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: CronJobInput[],
@@ -643,8 +644,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 定时任务 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -661,4 +661,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByCronJob;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: CronJobInput = {
+    timezone: "Asia/Shanghai",
+    is_locked: 1,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

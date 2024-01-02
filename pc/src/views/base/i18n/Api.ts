@@ -3,26 +3,40 @@ import {
 } from "#/types";
 
 import type {
+  I18nId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   I18Nsearch,
   I18Ninput,
+  I18Nmodel,
 } from "#/types";
 
 import type {
   LangSearch,
+} from "#/types";
+
+import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: I18Nmodel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找国际化列表
  * @param {I18Nsearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -66,16 +80,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllI18N;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllI18N;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个国际化
  * @param {I18Nsearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -117,14 +131,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneI18N;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找国际化总数
  * @param {I18Nsearch} search?
  * @param {GqlOpt} opt?
  */
@@ -144,22 +156,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountI18N;
-  return res;
+  const count = data.findCountI18N;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建国际化
  * @param {I18Ninput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: I18Ninput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<I18nId> {
   const data: {
     createI18N: Mutation["createI18N"];
   } = await mutation({
@@ -173,27 +184,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createI18N;
-  return res;
+  const id: I18nId = data.createI18N;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改国际化
+ * @param {I18nId} id
  * @param {I18Ninput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: I18nId,
   model: I18Ninput,
   opt?: GqlOpt,
-) {
+): Promise<I18nId> {
   const data: {
     updateByIdI18N: Mutation["updateByIdI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: I18Ninput!) {
+      mutation($id: I18NId!, $model: I18Ninput!) {
         updateByIdI18N(id: $id, model: $model)
       }
     `,
@@ -202,25 +212,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdI18N;
-  return res;
+  const id2: I18nId = data.updateByIdI18N;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找国际化
+ * @param {I18nId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: I18nId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdI18N: Query["findByIdI18N"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: I18nId!) {
         findByIdI18N(id: $id) {
           id
           lang_id
@@ -245,25 +254,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdI18N;
-  return res;
+  const model = data.findByIdI18N;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除国际化
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsI18N: Mutation["deleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [I18nId!]!) {
         deleteByIdsI18N(ids: $ids)
       }
     `,
@@ -276,20 +285,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原国际化
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsI18N: Mutation["revertByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [I18nId!]!) {
         revertByIdsI18N(ids: $ids)
       }
     `,
@@ -302,20 +310,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除国际化
+ * @param {I18nId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: I18nId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsI18N: Mutation["forceDeleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [I18nId!]!) {
         forceDeleteByIdsI18N(ids: $ids)
       }
     `,
@@ -575,7 +582,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {I18Ninput[]} models
- * @export importModels
  */
 export async function importModels(
   models: I18Ninput[],
@@ -620,4 +626,11 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: I18Ninput = {
+  };
+  return defaultInput;
 }

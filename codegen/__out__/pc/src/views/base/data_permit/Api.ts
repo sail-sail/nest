@@ -3,25 +3,41 @@ import {
 } from "#/types";
 
 import type {
+  DataPermitId,
+} from "@/typings/ids";
+
+import {
+  DataPermitScope,
+  DataPermitType,
+} from "#/types";
+
+import type {
   Query,
   Mutation,
   PageInput,
   DataPermitSearch,
   DataPermitInput,
+  DataPermitModel,
 } from "#/types";
 
 import type {
   MenuSearch,
-  UsrSearch,
 } from "#/types";
 
 import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+async function setLblById(
+  model?: DataPermitModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找数据权限列表
  * @param {DataPermitSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -66,16 +82,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllDataPermit;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllDataPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个数据权限
  * @param {DataPermitSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -118,14 +134,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneDataPermit;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找数据权限总数
  * @param {DataPermitSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -145,22 +159,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountDataPermit;
-  return res;
+  const count = data.findCountDataPermit;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建数据权限
  * @param {DataPermitInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<DataPermitId> {
   const data: {
     createDataPermit: Mutation["createDataPermit"];
   } = await mutation({
@@ -174,27 +187,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createDataPermit;
-  return res;
+  const id: DataPermitId = data.createDataPermit;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改数据权限
+ * @param {DataPermitId} id
  * @param {DataPermitInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: DataPermitId,
   model: DataPermitInput,
   opt?: GqlOpt,
-) {
+): Promise<DataPermitId> {
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: DataPermitInput!) {
+      mutation($id: DataPermitId!, $model: DataPermitInput!) {
         updateByIdDataPermit(id: $id, model: $model)
       }
     `,
@@ -203,25 +215,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdDataPermit;
-  return res;
+  const id2: DataPermitId = data.updateByIdDataPermit;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找数据权限
+ * @param {DataPermitId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: DataPermitId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdDataPermit: Query["findByIdDataPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: DataPermitId!) {
         findByIdDataPermit(id: $id) {
           id
           menu_id
@@ -247,25 +258,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdDataPermit;
-  return res;
+  const model = data.findByIdDataPermit;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除数据权限
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsDataPermit: Mutation["deleteByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         deleteByIdsDataPermit(ids: $ids)
       }
     `,
@@ -278,20 +289,19 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原数据权限
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsDataPermit: Mutation["revertByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         revertByIdsDataPermit(ids: $ids)
       }
     `,
@@ -304,20 +314,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除数据权限
+ * @param {DataPermitId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DataPermitId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsDataPermit: Mutation["forceDeleteByIdsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [DataPermitId!]!) {
         forceDeleteByIdsDataPermit(ids: $ids)
       }
     `,
@@ -539,7 +548,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {DataPermitInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: DataPermitInput[],
@@ -584,4 +592,13 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DataPermitInput = {
+    scope: DataPermitScope.Tenant,
+    type: DataPermitType.Editable,
+  };
+  return defaultInput;
 }

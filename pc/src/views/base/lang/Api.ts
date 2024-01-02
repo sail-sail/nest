@@ -3,20 +3,28 @@ import {
 } from "#/types";
 
 import type {
+  LangId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   LangSearch,
   LangInput,
+  LangModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: LangModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找语言列表
  * @param {LangSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -59,16 +67,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllLang;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllLang;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个语言
  * @param {LangSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -109,14 +117,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneLang;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找语言总数
  * @param {LangSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -136,22 +142,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountLang;
-  return res;
+  const count = data.findCountLang;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建语言
  * @param {LangInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: LangInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<LangId> {
   const data: {
     createLang: Mutation["createLang"];
   } = await mutation({
@@ -165,27 +170,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createLang;
-  return res;
+  const id: LangId = data.createLang;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改语言
+ * @param {LangId} id
  * @param {LangInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: LangId,
   model: LangInput,
   opt?: GqlOpt,
-) {
+): Promise<LangId> {
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: LangInput!) {
+      mutation($id: LangId!, $model: LangInput!) {
         updateByIdLang(id: $id, model: $model)
       }
     `,
@@ -194,25 +198,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdLang;
-  return res;
+  const id2: LangId = data.updateByIdLang;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找语言
+ * @param {LangId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: LangId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdLang: Query["findByIdLang"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: LangId!) {
         findByIdLang(id: $id) {
           id
           code
@@ -236,25 +239,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdLang;
-  return res;
+  const model = data.findByIdLang;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除语言
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsLang: Mutation["deleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         deleteByIdsLang(ids: $ids)
       }
     `,
@@ -267,14 +270,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用语言
+ * @param {LangId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: LangId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -282,7 +284,7 @@ export async function enableByIds(
     enableByIdsLang: Mutation["enableByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [LangId!]!, $is_enabled: Int!) {
         enableByIdsLang(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -296,20 +298,19 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原语言
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsLang: Mutation["revertByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         revertByIdsLang(ids: $ids)
       }
     `,
@@ -322,20 +323,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除语言
+ * @param {LangId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: LangId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsLang: Mutation["forceDeleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [LangId!]!) {
         forceDeleteByIdsLang(ids: $ids)
       }
     `,
@@ -475,7 +475,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {LangInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: LangInput[],
@@ -523,8 +522,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 语言 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -541,4 +539,13 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByLang;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: LangInput = {
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

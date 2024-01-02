@@ -71,6 +71,22 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
+  OrgId,
+} from "/gen/base/org/org.model.ts";
+
+import type {
+  DeptId,
+} from "/gen/base/dept/dept.model.ts";
+
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
+import type {
   DeptInput,
   DeptModel,
   DeptSearch,
@@ -265,7 +281,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找部门总数
  * @param { DeptSearch } search?
  * @return {Promise<number>}
  */
@@ -306,7 +322,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找部门列表
  * @param {DeptSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -386,7 +402,7 @@ export async function findAll(
     
     // 部门负责人
     if (item.usr_ids) {
-      const obj = item.usr_ids as unknown as {[key: string]: string};
+      const obj = item.usr_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -395,7 +411,7 @@ export async function findAll(
       item.usr_ids = keys.map((key) => obj[key]);
     }
     if (item.usr_ids_lbl) {
-      const obj = item.usr_ids_lbl as unknown as {[key: string]: string};
+      const obj = item.usr_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
@@ -488,24 +504,28 @@ export async function setIdByLbl(
   
   // 部门负责人
   if (!input.usr_ids && input.usr_ids_lbl) {
-    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
-      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
+    input.usr_ids_lbl = input.usr_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.usr_ids_lbl = Array.from(new Set(input.usr_ids_lbl));
+    if (input.usr_ids_lbl.length === 0) {
+      input.usr_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_usr t
+        where
+          t.lbl in ${ args.push(input.usr_ids_lbl) }
+      `;
+      interface Result {
+        id: UsrId;
+      }
+      const models = await query<Result>(sql, args);
+      input.usr_ids = models.map((item: { id: UsrId }) => item.id);
     }
-    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_usr t
-      where
-        t.lbl in ${ args.push(input.usr_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.usr_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
@@ -526,7 +546,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取部门字段注释
  */
 export async function getFieldComments(): Promise<DeptFieldComment> {
   const n = initN(route_path);
@@ -556,7 +576,7 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得部门列表
  * @param {DeptInput} search0
  */
 export async function findByUnique(
@@ -578,7 +598,7 @@ export async function findByUnique(
     if (search0.parent_id == null) {
       return [ ];
     }
-    let parent_id: string[] = [ ];
+    let parent_id: DeptId[] = [ ];
     if (!Array.isArray(search0.parent_id)) {
       parent_id.push(search0.parent_id, search0.parent_id);
     } else {
@@ -620,11 +640,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查部门是否已经存在
  * @param {DeptInput} input
  * @param {DeptModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<DeptId | undefined>}
  */
 export async function checkByUnique(
   input: DeptInput,
@@ -632,14 +652,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<DeptId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: DeptId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -649,7 +669,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -659,7 +679,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个部门
  * @param {DeptSearch} search?
  */
 export async function findOne(
@@ -678,15 +698,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找部门
+ * @param {DeptId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DeptId | null,
   options?: {
   },
 ): Promise<DeptModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -694,7 +714,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断部门是否存在
  * @param {DeptSearch} search?
  */
 export async function exist(
@@ -708,16 +728,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断部门是否存在
+ * @param {DeptId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DeptId | null,
 ) {
   const table = "base_dept";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -748,7 +768,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验部门是否启用 */
 export async function validateIsEnabled(
   model: DeptModel,
 ) {
@@ -757,7 +777,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验部门是否存在 */
 export async function validateOption(
   model?: DeptModel,
 ) {
@@ -768,7 +788,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 部门增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -821,7 +841,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建部门
  * @param {DeptInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -829,14 +849,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<DeptId>} 
  */
 export async function create(
   input: DeptInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<DeptId> {
   const table = "base_dept";
   const method = "create";
   
@@ -848,7 +868,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: DeptId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -866,12 +886,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<DeptId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -950,7 +970,7 @@ export async function create(
       sql += `,${ args.push(authModel?.org_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -958,7 +978,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -1028,16 +1048,16 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * 部门根据id修改租户id
+ * @param {DeptId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: DeptId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -1067,17 +1087,17 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
+ * 部门根据id修改组织id
  * @export
- * @param {string} id
- * @param {string} org_id
+ * @param {DeptId} id
+ * @param {OrgId} org_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateOrgById(
-  id: string,
-  org_id: string,
+  id: DeptId,
+  org_id: OrgId,
   options?: {
   },
 ): Promise<number> {
@@ -1109,8 +1129,8 @@ export async function updateOrgById(
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改部门
+ * @param {DeptId} id
  * @param {DeptInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -1118,15 +1138,15 @@ export async function updateOrgById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<DeptId>}
  */
 export async function updateById(
-  id: string,
+  id: DeptId,
   input: DeptInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<DeptId> {
   const table = "base_dept";
   const method = "updateById";
   
@@ -1139,12 +1159,12 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   // 修改组织id
   if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id);
+    await updateOrgById(id, input.org_id as unknown as OrgId);
   }
   
   await setIdByLbl(input);
@@ -1213,7 +1233,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1236,7 +1256,7 @@ export async function updateById(
   await many2manyUpdate(
     {
       ...input,
-      id,
+      id: id as unknown as string,
     },
     "usr_ids",
     {
@@ -1261,12 +1281,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除部门
+ * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DeptId[],
   options?: {
   },
 ): Promise<number> {
@@ -1283,7 +1303,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DeptId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1309,13 +1329,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找部门是否已启用
+ * 不存在则返回 undefined
+ * @param {DeptId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: DeptId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1328,13 +1348,13 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用部门
+ * @param {DeptId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DeptId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1378,14 +1398,14 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找部门是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
+ * @param {DeptId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: DeptId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1398,13 +1418,13 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁部门
+ * @param {DeptId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DeptId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1448,12 +1468,12 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原部门
+ * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DeptId[],
   options?: {
   },
 ): Promise<number> {
@@ -1470,7 +1490,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: DeptId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1507,12 +1527,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除部门
+ * @param {DeptId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DeptId[],
   options?: {
   },
 ): Promise<number> {
@@ -1562,7 +1582,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 部门 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

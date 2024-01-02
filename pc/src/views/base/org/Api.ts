@@ -3,20 +3,28 @@ import {
 } from "#/types";
 
 import type {
+  OrgId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   OrgSearch,
   OrgInput,
+  OrgModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: OrgModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找组织列表
  * @param {OrgSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -60,16 +68,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllOrg;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllOrg;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个组织
  * @param {OrgSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -111,14 +119,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneOrg;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找组织总数
  * @param {OrgSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -138,22 +144,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountOrg;
-  return res;
+  const count = data.findCountOrg;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建组织
  * @param {OrgInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: OrgInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<OrgId> {
   const data: {
     createOrg: Mutation["createOrg"];
   } = await mutation({
@@ -167,27 +172,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createOrg;
-  return res;
+  const id: OrgId = data.createOrg;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改组织
+ * @param {OrgId} id
  * @param {OrgInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: OrgId,
   model: OrgInput,
   opt?: GqlOpt,
-) {
+): Promise<OrgId> {
   const data: {
     updateByIdOrg: Mutation["updateByIdOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: OrgInput!) {
+      mutation($id: OrgId!, $model: OrgInput!) {
         updateByIdOrg(id: $id, model: $model)
       }
     `,
@@ -196,25 +200,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdOrg;
-  return res;
+  const id2: OrgId = data.updateByIdOrg;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找组织
+ * @param {OrgId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: OrgId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdOrg: Query["findByIdOrg"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: OrgId!) {
         findByIdOrg(id: $id) {
           id
           lbl
@@ -239,25 +242,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdOrg;
-  return res;
+  const model = data.findByIdOrg;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除组织
+ * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OrgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsOrg: Mutation["deleteByIdsOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrgId!]!) {
         deleteByIdsOrg(ids: $ids)
       }
     `,
@@ -270,14 +273,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用组织
+ * @param {OrgId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OrgId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -285,7 +287,7 @@ export async function enableByIds(
     enableByIdsOrg: Mutation["enableByIdsOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [OrgId!]!, $is_enabled: Int!) {
         enableByIdsOrg(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -299,14 +301,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁组织
+ * @param {OrgId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OrgId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -314,7 +315,7 @@ export async function lockByIds(
     lockByIdsOrg: Mutation["lockByIdsOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [OrgId!]!, $is_locked: Int!) {
         lockByIdsOrg(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -328,20 +329,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原组织
+ * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OrgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsOrg: Mutation["revertByIdsOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrgId!]!) {
         revertByIdsOrg(ids: $ids)
       }
     `,
@@ -354,20 +354,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除组织
+ * @param {OrgId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OrgId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsOrg: Mutation["forceDeleteByIdsOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [OrgId!]!) {
         forceDeleteByIdsOrg(ids: $ids)
       }
     `,
@@ -508,7 +507,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {OrgInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: OrgInput[],
@@ -556,8 +554,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 组织 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -574,4 +571,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByOrg;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OrgInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

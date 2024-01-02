@@ -7,16 +7,15 @@ import type {
 } from "/lib/util/dao_util.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
 
 import type {
-  CronJobLogInput,
   CronJobLogModel,
   CronJobLogSearch,
   CronJobLogFieldComment,
+  CronJobLogId,
 } from "./cron_job_log.model.ts";
 
 import {
@@ -24,7 +23,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找任务执行日志总数
  */
 export async function findCountCronJobLog(
   search?: CronJobLogSearch & { $extra?: SearchExtra[] },
@@ -39,7 +38,7 @@ export async function findCountCronJobLog(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找任务执行日志列表
  */
 export async function findAllCronJobLog(
   search?: CronJobLogSearch & { $extra?: SearchExtra[] },
@@ -56,7 +55,7 @@ export async function findAllCronJobLog(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取任务执行日志字段注释
  */
 export async function getFieldCommentsCronJobLog(): Promise<CronJobLogFieldComment> {
   const { getFieldComments } = await import("./cron_job_log.service.ts");
@@ -65,7 +64,7 @@ export async function getFieldCommentsCronJobLog(): Promise<CronJobLogFieldComme
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个任务执行日志
  */
 export async function findOneCronJobLog(
   search?: CronJobLogSearch & { $extra?: SearchExtra[] },
@@ -81,10 +80,10 @@ export async function findOneCronJobLog(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找任务执行日志
  */
 export async function findByIdCronJobLog(
-  id: string,
+  id: CronJobLogId,
 ): Promise<CronJobLogModel | undefined> {
   const { findById } = await import("./cron_job_log.service.ts");
   const res = await findById(id);
@@ -92,10 +91,10 @@ export async function findByIdCronJobLog(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除任务执行日志
  */
 export async function deleteByIdsCronJobLog(
-  ids: string[],
+  ids: CronJobLogId[],
 ): Promise<number> {
   
   const {
@@ -115,10 +114,10 @@ export async function deleteByIdsCronJobLog(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原任务执行日志
  */
 export async function revertByIdsCronJobLog(
-  ids: string[],
+  ids: CronJobLogId[],
 ): Promise<number> {
   
   const {
@@ -138,10 +137,10 @@ export async function revertByIdsCronJobLog(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除任务执行日志
  */
 export async function forceDeleteByIdsCronJobLog(
-  ids: string[],
+  ids: CronJobLogId[],
 ): Promise<number> {
   const context = useContext();
   

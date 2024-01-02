@@ -9,11 +9,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -30,14 +30,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 >
   <el-input
     v-bind="$attrs"
+    ref="inputRef"
     @click="onInput"
     v-model="inputValue"
     @clear="onClear"
     readonly
-    clearable
     :placeholder="props.placeholder"
-    @mouseenter="inputEnter"
-    @mouseleave="inputLeave"
+    @mouseenter="mouseEnter"
+    @mouseleave="mouseLeave"
+    @keydown.enter="onEnter"
   >
     <template
       v-for="(item, key, index) in $slots"
@@ -89,9 +90,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     </template>
   </el-input>
   <SelectList
+    v-bind="$attrs"
     ref="selectListRef"
     @closed="dialog_visible = false;"
-    @change="selectListChg"
+    @change="onSelectList"
   ></SelectList>
 </div>
 <template
@@ -102,7 +104,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-p="x-2.75 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
@@ -116,11 +117,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </template>
 
 <script lang="ts" setup>
-import type {
-  MaybeRefOrGetter,
-  WatchStopHandle,
-} from "vue";
-
 import SelectList from "./SelectList.vue";
 
 import {
@@ -128,11 +124,15 @@ import {
 } from "./Api";
 
 import type {
+  <#=Table_Up#>Id,
+} from "@/typings/ids";
+
+import type {
   <#=modelName#>,
 } from "#/types";
 
 let emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
   (e: "clear"): void,
 }>();
@@ -146,7 +146,7 @@ const {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: string | string[] | null;
+    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
@@ -187,27 +187,34 @@ watch(
 
 let isHover = $ref(false);
 
-function inputEnter() {
+function mouseEnter() {
   isHover = true;
 }
 
-function inputLeave() {
+function mouseLeave() {
   isHover = false;
 }
 
+async function onEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    return;
+  }
+  await onInput();
+}
+
 function getModelValueArr() {
-  let modelValueArr: string[] = [ ];
+  let modelValueArr: <#=Table_Up#>Id[] = [ ];
   if (modelValue) {
     if (Array.isArray(modelValue)) {
       modelValueArr = modelValue;
     } else {
-      modelValueArr = modelValue.split(",");
+      modelValueArr = modelValue.split(",") as unknown as <#=Table_Up#>Id[];
     }
   }
   return modelValueArr;
 }
 
-async function getModelsByIds(ids: string[]) {
+async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const res = await findAll(
     {
       ids,
@@ -228,7 +235,7 @@ async function refreshInputValue() {
 }
 
 function onClear() {
-  modelValue = "";
+  modelValue = undefined;
   inputValue = "";
   emit("update:modelValue", modelValue);
   emit("change");
@@ -257,18 +264,35 @@ async function onInput() {
       ids: modelValueArr,
     },
   });
+  focus();
   if (type === "cancel") {
     return;
   }
   if (props.multiple) {
     modelValue = selectedIds;
   } else {
-    modelValue = selectedIds[0] || "";
+    modelValue = selectedIds[0];
   }
   emit("update:modelValue", modelValue);
 }
 
-function selectListChg(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+let inputRef = $ref<InstanceType<typeof ElInput>>();
+
+function focus() {
+  if (!inputRef) {
+    return;
+  }
+  inputRef.focus();
+}
+
+function blur() {
+  if (!inputRef) {
+    return;
+  }
+  inputRef.blur();
+}
+
+function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
   if (props.multiple) {
     emit("change", value);
     return;
@@ -279,4 +303,9 @@ function selectListChg(value?: <#=modelName#> | (<#=modelName#> | undefined)[] |
   }
   emit("change", value[0]);
 }
+
+defineExpose({
+  focus,
+  blur,
+});
 </script>

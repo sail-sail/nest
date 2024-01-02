@@ -17,6 +17,7 @@ import type {
   TenantModel,
   TenantSearch,
   TenantFieldComment,
+  TenantId,
 } from "./tenant.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找租户总数
  */
 export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountTenant(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找租户列表
  */
 export async function findAllTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllTenant(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取租户字段注释
  */
 export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
   const { getFieldComments } = await import("./tenant.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个租户
  */
 export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneTenant(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找租户
  */
 export async function findByIdTenant(
-  id: string,
+  id: TenantId,
 ): Promise<TenantModel | undefined> {
   const { findById } = await import("./tenant.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdTenant(
 }
 
 /**
- * 创建一条数据
+ * 创建租户
  */
 export async function createTenant(
   input: TenantInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<TenantId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createTenant(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: TenantId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改租户
  */
 export async function updateByIdTenant(
-  id: string,
+  id: TenantId,
   input: TenantInput,
-): Promise<string> {
+): Promise<TenantId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdTenant(
     "/base/tenant",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: TenantId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除租户
  */
 export async function deleteByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsTenant(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用租户
  */
 export async function enableByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsTenant(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁租户
  */
 export async function lockByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsTenant(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原租户
  */
 export async function revertByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsTenant(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除租户
  */
 export async function forceDeleteByIdsTenant(
-  ids: string[],
+  ids: TenantId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsTenant(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(): Promise<number> {
   const { findLastOrderBy } = await import("./tenant.service.ts");

@@ -20,7 +20,7 @@ import cfg from "@/utils/config";
 const indexStore = useIndexStore(cfg.pinia);
 
 let loading = $computed(() => {
-  return indexStore.loading;
+  return indexStore.getLoading();
 });
 </script>
 

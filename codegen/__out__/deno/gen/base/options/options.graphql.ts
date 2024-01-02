@@ -8,7 +8,7 @@ scalar OptionsId
 
 type OptionsModel {
   "ID"
-  id: String!
+  id: OptionsId!
   "名称"
   lbl: String!
   "键"
@@ -30,17 +30,17 @@ type OptionsModel {
   "版本号"
   version: Int!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -112,17 +112,17 @@ input OptionsInput {
   "版本号"
   version: Int
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input OptionsSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [OptionsId!]
   "ID"
   id: OptionsId
   "名称"
@@ -167,34 +167,34 @@ input OptionsSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找系统选项总数"
   findCountOptions(search: OptionsSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找系统选项列表"
   findAllOptions(search: OptionsSearch, page: PageInput, sort: [SortInput!]): [OptionsModel!]!
-  "获取字段对应的名称"
+  "获取系统选项字段注释"
   getFieldCommentsOptions: OptionsFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个系统选项"
   findOneOptions(search: OptionsSearch, sort: [SortInput!]): OptionsModel
-  "根据id查找一条数据"
-  findByIdOptions(id: String!): OptionsModel
-  "查找order_by字段的最大值"
+  "根据 id 查找系统选项"
+  findByIdOptions(id: OptionsId!): OptionsModel
+  "查找 系统选项 order_by 字段的最大值"
   findLastOrderByOptions: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createOptions(model: OptionsInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdOptions(id: String!, model: OptionsInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsOptions(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsOptions(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsOptions(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsOptions(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsOptions(ids: [String!]!): Int!
+  "创建系统选项"
+  createOptions(model: OptionsInput!, unique_type: UniqueType): OptionsId!
+  "根据 id 修改系统选项"
+  updateByIdOptions(id: OptionsId!, model: OptionsInput!): OptionsId!
+  "根据 ids 删除系统选项"
+  deleteByIdsOptions(ids: [OptionsId!]!): Int!
+  "根据 ids 启用或者禁用系统选项"
+  enableByIdsOptions(ids: [OptionsId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁系统选项"
+  lockByIdsOptions(ids: [OptionsId!]!, is_locked: Int!): Int!
+  "根据 ids 还原系统选项"
+  revertByIdsOptions(ids: [OptionsId!]!): Int!
+  "根据 ids 彻底删除系统选项"
+  forceDeleteByIdsOptions(ids: [OptionsId!]!): Int!
 }
 
 `);

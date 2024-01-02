@@ -54,13 +54,11 @@
           :label="n('名称')"
           prop="lbl_like"
         >
-          <el-input
+          <CustomInput
             v-model="search.lbl_like"
-            un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-            clearable
             @clear="onSearchClear"
-          ></el-input>
+          ></CustomInput>
         </el-form-item>
       </template>
       
@@ -150,7 +148,7 @@
         
         <el-button
           plain
-          @click="searchReset"
+          @click="onSearchReset"
         >
           <template #icon>
             <ElIconDelete />
@@ -423,16 +421,17 @@
         size="small"
         height="100%"
         row-key="id"
+        :default-sort="defaultSort"
         :empty-text="inited ? undefined : ns('加载中...')"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
-        @row-dblclick="openView"
+        @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
-        @keyup.enter="onRowEnter"
+        @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
         @keydown.left="onRowLeft"
@@ -594,6 +593,10 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
+import type {
+  DataPermitId,
+} from "@/typings/ids";
+
 import {
   findAll,
   findCount,
@@ -643,23 +646,15 @@ const permit = permitStore.getPermit("/base/data_permit");
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [
-    string[],
-  ],
-  add: [
-    string[],
-  ],
-  edit: [
-    string[],
-  ],
-  remove: [
-    number,
-  ],
-  revert: [
-    number,
-  ],
+  selectedIdsChg: [ DataPermitId[] ],
+  add: [ DataPermitId[] ],
+  edit: [ DataPermitId[] ],
+  remove: [ number ],
+  revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ DataPermitModel ],
 }>();
 
 /** 表格 */
@@ -694,11 +689,12 @@ async function onRefresh() {
 }
 
 /** 重置搜索 */
-async function searchReset() {
+async function onSearchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
+  await nextTick();
   await dataGrid(true);
 }
 
@@ -717,24 +713,19 @@ const props = defineProps<{
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
+  isFocus?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
+  selectedIds?: DataPermitId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: string; // ID
+  id?: DataPermitId; // ID
   menu_id?: string|string[]; // 菜单
-  menu_id_lbl?: string|string[]; // 菜单
+  menu_id_lbl?: string; // 菜单
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   scope?: string|string[]; // 范围
   type?: string|string[]; // 类型
   rem?: string; // 备注
   rem_like?: string; // 备注
-  create_usr_id?: string|string[]; // 创建人
-  create_usr_id_lbl?: string|string[]; // 创建人
-  create_time?: string; // 创建时间
-  update_usr_id?: string|string[]; // 更新人
-  update_usr_id_lbl?: string|string[]; // 更新人
-  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -742,6 +733,7 @@ const builtInSearchType: { [key: string]: string } = {
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
+  isFocus: "0|1",
   ids: "string[]",
   menu_id: "string[]",
   menu_id_lbl: "string[]",
@@ -761,6 +753,7 @@ const propsNotInSearch: string[] = [
   "showBuildIn",
   "isPagination",
   "isLocked",
+  "isFocus",
 ];
 
 /** 内置搜索条件 */
@@ -785,6 +778,8 @@ const showBuildIn = $computed(() => props.showBuildIn === "1");
 const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
 /** 是否只读模式 */
 const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -814,7 +809,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<DataPermitModel>(
+} = $(useSelect<DataPermitModel, DataPermitId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1071,19 +1066,6 @@ let sort = $ref<Sort>({
   ...defaultSort,
 });
 
-let defaultSortBy = $computed(() => {
-  const column = tableColumns.find((item) => {
-    const sortBy = item.sortBy || item.prop || "";
-    return item.sortBy === sortBy;
-  });
-  const prop = column?.prop || "";
-  const order = sort.order;
-  return {
-    prop,
-    order,
-  } as Sort;
-});
-
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<DataPermitModel> } & Sort,
@@ -1095,13 +1077,13 @@ async function onSortChange(
     await dataGrid();
     return;
   }
-  let sortBy = "";
+  let prop2 = "";
   if (Array.isArray(column.sortBy)) {
-    sortBy = column.sortBy[0];
+    prop2 = column.sortBy[0];
   } else {
-    sortBy = (column.sortBy as string) || prop || "";
+    prop2 = (column.sortBy as string) || prop || "";
   }
-  sort.prop = sortBy;
+  sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
 }
@@ -1327,6 +1309,10 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
+  if (props.selectedIds != null) {
+    emit("rowEnter", e);
+    return;
+  }
   if (e.ctrlKey) {
     await openEdit();
   } else if (e.shiftKey) {
@@ -1334,6 +1320,17 @@ async function onRowEnter(e: KeyboardEvent) {
   } else {
     await openView();
   }
+}
+
+/** 双击行 */
+async function onRowDblclick(
+  row: DataPermitModel,
+) {
+  if (props.selectedIds != null) {
+    emit("rowDblclick", row);
+    return;
+  }
+  await openView();
 }
 
 /** 打开查看 */
@@ -1485,10 +1482,27 @@ async function initI18nsEfc() {
   ]);
 }
 
-async function initFrame() {
-  if (!usrStore.authorization) {
+async function focus() {
+  if (!inited || !tableRef || !tableRef.$el) {
     return;
   }
+  tableRef.$el.focus();
+}
+
+watch(
+  () => [
+    props.isFocus,
+    inited,
+  ],
+  () => {
+    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+      return;
+    }
+    tableRef.$el.focus();
+  },
+);
+
+async function initFrame() {
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),
@@ -1521,5 +1535,6 @@ initFrame();
 
 defineExpose({
   refresh: onRefresh,
+  focus,
 });
 </script>

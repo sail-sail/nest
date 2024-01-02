@@ -13,12 +13,13 @@ import type {
   DictModel,
   DictSearch,
   DictFieldComment,
+  DictId,
 } from "./dict.model.ts";
 
 import * as dictDao from "./dict.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找系统字典总数
  * @param {DictSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找系统字典列表
  * @param {DictSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个系统字典
  * @param {DictSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找系统字典
+ * @param {DictId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: DictId | null,
 ): Promise<DictModel | undefined> {
   const model = await dictDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找系统字典是否存在
  * @param {DictSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找系统字典是否存在
+ * @param {DictId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: DictId | null,
 ): Promise<boolean> {
   const data = await dictDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验系统字典
  * @param input 
  */
 export async function validate(
@@ -116,28 +117,28 @@ export async function validate(
 /**
  * 创建数据
  * @param {DictInput} input
- * @return {Promise<string>} id
+ * @return {Promise<DictId>} id
  */
 export async function create(
   input: DictInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await dictDao.create(input, options);
-  return data;
+): Promise<DictId> {
+  const id: DictId = await dictDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改系统字典
+ * @param {DictId} id
  * @param {DictInput} input
- * @return {Promise<string>}
+ * @return {Promise<DictId>}
  */
 export async function updateById(
-  id: string,
+  id: DictId,
   input: DictInput,
-): Promise<string> {
+): Promise<DictId> {
   
   const is_locked = await dictDao.getIsLockedById(id);
   if (is_locked) {
@@ -157,23 +158,23 @@ export async function updateById(
     input.is_enabled_lbl = "";
   }
   
-  const data = await dictDao.updateById(id, input);
-  return data;
+  const id2: DictId = await dictDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: DictId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: DictId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: DictId = ids[i];
       const is_locked = await dictDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -186,9 +187,9 @@ export async function deleteByIds(
   }
   
   {
-    const ids2: string[] = [ ];
+    const ids2: DictId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: DictId = ids[i];
       const model = await dictDao.findById(id);
       if (model && model.is_sys === 1) {
         continue;
@@ -206,13 +207,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用系统字典
+ * @param {DictId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: DictId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dictDao.enableByIds(ids, is_enabled);
@@ -220,13 +221,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁系统字典
+ * @param {DictId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: DictId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await dictDao.lockByIds(ids, is_locked);
@@ -234,31 +235,31 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: DictId[],
 ): Promise<number> {
   const data = await dictDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除系统字典
+ * @param {DictId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: DictId[],
 ): Promise<number> {
   const data = await dictDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取系统字典字段注释
  */
 export async function getFieldComments(): Promise<DictFieldComment> {
   const data = await dictDao.getFieldComments();
@@ -266,7 +267,7 @@ export async function getFieldComments(): Promise<DictFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 系统字典 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

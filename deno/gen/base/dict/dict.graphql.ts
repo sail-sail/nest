@@ -6,11 +6,24 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar DictId
 
 "系统字典数据类型"
-scalar DictType
+enum DictType {
+  "字符串"
+  string
+  "数值"
+  number
+  "日期"
+  date
+  "日期时间"
+  datetime
+  "时间"
+  time
+  "布尔"
+  boolean
+}
 
 type DictModel {
   "ID"
-  id: String!
+  id: DictId!
   "编码"
   code: String!
   "名称"
@@ -32,17 +45,17 @@ type DictModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -116,17 +129,17 @@ input DictInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -138,7 +151,7 @@ input DictSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DictId!]
   "ID"
   id: DictId
   "编码"
@@ -170,34 +183,34 @@ input DictSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找系统字典总数"
   findCountDict(search: DictSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找系统字典列表"
   findAllDict(search: DictSearch, page: PageInput, sort: [SortInput!]): [DictModel!]!
-  "获取字段对应的名称"
+  "获取系统字典字段注释"
   getFieldCommentsDict: DictFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个系统字典"
   findOneDict(search: DictSearch, sort: [SortInput!]): DictModel
-  "根据id查找一条数据"
-  findByIdDict(id: String!): DictModel
-  "查找order_by字段的最大值"
+  "根据 id 查找系统字典"
+  findByIdDict(id: DictId!): DictModel
+  "查找 系统字典 order_by 字段的最大值"
   findLastOrderByDict: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createDict(model: DictInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdDict(id: String!, model: DictInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsDict(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsDict(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsDict(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsDict(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsDict(ids: [String!]!): Int!
+  "创建系统字典"
+  createDict(model: DictInput!, unique_type: UniqueType): DictId!
+  "根据 id 修改系统字典"
+  updateByIdDict(id: DictId!, model: DictInput!): DictId!
+  "根据 ids 删除系统字典"
+  deleteByIdsDict(ids: [DictId!]!): Int!
+  "根据 ids 启用或者禁用系统字典"
+  enableByIdsDict(ids: [DictId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁系统字典"
+  lockByIdsDict(ids: [DictId!]!, is_locked: Int!): Int!
+  "根据 ids 还原系统字典"
+  revertByIdsDict(ids: [DictId!]!): Int!
+  "根据 ids 彻底删除系统字典"
+  forceDeleteByIdsDict(ids: [DictId!]!): Int!
 }
 
 `);

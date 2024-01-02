@@ -217,7 +217,7 @@ export default defineStore("tabs", function() {
     {
       const name = "首页";
       const lbl = name;
-      const closeable = false;
+      const closeable = true;
       const icon = "iconfont-home-fill";
       const tab: TabInf = {
         name,

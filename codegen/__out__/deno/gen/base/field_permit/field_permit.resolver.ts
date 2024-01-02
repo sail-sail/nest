@@ -17,6 +17,7 @@ import type {
   FieldPermitModel,
   FieldPermitSearch,
   FieldPermitFieldComment,
+  FieldPermitId,
 } from "./field_permit.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找字段权限总数
  */
 export async function findCountFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountFieldPermit(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找字段权限列表
  */
 export async function findAllFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllFieldPermit(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取字段权限字段注释
  */
 export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldComment> {
   const { getFieldComments } = await import("./field_permit.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldCom
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个字段权限
  */
 export async function findOneFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneFieldPermit(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找字段权限
  */
 export async function findByIdFieldPermit(
-  id: string,
+  id: FieldPermitId,
 ): Promise<FieldPermitModel | undefined> {
   const { findById } = await import("./field_permit.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdFieldPermit(
 }
 
 /**
- * 创建一条数据
+ * 创建字段权限
  */
 export async function createFieldPermit(
   input: FieldPermitInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<FieldPermitId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createFieldPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: FieldPermitId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改字段权限
  */
 export async function updateByIdFieldPermit(
-  id: string,
+  id: FieldPermitId,
   input: FieldPermitInput,
-): Promise<string> {
+): Promise<FieldPermitId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdFieldPermit(
     "/base/field_permit",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: FieldPermitId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除字段权限
  */
 export async function deleteByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsFieldPermit(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原字段权限
  */
 export async function revertByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   
   const {
@@ -196,10 +197,10 @@ export async function revertByIdsFieldPermit(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除字段权限
  */
 export async function forceDeleteByIdsFieldPermit(
-  ids: string[],
+  ids: FieldPermitId[],
 ): Promise<number> {
   const context = useContext();
   

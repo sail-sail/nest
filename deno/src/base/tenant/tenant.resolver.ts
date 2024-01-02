@@ -1,5 +1,5 @@
-import {
-  type QueryGetLoginTenantsArgs,
+import type {
+  QueryGetLoginTenantsArgs,
 } from "/gen/types.ts";
 
 export async function getLoginTenants(

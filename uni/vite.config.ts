@@ -73,6 +73,7 @@ export default defineConfig({
             "request",
             "uploadFile",
             "getDownloadUrl",
+            "getImgUrl",
             "getAttUrl",
             "downloadFile",
             "uniLogin",
@@ -80,6 +81,9 @@ export default defineConfig({
           "@/utils/graphql": [
             "query",
             "mutation",
+          ],
+          "@/pages/index/Api": [
+            "checkLogin",
           ],
           "@/utils/StringUtil": [
             "isEmpty",
@@ -94,6 +98,10 @@ export default defineConfig({
           ],
           "@/components/CustomForm/CustomForm.vue": [
             [ "default", "CustomForm" ]
+          ],
+          "@/utils/WxWorkUtil": [
+            "wxwGetAppid",
+            "initWxWorkCfg",
           ],
         },
       ],

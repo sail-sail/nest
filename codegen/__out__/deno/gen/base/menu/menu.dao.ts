@@ -54,7 +54,12 @@ import {
 import type {
   PageInput,
   SortInput,
+  MenuType,
 } from "/gen/types.ts";
+
+import type {
+  MenuId,
+} from "/gen/base/menu/menu.model.ts";
 
 import type {
   MenuInput,
@@ -223,7 +228,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找菜单总数
  * @param { MenuSearch } search?
  * @return {Promise<number>}
  */
@@ -264,7 +269,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找菜单列表
  * @param {MenuSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -353,7 +358,7 @@ export async function findAll(
     const model = result[i];
     
     // 类型
-    let type_lbl = model.type;
+    let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
       if (dictItem) {
@@ -429,7 +434,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.type_lbl) && input.type === undefined) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      input.type = val;
+      input.type = val as MenuType;
     }
   }
   
@@ -460,7 +465,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取菜单字段注释
  */
 export async function getFieldComments(): Promise<MenuFieldComment> {
   const n = initN(route_path);
@@ -492,7 +497,7 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得菜单列表
  * @param {MenuInput} search0
  */
 export async function findByUnique(
@@ -514,7 +519,7 @@ export async function findByUnique(
     if (search0.parent_id == null) {
       return [ ];
     }
-    let parent_id: string[] = [ ];
+    let parent_id: MenuId[] = [ ];
     if (!Array.isArray(search0.parent_id)) {
       parent_id.push(search0.parent_id, search0.parent_id);
     } else {
@@ -556,11 +561,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查菜单是否已经存在
  * @param {MenuInput} input
  * @param {MenuModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<MenuId | undefined>}
  */
 export async function checkByUnique(
   input: MenuInput,
@@ -568,14 +573,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<MenuId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: MenuId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -585,7 +590,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -595,7 +600,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个菜单
  * @param {MenuSearch} search?
  */
 export async function findOne(
@@ -614,15 +619,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找菜单
+ * @param {MenuId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: MenuId | null,
   options?: {
   },
 ): Promise<MenuModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -630,7 +635,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断菜单是否存在
  * @param {MenuSearch} search?
  */
 export async function exist(
@@ -644,16 +649,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断菜单是否存在
+ * @param {MenuId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: MenuId | null,
 ) {
   const table = "base_menu";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -684,7 +689,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否启用 */
+/** 校验菜单是否启用 */
 export async function validateIsEnabled(
   model: MenuModel,
 ) {
@@ -693,7 +698,7 @@ export async function validateIsEnabled(
   }
 }
 
-/** 校验记录是否存在 */
+/** 校验菜单是否存在 */
 export async function validateOption(
   model?: MenuModel,
 ) {
@@ -704,7 +709,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 菜单增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -778,7 +783,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建菜单
  * @param {MenuInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -786,14 +791,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<MenuId>} 
  */
 export async function create(
   input: MenuInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<MenuId> {
   const table = "base_menu";
   const method = "create";
   
@@ -805,7 +810,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: MenuId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -823,12 +828,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<MenuId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -882,7 +887,7 @@ export async function create(
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -890,7 +895,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -956,8 +961,8 @@ export async function delCache() {
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改菜单
+ * @param {MenuId} id
  * @param {MenuInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -965,15 +970,15 @@ export async function delCache() {
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<MenuId>}
  */
 export async function updateById(
-  id: string,
+  id: MenuId,
   input: MenuInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<MenuId> {
   const table = "base_menu";
   const method = "updateById";
   
@@ -1068,7 +1073,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1099,12 +1104,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除菜单
+ * @param {MenuId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: MenuId[],
   options?: {
   },
 ): Promise<number> {
@@ -1121,7 +1126,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: MenuId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1147,13 +1152,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找是否已启用
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找菜单是否已启用
+ * 不存在则返回 undefined
+ * @param {MenuId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsEnabledById(
-  id: string,
+  id: MenuId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1166,13 +1171,13 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用菜单
+ * @param {MenuId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: MenuId[],
   is_enabled: 0 | 1,
   options?: {
   },
@@ -1216,14 +1221,14 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找是否已锁定
- * 已锁定的记录不能修改和删除
- * 记录不存在则返回 undefined
- * @param {string} id
+ * 根据 ID 查找菜单是否已锁定
+ * 已锁定的不能修改和删除
+ * 不存在则返回 undefined
+ * @param {MenuId} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIsLockedById(
-  id: string,
+  id: MenuId,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
@@ -1236,13 +1241,13 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁菜单
+ * @param {MenuId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: MenuId[],
   is_locked: 0 | 1,
   options?: {
   },
@@ -1286,12 +1291,12 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原菜单
+ * @param {MenuId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: MenuId[],
   options?: {
   },
 ): Promise<number> {
@@ -1308,7 +1313,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: MenuId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1345,12 +1350,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除菜单
+ * @param {MenuId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: MenuId[],
   options?: {
   },
 ): Promise<number> {
@@ -1400,7 +1405,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 order_by 字段的最大值
+ * 查找 菜单 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

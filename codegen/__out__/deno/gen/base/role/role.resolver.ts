@@ -17,6 +17,7 @@ import type {
   RoleModel,
   RoleSearch,
   RoleFieldComment,
+  RoleId,
 } from "./role.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找角色总数
  */
 export async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountRole(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找角色列表
  */
 export async function findAllRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllRole(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取角色字段注释
  */
 export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
   const { getFieldComments } = await import("./role.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个角色
  */
 export async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOneRole(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找角色
  */
 export async function findByIdRole(
-  id: string,
+  id: RoleId,
 ): Promise<RoleModel | undefined> {
   const { findById } = await import("./role.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdRole(
 }
 
 /**
- * 创建一条数据
+ * 创建角色
  */
 export async function createRole(
   input: RoleInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<RoleId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createRole(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: RoleId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改角色
  */
 export async function updateByIdRole(
-  id: string,
+  id: RoleId,
   input: RoleInput,
-): Promise<string> {
+): Promise<RoleId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdRole(
     "/base/role",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: RoleId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除角色
  */
 export async function deleteByIdsRole(
-  ids: string[],
+  ids: RoleId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsRole(
 }
 
 /**
- * 根据 ids 启用或者禁用数据
+ * 根据 ids 启用或者禁用角色
  */
 export async function enableByIdsRole(
-  ids: string[],
+  ids: RoleId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   
@@ -200,10 +201,10 @@ export async function enableByIdsRole(
 }
 
 /**
- * 根据 ids 锁定或者解锁数据
+ * 根据 ids 锁定或者解锁角色
  */
 export async function lockByIdsRole(
-  ids: string[],
+  ids: RoleId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   
@@ -227,10 +228,10 @@ export async function lockByIdsRole(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原角色
  */
 export async function revertByIdsRole(
-  ids: string[],
+  ids: RoleId[],
 ): Promise<number> {
   
   const {
@@ -250,10 +251,10 @@ export async function revertByIdsRole(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除角色
  */
 export async function forceDeleteByIdsRole(
-  ids: string[],
+  ids: RoleId[],
 ): Promise<number> {
   const context = useContext();
   
@@ -272,7 +273,7 @@ export async function forceDeleteByIdsRole(
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 角色 order_by 字段的最大值
  */
 export async function findLastOrderByRole(): Promise<number> {
   const { findLastOrderBy } = await import("./role.service.ts");

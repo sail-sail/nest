@@ -14,11 +14,11 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
+  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up2 + "model";
+  fieldCommentName = Table_Up2 + "fieldComment";
+  inputName = Table_Up2 + "input";
+  searchName = Table_Up2 + "search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -52,6 +52,14 @@ for (let i = 0; i < columns.length; i++) {
   }
   columnNum++;
 }
+let detailCustomDialogType = opts.detailCustomDialogType;
+if (!detailCustomDialogType) {
+  if (columnNum > 20 || hasInlineForeignTabs) {
+    detailCustomDialogType = "default";
+  } else {
+    detailCustomDialogType = "auto";
+  }
+}
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -62,6 +70,11 @@ for (let i = 0; i < columns.length; i++) {
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"<#
+  if (opts.noAdd !== true) {
+  #>
+  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"<#
+  }
+  #><#
   if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
   @keydown.ctrl.enter="onSaveKeydown"
@@ -107,7 +120,8 @@ for (let i = 0; i < columns.length; i++) {
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -135,12 +149,7 @@ for (let i = 0; i < columns.length; i++) {
         
         :model="dialogModel"
         :rules="form_rules"
-        :validate-on-rule-change="false"<#
-        if (opts.noAdd !== true || opts.noEdit !== true) {
-        #>
-        @keyup.enter="onSave"<#
-        }
-        #>
+        :validate-on-rule-change="false"
       ><#
         const selectInputForeign_Table_Ups = [ ];
         for (let i = 0; i < columns.length; i++) {
@@ -578,7 +587,7 @@ for (let i = 0; i < columns.length; i++) {
               if (column.isTextarea) {
               #>
               type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               @keyup.enter.stop<#
               }
               #>
@@ -638,13 +647,13 @@ for (let i = 0; i < columns.length; i++) {
         ><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
           #>
           
           <el-tab-pane
@@ -1082,11 +1091,27 @@ for (let i = 0; i < columns.length; i++) {
         </template>
         <span>{{ n('关闭') }}</span>
       </el-button><#
-      if (opts.noAdd !== true || opts.noEdit !== true) {
+      if (!opts.noAdd) {
       #>
       
       <el-button
-        v-if="!isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSaveAndCopy"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存并继续') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -1094,42 +1119,65 @@ for (let i = 0; i < columns.length; i++) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ n('保存') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noEdit) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSave"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存') }}</span>
       </el-button><#
       }
       #>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -1160,14 +1208,20 @@ import {<#
   updateById,<#
   }
   #>
+  getDefaultInput,
 } from "./Api";
 
-import type {<#
-  if (opts?.noAdd !== true || opts?.noEdit !== true) {
+import type {
+  <#=Table_Up#>Id,<#
+  if (mod === "base" && table === "usr") {
   #>
-  <#=inputName#>,<#
+  OrgId,<#
   }
-  #><#
+  #>
+} from "@/typings/ids";
+
+import type {
+  <#=inputName#>,<#
   const foreignTableArr = [];
   for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1205,12 +1259,6 @@ import type {<#
 }
 #>
 } from "#/types";<#
-if (opts?.noAdd === true && opts?.noEdit === true) {
-#>
-
-type <#=inputName#> = any;<#
-}
-#><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
@@ -1418,13 +1466,13 @@ if (hasInlineForeignTabs) {
 import type {<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
     if (!inlineForeignSchema) {
       throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
       process.exit(1);
     }
-    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1612,6 +1660,22 @@ import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=for
 #><#
 }
 #><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+#>
+
+import {
+  getDefaultInput as getDefaultInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -1632,7 +1696,7 @@ const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: string,
+      id: <#=Table_Up#>Id,
     },
   ],
 }>();
@@ -1645,6 +1709,7 @@ const {
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
@@ -1682,9 +1747,9 @@ let dialogModel: <#=inputName#> = $ref({<#
   #>
 } as <#=inputName#>);
 
-let ids = $ref<string[]>([ ]);
+let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<string[]>([ ]);
+let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -1863,7 +1928,7 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: string[];
+  changedIds: <#=Table_Up#>Id[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
@@ -1882,75 +1947,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: <#=inputName#> = {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_deleted") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (
-        [
-          "is_default",
-          "is_deleted",
-          "tenant_id",
-          "org_id",
-        ].includes(column_name)
-      ) {
-        continue;
-      }
-      if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-      let defaultValue = column.COLUMN_DEFAULT.toString();
-      if (selectList.length > 0) {
-        if (typeof selectList[0].value === "string") {
-          defaultValue = `"${ defaultValue }"`;
-        } else {
-          defaultValue = defaultValue;
-        }
-      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
-        defaultValue = defaultValue;
-      } else if (data_type === "datetime" || data_type === "date") {
-        let valueFormat = "YYYY-MM-DD HH:mm:ss";
-        if (data_type === "date") {
-          valueFormat = "YYYY-MM-DD";
-        }
-        if (defaultValue === "now") {
-          defaultValue = "new Date()";
-        } else if (defaultValue.startsWith("start_of_")) {
-          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
-        } else if (defaultValue.startsWith("end_of_")) {
-          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
-        } else {
-          defaultValue = `"${ defaultValue }"`;
-        }
-      } else {
-        defaultValue = `"${ defaultValue }"`;
-      }
-      if (data_type === "decimal") {
-        defaultValue = `"${ defaultValue }"`;
-      }
-    #>
-    <#=column_name#>: <#=defaultValue#>,<#
-    }
-    #>
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -1962,8 +1958,8 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: string;
-      ids?: string[];
+      id?: <#=Table_Up#>Id;
+      ids?: <#=Table_Up#>Id[];
       is_deleted?: number | null;
     };
     action: DialogAction;
@@ -1972,15 +1968,8 @@ async function showDialog(
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
-  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({<#
-    if (columnNum > 20 || hasInlineForeignTabs) {
-    #>
-    type: "default",<#
-    } else {
-    #>
-    type: "auto",<#
-    }
-    #>
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "<#=detailCustomDialogType#>",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
@@ -2081,6 +2070,29 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,<#
+        for (let i = 0; i < columns.length; i++) {
+          const column = columns[i];
+          if (column.ignoreCodegen) continue;
+          if (column.onlyCodegenDeno) continue;
+          if (column.noAdd && column.noEdit) continue;
+          if (column.isAtt) continue;
+          const column_name = column.COLUMN_NAME;
+          if (column_name === "id") continue;
+          if (column_name === "is_locked") continue;
+          if (column_name === "is_deleted") continue;
+          if (column_name === "version") continue;
+          if (column_name === "tenant_id") continue;
+          if (column_name === "org_id") continue;
+          let data_type = column.DATA_TYPE;
+          let column_type = column.COLUMN_TYPE;
+          let column_comment = column.COLUMN_COMMENT || "";
+          if (!column.readonly) {
+            continue;
+          }
+        #>
+        <#=column_name#>: undefined,<#
+        }
+        #><#
         if (hasDefault) {
         #>
         is_default: undefined,
@@ -2096,6 +2108,20 @@ async function showDialog(
         if (hasOrderBy) {
         #>
         order_by: order_by + 1,<#
+        }
+        #><#
+        for (const inlineForeignTab of inlineForeignTabs) {
+          const table = inlineForeignTab.table;
+          const mod = inlineForeignTab.mod;
+          const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+          const Table_Up = tableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+        #>
+        <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+          ...item,
+          id: undefined,
+        })) || [ ],<#
         }
         #>
       };
@@ -2365,19 +2391,117 @@ async function nextId() {
 if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 
+watch(
+  () => [
+    inited,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let column_type = column.COLUMN_TYPE;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      if (column.readonly) continue;
+      if (column.noEdit) continue;
+    #><#
+      if (foreignKey || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    dialogModel.<#=column_name#>,<#
+      }
+    #><#
+    }
+    #>
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let column_type = column.COLUMN_TYPE;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      if (column.readonly) continue;
+      if (column.noEdit) continue;
+    #><#
+      if ((foreignKey && !foreignKey.multiple) || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    if (!dialogModel.<#=column_name#>) {
+      dialogModel.<#=column_name#>_lbl = "";
+    }<#
+      } else if (foreignKey && foreignKey.multiple) {
+    #>
+    if (!dialogModel.<#=column_name#> || dialogModel.<#=column_name#>.length === 0) {
+      dialogModel.<#=column_name#>_lbl = [ ];
+    }<#
+      }
+    #><#
+    }
+    #>
+  },
+);
+
+/** 快捷键ctrl+shift+回车 */
+async function onSaveAndCopyKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (dialogAction === "add" || dialogAction === "copy") {
+    customDialogRef?.focus();
+    await onSaveAndCopy();
+  }
+}
+
+/** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  customDialogRef?.focus();
-  await onSave();
+  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
+    customDialogRef?.focus();
+    await onSave();
+  }
 }
 
-/** 确定 */
-async function onSave() {
+/** 保存并返回id */
+async function save() {
   if (isReadonly) {
     return;
   }
   if (!formRef) {
+    return;
+  }
+  if (dialogAction === "view") {
+    return;
+  }
+  if (dialogAction === "edit" && !permit("edit")) {
+    return;
+  }
+  if (dialogAction === "add" && !permit("add")) {
     return;
   }
   try {
@@ -2385,7 +2509,7 @@ async function onSave() {
   } catch (err) {
     return;
   }
-  let id: string | undefined = undefined;
+  let id: <#=Table_Up#>Id | undefined = undefined;
   let msg = "";<#
   if (opts.noAdd !== true) {
   #>
@@ -2394,14 +2518,14 @@ async function onSave() {
       ...dialogModel,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-        if (!inlineForeignSchema) {
-          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-          process.exit(1);
-        }
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
         const hasOrderBy = columns.some((item) => item.COLUMN_NAME === "order_by");
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
       #>
       <#=table#>_models: [
         ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
@@ -2424,7 +2548,7 @@ async function onSave() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("添加成功");
+    msg = await nsAsync("新增成功");
   }<#
   }
   #><#
@@ -2441,14 +2565,14 @@ async function onSave() {
       ...dialogModel,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-        if (!inlineForeignSchema) {
-          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-          process.exit(1);
-        }
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
         const hasOrderBy = columns.some((item) => item.COLUMN_NAME === "order_by");
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
+        if (!inlineForeignSchema) {
+          throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+          process.exit(1);
+        }
       #>
       <#=table#>_models: [
         ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
@@ -2482,16 +2606,116 @@ async function onSave() {
     if (!changedIds.includes(id)) {
       changedIds.push(id);
     }
-    ElMessage.success(msg);
-    const hasNext = await nextId();
-    if (hasNext) {
-      return;
-    }
-    onCloseResolve({
-      type: "ok",
-      changedIds,
-    });
   }
+  if (msg) {
+    ElMessage.success(msg);
+  }
+  return id;
+}
+
+/** 保存并继续 */
+async function onSaveAndCopy() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  dialogAction = "copy";
+  const [
+    data,<#
+    if (hasOrderBy) {
+    #>
+    order_by,<#
+    }
+    #>
+  ] = await Promise.all([
+    findOne({
+      id,
+      is_deleted,
+    }),<#
+    if (hasOrderBy) {
+    #>
+    findLastOrderBy(),<#
+    }
+    #>
+  ]);
+  if (!data) {
+    return;
+  }
+  dialogModel = {
+    ...data,
+    id: undefined,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      if (column.noAdd && column.noEdit) continue;
+      if (column.isAtt) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (!column.readonly) {
+        continue;
+      }
+    #>
+    <#=column_name#>: undefined,<#
+    }
+    #><#
+    if (hasDefault) {
+    #>
+    is_default: undefined,
+    is_default_lbl: undefined,<#
+    }
+    #><#
+    if (hasLocked) {
+    #>
+    is_locked: undefined,
+    is_locked_lbl: undefined,<#
+    }
+    #><#
+    if (hasOrderBy) {
+    #>
+    order_by: order_by + 1,<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+      ...item,
+      id: undefined,
+    })) || [ ],<#
+    }
+    #>
+  };
+  Object.assign(dialogModel, { is_deleted: undefined });
+}
+
+/** 保存 */
+async function onSave() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }<#
 }
 #><#
@@ -2499,7 +2723,7 @@ if (mod === "base" && table === "usr") {
 #>
 
 let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
-let old_default_org_id: string | null | undefined = undefined;
+let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
   let org_ids = dialogModel.org_ids || [ ];
@@ -2545,6 +2769,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const Table_Up = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
 #>
 
 // <#=inlineForeignTab.label#>
@@ -2562,11 +2787,12 @@ let <#=table#>Data = $computed(() => {
   return dialogModel.<#=table#>_models ?? [ ];
 });
 
-function <#=table#>Add() {
+async function <#=table#>Add() {
   if (!dialogModel.<#=table#>_models) {
     dialogModel.<#=table#>_models = [ ];
   }
-  dialogModel.<#=table#>_models.push({ });
+  const defaultModel = await getDefaultInput<#=Table_Up#>();
+  dialogModel.<#=table#>_models.push(defaultModel);
   <#=table#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 

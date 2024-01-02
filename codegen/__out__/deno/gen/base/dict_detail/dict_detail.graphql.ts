@@ -8,11 +8,11 @@ scalar DictDetailId
 
 type DictDetailModel {
   "ID"
-  id: String!
+  id: DictDetailId!
   "系统字典"
-  dict_id: String!
+  dict_id: DictId!
   "系统字典"
-  dict_id_lbl: DictId
+  dict_id_lbl: String
   "名称"
   lbl: String!
   "值"
@@ -30,17 +30,17 @@ type DictDetailModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: String!
+  create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: String!
+  update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -92,9 +92,9 @@ input DictDetailInput {
   ""
   id: DictDetailId
   "系统字典"
-  dict_id: String
+  dict_id: DictId
   "系统字典"
-  dict_id_lbl: DictId
+  dict_id_lbl: String
   "名称"
   lbl: String
   "值"
@@ -112,17 +112,17 @@ input DictDetailInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: String
+  create_usr_id: UsrId
   "创建人"
-  create_usr_id_lbl: UsrId
+  create_usr_id_lbl: String
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: String
+  update_usr_id: UsrId
   "更新人"
-  update_usr_id_lbl: UsrId
+  update_usr_id_lbl: String
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -132,7 +132,7 @@ input DictDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [String]
+  ids: [DictDetailId!]
   "ID"
   id: DictDetailId
   "系统字典"
@@ -165,34 +165,34 @@ input DictDetailSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找据数总数"
+  "根据条件查找系统字典明细总数"
   findCountDictDetail(search: DictDetailSearch): Int!
-  "根据搜索条件和分页查找数据"
+  "根据搜索条件和分页查找系统字典明细列表"
   findAllDictDetail(search: DictDetailSearch, page: PageInput, sort: [SortInput!]): [DictDetailModel!]!
-  "获取字段对应的名称"
+  "获取系统字典明细字段注释"
   getFieldCommentsDictDetail: DictDetailFieldComment!
-  "根据条件查找第一条数据"
+  "根据条件查找第一个系统字典明细"
   findOneDictDetail(search: DictDetailSearch, sort: [SortInput!]): DictDetailModel
-  "根据id查找一条数据"
-  findByIdDictDetail(id: String!): DictDetailModel
-  "查找order_by字段的最大值"
+  "根据 id 查找系统字典明细"
+  findByIdDictDetail(id: DictDetailId!): DictDetailModel
+  "查找 系统字典明细 order_by 字段的最大值"
   findLastOrderByDictDetail: Int!
 }
 type Mutation {
-  "创建一条数据"
-  createDictDetail(model: DictDetailInput!, unique_type: UniqueType): String!
-  "根据id修改一条数据"
-  updateByIdDictDetail(id: String!, model: DictDetailInput!): String!
-  "根据 ids 删除数据"
-  deleteByIdsDictDetail(ids: [String!]!): Int!
-  "根据 ids 启用或者禁用数据"
-  enableByIdsDictDetail(ids: [String!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁数据"
-  lockByIdsDictDetail(ids: [String!]!, is_locked: Int!): Int!
-  "根据 ids 还原数据"
-  revertByIdsDictDetail(ids: [String!]!): Int!
-  "根据 ids 彻底删除数据"
-  forceDeleteByIdsDictDetail(ids: [String!]!): Int!
+  "创建系统字典明细"
+  createDictDetail(model: DictDetailInput!, unique_type: UniqueType): DictDetailId!
+  "根据 id 修改系统字典明细"
+  updateByIdDictDetail(id: DictDetailId!, model: DictDetailInput!): DictDetailId!
+  "根据 ids 删除系统字典明细"
+  deleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
+  "根据 ids 启用或者禁用系统字典明细"
+  enableByIdsDictDetail(ids: [DictDetailId!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁系统字典明细"
+  lockByIdsDictDetail(ids: [DictDetailId!]!, is_locked: Int!): Int!
+  "根据 ids 还原系统字典明细"
+  revertByIdsDictDetail(ids: [DictDetailId!]!): Int!
+  "根据 ids 彻底删除系统字典明细"
+  forceDeleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
 }
 
 `);

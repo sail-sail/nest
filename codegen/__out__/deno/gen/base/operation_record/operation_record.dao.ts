@@ -60,10 +60,15 @@ import type {
 } from "/gen/types.ts";
 
 import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
+import type {
   OperationRecordInput,
   OperationRecordModel,
   OperationRecordSearch,
   OperationRecordFieldComment,
+  OperationRecordId,
 } from "./operation_record.model.ts";
 
 const route_path = "/base/operation_record";
@@ -231,7 +236,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找总数据数
+ * 根据条件查找操作记录总数
  * @param { OperationRecordSearch } search?
  * @return {Promise<number>}
  */
@@ -269,7 +274,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找操作记录列表
  * @param {OperationRecordSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -373,7 +378,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取操作记录字段注释
  */
 export async function getFieldComments(): Promise<OperationRecordFieldComment> {
   const n = initN(route_path);
@@ -400,7 +405,7 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
 }
 
 /**
- * 通过唯一约束获得数据列表
+ * 通过唯一约束获得操作记录列表
  * @param {OperationRecordInput} search0
  */
 export async function findByUnique(
@@ -438,11 +443,11 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查数据是否已经存在
+ * 通过唯一约束检查操作记录是否已经存在
  * @param {OperationRecordInput} input
  * @param {OperationRecordModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<string>}
+ * @return {Promise<OperationRecordId | undefined>}
  */
 export async function checkByUnique(
   input: OperationRecordInput,
@@ -450,14 +455,14 @@ export async function checkByUnique(
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<string | undefined> {
+): Promise<OperationRecordId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === UniqueType.Update) {
-      const result = await updateById(
+      const id: OperationRecordId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -467,7 +472,7 @@ export async function checkByUnique(
           ...options,
         },
       );
-      return result;
+      return id;
     }
     if (uniqueType === UniqueType.Ignore) {
       return;
@@ -477,7 +482,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个操作记录
  * @param {OperationRecordSearch} search?
  */
 export async function findOne(
@@ -496,15 +501,15 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找操作记录
+ * @param {OperationRecordId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: OperationRecordId | null,
   options?: {
   },
 ): Promise<OperationRecordModel | undefined> {
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return;
   }
   const model = await findOne({ id });
@@ -512,7 +517,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件判断操作记录是否存在
  * @param {OperationRecordSearch} search?
  */
 export async function exist(
@@ -526,16 +531,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断数据是否存在
- * @param {string} id
+ * 根据id判断操作记录是否存在
+ * @param {OperationRecordId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: OperationRecordId | null,
 ) {
   const table = "base_operation_record";
   const method = "existById";
   
-  if (isEmpty(id)) {
+  if (isEmpty(id as unknown as string)) {
     return false;
   }
   
@@ -563,7 +568,7 @@ export async function existById(
   return result;
 }
 
-/** 校验记录是否存在 */
+/** 校验操作记录是否存在 */
 export async function validateOption(
   model?: OperationRecordModel,
 ) {
@@ -574,7 +579,7 @@ export async function validateOption(
 }
 
 /**
- * 增加和修改时校验输入
+ * 操作记录增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -662,7 +667,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建操作记录
  * @param {OperationRecordInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -670,14 +675,14 @@ export async function validate(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string>} 
+ * @return {Promise<OperationRecordId>} 
  */
 export async function create(
   input: OperationRecordInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
+): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "create";
   
@@ -689,7 +694,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: string | undefined = undefined;
+    let id: OperationRecordId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -707,12 +712,12 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4();
+    input.id = shortUuidV4<OperationRecordId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
     }
-    error(`ID_COLLIDE: ${ table } ${ input.id }`);
+    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
   }
   
   const args = new QueryArgs();
@@ -781,7 +786,7 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -789,7 +794,7 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
@@ -829,16 +834,16 @@ export async function create(
 }
 
 /**
- * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
+ * 操作记录根据id修改租户id
+ * @param {OperationRecordId} id
+ * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: string,
-  tenant_id: string,
+  id: OperationRecordId,
+  tenant_id: TenantId,
   options?: {
   },
 ): Promise<number> {
@@ -866,8 +871,8 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改一行数据
- * @param {string} id
+ * 根据 id 修改操作记录
+ * @param {OperationRecordId} id
  * @param {OperationRecordInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
@@ -875,15 +880,15 @@ export async function updateTenantById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<string>}
+ * @return {Promise<OperationRecordId>}
  */
 export async function updateById(
-  id: string,
+  id: OperationRecordId,
   input: OperationRecordInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
-): Promise<string> {
+): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "updateById";
   
@@ -896,7 +901,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
+    await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
   await setIdByLbl(input);
@@ -977,7 +982,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id !== "-") {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
@@ -1002,12 +1007,12 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除操作记录
+ * @param {OperationRecordId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   options?: {
   },
 ): Promise<number> {
@@ -1020,7 +1025,7 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: OperationRecordId = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
       continue;
@@ -1044,12 +1049,12 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原操作记录
+ * @param {OperationRecordId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   options?: {
   },
 ): Promise<number> {
@@ -1062,7 +1067,7 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
+    const id: OperationRecordId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
@@ -1097,12 +1102,12 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除操作记录
+ * @param {OperationRecordId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OperationRecordId[],
   options?: {
   },
 ): Promise<number> {

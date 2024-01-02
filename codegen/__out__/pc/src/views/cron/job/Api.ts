@@ -3,20 +3,28 @@ import {
 } from "#/types";
 
 import type {
+  JobId,
+} from "@/typings/ids";
+
+import type {
   Query,
   Mutation,
   PageInput,
   JobSearch,
   JobInput,
+  JobModel,
 } from "#/types";
 
-import type {
-  UsrSearch,
-} from "#/types";
+async function setLblById(
+  model?: JobModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
 
 /**
- * 根据搜索条件查找数据
- * @export findAll
+ * 根据搜索条件查找任务列表
  * @param {JobSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -61,16 +69,16 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllJob;
-  for (let i = 0; i < res.length; i++) {
-    const item = res[i];
+  const models = data.findAllJob;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
   }
-  return res;
+  return models;
 }
 
 /**
- * 根据搜索条件查找第一条记录
- * @export findOne
+ * 根据条件查找第一个任务
  * @param {JobSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -113,14 +121,12 @@ export async function findOne(
     },
   }, opt);
   const model = data.findOneJob;
-  if (model) {
-  }
+  await setLblById(model);
   return model;
 }
 
 /**
- * 根据搜索条件查找数据总数
- * @export findCount
+ * 根据搜索条件查找任务总数
  * @param {JobSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -140,22 +146,21 @@ export async function findCount(
       search,
     },
   }, opt);
-  const res = data.findCountJob;
-  return res;
+  const count = data.findCountJob;
+  return count;
 }
 
 /**
- * 创建一条数据
- * @export create
+ * 创建任务
  * @param {JobInput} model
- * @param {UniqueType} uniqueType?
+ * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: JobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
-) {
+): Promise<JobId> {
   const data: {
     createJob: Mutation["createJob"];
   } = await mutation({
@@ -169,27 +174,26 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const res = data.createJob;
-  return res;
+  const id: JobId = data.createJob;
+  return id;
 }
 
 /**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
+ * 根据 id 修改任务
+ * @param {JobId} id
  * @param {JobInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
-  id: string,
+  id: JobId,
   model: JobInput,
   opt?: GqlOpt,
-) {
+): Promise<JobId> {
   const data: {
     updateByIdJob: Mutation["updateByIdJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: JobInput!) {
+      mutation($id: JobId!, $model: JobInput!) {
         updateByIdJob(id: $id, model: $model)
       }
     `,
@@ -198,25 +202,24 @@ export async function updateById(
       model,
     },
   }, opt);
-  const res = data.updateByIdJob;
-  return res;
+  const id2: JobId = data.updateByIdJob;
+  return id2;
 }
 
 /**
- * 通过ID查找一条数据
- * @export findById
- * @param {string} id
+ * 根据 id 查找任务
+ * @param {JobId} id
  * @param {GqlOpt} opt?
  */
 export async function findById(
-  id: string,
+  id: JobId,
   opt?: GqlOpt,
 ) {
   const data: {
     findByIdJob: Query["findByIdJob"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: String!) {
+      query($id: JobId!) {
         findByIdJob(id: $id) {
           id
           code
@@ -242,25 +245,25 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdJob;
-  return res;
+  const model = data.findByIdJob;
+  await setLblById(model);
+  return model;
 }
 
 /**
- * 根据 ids 删除数据
- * @export deleteByIds
- * @param {string[]} ids
+ * 根据 ids 删除任务
+ * @param {JobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: JobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     deleteByIdsJob: Mutation["deleteByIdsJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [JobId!]!) {
         deleteByIdsJob(ids: $ids)
       }
     `,
@@ -273,14 +276,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @export enableByIds
- * @param {string[]} ids
+ * 根据 ids 启用或禁用任务
+ * @param {JobId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
  */
 export async function enableByIds(
-  ids: string[],
+  ids: JobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -288,7 +290,7 @@ export async function enableByIds(
     enableByIdsJob: Mutation["enableByIdsJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_enabled: Int!) {
+      mutation($ids: [JobId!]!, $is_enabled: Int!) {
         enableByIdsJob(ids: $ids, is_enabled: $is_enabled)
       }
     `,
@@ -302,14 +304,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @export lockByIds
- * @param {string[]} ids
+ * 根据 ids 锁定或解锁任务
+ * @param {JobId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
-  ids: string[],
+  ids: JobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
@@ -317,7 +318,7 @@ export async function lockByIds(
     lockByIdsJob: Mutation["lockByIdsJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!, $is_locked: Int!) {
+      mutation($ids: [JobId!]!, $is_locked: Int!) {
         lockByIdsJob(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -331,20 +332,19 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 从回收站还原数据
- * @export revertByIds
- * @param {string[]} ids
+ * 根据 ids 还原任务
+ * @param {JobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function revertByIds(
-  ids: string[],
+  ids: JobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     revertByIdsJob: Mutation["revertByIdsJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [JobId!]!) {
         revertByIdsJob(ids: $ids)
       }
     `,
@@ -357,20 +357,19 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @export forceDeleteByIds
- * @param {string[]} ids
+ * 根据 ids 彻底删除任务
+ * @param {JobId[]} ids
  * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: JobId[],
   opt?: GqlOpt,
 ) {
   const data: {
     forceDeleteByIdsJob: Mutation["forceDeleteByIdsJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
+      mutation($ids: [JobId!]!) {
         forceDeleteByIdsJob(ids: $ids)
       }
     `,
@@ -514,7 +513,6 @@ export function useExportExcel(routePath: string) {
 /**
  * 批量导入
  * @param {JobInput[]} models
- * @export importModels
  */
 export async function importModels(
   models: JobInput[],
@@ -562,8 +560,7 @@ export async function importModels(
 }
 
 /**
- * 查找order_by字段的最大值
- * @export findLastOrderBy
+ * 查找 任务 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
@@ -580,4 +577,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByJob;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: JobInput = {
+    is_locked: 1,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

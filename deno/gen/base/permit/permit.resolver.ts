@@ -17,6 +17,7 @@ import type {
   PermitModel,
   PermitSearch,
   PermitFieldComment,
+  PermitId,
 } from "./permit.model.ts";
 
 import {
@@ -24,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找据数总数
+ * 根据条件查找按钮权限总数
  */
 export async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -39,7 +40,7 @@ export async function findCountPermit(
 }
 
 /**
- * 根据搜索条件和分页查找数据
+ * 根据搜索条件和分页查找按钮权限列表
  */
 export async function findAllPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -56,7 +57,7 @@ export async function findAllPermit(
 }
 
 /**
- * 获取字段对应的名称
+ * 获取按钮权限字段注释
  */
 export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
   const { getFieldComments } = await import("./permit.service.ts");
@@ -65,7 +66,7 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个按钮权限
  */
 export async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
@@ -81,10 +82,10 @@ export async function findOnePermit(
 }
 
 /**
- * 根据 id 查找一条数据
+ * 根据 id 查找按钮权限
  */
 export async function findByIdPermit(
-  id: string,
+  id: PermitId,
 ): Promise<PermitModel | undefined> {
   const { findById } = await import("./permit.service.ts");
   const res = await findById(id);
@@ -92,12 +93,12 @@ export async function findByIdPermit(
 }
 
 /**
- * 创建一条数据
+ * 创建按钮权限
  */
 export async function createPermit(
   input: PermitInput,
   unique_type?: UniqueType,
-): Promise<string> {
+): Promise<PermitId> {
   
   const {
     validate,
@@ -118,17 +119,17 @@ export async function createPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const res = await create(input, { uniqueType });
-  return res;
+  const id: PermitId = await create(input, { uniqueType });
+  return id;
 }
 
 /**
- * 根据id修改一条数据
+ * 根据 id 修改按钮权限
  */
 export async function updateByIdPermit(
-  id: string,
+  id: PermitId,
   input: PermitInput,
-): Promise<string> {
+): Promise<PermitId> {
   
   const {
     setIdByLbl,
@@ -145,15 +146,15 @@ export async function updateByIdPermit(
     "/base/permit",
     "edit",
   );
-  const res = await updateById(id, input);
-  return res;
+  const id2: PermitId = await updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 删除按钮权限
  */
 export async function deleteByIdsPermit(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   
   const {
@@ -173,10 +174,10 @@ export async function deleteByIdsPermit(
 }
 
 /**
- * 根据 ids 还原数据
+ * 根据 ids 还原按钮权限
  */
 export async function revertByIdsPermit(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   
   const {
@@ -196,10 +197,10 @@ export async function revertByIdsPermit(
 }
 
 /**
- * 根据 ids 彻底删除数据
+ * 根据 ids 彻底删除按钮权限
  */
 export async function forceDeleteByIdsPermit(
-  ids: string[],
+  ids: PermitId[],
 ): Promise<number> {
   const context = useContext();
   

@@ -2,6 +2,7 @@ import type {
   Query,
   Mutation,
   MutationLoginArgs,
+  GetLoginTenants,
 } from "#/types";
 
 /**
@@ -9,12 +10,12 @@ import type {
  * @export
  * @param {{ host: string }} variables
  * @param {GqlOpt} [opt]
- * @return {Promise<{ id: string, lbl: string }[]>}
+ * @return {Promise<GetLoginTenants[]>}
  */
 export async function getLoginTenants(
   variables: { domain: string },
   opt?: GqlOpt,
-): Promise<{ id: string, lbl: string }[]> {
+): Promise<GetLoginTenants[]> {
   const data: {
     getLoginTenants: Query["getLoginTenants"],
   } = await query({

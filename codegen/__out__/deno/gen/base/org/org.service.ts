@@ -13,12 +13,13 @@ import type {
   OrgModel,
   OrgSearch,
   OrgFieldComment,
+  OrgId,
 } from "./org.model.ts";
 
 import * as orgDao from "./org.dao.ts";
 
 /**
- * 根据条件查找总数
+ * 根据条件查找组织总数
  * @param {OrgSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -31,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据条件和分页查找数据
+ * 根据搜索条件和分页查找组织列表
  * @param {OrgSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -56,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一条数据
+ * 根据条件查找第一个组织
  * @param {OrgSearch} search? 搜索条件
  */
 export async function findOne(
@@ -69,18 +70,18 @@ export async function findOne(
 }
 
 /**
- * 根据id查找数据
- * @param {string} id
+ * 根据 id 查找组织
+ * @param {OrgId} id
  */
 export async function findById(
-  id?: string | null,
+  id?: OrgId | null,
 ): Promise<OrgModel | undefined> {
   const model = await orgDao.findById(id);
   return model;
 }
 
 /**
- * 根据搜索条件判断数据是否存在
+ * 根据搜索条件查找组织是否存在
  * @param {OrgSearch} search? 搜索条件
  */
 export async function exist(
@@ -92,18 +93,18 @@ export async function exist(
 }
 
 /**
- * 根据id查找数据是否存在
- * @param {string} id
+ * 根据 id 查找组织是否存在
+ * @param {OrgId} id
  */
 export async function existById(
-  id?: string | null,
+  id?: OrgId | null,
 ): Promise<boolean> {
   const data = await orgDao.existById(id);
   return data;
 }
 
 /**
- * 增加和修改时校验输入
+ * 增加和修改时校验组织
  * @param input 
  */
 export async function validate(
@@ -116,51 +117,51 @@ export async function validate(
 /**
  * 创建数据
  * @param {OrgInput} input
- * @return {Promise<string>} id
+ * @return {Promise<OrgId>} id
  */
 export async function create(
   input: OrgInput,
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<string> {
-  const data = await orgDao.create(input, options);
-  return data;
+): Promise<OrgId> {
+  const id: OrgId = await orgDao.create(input, options);
+  return id;
 }
 
 /**
- * 根据 id 修改数据
- * @param {string} id
+ * 根据 id 修改组织
+ * @param {OrgId} id
  * @param {OrgInput} input
- * @return {Promise<string>}
+ * @return {Promise<OrgId>}
  */
 export async function updateById(
-  id: string,
+  id: OrgId,
   input: OrgInput,
-): Promise<string> {
+): Promise<OrgId> {
   
   const is_locked = await orgDao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const data = await orgDao.updateById(id, input);
-  return data;
+  const id2: OrgId = await orgDao.updateById(id, input);
+  return id2;
 }
 
 /**
- * 根据 ids 删除数据
- * @param {string[]} ids
+ * 根据 ids 删除组织
+ * @param {OrgId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   
   {
-    const ids2: string[] = [ ];
+    const ids2: OrgId[] = [ ];
     for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+      const id: OrgId = ids[i];
       const is_locked = await orgDao.getIsLockedById(id);
       if (!is_locked) {
         ids2.push(id);
@@ -177,13 +178,13 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用数据
- * @param {string[]} ids
+ * 根据 ids 启用或者禁用组织
+ * @param {OrgId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function enableByIds(
-  ids: string[],
+  ids: OrgId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await orgDao.enableByIds(ids, is_enabled);
@@ -191,13 +192,13 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁数据
- * @param {string[]} ids
+ * 根据 ids 锁定或者解锁组织
+ * @param {OrgId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  ids: string[],
+  ids: OrgId[],
   is_locked: 0 | 1,
 ): Promise<number> {
   const data = await orgDao.lockByIds(ids, is_locked);
@@ -205,31 +206,31 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原数据
- * @param {string[]} ids
+ * 根据 ids 还原组织
+ * @param {OrgId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   const data = await orgDao.revertByIds(ids);
   return data;
 }
 
 /**
- * 根据 ids 彻底删除数据
- * @param {string[]} ids
+ * 根据 ids 彻底删除组织
+ * @param {OrgId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: string[],
+  ids: OrgId[],
 ): Promise<number> {
   const data = await orgDao.forceDeleteByIds(ids);
   return data;
 }
 
 /**
- * 获取字段对应的名称
+ * 获取组织字段注释
  */
 export async function getFieldComments(): Promise<OrgFieldComment> {
   const data = await orgDao.getFieldComments();
@@ -237,7 +238,7 @@ export async function getFieldComments(): Promise<OrgFieldComment> {
 }
 
 /**
- * 查找 order_by 字段的最大值
+ * 查找 组织 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
