@@ -2,11 +2,18 @@ import type {
   WxPayNoticeId,
 } from "@/typings/ids";
 
+import {
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
   PageInput,
   WxPayNoticeSearch,
+  WxPayNoticeInput,
   WxPayNoticeModel,
 } from "#/types";
 
@@ -413,4 +420,17 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: WxPayNoticeInput = {
+    trade_state: WxPayNoticeTradeState.NOTPAY,
+    trade_state_desc: 未支付,
+    total: 0,
+    payer_total: 0,
+    currency: WxPayNoticeCurrency.CNY,
+    payer_currency: WxPayNoticePayerCurrency.CNY,
+  };
+  return defaultInput;
 }

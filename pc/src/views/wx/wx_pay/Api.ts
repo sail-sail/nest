@@ -612,3 +612,13 @@ export async function findLastOrderBy(
   const res = data.findLastOrderByWxPay;
   return res;
 }
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: WxPayInput = {
+    is_locked: 1,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
+}
