@@ -426,7 +426,7 @@ export function useExportExcel(routePath: string) {
 export async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
     trade_state: WxPayNoticeTradeState.NOTPAY,
-    trade_state_desc: 未支付,
+    trade_state_desc: "未支付",
     total: 0,
     payer_total: 0,
     currency: WxPayNoticeCurrency.CNY,
