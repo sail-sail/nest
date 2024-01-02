@@ -184,7 +184,10 @@ import Decimal from "decimal.js-light";<#
 import type {
   Query,
   Mutation,
-  PageInput,
+  PageInput,<#
+  const findAllSearchArgs = [ ];
+  findAllSearchArgs.push(searchName);
+  #>
   <#=searchName#>,
   <#=inputName#>,
   <#=modelName#>,
@@ -219,11 +222,65 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   importForeignTables.push(Foreign_Table_Up);
+  if (findAllSearchArgs.includes(`${ Foreign_Table_Up }Search`)) {
+    continue;
+  }
+  findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
 #>
 
 import type {
   <#=Foreign_Table_Up#>Search,
 } from "#/types";<#
+}
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns;
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+        "org_id", "org_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || (column.noAdd && column.noEdit)
+    ) continue;
+    const foreignKey = column.foreignKey;
+    const data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let Foreign_Table_Up2 = Foreign_Table_Up;
+    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+    ) {
+      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+    }
+    if (findAllSearchArgs.includes(`${ Foreign_Table_Up2 }Search`)) {
+      continue;
+    }
+    findAllSearchArgs.push(`${ Foreign_Table_Up2 }Search`);
+#>
+
+import type {
+  <#=Foreign_Table_Up2#>Search,
+} from "#/types";<#
+  }
 }
 #><#
 const importForeignTablesTree = [ ];
@@ -2206,6 +2263,8 @@ export async function getDefaultInput() {
           defaultValue = "usrStore.tenant_id";
         } else if (defaultValue === "CURRENT_USERNAME") {
           defaultValue = "usrStore.username";
+        } else {
+          defaultValue = `"${ defaultValue }"`;
         }
       } else {
         defaultValue = `"${ defaultValue }"`;
