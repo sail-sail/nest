@@ -2254,22 +2254,7 @@ export async function getDefaultInput() {
         }
       } else if (data_type === "decimal") {
         defaultValue = `new Decimal(${ defaultValue })`;
-      } else if (data_type === "varchar" || data_type === "text") {
-        if (defaultValue === "CURRENT_USR_ID") {
-          defaultValue = "usrStore.usr_id";
-        } else if (defaultValue === "CURRENT_ORG_ID") {
-          defaultValue = "usrStore.loginInfo?.org_id";
-        } else if (defaultValue === "CURRENT_TENANT_ID") {
-          defaultValue = "usrStore.tenant_id";
-        } else if (defaultValue === "CURRENT_USERNAME") {
-          defaultValue = "usrStore.username";
-        } else {
-          defaultValue = `"${ defaultValue }"`;
-        }
-      } else {
-        defaultValue = `"${ defaultValue }"`;
-      }
-      if (column.dict || column.dictbiz) {
+      } else if (column.dict || column.dictbiz) {
         const columnDictModels = [
           ...dictModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;
@@ -2288,7 +2273,27 @@ export async function getDefaultInput() {
             return item.substring(0, 1).toUpperCase() + item.substring(1);
           }).join("");
           defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
+        } else {
+          if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+            defaultValue = `"${ defaultValue }"`;
+          } else {
+            defaultValue = defaultValue;
+          }
         }
+      } else if (data_type === "varchar" || data_type === "text") {
+        if (defaultValue === "CURRENT_USR_ID") {
+          defaultValue = "usrStore.usr_id";
+        } else if (defaultValue === "CURRENT_ORG_ID") {
+          defaultValue = "usrStore.loginInfo?.org_id";
+        } else if (defaultValue === "CURRENT_TENANT_ID") {
+          defaultValue = "usrStore.tenant_id";
+        } else if (defaultValue === "CURRENT_USERNAME") {
+          defaultValue = "usrStore.username";
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
+      } else {
+        defaultValue = `"${ defaultValue }"`;
       }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
