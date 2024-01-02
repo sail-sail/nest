@@ -8,6 +8,7 @@
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"
+  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -683,14 +684,22 @@ watch(
   },
 );
 
+/** 快捷键ctrl+shift+回车 */
+async function onSaveAndCopyKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (dialogAction === "add" || dialogAction === "copy") {
+    customDialogRef?.focus();
+    await onSaveAndCopy();
+  }
+}
+
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  customDialogRef?.focus();
-  if (dialogAction === "add" || dialogAction === "copy") {
-    await onSaveAndCopy();
-  } else if (dialogAction === "edit") {
+  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
+    customDialogRef?.focus();
     await onSave();
   }
 }
