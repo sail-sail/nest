@@ -817,3 +817,13 @@ export async function findLastOrderBy(
   const res = data.findLastOrderByUsr;
   return res;
 }
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: UsrInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
+}
