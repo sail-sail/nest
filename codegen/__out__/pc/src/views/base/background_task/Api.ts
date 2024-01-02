@@ -2,11 +2,17 @@ import type {
   BackgroundTaskId,
 } from "@/typings/ids";
 
+import {
+  BackgroundTaskState,
+  BackgroundTaskType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
   PageInput,
   BackgroundTaskSearch,
+  BackgroundTaskInput,
   BackgroundTaskModel,
 } from "#/types";
 
@@ -420,4 +426,13 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: BackgroundTaskInput = {
+    state: BackgroundTaskState.Running,
+    type: BackgroundTaskType.Text,
+  };
+  return defaultInput;
 }

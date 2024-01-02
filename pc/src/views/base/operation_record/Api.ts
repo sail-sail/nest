@@ -7,6 +7,7 @@ import type {
   Mutation,
   PageInput,
   OperationRecordSearch,
+  OperationRecordInput,
   OperationRecordModel,
 } from "#/types";
 
@@ -390,4 +391,11 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OperationRecordInput = {
+  };
+  return defaultInput;
 }
