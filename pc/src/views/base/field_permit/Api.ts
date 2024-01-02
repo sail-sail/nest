@@ -6,6 +6,10 @@ import type {
   FieldPermitId,
 } from "@/typings/ids";
 
+import {
+  FieldPermitType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -581,4 +585,12 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: FieldPermitInput = {
+    type: FieldPermitType.Editable,
+  };
+  return defaultInput;
 }

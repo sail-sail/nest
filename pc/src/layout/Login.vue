@@ -375,7 +375,7 @@ initFrame();
   color: #FFF;
   border: 0 !important;
 }
-.from_input.custom_select :deep(.el-select-v2__placeholder) {
+.from_input.custom_select_div :deep(.el-select-v2__placeholder) {
   padding-left: 22px;
 }
 </style>

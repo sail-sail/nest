@@ -70,6 +70,11 @@ if (!detailCustomDialogType) {
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"<#
+  if (opts.noAdd !== true) {
+  #>
+  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"<#
+  }
+  #><#
   if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
   @keydown.ctrl.enter="onSaveKeydown"
@@ -115,7 +120,8 @@ if (!detailCustomDialogType) {
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -1085,11 +1091,27 @@ if (!detailCustomDialogType) {
         </template>
         <span>{{ n('关闭') }}</span>
       </el-button><#
-      if (opts.noAdd !== true || opts.noEdit !== true) {
+      if (!opts.noAdd) {
       #>
       
       <el-button
-        v-if="!isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSaveAndCopy"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存并继续') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -1097,42 +1119,65 @@ if (!detailCustomDialogType) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ n('保存') }}</span>
+      </el-button><#
+      }
+      #><#
+      if (!opts.noEdit) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSave"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存') }}</span>
       </el-button><#
       }
       #>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -1163,6 +1208,7 @@ import {<#
   updateById,<#
   }
   #>
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -1174,12 +1220,8 @@ import type {
   #>
 } from "@/typings/ids";
 
-import type {<#
-  if (opts?.noAdd !== true || opts?.noEdit !== true) {
-  #>
+import type {
   <#=inputName#>,<#
-  }
-  #><#
   const foreignTableArr = [];
   for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1217,12 +1259,6 @@ import type {<#
 }
 #>
 } from "#/types";<#
-if (opts?.noAdd === true && opts?.noEdit === true) {
-#>
-
-type <#=inputName#> = any;<#
-}
-#><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
@@ -1624,6 +1660,22 @@ import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=for
 #><#
 }
 #><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+#>
+
+import {
+  getDefaultInput as getDefaultInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -1637,112 +1689,6 @@ let locale = $computed(() => {
     return "zh_TW";
   }
 });<#
-}
-#><#
-let hasDefaultValue = false;
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  if (column_name === "is_deleted") continue;
-  const data_type = column.DATA_TYPE;
-  const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
-  if (
-    [
-      "is_default",
-      "is_deleted",
-      "tenant_id",
-      "org_id",
-      "version",
-    ].includes(column_name)
-  ) {
-    continue;
-  }
-  if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-  if (!column.dict && !column.dictbiz) {
-    continue;
-  }
-  const columnDictModels = [
-    ...dictModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
-    }),
-    ...dictbizModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
-    }),
-  ];
-  if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
-    continue;
-  }
-  let defaultValue = column.COLUMN_DEFAULT.toString();
-  if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
-    continue;
-  }
-  hasDefaultValue = true;
-  break;
-}
-#><#
-if (hasDefaultValue) {
-#>
-
-import {<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "is_deleted") continue;
-    const data_type = column.DATA_TYPE;
-    const column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (
-      [
-        "is_default",
-        "is_deleted",
-        "tenant_id",
-        "org_id",
-        "version",
-      ].includes(column_name)
-    ) {
-      continue;
-    }
-    if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-    if (!column.dict && !column.dictbiz) {
-      continue;
-    }
-    const columnDictModels = [
-      ...dictModels.filter(function(item) {
-        return item.code === column.dict || item.code === column.dictbiz;
-      }),
-      ...dictbizModels.filter(function(item) {
-        return item.code === column.dict || item.code === column.dictbiz;
-      }),
-    ];
-    if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
-      continue;
-    }
-    let defaultValue = column.COLUMN_DEFAULT.toString();
-    if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
-      continue;
-    }
-    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
-    Column_Up = Column_Up.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-  #>
-  <#=Table_Up#><#=Column_Up#>,<#
-  }
-  #>
-} from "#/types";<#
 }
 #>
 
@@ -1763,6 +1709,7 @@ const {
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
@@ -2000,98 +1947,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: <#=inputName#> = {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_deleted") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (
-        [
-          "is_default",
-          "is_deleted",
-          "tenant_id",
-          "org_id",
-        ].includes(column_name)
-      ) {
-        continue;
-      }
-      if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-      let defaultValue = column.COLUMN_DEFAULT.toString();
-      if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
-        continue;
-      }
-      if (selectList.length > 0) {
-        if (typeof selectList[0].value === "string") {
-          defaultValue = `"${ defaultValue }"`;
-        } else {
-          defaultValue = defaultValue;
-        }
-      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
-        defaultValue = defaultValue;
-      } else if (data_type === "datetime" || data_type === "date") {
-        let valueFormat = "YYYY-MM-DD HH:mm:ss";
-        if (data_type === "date") {
-          valueFormat = "YYYY-MM-DD";
-        }
-        if (defaultValue === "now") {
-          defaultValue = "new Date()";
-        } else if (defaultValue.startsWith("start_of_")) {
-          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
-        } else if (defaultValue.startsWith("end_of_")) {
-          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
-        } else {
-          defaultValue = `"${ defaultValue }"`;
-        }
-      } else if (data_type === "decimal") {
-        defaultValue = `new Decimal(${ defaultValue })`;
-      } else {
-        defaultValue = `"${ defaultValue }"`;
-      }
-      if (column.dict || column.dictbiz) {
-        const columnDictModels = [
-          ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
-          }),
-          ...dictbizModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
-          }),
-        ];
-        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
-          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
-          Column_Up = Column_Up.split("_").map(function(item) {
-            return item.substring(0, 1).toUpperCase() + item.substring(1);
-          }).join("");
-          let defaultValue_Up = column.COLUMN_DEFAULT.toString();
-          defaultValue_Up = defaultValue_Up.split("_").map(function(item) {
-            return item.substring(0, 1).toUpperCase() + item.substring(1);
-          }).join("");
-          defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
-        }
-      }
-    #>
-    <#=column_name#>: <#=defaultValue#>,<#
-    }
-    #>
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -2253,6 +2108,20 @@ async function showDialog(
         if (hasOrderBy) {
         #>
         order_by: order_by + 1,<#
+        }
+        #><#
+        for (const inlineForeignTab of inlineForeignTabs) {
+          const table = inlineForeignTab.table;
+          const mod = inlineForeignTab.mod;
+          const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+          const Table_Up = tableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+        #>
+        <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+          ...item,
+          id: undefined,
+        })) || [ ],<#
         }
         #>
       };
@@ -2598,19 +2467,41 @@ watch(
   },
 );
 
+/** 快捷键ctrl+shift+回车 */
+async function onSaveAndCopyKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (dialogAction === "add" || dialogAction === "copy") {
+    customDialogRef?.focus();
+    await onSaveAndCopy();
+  }
+}
+
+/** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  customDialogRef?.focus();
-  await onSave();
+  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
+    customDialogRef?.focus();
+    await onSave();
+  }
 }
 
-/** 确定 */
-async function onSave() {
+/** 保存并返回id */
+async function save() {
   if (isReadonly) {
     return;
   }
   if (!formRef) {
+    return;
+  }
+  if (dialogAction === "view") {
+    return;
+  }
+  if (dialogAction === "edit" && !permit("edit")) {
+    return;
+  }
+  if (dialogAction === "add" && !permit("add")) {
     return;
   }
   try {
@@ -2657,7 +2548,7 @@ async function onSave() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("添加成功");
+    msg = await nsAsync("新增成功");
   }<#
   }
   #><#
@@ -2715,16 +2606,116 @@ async function onSave() {
     if (!changedIds.includes(id)) {
       changedIds.push(id);
     }
-    ElMessage.success(msg);
-    const hasNext = await nextId();
-    if (hasNext) {
-      return;
-    }
-    onCloseResolve({
-      type: "ok",
-      changedIds,
-    });
   }
+  if (msg) {
+    ElMessage.success(msg);
+  }
+  return id;
+}
+
+/** 保存并继续 */
+async function onSaveAndCopy() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  dialogAction = "copy";
+  const [
+    data,<#
+    if (hasOrderBy) {
+    #>
+    order_by,<#
+    }
+    #>
+  ] = await Promise.all([
+    findOne({
+      id,
+      is_deleted,
+    }),<#
+    if (hasOrderBy) {
+    #>
+    findLastOrderBy(),<#
+    }
+    #>
+  ]);
+  if (!data) {
+    return;
+  }
+  dialogModel = {
+    ...data,
+    id: undefined,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      if (column.noAdd && column.noEdit) continue;
+      if (column.isAtt) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (!column.readonly) {
+        continue;
+      }
+    #>
+    <#=column_name#>: undefined,<#
+    }
+    #><#
+    if (hasDefault) {
+    #>
+    is_default: undefined,
+    is_default_lbl: undefined,<#
+    }
+    #><#
+    if (hasLocked) {
+    #>
+    is_locked: undefined,
+    is_locked_lbl: undefined,<#
+    }
+    #><#
+    if (hasOrderBy) {
+    #>
+    order_by: order_by + 1,<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+      ...item,
+      id: undefined,
+    })) || [ ],<#
+    }
+    #>
+  };
+  Object.assign(dialogModel, { is_deleted: undefined });
+}
+
+/** 保存 */
+async function onSave() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }<#
 }
 #><#
@@ -2778,6 +2769,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const Table_Up = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
 #>
 
 // <#=inlineForeignTab.label#>
@@ -2795,11 +2787,12 @@ let <#=table#>Data = $computed(() => {
   return dialogModel.<#=table#>_models ?? [ ];
 });
 
-function <#=table#>Add() {
+async function <#=table#>Add() {
   if (!dialogModel.<#=table#>_models) {
     dialogModel.<#=table#>_models = [ ];
   }
-  dialogModel.<#=table#>_models.push({ });
+  const defaultModel = await getDefaultInput<#=Table_Up#>();
+  dialogModel.<#=table#>_models.push(defaultModel);
   <#=table#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 

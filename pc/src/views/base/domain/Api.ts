@@ -613,3 +613,14 @@ export async function findLastOrderBy(
   const res = data.findLastOrderByDomain;
   return res;
 }
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DomainInput = {
+    protocol: https,
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
+}

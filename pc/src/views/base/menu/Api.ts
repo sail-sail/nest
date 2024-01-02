@@ -6,6 +6,10 @@ import type {
   MenuId,
 } from "@/typings/ids";
 
+import {
+  MenuType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -706,4 +710,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByMenu;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: MenuInput = {
+    type: MenuType.Pc,
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }
