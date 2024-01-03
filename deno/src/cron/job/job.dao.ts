@@ -12,11 +12,23 @@ import {
 
 import dayjs from "dayjs";
 
+import type {
+  JobId,
+} from "/gen/cron/job/job.model.ts";
+
+import type {
+  CronJobId,
+} from "/gen/cron/cron_job/cron_job.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
 export async function runJob(
-  job_id: string,
-  cron_job_id: string,
+  job_id: JobId,
+  cron_job_id: CronJobId,
   cron: string,
-  tenant_id: string,
+  tenant_id: TenantId,
 ) {
   const begin_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
   const id = await createCronJobLog({

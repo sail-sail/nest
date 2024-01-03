@@ -8,7 +8,7 @@ type Mutation {
   "手动执行定时任务"
   runCronJob(
     "定时任务ID"
-    id: String!,
+    id: CronJobId!,
   ): String!
 }
   
