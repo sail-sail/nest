@@ -24,6 +24,10 @@ import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
 
+import {
+  CronJobLogExecState,
+} from "/gen/types.ts";
+
 export async function runJob(
   job_id: JobId,
   cron_job_id: CronJobId,
@@ -55,7 +59,7 @@ export async function runJob(
     await updateByIdCronJobLog(
       id,
       {
-        exec_state: "success",
+        exec_state: CronJobLogExecState.Success,
         exec_result,
         end_time,
       },
@@ -67,7 +71,7 @@ export async function runJob(
     await updateByIdCronJobLog(
       id,
       {
-        exec_state: "fail",
+        exec_state: CronJobLogExecState.Fail,
         exec_result,
         end_time,
       },
