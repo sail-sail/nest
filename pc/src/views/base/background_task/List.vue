@@ -932,9 +932,6 @@ async function dataGrid(
 
 function getDataSearch() {
   const is_deleted = search.is_deleted;
-  if (showBuildIn) {
-    Object.assign(search, builtInSearch);
-  }
   const search2 = {
     ...search,
     idsChecked: undefined,
@@ -1230,11 +1227,14 @@ async function initFrame() {
 }
 
 watch(
-  () => builtInSearch,
+  () => [ builtInSearch, showBuildIn ],
   async function() {
     search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search)) {
       return;
+    }
+    if (showBuildIn) {
+      Object.assign(search, builtInSearch);
     }
     await dataGrid(true);
   },

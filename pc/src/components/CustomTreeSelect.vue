@@ -20,7 +20,7 @@
   :loading="!inited"
   v-model="modelValue"
   @keyup.enter.stop
-  @clear="onClear"
+  @clear.stop="onClear"
   @change="onChange"
   @check="onCheck"
   :clearable="!props.disabled"
@@ -176,8 +176,16 @@ const modelLabels = $computed(() => {
 });
 
 function onClear() {
-  modelValue = "";
-  emit("change", undefined);
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
   emit("clear");
 }
 
