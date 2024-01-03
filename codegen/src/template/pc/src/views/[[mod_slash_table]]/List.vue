@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -385,7 +386,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           <ElIconRemove />
         </el-icon>
       </el-form-item><#
-      if (opts.noDelete !== true && opts.noRevert !== true) {
+      if ((opts.noDelete !== true && opts.noRevert !== true) || hasIsDeleted) {
       #>
       
       <el-form-item
@@ -1688,8 +1689,12 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 搜索 */
 function initSearch() {
-  return {
+  return {<#
+    if (hasIsDeleted) {
+    #>
     is_deleted: 0,<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1764,8 +1769,12 @@ async function onIdsChecked() {
   await dataGrid(true);
 }
 
-const props = defineProps<{
-  is_deleted?: string;
+const props = defineProps<{<#
+  if (hasIsDeleted) {
+  #>
+  is_deleted?: string;<#
+  }
+  #>
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
@@ -1887,8 +1896,12 @@ const props = defineProps<{
   #>
 }>();
 
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
+const builtInSearchType: { [key: string]: string } = {<#
+  if (hasIsDeleted) {
+  #>
+  is_deleted: "0|1",<#
+  }
+  #>
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
@@ -2330,8 +2343,12 @@ async function dataGrid(
   }
 }
 
-function getDataSearch() {
-  const is_deleted = search.is_deleted;
+function getDataSearch() {<#
+  if (hasIsDeleted) {
+  #>
+  const is_deleted = search.is_deleted;<#
+  }
+  #>
   if (showBuildIn) {
     Object.assign(search, builtInSearch);
   }
@@ -2341,8 +2358,12 @@ function getDataSearch() {
   };
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
+  }<#
+  if (hasIsDeleted) {
+  #>
+  search2.is_deleted = is_deleted;<#
   }
-  search2.is_deleted = is_deleted;
+  #>
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -2983,8 +3004,12 @@ async function openView() {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
   }
-  const search = getDataSearch();
-  const is_deleted = search.is_deleted;
+  const search = getDataSearch();<#
+  if (hasIsDeleted) {
+  #>
+  const is_deleted = search.is_deleted;<#
+  }
+  #>
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -2994,8 +3019,12 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
-      is_deleted,
+      ids: selectedIds,<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
     },
   });
   tableFocus();
@@ -3177,8 +3206,12 @@ async function onRevertByIds() {
     return;
   }
   const num = await revertByIds(selectedIds);
-  if (num) {
-    search.is_deleted = 0;
+  if (num) {<#
+    if (hasIsDeleted) {
+    #>
+    search.is_deleted = 0;<#
+    }
+    #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
@@ -3217,8 +3250,12 @@ async function openForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await foreignTabsRef.showDialog({
     title,
     model: {
-      id,
-      is_deleted: search.is_deleted,
+      id,<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: search.is_deleted,<#
+      }
+      #>
     },
   });
   tableFocus();
@@ -3295,8 +3332,12 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async function() {
-    search.is_deleted = builtInSearch.is_deleted;
+  async function() {<#
+    if (hasIsDeleted) {
+    #>
+    search.is_deleted = builtInSearch.is_deleted;<#
+    }
+    #>
     if (deepCompare(builtInSearch, search)) {
       return;
     }
@@ -3401,8 +3442,12 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: 
     title,
     isLocked: $$(isLocked),
     model: {
-      id,
-      is_deleted: search.is_deleted,
+      id,<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: search.is_deleted,<#
+      }
+      #>
     },
   });
 }<#

@@ -87,6 +87,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     table_comment,
     defaultSort,
     hasTenant_id,
+    hasCreateUsrId,
+    hasCreateTime,
     cache,
     log,
     list_page,
