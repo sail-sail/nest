@@ -20,7 +20,7 @@
   :loading="!inited"
   v-model="modelValue"
   @keyup.enter.stop
-  @clear.stop="onClear"
+  @clear="onClear"
   @change="onChange"
   @check="onCheck"
   :clearable="!props.disabled"
