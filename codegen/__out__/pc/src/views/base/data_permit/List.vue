@@ -688,14 +688,18 @@ async function onRefresh() {
   await dataGrid(true);
 }
 
+let isSearchReset = $ref(false);
+
 /** 重置搜索 */
 async function onSearchReset() {
+  isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
   await nextTick();
   await dataGrid(true);
+  isSearchReset = false;
 }
 
 /** 清空搜索框事件 */
@@ -1514,6 +1518,9 @@ async function initFrame() {
 watch(
   () => [ builtInSearch, showBuildIn ],
   async function() {
+    if (isSearchReset) {
+      return;
+    }
     search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search)) {
       return;
