@@ -13,17 +13,29 @@ import {
   runJob,
 } from "../job/job.dao.ts";
 
+import type {
+  JobId,
+} from "/gen/cron/job/job.model.ts";
+
+import type {
+  CronJobId,
+} from "/gen/cron/cron_job/cron_job.model.ts";
+
+import type {
+  TenantId,
+} from "/gen/base/tenant/tenant.model.ts";
+
 const cronJobs: {
-  id: string;
+  id: CronJobId;
   cron: string;
   job: Cron;
 }[] = [ ];
 
 function newCron(
-  job_id: string,
-  cron_job_id: string,
+  job_id: JobId,
+  cron_job_id: CronJobId,
   cron: string,
-  tenant_id: string,
+  tenant_id: TenantId,
 ) {
   const job = new Cron(cron, async () => {
     const context = newContext();
