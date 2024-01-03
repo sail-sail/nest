@@ -717,7 +717,7 @@ import ForeignTabs from "./ForeignTabs.vue";
 
 import {
   runCronJob,
-} from "./Api";
+} from "./Api2";
 
 defineOptions({
   name: "定时任务",
@@ -1716,7 +1716,7 @@ async function onRevertByIds() {
 
 /** 手动执行定时任务 */
 async function onRunCronJob(
-  id: string,
+  id: CronJobId,
   lbl: string,
 ) {
   try {
