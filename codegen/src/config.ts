@@ -688,6 +688,9 @@ export interface TablesConfigItem {
      */
     detailCustomDialogType?: "auto" | "medium" | "large" | "default";
     
+    /** 是否生成 SelectInput 跟 SelectList 界面 */
+    hasSelectInput?: boolean;
+    
   },
   columns?: TableCloumn[];
   records?: any[];

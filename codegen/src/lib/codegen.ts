@@ -58,7 +58,14 @@ function mysqlKeyEscape(key: string) {
  * 检查此表是否有selectInput
  * @param table 
  */
-function hasSelectInputFn(table_name: string) {
+function hasSelectInputFn(
+  mod: string,
+  table_name: string,
+) {
+  let hasSelectInput = tables[mod + "_" + table_name].opts?.hasSelectInput;
+  if (hasSelectInput != null) {
+    return hasSelectInput;
+  }
   const keys = Object.keys(tables);
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
@@ -136,7 +143,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const fileTng = `${rootPh}${dir}`;
     const stats = await stat(fileTng);
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
-    const hasSelectInput = hasSelectInputFn(table);
+    const hasSelectInput = hasSelectInputFn(mod, table);
     if (stats.isFile()) {
       if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
         return;
