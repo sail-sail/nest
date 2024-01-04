@@ -89,3 +89,26 @@ export async function findByIdWxPayNotice(
   const res = await findById(id);
   return res;
 }
+
+/**
+ * 根据 ids 还原微信支付通知
+ */
+export async function revertByIdsWxPayNotice(
+  ids: WxPayNoticeId[],
+): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./wx_pay_notice.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wx/wx_pay_notice",
+    "delete",
+  );
+  const res = await revertByIds(ids);
+  return res;
+}
