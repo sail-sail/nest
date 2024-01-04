@@ -199,13 +199,6 @@
                 un-whitespace-nowrap
               >
                 
-                <el-dropdown-item @click="goIndex">
-                  <ElIcon>
-                    <ElIconHomeFilled />
-                  </ElIcon>
-                  <span>{{ ns('打开首页') }}</span>
-                </el-dropdown-item>
-                
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
                     <ElIcon>
@@ -237,6 +230,15 @@
                 
                 <el-dropdown-item
                   divided
+                  @click="goIndex"
+                >
+                  <ElIcon>
+                    <ElIconHomeFilled />
+                  </ElIcon>
+                  <span>{{ ns('打开首页') }}</span>
+                </el-dropdown-item>
+                
+                <el-dropdown-item
                   @click="onChangePassword"
                 >
                   <ElIcon>

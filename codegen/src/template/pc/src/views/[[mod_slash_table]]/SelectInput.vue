@@ -231,7 +231,7 @@ async function refreshInputValue() {
     return;
   }
   const models = await getModelsByIds(modelValueArr);
-  inputValue = models.map((item) => item?.lbl || "").join(", ");
+  inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
 }
 
 function onClear() {

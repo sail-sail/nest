@@ -23,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
         name: "首页",
         component: () => import("@/views/Index.vue"),
         meta: {
-          closeable: false,
+          closeable: true,
           icon: "iconfont-home-fill",
         },
       },

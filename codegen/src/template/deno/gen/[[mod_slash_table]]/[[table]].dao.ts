@@ -9,8 +9,7 @@ const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
-const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
-const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
@@ -602,8 +601,12 @@ async function getWhereQuery(
   const hasTenantPermit = dataPermitModels.some((item) => item.type === "tenant");<#
   }
   #>
-  let whereQuery = "";
+  let whereQuery = "";<#
+  if (hasIsDeleted) {
+  #>
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasUsrPermit) {
@@ -876,8 +879,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;<#
@@ -945,8 +955,15 @@ export async function findAll(
       #>
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;<#
   if (defaultSort) {
@@ -2343,8 +2360,12 @@ export async function existById(
     from
       <#=mod#>_<#=table#> t
     where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
+      t.id = ${ args.push(id) }<#
+      if (hasIsDeleted) {
+      #>
+      and t.is_deleted = 0<#
+      }
+      #>
     limit 1
   `;<#
   if (cache) {
@@ -2686,8 +2707,12 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into <#=mod#>_<#=table#>(
-      id
-      ,create_time
+      id<#
+      if (hasCreateTime) {
+      #>
+      ,create_time<#
+      }
+      #>
       ,update_time
   `;<#
   if (hasTenant_id) {
@@ -2813,7 +2838,11 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;<#
+  sql += `) values(${ args.push(input.id) },<#
+  if (hasCreateTime) {
+  #>${ args.push(reqDate()) },<#
+  }
+  #>${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
   #>
   if (input.tenant_id != null) {
@@ -3622,7 +3651,9 @@ export async function deleteByIds(
     if (!isExist) {
       continue;
     }
-    const args = new QueryArgs();
+    const args = new QueryArgs();<#
+    if (hasIsDeleted) {
+    #>
     const sql = `
       update
         <#=mod#>_<#=table#>
@@ -3632,7 +3663,18 @@ export async function deleteByIds(
       where
         id = ${ args.push(id) }
       limit 1
-    `;
+    `;<#
+    } else {
+    #>
+    const sql = `
+      delete from
+        <#=mod#>_<#=table#>
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;<#
+    }
+    #>
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
@@ -3908,6 +3950,8 @@ export async function lockByIds(
   return num;
 }<#
 }
+#><#
+if (hasIsDeleted) {
 #>
 
 /**
@@ -3998,7 +4042,11 @@ export async function revertByIds(
   #>
   
   return num;
+}<#
 }
+#><#
+if (hasIsDeleted) {
+#>
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
@@ -4079,6 +4127,8 @@ export async function forceDeleteByIds(
   
   return num;
 }<#
+}
+#><#
 if (hasOrderBy) {
 #>
   
