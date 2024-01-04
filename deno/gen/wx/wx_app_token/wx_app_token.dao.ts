@@ -167,8 +167,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -206,8 +213,15 @@ export async function findAll(
       ,wx_app_id_lbl.lbl wx_app_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -223,6 +237,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
