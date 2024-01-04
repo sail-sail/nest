@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -90,7 +91,9 @@ if (!detailCustomDialogType) {
         class="reset_but"
         @click="onReset"
       ></ElIconRefresh>
-    </div>
+    </div><#
+    if (hasIsDeleted) {
+    #>
     <template v-if="!isLocked && !is_deleted">
       <div
         v-if="!isReadonly"
@@ -111,7 +114,9 @@ if (!detailCustomDialogType) {
           @click="isReadonly = false"
         ></ElIconLock>
       </div>
-    </template>
+    </template><#
+    }
+    #>
   </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -2057,8 +2062,12 @@ async function showDialog(
       #>
     ] = await Promise.all([
       findOne({
-        id: model.id,
-        is_deleted,
+        id: model.id,<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
       }),<#
       if (hasOrderBy) {
       #>
@@ -2281,8 +2290,12 @@ async function onRefresh() {
     return;
   }
   const data = await findOne({
-    id: dialogModel.id,
-    is_deleted,
+    id: dialogModel.id,<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted,<#
+    }
+    #>
   });
   if (data) {
     dialogModel = {
