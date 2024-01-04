@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
@@ -465,8 +466,12 @@ export async function findAll(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
             const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -603,8 +608,12 @@ export async function findOne(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
             const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);

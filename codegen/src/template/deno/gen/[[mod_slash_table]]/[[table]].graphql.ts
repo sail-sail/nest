@@ -7,6 +7,7 @@ const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -228,9 +229,13 @@ type <#=modelName#> {<#
   <#=column_name#>_lbl: <#=_data_type#><#
     }
   }
+  #><#
+  if (hasIsDeleted) {
   #>
   "是否已删除"
   is_deleted: Int!<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     const table = inlineForeignTab.table;
@@ -493,9 +498,13 @@ input <#=inputName#> {<#
   }
   #>
 }
-input <#=searchName#> {
+input <#=searchName#> {<#
+  if (hasIsDeleted) {
+  #>
   "是否已删除"
-  is_deleted: Int
+  is_deleted: Int<#
+  }
+  #>
   "ID列表"
   ids: [<#=Table_Up#>Id!]<#
   for (let i = 0; i < columns.length; i++) {
@@ -714,10 +723,14 @@ type Mutation {<#
   lockByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
   }
   #><#
-  if (opts.noDelete !== true) {
+  if (opts.noRevert !== true && hasIsDeleted) {
   #>
   "根据 ids 还原<#=table_comment#>"
-  revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!
+  revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
+  }
+  #><#
+  if (opts.noDelete !== true && hasIsDeleted) {
+  #>
   "根据 ids 彻底删除<#=table_comment#>"
   forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
