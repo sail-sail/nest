@@ -176,8 +176,16 @@ const modelLabels = $computed(() => {
 });
 
 function onClear() {
-  modelValue = "";
-  emit("change", undefined);
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
   emit("clear");
 }
 

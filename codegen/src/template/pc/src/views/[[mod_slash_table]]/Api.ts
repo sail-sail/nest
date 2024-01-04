@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
@@ -465,8 +466,12 @@ export async function findAll(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
             const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -603,8 +608,12 @@ export async function findOne(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
             const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -2254,22 +2263,7 @@ export async function getDefaultInput() {
         }
       } else if (data_type === "decimal") {
         defaultValue = `new Decimal(${ defaultValue })`;
-      } else if (data_type === "varchar" || data_type === "text") {
-        if (defaultValue === "CURRENT_USR_ID") {
-          defaultValue = "usrStore.usr_id";
-        } else if (defaultValue === "CURRENT_ORG_ID") {
-          defaultValue = "usrStore.loginInfo?.org_id";
-        } else if (defaultValue === "CURRENT_TENANT_ID") {
-          defaultValue = "usrStore.tenant_id";
-        } else if (defaultValue === "CURRENT_USERNAME") {
-          defaultValue = "usrStore.username";
-        } else {
-          defaultValue = `"${ defaultValue }"`;
-        }
-      } else {
-        defaultValue = `"${ defaultValue }"`;
-      }
-      if (column.dict || column.dictbiz) {
+      } else if (column.dict || column.dictbiz) {
         const columnDictModels = [
           ...dictModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;
@@ -2288,7 +2282,27 @@ export async function getDefaultInput() {
             return item.substring(0, 1).toUpperCase() + item.substring(1);
           }).join("");
           defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
+        } else {
+          if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+            defaultValue = `"${ defaultValue }"`;
+          } else {
+            defaultValue = defaultValue;
+          }
         }
+      } else if (data_type === "varchar" || data_type === "text") {
+        if (defaultValue === "CURRENT_USR_ID") {
+          defaultValue = "usrStore.usr_id";
+        } else if (defaultValue === "CURRENT_ORG_ID") {
+          defaultValue = "usrStore.loginInfo?.org_id";
+        } else if (defaultValue === "CURRENT_TENANT_ID") {
+          defaultValue = "usrStore.tenant_id";
+        } else if (defaultValue === "CURRENT_USERNAME") {
+          defaultValue = "usrStore.username";
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
+      } else {
+        defaultValue = `"${ defaultValue }"`;
       }
     #>
     <#=column_name#>: <#=defaultValue#>,<#
