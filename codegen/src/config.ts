@@ -606,6 +606,12 @@ export interface TablesConfigItem {
      */
     hasTenant_id?: boolean;
     
+    /** 是否有 create_usr_id 字段 */
+    hasCreateUsrId?: boolean;
+    
+    /** 是否有 create_time 字段 */
+    hasCreateTime?: boolean;
+    
     /**
      * 默认排序字段
      */
@@ -682,8 +688,12 @@ export interface TablesConfigItem {
      */
     detailCustomDialogType?: "auto" | "medium" | "large" | "default";
     
+    /** 是否生成 SelectInput 跟 SelectList 界面 */
+    hasSelectInput?: boolean;
+    
   },
   columns?: TableCloumn[];
+  records?: any[];
 }
 
 export interface TablesConfig {
