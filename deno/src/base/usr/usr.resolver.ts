@@ -27,7 +27,8 @@ export async function login(
   
   context.notVerifyToken = true;
   context.is_tran = true;
-  return await login(input);
+  const ip = context.ip;
+  return await login(ip, input);
 }
 
 export async function getLoginInfo() {

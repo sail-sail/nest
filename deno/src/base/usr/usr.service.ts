@@ -17,6 +17,11 @@ import * as usrDaoGen from "/gen/base/usr/usr.dao.ts";
 
 import * as orgDaoGen from "/gen/base/org/org.dao.ts";
 
+import {
+  create as createLoginLog,
+  findCount as findCountLoginLog,
+} from "/gen/base/login_log/login_log.dao.ts";
+
 import type {
   MutationLoginArgs,
   ChangePasswordInput,
@@ -39,6 +44,12 @@ import type {
   TenantId,
 } from "/gen/base/tenant/tenant.model.ts";
 
+import dayjs from "dayjs";
+
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
+
 /**
  * 登录获得 authorization
  * @param {MutationLoginArgs["input"]} input 登录信息
@@ -49,6 +60,7 @@ import type {
  *  lang 语言编码
  */
 export async function login(
+  ip: string,
   input: MutationLoginArgs["input"],
 ): Promise<LoginModel> {
   const username = input.username;
@@ -62,6 +74,29 @@ export async function login(
   if (isEmpty(tenant_id)) {
     throw await ns("请选择租户");
   }
+  // 最近10分钟内密码错误6次, 此用户名锁定10分钟
+  const now = dayjs();
+  const begin = now.subtract(10, "minute").format("YYYY-MM-DD HH:mm:ss");
+  const end = now.format("YYYY-MM-DD HH:mm:ss");
+  const loginLog1Count = await findCountLoginLog({
+    username,
+    ip,
+    is_succ: [ 1 ],
+    create_time: [ begin, end ],
+    tenant_id,
+  });
+  if (loginLog1Count === 0) {
+    const loginLog0Count = await findCountLoginLog({
+      username,
+      ip,
+      is_succ: [ 0 ],
+      create_time: [ begin, end ],
+      tenant_id,
+    });
+    if (loginLog0Count >= 6) {
+      throw await ns(`因联系登录失败次数过度, {0} 已被锁定10分钟, 请稍后再试`, username);
+    }
+  }
   const password2 = await getPassword(password);
   const model = await findLoginUsr(
     username,
@@ -69,8 +104,20 @@ export async function login(
     tenant_id,
   );
   if (!model || !model.id) {
-    throw await ns("用户名或密码错误");
+    await createLoginLog({
+      username,
+      ip,
+      is_succ: 0,
+      tenant_id,
+    });
+    throw new ServiceException(await ns("用户名或密码错误"), "username_or_password_error", false);
   }
+  await createLoginLog({
+    username,
+    ip,
+    is_succ: 1,
+    tenant_id,
+  });
   const usr_id = model.id;
   if (org_id === null) {
     org_id = undefined;
