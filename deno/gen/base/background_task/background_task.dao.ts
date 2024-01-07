@@ -273,7 +273,7 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args);
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
