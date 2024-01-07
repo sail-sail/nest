@@ -54,7 +54,6 @@ import {
 import type {
   PageInput,
   SortInput,
-  MenuType,
 } from "/gen/types.ts";
 
 import type {
@@ -86,12 +85,6 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.type && !Array.isArray(search?.type)) {
-    search.type = [ search.type ];
-  }
-  if (search?.type && search?.type?.length > 0) {
-    whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
   if (search?.parent_id && !Array.isArray(search?.parent_id)) {
     search.parent_id = [ search.parent_id ];
@@ -359,27 +352,15 @@ export async function findAll(
   );
   
   const [
-    typeDict, // 类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
-    "menu_type",
     "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 类型
-    let type_lbl = model.type as string;
-    if (!isEmpty(model.type)) {
-      const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
-      if (dictItem) {
-        type_lbl = dictItem.lbl;
-      }
-    }
-    model.type_lbl = type_lbl;
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -435,22 +416,12 @@ export async function setIdByLbl(
 ) {
   
   const [
-    typeDict, // 类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
-    "menu_type",
     "is_locked",
     "is_enabled",
   ]);
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val as MenuType;
-    }
-  }
   
   // 父菜单
   if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
@@ -485,8 +456,6 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
   const n = initN(route_path);
   const fieldComments: MenuFieldComment = {
     id: await n("ID"),
-    type: await n("类型"),
-    type_lbl: await n("类型"),
     parent_id: await n("父菜单"),
     parent_id_lbl: await n("父菜单"),
     lbl: await n("名称"),
@@ -738,13 +707,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
   // 父菜单
   await validators.chars_max_length(
     input.parent_id,
@@ -873,9 +835,6 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
-  if (input.type !== undefined) {
-    sql += `,type`;
-  }
   if (input.parent_id !== undefined) {
     sql += `,parent_id`;
   }
@@ -916,9 +875,6 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
-  }
-  if (input.type !== undefined) {
-    sql += `,${ args.push(input.type) }`;
   }
   if (input.parent_id !== undefined) {
     sql += `,${ args.push(input.parent_id) }`;
@@ -1032,12 +988,6 @@ export async function updateById(
     update base_menu set
   `;
   let updateFldNum = 0;
-  if (input.type !== undefined) {
-    if (input.type != oldModel.type) {
-      sql += `type = ${ args.push(input.type) },`;
-      updateFldNum++;
-    }
-  }
   if (input.parent_id !== undefined) {
     if (input.parent_id != oldModel.parent_id) {
       sql += `parent_id = ${ args.push(input.parent_id) },`;
