@@ -907,7 +907,7 @@ export async function findCount(
   #>, { cacheKey1, cacheKey2 }<#
   }
   #>);
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
