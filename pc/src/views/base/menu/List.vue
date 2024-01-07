@@ -26,23 +26,6 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.type == null">
-        <el-form-item
-          :label="n('类型')"
-          prop="type"
-        >
-          <DictSelect
-            :set="search.type = search.type || [ ]"
-            :model-value="search.type"
-            @update:model-value="search.type = $event"
-            code="menu_type"
-            :placeholder="`${ ns('请选择') } ${ n('类型') }`"
-            multiple
-            @change="onSearch"
-          ></DictSelect>
-        </el-form-item>
-      </template>
-      
       <template v-if="showBuildIn || builtInSearch?.parent_id == null">
         <el-form-item
           label="父菜单"
@@ -486,17 +469,8 @@
           :key="col.prop"
         >
           
-          <!-- 类型 -->
-          <template v-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 父菜单 -->
-          <template v-else-if="'parent_id_lbl' === col.prop && (showBuildIn || builtInSearch?.parent_id == null)">
+          <template v-if="'parent_id_lbl' === col.prop && (showBuildIn || builtInSearch?.parent_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -812,7 +786,6 @@ const props = defineProps<{
   selectedIds?: MenuId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: MenuId; // ID
-  type?: string|string[]; // 类型
   parent_id?: string|string[]; // 父菜单
   parent_id_lbl?: string; // 父菜单
   lbl?: string; // 名称
@@ -835,8 +808,6 @@ const builtInSearchType: { [key: string]: string } = {
   isLocked: "0|1",
   isFocus: "0|1",
   ids: "string[]",
-  type: "string[]",
-  type_lbl: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
   is_locked: "number[]",
@@ -969,16 +940,6 @@ let tableData = $ref<MenuModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
-    {
-      label: "类型",
-      prop: "type_lbl",
-      sortBy: "type",
-      width: 80,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-      fixed: "left",
-    },
     {
       label: "父菜单",
       prop: "parent_id_lbl",
@@ -1347,7 +1308,6 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("类型") ]: "type_lbl",
     [ await nAsync("父菜单") ]: "parent_id_lbl",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("路由") ]: "route_path",
@@ -1377,7 +1337,6 @@ async function onImportExcel() {
       header,
       {
         key_types: {
-          "type_lbl": "string",
           "parent_id_lbl": "string",
           "lbl": "string",
           "route_path": "string",
@@ -1724,7 +1683,6 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "类型",
     "父菜单",
     "名称",
     "路由",

@@ -802,6 +802,16 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
+  {
+    if (search0.username == null) {
+      return [ ];
+    }
+    const username = search0.username;
+    const modelTmps = await findAll({
+      username,
+    });
+    models.push(...modelTmps);
+  }
   return models;
 }
 
@@ -820,6 +830,11 @@ export function equalsByUnique(
   }
   if (
     oldModel.lbl === input.lbl
+  ) {
+    return true;
+  }
+  if (
+    oldModel.username === input.username
   ) {
     return true;
   }
