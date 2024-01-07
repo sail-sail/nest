@@ -9,6 +9,7 @@ import "/gen/base/domain/domain.graphql.ts";
 import "/gen/base/field_permit/field_permit.graphql.ts";
 import "/gen/base/i18n/i18n.graphql.ts";
 import "/gen/base/lang/lang.graphql.ts";
+import "/gen/base/login_log/login_log.graphql.ts";
 import "/gen/base/menu/menu.graphql.ts";
 import "/gen/base/operation_record/operation_record.graphql.ts";
 import "/gen/base/optbiz/optbiz.graphql.ts";

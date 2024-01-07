@@ -15,7 +15,8 @@ CREATE TABLE if not exists `base_tenant` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`order_by`),
+  INDEX (`lbl`, `is_deleted`),
+  INDEX (`order_by`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户';
 
@@ -36,6 +37,7 @@ CREATE TABLE if not exists `base_domain` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='域名';
 
@@ -52,7 +54,7 @@ CREATE TABLE if not exists `base_tenant_domain` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`tenant_id`, `domain_id`),
+  INDEX (`tenant_id`, `domain_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户域名';
 
@@ -69,7 +71,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`tenant_id`, `menu_id`),
+  INDEX (`tenant_id`, `menu_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户菜单';
 
@@ -94,9 +96,29 @@ CREATE TABLE if not exists `base_usr` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`username`, `password`, `tenant_id`),
+  INDEX (`lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`username`, `tenant_id`, `is_deleted`),
+  INDEX (`username`, `password`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户';
+
+------------------------------------------------------------------------ 登录日志
+drop table if exists `base_login_log`;
+CREATE TABLE if not exists `base_login_log` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
+  `is_succ` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '登录成功,dict:yes_no',
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IP',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`username`, `ip`, `tenant_id`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='登录日志';
 
 ------------------------------------------------------------------------ 角色
 drop table if exists `base_role`;
@@ -115,6 +137,7 @@ CREATE TABLE if not exists `base_role` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色';
 
@@ -132,7 +155,7 @@ CREATE TABLE if not exists `base_usr_role` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `role_id`, `tenant_id`),
+  INDEX (`usr_id`, `role_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户角色';
 
@@ -150,7 +173,7 @@ CREATE TABLE if not exists `base_usr_dept` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `dept_id`, `tenant_id`),
+  INDEX (`usr_id`, `dept_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户部门';
 
@@ -168,7 +191,7 @@ CREATE TABLE if not exists `base_usr_org` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `org_id`, `tenant_id`),
+  INDEX (`usr_id`, `org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户组织';
 
@@ -176,7 +199,6 @@ CREATE TABLE if not exists `base_usr_org` (
 drop table if exists `base_menu`;
 CREATE TABLE if not exists `base_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `type` varchar(10) NOT NULL DEFAULT 'pc' COMMENT '类型,dict:menu_type',
   `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父菜单',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `route_path` varchar(100) NOT NULL DEFAULT '' COMMENT '路由',
@@ -191,6 +213,7 @@ CREATE TABLE if not exists `base_menu` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`parent_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单';
 
@@ -211,7 +234,8 @@ CREATE TABLE if not exists `base_lang` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`),
+  INDEX (`code`, `is_deleted`),
+  INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='语言';
 
@@ -230,7 +254,7 @@ CREATE TABLE if not exists `base_i18n` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lang_id`, `menu_id`, `code`),
+  INDEX (`lang_id`, `menu_id`, `code`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='国际化';
 
@@ -249,7 +273,7 @@ CREATE TABLE if not exists `base_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `code`),
+  INDEX (`menu_id`, `code`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='按钮权限';
 
@@ -269,7 +293,7 @@ CREATE TABLE if not exists `base_data_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `scope`),
+  INDEX (`menu_id`, `scope`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='数据权限';
 
@@ -289,7 +313,7 @@ CREATE TABLE if not exists `base_field_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `code`),
+  INDEX (`menu_id`, `code`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='字段权限';
 
@@ -307,7 +331,7 @@ CREATE TABLE if not exists `base_role_menu` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `menu_id`, `tenant_id`),
+  INDEX (`role_id`, `menu_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色菜单';
 
@@ -325,7 +349,7 @@ CREATE TABLE if not exists `base_role_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `permit_id`, `tenant_id`),
+  INDEX (`role_id`, `permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色按钮权限';
 
@@ -343,7 +367,7 @@ CREATE TABLE if not exists `base_role_data_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `data_permit_id`, `tenant_id`),
+  INDEX (`role_id`, `data_permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色数据权限';
 
@@ -361,7 +385,7 @@ CREATE TABLE if not exists `base_role_field_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `field_permit_id`, `tenant_id`),
+  INDEX (`role_id`, `field_permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色字段权限';
 
@@ -384,8 +408,8 @@ CREATE TABLE if not exists `base_background_task` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`begin_time`, `tenant_id`),
-  INDEX (`end_time`, `tenant_id`),
+  INDEX (`begin_time`, `tenant_id`, `is_deleted`),
+  INDEX (`end_time`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='后台任务';
 
@@ -408,7 +432,7 @@ CREATE TABLE if not exists `base_options` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `ky`),
+  INDEX (`lbl`, `ky`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统选项';
 
@@ -432,7 +456,7 @@ CREATE TABLE if not exists `base_optbiz` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `ky`),
+  INDEX (`lbl`, `ky`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='业务选项';
 
@@ -455,7 +479,7 @@ CREATE TABLE if not exists `base_operation_record` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`create_time`, `tenant_id`),
+  INDEX (`create_time`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作记录';
 
@@ -475,7 +499,7 @@ CREATE TABLE if not exists `base_org` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `tenant_id`),
+  INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='组织';
 
@@ -497,7 +521,7 @@ CREATE TABLE if not exists `base_dept` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`parent_id`, `lbl`, `tenant_id`),
+  INDEX (`parent_id`, `lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门';
 
@@ -515,7 +539,7 @@ CREATE TABLE if not exists `base_dept_usr` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dept_id`, `usr_id`, `tenant_id`),
+  INDEX (`dept_id`, `usr_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门负责人';
 
@@ -537,7 +561,8 @@ CREATE TABLE if not exists `base_dict` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`),
+  INDEX (`code`, `is_deleted`),
+  INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统字典';
 
@@ -559,7 +584,7 @@ CREATE TABLE if not exists `base_dict_detail` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dict_id`, `lbl`),
+  INDEX (`dict_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统字典明细';
 
@@ -582,7 +607,8 @@ CREATE TABLE if not exists `base_dictbiz` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`),
+  INDEX (`code`, `is_deleted`),
+  INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='业务字典';
 
@@ -605,6 +631,6 @@ CREATE TABLE if not exists `base_dictbiz_detail` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dictbiz_id`, `lbl`),
+  INDEX (`dictbiz_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='业务字典明细';
