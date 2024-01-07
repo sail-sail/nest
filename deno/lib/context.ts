@@ -197,6 +197,10 @@ export class Context {
     return this.#req_id;
   }
   
+  get ip() {
+    return this.oakCtx?.request.ip || "127.0.0.1";
+  }
+  
   /**
    * 获取当前请求是否开启事务
    * @return {boolean} 
