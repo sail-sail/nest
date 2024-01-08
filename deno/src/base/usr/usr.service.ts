@@ -94,7 +94,7 @@ export async function login(
       tenant_id,
     });
     if (loginLog0Count >= 6) {
-      throw await ns(`因联系登录失败次数过度, {0} 已被锁定10分钟, 请稍后再试`, username);
+      throw await ns(`因联系登录失败次数过多, {0} 已被锁定10分钟, 请稍后再试`, username);
     }
   }
   const password2 = await getPassword(password);
