@@ -15,19 +15,13 @@ import type {
   MenuId,
 } from "/gen/base/menu/menu.model.ts";
 
-import type {
-  MenuType,
-} from "/gen/types.ts";
-
 async function _getMenus(
-  type?: string,
   parent_id?: MenuId,
 ) {
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
       t.id,
-      t.type,
       t.parent_id,
       t.lbl,
       t.route_path,
@@ -50,9 +44,6 @@ async function _getMenus(
       t.is_deleted = 0
       and t.is_enabled = 1
   `;
-  if (type) {
-    sql += ` and t.type = ${ args.push(type) }`;
-  }
   const authModel = await getAuthModel();
   const tenant_id = await getTenant_id(authModel?.id);
   if (tenant_id) {
@@ -73,7 +64,6 @@ async function _getMenus(
   
   type Result = {
     id: MenuId,
-    type: MenuType,
     parent_id: string,
     lbl: string,
     route_path: string,
@@ -85,10 +75,8 @@ async function _getMenus(
   return result;
 }
 
-export async function getMenus(
-  type = "pc",
-) {
-  const allModels = await _getMenus(type);
+export async function getMenus() {
+  const allModels = await _getMenus();
   // let menus: typeof allModels = [ ];
   // // deno-lint-ignore no-explicit-any
   // async function tmpFn(parent?: any) {
