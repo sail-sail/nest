@@ -297,11 +297,23 @@ impl Ctx {
           req_id = self.req_id,
           err_msg = err.to_string(),
         );
-        info!(
-          "{req_id} rollback; -- {connection_id}",
-          req_id = self.req_id,
-        );
-        tran.execute("rollback").await?;
+        let rollback = match err.downcast_ref::<crate::common::exceptions::service_exception::ServiceException>() {
+          Some(err) => err.rollback,
+          None => true,
+        };
+        if rollback {
+          info!(
+            "{req_id} rollback; -- {connection_id}",
+            req_id = self.req_id,
+          );
+          tran.execute("rollback").await?;
+        } else {
+          info!(
+            "{req_id} commit; -- {connection_id}",
+            req_id = self.req_id,
+          );
+          tran.execute("commit").await?;
+        }
         return Err(err);
       }
       info!(

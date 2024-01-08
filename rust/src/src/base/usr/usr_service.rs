@@ -6,6 +6,7 @@ use crate::common::context::{
   get_now,
   get_server_tokentimeout,
 };
+use crate::common::exceptions::service_exception::ServiceExceptionBuilder;
 
 use super::usr_model::LoginModel;
 
@@ -29,12 +30,28 @@ use super::usr_model::{
   ChangePasswordInput,
 };
 
+use crate::gen::base::login_log::login_log_dao::{
+  create as create_login_log,
+  find_count as find_login_log_count,
+};
+use crate::gen::base::login_log::login_log_model::{
+  LoginLogInput,
+  LoginLogSearch,
+};
+
 use crate::src::base::i18n::i18n_dao::NRoute;
+
+use chrono::{NaiveDateTime, Duration};
 
 /// 登录, 获得token
 pub async fn login(
+  ip: String,
   input: LoginInput,
 ) -> Result<LoginModel> {
+  let n_route = NRoute {
+    route_path: "/base/usr".to_owned().into()
+  };
+  
   let LoginInput {
     username,
     password,
@@ -43,22 +60,91 @@ pub async fn login(
     lang,
   } = input;
   if username.is_empty() || password.is_empty() {
-    return Err(anyhow::anyhow!("用户名或密码不能为空"));
+    let err_msg = n_route.n(
+      "用户名或密码不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
   }
   if tenant_id.is_empty() {
-    return Err(anyhow::anyhow!("请选择租户"));
+    let err_msg = n_route.n(
+      "请选择租户".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
   }
+  // 最近10分钟内密码错误6次, 此用户名锁定10分钟
+  let now = get_now();
+  let begin: NaiveDateTime = now - Duration::minutes(10);
+  let end: NaiveDateTime = now;
+  
+  let count = find_login_log_count(
+    LoginLogSearch {
+      username: username.clone().into(),
+      ip: ip.clone().into(),
+      is_succ: vec![1].into(),
+      tenant_id: tenant_id.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+  ).await?;
+  
+  if count == 0 {
+    let count = find_login_log_count(
+      LoginLogSearch {
+        username: username.clone().into(),
+        ip: ip.clone().into(),
+        is_succ: vec![0].into(),
+        create_time: vec![begin, end].into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      }.into(),
+      None,
+    ).await?;
+    if count >= 6 {
+      let err_msg = n_route.n(
+        "密码错误次数过多, 请10分钟后再试".to_owned(),
+        None,
+      ).await?;
+      return Err(anyhow::anyhow!(err_msg));
+    }
+  }
+  
   let usr_model = usr_dao::find_one(
     UsrSearch {
-      username: username.into(),
+      username: username.clone().into(),
       tenant_id: tenant_id.clone().into(),
       ..Default::default()
     }.into(),
     None,
     None,
   ).await?;
+  
   if usr_model.is_none() {
-    return Err(anyhow::anyhow!("用户名或密码错误"));
+    
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        ip: ip.clone().into(),
+        is_succ: 0.into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+    
+    let err_msg = n_route.n(
+      "用户名或密码错误".to_owned(),
+      None,
+    ).await?;
+    return Err(
+      ServiceExceptionBuilder::default()
+        .code("username_or_password_error")
+        .message(err_msg)
+        .rollback(false)
+        .build()?
+        .into()
+    );
   }
   let usr_model = usr_model.unwrap();
   usr_dao::validate_is_enabled(
@@ -66,8 +152,42 @@ pub async fn login(
   ).await?;
   
   if usr_model.password != get_password(password)? {
-    return Err(anyhow::anyhow!("用户名或密码错误"));
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        ip: ip.clone().into(),
+        is_succ: 0.into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+    
+    let err_msg = n_route.n(
+      "用户名或密码错误".to_owned(),
+      None,
+    ).await?;
+    return Err(
+      ServiceExceptionBuilder::default()
+        .code("username_or_password_error")
+        .message(err_msg)
+        .rollback(false)
+        .build()?
+        .into()
+    );
   }
+  
+  create_login_log(
+    LoginLogInput {
+      username: username.clone().into(),
+      ip: ip.clone().into(),
+      is_succ: 1.into(),
+      tenant_id: tenant_id.clone().into(),
+      ..Default::default()
+    },
+    None,
+  ).await?;
+  
   let usr_id = usr_model.id;
   let username = usr_model.username;
   

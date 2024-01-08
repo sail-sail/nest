@@ -916,6 +916,27 @@ pub async fn find_by_unique(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.username.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = UsrSearch {
+      username: search.username,
+      ..Default::default()
+    };
+    
+    find_all(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -931,6 +952,12 @@ fn equals_by_unique(
   
   if
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+  {
+    return true;
+  }
+  
+  if
+    input.username.as_ref().is_some() && input.username.as_ref().unwrap() == &model.username
   {
     return true;
   }

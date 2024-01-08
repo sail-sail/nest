@@ -18,7 +18,6 @@ use crate::common::context::{
   CountModel,
   UniqueType,
   SrvErr,
-  OrderByModel,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -34,13 +33,15 @@ use crate::common::gql::model::{
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use super::lang_model::*;
+use super::login_log_model::*;
+
+use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<LangSearch>,
+  search: Option<LoginLogSearch>,
 ) -> Result<String> {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
@@ -68,7 +69,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<LangId> = match &search {
+    let ids: Vec<LoginLogId> = match &search {
       Some(item) => item.ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -85,102 +86,80 @@ async fn get_where_query(
     }
   }
   {
-    let code = match &search {
-      Some(item) => item.code.clone(),
-      None => None,
+    let tenant_id = {
+      let tenant_id = match &search {
+        Some(item) => item.tenant_id.clone(),
+        None => None,
+      };
+      let tenant_id = match tenant_id {
+        None => get_auth_tenant_id(),
+        Some(item) => match item.as_str() {
+          "-" => None,
+          _ => item.into(),
+        },
+      };
+      tenant_id
     };
-    if let Some(code) = code {
-      where_query += &format!(" and t.code = {}", args.push(code.into()));
+    if let Some(tenant_id) = tenant_id {
+      where_query += " and t.tenant_id = ?";
+      args.push(tenant_id.into());
     }
-    let code_like = match &search {
-      Some(item) => item.code_like.clone(),
+  }
+  {
+    let username = match &search {
+      Some(item) => item.username.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(username) = username {
+      where_query += &format!(" and t.username = {}", args.push(username.into()));
+    }
+    let username_like = match &search {
+      Some(item) => item.username_like.clone(),
+      None => None,
+    };
+    if let Some(username_like) = username_like {
       where_query += &format!(
-        " and t.code like {}",
+        " and t.username like {}",
         args.push(
-          format!("%{}%", sql_like(&code_like)).into()
+          format!("%{}%", sql_like(&username_like)).into()
         ),
       );
     }
   }
   {
-    let lbl = match &search {
-      Some(item) => item.lbl.clone(),
-      None => None,
-    };
-    if let Some(lbl) = lbl {
-      where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
-    }
-    let lbl_like = match &search {
-      Some(item) => item.lbl_like.clone(),
-      None => None,
-    };
-    if let Some(lbl_like) = lbl_like {
-      where_query += &format!(
-        " and t.lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&lbl_like)).into()
-        ),
-      );
-    }
-  }
-  {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+    let is_succ: Vec<u8> = match &search {
+      Some(item) => item.is_succ.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !is_enabled.is_empty() {
+    if !is_succ.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
+        let mut items = Vec::with_capacity(is_succ.len());
+        for item in is_succ {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
+      where_query += &format!(" and t.is_succ in ({})", arg);
     }
   }
   {
-    let order_by: Vec<u32> = match &search {
-      Some(item) => item.order_by.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let order_by_gt: Option<u32> = match &order_by.len() {
-      0 => None,
-      _ => order_by[0].into(),
-    };
-    let order_by_lt: Option<u32> = match &order_by.len() {
-      0 => None,
-      1 => None,
-      _ => order_by[1].into(),
-    };
-    if let Some(order_by_gt) = order_by_gt {
-      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
-    }
-    if let Some(order_by_lt) = order_by_lt {
-      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
-    }
-  }
-  {
-    let rem = match &search {
-      Some(item) => item.rem.clone(),
+    let ip = match &search {
+      Some(item) => item.ip.clone(),
       None => None,
     };
-    if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+    if let Some(ip) = ip {
+      where_query += &format!(" and t.ip = {}", args.push(ip.into()));
     }
-    let rem_like = match &search {
-      Some(item) => item.rem_like.clone(),
+    let ip_like = match &search {
+      Some(item) => item.ip_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(ip_like) = ip_like {
       where_query += &format!(
-        " and t.rem like {}",
+        " and t.ip like {}",
         args.push(
-          format!("%{}%", sql_like(&rem_like)).into()
+          format!("%{}%", sql_like(&ip_like)).into()
         ),
       );
     }
@@ -232,76 +211,27 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
-  {
-    let update_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !update_usr_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let update_usr_id_is_null: bool = match &search {
-      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
-    }
-  }
-  {
-    let update_time: Vec<chrono::NaiveDateTime> = match &search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      _ => update_time[0].into(),
-    };
-    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      1 => None,
-      _ => update_time[1].into(),
-    };
-    if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
-    }
-    if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
-    }
-  }
   Ok(where_query)
 }
 
 async fn get_from_query() -> Result<String> {
-  let from_query = r#"base_lang t
+  let from_query = r#"base_login_log t
     left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
+      on create_usr_id_lbl.id = t.create_usr_id"#.to_owned();
   Ok(from_query)
 }
 
-/// 根据搜索条件和分页查找语言列表
+/// 根据搜索条件和分页查找登录日志列表
 #[allow(unused_variables)]
 pub async fn find_all(
-  search: Option<LangSearch>,
+  search: Option<LoginLogSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<LangModel>> {
+) -> Result<Vec<LoginLogModel>> {
   
   #[allow(unused_variables)]
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "find_all";
   
   let is_deleted = search.as_ref()
@@ -313,10 +243,10 @@ pub async fn find_all(
   let where_query = get_where_query(&mut args, search).await?;
   
   let mut sort = sort.unwrap_or_default();
-  if !sort.iter().any(|item| item.prop == "order_by") {
+  if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "order_by".into(),
-      order: "asc".into(),
+      prop: "create_time".into(),
+      order: "desc".into(),
     });
   }
   if !sort.iter().any(|item| item.prop == "create_time") {
@@ -334,7 +264,6 @@ pub async fn find_all(
     select
       t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -346,34 +275,32 @@ pub async fn find_all(
   
   let options = Options::from(options);
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
   let options = options.into();
   
-  let mut res: Vec<LangModel> = query(
+  let mut res: Vec<LoginLogModel> = query(
     sql,
     args,
     options,
   ).await?;
   
   let dict_vec = get_dict(&[
-    "is_enabled",
+    "yes_no",
   ]).await?;
   let [
-    is_enabled_dict,
+    is_succ_dict,
   ]: [Vec<_>; 1] = dict_vec
     .try_into()
     .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
     
-    // 启用
-    model.is_enabled_lbl = {
-      is_enabled_dict
+    // 登录成功
+    model.is_succ_lbl = {
+      is_succ_dict
         .iter()
-        .find(|item| item.val == model.is_enabled.to_string())
+        .find(|item| item.val == model.is_succ.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
+        .unwrap_or_else(|| model.is_succ.to_string())
     };
     
   }
@@ -381,14 +308,14 @@ pub async fn find_all(
   Ok(res)
 }
 
-/// 根据条件查找语言总数
+/// 根据条件查找登录日志总数
 pub async fn find_count(
-  search: Option<LangSearch>,
+  search: Option<LoginLogSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   #[allow(unused_variables)]
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "find_count";
   
   let mut args = QueryArgs::new();
@@ -415,8 +342,6 @@ pub async fn find_count(
   
   let options = Options::from(options);
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
   let options = options.into();
   
   let res: Option<CountModel> = query_one(
@@ -435,7 +360,7 @@ pub async fn find_count(
 
 /// 获取路由地址
 pub fn get_route_path() -> String {
-  "/base/lang".to_owned()
+  "/base/login_log".to_owned()
 }
 
 /// 获取当前路由的国际化
@@ -445,29 +370,23 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
-/// 获取语言字段注释
+/// 获取登录日志字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
-) -> Result<LangFieldComment> {
+) -> Result<LoginLogFieldComment> {
   
   let n_route = get_n_route();
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
-    "编码".into(),
-    "名称".into(),
-    "启用".into(),
-    "启用".into(),
-    "排序".into(),
-    "备注".into(),
+    "用户名".into(),
+    "登录成功".into(),
+    "登录成功".into(),
+    "IP".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
     "创建时间".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
   ];
   
   let map = n_route.n_batch(
@@ -482,32 +401,26 @@ pub async fn get_field_comments(
     )
     .collect::<Vec<String>>();
   
-  let field_comments = LangFieldComment {
+  let field_comments = LoginLogFieldComment {
     id: vec[0].to_owned(),
-    code: vec[1].to_owned(),
-    lbl: vec[2].to_owned(),
-    is_enabled: vec[3].to_owned(),
-    is_enabled_lbl: vec[4].to_owned(),
-    order_by: vec[5].to_owned(),
-    rem: vec[6].to_owned(),
-    create_usr_id: vec[7].to_owned(),
-    create_usr_id_lbl: vec[8].to_owned(),
-    create_time: vec[9].to_owned(),
-    create_time_lbl: vec[10].to_owned(),
-    update_usr_id: vec[11].to_owned(),
-    update_usr_id_lbl: vec[12].to_owned(),
-    update_time: vec[13].to_owned(),
-    update_time_lbl: vec[14].to_owned(),
+    username: vec[1].to_owned(),
+    is_succ: vec[2].to_owned(),
+    is_succ_lbl: vec[3].to_owned(),
+    ip: vec[4].to_owned(),
+    create_usr_id: vec[5].to_owned(),
+    create_usr_id_lbl: vec[6].to_owned(),
+    create_time: vec[7].to_owned(),
+    create_time_lbl: vec[8].to_owned(),
   };
   Ok(field_comments)
 }
 
-/// 根据条件查找第一个语言
+/// 根据条件查找第一个登录日志
 pub async fn find_one(
-  search: Option<LangSearch>,
+  search: Option<LoginLogSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<LangModel>> {
+) -> Result<Option<LoginLogModel>> {
   
   let page = PageInput {
     pg_offset: 0.into(),
@@ -521,18 +434,18 @@ pub async fn find_one(
     options,
   ).await?;
   
-  let model: Option<LangModel> = res.into_iter().next();
+  let model: Option<LoginLogModel> = res.into_iter().next();
   
   Ok(model)
 }
 
-/// 根据 id 查找语言
+/// 根据 id 查找登录日志
 pub async fn find_by_id(
-  id: LangId,
+  id: LoginLogId,
   options: Option<Options>,
-) -> Result<Option<LangModel>> {
+) -> Result<Option<LoginLogModel>> {
   
-  let search = LangSearch {
+  let search = LoginLogSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -546,9 +459,9 @@ pub async fn find_by_id(
   Ok(res)
 }
 
-/// 根据搜索条件判断语言是否存在
+/// 根据搜索条件判断登录日志是否存在
 pub async fn exists(
-  search: Option<LangSearch>,
+  search: Option<LoginLogSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
@@ -560,13 +473,13 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-/// 根据 id 判断语言是否存在
+/// 根据 id 判断登录日志是否存在
 pub async fn exists_by_id(
-  id: LangId,
+  id: LoginLogId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let search = LangSearch {
+  let search = LoginLogSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -582,10 +495,10 @@ pub async fn exists_by_id(
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique(
-  search: LangSearch,
+  search: LoginLogSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<LangModel>> {
+) -> Result<Vec<LoginLogModel>> {
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -595,73 +508,17 @@ pub async fn find_by_unique(
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
-  let mut models: Vec<LangModel> = vec![];
-  
-  let mut models_tmp = {
-    if
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
-    let search = LangSearch {
-      code: search.code,
-      ..Default::default()
-    };
-    
-    find_all(
-      search.into(),
-      None,
-      sort.clone(),
-      options.clone(),
-    ).await?
-  };
-  models.append(&mut models_tmp);
-  
-  let mut models_tmp = {
-    if
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
-    let search = LangSearch {
-      lbl: search.lbl,
-      ..Default::default()
-    };
-    
-    find_all(
-      search.into(),
-      None,
-      sort.clone(),
-      options.clone(),
-    ).await?
-  };
-  models.append(&mut models_tmp);
-  
-  Ok(models)
+  Ok(vec![])
 }
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: &LangInput,
-  model: &LangModel,
+  input: &LoginLogInput,
+  model: &LoginLogModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
-  }
-  
-  if
-    input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
-  {
-    return true;
-  }
-  
-  if
-    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
-  {
-    return true;
   }
   false
 }
@@ -669,10 +526,10 @@ fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique(
-  input: LangInput,
-  model: LangModel,
+  input: LoginLogInput,
+  model: LoginLogModel,
   unique_type: UniqueType,
-) -> Result<Option<LangId>> {
+) -> Result<Option<LoginLogId>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -705,24 +562,24 @@ pub async fn check_by_unique(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl(
-  input: LangInput,
-) -> Result<LangInput> {
+  input: LoginLogInput,
+) -> Result<LoginLogInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
   
   let dict_vec = get_dict(&[
-    "is_enabled",
+    "yes_no",
   ]).await?;
   
-  // 启用
-  if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[0];
-    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-      input.is_enabled = is_enabled_dict
+  // 登录成功
+  if input.is_succ.is_none() {
+    let is_succ_dict = &dict_vec[0];
+    if let Some(is_succ_lbl) = input.is_succ_lbl.clone() {
+      input.is_succ = is_succ_dict
         .iter()
         .find(|item| {
-          item.lbl == is_enabled_lbl
+          item.lbl == is_succ_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -733,14 +590,14 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-/// 创建语言
+/// 创建登录日志
 #[allow(unused_mut)]
 pub async fn create(
-  mut input: LangInput,
+  mut input: LoginLogInput,
   options: Option<Options>,
-) -> Result<LangId> {
+) -> Result<LoginLogId> {
   
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "create";
   
   if input.id.is_some() {
@@ -765,7 +622,7 @@ pub async fn create(
       )
       .unwrap_or(UniqueType::Throw);
     
-    let mut id: Option<LangId> = None;
+    let mut id: Option<LoginLogId> = None;
     
     for old_model in old_models {
       
@@ -785,7 +642,7 @@ pub async fn create(
     }
   }
   
-  let mut id: LangId;
+  let mut id: LoginLogId;
   loop {
     id = get_short_uuid().into();
     let is_exist = exists_by_id(
@@ -811,59 +668,39 @@ pub async fn create(
   args.push(id.clone().into());
   args.push(now.into());
   
+  if let Some(tenant_id) = input.tenant_id {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  } else if let Some(tenant_id) = get_auth_tenant_id() {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  }
+  
   if let Some(auth_model) = get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
     sql_values += ",?";
     args.push(usr_id.into());
   }
-  // 编码
-  if let Some(code) = input.code {
-    sql_fields += ",code";
+  // 用户名
+  if let Some(username) = input.username {
+    sql_fields += ",username";
     sql_values += ",?";
-    args.push(code.into());
+    args.push(username.into());
   }
-  // 名称
-  if let Some(lbl) = input.lbl {
-    sql_fields += ",lbl";
+  // 登录成功
+  if let Some(is_succ) = input.is_succ {
+    sql_fields += ",is_succ";
     sql_values += ",?";
-    args.push(lbl.into());
+    args.push(is_succ.into());
   }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    sql_fields += ",is_enabled";
+  // IP
+  if let Some(ip) = input.ip {
+    sql_fields += ",ip";
     sql_values += ",?";
-    args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  // 系统字段
-  if let Some(is_sys) = input.is_sys {
-    sql_fields += ",is_sys";
-    sql_values += ",?";
-    args.push(is_sys.into());
+    args.push(ip.into());
   }
   
   let sql = format!(
@@ -877,8 +714,6 @@ pub async fn create(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
-  
   let options = options.into();
   
   execute(
@@ -890,13 +725,53 @@ pub async fn create(
   Ok(id)
 }
 
-/// 根据 id 修改语言
+/// 登录日志根据id修改租户id
+pub async fn update_tenant_by_id(
+  id: LoginLogId,
+  tenant_id: TenantId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "base_login_log";
+  let _method = "update_tenant_by_id";
+  
+  let mut args = QueryArgs::new();
+  
+  let sql_fields = "tenant_id = ?,update_time = ?";
+  args.push(tenant_id.into());
+  args.push(get_now().into());
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {}",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.into();
+  
+  let num = execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 id 修改登录日志
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: LangId,
-  mut input: LangInput,
+  id: LoginLogId,
+  mut input: LoginLogInput,
   options: Option<Options>,
-) -> Result<LangId> {
+) -> Result<LoginLogId> {
   
   let old_model = find_by_id(
     id.clone(),
@@ -925,7 +800,7 @@ pub async fn update_by_id(
       .filter(|item| 
         item.id != id
       )
-      .collect::<Vec<LangModel>>();
+      .collect::<Vec<LoginLogModel>>();
     
     if !models.is_empty() {
       let unique_type = {
@@ -948,7 +823,7 @@ pub async fn update_by_id(
     }
   }
   
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "update_by_id";
   
   let now = get_now();
@@ -959,41 +834,29 @@ pub async fn update_by_id(
   args.push(now.into());
   
   let mut field_num: usize = 0;
-  // 编码
-  if let Some(code) = input.code {
+  
+  if let Some(tenant_id) = input.tenant_id {
     field_num += 1;
-    sql_fields += ",code = ?";
-    args.push(code.into());
+    sql_fields += ",tenant_id = ?";
+    args.push(tenant_id.into());
   }
-  // 名称
-  if let Some(lbl) = input.lbl {
+  // 用户名
+  if let Some(username) = input.username {
     field_num += 1;
-    sql_fields += ",lbl = ?";
-    args.push(lbl.into());
+    sql_fields += ",username = ?";
+    args.push(username.into());
   }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
+  // 登录成功
+  if let Some(is_succ) = input.is_succ {
     field_num += 1;
-    sql_fields += ",is_enabled = ?";
-    args.push(is_enabled.into());
+    sql_fields += ",is_succ = ?";
+    args.push(is_succ.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
+  // IP
+  if let Some(ip) = input.ip {
     field_num += 1;
-    sql_fields += ",order_by = ?";
-    args.push(order_by.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    field_num += 1;
-    sql_fields += ",rem = ?";
-    args.push(rem.into());
-  }
-  // 系统字段
-  if let Some(is_sys) = input.is_sys {
-    field_num += 1;
-    sql_fields += ",is_sys = ?";
-    args.push(is_sys.into());
+    sql_fields += ",ip = ?";
+    args.push(ip.into());
   }
   
   if field_num > 0 {
@@ -1018,8 +881,6 @@ pub async fn update_by_id(
     
     let options = Options::from(options);
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
-    
     let options = options.into();
     
     execute(
@@ -1036,7 +897,7 @@ pub async fn update_by_id(
 /// 获取外键关联表, 第一个是主表
 #[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_lang";
+  let table = "base_login_log";
   vec![
     table,
     "base_usr",
@@ -1053,13 +914,13 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-/// 根据 ids 删除语言
+/// 根据 ids 删除登录日志
 pub async fn delete_by_ids(
-  ids: Vec<LangId>,
+  ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "delete_by_ids";
   
   let options = Options::from(options);
@@ -1080,8 +941,6 @@ pub async fn delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
-    
     let options = options.into();
     
     num += execute(
@@ -1094,73 +953,13 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找语言是否已启用
-/// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
-  id: LangId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let model = find_by_id(id, options).await?;
-  
-  let is_enabled = {
-    if let Some(model) = model {
-      model.is_enabled == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_enabled)
-}
-
-/// 根据 ids 启用或者禁用语言
-pub async fn enable_by_ids(
-  ids: Vec<LangId>,
-  is_enabled: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_lang";
-  let _method = "enable_by_ids";
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_foreign_tables());
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!(
-      "update {} set is_enabled=? where id=? limit 1",
-      table,
-    );
-    
-    args.push(is_enabled.into());
-    args.push(id.into());
-    
-    let args = args.into();
-    
-    let options = options.clone().into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  Ok(num)
-}
-
-/// 根据 ids 还原语言
+/// 根据 ids 还原登录日志
 pub async fn revert_by_ids(
-  ids: Vec<LangId>,
+  ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "revert_by_ids";
   
   let options = Options::from(options);
@@ -1179,8 +978,6 @@ pub async fn revert_by_ids(
     let args = args.into();
     
     let options = options.clone();
-    
-    let options = options.set_del_cache_key1s(get_foreign_tables());
     
     let options = options.into();
     
@@ -1202,7 +999,7 @@ pub async fn revert_by_ids(
       }
       let old_model = old_model.unwrap();
       
-      let mut input: LangInput = old_model.into();
+      let mut input: LoginLogInput = old_model.into();
       input.id = None;
       
       let models = find_by_unique(
@@ -1211,7 +1008,7 @@ pub async fn revert_by_ids(
         None,
       ).await?;
       
-      let models: Vec<LangModel> = models.into_iter()
+      let models: Vec<LoginLogModel> = models.into_iter()
         .filter(|item| 
           item.id != id
         )
@@ -1231,13 +1028,13 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除语言
+/// 根据 ids 彻底删除登录日志
 pub async fn force_delete_by_ids(
-  ids: Vec<LangId>,
+  ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_lang";
+  let table = "base_login_log";
   let _method = "force_delete_by_ids";
   
   let options = Options::from(options);
@@ -1246,7 +1043,7 @@ pub async fn force_delete_by_ids(
   for id in ids.clone() {
     
     let model = find_all(
-      LangSearch {
+      LoginLogSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -1274,8 +1071,6 @@ pub async fn force_delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
-    
     let options = options.into();
     
     num += execute(
@@ -1288,73 +1083,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-/// 查找 语言 order_by 字段的最大值
-pub async fn find_last_order_by(
-  options: Option<Options>,
-) -> Result<u32> {
-  
-  let table = "base_lang";
-  let _method = "find_last_order_by";
-  
-  #[allow(unused_mut)]
-  let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
-  
-  sql_where += "t.is_deleted = 0";
-  
-  let sql = format!(
-    "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
-    table,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = options.into();
-  
-  let model = query_one::<OrderByModel>(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  let order_by = {
-    if let Some(model) = model {
-      model.order_by
-    } else {
-      0
-    }
-  };
-  
-  Ok(order_by)
-}
-
-/// 校验语言是否启用
-#[function_name::named]
-#[allow(dead_code)]
-pub async fn validate_is_enabled(
-  model: &LangModel,
-) -> Result<()> {
-  if model.is_enabled == 0 {
-    let msg0 = i18n_dao::ns(
-      "语言".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "已禁用".to_owned(),
-      None,
-    ).await?;
-    let err_msg = msg0 + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
-  }
-  Ok(())
-}
-
-/// 校验语言是否存在
+/// 校验登录日志是否存在
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
@@ -1362,7 +1091,7 @@ pub async fn validate_option<'a, T>(
 ) -> Result<T> {
   if model.is_none() {
     let msg0 = i18n_dao::ns(
-      "语言".to_owned(),
+      "登录日志".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(

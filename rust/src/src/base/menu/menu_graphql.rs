@@ -16,15 +16,12 @@ impl MenuQuery {
   async fn get_menus(
     &self,
     ctx: &Context<'_>,
-    r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::get_menus(
-          r#type,
-        )
+        menu_resolver::get_menus()
       }).await
   }
   

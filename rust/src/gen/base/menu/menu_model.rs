@@ -32,10 +32,6 @@ use crate::gen::base::usr::usr_model::UsrId;
 pub struct MenuModel {
   /// ID
   pub id: MenuId,
-  /// 类型
-  pub r#type: MenuType,
-  /// 类型
-  pub type_lbl: String,
   /// 父菜单
   pub parent_id: MenuId,
   /// 父菜单
@@ -82,9 +78,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: MenuId = row.try_get("id")?;
-    // 类型
-    let type_lbl: String = row.try_get("type")?;
-    let r#type: MenuType = type_lbl.clone().try_into()?;
     // 父菜单
     let parent_id: MenuId = row.try_get("parent_id")?;
     let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
@@ -131,8 +124,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let model = Self {
       is_deleted,
       id,
-      r#type,
-      type_lbl,
       parent_id,
       parent_id_lbl,
       lbl,
@@ -163,10 +154,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
 pub struct MenuFieldComment {
   /// ID
   pub id: String,
-  /// 类型
-  pub r#type: String,
-  /// 类型
-  pub type_lbl: String,
   /// 父菜单
   pub parent_id: String,
   /// 父菜单
@@ -215,8 +202,6 @@ pub struct MenuSearch {
   /// ID列表
   pub ids: Option<Vec<MenuId>>,
   pub is_deleted: Option<u8>,
-  /// 类型
-  pub r#type: Option<Vec<MenuType>>,
   /// 父菜单
   pub parent_id: Option<Vec<MenuId>>,
   /// 父菜单
@@ -264,10 +249,6 @@ pub struct MenuInput {
   pub id: Option<MenuId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 类型
-  pub r#type: Option<MenuType>,
-  /// 类型
-  pub type_lbl: Option<String>,
   /// 父菜单
   pub parent_id: Option<MenuId>,
   /// 父菜单
@@ -313,9 +294,6 @@ impl From<MenuModel> for MenuInput {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
-      // 类型
-      r#type: model.r#type.into(),
-      type_lbl: model.type_lbl.into(),
       // 父菜单
       parent_id: model.parent_id.into(),
       parent_id_lbl: model.parent_id_lbl.into(),
@@ -357,8 +335,6 @@ impl From<MenuInput> for MenuSearch {
       id: input.id,
       ids: None,
       is_deleted: None,
-      // 类型
-      r#type: input.r#type.map(|x| vec![x]),
       // 父菜单
       parent_id: input.parent_id.map(|x| vec![x]),
       // 名称
@@ -486,95 +462,5 @@ impl<'r> sqlx::Decode<'r, MySql> for MenuId {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-/// 菜单类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
-pub enum MenuType {
-  /// 电脑端
-  #[graphql(name="pc")]
-  Pc,
-  /// 手机端
-  #[graphql(name="mobile")]
-  Mobile,
-}
-
-impl fmt::Display for MenuType {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      Self::Pc => write!(f, "pc"),
-      Self::Mobile => write!(f, "mobile"),
-    }
-  }
-}
-
-impl From<MenuType> for SmolStr {
-  fn from(value: MenuType) -> Self {
-    match value {
-      MenuType::Pc => "pc".into(),
-      MenuType::Mobile => "mobile".into(),
-    }
-  }
-}
-
-impl From<MenuType> for String {
-  fn from(value: MenuType) -> Self {
-    match value {
-      MenuType::Pc => "pc".into(),
-      MenuType::Mobile => "mobile".into(),
-    }
-  }
-}
-
-impl From<MenuType> for ArgType {
-  fn from(value: MenuType) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for MenuType {
-  fn default() -> Self {
-    Self::Pc
-  }
-}
-
-impl FromStr for MenuType {
-  type Err = anyhow::Error;
-  
-  fn from_str(s: &str) -> Result<Self, Self::Err> {
-    match s {
-      "pc" => Ok(Self::Pc),
-      "mobile" => Ok(Self::Mobile),
-      _ => Err(anyhow::anyhow!("MenuType can't convert from {s}")),
-    }
-  }
-}
-
-impl MenuType {
-  pub fn as_str(&self) -> &str {
-    match self {
-      Self::Pc => "pc",
-      Self::Mobile => "mobile",
-    }
-  }
-}
-
-impl TryFrom<String> for MenuType {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: String) -> Result<Self, Self::Error> {
-    match s.as_str() {
-      "pc" => Ok(Self::Pc),
-      "mobile" => Ok(Self::Mobile),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "type".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "MenuType can't convert from {s}".to_owned(),
-          )),
-        }),
-      )),
-    }
   }
 }
