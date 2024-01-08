@@ -193,6 +193,7 @@ export default defineConfig({
       ignoreCodegen: false,
       uniques: [
         [ "lbl" ],
+        [ "username" ],
       ],
       defaultSort: {
         prop: "order_by",
@@ -299,6 +300,42 @@ export default defineConfig({
       },
     ],
   },
+  // 登录日志
+  base_login_log: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      noImport: true,
+      noExport: true,
+      defaultSort: {
+        prop: "create_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "username",
+        align: "center",
+        require: true,
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "is_succ",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "ip",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+    ],
+  },
   // 菜单
   base_menu: {
     opts: {
@@ -313,12 +350,6 @@ export default defineConfig({
       list_tree: true,
     },
     columns: [
-      {
-        COLUMN_NAME: "type",
-        search: true,
-        width: 80,
-        fixed: "left",
-      },
       {
         COLUMN_NAME: "parent_id",
         require: false,
@@ -459,6 +490,7 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "code" ],
+        [ "lbl" ],
       ],
     },
     columns: [
@@ -1185,6 +1217,7 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "code" ],
+        [ "lbl" ],
       ],
       defaultSort: {
         prop: "order_by",

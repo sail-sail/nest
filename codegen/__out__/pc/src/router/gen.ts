@@ -135,6 +135,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/login_log",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "登录日志",
+        component: () => import("@/views/base/login_log/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/menu",
     component: Layout1,
     children: [

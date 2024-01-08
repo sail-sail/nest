@@ -47,8 +47,6 @@ export async function findAll(
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
-          type
-          type_lbl
           parent_id
           parent_id_lbl
           lbl
@@ -104,8 +102,6 @@ export async function findOne(
       query($search: MenuSearch, $sort: [SortInput!]) {
         findOneMenu(search: $search, sort: $sort) {
           id
-          type
-          type_lbl
           parent_id
           parent_id_lbl
           lbl
@@ -261,8 +257,6 @@ export async function findById(
       query($id: MenuId!) {
         findByIdMenu(id: $id) {
           id
-          type
-          type_lbl
           parent_id
           parent_id_lbl
           lbl
@@ -503,7 +497,6 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsMenu {
-            type_lbl
             parent_id_lbl
             lbl
             route_path
@@ -513,12 +506,6 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllMenu {
             id
-            lbl
-          }
-          getDict(codes: [
-            "menu_type",
-          ]) {
-            code
             lbl
           }
         }
@@ -564,8 +551,6 @@ export function useExportExcel(routePath: string) {
         query($search: MenuSearch, $sort: [SortInput!]) {
           findAllMenu(search: $search, sort: $sort) {
             id
-            type
-            type_lbl
             parent_id
             parent_id_lbl
             lbl
@@ -587,7 +572,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsMenu {
-            type_lbl
             parent_id_lbl
             lbl
             route_path
@@ -605,7 +589,6 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "menu_type",
             "is_locked",
             "is_enabled",
           ]) {
@@ -706,4 +689,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByMenu;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: MenuInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

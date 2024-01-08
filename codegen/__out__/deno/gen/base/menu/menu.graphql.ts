@@ -5,21 +5,10 @@ import * as resolver from "./menu.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar MenuId
 
-"菜单类型"
-enum MenuType {
-  "电脑端"
-  pc
-  "手机端"
-  mobile
-}
 
 type MenuModel {
   "ID"
   id: MenuId!
-  "类型"
-  type: MenuType
-  "类型"
-  type_lbl: String!
   "父菜单"
   parent_id: MenuId!
   "父菜单"
@@ -64,10 +53,6 @@ type MenuModel {
 type MenuFieldComment {
   "ID"
   id: String!
-  "类型"
-  type: String!
-  "类型"
-  type_lbl: String!
   "父菜单"
   parent_id: String!
   "父菜单"
@@ -110,10 +95,6 @@ type MenuFieldComment {
 input MenuInput {
   ""
   id: MenuId
-  "类型"
-  type: MenuType
-  "类型"
-  type_lbl: String
   "父菜单"
   parent_id: MenuId
   "父菜单"
@@ -160,8 +141,6 @@ input MenuSearch {
   ids: [MenuId!]
   "ID"
   id: MenuId
-  "类型"
-  type: [String!]
   "父菜单"
   parent_id: [MenuId!]
   parent_id_is_null: Boolean
