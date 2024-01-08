@@ -117,6 +117,7 @@ export async function login(
     ip,
     is_succ: 1,
     tenant_id,
+    create_usr_id: model.id,
   });
   const usr_id = model.id;
   if (org_id === null) {
