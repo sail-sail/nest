@@ -14,7 +14,7 @@ defineGraphql(menuResolver, /* GraphQL */`
 
   type Query {
     "获取主页菜单"
-    getMenus(type: String): [GetMenus!]!
+    getMenus: [GetMenus!]!
   }
   
 `);

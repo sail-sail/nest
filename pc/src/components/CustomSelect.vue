@@ -235,11 +235,13 @@ function onClear() {
   if (!props.multiple) {
     modelValue = "";
     emit("update:modelValue", modelValue);
+    emit("change", modelValue);
     emit("clear");
     return;
   }
   modelValue = [ ];
   emit("update:modelValue", modelValue);
+  emit("change", modelValue);
   emit("clear");
 }
 
