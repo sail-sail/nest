@@ -99,7 +99,7 @@ async function menuSelect(id: MenuId) {
 }
 
 async function getMenusEfc() {
-  const result = await getMenus({ type: "pc" });
+  const result = await getMenus();
   menuStore.setMenus(result);
   setDefaultActiveByRouter(route.path, route.query);
 }
