@@ -4,13 +4,9 @@ use super::menu_dao;
 use super::menu_model::GetMenus;
 
 /// 首页获取菜单列表
-pub async fn get_menus(
-  r#type: Option<String>,
-) -> Result<Vec<GetMenus>> {
+pub async fn get_menus() -> Result<Vec<GetMenus>> {
   
-  let res = menu_dao::get_menus(
-    r#type,
-  ).await?;
+  let res = menu_dao::get_menus().await?;
   
   Ok(res)
 }

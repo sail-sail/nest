@@ -9,6 +9,7 @@ pub mod domain;
 pub mod field_permit;
 pub mod i18n;
 pub mod lang;
+pub mod login_log;
 pub mod menu;
 pub mod operation_record;
 pub mod optbiz;

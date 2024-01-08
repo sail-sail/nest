@@ -6,7 +6,6 @@ use async_graphql::SimpleObject;
 #[graphql(rename_fields = "snake_case")]
 pub struct GetMenus {
   pub id: String,
-  pub r#type: String,
   pub parent_id: String,
   pub lbl: String,
   pub route_path: Option<String>,
@@ -17,8 +16,6 @@ impl FromRow<'_, MySqlRow> for GetMenus {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    // 类型
-    let r#type: String = row.try_get("type")?;
     // 父菜单
     let parent_id: String = row.try_get("parent_id")?;
     // 名称
@@ -28,7 +25,6 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     
     let model = Self {
       id,
-      r#type,
       parent_id,
       lbl,
       route_path,

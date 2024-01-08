@@ -28,7 +28,10 @@ impl UsrMutation {
       .with_tran()?
       .build()
       .scope({
-        usr_resolver::login(input)
+        let ip: String = ctx.data_opt::<crate::common::gql::model::Ip>()
+          .map(|item| item.clone().0)
+          .unwrap_or_default();
+        usr_resolver::login(ip, input)
       }).await
   }
   

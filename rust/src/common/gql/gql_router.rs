@@ -37,6 +37,13 @@ pub async fn graphql_handler_get(
   Query(gql_params): Query<GglParams>,
   req: &poem::Request,
 ) -> Response {
+  // IP地址
+  let ip = match req.header("x-real-ip") {
+    Some(ip) => ip.to_string(),
+    None => "127.0.0.1".to_string(),
+  };
+  let ip = crate::common::gql::model::Ip(ip);
+  
   let now0 = Instant::now();
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
@@ -50,6 +57,7 @@ pub async fn graphql_handler_get(
       gql_req = gql_req.data::<AuthToken>(auth_token);
     },
   }
+  gql_req = gql_req.data::<crate::common::gql::model::Ip>(ip);
   if let Some(variables) = gql_params.variables {
     let variables = match serde_json::from_str::<Variables>(&variables) {
       Ok(variables) => variables,
@@ -102,6 +110,13 @@ pub async fn graphql_handler(
   data: Json<Request>,
   req: &poem::Request,
 ) -> Response {
+  // IP地址
+  let ip = match req.header("x-real-ip") {
+    Some(ip) => ip.to_string(),
+    None => "127.0.0.1".to_string(),
+  };
+  let ip = crate::common::gql::model::Ip(ip);
+  
   let now0 = Instant::now();
   let mut gql_req = data.0;
   match req.header(AUTHORIZATION).map(ToString::to_string) {
@@ -114,6 +129,7 @@ pub async fn graphql_handler(
       gql_req = gql_req.data::<AuthToken>(auth_token);
     },
   }
+  gql_req = gql_req.data::<crate::common::gql::model::Ip>(ip);
   // info!(
   //   "{query}",
   //   query = gql_req.query,

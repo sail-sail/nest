@@ -13,10 +13,12 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login(
+  ip: String,
   input: LoginInput,
 ) -> Result<LoginModel> {
   
   let res = usr_service::login(
+    ip,
     input,
   ).await?;
   
