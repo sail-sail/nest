@@ -198,7 +198,9 @@ export class Context {
   }
   
   get ip() {
-    return this.oakCtx?.request.ip || "127.0.0.1";
+    const headers = this.oakCtx?.request.headers;
+    const ip = headers?.get("x-real-ip");
+    return ip || "127.0.0.1";
   }
   
   /**
