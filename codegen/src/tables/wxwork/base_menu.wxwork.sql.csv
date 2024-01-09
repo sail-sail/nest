@@ -1,5 +1,5 @@
-id,type,parent_id,lbl,route_path,route_query,is_enabled,order_by
-sXH8nQZySYSDr8TpqGMfBw,pc,,企业微信,,NULL,1,12000
-mvdnDsPvQ7CEindYI2YObw,pc,sXH8nQZySYSDr8TpqGMfBw,企微应用,/wxwork/wxw_app,NULL,1,12001
-TjhIU2PZR6SYZRmXzsk4zw,pc,sXH8nQZySYSDr8TpqGMfBw,企微用户,/wxwork/wxw_usr,NULL,1,12002
-uwjsDQfeRxiQYBcxefHCtg,pc,sXH8nQZySYSDr8TpqGMfBw,企微消息,/wxwork/wxw_msg,NULL,1,12003
+id,parent_id,lbl,route_path,route_query,is_enabled,order_by
+sXH8nQZySYSDr8TpqGMfBw,,企业微信,,,1,12000
+mvdnDsPvQ7CEindYI2YObw,sXH8nQZySYSDr8TpqGMfBw,企微应用,/wxwork/wxw_app,,1,12001
+TjhIU2PZR6SYZRmXzsk4zw,sXH8nQZySYSDr8TpqGMfBw,企微用户,/wxwork/wxw_usr,,1,12002
+uwjsDQfeRxiQYBcxefHCtg,sXH8nQZySYSDr8TpqGMfBw,企微消息,/wxwork/wxw_msg,,1,12003
