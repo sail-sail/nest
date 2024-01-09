@@ -5,12 +5,27 @@ import {
 } from "node:fs";
 
 import {
+  readFile,
+  writeFile,
+} from "node:fs/promises";
+
+import { parse } from "fast-csv";
+
+import {
+  normalize,
+  basename,
+  dirname,
+} from "node:path";
+
+import {
   execCsvFile,
 } from "./common";
 
 import {
   initContext,
 } from "../lib/information_schema";
+
+import * as crypto from "node:crypto";
 
 import {
   isEmpty,
@@ -59,12 +74,62 @@ fileArr = fileArr2;
 
 async function exec() {
   console.time("csv");
-  const context = await initContext();
   
   const csvFiles = [
-    ...fileArr.map((file) => `${ root }/${ file }`),
+    ...fileArr.map((file) => normalize(`${ root }/${ file }`)),
   ];
+  for (let i = 0; i < csvFiles.length; i++) {
+    const file = csvFiles[i];
+    if (file.includes("\\base_menu.")) {
+      const str = await readFile(file, "utf8");
+      const rows: any[] = await new Promise(function(resolve, reject) {
+        const rows = [ ];
+        const stream = parse({ headers: true })
+          .on("error", (error) => reject(error))
+          .on("data", (row) => rows.push(row))
+          .on("end", () => resolve(rows));
+        stream.write(str);
+        stream.end();
+      });
+      const route_paths = rows.map((row) => row.route_path);
+      const base_role_menu_ids: string[] = [ ];
+      const base_tenant_menu_ids: string[] = [ ];
+      for (const route_path of route_paths) {
+        const role_buffer = Buffer.from(await crypto.subtle.digest('SHA-1', new TextEncoder().encode(JSON.stringify({
+          key: "base_role_menu",
+          route_path,
+        }))));
+        const tenant_buffer = Buffer.from(await crypto.subtle.digest('SHA-1', new TextEncoder().encode(JSON.stringify({
+          key: "base_tenant_menu",
+          route_path,
+        }))));
+        base_role_menu_ids.push(role_buffer.toString("base64").substring(0, 22));
+        base_tenant_menu_ids.push(tenant_buffer.toString("base64").substring(0, 22));
+      }
+      const mod_name = basename(dirname(file));
+      let base_role_menu = "id,role_id,menu_id,tenant_id,order_by\n";
+      for (let k = 0; k < base_role_menu_ids.length; k++) {
+        const base_role_menu_id = base_role_menu_ids[k];
+        base_role_menu += base_role_menu_id + "," 
+        base_role_menu += "T/A58UzxTzK0thbZH7aZhw,";
+        base_role_menu += rows[k].id + ",";
+        base_role_menu += "ZDbZlC1OT8KaDg6soxMCBQ,";
+        base_role_menu += rows[k].order_by + "\n";
+      }
+      await writeFile(`${ dirname(file) }/base_role_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`, base_role_menu);
+      let base_tenant_menu = "id,tenant_id,menu_id,order_by\n";
+      for (let k = 0; k < base_tenant_menu_ids.length; k++) {
+        const base_tenant_menu_id = base_tenant_menu_ids[k];
+        base_tenant_menu += base_tenant_menu_id + "," 
+        base_tenant_menu += "ZDbZlC1OT8KaDg6soxMCBQ,";
+        base_tenant_menu += rows[k].id + ",";
+        base_tenant_menu += rows[k].order_by + "\n";
+      }
+      await writeFile(`${ dirname(file) }/base_tenant_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`, base_tenant_menu);
+    }
+  }
   
+  const context = await initContext();
   for (let i = 0; i < csvFiles.length; i++) {
     const item = csvFiles[i];
     await execCsvFile(context, item);
