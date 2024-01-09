@@ -94,7 +94,7 @@ export async function login(
       tenant_id,
     });
     if (loginLog0Count >= 6) {
-      throw await ns(`因联系登录失败次数过度, {0} 已被锁定10分钟, 请稍后再试`, username);
+      throw await ns(`密码错误次数过多, 请10分钟后再试`);
     }
   }
   const password2 = await getPassword(password);
@@ -117,6 +117,7 @@ export async function login(
     ip,
     is_succ: 1,
     tenant_id,
+    create_usr_id: model.id,
   });
   const usr_id = model.id;
   if (org_id === null) {
