@@ -91,17 +91,16 @@ async function exec() {
         stream.write(str);
         stream.end();
       });
-      const route_paths = rows.map((row) => row.route_path);
       const base_role_menu_ids: string[] = [ ];
       const base_tenant_menu_ids: string[] = [ ];
-      for (const route_path of route_paths) {
+      for (const row of rows) {
         const role_buffer = Buffer.from(await crypto.subtle.digest('SHA-1', new TextEncoder().encode(JSON.stringify({
           key: "base_role_menu",
-          route_path,
+          id: row.id,
         }))));
         const tenant_buffer = Buffer.from(await crypto.subtle.digest('SHA-1', new TextEncoder().encode(JSON.stringify({
           key: "base_tenant_menu",
-          route_path,
+          id: row.id,
         }))));
         base_role_menu_ids.push(role_buffer.toString("base64").substring(0, 22));
         base_tenant_menu_ids.push(tenant_buffer.toString("base64").substring(0, 22));
