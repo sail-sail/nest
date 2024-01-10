@@ -31,7 +31,7 @@ enum PayTransactionsJsapiCurrency {
 type PayTransactionsJsapiModel {
   "ID"
   id: PayTransactionsJsapiId!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -95,7 +95,7 @@ type PayTransactionsJsapiModel {
 type PayTransactionsJsapiFieldComment {
   "ID"
   id: String!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -157,7 +157,7 @@ type PayTransactionsJsapiFieldComment {
 input PayTransactionsJsapiInput {
   ""
   id: PayTransactionsJsapiId
-  "appid"
+  "开发者ID"
   appid: String
   "商户号"
   mchid: String
@@ -223,7 +223,7 @@ input PayTransactionsJsapiSearch {
   ids: [PayTransactionsJsapiId!]
   "ID"
   id: PayTransactionsJsapiId
-  "appid"
+  "开发者ID"
   appid: String
   appid_like: String
   "商户号"

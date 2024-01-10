@@ -9,9 +9,9 @@ scalar WxAppTokenId
 type WxAppTokenModel {
   "ID"
   id: WxAppTokenId!
-  "微信小程序"
+  "小程序设置"
   wx_app_id: WxAppId!
-  "微信小程序"
+  "小程序设置"
   wx_app_id_lbl: String
   "令牌"
   access_token: String!
@@ -27,9 +27,9 @@ type WxAppTokenModel {
 type WxAppTokenFieldComment {
   "ID"
   id: String!
-  "微信小程序"
+  "小程序设置"
   wx_app_id: String!
-  "微信小程序"
+  "小程序设置"
   wx_app_id_lbl: String!
   "令牌"
   access_token: String!
@@ -43,9 +43,9 @@ type WxAppTokenFieldComment {
 input WxAppTokenInput {
   ""
   id: WxAppTokenId
-  "微信小程序"
+  "小程序设置"
   wx_app_id: WxAppId
-  "微信小程序"
+  "小程序设置"
   wx_app_id_lbl: String
   "令牌"
   access_token: String
@@ -63,7 +63,7 @@ input WxAppTokenSearch {
   ids: [WxAppTokenId!]
   "ID"
   id: WxAppTokenId
-  "微信小程序"
+  "小程序设置"
   wx_app_id: [WxAppId!]
   wx_app_id_is_null: Boolean
   "令牌"

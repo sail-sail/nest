@@ -70,12 +70,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('appid')"
+            :label="n('开发者ID')"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -746,7 +746,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "appid",
+    "开发者ID",
     "商户号",
     "商品描述",
     "商户订单号",

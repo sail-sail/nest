@@ -99,12 +99,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('appid')"
+            :label="n('开发者ID')"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -112,12 +112,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appsecret == null)">
           <el-form-item
-            :label="n('appsecret')"
+            :label="n('开发者密码')"
             prop="appsecret"
           >
             <CustomInput
               v-model="dialogModel.appsecret"
-              :placeholder="`${ ns('请输入') } ${ n('appsecret') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者密码') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -348,28 +348,28 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // appid
+    // 开发者ID
     appid: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("appid") }`,
+        message: `${ await nsAsync("请输入") } ${ n("开发者ID") }`,
       },
       {
         type: "string",
         max: 22,
-        message: `${ n("appid") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        message: `${ n("开发者ID") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // appsecret
+    // 开发者密码
     appsecret: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("appsecret") }`,
+        message: `${ await nsAsync("请输入") } ${ n("开发者密码") }`,
       },
       {
         type: "string",
         max: 200,
-        message: `${ n("appsecret") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
+        message: `${ n("开发者密码") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
       },
     ],
     // 排序
@@ -862,8 +862,8 @@ async function onInitI18ns() {
   const codes: string[] = [
     "原始ID",
     "名称",
-    "appid",
-    "appsecret",
+    "开发者ID",
+    "开发者密码",
     "锁定",
     "启用",
     "排序",

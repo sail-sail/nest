@@ -41,12 +41,12 @@
       
       <template v-if="builtInSearch?.appid == null && (showBuildIn || builtInSearch?.appid_like == null)">
         <el-form-item
-          :label="n('appid')"
+          :label="n('开发者ID')"
           prop="appid_like"
         >
           <CustomInput
             v-model="search.appid_like"
-            :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+            :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -469,7 +469,7 @@
             </el-table-column>
           </template>
           
-          <!-- appid -->
+          <!-- 开发者ID -->
           <template v-else-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -722,7 +722,7 @@ import type {
 } from "#/types";
 
 defineOptions({
-  name: "微信支付",
+  name: "微信支付设置",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;
@@ -824,8 +824,8 @@ const props = defineProps<{
   id?: WxPayId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  appid?: string; // appid
-  appid_like?: string; // appid
+  appid?: string; // 开发者ID
+  appid_like?: string; // 开发者ID
   mchid?: string; // 商户号
   mchid_like?: string; // 商户号
   public_key?: string; // 公钥
@@ -992,7 +992,7 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "appid",
+      label: "开发者ID",
       prop: "appid",
       width: 160,
       align: "center",
@@ -1382,7 +1382,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("appid") ]: "appid",
+    [ await nAsync("开发者ID") ]: "appid",
     [ await nAsync("商户号") ]: "mchid",
     [ await nAsync("公钥") ]: "public_key",
     [ await nAsync("私钥") ]: "private_key",
@@ -1765,7 +1765,7 @@ async function onRevertByIds() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "appid",
+    "开发者ID",
     "商户号",
     "公钥",
     "私钥",

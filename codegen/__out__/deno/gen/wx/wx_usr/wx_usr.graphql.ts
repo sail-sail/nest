@@ -21,11 +21,9 @@ type WxUsrModel {
   avatar_url: String!
   "手机"
   mobile: String!
-  "小程序openid"
+  "小程序用户唯一标识"
   openid: String!
-  "公众号openid"
-  gz_openid: String!
-  "unionid"
+  "小程序用户统一标识"
   unionid: String!
   "性别"
   gender: Int!
@@ -39,14 +37,6 @@ type WxUsrModel {
   country: String!
   "语言"
   language: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
-  "启用"
-  is_enabled: Int!
-  "启用"
-  is_enabled_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -83,11 +73,9 @@ type WxUsrFieldComment {
   avatar_url: String!
   "手机"
   mobile: String!
-  "小程序openid"
+  "小程序用户唯一标识"
   openid: String!
-  "公众号openid"
-  gz_openid: String!
-  "unionid"
+  "小程序用户统一标识"
   unionid: String!
   "性别"
   gender: String!
@@ -101,14 +89,6 @@ type WxUsrFieldComment {
   country: String!
   "语言"
   language: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
-  "启用"
-  is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -143,11 +123,9 @@ input WxUsrInput {
   avatar_url: String
   "手机"
   mobile: String
-  "小程序openid"
+  "小程序用户唯一标识"
   openid: String
-  "公众号openid"
-  gz_openid: String
-  "unionid"
+  "小程序用户统一标识"
   unionid: String
   "性别"
   gender: Int
@@ -161,14 +139,6 @@ input WxUsrInput {
   country: String
   "语言"
   language: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
-  "启用"
-  is_enabled: Int
-  "启用"
-  is_enabled_lbl: String
   "备注"
   rem: String
   "创建人"
@@ -210,13 +180,10 @@ input WxUsrSearch {
   "手机"
   mobile: String
   mobile_like: String
-  "小程序openid"
+  "小程序用户唯一标识"
   openid: String
   openid_like: String
-  "公众号openid"
-  gz_openid: String
-  gz_openid_like: String
-  "unionid"
+  "小程序用户统一标识"
   unionid: String
   unionid_like: String
   "性别"
@@ -233,10 +200,6 @@ input WxUsrSearch {
   "语言"
   language: String
   language_like: String
-  "锁定"
-  is_locked: [Int!]
-  "启用"
-  is_enabled: [Int!]
   "备注"
   rem: String
   rem_like: String
@@ -252,31 +215,27 @@ input WxUsrSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找微信用户总数"
+  "根据条件查找小程序用户总数"
   findCountWxUsr(search: WxUsrSearch): Int!
-  "根据搜索条件和分页查找微信用户列表"
+  "根据搜索条件和分页查找小程序用户列表"
   findAllWxUsr(search: WxUsrSearch, page: PageInput, sort: [SortInput!]): [WxUsrModel!]!
-  "获取微信用户字段注释"
+  "获取小程序用户字段注释"
   getFieldCommentsWxUsr: WxUsrFieldComment!
-  "根据条件查找第一个微信用户"
+  "根据条件查找第一个小程序用户"
   findOneWxUsr(search: WxUsrSearch, sort: [SortInput!]): WxUsrModel
-  "根据 id 查找微信用户"
+  "根据 id 查找小程序用户"
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
 }
 type Mutation {
-  "创建微信用户"
+  "创建小程序用户"
   createWxUsr(model: WxUsrInput!, unique_type: UniqueType): WxUsrId!
-  "根据 id 修改微信用户"
+  "根据 id 修改小程序用户"
   updateByIdWxUsr(id: WxUsrId!, model: WxUsrInput!): WxUsrId!
-  "根据 ids 删除微信用户"
+  "根据 ids 删除小程序用户"
   deleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
-  "根据 ids 启用或者禁用微信用户"
-  enableByIdsWxUsr(ids: [WxUsrId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁微信用户"
-  lockByIdsWxUsr(ids: [WxUsrId!]!, is_locked: Int!): Int!
-  "根据 ids 还原微信用户"
+  "根据 ids 还原小程序用户"
   revertByIdsWxUsr(ids: [WxUsrId!]!): Int!
-  "根据 ids 彻底删除微信用户"
+  "根据 ids 彻底删除小程序用户"
   forceDeleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
 }
 

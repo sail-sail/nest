@@ -88,7 +88,7 @@ declare const pay_transactions_jsapiId: unique symbol;
 export type PayTransactionsJsapiId = Distinct<string, typeof pay_transactions_jsapiId>;
 
 declare const wx_appId: unique symbol;
-/** 微信小程序 */
+/** 小程序设置 */
 export type WxAppId = Distinct<string, typeof wx_appId>;
 
 declare const wx_app_tokenId: unique symbol;
@@ -96,7 +96,7 @@ declare const wx_app_tokenId: unique symbol;
 export type WxAppTokenId = Distinct<string, typeof wx_app_tokenId>;
 
 declare const wx_payId: unique symbol;
-/** 微信支付 */
+/** 微信支付设置 */
 export type WxPayId = Distinct<string, typeof wx_payId>;
 
 declare const wx_pay_noticeId: unique symbol;
@@ -104,5 +104,17 @@ declare const wx_pay_noticeId: unique symbol;
 export type WxPayNoticeId = Distinct<string, typeof wx_pay_noticeId>;
 
 declare const wx_usrId: unique symbol;
-/** 微信用户 */
+/** 小程序用户 */
 export type WxUsrId = Distinct<string, typeof wx_usrId>;
+
+declare const wxo_appId: unique symbol;
+/** 公众号设置 */
+export type WxoAppId = Distinct<string, typeof wxo_appId>;
+
+declare const wxo_app_tokenId: unique symbol;
+/** 小程序接口凭据 */
+export type WxoAppTokenId = Distinct<string, typeof wxo_app_tokenId>;
+
+declare const wxo_usrId: unique symbol;
+/** 公众号用户 */
+export type WxoUsrId = Distinct<string, typeof wxo_usrId>;

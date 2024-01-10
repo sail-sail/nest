@@ -333,7 +333,7 @@
           :key="col.prop"
         >
           
-          <!-- appid -->
+          <!-- 开发者ID -->
           <template v-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -684,8 +684,8 @@ const props = defineProps<{
   selectedIds?: PayTransactionsJsapiId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: PayTransactionsJsapiId; // ID
-  appid?: string; // appid
-  appid_like?: string; // appid
+  appid?: string; // 开发者ID
+  appid_like?: string; // 开发者ID
   mchid?: string; // 商户号
   mchid_like?: string; // 商户号
   description?: string; // 商品描述
@@ -855,7 +855,7 @@ let tableData = $ref<PayTransactionsJsapiModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "appid",
+      label: "开发者ID",
       prop: "appid",
       width: 160,
       align: "left",
@@ -1248,7 +1248,7 @@ async function openView() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "appid",
+    "开发者ID",
     "商户号",
     "商品描述",
     "商户订单号",

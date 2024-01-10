@@ -4,3 +4,4 @@ VkG+mAlHR7y6IlfsDCoROw,wx_unified_order_trade_type,微信统一下单-交易类�
 Pz11MYjESMaE8ift9DOCpg,wx_pay_notice_trade_state,微信支付通知-交易状态,string,104,1,1
 A+3vwR6vS7eFqf8mewVXlA,wx_pay_notice_currency,微信支付通知-货币类型,string,105,1,1
 qdUtCjusRjiO22jxXk7ipA,wx_pay_notice_payer_currency,微信支付通知-用户支付币种,string,106,1,1
+XsJS1HyjRQuwgi2za8vmJw,wxo_app_encoding_type,公众号设置-消息加解密方式,string,107,1,1

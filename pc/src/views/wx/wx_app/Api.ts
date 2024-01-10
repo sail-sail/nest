@@ -24,7 +24,7 @@ async function setLblById(
 }
 
 /**
- * 根据搜索条件查找微信小程序列表
+ * 根据搜索条件查找小程序设置列表
  * @param {WxAppSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -80,7 +80,7 @@ export async function findAll(
 }
 
 /**
- * 根据条件查找第一个微信小程序
+ * 根据条件查找第一个小程序设置
  * @param {WxAppSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -130,7 +130,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找微信小程序总数
+ * 根据搜索条件查找小程序设置总数
  * @param {WxAppSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -155,7 +155,7 @@ export async function findCount(
 }
 
 /**
- * 创建微信小程序
+ * 创建小程序设置
  * @param {WxAppInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -183,7 +183,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改微信小程序
+ * 根据 id 修改小程序设置
  * @param {WxAppId} id
  * @param {WxAppInput} model
  * @param {GqlOpt} opt?
@@ -211,7 +211,7 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找微信小程序
+ * 根据 id 查找小程序设置
  * @param {WxAppId} id
  * @param {GqlOpt} opt?
  */
@@ -257,7 +257,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除微信小程序
+ * 根据 ids 删除小程序设置
  * @param {WxAppId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -282,7 +282,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用微信小程序
+ * 根据 ids 启用或禁用小程序设置
  * @param {WxAppId[]} ids
  * @param {0 | 1} is_enabled
  * @param {GqlOpt} opt?
@@ -310,7 +310,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁微信小程序
+ * 根据 ids 锁定或解锁小程序设置
  * @param {WxAppId[]} ids
  * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
@@ -338,7 +338,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原微信小程序
+ * 根据 ids 还原小程序设置
  * @param {WxAppId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -363,7 +363,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信小程序
+ * 根据 ids 彻底删除小程序设置
  * @param {WxAppId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -423,7 +423,7 @@ export function useDownloadImportTemplate(routePath: string) {
         data,
       },
     );
-    saveAsExcel(buffer, `${ await nAsync("微信小程序") }${ await nsAsync("导入") }`);
+    saveAsExcel(buffer, `${ await nAsync("小程序设置") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -509,7 +509,7 @@ export function useExportExcel(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, await nAsync("微信小程序"));
+      saveAsExcel(buffer, await nAsync("小程序设置"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;
@@ -572,7 +572,7 @@ export async function importModels(
 }
 
 /**
- * 查找 微信小程序 order_by 字段的最大值
+ * 查找 小程序设置 order_by 字段的最大值
  * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(

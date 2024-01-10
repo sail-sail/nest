@@ -47,7 +47,7 @@ enum WxPayNoticePayerCurrency {
 type WxPayNoticeModel {
   "ID"
   id: WxPayNoticeId!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -115,7 +115,7 @@ type WxPayNoticeModel {
 type WxPayNoticeFieldComment {
   "ID"
   id: String!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -181,7 +181,7 @@ type WxPayNoticeFieldComment {
 input WxPayNoticeInput {
   ""
   id: WxPayNoticeId
-  "appid"
+  "开发者ID"
   appid: String
   "商户号"
   mchid: String
@@ -251,7 +251,7 @@ input WxPayNoticeSearch {
   ids: [WxPayNoticeId!]
   "ID"
   id: WxPayNoticeId
-  "appid"
+  "开发者ID"
   appid: String
   appid_like: String
   "商户号"

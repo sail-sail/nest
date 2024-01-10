@@ -19,7 +19,7 @@ import type {
 import * as wx_payDao from "./wx_pay.dao.ts";
 
 /**
- * 根据条件查找微信支付总数
+ * 根据条件查找微信支付设置总数
  * @param {WxPaySearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -32,7 +32,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找微信支付列表
+ * 根据搜索条件和分页查找微信支付设置列表
  * @param {WxPaySearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -57,7 +57,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一个微信支付
+ * 根据条件查找第一个微信支付设置
  * @param {WxPaySearch} search? 搜索条件
  */
 export async function findOne(
@@ -70,7 +70,7 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找微信支付
+ * 根据 id 查找微信支付设置
  * @param {WxPayId} id
  */
 export async function findById(
@@ -81,7 +81,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件查找微信支付是否存在
+ * 根据搜索条件查找微信支付设置是否存在
  * @param {WxPaySearch} search? 搜索条件
  */
 export async function exist(
@@ -93,7 +93,7 @@ export async function exist(
 }
 
 /**
- * 根据 id 查找微信支付是否存在
+ * 根据 id 查找微信支付设置是否存在
  * @param {WxPayId} id
  */
 export async function existById(
@@ -104,7 +104,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验微信支付
+ * 增加和修改时校验微信支付设置
  * @param input 
  */
 export async function validate(
@@ -130,7 +130,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改微信支付
+ * 根据 id 修改微信支付设置
  * @param {WxPayId} id
  * @param {WxPayInput} input
  * @return {Promise<WxPayId>}
@@ -150,7 +150,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除微信支付
+ * 根据 ids 删除微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -178,7 +178,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或者禁用微信支付
+ * 根据 ids 启用或者禁用微信支付设置
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -192,7 +192,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或者解锁微信支付
+ * 根据 ids 锁定或者解锁微信支付设置
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -206,7 +206,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原微信支付
+ * 根据 ids 还原微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -218,7 +218,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信支付
+ * 根据 ids 彻底删除微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -230,7 +230,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取微信支付字段注释
+ * 获取微信支付设置字段注释
  */
 export async function getFieldComments(): Promise<WxPayFieldComment> {
   const data = await wx_payDao.getFieldComments();
@@ -238,7 +238,7 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
 }
 
 /**
- * 查找 微信支付 order_by 字段的最大值
+ * 查找 微信支付设置 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

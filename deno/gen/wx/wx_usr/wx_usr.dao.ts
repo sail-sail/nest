@@ -178,15 +178,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.openid_like)) {
     whereQuery += ` and t.openid like ${ args.push("%" + sqlLike(search?.openid_like) + "%") }`;
   }
-  if (search?.gz_openid !== undefined) {
-    whereQuery += ` and t.gz_openid = ${ args.push(search.gz_openid) }`;
-  }
-  if (search?.gz_openid === null) {
-    whereQuery += ` and t.gz_openid is null`;
-  }
-  if (isNotEmpty(search?.gz_openid_like)) {
-    whereQuery += ` and t.gz_openid like ${ args.push("%" + sqlLike(search?.gz_openid_like) + "%") }`;
-  }
   if (search?.unionid !== undefined) {
     whereQuery += ` and t.unionid = ${ args.push(search.unionid) }`;
   }
@@ -237,18 +228,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.language_like)) {
     whereQuery += ` and t.language like ${ args.push("%" + sqlLike(search?.language_like) + "%") }`;
-  }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -326,7 +305,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找微信用户总数
+ * 根据条件查找小程序用户总数
  * @param { WxUsrSearch } search?
  * @return {Promise<number>}
  */
@@ -374,7 +353,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找微信用户列表
+ * 根据搜索条件和分页查找小程序用户列表
  * @param {WxUsrSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -458,12 +437,8 @@ export async function findAll(
   
   const [
     genderDict, // 性别
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
   ] = await getDict([
     "wx_usr_gender",
-    "is_locked",
-    "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -478,26 +453,6 @@ export async function findAll(
       }
     }
     model.gender_lbl = gender_lbl;
-    
-    // 锁定
-    let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked !== undefined && model.is_locked !== null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
-      if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
-      }
-    }
-    model.is_locked_lbl = is_locked_lbl;
-    
-    // 启用
-    let is_enabled_lbl = model.is_enabled?.toString() || "";
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
-      if (dictItem) {
-        is_enabled_lbl = dictItem.lbl;
-      }
-    }
-    model.is_enabled_lbl = is_enabled_lbl;
     
     // 创建时间
     if (model.create_time) {
@@ -534,12 +489,8 @@ export async function setIdByLbl(
   
   const [
     genderDict, // 性别
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
   ] = await getDict([
     "wx_usr_gender",
-    "is_locked",
-    "is_enabled",
   ]);
   
   // 用户
@@ -558,26 +509,10 @@ export async function setIdByLbl(
       input.gender = Number(val);
     }
   }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
 }
 
 /**
- * 获取微信用户字段注释
+ * 获取小程序用户字段注释
  */
 export async function getFieldComments(): Promise<WxUsrFieldComment> {
   const n = initN(route_path);
@@ -589,19 +524,14 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     nick_name: await n("昵称"),
     avatar_url: await n("头像"),
     mobile: await n("手机"),
-    openid: await n("小程序openid"),
-    gz_openid: await n("公众号openid"),
-    unionid: await n("unionid"),
+    openid: await n("小程序用户唯一标识"),
+    unionid: await n("小程序用户统一标识"),
     gender: await n("性别"),
     gender_lbl: await n("性别"),
     city: await n("城市"),
     province: await n("省份"),
     country: await n("国家"),
     language: await n("语言"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -616,7 +546,7 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
 }
 
 /**
- * 通过唯一约束获得微信用户列表
+ * 通过唯一约束获得小程序用户列表
  * @param {WxUsrInput} search0
  */
 export async function findByUnique(
@@ -669,7 +599,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查微信用户是否已经存在
+ * 通过唯一约束检查小程序用户是否已经存在
  * @param {WxUsrInput} input
  * @param {WxUsrModel} oldModel
  * @param {UniqueType} uniqueType
@@ -708,7 +638,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一个微信用户
+ * 根据条件查找第一个小程序用户
  * @param {WxUsrSearch} search?
  */
 export async function findOne(
@@ -727,7 +657,7 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找微信用户
+ * 根据 id 查找小程序用户
  * @param {WxUsrId} id
  */
 export async function findById(
@@ -743,7 +673,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断微信用户是否存在
+ * 根据搜索条件判断小程序用户是否存在
  * @param {WxUsrSearch} search?
  */
 export async function exist(
@@ -757,7 +687,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断微信用户是否存在
+ * 根据id判断小程序用户是否存在
  * @param {WxUsrId} id
  */
 export async function existById(
@@ -797,27 +727,18 @@ export async function existById(
   return result;
 }
 
-/** 校验微信用户是否启用 */
-export async function validateIsEnabled(
-  model: WxUsrModel,
-) {
-  if (model.is_enabled == 0) {
-    throw `${ await ns("微信用户") } ${ await ns("已禁用") }`;
-  }
-}
-
-/** 校验微信用户是否存在 */
+/** 校验小程序用户是否存在 */
 export async function validateOption(
   model?: WxUsrModel,
 ) {
   if (!model) {
-    throw `${ await ns("微信用户") } ${ await ns("不存在") }`;
+    throw `${ await ns("小程序用户") } ${ await ns("不存在") }`;
   }
   return model;
 }
 
 /**
- * 微信用户增加和修改时校验输入
+ * 小程序用户增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -867,21 +788,14 @@ export async function validate(
     fieldComments.mobile,
   );
   
-  // 小程序openid
+  // 小程序用户唯一标识
   await validators.chars_max_length(
     input.openid,
     100,
     fieldComments.openid,
   );
   
-  // 公众号openid
-  await validators.chars_max_length(
-    input.gz_openid,
-    100,
-    fieldComments.gz_openid,
-  );
-  
-  // unionid
+  // 小程序用户统一标识
   await validators.chars_max_length(
     input.unionid,
     100,
@@ -940,7 +854,7 @@ export async function validate(
 }
 
 /**
- * 创建微信用户
+ * 创建小程序用户
  * @param {WxUsrInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1051,9 +965,6 @@ export async function create(
   if (input.openid !== undefined) {
     sql += `,openid`;
   }
-  if (input.gz_openid !== undefined) {
-    sql += `,gz_openid`;
-  }
   if (input.unionid !== undefined) {
     sql += `,unionid`;
   }
@@ -1071,12 +982,6 @@ export async function create(
   }
   if (input.language !== undefined) {
     sql += `,language`;
-  }
-  if (input.is_locked !== undefined) {
-    sql += `,is_locked`;
-  }
-  if (input.is_enabled !== undefined) {
-    sql += `,is_enabled`;
   }
   if (input.rem !== undefined) {
     sql += `,rem`;
@@ -1133,9 +1038,6 @@ export async function create(
   if (input.openid !== undefined) {
     sql += `,${ args.push(input.openid) }`;
   }
-  if (input.gz_openid !== undefined) {
-    sql += `,${ args.push(input.gz_openid) }`;
-  }
   if (input.unionid !== undefined) {
     sql += `,${ args.push(input.unionid) }`;
   }
@@ -1153,12 +1055,6 @@ export async function create(
   }
   if (input.language !== undefined) {
     sql += `,${ args.push(input.language) }`;
-  }
-  if (input.is_locked !== undefined) {
-    sql += `,${ args.push(input.is_locked) }`;
-  }
-  if (input.is_enabled !== undefined) {
-    sql += `,${ args.push(input.is_enabled) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -1193,7 +1089,7 @@ export async function delCache() {
 }
 
 /**
- * 微信用户根据id修改租户id
+ * 小程序用户根据id修改租户id
  * @param {WxUsrId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1232,7 +1128,7 @@ export async function updateTenantById(
 }
 
 /**
- * 微信用户根据id修改组织id
+ * 小程序用户根据id修改组织id
  * @export
  * @param {WxUsrId} id
  * @param {OrgId} org_id
@@ -1274,7 +1170,7 @@ export async function updateOrgById(
 }
 
 /**
- * 根据 id 修改微信用户
+ * 根据 id 修改小程序用户
  * @param {WxUsrId} id
  * @param {WxUsrInput} input
  * @param {({
@@ -1377,12 +1273,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.gz_openid !== undefined) {
-    if (input.gz_openid != oldModel.gz_openid) {
-      sql += `gz_openid = ${ args.push(input.gz_openid) },`;
-      updateFldNum++;
-    }
-  }
   if (input.unionid !== undefined) {
     if (input.unionid != oldModel.unionid) {
       sql += `unionid = ${ args.push(input.unionid) },`;
@@ -1416,18 +1306,6 @@ export async function updateById(
   if (input.language !== undefined) {
     if (input.language != oldModel.language) {
       sql += `language = ${ args.push(input.language) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_locked !== undefined) {
-    if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(input.is_locked) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_enabled !== undefined) {
-    if (input.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
@@ -1469,7 +1347,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除微信用户
+ * 根据 ids 删除小程序用户
  * @param {WxUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -1517,146 +1395,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找微信用户是否已启用
- * 不存在则返回 undefined
- * @param {WxUsrId} id
- * @return {Promise<0 | 1 | undefined>}
- */
-export async function getIsEnabledById(
-  id: WxUsrId,
-  options?: {
-  },
-): Promise<0 | 1 | undefined> {
-  const model = await findById(
-    id,
-    options,
-  );
-  const is_enabled = model?.is_enabled as (0 | 1 | undefined);
-  return is_enabled;
-}
-
-/**
- * 根据 ids 启用或者禁用微信用户
- * @param {WxUsrId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
-export async function enableByIds(
-  ids: WxUsrId[],
-  is_enabled: 0 | 1,
-  options?: {
-  },
-): Promise<number> {
-  const table = "wx_wx_usr";
-  const method = "enableByIds";
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
-  const args = new QueryArgs();
-  let sql = `
-    update
-      wx_wx_usr
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  
-  return num;
-}
-
-/**
- * 根据 ID 查找微信用户是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {WxUsrId} id
- * @return {Promise<0 | 1 | undefined>}
- */
-export async function getIsLockedById(
-  id: WxUsrId,
-  options?: {
-  },
-): Promise<0 | 1 | undefined> {
-  const model = await findById(
-    id,
-    options,
-  );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
-  return is_locked;
-}
-
-/**
- * 根据 ids 锁定或者解锁微信用户
- * @param {WxUsrId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
-export async function lockByIds(
-  ids: WxUsrId[],
-  is_locked: 0 | 1,
-  options?: {
-  },
-): Promise<number> {
-  const table = "wx_wx_usr";
-  const method = "lockByIds";
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
-  const args = new QueryArgs();
-  let sql = `
-    update
-      wx_wx_usr
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  
-  return num;
-}
-
-/**
- * 根据 ids 还原微信用户
+ * 根据 ids 还原小程序用户
  * @param {WxUsrId[]} ids
  * @return {Promise<number>}
  */
@@ -1715,7 +1454,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信用户
+ * 根据 ids 彻底删除小程序用户
  * @param {WxUsrId[]} ids
  * @return {Promise<number>}
  */
