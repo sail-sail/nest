@@ -24,3 +24,12 @@ export async function bindWxUsr(
   
   return await bindWxUsr(input);
 }
+
+/** 解除绑定 */
+export async function unBindWxUsr() {
+  const {
+    unBindWxUsr,
+  } = await import("./wx_usr.service.ts");
+  
+  return await unBindWxUsr();
+}

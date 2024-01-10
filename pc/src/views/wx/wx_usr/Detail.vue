@@ -145,25 +145,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
-            :label="n('小程序openid')"
+            :label="n('小程序用户唯一标识')"
             prop="openid"
           >
             <CustomInput
               v-model="dialogModel.openid"
-              :placeholder="`${ ns('请输入') } ${ n('小程序openid') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.gz_openid == null)">
-          <el-form-item
-            :label="n('公众号openid')"
-            prop="gz_openid"
-          >
-            <CustomInput
-              v-model="dialogModel.gz_openid"
-              :placeholder="`${ ns('请输入') } ${ n('公众号openid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('小程序用户唯一标识') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -171,12 +158,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.unionid == null)">
           <el-form-item
-            :label="n('unionid')"
+            :label="n('小程序用户统一标识')"
             prop="unionid"
           >
             <CustomInput
               v-model="dialogModel.unionid"
-              :placeholder="`${ ns('请输入') } ${ n('unionid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('小程序用户统一标识') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -519,14 +506,10 @@ async function showDialog(
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -564,8 +547,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -592,21 +573,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
-    }
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -883,8 +849,6 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
-    is_locked: undefined,
-    is_locked_lbl: undefined,
   };
   Object.assign(dialogModel, { is_deleted: undefined });
 }
@@ -935,16 +899,13 @@ async function onInitI18ns() {
     "昵称",
     "头像",
     "手机",
-    "小程序openid",
-    "公众号openid",
-    "unionid",
+    "小程序用户唯一标识",
+    "小程序用户统一标识",
     "性别",
     "城市",
     "省份",
     "国家",
     "语言",
-    "锁定",
-    "启用",
     "备注",
     "创建人",
     "创建时间",

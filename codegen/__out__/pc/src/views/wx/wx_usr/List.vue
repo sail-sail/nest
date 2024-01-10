@@ -246,38 +246,6 @@
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
             
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onEnableByIds(1)"
-            >
-              <span>{{ ns('启用') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onEnableByIds(0)"
-            >
-              <span>{{ ns('禁用') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(1)"
-            >
-              <span>{{ ns('锁定') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(0)"
-            >
-              <span>{{ ns('解锁') }}</span>
-            </el-dropdown-item>
-            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -492,7 +460,7 @@
             </el-table-column>
           </template>
           
-          <!-- 小程序openid -->
+          <!-- 小程序用户唯一标识 -->
           <template v-else-if="'openid' === col.prop && (showBuildIn || builtInSearch?.openid == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -501,16 +469,7 @@
             </el-table-column>
           </template>
           
-          <!-- 公众号openid -->
-          <template v-else-if="'gz_openid' === col.prop && (showBuildIn || builtInSearch?.gz_openid == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- unionid -->
+          <!-- 小程序用户统一标识 -->
           <template v-else-if="'unionid' === col.prop && (showBuildIn || builtInSearch?.unionid == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -561,38 +520,6 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-            </el-table-column>
-          </template>
-          
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_locked"
-                  @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_enabled"
-                  @change="onIs_enabled(row.id, row.is_enabled)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
@@ -708,8 +635,6 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
-  enableByIds,
-  lockByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -723,7 +648,7 @@ import type {
 } from "#/types";
 
 defineOptions({
-  name: "微信用户",
+  name: "小程序用户",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;
@@ -833,12 +758,10 @@ const props = defineProps<{
   avatar_url_like?: string; // 头像
   mobile?: string; // 手机
   mobile_like?: string; // 手机
-  openid?: string; // 小程序openid
-  openid_like?: string; // 小程序openid
-  gz_openid?: string; // 公众号openid
-  gz_openid_like?: string; // 公众号openid
-  unionid?: string; // unionid
-  unionid_like?: string; // unionid
+  openid?: string; // 小程序用户唯一标识
+  openid_like?: string; // 小程序用户唯一标识
+  unionid?: string; // 小程序用户统一标识
+  unionid_like?: string; // 小程序用户统一标识
   gender?: string|string[]; // 性别
   city?: string; // 城市
   city_like?: string; // 城市
@@ -848,8 +771,6 @@ const props = defineProps<{
   country_like?: string; // 国家
   language?: string; // 语言
   language_like?: string; // 语言
-  is_locked?: string|string[]; // 锁定
-  is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -865,10 +786,6 @@ const builtInSearchType: { [key: string]: string } = {
   usr_id_lbl: "string[]",
   gender: "number[]",
   gender_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1037,7 +954,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "小程序openid",
+      label: "小程序用户唯一标识",
       prop: "openid",
       width: 240,
       align: "center",
@@ -1045,15 +962,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "公众号openid",
-      prop: "gz_openid",
-      width: 180,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "unionid",
+      label: "小程序用户统一标识",
       prop: "unionid",
       width: 180,
       align: "center",
@@ -1100,24 +1009,6 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-    },
-    {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      sortBy: "is_locked",
-      width: 60,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      sortBy: "is_enabled",
-      width: 60,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -1429,16 +1320,13 @@ async function onImportExcel() {
     [ await nAsync("昵称") ]: "nick_name",
     [ await nAsync("头像") ]: "avatar_url",
     [ await nAsync("手机") ]: "mobile",
-    [ await nAsync("小程序openid") ]: "openid",
-    [ await nAsync("公众号openid") ]: "gz_openid",
-    [ await nAsync("unionid") ]: "unionid",
+    [ await nAsync("小程序用户唯一标识") ]: "openid",
+    [ await nAsync("小程序用户统一标识") ]: "unionid",
     [ await nAsync("性别") ]: "gender_lbl",
     [ await nAsync("城市") ]: "city",
     [ await nAsync("省份") ]: "province",
     [ await nAsync("国家") ]: "country",
     [ await nAsync("语言") ]: "language",
-    [ await nAsync("锁定") ]: "is_locked_lbl",
-    [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1467,15 +1355,12 @@ async function onImportExcel() {
           "avatar_url": "string",
           "mobile": "string",
           "openid": "string",
-          "gz_openid": "string",
           "unionid": "string",
           "gender_lbl": "string",
           "city": "string",
           "province": "string",
           "country": "string",
           "language": "string",
-          "is_locked_lbl": "string",
-          "is_enabled_lbl": "string",
           "rem": "string",
         },
       },
@@ -1504,50 +1389,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-}
-
-/** 锁定 */
-async function onIs_locked(id: WxUsrId, is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await lockByIds(
-    [ id ],
-    is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 启用 */
-async function onIs_enabled(id: WxUsrId, is_enabled: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await enableByIds(
-    [ id ],
-    is_enabled,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 打开编辑页面 */
@@ -1711,74 +1552,6 @@ async function onForceDeleteByIds() {
   }
 }
 
-/** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("edit") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的数据");
-    } else {
-      msg = await nsAsync("请选择需要 禁用 的数据");
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await enableByIds(selectedIds, is_enabled);
-  if (num > 0) {
-    let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 条数据成功", num);
-    } else {
-      msg = await nsAsync("禁用 {0} 条数据成功", num);
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("edit") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的数据");
-    } else {
-      msg = await nsAsync("请选择需要 解锁 的数据");
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await lockByIds(selectedIds, is_locked);
-  if (num > 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 条数据成功", num);
-    } else {
-      msg = await nsAsync("解锁 {0} 条数据成功", num);
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
 /** 点击还原 */
 async function onRevertByIds() {
   tableFocus();
@@ -1820,16 +1593,13 @@ async function initI18nsEfc() {
     "昵称",
     "头像",
     "手机",
-    "小程序openid",
-    "公众号openid",
-    "unionid",
+    "小程序用户唯一标识",
+    "小程序用户统一标识",
     "性别",
     "城市",
     "省份",
     "国家",
     "语言",
-    "锁定",
-    "启用",
     "备注",
     "创建人",
     "创建时间",

@@ -86,12 +86,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('appid')"
+            :label="n('开发者ID')"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -362,16 +362,16 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // appid
+    // 开发者ID
     appid: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("appid") }`,
+        message: `${ await nsAsync("请输入") } ${ n("开发者ID") }`,
       },
       {
         type: "string",
         max: 22,
-        message: `${ n("appid") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        message: `${ n("开发者ID") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
     // 排序
@@ -863,7 +863,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "名称",
-    "appid",
+    "开发者ID",
     "商户号",
     "公钥",
     "私钥",

@@ -342,6 +342,22 @@ export async function bindWxUsr(
   return loginModel;
 }
 
+/** 解除绑定 */
+export async function unBindWxUsr() {
+  const authModel = await getAuthModel();
+  const wx_usr_id = authModel.wx_usr_id;
+  if (!wx_usr_id) {
+    throw "wx_usr_id can not be null";
+  }
+  await updateByIdWxUsr(
+    wx_usr_id,
+    {
+      usr_id: "" as UsrId,
+    },
+  );
+  return true;
+}
+
 async function fetchPhoneNumber(
   access_token: string,
   code: string,

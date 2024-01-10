@@ -28,7 +28,7 @@ async function setLblById(
 }
 
 /**
- * 根据搜索条件查找微信用户列表
+ * 根据搜索条件查找小程序用户列表
  * @param {WxUsrSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -54,7 +54,6 @@ export async function findAll(
           avatar_url
           mobile
           openid
-          gz_openid
           unionid
           gender
           gender_lbl
@@ -62,10 +61,6 @@ export async function findAll(
           province
           country
           language
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
           rem
           create_usr_id
           create_usr_id_lbl
@@ -94,7 +89,7 @@ export async function findAll(
 }
 
 /**
- * 根据条件查找第一个微信用户
+ * 根据条件查找第一个小程序用户
  * @param {WxUsrSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -118,7 +113,6 @@ export async function findOne(
           avatar_url
           mobile
           openid
-          gz_openid
           unionid
           gender
           gender_lbl
@@ -126,10 +120,6 @@ export async function findOne(
           province
           country
           language
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
           rem
           create_usr_id
           create_usr_id_lbl
@@ -154,7 +144,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找微信用户总数
+ * 根据搜索条件查找小程序用户总数
  * @param {WxUsrSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -179,7 +169,7 @@ export async function findCount(
 }
 
 /**
- * 创建微信用户
+ * 创建小程序用户
  * @param {WxUsrInput} model
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
@@ -207,7 +197,7 @@ export async function create(
 }
 
 /**
- * 根据 id 修改微信用户
+ * 根据 id 修改小程序用户
  * @param {WxUsrId} id
  * @param {WxUsrInput} model
  * @param {GqlOpt} opt?
@@ -235,7 +225,7 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找微信用户
+ * 根据 id 查找小程序用户
  * @param {WxUsrId} id
  * @param {GqlOpt} opt?
  */
@@ -257,7 +247,6 @@ export async function findById(
           avatar_url
           mobile
           openid
-          gz_openid
           unionid
           gender
           gender_lbl
@@ -265,10 +254,6 @@ export async function findById(
           province
           country
           language
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
           rem
           create_usr_id
           create_usr_id_lbl
@@ -291,7 +276,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除微信用户
+ * 根据 ids 删除小程序用户
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -316,63 +301,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用微信用户
- * @param {WxUsrId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
- */
-export async function enableByIds(
-  ids: WxUsrId[],
-  is_enabled: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    enableByIdsWxUsr: Mutation["enableByIdsWxUsr"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [WxUsrId!]!, $is_enabled: Int!) {
-        enableByIdsWxUsr(ids: $ids, is_enabled: $is_enabled)
-      }
-    `,
-    variables: {
-      ids,
-      is_enabled,
-    },
-  }, opt);
-  const res = data.enableByIdsWxUsr;
-  return res;
-}
-
-/**
- * 根据 ids 锁定或解锁微信用户
- * @param {WxUsrId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
- */
-export async function lockByIds(
-  ids: WxUsrId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    lockByIdsWxUsr: Mutation["lockByIdsWxUsr"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [WxUsrId!]!, $is_locked: Int!) {
-        lockByIdsWxUsr(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsWxUsr;
-  return res;
-}
-
-/**
- * 根据 ids 还原微信用户
+ * 根据 ids 还原小程序用户
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -397,7 +326,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信用户
+ * 根据 ids 彻底删除小程序用户
  * @param {WxUsrId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -491,7 +420,6 @@ export function useDownloadImportTemplate(routePath: string) {
             avatar_url
             mobile
             openid
-            gz_openid
             unionid
             gender_lbl
             city
@@ -521,7 +449,7 @@ export function useDownloadImportTemplate(routePath: string) {
         data,
       },
     );
-    saveAsExcel(buffer, `${ await nAsync("微信用户") }${ await nsAsync("导入") }`);
+    saveAsExcel(buffer, `${ await nAsync("小程序用户") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -560,7 +488,6 @@ export function useExportExcel(routePath: string) {
             avatar_url
             mobile
             openid
-            gz_openid
             unionid
             gender
             gender_lbl
@@ -568,10 +495,6 @@ export function useExportExcel(routePath: string) {
             province
             country
             language
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
             rem
             create_usr_id
             create_usr_id_lbl
@@ -589,15 +512,12 @@ export function useExportExcel(routePath: string) {
             avatar_url
             mobile
             openid
-            gz_openid
             unionid
             gender_lbl
             city
             province
             country
             language
-            is_locked_lbl
-            is_enabled_lbl
             rem
             create_usr_id_lbl
             create_time_lbl
@@ -609,8 +529,6 @@ export function useExportExcel(routePath: string) {
           }
           getDict(codes: [
             "wx_usr_gender",
-            "is_locked",
-            "is_enabled",
           ]) {
             code
             lbl
@@ -629,7 +547,7 @@ export function useExportExcel(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, await nAsync("微信用户"));
+      saveAsExcel(buffer, await nAsync("小程序用户"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;
@@ -695,8 +613,6 @@ export async function importModels(
 export async function getDefaultInput() {
   const defaultInput: WxUsrInput = {
     gender: 0,
-    is_locked: 0,
-    is_enabled: 1,
   };
   return defaultInput;
 }

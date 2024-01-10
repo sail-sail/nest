@@ -272,7 +272,7 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "微信小程序",
+        name: "小程序设置",
         component: () => import("@/views/wx/wx_app/List.vue"),
         props: (route) => route.query,
       },
@@ -284,7 +284,7 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "微信支付",
+        name: "微信支付设置",
         component: () => import("@/views/wx/wx_pay/List.vue"),
         props: (route) => route.query,
       },
@@ -308,8 +308,32 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "微信用户",
+        name: "小程序用户",
         component: () => import("@/views/wx/wx_usr/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wxo_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "公众号设置",
+        component: () => import("@/views/wx/wxo_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wxo_usr",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "公众号用户",
+        component: () => import("@/views/wx/wxo_usr/List.vue"),
         props: (route) => route.query,
       },
     ],

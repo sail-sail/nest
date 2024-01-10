@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找微信支付总数
+ * 根据条件查找微信支付设置总数
  */
 export async function findCountWxPay(
   search?: WxPaySearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxPay(
 }
 
 /**
- * 根据搜索条件和分页查找微信支付列表
+ * 根据搜索条件和分页查找微信支付设置列表
  */
 export async function findAllWxPay(
   search?: WxPaySearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxPay(
 }
 
 /**
- * 获取微信支付字段注释
+ * 获取微信支付设置字段注释
  */
 export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
   const { getFieldComments } = await import("./wx_pay.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
 }
 
 /**
- * 根据条件查找第一个微信支付
+ * 根据条件查找第一个微信支付设置
  */
 export async function findOneWxPay(
   search?: WxPaySearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxPay(
 }
 
 /**
- * 根据 id 查找微信支付
+ * 根据 id 查找微信支付设置
  */
 export async function findByIdWxPay(
   id: WxPayId,
@@ -93,7 +93,7 @@ export async function findByIdWxPay(
 }
 
 /**
- * 创建微信支付
+ * 创建微信支付设置
  */
 export async function createWxPay(
   input: WxPayInput,
@@ -124,7 +124,7 @@ export async function createWxPay(
 }
 
 /**
- * 根据 id 修改微信支付
+ * 根据 id 修改微信支付设置
  */
 export async function updateByIdWxPay(
   id: WxPayId,
@@ -151,7 +151,7 @@ export async function updateByIdWxPay(
 }
 
 /**
- * 根据 ids 删除微信支付
+ * 根据 ids 删除微信支付设置
  */
 export async function deleteByIdsWxPay(
   ids: WxPayId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxPay(
 }
 
 /**
- * 根据 ids 启用或者禁用微信支付
+ * 根据 ids 启用或者禁用微信支付设置
  */
 export async function enableByIdsWxPay(
   ids: WxPayId[],
@@ -201,7 +201,7 @@ export async function enableByIdsWxPay(
 }
 
 /**
- * 根据 ids 锁定或者解锁微信支付
+ * 根据 ids 锁定或者解锁微信支付设置
  */
 export async function lockByIdsWxPay(
   ids: WxPayId[],
@@ -228,7 +228,7 @@ export async function lockByIdsWxPay(
 }
 
 /**
- * 根据 ids 还原微信支付
+ * 根据 ids 还原微信支付设置
  */
 export async function revertByIdsWxPay(
   ids: WxPayId[],
@@ -251,7 +251,7 @@ export async function revertByIdsWxPay(
 }
 
 /**
- * 根据 ids 彻底删除微信支付
+ * 根据 ids 彻底删除微信支付设置
  */
 export async function forceDeleteByIdsWxPay(
   ids: WxPayId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsWxPay(
 }
 
 /**
- * 查找 微信支付 order_by 字段的最大值
+ * 查找 微信支付设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxPay(): Promise<number> {
   const { findLastOrderBy } = await import("./wx_pay.service.ts");

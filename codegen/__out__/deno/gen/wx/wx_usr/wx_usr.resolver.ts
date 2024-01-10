@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找微信用户总数
+ * 根据条件查找小程序用户总数
  */
 export async function findCountWxUsr(
   search?: WxUsrSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxUsr(
 }
 
 /**
- * 根据搜索条件和分页查找微信用户列表
+ * 根据搜索条件和分页查找小程序用户列表
  */
 export async function findAllWxUsr(
   search?: WxUsrSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxUsr(
 }
 
 /**
- * 获取微信用户字段注释
+ * 获取小程序用户字段注释
  */
 export async function getFieldCommentsWxUsr(): Promise<WxUsrFieldComment> {
   const { getFieldComments } = await import("./wx_usr.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxUsr(): Promise<WxUsrFieldComment> {
 }
 
 /**
- * 根据条件查找第一个微信用户
+ * 根据条件查找第一个小程序用户
  */
 export async function findOneWxUsr(
   search?: WxUsrSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxUsr(
 }
 
 /**
- * 根据 id 查找微信用户
+ * 根据 id 查找小程序用户
  */
 export async function findByIdWxUsr(
   id: WxUsrId,
@@ -93,7 +93,7 @@ export async function findByIdWxUsr(
 }
 
 /**
- * 创建微信用户
+ * 创建小程序用户
  */
 export async function createWxUsr(
   input: WxUsrInput,
@@ -124,7 +124,7 @@ export async function createWxUsr(
 }
 
 /**
- * 根据 id 修改微信用户
+ * 根据 id 修改小程序用户
  */
 export async function updateByIdWxUsr(
   id: WxUsrId,
@@ -151,7 +151,7 @@ export async function updateByIdWxUsr(
 }
 
 /**
- * 根据 ids 删除微信用户
+ * 根据 ids 删除小程序用户
  */
 export async function deleteByIdsWxUsr(
   ids: WxUsrId[],
@@ -174,61 +174,7 @@ export async function deleteByIdsWxUsr(
 }
 
 /**
- * 根据 ids 启用或者禁用微信用户
- */
-export async function enableByIdsWxUsr(
-  ids: WxUsrId[],
-  is_enabled: 0 | 1,
-): Promise<number> {
-  
-  const {
-    enableByIds,
-  } = await import("./wx_usr.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  if (is_enabled !== 0 && is_enabled !== 1) {
-    throw new Error(`enableByIdsWxUsr.is_enabled expect 0 or 1 but got ${ is_enabled }`);
-  }
-  
-  await usePermit(
-    "/wx/wx_usr",
-    "enable",
-  );
-  const res = await enableByIds(ids, is_enabled);
-  return res;
-}
-
-/**
- * 根据 ids 锁定或者解锁微信用户
- */
-export async function lockByIdsWxUsr(
-  ids: WxUsrId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  
-  const {
-    lockByIds,
-  } = await import("./wx_usr.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIdsWxUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
-  }
-  
-  await usePermit(
-    "/wx/wx_usr",
-    "lock",
-  );
-  const res = await lockByIds(ids, is_locked);
-  return res;
-}
-
-/**
- * 根据 ids 还原微信用户
+ * 根据 ids 还原小程序用户
  */
 export async function revertByIdsWxUsr(
   ids: WxUsrId[],
@@ -251,7 +197,7 @@ export async function revertByIdsWxUsr(
 }
 
 /**
- * 根据 ids 彻底删除微信用户
+ * 根据 ids 彻底删除小程序用户
  */
 export async function forceDeleteByIdsWxUsr(
   ids: WxUsrId[],

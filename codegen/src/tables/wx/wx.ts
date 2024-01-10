@@ -1,7 +1,7 @@
 import { defineConfig } from "../../config";
 
 export default defineConfig({
-  // 微信小程序
+  // 小程序设置
   wx_wx_app: {
     opts: {
       cache: true,
@@ -32,6 +32,7 @@ export default defineConfig({
         require: true,
         isEncrypt: true,
         width: 260,
+        align: "left",
       },
       {
         COLUMN_NAME: "is_locked",
@@ -83,7 +84,7 @@ export default defineConfig({
       },
     ],
   },
-  // 微信用户
+  // 小程序用户
   wx_wx_usr: {
     opts: {
       cache: true,
@@ -121,10 +122,6 @@ export default defineConfig({
         width: 240,
       },
       {
-        COLUMN_NAME: "gz_openid",
-        width: 180,
-      },
-      {
         COLUMN_NAME: "unionid",
         width: 180,
       },
@@ -149,10 +146,80 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 公众号设置
+  wx_wxo_app: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "code" ],
+        [ "lbl" ],
+        [ "appid" ],
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "code",
+        align: "center",
+        width: 140,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "appid",
+        require: true,
+        search: true,
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "appsecret",
+        require: true,
+        isEncrypt: true,
+        width: 260,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "token",
+        isEncrypt: true,
+        width: 140,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "encoding_aes_key",
+        isEncrypt: true,
+        width: 140,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "domain_id",
+        width: 240,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
@@ -171,7 +238,77 @@ export default defineConfig({
       },
     ],
   },
-  // 微信支付
+  // 公众号接口凭据
+  wx_wxo_app_token: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "wxo_app_id" ],
+      ],
+      onlyCodegenDeno: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "wxo_app_id",
+      },
+      {
+        COLUMN_NAME: "access_token",
+      },
+      {
+        COLUMN_NAME: "token_time",
+      },
+      {
+        COLUMN_NAME: "expires_in",
+      },
+    ],
+  },
+  // 公众号用户
+  wx_wxo_usr: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "openid" ],
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+        width: 280,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "usr_id",
+        headerAlign: "center",
+        align: "left",
+        width: 240,
+      },
+      {
+        COLUMN_NAME: "openid",
+        width: 240,
+      },
+      {
+        COLUMN_NAME: "unionid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 微信支付设置
   wx_wx_pay: {
     opts: {
       cache: true,

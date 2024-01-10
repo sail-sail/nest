@@ -25,7 +25,7 @@ import {
 } from "/src/base/permit/permit.service.ts";
 
 /**
- * 根据条件查找微信小程序总数
+ * 根据条件查找小程序设置总数
  */
 export async function findCountWxApp(
   search?: WxAppSearch & { $extra?: SearchExtra[] },
@@ -40,7 +40,7 @@ export async function findCountWxApp(
 }
 
 /**
- * 根据搜索条件和分页查找微信小程序列表
+ * 根据搜索条件和分页查找小程序设置列表
  */
 export async function findAllWxApp(
   search?: WxAppSearch & { $extra?: SearchExtra[] },
@@ -57,7 +57,7 @@ export async function findAllWxApp(
 }
 
 /**
- * 获取微信小程序字段注释
+ * 获取小程序设置字段注释
  */
 export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
   const { getFieldComments } = await import("./wx_app.service.ts");
@@ -66,7 +66,7 @@ export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
 }
 
 /**
- * 根据条件查找第一个微信小程序
+ * 根据条件查找第一个小程序设置
  */
 export async function findOneWxApp(
   search?: WxAppSearch & { $extra?: SearchExtra[] },
@@ -82,7 +82,7 @@ export async function findOneWxApp(
 }
 
 /**
- * 根据 id 查找微信小程序
+ * 根据 id 查找小程序设置
  */
 export async function findByIdWxApp(
   id: WxAppId,
@@ -93,7 +93,7 @@ export async function findByIdWxApp(
 }
 
 /**
- * 创建微信小程序
+ * 创建小程序设置
  */
 export async function createWxApp(
   input: WxAppInput,
@@ -124,7 +124,7 @@ export async function createWxApp(
 }
 
 /**
- * 根据 id 修改微信小程序
+ * 根据 id 修改小程序设置
  */
 export async function updateByIdWxApp(
   id: WxAppId,
@@ -151,7 +151,7 @@ export async function updateByIdWxApp(
 }
 
 /**
- * 根据 ids 删除微信小程序
+ * 根据 ids 删除小程序设置
  */
 export async function deleteByIdsWxApp(
   ids: WxAppId[],
@@ -174,7 +174,7 @@ export async function deleteByIdsWxApp(
 }
 
 /**
- * 根据 ids 启用或者禁用微信小程序
+ * 根据 ids 启用或者禁用小程序设置
  */
 export async function enableByIdsWxApp(
   ids: WxAppId[],
@@ -201,7 +201,7 @@ export async function enableByIdsWxApp(
 }
 
 /**
- * 根据 ids 锁定或者解锁微信小程序
+ * 根据 ids 锁定或者解锁小程序设置
  */
 export async function lockByIdsWxApp(
   ids: WxAppId[],
@@ -228,7 +228,7 @@ export async function lockByIdsWxApp(
 }
 
 /**
- * 根据 ids 还原微信小程序
+ * 根据 ids 还原小程序设置
  */
 export async function revertByIdsWxApp(
   ids: WxAppId[],
@@ -251,7 +251,7 @@ export async function revertByIdsWxApp(
 }
 
 /**
- * 根据 ids 彻底删除微信小程序
+ * 根据 ids 彻底删除小程序设置
  */
 export async function forceDeleteByIdsWxApp(
   ids: WxAppId[],
@@ -273,7 +273,7 @@ export async function forceDeleteByIdsWxApp(
 }
 
 /**
- * 查找 微信小程序 order_by 字段的最大值
+ * 查找 小程序设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxApp(): Promise<number> {
   const { findLastOrderBy } = await import("./wx_app.service.ts");
