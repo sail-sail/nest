@@ -1827,10 +1827,6 @@ async function initFrame() {
     initI18nsEfc(),
     dataGrid(true),
   ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
   inited = true;
 }
 

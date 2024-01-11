@@ -22,7 +22,9 @@
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 
-import { getMenus } from "./Api";
+import {
+  getMenus,
+} from "./Api";
 
 import type {
   LocationQueryRaw,
