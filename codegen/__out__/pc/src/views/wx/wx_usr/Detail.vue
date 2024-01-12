@@ -8,6 +8,7 @@
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"
+  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -49,7 +50,8 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -143,25 +145,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
-            :label="n('小程序openid')"
+            :label="n('小程序用户唯一标识')"
             prop="openid"
           >
             <CustomInput
               v-model="dialogModel.openid"
-              :placeholder="`${ ns('请输入') } ${ n('小程序openid') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.gz_openid == null)">
-          <el-form-item
-            :label="n('公众号openid')"
-            prop="gz_openid"
-          >
-            <CustomInput
-              v-model="dialogModel.gz_openid"
-              :placeholder="`${ ns('请输入') } ${ n('公众号openid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('小程序用户唯一标识') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -169,12 +158,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.unionid == null)">
           <el-form-item
-            :label="n('unionid')"
+            :label="n('小程序用户统一标识')"
             prop="unionid"
           >
             <CustomInput
               v-model="dialogModel.unionid"
-              :placeholder="`${ ns('请输入') } ${ n('unionid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('小程序用户统一标识') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -284,7 +273,19 @@
       </el-button>
       
       <el-button
-        v-if="!isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSaveAndCopy"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存并继续') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -292,40 +293,59 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ n('保存') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSave"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存') }}</span>
       </el-button>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -343,6 +363,7 @@ import {
   create,
   findOne,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -375,6 +396,7 @@ const {
   initSysI18ns,
 } = useI18n("/wx/wx_usr");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/wx/wx_usr");
@@ -442,16 +464,6 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: WxUsrInput = {
-    gender: 0,
-    is_locked: 0,
-    is_enabled: 1,
-  };
-  return defaultInput;
-}
-
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
@@ -494,14 +506,10 @@ async function showDialog(
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -539,8 +547,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -567,21 +573,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
-    }
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -753,19 +744,41 @@ watch(
   },
 );
 
+/** 快捷键ctrl+shift+回车 */
+async function onSaveAndCopyKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (dialogAction === "add" || dialogAction === "copy") {
+    customDialogRef?.focus();
+    await onSaveAndCopy();
+  }
+}
+
+/** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  customDialogRef?.focus();
-  await onSave();
+  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
+    customDialogRef?.focus();
+    await onSave();
+  }
 }
 
-/** 确定 */
-async function onSave() {
+/** 保存并返回id */
+async function save() {
   if (isReadonly) {
     return;
   }
   if (!formRef) {
+    return;
+  }
+  if (dialogAction === "view") {
+    return;
+  }
+  if (dialogAction === "edit" && !permit("edit")) {
+    return;
+  }
+  if (dialogAction === "add" && !permit("add")) {
     return;
   }
   try {
@@ -785,7 +798,7 @@ async function onSave() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("添加成功");
+    msg = await nsAsync("新增成功");
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -808,16 +821,52 @@ async function onSave() {
     if (!changedIds.includes(id)) {
       changedIds.push(id);
     }
-    ElMessage.success(msg);
-    const hasNext = await nextId();
-    if (hasNext) {
-      return;
-    }
-    onCloseResolve({
-      type: "ok",
-      changedIds,
-    });
   }
+  if (msg) {
+    ElMessage.success(msg);
+  }
+  return id;
+}
+
+/** 保存并继续 */
+async function onSaveAndCopy() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  dialogAction = "copy";
+  const [
+    data,
+  ] = await Promise.all([
+    findOne({
+      id,
+      is_deleted,
+    }),
+  ]);
+  if (!data) {
+    return;
+  }
+  dialogModel = {
+    ...data,
+    id: undefined,
+  };
+  Object.assign(dialogModel, { is_deleted: undefined });
+}
+
+/** 保存 */
+async function onSave() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }
 
 /** 点击取消关闭按钮 */
@@ -850,16 +899,13 @@ async function onInitI18ns() {
     "昵称",
     "头像",
     "手机",
-    "小程序openid",
-    "公众号openid",
-    "unionid",
+    "小程序用户唯一标识",
+    "小程序用户统一标识",
     "性别",
     "城市",
     "省份",
     "国家",
     "语言",
-    "锁定",
-    "启用",
     "备注",
     "创建人",
     "创建时间",

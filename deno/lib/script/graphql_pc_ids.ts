@@ -182,7 +182,7 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").PayTransactionsJsapiId`,
     },
     
-    // 微信小程序
+    // 小程序设置
     "WxAppId": {
       "input": `import("@/typings/ids.ts").WxAppId`,
       "output": `import("@/typings/ids.ts").WxAppId`,
@@ -194,7 +194,7 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").WxAppTokenId`,
     },
     
-    // 微信支付
+    // 微信支付设置
     "WxPayId": {
       "input": `import("@/typings/ids.ts").WxPayId`,
       "output": `import("@/typings/ids.ts").WxPayId`,
@@ -206,10 +206,28 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").WxPayNoticeId`,
     },
     
-    // 微信用户
+    // 小程序用户
     "WxUsrId": {
       "input": `import("@/typings/ids.ts").WxUsrId`,
       "output": `import("@/typings/ids.ts").WxUsrId`,
+    },
+    
+    // 公众号设置
+    "WxoAppId": {
+      "input": `import("@/typings/ids.ts").WxoAppId`,
+      "output": `import("@/typings/ids.ts").WxoAppId`,
+    },
+    
+    // 小程序接口凭据
+    "WxoAppTokenId": {
+      "input": `import("@/typings/ids.ts").WxoAppTokenId`,
+      "output": `import("@/typings/ids.ts").WxoAppTokenId`,
+    },
+    
+    // 公众号用户
+    "WxoUsrId": {
+      "input": `import("@/typings/ids.ts").WxoUsrId`,
+      "output": `import("@/typings/ids.ts").WxoUsrId`,
     },
     
   };

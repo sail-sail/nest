@@ -10,10 +10,15 @@ type Query {
 }
 
 type Mutation {
+  
   "微信用户绑定"
   bindWxUsr(
     input: LoginInput!
   ): LoginModel!
+  
+  "解除绑定"
+  unBindWxUsr: Boolean!
+  
 }
 
 `);

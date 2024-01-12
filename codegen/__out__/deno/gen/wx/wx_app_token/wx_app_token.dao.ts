@@ -167,8 +167,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -180,7 +187,7 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
@@ -206,8 +213,15 @@ export async function findAll(
       ,wx_app_id_lbl.lbl wx_app_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -223,6 +237,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -297,7 +315,7 @@ export async function setIdByLbl(
     input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
   }
   
-  // 微信小程序
+  // 小程序设置
   if (isNotEmpty(input.wx_app_id_lbl) && input.wx_app_id === undefined) {
     input.wx_app_id_lbl = String(input.wx_app_id_lbl).trim();
     const wx_appModel = await wx_appDao.findOne({ lbl: input.wx_app_id_lbl });
@@ -320,8 +338,8 @@ export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxAppTokenFieldComment = {
     id: await n("ID"),
-    wx_app_id: await n("微信小程序"),
-    wx_app_id_lbl: await n("微信小程序"),
+    wx_app_id: await n("小程序设置"),
+    wx_app_id_lbl: await n("小程序设置"),
     access_token: await n("令牌"),
     token_time: await n("令牌创建时间"),
     token_time_lbl: await n("令牌创建时间"),
@@ -543,7 +561,7 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 微信小程序
+  // 小程序设置
   await validators.chars_max_length(
     input.wx_app_id,
     22,

@@ -14,6 +14,7 @@ import type {
   PageInput,
   PtSearch,
   PtInput,
+  PtModel,
 } from "#/types";
 
 import type {
@@ -21,7 +22,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: PtModel,
+  model?: PtModel | null,
 ) {
   if (!model) {
     return;
@@ -714,4 +715,18 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByPt;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: PtInput = {
+    price: new Decimal(0.00),
+    original_price: new Decimal(0.00),
+    unit: "次",
+    is_new: 0,
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

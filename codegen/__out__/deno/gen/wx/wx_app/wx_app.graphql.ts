@@ -13,9 +13,9 @@ type WxAppModel {
   code: String!
   "名称"
   lbl: String!
-  "appid"
+  "开发者ID"
   appid: String!
-  "appsecret"
+  "开发者密码"
   appsecret: String!
   "锁定"
   is_locked: Int!
@@ -55,9 +55,9 @@ type WxAppFieldComment {
   code: String!
   "名称"
   lbl: String!
-  "appid"
+  "开发者ID"
   appid: String!
-  "appsecret"
+  "开发者密码"
   appsecret: String!
   "锁定"
   is_locked: String!
@@ -95,9 +95,9 @@ input WxAppInput {
   code: String
   "名称"
   lbl: String
-  "appid"
+  "开发者ID"
   appid: String
-  "appsecret"
+  "开发者密码"
   appsecret: String
   "锁定"
   is_locked: Int
@@ -141,7 +141,7 @@ input WxAppSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "appid"
+  "开发者ID"
   appid: String
   appid_like: String
   "锁定"
@@ -165,33 +165,33 @@ input WxAppSearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找微信小程序总数"
+  "根据条件查找小程序设置总数"
   findCountWxApp(search: WxAppSearch): Int!
-  "根据搜索条件和分页查找微信小程序列表"
+  "根据搜索条件和分页查找小程序设置列表"
   findAllWxApp(search: WxAppSearch, page: PageInput, sort: [SortInput!]): [WxAppModel!]!
-  "获取微信小程序字段注释"
+  "获取小程序设置字段注释"
   getFieldCommentsWxApp: WxAppFieldComment!
-  "根据条件查找第一个微信小程序"
+  "根据条件查找第一个小程序设置"
   findOneWxApp(search: WxAppSearch, sort: [SortInput!]): WxAppModel
-  "根据 id 查找微信小程序"
+  "根据 id 查找小程序设置"
   findByIdWxApp(id: WxAppId!): WxAppModel
-  "查找 微信小程序 order_by 字段的最大值"
+  "查找 小程序设置 order_by 字段的最大值"
   findLastOrderByWxApp: Int!
 }
 type Mutation {
-  "创建微信小程序"
+  "创建小程序设置"
   createWxApp(model: WxAppInput!, unique_type: UniqueType): WxAppId!
-  "根据 id 修改微信小程序"
+  "根据 id 修改小程序设置"
   updateByIdWxApp(id: WxAppId!, model: WxAppInput!): WxAppId!
-  "根据 ids 删除微信小程序"
+  "根据 ids 删除小程序设置"
   deleteByIdsWxApp(ids: [WxAppId!]!): Int!
-  "根据 ids 启用或者禁用微信小程序"
+  "根据 ids 启用或者禁用小程序设置"
   enableByIdsWxApp(ids: [WxAppId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁微信小程序"
+  "根据 ids 锁定或者解锁小程序设置"
   lockByIdsWxApp(ids: [WxAppId!]!, is_locked: Int!): Int!
-  "根据 ids 还原微信小程序"
+  "根据 ids 还原小程序设置"
   revertByIdsWxApp(ids: [WxAppId!]!): Int!
-  "根据 ids 彻底删除微信小程序"
+  "根据 ids 彻底删除小程序设置"
   forceDeleteByIdsWxApp(ids: [WxAppId!]!): Int!
 }
 

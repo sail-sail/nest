@@ -47,7 +47,8 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -69,12 +70,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('appid')"
+            :label="n('开发者ID')"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -317,36 +318,43 @@
       </el-button>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -362,6 +370,7 @@ import type {
 
 import {
   findOne,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -369,12 +378,7 @@ import type {
 } from "@/typings/ids";
 
 import type {
-} from "#/types";
-
-type PayTransactionsJsapiInput = any;
-
-import {
-  PayTransactionsJsapiTradeState,
+  PayTransactionsJsapiInput,
 } from "#/types";
 
 const emit = defineEmits<{
@@ -394,6 +398,7 @@ const {
   initSysI18ns,
 } = useI18n("/wx/pay_transactions_jsapi");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/wx/pay_transactions_jsapi");
@@ -455,17 +460,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: PayTransactionsJsapiInput = {
-    trade_state: PayTransactionsJsapiTradeState.NOTPAY,
-    trade_state_desc: "未支付",
-    support_fapiao: 0,
-    total_fee: 0,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
@@ -752,7 +746,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "appid",
+    "开发者ID",
     "商户号",
     "商品描述",
     "商户订单号",

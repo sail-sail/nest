@@ -12,10 +12,11 @@ import type {
   PageInput,
   PtTypeSearch,
   PtTypeInput,
+  PtTypeModel,
 } from "#/types";
 
 async function setLblById(
-  model?: PtTypeModel,
+  model?: PtTypeModel | null,
 ) {
   if (!model) {
     return;
@@ -605,4 +606,16 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByPtType;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: PtTypeInput = {
+    is_home: 1,
+    is_recommend: 0,
+    is_locked: 1,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

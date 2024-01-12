@@ -8,6 +8,7 @@
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"
+  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -49,7 +50,8 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -97,12 +99,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('appid')"
+            :label="n('开发者ID')"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('appid') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -110,12 +112,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appsecret == null)">
           <el-form-item
-            :label="n('appsecret')"
+            :label="n('开发者密码')"
             prop="appsecret"
           >
             <CustomInput
               v-model="dialogModel.appsecret"
-              :placeholder="`${ ns('请输入') } ${ n('appsecret') }`"
+              :placeholder="`${ ns('请输入') } ${ n('开发者密码') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -171,7 +173,19 @@
       </el-button>
       
       <el-button
-        v-if="!isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSaveAndCopy"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存并继续') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -179,40 +193,59 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ n('保存') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        @click="onSave"
+      >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
+        <span>{{ n('保存') }}</span>
       </el-button>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -231,6 +264,7 @@ import {
   findOne,
   findLastOrderBy,
   updateById,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -258,6 +292,7 @@ const {
   initSysI18ns,
 } = useI18n("/wx/wx_app");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/wx/wx_app");
@@ -313,28 +348,28 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // appid
+    // 开发者ID
     appid: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("appid") }`,
+        message: `${ await nsAsync("请输入") } ${ n("开发者ID") }`,
       },
       {
         type: "string",
         max: 22,
-        message: `${ n("appid") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        message: `${ n("开发者ID") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
-    // appsecret
+    // 开发者密码
     appsecret: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("appsecret") }`,
+        message: `${ await nsAsync("请输入") } ${ n("开发者密码") }`,
       },
       {
         type: "string",
         max: 200,
-        message: `${ n("appsecret") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
+        message: `${ n("开发者密码") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
       },
     ],
     // 排序
@@ -367,16 +402,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: WxAppInput = {
-    is_locked: 0,
-    is_enabled: 1,
-    order_by: 1,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
@@ -680,19 +705,41 @@ watch(
   },
 );
 
+/** 快捷键ctrl+shift+回车 */
+async function onSaveAndCopyKeydown(e: KeyboardEvent) {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (dialogAction === "add" || dialogAction === "copy") {
+    customDialogRef?.focus();
+    await onSaveAndCopy();
+  }
+}
+
+/** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  customDialogRef?.focus();
-  await onSave();
+  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
+    customDialogRef?.focus();
+    await onSave();
+  }
 }
 
-/** 确定 */
-async function onSave() {
+/** 保存并返回id */
+async function save() {
   if (isReadonly) {
     return;
   }
   if (!formRef) {
+    return;
+  }
+  if (dialogAction === "view") {
+    return;
+  }
+  if (dialogAction === "edit" && !permit("edit")) {
+    return;
+  }
+  if (dialogAction === "add" && !permit("add")) {
     return;
   }
   try {
@@ -712,7 +759,7 @@ async function onSave() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("添加成功");
+    msg = await nsAsync("新增成功");
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -735,16 +782,57 @@ async function onSave() {
     if (!changedIds.includes(id)) {
       changedIds.push(id);
     }
-    ElMessage.success(msg);
-    const hasNext = await nextId();
-    if (hasNext) {
-      return;
-    }
-    onCloseResolve({
-      type: "ok",
-      changedIds,
-    });
   }
+  if (msg) {
+    ElMessage.success(msg);
+  }
+  return id;
+}
+
+/** 保存并继续 */
+async function onSaveAndCopy() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  dialogAction = "copy";
+  const [
+    data,
+    order_by,
+  ] = await Promise.all([
+    findOne({
+      id,
+      is_deleted,
+    }),
+    findLastOrderBy(),
+  ]);
+  if (!data) {
+    return;
+  }
+  dialogModel = {
+    ...data,
+    id: undefined,
+    is_locked: undefined,
+    is_locked_lbl: undefined,
+    order_by: order_by + 1,
+  };
+  Object.assign(dialogModel, { is_deleted: undefined });
+}
+
+/** 保存 */
+async function onSave() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }
 
 /** 点击取消关闭按钮 */
@@ -774,8 +862,8 @@ async function onInitI18ns() {
   const codes: string[] = [
     "原始ID",
     "名称",
-    "appid",
-    "appsecret",
+    "开发者ID",
+    "开发者密码",
     "锁定",
     "启用",
     "排序",

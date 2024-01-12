@@ -206,7 +206,7 @@ export async function code2Session(
 /**
  * 微信用户是否已绑定
  */
-export async function checkBind() {
+export async function checkBindWxUsr() {
   const authModel = await getAuthModel();
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(authModel.wx_usr_id),
@@ -340,6 +340,22 @@ export async function bindWxUsr(
   };
   
   return loginModel;
+}
+
+/** 解除绑定 */
+export async function unBindWxUsr() {
+  const authModel = await getAuthModel();
+  const wx_usr_id = authModel.wx_usr_id;
+  if (!wx_usr_id) {
+    throw "wx_usr_id can not be null";
+  }
+  await updateByIdWxUsr(
+    wx_usr_id,
+    {
+      usr_id: "" as UsrId,
+    },
+  );
+  return true;
 }
 
 async function fetchPhoneNumber(

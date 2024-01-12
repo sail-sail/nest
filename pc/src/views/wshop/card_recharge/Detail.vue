@@ -47,7 +47,8 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-8 y-5"
+      un-box-border
       un-gap="4"
       un-justify-start
       un-items-center
@@ -217,36 +218,43 @@
       </el-button>
       
       <div
-        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
+        un-flex="~"
+        un-gap="x-1"
       >
+        <template v-if="(ids && ids.length > 1)">
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+            @click="onPrevId"
+          >
+            <ElIconArrowLeft
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowLeft>
+          </el-button>
+          
+          <div>
+            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+          </div>
+          
+          <el-button
+            link
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="onNextId"
+          >
+            <ElIconArrowRight
+              un-w="1em"
+              un-h="1em"
+            ></ElIconArrowRight>
+          </el-button>
+        </template>
         
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="onPrevId"
-        >
-          {{ n('上一项') }}
-        </el-button>
-        
-        <span>
-          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-        </span>
-        
-        <el-button
-          link
-          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="onNextId"
-        >
-          {{ n('下一项') }}
-        </el-button>
-        
-        <span v-if="changedIds.length > 0">
+        <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
-        </span>
-        
+        </div>
       </div>
       
     </div>
@@ -262,6 +270,7 @@ import type {
 
 import {
   findOne,
+  getDefaultInput,
 } from "./Api";
 
 import type {
@@ -269,11 +278,10 @@ import type {
 } from "@/typings/ids";
 
 import type {
+  CardRechargeInput,
   CardModel,
   UsrModel,
 } from "#/types";
-
-type CardRechargeInput = any;
 
 import {
   getCardList,
@@ -297,6 +305,7 @@ const {
   initSysI18ns,
 } = useI18n("/wshop/card_recharge");
 
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/wshop/card_recharge");
@@ -351,18 +360,6 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
-
-/** 新增时的默认值 */
-async function getDefaultInput() {
-  const defaultInput: CardRechargeInput = {
-    amt: "0.00",
-    give_amt: "0.00",
-    balance: "0.00",
-    give_balance: "0.00",
-    integral: 0,
-  };
-  return defaultInput;
-}
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 

@@ -14,10 +14,11 @@ import type {
   PageInput,
   RechargeRuleSearch,
   RechargeRuleInput,
+  RechargeRuleModel,
 } from "#/types";
 
 async function setLblById(
-  model?: RechargeRuleModel,
+  model?: RechargeRuleModel | null,
 ) {
   if (!model) {
     return;
@@ -568,4 +569,15 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: RechargeRuleInput = {
+    amt: new Decimal(0.00),
+    give_amt: new Decimal(0.00),
+    is_locked: 0,
+    is_enabled: 1,
+  };
+  return defaultInput;
 }

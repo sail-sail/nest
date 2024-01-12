@@ -13,7 +13,7 @@ export async function wxoLoginByCode(
 ) {
   const host = cfg.domain;
   const res: {
-    wxoLoginByCode: Mutation["wxoLoginByCode"],
+    wxoLoginByCode: Mutation["wxoLoginByCode"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($input: WxoLoginByCodeInput!) {

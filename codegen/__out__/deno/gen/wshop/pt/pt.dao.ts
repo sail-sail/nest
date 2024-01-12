@@ -364,8 +364,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -377,7 +384,7 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
@@ -406,8 +413,15 @@ export async function findAll(
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -579,24 +593,28 @@ export async function setIdByLbl(
   
   // 产品类别
   if (!input.pt_type_ids && input.pt_type_ids_lbl) {
-    if (typeof input.pt_type_ids_lbl === "string" || input.pt_type_ids_lbl instanceof String) {
-      input.pt_type_ids_lbl = input.pt_type_ids_lbl.split(",");
+    input.pt_type_ids_lbl = input.pt_type_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.pt_type_ids_lbl = Array.from(new Set(input.pt_type_ids_lbl));
+    if (input.pt_type_ids_lbl.length === 0) {
+      input.pt_type_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          wshop_pt_type t
+        where
+          t.lbl in ${ args.push(input.pt_type_ids_lbl) }
+      `;
+      interface Result {
+        id: PtTypeId;
+      }
+      const models = await query<Result>(sql, args);
+      input.pt_type_ids = models.map((item: { id: PtTypeId }) => item.id);
     }
-    input.pt_type_ids_lbl = input.pt_type_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        wshop_pt_type t
-      where
-        t.lbl in ${ args.push(input.pt_type_ids_lbl) }
-    `;
-    interface Result {
-      id: PtTypeId;
-    }
-    const models = await query<Result>(sql, args);
-    input.pt_type_ids = models.map((item: { id: PtTypeId }) => item.id);
   }
   
   // 新品

@@ -5,17 +5,36 @@ import type {
 } from "#/types";
 
 export async function checkBindWxUsr() {
-  const res: {
-    checkBindWxUsr: Query["checkBindWxUsr"],
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        checkBindWxUsr
-      }
-    `,
-  });
-  const data = res.checkBindWxUsr;
-  return data;
+  // #ifndef H5
+  {
+    const res: {
+      checkBindWxUsr: Query["checkBindWxUsr"],
+    } = await query({
+      query: /* GraphQL */ `
+        query {
+          checkBindWxUsr
+        }
+      `,
+    });
+    const data = res.checkBindWxUsr;
+    return data;
+  }
+  // #endif
+  // #ifdef H5
+  {
+    const res: {
+      checkBindWxUsr: Query["checkBindWxUsr"],
+    } = await query({
+      query: /* GraphQL */ `
+        query {
+          checkBindWxUsr
+        }
+      `,
+    });
+    const data = res.checkBindWxUsr;
+    return data;
+  }
+  // #endif
 }
 
 export async function bindWxUsr(
