@@ -11,7 +11,7 @@ type WxPayModel {
   id: WxPayId!
   "名称"
   lbl: String!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -61,7 +61,7 @@ type WxPayFieldComment {
   id: String!
   "名称"
   lbl: String!
-  "appid"
+  "开发者ID"
   appid: String!
   "商户号"
   mchid: String!
@@ -109,7 +109,7 @@ input WxPayInput {
   id: WxPayId
   "名称"
   lbl: String
-  "appid"
+  "开发者ID"
   appid: String
   "商户号"
   mchid: String
@@ -162,7 +162,7 @@ input WxPaySearch {
   "名称"
   lbl: String
   lbl_like: String
-  "appid"
+  "开发者ID"
   appid: String
   appid_like: String
   "商户号"
@@ -204,33 +204,33 @@ input WxPaySearch {
   update_time: [NaiveDateTime!]
 }
 type Query {
-  "根据条件查找微信支付总数"
+  "根据条件查找微信支付设置总数"
   findCountWxPay(search: WxPaySearch): Int!
-  "根据搜索条件和分页查找微信支付列表"
+  "根据搜索条件和分页查找微信支付设置列表"
   findAllWxPay(search: WxPaySearch, page: PageInput, sort: [SortInput!]): [WxPayModel!]!
-  "获取微信支付字段注释"
+  "获取微信支付设置字段注释"
   getFieldCommentsWxPay: WxPayFieldComment!
-  "根据条件查找第一个微信支付"
+  "根据条件查找第一个微信支付设置"
   findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
-  "根据 id 查找微信支付"
+  "根据 id 查找微信支付设置"
   findByIdWxPay(id: WxPayId!): WxPayModel
-  "查找 微信支付 order_by 字段的最大值"
+  "查找 微信支付设置 order_by 字段的最大值"
   findLastOrderByWxPay: Int!
 }
 type Mutation {
-  "创建微信支付"
+  "创建微信支付设置"
   createWxPay(model: WxPayInput!, unique_type: UniqueType): WxPayId!
-  "根据 id 修改微信支付"
+  "根据 id 修改微信支付设置"
   updateByIdWxPay(id: WxPayId!, model: WxPayInput!): WxPayId!
-  "根据 ids 删除微信支付"
+  "根据 ids 删除微信支付设置"
   deleteByIdsWxPay(ids: [WxPayId!]!): Int!
-  "根据 ids 启用或者禁用微信支付"
+  "根据 ids 启用或者禁用微信支付设置"
   enableByIdsWxPay(ids: [WxPayId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁微信支付"
+  "根据 ids 锁定或者解锁微信支付设置"
   lockByIdsWxPay(ids: [WxPayId!]!, is_locked: Int!): Int!
-  "根据 ids 还原微信支付"
+  "根据 ids 还原微信支付设置"
   revertByIdsWxPay(ids: [WxPayId!]!): Int!
-  "根据 ids 彻底删除微信支付"
+  "根据 ids 彻底删除微信支付设置"
   forceDeleteByIdsWxPay(ids: [WxPayId!]!): Int!
 }
 

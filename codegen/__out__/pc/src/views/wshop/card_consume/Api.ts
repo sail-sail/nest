@@ -9,6 +9,8 @@ import type {
   Mutation,
   PageInput,
   CardConsumeSearch,
+  CardConsumeInput,
+  CardConsumeModel,
 } from "#/types";
 
 import type {
@@ -20,7 +22,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: CardConsumeModel,
+  model?: CardConsumeModel | null,
 ) {
   if (!model) {
     return;
@@ -533,4 +535,16 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: CardConsumeInput = {
+    amt: new Decimal(0.00),
+    give_amt: new Decimal(0.00),
+    integral: 0,
+    balance: new Decimal(0.00),
+    give_balance: new Decimal(0.00),
+  };
+  return defaultInput;
 }

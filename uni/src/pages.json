@@ -40,6 +40,12 @@
 			}
 		},
 		{
+			"path": "pages/index/Login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
 			"path": "pages/wshop/card/My",
 			"style": {
 				"navigationBarTitleText": "我的"

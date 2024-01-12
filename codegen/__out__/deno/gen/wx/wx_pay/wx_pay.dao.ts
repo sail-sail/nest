@@ -270,7 +270,7 @@ async function getFromQuery() {
 }
 
 /**
- * 根据条件查找微信支付总数
+ * 根据条件查找微信支付设置总数
  * @param { WxPaySearch } search?
  * @return {Promise<number>}
  */
@@ -292,8 +292,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -305,13 +312,13 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
 
 /**
- * 根据搜索条件和分页查找微信支付列表
+ * 根据搜索条件和分页查找微信支付设置列表
  * @param {WxPaySearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -332,8 +339,15 @@ export async function findAll(
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -475,14 +489,14 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取微信支付字段注释
+ * 获取微信支付设置字段注释
  */
 export async function getFieldComments(): Promise<WxPayFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxPayFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
-    appid: await n("appid"),
+    appid: await n("开发者ID"),
     mchid: await n("商户号"),
     public_key: await n("公钥"),
     private_key: await n("私钥"),
@@ -508,7 +522,7 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
 }
 
 /**
- * 通过唯一约束获得微信支付列表
+ * 通过唯一约束获得微信支付设置列表
  * @param {WxPayInput} search0
  */
 export async function findByUnique(
@@ -576,7 +590,7 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查微信支付是否已经存在
+ * 通过唯一约束检查微信支付设置是否已经存在
  * @param {WxPayInput} input
  * @param {WxPayModel} oldModel
  * @param {UniqueType} uniqueType
@@ -615,7 +629,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一个微信支付
+ * 根据条件查找第一个微信支付设置
  * @param {WxPaySearch} search?
  */
 export async function findOne(
@@ -634,7 +648,7 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找微信支付
+ * 根据 id 查找微信支付设置
  * @param {WxPayId} id
  */
 export async function findById(
@@ -650,7 +664,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断微信支付是否存在
+ * 根据搜索条件判断微信支付设置是否存在
  * @param {WxPaySearch} search?
  */
 export async function exist(
@@ -664,7 +678,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断微信支付是否存在
+ * 根据id判断微信支付设置是否存在
  * @param {WxPayId} id
  */
 export async function existById(
@@ -704,27 +718,27 @@ export async function existById(
   return result;
 }
 
-/** 校验微信支付是否启用 */
+/** 校验微信支付设置是否启用 */
 export async function validateIsEnabled(
   model: WxPayModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("微信支付") } ${ await ns("已禁用") }`;
+    throw `${ await ns("微信支付设置") } ${ await ns("已禁用") }`;
   }
 }
 
-/** 校验微信支付是否存在 */
+/** 校验微信支付设置是否存在 */
 export async function validateOption(
   model?: WxPayModel,
 ) {
   if (!model) {
-    throw `${ await ns("微信支付") } ${ await ns("不存在") }`;
+    throw `${ await ns("微信支付设置") } ${ await ns("不存在") }`;
   }
   return model;
 }
 
 /**
- * 微信支付增加和修改时校验输入
+ * 微信支付设置增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -746,7 +760,7 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // appid
+  // 开发者ID
   await validators.chars_max_length(
     input.appid,
     22,
@@ -819,7 +833,7 @@ export async function validate(
 }
 
 /**
- * 创建微信支付
+ * 创建微信支付设置
  * @param {WxPayInput} input
  * @param {({
  *   uniqueType?: UniqueType,
@@ -1032,7 +1046,7 @@ export async function delCache() {
 }
 
 /**
- * 微信支付根据id修改租户id
+ * 微信支付设置根据id修改租户id
  * @param {WxPayId} id
  * @param {TenantId} tenant_id
  * @param {{
@@ -1071,7 +1085,7 @@ export async function updateTenantById(
 }
 
 /**
- * 根据 id 修改微信支付
+ * 根据 id 修改微信支付设置
  * @param {WxPayId} id
  * @param {WxPayInput} input
  * @param {({
@@ -1237,7 +1251,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除微信支付
+ * 根据 ids 删除微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -1285,7 +1299,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ID 查找微信支付是否已启用
+ * 根据 ID 查找微信支付设置是否已启用
  * 不存在则返回 undefined
  * @param {WxPayId} id
  * @return {Promise<0 | 1 | undefined>}
@@ -1304,7 +1318,7 @@ export async function getIsEnabledById(
 }
 
 /**
- * 根据 ids 启用或者禁用微信支付
+ * 根据 ids 启用或者禁用微信支付设置
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_enabled
  * @return {Promise<number>}
@@ -1354,7 +1368,7 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ID 查找微信支付是否已锁定
+ * 根据 ID 查找微信支付设置是否已锁定
  * 已锁定的不能修改和删除
  * 不存在则返回 undefined
  * @param {WxPayId} id
@@ -1374,7 +1388,7 @@ export async function getIsLockedById(
 }
 
 /**
- * 根据 ids 锁定或者解锁微信支付
+ * 根据 ids 锁定或者解锁微信支付设置
  * @param {WxPayId[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
@@ -1424,7 +1438,7 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原微信支付
+ * 根据 ids 还原微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -1483,7 +1497,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信支付
+ * 根据 ids 彻底删除微信支付设置
  * @param {WxPayId[]} ids
  * @return {Promise<number>}
  */
@@ -1538,7 +1552,7 @@ export async function forceDeleteByIds(
 }
   
 /**
- * 查找 微信支付 order_by 字段的最大值
+ * 查找 微信支付设置 order_by 字段的最大值
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

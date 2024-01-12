@@ -86,6 +86,21 @@
       
       <el-form-item
         label=" "
+        prop="is_deleted"
+      >
+        <el-checkbox
+          :set="search.is_deleted = search.is_deleted ?? 0"
+          v-model="search.is_deleted"
+          :false-label="0"
+          :true-label="1"
+          @change="recycleChg"
+        >
+          <span>{{ ns('回收站') }}</span>
+        </el-checkbox>
+      </el-form-item>
+      
+      <el-form-item
+        label=" "
         un-self-start
         un-flex="~ nowrap"
         un-w="full"
@@ -331,7 +346,7 @@
           :key="col.prop"
         >
           
-          <!-- appid -->
+          <!-- 开发者ID -->
           <template v-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -657,14 +672,18 @@ async function onRefresh() {
   await dataGrid(true);
 }
 
+let isSearchReset = $ref(false);
+
 /** 重置搜索 */
 async function onSearchReset() {
+  isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
   await nextTick();
   await dataGrid(true);
+  isSearchReset = false;
 }
 
 /** 清空搜索框事件 */
@@ -687,8 +706,8 @@ const props = defineProps<{
   selectedIds?: WxPayNoticeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: WxPayNoticeId; // ID
-  appid?: string; // appid
-  appid_like?: string; // appid
+  appid?: string; // 开发者ID
+  appid_like?: string; // 开发者ID
   mchid?: string; // 商户号
   mchid_like?: string; // 商户号
   openid?: string; // 用户标识
@@ -861,7 +880,7 @@ let tableData = $ref<WxPayNoticeModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "appid",
+      label: "开发者ID",
       prop: "appid",
       width: 160,
       align: "center",
@@ -1099,9 +1118,6 @@ async function dataGrid(
 
 function getDataSearch() {
   const is_deleted = search.is_deleted;
-  if (showBuildIn) {
-    Object.assign(search, builtInSearch);
-  }
   const search2 = {
     ...search,
     idsChecked: undefined,
@@ -1266,7 +1282,7 @@ async function openView() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "appid",
+    "开发者ID",
     "商户号",
     "用户标识",
     "商户订单号",
@@ -1320,19 +1336,21 @@ async function initFrame() {
     initI18nsEfc(),
     dataGrid(true),
   ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
   inited = true;
 }
 
 watch(
-  () => builtInSearch,
+  () => [ builtInSearch, showBuildIn ],
   async function() {
+    if (isSearchReset) {
+      return;
+    }
     search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search)) {
       return;
+    }
+    if (showBuildIn) {
+      Object.assign(search, builtInSearch);
     }
     await dataGrid(true);
   },

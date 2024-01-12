@@ -349,8 +349,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -359,7 +366,7 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args);
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
@@ -386,8 +393,15 @@ export async function findAll(
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -585,7 +599,7 @@ export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComme
   const n = initN(route_path);
   const fieldComments: PayTransactionsJsapiFieldComment = {
     id: await n("ID"),
-    appid: await n("appid"),
+    appid: await n("开发者ID"),
     mchid: await n("商户号"),
     description: await n("商品描述"),
     out_trade_no: await n("商户订单号"),
@@ -808,7 +822,7 @@ export async function validate(
     fieldComments.id,
   );
   
-  // appid
+  // 开发者ID
   await validators.chars_max_length(
     input.appid,
     32,

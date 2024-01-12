@@ -3,25 +3,22 @@ import {
   wxoLoginByCode,
 } from "./Api";
 
-import cfg from "./config";
+import type {
+  Query,
+} from "#/types";
 
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr"; 
+import cfg from "./config";
 
 export async function wxoGetAppid() {
   const host = cfg.domain;
   
   const res: {
-    wxwGetAppid: {
-      appid: string,
-      agentid: string,
-    },
+    wxoGetAppid: Query["wxoGetAppid"];
   } = await query({
     query: /* GraphQL */ `
       query($host: String!) {
-        wxwGetAppid(host: $host) {
+        wxoGetAppid(host: $host) {
           appid
-          agentid
         }
       }
     `,
@@ -29,20 +26,23 @@ export async function wxoGetAppid() {
       host,
     },
   });
-  const data = res?.wxwGetAppid;
-  if (!data || !data.appid || !data.agentid) {
+  const data = res?.wxoGetAppid;
+  if (!data || !data.appid) {
     await uni.showModal({
       content: "请联系管理员配置 appid",
       showCancel: false,
     });
-    return;
+    throw new Error("请联系管理员配置 appid");
   }
-  return data;
+  return {
+    appid: data.appid,
+    agentid: undefined,
+  };
 }
  
 export async function initWxoCfg() {
-  const indexStore = useIndexStore();
-  const usrStore = useUsrStore();
+  const indexStore = useIndexStore(cfg.pinia);
+  const usrStore = useUsrStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWechat) {
     const wxoAppid = await wxoGetAppid();
@@ -55,14 +55,15 @@ export async function initWxoCfg() {
     const url = new URL(href);
     const code = url.searchParams.get("code");
     if (code) {
-      const loginModel = await wxoLoginByCode(code);
-      if (!loginModel || !loginModel.authorization) {
+      const model = await wxoLoginByCode(code);
+      if (!model || !model.authorization) {
         return;
       }
-      usrStore.authorization = loginModel.authorization;
-      usrStore.username = loginModel.username;
-      usrStore.tenant_id = loginModel.tenant_id;
-      usrStore.lang = loginModel.lang;
+      usrStore.setAuthorization(model.authorization);
+      usrStore.setUsrId(model.usr_id);
+      usrStore.setUsername(model.username);
+      usrStore.setTenantId(model.tenant_id);
+      usrStore.setLang(model.lang);
       const url = new URL(location.href);
       url.searchParams.delete("code");
       url.searchParams.delete("state");

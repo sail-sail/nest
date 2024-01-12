@@ -416,11 +416,8 @@ export async function uniLogin() {
       const {
         appid,
         agentid,
-      } = {
-        appid: "",
-        agentid: "",
-      };
-      if (appid && agentid) {
+      } = await wxwGetAppid();
+      if (appid) {
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
           encodeURIComponent(appid)
         }`;

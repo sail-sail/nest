@@ -12,10 +12,11 @@ import type {
   PageInput,
   WxappConfigSearch,
   WxappConfigInput,
+  WxappConfigModel,
 } from "#/types";
 
 async function setLblById(
-  model?: WxappConfigModel,
+  model?: WxappConfigModel | null,
 ) {
   if (!model) {
     return;
@@ -556,4 +557,13 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: WxappConfigInput = {
+    is_locked: 0,
+    is_enabled: 1,
+  };
+  return defaultInput;
 }

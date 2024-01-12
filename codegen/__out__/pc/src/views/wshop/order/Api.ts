@@ -6,6 +6,11 @@ import type {
   OrderId,
 } from "@/typings/ids";
 
+import {
+  OrderStatus,
+  OrderType,
+} from "#/types";
+
 import Decimal from "decimal.js-light";
 
 import type {
@@ -14,6 +19,7 @@ import type {
   PageInput,
   OrderSearch,
   OrderInput,
+  OrderModel,
 } from "#/types";
 
 import type {
@@ -25,7 +31,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: OrderModel,
+  model?: OrderModel | null,
 ) {
   if (!model) {
     return;
@@ -781,4 +787,21 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OrderInput = {
+    status: OrderStatus.ToBePaid,
+    price: new Decimal(0.00),
+    type: OrderType.Pay,
+    amt: new Decimal(0.00),
+    give_amt: new Decimal(0.00),
+    integral: 0,
+    balance: new Decimal(0.00),
+    give_balance: new Decimal(0.00),
+    is_locked: 0,
+    is_enabled: 1,
+  };
+  return defaultInput;
 }

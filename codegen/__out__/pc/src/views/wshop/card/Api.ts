@@ -6,6 +6,10 @@ import type {
   CardId,
 } from "@/typings/ids";
 
+import {
+  CardGrade,
+} from "#/types";
+
 import Decimal from "decimal.js-light";
 
 import type {
@@ -14,6 +18,7 @@ import type {
   PageInput,
   CardSearch,
   CardInput,
+  CardModel,
 } from "#/types";
 
 import type {
@@ -21,7 +26,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: CardModel,
+  model?: CardModel | null,
 ) {
   if (!model) {
     return;
@@ -701,4 +706,19 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: CardInput = {
+    grade: CardGrade.Normal,
+    balance: new Decimal(0.00),
+    give_balance: new Decimal(0.00),
+    integral: 0,
+    growth_amt: new Decimal(0.00),
+    is_default_card: 1,
+    is_locked: 1,
+    is_enabled: 1,
+  };
+  return defaultInput;
 }
