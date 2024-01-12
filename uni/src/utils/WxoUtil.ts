@@ -19,7 +19,6 @@ export async function wxoGetAppid() {
       query($host: String!) {
         wxoGetAppid(host: $host) {
           appid
-          agentid
         }
       }
     `,
@@ -28,14 +27,17 @@ export async function wxoGetAppid() {
     },
   });
   const data = res?.wxoGetAppid;
-  if (!data || !data.appid || !data.agentid) {
+  if (!data || !data.appid) {
     await uni.showModal({
       content: "请联系管理员配置 appid",
       showCancel: false,
     });
-    return;
+    throw new Error("请联系管理员配置 appid");
   }
-  return data;
+  return {
+    appid: data.appid,
+    agentid: undefined,
+  };
 }
  
 export async function initWxoCfg() {

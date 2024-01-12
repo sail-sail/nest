@@ -206,7 +206,7 @@ export async function code2Session(
 /**
  * 微信用户是否已绑定
  */
-export async function checkBind() {
+export async function checkBindWxUsr() {
   const authModel = await getAuthModel();
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(authModel.wx_usr_id),
