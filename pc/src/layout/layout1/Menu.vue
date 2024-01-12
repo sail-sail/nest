@@ -22,7 +22,9 @@
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 
-import { getMenus } from "./Api";
+import {
+  getMenus,
+} from "./Api";
 
 import type {
   LocationQueryRaw,
@@ -99,7 +101,7 @@ async function menuSelect(id: MenuId) {
 }
 
 async function getMenusEfc() {
-  const result = await getMenus({ type: "pc" });
+  const result = await getMenus();
   menuStore.setMenus(result);
   setDefaultActiveByRouter(route.path, route.query);
 }

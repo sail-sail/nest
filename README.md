@@ -11,9 +11,7 @@ CREATE DATABASE IF NOT EXISTS wshop CHARSET utf8mb4;
 -- 创建用户
 create user 'wshop'@'%' identified by 'l1zx6Cfo2k1Z95SO';
 -- 设置用户密码不过期
-ALTER USER 'wshop'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
--- 修改密码策略
-ALTER USER 'wshop'@'%' IDENTIFIED WITH mysql_native_password BY 'l1zx6Cfo2k1Z95SO';
+ALTER USER 'nest'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
 -- 给用户授权
 grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on wshop.* to 'wshop'@'%';
 -- 刷新权限

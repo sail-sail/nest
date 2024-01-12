@@ -12,6 +12,7 @@ import type {
   PageInput,
   I18Nsearch,
   I18Ninput,
+  I18Nmodel,
 } from "#/types";
 
 import type {
@@ -27,7 +28,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: I18Nmodel,
+  model?: I18Nmodel | null,
 ) {
   if (!model) {
     return;
@@ -625,4 +626,11 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: I18Ninput = {
+  };
+  return defaultInput;
 }

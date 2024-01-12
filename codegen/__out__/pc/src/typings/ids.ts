@@ -43,6 +43,10 @@ declare const langId: unique symbol;
 /** 语言 */
 export type LangId = Distinct<string, typeof langId>;
 
+declare const login_logId: unique symbol;
+/** 登录日志 */
+export type LoginLogId = Distinct<string, typeof login_logId>;
+
 declare const menuId: unique symbol;
 /** 菜单 */
 export type MenuId = Distinct<string, typeof menuId>;

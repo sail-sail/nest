@@ -12,10 +12,11 @@ import type {
   PageInput,
   OptionsSearch,
   OptionsInput,
+  OptionsModel,
 } from "#/types";
 
 async function setLblById(
-  model?: OptionsModel,
+  model?: OptionsModel | null,
 ) {
   if (!model) {
     return;
@@ -588,4 +589,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByOptions;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OptionsInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+    version: 1,
+  };
+  return defaultInput;
 }

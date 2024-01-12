@@ -835,14 +835,18 @@ async function onRefresh() {
   await dataGrid(true);
 }
 
+let isSearchReset = $ref(false);
+
 /** 重置搜索 */
 async function onSearchReset() {
+  isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
   await nextTick();
   await dataGrid(true);
+  isSearchReset = false;
 }
 
 /** 清空搜索框事件 */
@@ -1194,9 +1198,6 @@ async function dataGrid(
 
 function getDataSearch() {
   const is_deleted = search.is_deleted;
-  if (showBuildIn) {
-    Object.assign(search, builtInSearch);
-  }
   const search2 = {
     ...search,
     idsChecked: undefined,
@@ -1436,9 +1437,9 @@ async function onImportExcel() {
         key_types: {
           "lbl": "string",
           "home_url": "string",
-          "menu_ids_lbl": "string",
-          "permit_ids_lbl": "string",
-          "data_permit_ids_lbl": "string",
+          "menu_ids_lbl": "string[]",
+          "permit_ids_lbl": "string[]",
+          "data_permit_ids_lbl": "string[]",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1826,19 +1827,21 @@ async function initFrame() {
     initI18nsEfc(),
     dataGrid(true),
   ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
   inited = true;
 }
 
 watch(
-  () => builtInSearch,
+  () => [ builtInSearch, showBuildIn ],
   async function() {
+    if (isSearchReset) {
+      return;
+    }
     search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search)) {
       return;
+    }
+    if (showBuildIn) {
+      Object.assign(search, builtInSearch);
     }
     await dataGrid(true);
   },
