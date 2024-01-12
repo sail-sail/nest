@@ -5,6 +5,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasPassword = columns.some((column) => column.isPassword);
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -686,7 +687,7 @@ export async function lockByIds<#=Table_Up#>(
 }<#
   }
 #><#
-if (opts.noDelete !== true) {
+if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
@@ -730,7 +731,11 @@ export async function revertByIds<#=Table_Up#>(
   }
   #>
   return res;
+}<#
 }
+#><#
+if (opts.noDelete !== true && hasIsDeleted) {
+#>
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>

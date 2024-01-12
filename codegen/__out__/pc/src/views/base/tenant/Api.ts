@@ -12,6 +12,7 @@ import type {
   PageInput,
   TenantSearch,
   TenantInput,
+  TenantModel,
 } from "#/types";
 
 import type {
@@ -27,7 +28,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: TenantModel,
+  model?: TenantModel | null,
 ) {
   if (!model) {
     return;
@@ -724,4 +725,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByTenant;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: TenantInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

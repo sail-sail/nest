@@ -303,8 +303,15 @@ export async function findCount(
           1
         from
           ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
         where
-          ${ await getWhereQuery(args, search, options) }
+          ${ whereQuery }
+    `;
+  }
+  sql += `
         group by t.id
       ) t
   `;
@@ -316,7 +323,7 @@ export async function findCount(
     total: number,
   }
   const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
-  let result = model?.total || 0;
+  let result = Number(model?.total || 0);
   
   return result;
 }
@@ -346,8 +353,15 @@ export async function findAll(
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
+  `;
+  const whereQuery = await getWhereQuery(args, search, options);
+  if (isNotEmpty(whereQuery)) {
+    sql += `
     where
-      ${ await getWhereQuery(args, search, options) }
+      ${ whereQuery }
+    `;
+  }
+  sql += `
     group by t.id
   `;
   
@@ -504,24 +518,28 @@ export async function setIdByLbl(
   
   // 部门负责人
   if (!input.usr_ids && input.usr_ids_lbl) {
-    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
-      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
+    input.usr_ids_lbl = input.usr_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.usr_ids_lbl = Array.from(new Set(input.usr_ids_lbl));
+    if (input.usr_ids_lbl.length === 0) {
+      input.usr_ids = [ ];
+    } else {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          t.id
+        from
+          base_usr t
+        where
+          t.lbl in ${ args.push(input.usr_ids_lbl) }
+      `;
+      interface Result {
+        id: UsrId;
+      }
+      const models = await query<Result>(sql, args);
+      input.usr_ids = models.map((item: { id: UsrId }) => item.id);
     }
-    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_usr t
-      where
-        t.lbl in ${ args.push(input.usr_ids_lbl) }
-    `;
-    interface Result {
-      id: UsrId;
-    }
-    const models = await query<Result>(sql, args);
-    input.usr_ids = models.map((item: { id: UsrId }) => item.id);
   }
   
   // 锁定
