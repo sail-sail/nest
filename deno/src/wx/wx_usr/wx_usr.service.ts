@@ -208,25 +208,26 @@ export async function code2Session(
  */
 export async function checkBindWxUsr() {
   const authModel = await getAuthModel();
+  if (!authModel.wx_usr_id) {
+    return false;
+  }
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(authModel.wx_usr_id),
   );
-  if (!wx_usrModel.usr_id) {
+  const usr_id = wx_usrModel.usr_id;
+  if (!usr_id) {
     return false;
   }
   const usrModel = await validateOptionUsr(
-    await findByIdUsr(wx_usrModel.usr_id),
+    await findByIdUsr(usr_id),
   );
   return !usrModel.is_hidden;
 }
 
 /**
  * 绑定微信用户
- * 
  * 找到这个用户, 如果这个用户是 is_hidden 为0, 代表它未绑定, 否则已被绑定
- * 
  * 未绑定的, 就找到当前的登录用户, 修改它的用户名, 密码, 跟 租户ID, 还有 is_hidden 变为 1
- * 
  * 之后再执行登录流程
  */
 export async function bindWxUsr(

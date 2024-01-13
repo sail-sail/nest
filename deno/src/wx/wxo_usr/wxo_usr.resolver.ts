@@ -3,6 +3,8 @@ import {
 } from "/lib/context.ts";
  
 import type {
+  LoginInput,
+  LoginModel,
   WxoLoginByCodeInput,
 } from "/gen/types.ts";
 
@@ -36,4 +38,35 @@ export async function wxoLoginByCode(
   context.notVerifyToken = true;
   const res = await wxoLoginByCode(input);
   return res;
+}
+
+/** 公众号用户是否已绑定 */
+export async function checkBindWxoUsr(): Promise<boolean> {
+  
+  const {
+    checkBindWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  return await checkBindWxoUsr();
+}
+
+/** 公众号用户绑定 */
+export async function bindWxoUsr(
+  input: LoginInput,
+): Promise<LoginModel> {
+  
+  const {
+    bindWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  return await bindWxoUsr(input);
+}
+
+/** 公众号用户解除绑定 */
+export async function unBindWxoUsr() {
+  const {
+    unBindWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  return await unBindWxoUsr();
 }
