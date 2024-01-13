@@ -860,7 +860,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.escape="onEmptySelected"<#
         if (opts.noDelete !== true) {
         #>
-        @keydown.delete="onDeleteByIds"<#
+        @keydown.ctrl.delete.stop="onDeleteByIds"<#
         }
         #>
         @keydown.enter="onRowEnter"
