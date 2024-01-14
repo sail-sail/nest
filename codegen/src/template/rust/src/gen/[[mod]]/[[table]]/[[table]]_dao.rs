@@ -10,6 +10,7 @@ const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -338,14 +339,18 @@ async fn get_where_query(
     .is_some();<#
   }
   #>
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::with_capacity(80 * 15 * 2);<#
+  if (hasIsDeleted) {
+  #>
   {
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
       .unwrap_or(0);
     where_query += " t.is_deleted = ?";
     args.push(is_deleted.into());
+  }<#
   }
+  #>
   {
     let id = match &search {
       Some(item) => &item.id,
@@ -828,10 +833,14 @@ pub async fn find_all(
   
   #[allow(unused_variables)]
   let table = "<#=mod#>_<#=table#>";
-  let _method = "find_all";
+  let _method = "find_all";<#
+  if (hasIsDeleted) {
+  #>
   
   let is_deleted = search.as_ref()
-    .and_then(|item| item.is_deleted);
+    .and_then(|item| item.is_deleted);<#
+  }
+  #>
   
   let mut args = QueryArgs::new();
   
@@ -1072,8 +1081,12 @@ pub async fn find_all(
         .iter()
         .map(|item| item.id.clone())
         .collect::<Vec<<#=Table_Up#>Id>>()
-        .into(),
-      is_deleted,
+        .into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -2714,8 +2727,12 @@ pub async fn update_by_id(
   if let Some(input_<#=table#>_models) = input.<#=table#>_models {
     let <#=table#>_models = find_all_<#=table#>(
       <#=Table_Up#>Search {
-        <#=inlineForeignTab.column#>: vec![id.clone()].into(),
-        is_deleted: 0.into(),
+        <#=inlineForeignTab.column#>: vec![id.clone()].into(),<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 0.into(),<#
+        }
+        #>
         ..Default::default()
       }.into(),
       None,
@@ -3043,8 +3060,12 @@ pub async fn delete_by_ids(
   // <#=inlineForeignTab.label#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=inlineForeignTab.column#>: ids.clone().into(),
-      is_deleted: 0.into(),
+      <#=inlineForeignTab.column#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 0.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -3350,8 +3371,12 @@ pub async fn revert_by_ids(
   // <#=inlineForeignTab.label#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=inlineForeignTab.column#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=inlineForeignTab.column#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -3479,9 +3504,13 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = "".to_owned();<#
+  if (hasIsDeleted) {
+  #>
   
   sql_where += "t.is_deleted = 0";<#
+  }
+  #><#
   if (hasTenantId) {
   #>
   
