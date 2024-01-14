@@ -6,12 +6,17 @@ import type {
   FieldPermitId,
 } from "@/typings/ids";
 
+import {
+  FieldPermitType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
   PageInput,
   FieldPermitSearch,
   FieldPermitInput,
+  FieldPermitModel,
 } from "#/types";
 
 import type {
@@ -23,7 +28,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: FieldPermitModel,
+  model?: FieldPermitModel | null,
 ) {
   if (!model) {
     return;
@@ -580,4 +585,12 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: FieldPermitInput = {
+    type: FieldPermitType.Editable,
+  };
+  return defaultInput;
 }

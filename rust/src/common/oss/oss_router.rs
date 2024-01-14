@@ -3,7 +3,7 @@ use anyhow::Result;
 use poem::{
   handler, web::{Multipart, Path, Query}, Response,
 };
-use reqwest::StatusCode;
+use poem::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

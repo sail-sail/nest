@@ -618,6 +618,27 @@ pub async fn find_by_unique(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.lbl.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = LangSearch {
+      lbl: search.lbl,
+      ..Default::default()
+    };
+    
+    find_all(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -633,6 +654,12 @@ fn equals_by_unique(
   
   if
     input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
+  {
+    return true;
+  }
+  
+  if
+    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
   {
     return true;
   }

@@ -197,6 +197,12 @@ export class Context {
     return this.#req_id;
   }
   
+  get ip() {
+    const headers = this.oakCtx?.request.headers;
+    const ip = headers?.get("x-real-ip");
+    return ip || "127.0.0.1";
+  }
+  
   /**
    * 获取当前请求是否开启事务
    * @return {boolean} 

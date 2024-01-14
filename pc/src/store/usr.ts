@@ -97,6 +97,7 @@ export default defineStore("usr", function() {
     paths: [
       "authorization",
       "username",
+      "usr_id",
       "tenant_id",
       "loginInfo",
       "lang",

@@ -27,3 +27,6 @@ pub enum UniqueType {
   #[graphql(name = "ignore")]
   Ignore,
 }
+
+#[derive(Clone)]
+pub struct Ip(pub String);

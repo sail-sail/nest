@@ -93,6 +93,8 @@ async function getSchema0(
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
+  const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -429,10 +431,12 @@ async function getSchema0(
     && (!tables[table_name]?.opts?.defaultSort)
   ) {
     tables[table_name].opts = tables[table_name].opts || { };
-    tables[table_name].opts.defaultSort = {
-      prop: "create_time",
-      order: "descending",
-    };
+    if (hasCreateTime) {
+      tables[table_name].opts.defaultSort = {
+        prop: "create_time",
+        order: "descending",
+      };
+    }
   } else if (
     hasOrderBy
     && (!tables[table_name]?.opts?.defaultSort)
@@ -442,6 +446,14 @@ async function getSchema0(
       prop: "order_by",
       order: "ascending",
     };
+  }
+  if (hasCreateTime && tables[table_name]?.opts?.hasCreateTime == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasCreateTime = true;
+  }
+  if (hasCreateUsrId && tables[table_name]?.opts?.hasCreateUsrId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasCreateUsrId = true;
   }
   return records2;
 }

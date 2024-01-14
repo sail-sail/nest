@@ -6,16 +6,21 @@ import type {
   DictbizId,
 } from "@/typings/ids";
 
+import {
+  DictbizType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
   PageInput,
   DictbizSearch,
   DictbizInput,
+  DictbizModel,
 } from "#/types";
 
 async function setLblById(
-  model?: DictbizModel,
+  model?: DictbizModel | null,
 ) {
   if (!model) {
     return;
@@ -696,4 +701,15 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByDictbiz;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DictbizInput = {
+    type: DictbizType.String,
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

@@ -948,8 +948,15 @@ pub async fn set_id_by_lbl(
     input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.menu_ids_lbl = input.menu_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::menu::menu_dao::find_one(
@@ -964,12 +971,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.menu_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<MenuId>>()
-        .into();
-    }
+    input.menu_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<MenuId>>()
+      .into();
   }
   
   // 按钮权限
@@ -977,8 +982,15 @@ pub async fn set_id_by_lbl(
     input.permit_ids_lbl = input.permit_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.permit_ids_lbl = input.permit_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.permit_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::permit::permit_dao::find_one(
@@ -993,12 +1005,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.permit_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<PermitId>>()
-        .into();
-    }
+    input.permit_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<PermitId>>()
+      .into();
   }
   
   // 数据权限
@@ -1006,8 +1016,15 @@ pub async fn set_id_by_lbl(
     input.data_permit_ids_lbl = input.data_permit_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.data_permit_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::data_permit::data_permit_dao::find_one(
@@ -1022,12 +1039,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.data_permit_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<DataPermitId>>()
-        .into();
-    }
+    input.data_permit_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DataPermitId>>()
+      .into();
   }
   
   Ok(input)
