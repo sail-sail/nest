@@ -5,8 +5,8 @@ import {
 import * as path from "path";
 import { parse } from "fast-csv";
 
-import {
-  type Context,
+import type {
+  Context,
 } from "../lib/information_schema";
 
 import {

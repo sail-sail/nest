@@ -860,7 +860,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @keydown.escape="onEmptySelected"<#
         if (opts.noDelete !== true) {
         #>
-        @keydown.delete="onDeleteByIds"<#
+        @keydown.ctrl.delete.stop="onDeleteByIds"<#
         }
         #>
         @keydown.enter="onRowEnter"
@@ -3324,10 +3324,6 @@ async function initFrame() {
     initI18nsEfc(),
     dataGrid(true),
   ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
   inited = true;
 }
 
