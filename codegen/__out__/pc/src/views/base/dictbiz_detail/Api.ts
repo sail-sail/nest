@@ -12,6 +12,7 @@ import type {
   PageInput,
   DictbizDetailSearch,
   DictbizDetailInput,
+  DictbizDetailModel,
 } from "#/types";
 
 import type {
@@ -19,7 +20,7 @@ import type {
 } from "#/types";
 
 async function setLblById(
-  model?: DictbizDetailModel,
+  model?: DictbizDetailModel | null,
 ) {
   if (!model) {
     return;
@@ -643,4 +644,14 @@ export async function findLastOrderBy(
   }, opt);
   const res = data.findLastOrderByDictbizDetail;
   return res;
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: DictbizDetailInput = {
+    is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
 }

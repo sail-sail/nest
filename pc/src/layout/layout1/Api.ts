@@ -29,7 +29,7 @@ function treeMenusUrl(children: MenuModel[]) {
 }
 
 export async function getMenus(
-  variables?: { type?: string },
+  variables?: { },
   opt?: GqlOpt,
 ): Promise<any> {
   const res: {
@@ -43,8 +43,8 @@ export async function getMenus(
         route_path
         route_query
       }
-      query($type: String) {
-        getMenus(type: $type) {
+      query {
+        getMenus {
           ...GetMenusFragment
         }
       }

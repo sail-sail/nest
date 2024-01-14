@@ -9,22 +9,13 @@ use crate::common::context::{
 
 use super::menu_model::GetMenus;
 
-async fn find_menus(
-  r#type: Option<String>,
-) -> Result<Vec<GetMenus>> {
+async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let table = "base_menu";
   
   let mut args = QueryArgs::new();
   
   let mut where_query = String::new();
-  
-  if let Some(r#type) = r#type {
-    where_query.push_str(" and type = ?");
-    args.push(r#type.into());
-  } else {
-    where_query.push_str(" and type = 'pc'");
-  }
   
   let tenant_id = get_auth_tenant_id();
   if let Some(tenant_id) = tenant_id {
@@ -42,7 +33,6 @@ async fn find_menus(
     r#"select
       t.id,
       t.parent_id,
-      t.type,
       t.lbl,
       t.route_path,
       t.route_query
@@ -125,10 +115,8 @@ async fn find_menus(
 // }
 
 /// 首页获取菜单列表
-pub async fn get_menus(
-  r#type: Option<String>,
-) -> Result<Vec<GetMenus>> {
-  let all_models: Vec<GetMenus> = find_menus(r#type).await?;
+pub async fn get_menus() -> Result<Vec<GetMenus>> {
+  let all_models: Vec<GetMenus> = find_menus().await?;
   // let mut menus: Vec<GetMenus> = vec![];
   // tmp_fn(None, all_models, &mut menus);
   // Ok(menus)

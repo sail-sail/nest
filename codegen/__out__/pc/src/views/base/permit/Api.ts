@@ -12,6 +12,7 @@ import type {
   PageInput,
   PermitSearch,
   PermitInput,
+  PermitModel,
 } from "#/types";
 
 import type {
@@ -23,7 +24,7 @@ import {
 } from "@/views/base/menu/Api";
 
 async function setLblById(
-  model?: PermitModel,
+  model?: PermitModel | null,
 ) {
   if (!model) {
     return;
@@ -558,4 +559,11 @@ export async function importModels(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: PermitInput = {
+  };
+  return defaultInput;
 }

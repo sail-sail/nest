@@ -5,5 +5,6 @@ pub mod auth;
 pub mod oss;
 pub mod tmpfile;
 pub mod cache;
+pub mod exceptions;
 pub mod util;
 pub mod app;

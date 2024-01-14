@@ -7,10 +7,12 @@ import type {
   Mutation,
   PageInput,
   OperationRecordSearch,
+  OperationRecordInput,
+  OperationRecordModel,
 } from "#/types";
 
 async function setLblById(
-  model?: OperationRecordModel,
+  model?: OperationRecordModel | null,
 ) {
   if (!model) {
     return;
@@ -389,4 +391,11 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: OperationRecordInput = {
+  };
+  return defaultInput;
 }

@@ -916,6 +916,27 @@ pub async fn find_by_unique(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.username.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = UsrSearch {
+      username: search.username,
+      ..Default::default()
+    };
+    
+    find_all(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -931,6 +952,12 @@ fn equals_by_unique(
   
   if
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+  {
+    return true;
+  }
+  
+  if
+    input.username.as_ref().is_some() && input.username.as_ref().unwrap() == &model.username
   {
     return true;
   }
@@ -1022,8 +1049,15 @@ pub async fn set_id_by_lbl(
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.org_ids_lbl = input.org_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::org::org_dao::find_one(
@@ -1038,12 +1072,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.org_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<OrgId>>()
-        .into();
-    }
+    input.org_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<OrgId>>()
+      .into();
   }
   
   // 默认组织
@@ -1072,8 +1104,15 @@ pub async fn set_id_by_lbl(
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::dept::dept_dao::find_one(
@@ -1088,12 +1127,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.dept_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<DeptId>>()
-        .into();
-    }
+    input.dept_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DeptId>>()
+      .into();
   }
   
   // 拥有角色
@@ -1101,8 +1138,15 @@ pub async fn set_id_by_lbl(
     input.role_ids_lbl = input.role_ids_lbl.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
+    input.role_ids_lbl = input.role_ids_lbl.map(|item| {
+      let mut set = std::collections::HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
     let mut models = vec![];
     for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
       let model = crate::gen::base::role::role_dao::find_one(
@@ -1117,12 +1161,10 @@ pub async fn set_id_by_lbl(
         models.push(model);
       }
     }
-    if !models.is_empty() {
-      input.role_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<RoleId>>()
-        .into();
-    }
+    input.role_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<RoleId>>()
+      .into();
   }
   
   Ok(input)

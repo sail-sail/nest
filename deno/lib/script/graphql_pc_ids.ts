@@ -68,6 +68,12 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").LangId`,
     },
     
+    // 登录日志
+    "LoginLogId": {
+      "input": `import("@/typings/ids.ts").LoginLogId`,
+      "output": `import("@/typings/ids.ts").LoginLogId`,
+    },
+    
     // 菜单
     "MenuId": {
       "input": `import("@/typings/ids.ts").MenuId`,

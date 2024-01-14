@@ -233,6 +233,20 @@ async function langChg() {
 
 let oldLoginModelKey = "oldLoginModelPc";
 
+function removeTabs() {
+  for (const tab of tabsStore.tabs) {
+    if (
+      [
+        "/",
+        "/index",
+      ].includes(tab.path)
+    ) {
+      continue;
+    }
+    tabsStore.removeTab(tab);
+  }
+}
+
 /**
  * 登录
  */
@@ -245,6 +259,7 @@ async function onLogin() {
   } catch (err) {
     return;
   }
+  removeTabs();
   const loginModel = await login(model);
   if (!loginModel.authorization) {
     return;
@@ -375,7 +390,7 @@ initFrame();
   color: #FFF;
   border: 0 !important;
 }
-.from_input.custom_select :deep(.el-select-v2__placeholder) {
+.from_input.custom_select_div :deep(.el-select-v2__placeholder) {
   padding-left: 22px;
 }
 </style>

@@ -85,23 +85,6 @@ async fn get_where_query(
     }
   }
   {
-    let r#type: Vec<MenuType> = match &search {
-      Some(item) => item.r#type.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !r#type.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(r#type.len());
-        for item in r#type {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.type in ({})", arg);
-    }
-  }
-  {
     let parent_id: Vec<MenuId> = match &search {
       Some(item) => item.parent_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -441,28 +424,17 @@ pub async fn find_all(
   ).await?;
   
   let dict_vec = get_dict(&[
-    "menu_type",
     "is_locked",
     "is_enabled",
   ]).await?;
   let [
-    type_dict,
     is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
   for model in &mut res {
-    
-    // 类型
-    model.r#type_lbl = {
-      r#type_dict
-        .iter()
-        .find(|item| item.val == model.r#type.as_str())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.r#type.to_string())
-    };
     
     // 锁定
     model.is_locked_lbl = {
@@ -560,8 +532,6 @@ pub async fn get_field_comments(
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
-    "类型".into(),
-    "类型".into(),
     "父菜单".into(),
     "父菜单".into(),
     "名称".into(),
@@ -597,27 +567,25 @@ pub async fn get_field_comments(
   
   let field_comments = MenuFieldComment {
     id: vec[0].to_owned(),
-    r#type: vec[1].to_owned(),
-    type_lbl: vec[2].to_owned(),
-    parent_id: vec[3].to_owned(),
-    parent_id_lbl: vec[4].to_owned(),
-    lbl: vec[5].to_owned(),
-    route_path: vec[6].to_owned(),
-    route_query: vec[7].to_owned(),
-    is_locked: vec[8].to_owned(),
-    is_locked_lbl: vec[9].to_owned(),
-    is_enabled: vec[10].to_owned(),
-    is_enabled_lbl: vec[11].to_owned(),
-    order_by: vec[12].to_owned(),
-    rem: vec[13].to_owned(),
-    create_usr_id: vec[14].to_owned(),
-    create_usr_id_lbl: vec[15].to_owned(),
-    create_time: vec[16].to_owned(),
-    create_time_lbl: vec[17].to_owned(),
-    update_usr_id: vec[18].to_owned(),
-    update_usr_id_lbl: vec[19].to_owned(),
-    update_time: vec[20].to_owned(),
-    update_time_lbl: vec[21].to_owned(),
+    parent_id: vec[1].to_owned(),
+    parent_id_lbl: vec[2].to_owned(),
+    lbl: vec[3].to_owned(),
+    route_path: vec[4].to_owned(),
+    route_query: vec[5].to_owned(),
+    is_locked: vec[6].to_owned(),
+    is_locked_lbl: vec[7].to_owned(),
+    is_enabled: vec[8].to_owned(),
+    is_enabled_lbl: vec[9].to_owned(),
+    order_by: vec[10].to_owned(),
+    rem: vec[11].to_owned(),
+    create_usr_id: vec[12].to_owned(),
+    create_usr_id_lbl: vec[13].to_owned(),
+    create_time: vec[14].to_owned(),
+    create_time_lbl: vec[15].to_owned(),
+    update_usr_id: vec[16].to_owned(),
+    update_usr_id_lbl: vec[17].to_owned(),
+    update_time: vec[18].to_owned(),
+    update_time_lbl: vec[19].to_owned(),
   };
   Ok(field_comments)
 }
@@ -808,29 +776,13 @@ pub async fn set_id_by_lbl(
   let mut input = input;
   
   let dict_vec = get_dict(&[
-    "menu_type",
     "is_locked",
     "is_enabled",
   ]).await?;
   
-  // 类型
-  if input.r#type.is_none() {
-    let type_dict = &dict_vec[0];
-    if let Some(type_lbl) = input.type_lbl.clone() {
-      input.r#type = type_dict
-        .iter()
-        .find(|item| {
-          item.lbl == type_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 锁定
   if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[0];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
       input.is_locked = is_locked_dict
         .iter()
@@ -845,7 +797,7 @@ pub async fn set_id_by_lbl(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -965,12 +917,6 @@ pub async fn create(
     sql_fields += ",create_usr_id";
     sql_values += ",?";
     args.push(usr_id.into());
-  }
-  // 类型
-  if let Some(r#type) = input.r#type {
-    sql_fields += ",type";
-    sql_values += ",?";
-    args.push(r#type.into());
   }
   // 父菜单
   if let Some(parent_id) = input.parent_id {
@@ -1126,12 +1072,6 @@ pub async fn update_by_id(
   args.push(now.into());
   
   let mut field_num: usize = 0;
-  // 类型
-  if let Some(r#type) = input.r#type {
-    field_num += 1;
-    sql_fields += ",type = ?";
-    args.push(r#type.into());
-  }
   // 父菜单
   if let Some(parent_id) = input.parent_id {
     field_num += 1;

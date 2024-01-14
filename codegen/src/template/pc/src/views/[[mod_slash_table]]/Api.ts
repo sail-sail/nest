@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
@@ -68,6 +69,112 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>import type {
   <#=Table_Up#>Id,
 } from "@/typings/ids";<#
+let hasDefaultValue = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_deleted") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (
+    [
+      "is_default",
+      "is_deleted",
+      "tenant_id",
+      "org_id",
+      "version",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+  if (!column.dict && !column.dictbiz) {
+    continue;
+  }
+  const columnDictModels = [
+    ...dictModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+    ...dictbizModels.filter(function(item) {
+      return item.code === column.dict || item.code === column.dictbiz;
+    }),
+  ];
+  if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
+    continue;
+  }
+  let defaultValue = column.COLUMN_DEFAULT.toString();
+  if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+    continue;
+  }
+  hasDefaultValue = true;
+  break;
+}
+#><#
+if (hasDefaultValue) {
+#>
+
+import {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_deleted") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (
+      [
+        "is_default",
+        "is_deleted",
+        "tenant_id",
+        "org_id",
+        "version",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+    if (!column.dict && !column.dictbiz) {
+      continue;
+    }
+    const columnDictModels = [
+      ...dictModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+      ...dictbizModels.filter(function(item) {
+        return item.code === column.dict || item.code === column.dictbiz;
+      }),
+    ];
+    if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) || columnDictModels.length === 0) {
+      continue;
+    }
+    let defaultValue = column.COLUMN_DEFAULT.toString();
+    if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+      continue;
+    }
+    let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+    Column_Up = Column_Up.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  <#=Table_Up#><#=Column_Up#>,<#
+  }
+  #>
+} from "#/types";<#
+}
+#><#
 if (hasDecimal) {
 #>
 
@@ -78,18 +185,13 @@ import Decimal from "decimal.js-light";<#
 import type {
   Query,
   Mutation,
-  PageInput,
-  <#=searchName#>,<#
-  if (opts.noAdd !== true || opts.noEdit !== true) {
+  PageInput,<#
+  const findAllSearchArgs = [ ];
+  findAllSearchArgs.push(searchName);
   #>
-  <#=inputName#>,<#
-  }
-  #><#
-  if (list_tree === true) {
-  #>
-  <#=modelName#>,<#
-  }
-  #>
+  <#=searchName#>,
+  <#=inputName#>,
+  <#=modelName#>,
 } from "#/types";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
@@ -121,11 +223,65 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   importForeignTables.push(Foreign_Table_Up);
+  if (findAllSearchArgs.includes(`${ Foreign_Table_Up }Search`)) {
+    continue;
+  }
+  findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
 #>
 
 import type {
   <#=Foreign_Table_Up#>Search,
 } from "#/types";<#
+}
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns;
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+        "org_id", "org_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || (column.noAdd && column.noEdit)
+    ) continue;
+    const foreignKey = column.foreignKey;
+    const data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let Foreign_Table_Up2 = Foreign_Table_Up;
+    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
+    ) {
+      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
+    }
+    if (findAllSearchArgs.includes(`${ Foreign_Table_Up2 }Search`)) {
+      continue;
+    }
+    findAllSearchArgs.push(`${ Foreign_Table_Up2 }Search`);
+#>
+
+import type {
+  <#=Foreign_Table_Up2#>Search,
+} from "#/types";<#
+  }
 }
 #><#
 const importForeignTablesTree = [ ];
@@ -215,7 +371,7 @@ import {
 #>
 
 async function setLblById(
-  model?: <#=modelName#>,
+  model?: <#=modelName#> | null,
 ) {
   if (!model) {
     return;
@@ -310,17 +466,21 @@ export async function findAll(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -448,17 +608,21 @@ export async function findOne(
           <#=column_name#><#
             }
           }
+          #><#
+          if (hasIsDeleted) {
           #>
           is_deleted<#
+          }
+          #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -743,13 +907,13 @@ export async function findById(
           #><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const table = inlineForeignTab.table;
+            const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
-            const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-            const table = inlineForeignTab.table;
-            const mod = inlineForeignTab.mod;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -2032,3 +2196,118 @@ export async function findLastOrderBy(
 }<#
 }
 #>
+
+/** 新增时的默认值 */
+export async function getDefaultInput() {
+  const defaultInput: <#=inputName#> = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_deleted") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (
+        [
+          "is_default",
+          "is_deleted",
+          "tenant_id",
+          "org_id",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+      let defaultValue = column.COLUMN_DEFAULT.toString();
+      if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+        continue;
+      }
+      if (selectList.length > 0) {
+        if (typeof selectList[0].value === "string") {
+          defaultValue = `"${ defaultValue }"`;
+        } else {
+          defaultValue = defaultValue;
+        }
+      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
+        defaultValue = defaultValue;
+      } else if (data_type === "datetime" || data_type === "date") {
+        let valueFormat = "YYYY-MM-DD HH:mm:ss";
+        if (data_type === "date") {
+          valueFormat = "YYYY-MM-DD";
+        }
+        if (defaultValue === "CURRENT_DATE") {
+          if (data_type === "datetime") {
+            defaultValue = "dayjs().format('YYYY-MM-DD 00:00:00')";
+          } else {
+            defaultValue = "dayjs().format('YYYY-MM-DD')";
+          }
+        } else if (defaultValue === "CURRENT_DATETIME") {
+          defaultValue = `dayjs().format('${ valueFormat }')`;
+        } else if (defaultValue.startsWith("start_of_")) {
+          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
+        } else if (defaultValue.startsWith("end_of_")) {
+          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
+      } else if (data_type === "decimal") {
+        defaultValue = `new Decimal(${ defaultValue })`;
+      } else if (column.dict || column.dictbiz) {
+        const columnDictModels = [
+          ...dictModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+          ...dictbizModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+        ];
+        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+          Column_Up = Column_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          let defaultValue_Up = column.COLUMN_DEFAULT.toString();
+          defaultValue_Up = defaultValue_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
+        } else {
+          if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+            defaultValue = `"${ defaultValue }"`;
+          } else {
+            defaultValue = defaultValue;
+          }
+        }
+      } else if (data_type === "varchar" || data_type === "text") {
+        if (defaultValue === "CURRENT_USR_ID") {
+          defaultValue = "usrStore.usr_id";
+        } else if (defaultValue === "CURRENT_ORG_ID") {
+          defaultValue = "usrStore.loginInfo?.org_id";
+        } else if (defaultValue === "CURRENT_TENANT_ID") {
+          defaultValue = "usrStore.tenant_id";
+        } else if (defaultValue === "CURRENT_USERNAME") {
+          defaultValue = "usrStore.username";
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
+      } else {
+        defaultValue = `"${ defaultValue }"`;
+      }
+    #>
+    <#=column_name#>: <#=defaultValue#>,<#
+    }
+    #>
+  };
+  return defaultInput;
+}

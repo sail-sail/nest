@@ -422,7 +422,7 @@
         @header-dragend="headerDragend"
         @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
-        @keydown.delete="onDeleteByIds"
+        @keydown.ctrl.delete.stop="onDeleteByIds"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
@@ -698,14 +698,18 @@ async function onRefresh() {
   await dataGrid(true);
 }
 
+let isSearchReset = $ref(false);
+
 /** 重置搜索 */
 async function onSearchReset() {
+  isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
   await nextTick();
   await dataGrid(true);
+  isSearchReset = false;
 }
 
 /** 清空搜索框事件 */
@@ -877,7 +881,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 180,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1008,9 +1012,6 @@ async function dataGrid(
 
 function getDataSearch() {
   const is_deleted = search.is_deleted;
-  if (showBuildIn) {
-    Object.assign(search, builtInSearch);
-  }
   const search2 = {
     ...search,
     idsChecked: undefined,
@@ -1628,19 +1629,21 @@ async function initFrame() {
     initI18nsEfc(),
     dataGrid(true),
   ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
   inited = true;
 }
 
 watch(
-  () => builtInSearch,
+  () => [ builtInSearch, showBuildIn ],
   async function() {
+    if (isSearchReset) {
+      return;
+    }
     search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search)) {
       return;
+    }
+    if (showBuildIn) {
+      Object.assign(search, builtInSearch);
     }
     await dataGrid(true);
   },
