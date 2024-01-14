@@ -9,6 +9,7 @@ const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id")
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasEncrypt = columns.some((column) => {
@@ -329,9 +330,13 @@ pub struct <#=tableUP#>Model {<#
     }
   #><#
   }
+  #><#
+  if (hasIsDeleted) {
   #>
   /// 是否已删除
   pub is_deleted: u8,<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     if (!inlineForeignSchema) {
@@ -583,9 +588,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       }
     #><#
     }
+    #><#
+    if (hasIsDeleted) {
     #>
     // 是否已删除
-    let is_deleted: u8 = row.try_get("is_deleted")?;
+    let is_deleted: u8 = row.try_get("is_deleted")?;<#
+    }
+    #>
     
     let model = Self {<#
       if (hasTenantId) {
@@ -607,8 +616,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #>
       is_hidden,<#
       }
+      #><#
+      if (hasIsDeleted) {
       #>
       is_deleted,<#
+      }
+      #><#
       for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -765,8 +778,12 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]
   pub is_hidden: Option<Vec<u8>>,<#
   }
+  #><#
+  if (hasIsDeleted) {
   #>
   pub is_deleted: Option<u8>,<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -950,9 +967,13 @@ pub struct <#=tableUP#>Search {
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
   /// ID
-  pub id: Option<<#=Table_Up#>Id>,
+  pub id: Option<<#=Table_Up#>Id>,<#
+  if (hasIsDeleted) {
+  #>
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
+  }
+  #><#
   if (hasTenantId) {
   #>
   /// 租户ID
@@ -1159,8 +1180,12 @@ pub struct <#=tableUP#>Input {
 impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
   fn from(model: <#=tableUP#>Model) -> Self {
     Self {
-      id: model.id.into(),
+      id: model.id.into(),<#
+      if (hasIsDeleted) {
+      #>
       is_deleted: model.is_deleted.into(),<#
+      }
+      #><#
       if (hasTenantId) {
       #>
       tenant_id: model.tenant_id.into(),<#
@@ -1285,8 +1310,12 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       // 隐藏字段
       is_hidden: input.is_hidden.map(|x| vec![x]),<#
       }
+      #><#
+      if (hasIsDeleted) {
       #>
       is_deleted: None,<#
+      }
+      #><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
