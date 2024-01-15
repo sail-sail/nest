@@ -67,6 +67,10 @@ import type {
   UsrId,
 } from "/gen/base/usr/usr.model.ts";
 
+import {
+  isEmpty,
+} from "/lib/util/string_util.ts";
+
 /** 通过域名获取开发者ID */
 export async function wxoGetAppid(
   host: string,
