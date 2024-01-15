@@ -144,7 +144,11 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 #>
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Model"<#
+}
+#>)]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
   #>
@@ -690,7 +694,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>FieldComment"<#
+}
+#>)]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -755,7 +763,11 @@ pub struct <#=tableUP#>FieldComment {<#
 }
 
 #[derive(InputObject, Default, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Search"<#
+}
+#>)]
 pub struct <#=tableUP#>Search {
   /// ID
   pub id: Option<<#=Table_Up#>Id>,
@@ -964,7 +976,11 @@ pub struct <#=tableUP#>Search {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Input"<#
+}
+#>)]
 pub struct <#=tableUP#>Input {
   /// ID
   pub id: Option<<#=Table_Up#>Id>,<#
