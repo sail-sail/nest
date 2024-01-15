@@ -74,7 +74,7 @@ import type {<#
 } from "/gen/types.ts";
 
 import type {<#
-  if (opts.noAdd !== true && opts.noEdit !== true) {
+  if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
   <#=inputName#>,<#
   }
