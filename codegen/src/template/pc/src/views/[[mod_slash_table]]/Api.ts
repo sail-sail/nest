@@ -207,7 +207,6 @@ for (let i = 0; i < columns.length; i++) {
       "tenant_id", "tenant_id_lbl",
       "org_id", "org_id_lbl",
     ].includes(column_name)
-    || column.readonly
     || (column.noAdd && column.noEdit)
   ) continue;
   const foreignKey = column.foreignKey;
@@ -255,7 +254,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
         "tenant_id", "tenant_id_lbl",
         "org_id", "org_id_lbl",
       ].includes(column_name)
-      || column.readonly
       || (column.noAdd && column.noEdit)
     ) continue;
     const foreignKey = column.foreignKey;
@@ -266,20 +264,14 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    let Foreign_Table_Up2 = Foreign_Table_Up;
-    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-    ) {
-      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-    }
-    if (findAllSearchArgs.includes(`${ Foreign_Table_Up2 }Search`)) {
+    if (findAllSearchArgs.includes(`${ Foreign_Table_Up }Search`)) {
       continue;
     }
-    findAllSearchArgs.push(`${ Foreign_Table_Up2 }Search`);
+    findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
 #>
 
 import type {
-  <#=Foreign_Table_Up2#>Search,
+  <#=Foreign_Table_Up#>Search,
 } from "#/types";<#
   }
 }
@@ -1175,7 +1167,6 @@ for (let i = 0; i < columns.length; i++) {
       "tenant_id", "tenant_id_lbl",
       "org_id", "org_id_lbl",
     ].includes(column_name)
-    || column.readonly
     || (column.noAdd && column.noEdit)
   ) continue;
   const foreignKey = column.foreignKey;
@@ -1188,29 +1179,23 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
-  let Foreign_Table_Up2 = Foreign_Table_Up;
-  if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-  ) {
-    Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-  }
   const defaultSort = foreignKey && foreignKey.defaultSort;
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #>
 
-export async function findAll<#=Foreign_Table_Up2#>(
-  search?: <#=Foreign_Table_Up2#>Search,
+export async function findAll<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up2#>: Query["findAll<#=Foreign_Table_Up2#>"];
+    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up2#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=Foreign_Table_Up2#>(search: $search, page: $page, sort: $sort) {
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
+        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -1222,12 +1207,12 @@ export async function findAll<#=Foreign_Table_Up2#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up2#>;
+  const res = data.findAll<#=Foreign_Table_Up#>;
   return res;
 }
 
-export async function get<#=Foreign_Table_Up2#>List() {
-  const data = await findAll<#=Foreign_Table_Up2#>(<#
+export async function get<#=Foreign_Table_Up#>List() {
+  const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
@@ -1269,12 +1254,6 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
-  let Foreign_Table_Up2 = Foreign_Table_Up;
-  if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-  ) {
-    Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-  }
   const defaultSort = foreignKey && foreignKey.defaultSort;
   let foreignSchema = undefined;
   if (foreignKey) {
@@ -1295,8 +1274,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 #>
 
-export async function get<#=Foreign_Table_Up2#>Tree() {
-  const data = await find<#=Foreign_Table_Up2#>Tree(<#
+export async function get<#=Foreign_Table_Up#>Tree() {
+  const data = await find<#=Foreign_Table_Up#>Tree(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1353,12 +1332,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    let Foreign_Table_Up2 = Foreign_Table_Up;
-    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-    ) {
-      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-    }
     if (foreignTableArr.includes(foreignTable)) continue;
     foreignTableArr.push(foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
@@ -1366,18 +1339,18 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #>
 
-export async function findAll<#=Foreign_Table_Up2#>(
-  search?: <#=Foreign_Table_Up2#>Search,
+export async function findAll<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up2#>: Query["findAll<#=Foreign_Table_Up2#>"];
+    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up2#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=Foreign_Table_Up2#>(search: $search, page: $page, sort: $sort) {
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
+        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -1389,12 +1362,12 @@ export async function findAll<#=Foreign_Table_Up2#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up2#>;
+  const res = data.findAll<#=Foreign_Table_Up#>;
   return res;
 }
 
-export async function get<#=Foreign_Table_Up2#>List() {
-  const data = await findAll<#=Foreign_Table_Up2#>(<#
+export async function get<#=Foreign_Table_Up#>List() {
+  const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
@@ -1443,12 +1416,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    let Foreign_Table_Up2 = Foreign_Table_Up;
-    if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-      && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-    ) {
-      Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-    }
     if (foreignTableTreeArr.includes(foreignTable)) continue;
     foreignTableTreeArr.push(foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
@@ -1471,8 +1438,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     }
 #>
 
-export async function get<#=Foreign_Table_Up2#>Tree() {
-  const data = await find<#=Foreign_Table_Up2#>Tree(<#
+export async function get<#=Foreign_Table_Up#>Tree() {
+  const data = await find<#=Foreign_Table_Up#>Tree(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1606,14 +1573,8 @@ export function useDownloadImportTemplate(routePath: string) {
             const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
             }).join("");
-            let Foreign_Table_Up2 = Foreign_Table_Up;
-            if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-              && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-            ) {
-              Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-            }
           #>
-          findAll<#=Foreign_Table_Up2#> {
+          findAll<#=Foreign_Table_Up#> {
             <#=foreignKey.column#>
             <#=foreignKey.lbl#>
           }<#
@@ -1939,14 +1900,8 @@ export function useExportExcel(routePath: string) {
             const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
             }).join("");
-            let Foreign_Table_Up2 = Foreign_Table_Up;
-            if (/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-              && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-            ) {
-              Foreign_Table_Up2 = Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-            }
           #>
-          findAll<#=Foreign_Table_Up2#> {
+          findAll<#=Foreign_Table_Up#> {
             <#=foreignKey.lbl#>
           }<#
           }
@@ -2198,7 +2153,44 @@ export async function findLastOrderBy(
 #>
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInput() {<#
+  let hasUsrStore = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "is_default",
+        "is_deleted",
+        "tenant_id",
+        "org_id",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+    let defaultValue = column.COLUMN_DEFAULT.toString();
+    if (
+      [
+        "CURRENT_USR_ID",
+        "CURRENT_ORG_ID",
+        "CURRENT_TENANT_ID",
+        "CURRENT_USERNAME",
+      ].includes(defaultValue)
+    ) {
+      hasUsrStore = true;
+      break;
+    }
+  }
+  #><#
+  if (hasUsrStore) {
+  #>
+  const usrStore = useUsrStore();<#
+  }
+  #>
   const defaultInput: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
