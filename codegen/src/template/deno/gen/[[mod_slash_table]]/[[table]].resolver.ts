@@ -9,6 +9,7 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -16,7 +17,7 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
   modelName = Table_Up2 + "model";
   fieldCommentName = Table_Up2 + "fieldComment";
   inputName = Table_Up2 + "input";
@@ -106,7 +107,7 @@ import "./cron_job.service.ts";<#
 /**
  * 根据条件查找<#=table_comment#>总数
  */
-export async function findCount<#=Table_Up#>(
+export async function findCount<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ): Promise<number> {
   
@@ -128,7 +129,7 @@ export async function findCount<#=Table_Up#>(
 /**
  * 根据搜索条件和分页查找<#=table_comment#>列表
  */
-export async function findAll<#=Table_Up#>(
+export async function findAll<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -183,7 +184,7 @@ export async function findAll<#=Table_Up#>(
 /**
  * 获取<#=table_comment#>字段注释
  */
-export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {
+export async function getFieldComments<#=Table_Up2#>(): Promise<<#=fieldCommentName#>> {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
   const res = await getFieldComments();
   return res;
@@ -194,7 +195,7 @@ if (hasSummary) {
 /**
  * 根据搜索条件查找<#=table_comment#>合计
  */
-export async function findSummary<#=Table_Up#>(
+export async function findSummary<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Summary> {
   const { findSummary } = await import("./<#=table#>.service.ts");
@@ -207,7 +208,7 @@ export async function findSummary<#=Table_Up#>(
 /**
  * 根据条件查找第一个<#=table_comment#>
  */
-export async function findOne<#=Table_Up#>(
+export async function findOne<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
@@ -257,7 +258,7 @@ export async function findOne<#=Table_Up#>(
 /**
  * 根据 id 查找<#=table_comment#>
  */
-export async function findById<#=Table_Up#>(
+export async function findById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
@@ -297,7 +298,7 @@ if (opts.noAdd !== true) {
 /**
  * 创建<#=table_comment#>
  */
-export async function create<#=Table_Up#>(
+export async function create<#=Table_Up2#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<<#=Table_Up#>Id> {<#
@@ -393,7 +394,7 @@ if (opts.noEdit !== true) {
 /**
  * 根据 id 修改<#=table_comment#>
  */
-export async function updateById<#=Table_Up#>(
+export async function updateById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {<#
@@ -456,7 +457,7 @@ export async function updateById<#=Table_Up#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findById<#=Table_Up#>(id);<#
+  const old_data = await findById<#=Table_Up2#>(id);<#
   }
   #>
   const id2: <#=Table_Up#>Id = await updateById(id, input);<#
@@ -486,7 +487,7 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 删除<#=table_comment#>
  */
-export async function deleteByIds<#=Table_Up#>(
+export async function deleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
@@ -541,7 +542,7 @@ export async function deleteByIds<#=Table_Up#>(
 /**
  * 根据 id 设置默认<#=table_comment#>
  */
-export async function defaultById<#=Table_Up#>(
+export async function defaultById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<number> {
   
@@ -588,7 +589,7 @@ export async function defaultById<#=Table_Up#>(
 /**
  * 根据 ids 启用或者禁用<#=table_comment#>
  */
-export async function enableByIds<#=Table_Up#>(
+export async function enableByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
@@ -639,7 +640,7 @@ export async function enableByIds<#=Table_Up#>(
 /**
  * 根据 ids 锁定或者解锁<#=table_comment#>
  */
-export async function lockByIds<#=Table_Up#>(
+export async function lockByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
@@ -693,7 +694,7 @@ if (opts.noRevert !== true && hasIsDeleted) {
 /**
  * 根据 ids 还原<#=table_comment#>
  */
-export async function revertByIds<#=Table_Up#>(
+export async function revertByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
@@ -740,7 +741,7 @@ if (opts.noDelete !== true && hasIsDeleted) {
 /**
  * 根据 ids 彻底删除<#=table_comment#>
  */
-export async function forceDeleteByIds<#=Table_Up#>(
+export async function forceDeleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const context = useContext();
@@ -786,7 +787,7 @@ if (hasOrderBy) {
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
-export async function findLastOrderBy<#=Table_Up#>(): Promise<number> {
+export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");
   const res = findLastOrderBy();
   return res;

@@ -27,7 +27,7 @@ import {
 /**
  * 根据条件查找国际化总数
  */
-export async function findCountI18n(
+export async function findCountI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
   
@@ -42,7 +42,7 @@ export async function findCountI18n(
 /**
  * 根据搜索条件和分页查找国际化列表
  */
-export async function findAllI18n(
+export async function findAllI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -59,7 +59,7 @@ export async function findAllI18n(
 /**
  * 获取国际化字段注释
  */
-export async function getFieldCommentsI18n(): Promise<I18NfieldComment> {
+export async function getFieldCommentsI18N(): Promise<I18NfieldComment> {
   const { getFieldComments } = await import("./i18n.service.ts");
   const res = await getFieldComments();
   return res;
@@ -68,7 +68,7 @@ export async function getFieldCommentsI18n(): Promise<I18NfieldComment> {
 /**
  * 根据条件查找第一个国际化
  */
-export async function findOneI18n(
+export async function findOneI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<I18Nmodel | undefined> {
@@ -84,7 +84,7 @@ export async function findOneI18n(
 /**
  * 根据 id 查找国际化
  */
-export async function findByIdI18n(
+export async function findByIdI18N(
   id: I18nId,
 ): Promise<I18Nmodel | undefined> {
   const { findById } = await import("./i18n.service.ts");
@@ -95,7 +95,7 @@ export async function findByIdI18n(
 /**
  * 创建国际化
  */
-export async function createI18n(
+export async function createI18N(
   input: I18Ninput,
   unique_type?: UniqueType,
 ): Promise<I18nId> {
@@ -126,7 +126,7 @@ export async function createI18n(
 /**
  * 根据 id 修改国际化
  */
-export async function updateByIdI18n(
+export async function updateByIdI18N(
   id: I18nId,
   input: I18Ninput,
 ): Promise<I18nId> {
@@ -153,7 +153,7 @@ export async function updateByIdI18n(
 /**
  * 根据 ids 删除国际化
  */
-export async function deleteByIdsI18n(
+export async function deleteByIdsI18N(
   ids: I18nId[],
 ): Promise<number> {
   
@@ -176,7 +176,7 @@ export async function deleteByIdsI18n(
 /**
  * 根据 ids 还原国际化
  */
-export async function revertByIdsI18n(
+export async function revertByIdsI18N(
   ids: I18nId[],
 ): Promise<number> {
   
@@ -199,7 +199,7 @@ export async function revertByIdsI18n(
 /**
  * 根据 ids 彻底删除国际化
  */
-export async function forceDeleteByIdsI18n(
+export async function forceDeleteByIdsI18N(
   ids: I18nId[],
 ): Promise<number> {
   const context = useContext();
