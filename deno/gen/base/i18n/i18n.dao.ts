@@ -61,10 +61,10 @@ import type {
 } from "/gen/base/menu/menu.model.ts";
 
 import type {
-  I18Ninput,
-  I18Nmodel,
-  I18Nsearch,
-  I18NfieldComment,
+  I18nInput,
+  I18nModel,
+  I18nSearch,
+  I18nFieldComment,
   I18nId,
 } from "./i18n.model.ts";
 
@@ -76,7 +76,7 @@ const route_path = "/base/i18n";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: I18Nsearch,
+  search?: I18nSearch,
   options?: {
   },
 ): Promise<string> {
@@ -212,11 +212,11 @@ async function getFromQuery() {
 
 /**
  * 根据条件查找国际化总数
- * @param { I18Nsearch } search?
+ * @param { I18nSearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   options?: {
   },
 ): Promise<number> {
@@ -260,16 +260,16 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找国际化列表
- * @param {I18Nsearch} search? 搜索条件
+ * @param {I18nSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
   },
-): Promise<I18Nmodel[]> {
+): Promise<I18nModel[]> {
   const table = "base_i18n";
   const method = "findAll";
   
@@ -333,7 +333,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
-  const result = await query<I18Nmodel>(
+  const result = await query<I18nModel>(
     sql,
     args,
     {
@@ -375,7 +375,7 @@ export async function findAll(
 
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
-  input: I18Ninput,
+  input: I18nInput,
 ) {
   
   // 语言
@@ -400,9 +400,9 @@ export async function setIdByLbl(
 /**
  * 获取国际化字段注释
  */
-export async function getFieldComments(): Promise<I18NfieldComment> {
+export async function getFieldComments(): Promise<I18nFieldComment> {
   const n = initN(route_path);
-  const fieldComments: I18NfieldComment = {
+  const fieldComments: I18nFieldComment = {
     id: await n("ID"),
     lang_id: await n("语言"),
     lang_id_lbl: await n("语言"),
@@ -425,13 +425,13 @@ export async function getFieldComments(): Promise<I18NfieldComment> {
 
 /**
  * 通过唯一约束获得国际化列表
- * @param {I18Ninput} search0
+ * @param {I18nInput} search0
  */
 export async function findByUnique(
-  search0: I18Ninput,
+  search0: I18nInput,
   options?: {
   },
-): Promise<I18Nmodel[]> {
+): Promise<I18nModel[]> {
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -441,7 +441,7 @@ export async function findByUnique(
     }
     return [ model ];
   }
-  const models: I18Nmodel[] = [ ];
+  const models: I18nModel[] = [ ];
   {
     if (search0.lang_id == null) {
       return [ ];
@@ -477,13 +477,13 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {I18Nmodel} oldModel
- * @param {I18Ninput} input
+ * @param {I18nModel} oldModel
+ * @param {I18nInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: I18Nmodel,
-  input: I18Ninput,
+  oldModel: I18nModel,
+  input: I18nInput,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -500,14 +500,14 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查国际化是否已经存在
- * @param {I18Ninput} input
- * @param {I18Nmodel} oldModel
+ * @param {I18nInput} input
+ * @param {I18nModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<I18nId | undefined>}
  */
 export async function checkByUnique(
-  input: I18Ninput,
-  oldModel: I18Nmodel,
+  input: I18nInput,
+  oldModel: I18nModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
@@ -539,14 +539,14 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一个国际化
- * @param {I18Nsearch} search?
+ * @param {I18nSearch} search?
  */
 export async function findOne(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   sort?: SortInput | SortInput[],
   options?: {
   },
-): Promise<I18Nmodel | undefined> {
+): Promise<I18nModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -564,7 +564,7 @@ export async function findById(
   id?: I18nId | null,
   options?: {
   },
-): Promise<I18Nmodel | undefined> {
+): Promise<I18nModel | undefined> {
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -574,10 +574,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断国际化是否存在
- * @param {I18Nsearch} search?
+ * @param {I18nSearch} search?
  */
 export async function exist(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   options?: {
   },
 ): Promise<boolean> {
@@ -629,7 +629,7 @@ export async function existById(
 
 /** 校验国际化是否存在 */
 export async function validateOption(
-  model?: I18Nmodel,
+  model?: I18nModel,
 ) {
   if (!model) {
     throw `${ await ns("国际化") } ${ await ns("不存在") }`;
@@ -642,7 +642,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: I18Ninput,
+  input: I18nInput,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -706,7 +706,7 @@ export async function validate(
 
 /**
  * 创建国际化
- * @param {I18Ninput} input
+ * @param {I18nInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -716,7 +716,7 @@ export async function validate(
  * @return {Promise<I18nId>} 
  */
 export async function create(
-  input: I18Ninput,
+  input: I18nInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -862,7 +862,7 @@ export async function delCache() {
 /**
  * 根据 id 修改国际化
  * @param {I18nId} id
- * @param {I18Ninput} input
+ * @param {I18nInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -873,7 +873,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: I18nId,
-  input: I18Ninput,
+  input: I18nInput,
   options?: {
     uniqueType?: "ignore" | "throw";
   },
