@@ -10,7 +10,7 @@ async function exec() {
   console.log(command);
   let origin = execSync(command).toString().trim();
   origin = origin.split("/")[0];
-  command = `git pull ${ origin } main`;
+  // command = `git pull ${ origin } main`;
   // console.log(command);
   // execSync(command, { stdio: "inherit" });
   if (parentBranchs.length > 0) {
