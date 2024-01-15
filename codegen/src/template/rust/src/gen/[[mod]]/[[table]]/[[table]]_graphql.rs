@@ -71,7 +71,7 @@ impl <#=tableUP#>GenQuery {
   /// 根据搜索条件和分页查找<#=table_comment#>列表<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "findAllI18N")]<#
+  #[graphql(name = "findAllI18n")]<#
   }
   #>
   async fn find_all_<#=table#>(
@@ -97,7 +97,7 @@ impl <#=tableUP#>GenQuery {
   /// 根据条件查找<#=table_comment#>总数<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "findCountI18N")]<#
+  #[graphql(name = "findCountI18n")]<#
   }
   #>
   async fn find_count_<#=table#>(
@@ -119,7 +119,7 @@ impl <#=tableUP#>GenQuery {
   /// 根据条件查找第一个<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "findOneI18N")]<#
+  #[graphql(name = "findOneI18n")]<#
   }
   #>
   async fn find_one_<#=table#>(
@@ -143,8 +143,8 @@ impl <#=tableUP#>GenQuery {
   /// 根据 id 查找<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "findByIdI18N")]<#
-  }  
+  #[graphql(name = "findByIdI18n")]<#
+  }
   #>
   async fn find_by_id_<#=table#>(
     &self,
@@ -168,8 +168,8 @@ impl <#=tableUP#>GenQuery {
   /// 记录不存在则返回 false<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "getIsEnabledByIdI18N")]<#
-  }  
+  #[graphql(name = "getIsEnabledByIdI18n")]<#
+  }
   #>
   async fn get_is_enabled_by_id_<#=table#>(
     &self,
@@ -196,8 +196,8 @@ impl <#=tableUP#>GenQuery {
   /// 记录不存在则返回 false<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "getIsLoackedByIdI18N")]<#
-  }  
+  #[graphql(name = "getIsLoackedByIdI18n")]<#
+  }
   #>
   async fn get_is_locked_by_id_<#=table#>(
     &self,
@@ -220,8 +220,8 @@ impl <#=tableUP#>GenQuery {
   /// 获取<#=table_comment#>字段注释<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "getFieldCommentsI18N")]<#
-  }  
+  #[graphql(name = "getFieldCommentsI18n")]<#
+  }
   #>
   async fn get_field_comments_<#=table#>(
     &self,
@@ -241,8 +241,8 @@ impl <#=tableUP#>GenQuery {
   /// 查找 <#=table_comment#> order_by 字段的最大值<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "findLastOrderByI18N")]<#
-  }  
+  #[graphql(name = "findLastOrderByI18n")]<#
+  }
   #>
   async fn find_last_order_by_<#=table#>(
     &self,
@@ -273,8 +273,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 创建<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "createI18N")]<#
-  }  
+  #[graphql(name = "createI18n")]<#
+  }
   #>
   async fn create_<#=table#>(
     &self,
@@ -305,8 +305,8 @@ impl <#=tableUP#>GenMutation {<#
   /// <#=table_comment#>根据id修改租户id<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "updateTenantByIdI18N")]<#
-  }  
+  #[graphql(name = "updateTenantByIdI18n")]<#
+  }
   #>
   async fn update_tenant_by_id_<#=table#>(
     &self,
@@ -334,8 +334,8 @@ impl <#=tableUP#>GenMutation {<#
   /// <#=table_comment#>根据id修改组织id<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "updateOrgByIdI18N")]<#
-  }  
+  #[graphql(name = "updateOrgByIdI18n")]<#
+  }
   #>
   async fn update_org_by_id_<#=table#>(
     &self,
@@ -363,8 +363,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 id 修改<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "updateByIdI18N")]<#
-  }  
+  #[graphql(name = "updateByIdI18n")]<#
+  }
   #>
   async fn update_by_id_<#=table#>(
     &self,
@@ -392,8 +392,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 ids 删除<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "deleteByIdsI18N")]<#
-  }  
+  #[graphql(name = "deleteByIdsI18n")]<#
+  }
   #>
   async fn delete_by_ids_<#=table#>(
     &self,
@@ -419,8 +419,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 id 设置默认<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "defaultByIdI18N")]<#
-  }  
+  #[graphql(name = "defaultByIdI18n")]<#
+  }
   #>
   async fn default_by_id_<#=table#>(
     &self,
@@ -446,8 +446,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 ids 启用或者禁用<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "enableByIdsI18N")]<#
-  }  
+  #[graphql(name = "enableByIdsI18n")]<#
+  }
   #>
   async fn enable_by_ids_<#=table#>(
     &self,
@@ -475,8 +475,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 ids 锁定或解锁数据<#
   if (table === "i18n") {
   #>
-  #[graphql(name = "lockByIdsI18N")]<#
-  }  
+  #[graphql(name = "lockByIdsI18n")]<#
+  }
   #>
   async fn lock_by_ids_<#=table#>(
     &self,
@@ -504,8 +504,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 ids 还原<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "revertByIdsI18N")]<#
-  }  
+  #[graphql(name = "revertByIdsI18n")]<#
+  }
   #>
   async fn revert_by_ids_<#=table#>(
     &self,
@@ -527,8 +527,8 @@ impl <#=tableUP#>GenMutation {<#
   /// 根据 ids 彻底删除<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "forceDeleteByIdsI18N")]<#
-  }  
+  #[graphql(name = "forceDeleteByIdsI18n")]<#
+  }
   #>
   async fn force_delete_by_ids_<#=table#>(
     &self,
