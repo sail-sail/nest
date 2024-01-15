@@ -12,11 +12,11 @@ let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 let Table_Up2 = Table_Up;
-if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
-  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
-) {
-  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-}
+// if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+//   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+// ) {
+//   Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+// }
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -25,11 +25,11 @@ let modelNameTree = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  modelName = Table_Up2 + "model";
-  fieldCommentName = Table_Up2 + "fieldComment";
-  inputName = Table_Up2 + "input";
-  searchName = Table_Up2 + "search";
-  modelNameTree = Table_Up2 + "modelTree";
+  modelName = Table_Up2 + "Model";
+  fieldCommentName = Table_Up2 + "FieldComment";
+  inputName = Table_Up2 + "Input";
+  searchName = Table_Up2 + "Search";
+  modelNameTree = Table_Up2 + "ModelTree";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -635,10 +635,10 @@ export async function findOne(
               && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
             ) {
               Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-              modelName = Table_Up + "model";
-              fieldCommentName = Table_Up + "fieldComment";
-              inputName = Table_Up + "input";
-              searchName = Table_Up + "search";
+              modelName = Table_Up + "Model";
+              fieldCommentName = Table_Up + "FieldComment";
+              inputName = Table_Up + "Input";
+              searchName = Table_Up + "Search";
             } else {
               modelName = Table_Up + "Model";
               fieldCommentName = Table_Up + "FieldComment";
@@ -926,10 +926,10 @@ export async function findById(
               && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
             ) {
               Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-              modelName = Table_Up + "model";
-              fieldCommentName = Table_Up + "fieldComment";
-              inputName = Table_Up + "input";
-              searchName = Table_Up + "search";
+              modelName = Table_Up + "Model";
+              fieldCommentName = Table_Up + "FieldComment";
+              inputName = Table_Up + "Input";
+              searchName = Table_Up + "Search";
             } else {
               modelName = Table_Up + "Model";
               fieldCommentName = Table_Up + "FieldComment";

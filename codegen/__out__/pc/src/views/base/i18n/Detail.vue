@@ -266,7 +266,7 @@ import type {
 } from "@/typings/ids";
 
 import type {
-  I18Ninput,
+  I18nInput,
   LangModel,
 } from "#/types";
 
@@ -308,8 +308,8 @@ let dialogTitle = $ref("");
 let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
-let dialogModel: I18Ninput = $ref({
-} as I18Ninput);
+let dialogModel: I18nInput = $ref({
+} as I18nInput);
 
 let ids = $ref<I18nId[]>([ ]);
 let is_deleted = $ref<number>(0);
@@ -369,7 +369,7 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<I18Ninput>();
+let builtInModel = $ref<I18nInput>();
 
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
@@ -388,7 +388,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: I18Ninput;
+    builtInModel?: I18nInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
