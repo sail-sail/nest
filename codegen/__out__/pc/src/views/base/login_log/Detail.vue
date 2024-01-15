@@ -4,10 +4,8 @@
   :before-close="beforeClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.i="onInsert"
 >
   <template #extra_header>
     <div
@@ -209,7 +207,6 @@ const {
   initSysI18ns,
 } = useI18n("/base/login_log");
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/base/login_log");
@@ -392,13 +389,6 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}
-
-/** 键盘按 Insert */
-async function onInsert() {
-  isReadonly = !isReadonly;
-  await nextTick();
-  customDialogRef?.focus();
 }
 
 /** 重置 */
