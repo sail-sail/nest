@@ -5,7 +5,7 @@ import {
   uniqueID,
 } from "./StringUtil";
 
-import {
+import type {
   LoginModel,
 } from "@/typings/types";
 

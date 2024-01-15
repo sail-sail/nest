@@ -249,6 +249,7 @@ export default defineStore("tabs", function() {
     activeTab,
     hasTab,
     findTab,
+    tabEqual,
     unshiftTab,
     refreshTab,
     removeTab,
