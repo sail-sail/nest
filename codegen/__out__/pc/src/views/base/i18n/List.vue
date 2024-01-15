@@ -628,9 +628,9 @@ import {
 } from "./Api";
 
 import type {
-  I18Nmodel,
-  I18Ninput,
-  I18Nsearch,
+  I18nModel,
+  I18nInput,
+  I18nSearch,
   LangModel,
   MenuModel,
 } from "#/types";
@@ -677,7 +677,7 @@ const emit = defineEmits<{
   refresh: [ ],
   beforeSearchReset: [ ],
   rowEnter: [ KeyboardEvent? ],
-  rowDblclick: [ I18Nmodel ],
+  rowDblclick: [ I18nModel ],
 }>();
 
 /** 表格 */
@@ -689,7 +689,7 @@ function initSearch() {
     is_deleted: 0,
     lang_id: [ ],
     menu_id: [ ],
-  } as I18Nsearch;
+  } as I18nSearch;
 }
 
 let search = $ref(initSearch());
@@ -785,14 +785,14 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch: I18Nsearch = $(initBuiltInSearch(
+const builtInSearch: I18nSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
   propsNotInSearch,
 ));
 
 /** 内置变量 */
-const builtInModel: I18Nmodel = $(initBuiltInModel(
+const builtInModel: I18nModel = $(initBuiltInModel(
   props,
   builtInSearchType,
   propsNotInSearch,
@@ -817,7 +817,7 @@ let {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<I18Nmodel>(
+} = $(usePage<I18nModel>(
   dataGrid,
   {
     isPagination,
@@ -837,7 +837,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<I18Nmodel, I18nId>(
+} = $(useSelect<I18nModel, I18nId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -890,7 +890,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<I18Nmodel[]>([ ]);
+let tableData = $ref<I18nModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
@@ -999,7 +999,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<I18Nmodel>(
+} = $(useTableColumns<I18nModel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -1094,7 +1094,7 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<I18Nmodel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<I18nModel> } & Sort,
 ) {
   if (!order) {
     sort = {
@@ -1256,7 +1256,7 @@ async function onImportExcel() {
   let succNum = 0;
   try {
     const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<I18Ninput>(
+    const models = await getExcelData<I18nInput>(
       file,
       header,
       {
@@ -1350,7 +1350,7 @@ async function onRowEnter(e: KeyboardEvent) {
 
 /** 双击行 */
 async function onRowDblclick(
-  row: I18Nmodel,
+  row: I18nModel,
 ) {
   if (props.selectedIds != null) {
     emit("rowDblclick", row);
