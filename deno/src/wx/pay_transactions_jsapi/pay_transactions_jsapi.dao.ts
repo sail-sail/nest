@@ -9,7 +9,6 @@ import {
 import {
   findById as findByIdWxUsr,
   validateOption as validateOptionWxUsr,
-  validateIsEnabled as validateIsEnabledWxUsr,
 } from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
 import {
@@ -234,7 +233,6 @@ export async function getJsapiObj(
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(wx_usr_id),
   );
-  await validateIsEnabledWxUsr(wx_usrModel);
   const openid = wx_usrModel.openid;
   const tenant_id: TenantId = wx_usrModel.tenant_id;
   

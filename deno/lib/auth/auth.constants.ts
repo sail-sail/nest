@@ -24,6 +24,10 @@ import type {
   WxUsrId,
 } from "/gen/wx/wx_usr/wx_usr.model.ts";
 
+import type {
+  WxoUsrId,
+} from "/gen/wx/wxo_usr/wxo_usr.model.ts";
+
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 export const NOT_VERIFY_TOKEN = "not_verify_token";
 export const TENANT_ID = "tenant_id";
@@ -32,6 +36,7 @@ export const AUTHORIZATION = "Authorization";
 export interface AuthModel extends JWTPayload {
   id: UsrId;
   wx_usr_id?: WxUsrId;
+  wxo_usr_id?: WxoUsrId;
   tenant_id: TenantId;
   org_id?: OrgId;
   lang: string;

@@ -21,7 +21,6 @@ export async function wxoLoginByCode(
           authorization
           org_id
           username,
-          name,
           tenant_id,
           lang,
         }
@@ -35,7 +34,7 @@ export async function wxoLoginByCode(
       },
     },
   }, opt);
-  const data = res?.wxoLoginByCode;
+  const data = res.wxoLoginByCode;
   return data;
 }
 // #ifdef H5

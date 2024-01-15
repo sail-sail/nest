@@ -16,7 +16,7 @@ type Mutation {
     input: LoginInput!
   ): LoginModel!
   
-  "解除绑定"
+  "微信用户解除绑定"
   unBindWxUsr: Boolean!
   
 }

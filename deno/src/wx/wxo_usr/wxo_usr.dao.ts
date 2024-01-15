@@ -11,6 +11,10 @@ import {
   validateOption as vlidateOptionWxoApp,
 } from "/gen/wx/wxo_app/wxo_app.dao.ts";
 
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
+
 // 通过code换取网页授权openid
 export async function fetchOpenid(
   code: string,
@@ -31,17 +35,17 @@ export async function fetchOpenid(
   const data: {
     openid: string,
     unionid?: string,
-    errcode: number,
-    errmsg: string,
+    errcode?: number,
+    errmsg?: string,
   } = await res.json();
   
   const errcode = data.errcode;
   const openid = data.openid;
   const unionid = data.unionid;
   
-  if (errcode != 0 || isEmpty(openid)) {
+  if ((errcode && errcode != 0) || isEmpty(openid)) {
     error(data);
-    throw data;
+    throw new Error(data.errmsg || await ns("微信公众号获取openid失败"));
   }
   return {
     openid,
