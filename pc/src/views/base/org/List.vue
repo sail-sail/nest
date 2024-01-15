@@ -422,7 +422,7 @@
         @header-dragend="headerDragend"
         @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
-        @keydown.delete="onDeleteByIds"
+        @keydown.ctrl.delete.stop="onDeleteByIds"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"

@@ -28,6 +28,9 @@ type Query {
     host: String!
   ): WxoGetAppid!
   
+  "公众号用户是否已绑定"
+  checkBindWxoUsr: Boolean!
+  
 }
 
 type Mutation {
@@ -36,6 +39,14 @@ type Mutation {
   wxoLoginByCode(
     input: WxoLoginByCodeInput!
   ): LoginModel!
+  
+  "公众号用户绑定"
+  bindWxoUsr(
+    input: LoginInput!
+  ): LoginModel!
+  
+  "公众号用户解除绑定"
+  unBindWxoUsr: Boolean!
   
 }
 
