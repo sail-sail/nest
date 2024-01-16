@@ -38,9 +38,10 @@ const hasDict = columns.some((column) => {
     return false;
   }
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
   return column.dict;
 });
 const hasDictbiz = columns.some((column) => {
@@ -48,9 +49,10 @@ const hasDictbiz = columns.some((column) => {
     return false;
   }
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
 const hasMany2many = columns.some((column) => {
