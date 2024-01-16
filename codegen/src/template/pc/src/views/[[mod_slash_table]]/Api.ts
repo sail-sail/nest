@@ -1870,6 +1870,7 @@ export function useExportExcel(routePath: string) {
             const column_name = column.COLUMN_NAME;
             if (
               [
+                "id",
                 "is_deleted", "is_sys",
                 "tenant_id", "tenant_id_lbl",
                 "org_id", "org_id_lbl",
@@ -1877,22 +1878,12 @@ export function useExportExcel(routePath: string) {
             ) continue;
             let column_type = column.COLUMN_TYPE;
             let data_type = column.DATA_TYPE;
-            let column_comment = column.COLUMN_COMMENT;
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.includes("[")) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
-            if (column_name === "id") {
-              continue;
-            }
+            const column_comment = column.COLUMN_COMMENT;
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignKey = column.foreignKey;
             if (!foreignKey) continue;
+            if (!foreignKey.lbl) continue;
             const foreignTable = foreignKey && foreignKey.table;
             if (foreignTableArrTmp2.includes(foreignTable)) continue;
             foreignTableArrTmp2.push(foreignTable);
@@ -1915,14 +1906,12 @@ export function useExportExcel(routePath: string) {
             const column_name = column.COLUMN_NAME;
             if (
               [
+                "id",
                 "is_deleted", "is_sys",
                 "tenant_id", "tenant_id_lbl",
                 "org_id", "org_id_lbl",
               ].includes(column_name)
             ) continue;
-            if (column_name === "id") {
-              continue;
-            }
             const isPassword = column.isPassword;
             if (isPassword) continue;
             if (column.dict) {
@@ -1986,14 +1975,12 @@ export function useExportExcel(routePath: string) {
             const column_name = column.COLUMN_NAME;
             if (
               [
+                "id",
                 "is_deleted", "is_sys",
                 "tenant_id", "tenant_id_lbl",
                 "org_id", "org_id_lbl",
               ].includes(column_name)
             ) continue;
-            if (column_name === "id") {
-              continue;
-            }
             const isPassword = column.isPassword;
             if (isPassword) continue;
             if (column.dictbiz) {
@@ -2012,6 +1999,7 @@ export function useExportExcel(routePath: string) {
               const column_name = column.COLUMN_NAME;
               if (
                 [
+                  "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
                   "org_id", "org_id_lbl",
@@ -2019,19 +2007,8 @@ export function useExportExcel(routePath: string) {
               ) continue;
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
+              const column_comment = column.COLUMN_COMMENT;
               const foreignKey = column.foreignKey;
-              if (column_name === "id") {
-                continue;
-              }
               const isPassword = column.isPassword;
               if (isPassword) continue;
             #><#
