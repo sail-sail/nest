@@ -694,6 +694,7 @@ if (!detailCustomDialogType) {
                 if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
+                if (column_name === "is_deleted") continue;
                 if (column_name === "is_locked") continue;
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
