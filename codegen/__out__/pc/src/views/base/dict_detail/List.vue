@@ -708,7 +708,7 @@ const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
-const clearDirty = dirtyStore.onDirty(onRefresh);
+const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit("/base/dict_detail");
 
