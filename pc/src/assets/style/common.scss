@@ -437,3 +437,7 @@ body .el-input-number.is-without-controls .el-input__inner {
     }
   }
 }
+
+:root {
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.4);
+}
