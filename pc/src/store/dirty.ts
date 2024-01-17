@@ -13,14 +13,17 @@ export default defineStore("dirty", function() {
   
   function onDirty(
     callback: () => void | PromiseLike<void>,
+    routePath?: string,
   )  {
-    const t = getCurrentInstance();
-    if (!t) {
-      throw new Error("getCurrentInstance is null");
-    }
-    const routePath = t.type?.name as string;
     if (!routePath) {
-      throw new Error("routePath is empty");
+      const t = getCurrentInstance();
+      if (!t) {
+        throw new Error("getCurrentInstance is null");
+      }
+      routePath = t.type?.name as string;
+      if (!routePath) {
+        throw new Error("routePath is empty");
+      }
     }
     let isDirty = ref(false);
     let isActivated = ref(false);
