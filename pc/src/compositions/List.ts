@@ -146,7 +146,7 @@ export function usePage<T>(
 export function useSelect<T = any, Id = string>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
-    tableSelectable?: ((row: T, index?: number) => boolean),
+    tableSelectable?: ((row: T, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
   },
@@ -328,23 +328,32 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
-    }
-    const selectedIdx = idx - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        idx = data.length - 1;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -360,10 +369,26 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    const selectedIdx = 0;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    let idx = -1;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -379,32 +404,62 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        idx = data.length - 1;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
       selectedIds = [
         ...selectedIds,
-        data[selectedIdx][rowKey],
+        data[idx][rowKey],
       ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
-    const selectedIdx = idx - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [
-        ...selectedIds,
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-    }
+    // if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
+    //   const selectedIdx = data.length - 1;
+    //   selectedIds = [
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    //   return;
+    // }
+    // const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    // if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
+    //   const selectedIdx = data.length - 1;
+    //   selectedIds = [
+    //     ...selectedIds,
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    //   return;
+    // }
+    // const selectedIdx = idx - 1;
+    // if (data[selectedIdx]?.[rowKey]) {
+    //   selectedIds = [
+    //     ...selectedIds,
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    // }
   }
   
   /**
@@ -429,21 +484,32 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
-      selectedIds = [ data[0][rowKey] ];
-      scrollIntoViewIfNeeded(0);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
-      selectedIds = [ data[0][rowKey] ];
-      scrollIntoViewIfNeeded(0);
-      return;
-    }
-    const selectedIdx = idx + 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        idx = 0;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -563,10 +629,26 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    const selectedIdx = data.length - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    let idx = data.length;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -582,31 +664,35 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
-      const selectedIdx = 0;
-      selectedIds = [
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
-      const selectedIdx = 0;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
       selectedIds = [
         ...selectedIds,
-        data[selectedIdx][rowKey],
+        data[idx][rowKey],
       ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
-    }
-    const selectedIdx = idx + 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [
-        ...selectedIds,
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -636,7 +722,7 @@ export function useSelect<T = any, Id = string>(
       multiple = false;
     }
     const tableSelectable = opts?.tableSelectable;
-    if (tableSelectable && !tableSelectable(row)) {
+    if (tableSelectable && !tableSelectable(row, tableRef.value?.data?.findIndex((item) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
       if (column && column.type !== "selection") {
         selectedIds = [ ];
       }
@@ -679,6 +765,10 @@ export function useSelect<T = any, Id = string>(
     }
     if (isRef(opts?.multiple) && opts?.multiple.value === false) {
       multiple = false;
+    }
+    const tableSelectable = opts?.tableSelectable;
+    if (tableSelectable && !tableSelectable(row, tableRef.value?.data?.findIndex((item) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
+      return;
     }
     const id = (row as any)[rowKey];
     if (selectedIds.includes(id)) {
