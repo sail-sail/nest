@@ -691,6 +691,9 @@ export interface TablesConfigItem {
     /** 是否生成 SelectInput 跟 SelectList 界面 */
     hasSelectInput?: boolean;
     
+    /** 表格的selectable, 行是否可以选择 */
+    tableSelectable?: string;
+    
   },
   columns?: TableCloumn[];
   records?: any[];
