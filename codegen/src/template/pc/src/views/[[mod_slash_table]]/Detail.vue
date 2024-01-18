@@ -65,11 +65,15 @@ if (!detailCustomDialogType) {
   ref="customDialogRef"
   :before-close="beforeClose"
   @keydown.page-down="onPageDown"
-  @keydown.page-up="onPageUp"
+  @keydown.page-up="onPageUp"<#
+  if (opts?.noAdd !== true || opts?.noEdit !== true) {
+  #>
   @keydown.insert="onInsert"
-  @keydown.ctrl.arrow-down="onPageDown"
-  @keydown.ctrl.arrow-up="onPageUp"
   @keydown.ctrl.i="onInsert"<#
+  }
+  #>
+  @keydown.ctrl.arrow-down="onPageDown"
+  @keydown.ctrl.arrow-up="onPageUp"<#
   if (opts.noAdd !== true) {
   #>
   @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"<#
@@ -690,6 +694,7 @@ if (!detailCustomDialogType) {
                 if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
+                if (column_name === "is_deleted") continue;
                 if (column_name === "is_locked") continue;
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
@@ -1713,7 +1718,6 @@ const {
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
@@ -2220,6 +2224,8 @@ watch(
   },
 );<#
 }
+#><#
+if (opts?.noAdd !== true || opts?.noEdit !== true) {
 #>
 
 /** 键盘按 Insert */
@@ -2227,7 +2233,9 @@ async function onInsert() {
   isReadonly = !isReadonly;
   await nextTick();
   customDialogRef?.focus();
+}<#
 }
+#>
 
 /** 重置 */
 async function onReset() {
