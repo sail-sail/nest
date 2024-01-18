@@ -433,12 +433,14 @@ let search = $ref(initSearch());
 
 /** 回收站 */
 async function recycleChg() {
+  tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
 }
 
 /** 搜索 */
 async function onSearch() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -453,6 +455,7 @@ let isSearchReset = $ref(false);
 
 /** 重置搜索 */
 async function onSearchReset() {
+  tableFocus();
   isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
@@ -465,11 +468,13 @@ async function onSearchReset() {
 
 /** 清空搜索框事件 */
 async function onSearchClear() {
+  tableFocus();
   await dataGrid(true);
 }
 
 /** 点击已选择 */
 async function onIdsChecked() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -591,6 +596,7 @@ function resetSelectedIds() {
 
 /** 取消已选择筛选 */
 async function onEmptySelected() {
+  tableFocus();
   resetSelectedIds();
   if (idsChecked === 1) {
     idsChecked = 0;
@@ -830,6 +836,7 @@ async function onRowDblclick(
 
 /** 打开查看 */
 async function openView() {
+  tableFocus();
   if (!detailRef) {
     return;
   }
@@ -896,6 +903,7 @@ async function onDeleteByIds() {
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }

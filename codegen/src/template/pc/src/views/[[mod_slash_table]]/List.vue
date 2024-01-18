@@ -875,7 +875,12 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="id"
           type="selection"
           align="center"
-          width="50"
+          width="50"<#
+          if (opts?.tableSelectable) {
+          #>
+          :selectable="tableSelectable"<#
+          }
+          #>
         ></el-table-column>
         
         <template
@@ -1715,12 +1720,14 @@ let search = $ref(initSearch());
 
 /** 回收站 */
 async function recycleChg() {
+  tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
 }
 
 /** 搜索 */
 async function onSearch() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -1735,6 +1742,7 @@ let isSearchReset = $ref(false);
 
 /** 重置搜索 */
 async function onSearchReset() {
+  tableFocus();
   isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
@@ -1747,11 +1755,13 @@ async function onSearchReset() {
 
 /** 清空搜索框事件 */
 async function onSearchClear() {
+  tableFocus();
   await dataGrid(true);
 }
 
 /** 点击已选择 */
 async function onIdsChecked() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -1994,7 +2004,13 @@ let {
   {
     isPagination,
   },
-));
+));<#
+if (opts?.tableSelectable) {
+#>
+function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSelectable#>
+}<#
+}
+#>
 
 /** 表格选择功能 */
 let {
@@ -2012,7 +2028,12 @@ let {
 } = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
-    multiple: $$(multiple),
+    multiple: $$(multiple),<#
+    if (opts?.tableSelectable) {
+    #>
+    tableSelectable,<#
+    }
+    #>
   },
 ));
 
@@ -2035,6 +2056,7 @@ function resetSelectedIds() {
 
 /** 取消已选择筛选 */
 async function onEmptySelected() {
+  tableFocus();
   resetSelectedIds();
   if (idsChecked === 1) {
     idsChecked = 0;
@@ -2980,6 +3002,7 @@ async function onRowDblclick(
 
 /** 打开查看 */
 async function openView() {
+  tableFocus();
   if (!detailRef) {
     return;
   }
@@ -3056,6 +3079,7 @@ async function onDeleteByIds() {
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -3211,6 +3235,7 @@ if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
 async function onOpenForeignTabs() {
+  tableFocus();
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要查看的数据"));
     return;
