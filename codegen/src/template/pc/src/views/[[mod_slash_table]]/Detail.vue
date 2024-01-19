@@ -217,6 +217,7 @@ if (!detailCustomDialogType) {
             continue;
           }
           const readonlyPlaceholder = column.readonlyPlaceholder;
+          const modelLabel = column.modelLabel;
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -290,6 +291,11 @@ if (!detailCustomDialogType) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #><#
               if (mod === "base" && table === "usr" && column_name === "default_org_id") {
               #>
               :method="getOrgListApi"<#
@@ -435,7 +441,12 @@ if (!detailCustomDialogType) {
             #>
             <DictSelect
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #>
               code="<#=column.dict#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (column.readonly) {
@@ -456,7 +467,12 @@ if (!detailCustomDialogType) {
             #>
             <DictbizSelect
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #>
               code="<#=column.dictbiz#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (column.readonly) {
@@ -730,6 +746,7 @@ if (!detailCustomDialogType) {
                 }
                 const width = (column.width || 180) + 38;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
+                const modelLabel = column.modelLabel;
               #>
               
               <el-table-column
@@ -754,7 +771,12 @@ if (!detailCustomDialogType) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
                       :method="get<#=Foreign_Table_Up#>List"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -860,7 +882,12 @@ if (!detailCustomDialogType) {
                     #>
                     <DictSelect
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
                       code="<#=column.dict#>"
                       placeholder=" "<#
                       if (column.readonly) {
@@ -881,7 +908,12 @@ if (!detailCustomDialogType) {
                     #>
                     <DictbizSelect
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
                       code="<#=column.dictbiz#>"
                       placeholder=" "<#
                       if (column.readonly) {
