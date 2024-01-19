@@ -10,19 +10,23 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
-  @clear="clearClk"
+  @clear="onClear"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue !== '' ? modelValue : undefined"
-  @update:model-value="modelValue = $event"
+  :model-value="modelValueComputed"
+  @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="dictbiz_select"
+  :class="{
+    dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
+  }"
   :multiple="props.multiple"
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  :placeholder="isShowModelLabel ? props.modelLabel : props.placeholder"
   @keyup.enter.stop
-  @change="valueChg"
+  @change="onValueChange"
 >
   <!--传递插槽-->
   <template
@@ -47,16 +51,39 @@
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="dictbiz_select_readonly"
     v-bind="$attrs"
   >
-    <el-tag
-      v-for="label in modelLabels"
-      :key="label"
-      type="info"
+    <template
+      v-if="modelLabels.length === 0"
     >
-      {{ label }}
-    </el-tag>
+      <span
+        class="dictbiz_select_placeholder"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        v-if="isShowModelLabel"
+        class="dictbiz_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <div
+        v-else
+      >
+        <el-tag
+          v-for="label in modelLabels"
+          :key="label"
+          type="info"
+        >
+          {{ label }}
+        </el-tag>
+      </div>
+    </template>
   </div>
   <div
     v-else
@@ -68,10 +95,38 @@
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="dictbiz_select_readonly"
+    :class="{
+      'dictbiz_select_placeholder': shouldShowPlaceholder,
+      dictbiz_select_isShowModelLabel: isShowModelLabel,
+    }"
     v-bind="$attrs"
   >
-    {{ modelLabels[0] || "" }}
+    <template
+      v-if="!modelLabels[0]"
+    >
+      <span
+        class="dictbiz_select_placeholder"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        v-if="isShowModelLabel"
+        class="dictbiz_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <span
+        v-else
+        class="dictbiz_select_readonly"
+      >
+        {{ modelLabels[0] || "" }}
+      </span>
+    </template>
   </div>
 </template>
 </template>
@@ -102,11 +157,14 @@ const props = withDefaults(
     pinyinFilterable?: boolean;
     height?: number;
     modelValue?: any;
+    modelLabel?: string | null;
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     optionsMap: function(item: DictbizModel) {
@@ -124,11 +182,14 @@ const props = withDefaults(
     pinyinFilterable: false,
     height: 300,
     modelValue: undefined,
+    modelLabel: undefined,
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
@@ -140,10 +201,81 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
+    modelLabel = props.modelLabel;
   },
 );
 
-function valueChg() {
+let modelLabel = $ref(props.modelLabel);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    modelLabel = props.modelLabel;
+  },
+);
+
+const modelValueComputed = $computed(() => {
+  if (modelLabel == null) {
+    return modelValue;
+  }
+  if (!props.multiple) {
+    if (modelValue == null || modelValue === "") {
+      return modelLabel;
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
+    if (!item || item.label !== modelLabel) {
+      return modelLabel;
+    }
+    return modelValue;
+  } else {
+    if (modelValue == null || modelValue.length === 0) {
+      return modelLabel;
+    }
+    const labels: string[] = modelLabel.split(",")
+      .filter((item: string) => item)
+      .map((item) => item.trim());
+    if (labels.length !== modelValue.length) {
+      return modelLabel;
+    }
+    for (let i = 0; i < modelValue.length; i++) {
+      const item = modelValue[i];
+      if (item !== labels[i]) {
+        return modelLabel;
+      }
+    }
+    return modelValue;
+  }
+});
+
+const isShowModelLabel = $computed(() => {
+  return modelValueComputed === modelLabel;
+});
+
+let shouldShowPlaceholder = $computed(() => {
+  if (props.multiple) {
+    return modelValue == null || modelValue.length === 0;
+  }
+  return modelValue == null || modelValue === "";
+});
+
+function modelValueUpdate(value?: string | string[] | null) {
+  nextTick(() => {
+    modelLabel = undefined;
+  });
+  modelValue = value;
+  emit("update:modelValue", value);
+  if (!props.multiple) {
+    emit("update:modelLabel", modelLabels[0]);
+  } else {
+    if (Array.isArray(modelLabels)) {
+      emit("update:modelLabel", modelLabels.join(","));
+    } else {
+      emit("update:modelLabel", "");
+    }
+  }
+}
+
+function onValueChange() {
   emit("update:modelValue", modelValue);
   if (!props.multiple) {
     const model = dictbizModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
@@ -213,6 +345,7 @@ let dictbizModels = $ref<DictbizModel[]>([ ]);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
+  (e: "update:modelLabel", value?: string | null): void,
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
@@ -240,9 +373,18 @@ const modelLabels = $computed(() => {
   return labels;
 });
 
-function clearClk() {
-  modelValue = undefined;
+function onClear() {
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("update:modelLabel", "");
+    emit("change", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", "");
   emit("change", modelValue);
   emit("clear");
 }
@@ -303,4 +445,24 @@ watch(
     immediate: true,
   },
 );
+
+defineExpose({
+  refresh: refreshEfc,
+});
 </script>
+
+<style scoped lang="scss">
+.dictbiz_select_space_normal {
+  :deep(.el-select-v2__placeholder) {
+    line-height: normal;
+    white-space: normal;
+    top: calc(50% - 2px);
+  }
+}
+.dictbiz_select_isShowModelLabel {
+  :deep(.el-select-v2__placeholder),.dictbiz_select_readonly {
+    color: red;
+  }
+}
+</style>
+

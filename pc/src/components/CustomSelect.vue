@@ -4,6 +4,9 @@
   ref="selectDivRef"
   un-w="full"
   class="custom_select_div"
+  :class="{
+    custom_select_isShowModelLabel: isShowModelLabel && inited,
+  }"
 >
   <ElSelectV2
     :options="options4SelectV2"
@@ -18,7 +21,7 @@
     @clear="onClear"
     un-w="full"
     v-bind="$attrs"
-    :model-value="modelValue !== '' ? modelValue : undefined"
+    :model-value="modelValueComputed"
     @update:model-value="modelValueUpdate"
     :loading="!inited"
     class="custom_select"
@@ -30,7 +33,7 @@
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
-    :placeholder="props.placeholder"
+    :placeholder="isShowModelLabel ? props.modelLabel : props.placeholder"
     @keyup.enter.stop
   >
     <template
@@ -59,7 +62,8 @@
     un-break-words
     class="custom_select_readonly"
     :class="{
-      'custom_select_placeholder': shouldShowPlaceholder
+      'custom_select_placeholder': shouldShowPlaceholder,
+      custom_select_isShowModelLabel: isShowModelLabel,
     }"
     v-bind="$attrs"
   >
@@ -75,13 +79,23 @@
     <template
       v-else
     >
-      <el-tag
-        v-for="label in modelLabels"
-        :key="label"
-        type="info"
+      <span
+        v-if="isShowModelLabel"
+        class="custom_select_readonly"
       >
-        {{ label }}
-      </el-tag>
+        {{ props.modelLabel || "" }}
+      </span>
+      <div
+        v-else
+      >
+        <el-tag
+          v-for="label in modelLabels"
+          :key="label"
+          type="info"
+        >
+          {{ label }}
+        </el-tag>
+      </div>
     </template>
   </div>
   <div
@@ -98,7 +112,8 @@
     un-break-words
     class="custom_select_readonly"
     :class="{
-      'custom_select_placeholder': shouldShowPlaceholder
+      'custom_select_placeholder': shouldShowPlaceholder,
+      custom_select_isShowModelLabel: isShowModelLabel,
     }"
     v-bind="$attrs"
   >
@@ -115,6 +130,13 @@
       v-else
     >
       <span
+        v-if="isShowModelLabel"
+        class="custom_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <span
+        v-else
         class="custom_select_readonly"
       >
         {{ modelLabels[0] || "" }}
@@ -137,6 +159,7 @@ const usrStore = useUsrStore();
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelLabel", value?: string | null): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
@@ -154,6 +177,7 @@ const props = withDefaults(
     pinyinFilterable?: boolean;
     height?: number;
     modelValue?: string | string[] | null;
+    modelLabel?: string | null;
     options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
     autoWidth?: boolean;
     maxWidth?: number;
@@ -176,6 +200,7 @@ const props = withDefaults(
     height: 300,
     options4SelectV2: () => [ ],
     modelValue: undefined,
+    modelLabel: undefined,
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
@@ -193,8 +218,55 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
+    modelLabel = props.modelLabel;
   },
 );
+
+let modelLabel = $ref(props.modelLabel);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    modelLabel = props.modelLabel;
+  },
+);
+
+const modelValueComputed = $computed(() => {
+  if (modelLabel == null) {
+    return modelValue;
+  }
+  if (!props.multiple) {
+    if (modelValue == null || modelValue === "") {
+      return modelLabel;
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
+    if (!item || item.label !== modelLabel) {
+      return modelLabel;
+    }
+    return modelValue;
+  } else {
+    if (modelValue == null || modelValue.length === 0) {
+      return modelLabel;
+    }
+    const labels: string[] = modelLabel.split(",")
+      .filter((item: string) => item)
+      .map((item) => item.trim());
+    if (labels.length !== modelValue.length) {
+      return modelLabel;
+    }
+    for (let i = 0; i < modelValue.length; i++) {
+      const item = modelValue[i];
+      if (item !== labels[i]) {
+        return modelLabel;
+      }
+    }
+    return modelValue;
+  }
+});
+
+const isShowModelLabel = $computed(() => {
+  return modelValueComputed === modelLabel;
+});
 
 let shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
@@ -204,8 +276,20 @@ let shouldShowPlaceholder = $computed(() => {
 });
 
 function modelValueUpdate(value?: string | string[] | null) {
+  nextTick(() => {
+    modelLabel = undefined;
+  });
   modelValue = value;
   emit("update:modelValue", value);
+  if (!props.multiple) {
+    emit("update:modelLabel", modelLabels[0]);
+  } else {
+    if (Array.isArray(modelLabels)) {
+      emit("update:modelLabel", modelLabels.join(","));
+    } else {
+      emit("update:modelLabel", "");
+    }
+  }
 }
 
 const modelLabels = $computed(() => {
@@ -235,12 +319,14 @@ function onClear() {
   if (!props.multiple) {
     modelValue = "";
     emit("update:modelValue", modelValue);
+    emit("update:modelLabel", "");
     emit("change", modelValue);
     emit("clear");
     return;
   }
   modelValue = [ ];
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", "");
   emit("change", modelValue);
   emit("clear");
 }
@@ -421,6 +507,11 @@ defineExpose({
     line-height: normal;
     white-space: normal;
     top: calc(50% - 2px);
+  }
+}
+.custom_select_isShowModelLabel {
+  :deep(.el-select-v2__placeholder),.custom_select_readonly {
+    color: red;
   }
 }
 </style>
