@@ -942,14 +942,23 @@ export async function findAll(
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
+        const modelLabel = column.modelLabel;
       #><#
         if (foreignKey && foreignKey.type === "many2many") {
       #>
-      ,max(<#=column_name#>) <#=column_name#>
+      ,max(<#=column_name#>) <#=column_name#><#
+        if (!modelLabel) {
+      #>
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
+        }
+      #><#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
+      #><#
+        if (!modelLabel) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
+        }
+      #><#
         }
       #><#
       }
@@ -2778,6 +2787,14 @@ export async function create(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `,<#=modelLabel#>`;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -2904,6 +2921,14 @@ export async function create(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `,${ args.push(input.<#=modelLabel#>) }`;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -3386,6 +3411,16 @@ export async function updateById(
       continue;
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `<#=modelLabel#> = ?,`;
+    args.push(input.<#=modelLabel#>);
+    updateFldNum++;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
