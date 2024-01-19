@@ -24,7 +24,7 @@
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
-  :placeholder="isShowModelLabel ? props.modelLabel : props.placeholder"
+  :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
   @keyup.enter.stop
   @change="onValueChange"
 >
@@ -215,7 +215,7 @@ watch(
 );
 
 const modelValueComputed = $computed(() => {
-  if (modelLabel == null) {
+  if (!modelLabel) {
     return modelValue;
   }
   if (!props.multiple) {
@@ -248,6 +248,9 @@ const modelValueComputed = $computed(() => {
 });
 
 const isShowModelLabel = $computed(() => {
+  if (modelLabel == null) {
+    return false;
+  }
   return modelValueComputed === modelLabel;
 });
 
