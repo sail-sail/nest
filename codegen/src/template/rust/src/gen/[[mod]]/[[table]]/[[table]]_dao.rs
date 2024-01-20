@@ -898,14 +898,23 @@ pub async fn find_all(
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
+        const modelLabel = column.modelLabel;
       #><#
         if (foreignKey && foreignKey.type === "many2many") {
       #>
-      ,max(<#=column_name#>) <#=column_name#>
+      ,max(<#=column_name#>) <#=column_name#><#
+        if (!modelLabel) {
+      #>
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
+        }
+      #><#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
+      #><#
+        if (!modelLabel) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
+        }
+      #><#
         }
       #><#
       }
@@ -2226,6 +2235,19 @@ pub async fn create(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
+    if !<#=modelLabel#>.is_empty() {
+      sql_fields += ",<#=modelLabel#>";
+      sql_values += ",?";
+      args.push(<#=modelLabel#>.into());
+    }
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -2643,13 +2665,26 @@ pub async fn update_by_id(
       continue;
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
+    if !<#=modelLabel#>.is_empty() {
+      field_num += 1;
+      sql_fields += ",<#=modelLabel#> = ?";
+      args.push(<#=modelLabel#>.into());
+    }
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
-       field_num += 1;
+      field_num += 1;
       sql_fields += ",<#=column_name_mysql#> = ?";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
