@@ -317,10 +317,38 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <CustomInputNumber
-            v-model="search.<#=column_name#>"
-            @clear="onSearchClear"
-          ></CustomInputNumber>
+          <div
+            un-flex="~"
+            un-w="full"
+            un-gap="x-1"
+            class="searchform_number_range"
+            :set="search.<#=column_name#> = search.<#=column_name#> ?? [ ]"
+          >
+            <CustomInputNumber
+              un-flex="[1_0_0]"
+              v-model="search.<#=column_name#>[0]"
+              @clear="onSearchClear"
+              :placeholder="ns('最小值')"
+              @change="() => {
+                search.<#=column_name#> = search.<#=column_name#> ?? [ ];
+                if (search.<#=column_name#>[1] == null) {
+                  search.<#=column_name#>[1] = search.<#=column_name#>[0];
+                }
+              }"
+            ></CustomInputNumber>
+            <CustomInputNumber
+              un-flex="[1_0_0]"
+              v-model="search.<#=column_name#>[1]"
+              @clear="onSearchClear"
+              :placeholder="ns('最大值')"
+              @change="() => {
+                search.<#=column_name#> = search.<#=column_name#> ?? [ ];
+                if (search.<#=column_name#>[0] == null) {
+                  search.<#=column_name#>[0] = search.<#=column_name#>[1];
+                }
+              }"
+            ></CustomInputNumber>
+          </div>
         </el-form-item>
       </template><#
       } else {
