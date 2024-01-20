@@ -467,6 +467,12 @@ export interface TableCloumn {
    */
   searchMultiple?: boolean,
   
+  
+  /**
+   * 此字段对应的冗余字段
+   */
+  modelLabel?: string;
+  
 }
 
 /**
