@@ -441,3 +441,21 @@ body .el-input-number.is-without-controls .el-input__inner {
 :root {
   --el-overlay-color-lighter: rgba(0, 0, 0, 0.4);
 }
+
+:root {
+  --readonly_font_color: #888;
+}
+html:is(.dark) {
+  --readonly_font_color: #bbb;
+}
+.dict_select_readonly,
+.dictbiz_select_readonly,
+.custom_select_readonly,
+.custom_input_readonly,
+.custom_date_picker_readonly,
+.custom_input_number_readonly,
+.custom_switch_readonly,
+.custom_checkbox_readonly,
+.custom_tree_select_readonly {
+  color: var(--readonly_font_color);
+}
