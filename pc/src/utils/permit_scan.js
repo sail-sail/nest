@@ -13,6 +13,8 @@ const {
   initContext,
 } = require("./database/Context");
 
+const path = require("node:path");
+
 let _menuModels = undefined;
 
 /**
@@ -66,32 +68,55 @@ function shortUuidV4(str) {
  * 保存权限
  */
 async function savePermit(context, model) {
-  const permitModels = await findAllPermit(context);
-  const permitModel = permitModels.find((permitModel) => {
-    return permitModel.menu_id === model.menu_id && permitModel.code === model.code;
-  });
-  if (permitModel) {
-    if (permitModel.lbl === model.lbl) {
+  const id = shortUuidV4(
+    JSON.stringify({
+      ph: model.ph,
+      code: model.code,
+    }),
+  );
+  // 如果记录已经存在, 则不插入
+  {
+    const res = await context.conn.query(
+      `select * from base_permit where menu_id = ? and code = ?`,
+      [
+        model.menu_id,
+        model.code,
+      ],
+    );
+    const model0 = res[0][0];
+    if (model0) {
+      const lbl0Arr = model0.lbl.split("，");
+      if (!lbl0Arr.includes(model.lbl)) {
+        lbl0Arr.push(model.lbl);
+      }
+      const lbl = lbl0Arr.join("，");
+      const sql = `
+        update base_permit
+        set
+          menu_id = ?,
+          code = ?,
+          lbl = ?,
+          is_sys = 1
+        where
+          id = ?
+      `;
+      const args = [
+        model.menu_id,
+        model.code,
+        lbl,
+        model0.id,
+      ];
+      try {
+        await context.conn.execute(sql, args);
+      } catch (err) {
+        console.error(model);
+        throw err;
+      }
       return;
     }
-    const sql = `
-      UPDATE
-        base_permit
-      SET
-        lbl = ?,
-        is_sys = 1
-      WHERE
-        id = ?
-    `
-    const args = [
-      model.lbl,
-      permitModel.id,
-    ];
-    await context.conn.execute(sql, args);
-    return;
   }
   const sql = `
-    INSERT INTO base_permit (
+    insert into base_permit (
       id,
       menu_id,
       code,
@@ -105,19 +130,18 @@ async function savePermit(context, model) {
       1
     )
   `;
-  const id = shortUuidV4(
-    JSON.stringify({
-      menu_id: model.menu_id,
-      code: model.code,
-    }),
-  );
   const args = [
     id,
     model.menu_id,
     model.code,
     model.lbl,
   ];
-  await context.conn.execute(sql, args);
+  try {
+    await context.conn.execute(sql, args);
+  } catch (err) {
+    console.error(model);
+    throw err;
+  }
 }
 
 /**
@@ -187,6 +211,7 @@ async function getPermits(ph){
       continue;
     }
     permits.push({
+      ph,
       code,
       name,
     });
@@ -265,6 +290,7 @@ async function exec(context) {
           // code name
           const permits = await getPermits(ph);
           const permitModels = permits.map((item) => ({
+            ph: path.relative(`${ __dirname }/../`, ph).replace(/\\/g, "/"),
             menu_id: menuModel.id,
             code: item.code,
             lbl: item.name,
