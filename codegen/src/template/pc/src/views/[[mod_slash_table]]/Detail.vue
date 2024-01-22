@@ -97,14 +97,14 @@ if (!detailCustomDialogType) {
     </div><#
     if (hasIsDeleted) {
     #>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true; dialogAction = 'view';"
         >
         </ElIconUnlock>
       </div>
@@ -114,7 +114,7 @@ if (!detailCustomDialogType) {
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false; dialogAction = 'edit';"
         ></ElIconLock>
       </div>
     </template><#
