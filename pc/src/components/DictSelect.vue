@@ -47,7 +47,7 @@
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="dict_select_readonly"
     v-bind="$attrs"
   >
     <el-tag
@@ -68,7 +68,7 @@
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="dict_select_readonly"
     v-bind="$attrs"
   >
     {{ modelLabels[0] ?? "" }}

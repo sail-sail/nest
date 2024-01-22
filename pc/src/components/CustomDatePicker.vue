@@ -1,7 +1,10 @@
 <template>
 <el-date-picker
   class="custom_date_picker w-full"
-  :class="{ 'custom_date_picker_range': props.type?.endsWith('range') }"
+  :class="{
+    'custom_date_picker_range': props.type?.endsWith('range'),
+    'custom_date_picker_readonly': props.readonly === true,
+  }"
   v-bind="$attrs"
   :type="props.type"
   v-model="modelValue"
