@@ -341,6 +341,12 @@ pub struct <#=tableUP#>Model {<#
   pub is_deleted: u8,<#
   }
   #><#
+  if (hasVersion) {
+  #>
+  /// 版本号
+  pub version: u32,<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     if (!inlineForeignSchema) {
@@ -385,6 +391,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // 隐藏字段
     let is_hidden = row.try_get("is_hidden")?;<#
+    }
+    #><#
+    if (hasVersion) {
+    #>
+    // 版本号
+    let version = row.try_get("version")?;<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -614,6 +626,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (hasIsSys) {
       #>
       is_sys,<#
+      }
+      #><#
+      if (hasVersion) {
+      #>
+      version,<#
       }
       #><#
       if (hasIsHidden) {
@@ -1174,6 +1191,12 @@ pub struct <#=tableUP#>Input {
   #><#
   }
   #><#
+  if (hasVersion) {
+  #>
+  /// 版本号
+  pub version: Option<u32>,<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     if (!inlineForeignSchema) {
@@ -1215,6 +1238,11 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       if (hasIsSys) {
       #>
       is_sys: model.is_sys.into(),<#
+      }
+      #><#
+      if (hasVersion) {
+      #>
+      version: model.version.into(),<#
       }
       #><#
       if (hasIsHidden) {
