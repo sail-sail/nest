@@ -409,6 +409,7 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    version: 0,
   };
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
@@ -448,6 +449,7 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
+        version: 0,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }

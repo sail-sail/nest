@@ -1121,7 +1121,7 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    if (input.version != null && input.version > 0) {
+    if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");

@@ -45,6 +45,8 @@ type OptionsModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "版本号"
+  version: Int!
   "是否已删除"
   is_deleted: Int!
 }
@@ -127,6 +129,8 @@ input OptionsInput {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
+  "版本号"
+  version: Int!
 }
 input OptionsSearch {
   "是否已删除"
