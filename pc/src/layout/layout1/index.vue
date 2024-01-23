@@ -103,7 +103,7 @@
         un-m="r-4"
       >
         <template
-          v-if="loginInfo && loginInfo.org_id_models"
+          v-if="loginInfo && loginInfo.org_id_models && loginInfo.org_id_models[0].lbl !== '默认组织'"
         >
           <el-dropdown
             trigger="click"
