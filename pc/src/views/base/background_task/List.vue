@@ -1067,7 +1067,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看"),
+    title: await nsAsync("查看") + await nsAsync("后台任务"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
