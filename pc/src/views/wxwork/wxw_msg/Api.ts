@@ -167,6 +167,7 @@ export async function findById(
           create_time
           create_time_lbl
           errmsg
+          is_deleted
         }
       }
     `,
