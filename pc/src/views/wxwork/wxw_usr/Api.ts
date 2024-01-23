@@ -199,6 +199,7 @@ export async function findById(
           lbl
           userid
           rem
+          is_deleted
         }
       }
     `,
