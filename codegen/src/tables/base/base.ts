@@ -814,9 +814,6 @@ export default defineConfig({
         COLUMN_NAME: "rem",
       },
       {
-        COLUMN_NAME: "version",
-      },
-      {
         COLUMN_NAME: "create_usr_id",
       },
       {
@@ -872,9 +869,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-      },
-      {
-        COLUMN_NAME: "version",
       },
       {
         COLUMN_NAME: "create_usr_id",
