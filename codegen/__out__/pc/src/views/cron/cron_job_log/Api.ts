@@ -174,6 +174,7 @@ export async function findById(
           rem
           create_time
           create_time_lbl
+          is_deleted
         }
       }
     `,
