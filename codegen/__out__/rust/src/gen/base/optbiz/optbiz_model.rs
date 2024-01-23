@@ -58,8 +58,6 @@ pub struct OptbizModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
-  /// 版本号
-  pub version: u32,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -104,8 +102,6 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    // 版本号
-    let version: u32 = row.try_get("version")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -143,7 +139,6 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
       is_enabled_lbl,
       order_by,
       rem,
-      version,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -181,8 +176,6 @@ pub struct OptbizFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
-  /// 版本号
-  pub version: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -233,8 +226,6 @@ pub struct OptbizSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 版本号
-  pub version: Option<Vec<u32>>,
   /// 创建人
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -280,8 +271,6 @@ pub struct OptbizInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
-  /// 版本号
-  pub version: Option<u32>,
   /// 创建人
   pub create_usr_id: Option<UsrId>,
   /// 创建人
@@ -323,8 +312,6 @@ impl From<OptbizModel> for OptbizInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
-      // 版本号
-      version: model.version.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -363,8 +350,6 @@ impl From<OptbizInput> for OptbizSearch {
       order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
-      // 版本号
-      version: input.version.map(|x| vec![x, x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间

@@ -6,7 +6,6 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
-const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
@@ -2823,7 +2822,6 @@ pub async fn update_by_id(
   if field_num > 0 {<#
     if (hasVersion) {
     #>
-    
     if let Some(version) = input.version {
       if version > 0 {
         let version2 = get_version_by_id(id.clone()).await?;
