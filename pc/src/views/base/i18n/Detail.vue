@@ -28,7 +28,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true; dialogAction = 'view';"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -38,7 +38,7 @@
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false; dialogAction = 'edit';"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template>
