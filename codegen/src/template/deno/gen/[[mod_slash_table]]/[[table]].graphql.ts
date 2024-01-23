@@ -230,6 +230,12 @@ type <#=modelName#> {<#
     }
   }
   #><#
+  if (hasVersion) {
+  #>
+  "版本号"
+  version: Int!<#
+  }
+  #><#
   if (hasIsDeleted) {
   #>
   "是否已删除"
@@ -460,6 +466,12 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#><#
     }
   #><#
+  }
+  #><#
+  if (hasVersion) {
+  #>
+  "版本号"
+  version: Int!<#
   }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {

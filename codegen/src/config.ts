@@ -618,6 +618,9 @@ export interface TablesConfigItem {
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
     
+    /** 是否有 version 字段 */
+    hasVersion?: boolean;
+    
     /**
      * 默认排序字段
      */

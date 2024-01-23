@@ -2053,7 +2053,12 @@ async function showDialog(
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
-  dialogModel = {
+  dialogModel = {<#
+    if (hasVersion) {
+    #>
+    version: 0,<#
+    }
+    #>
   };
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
@@ -2152,6 +2157,11 @@ async function showDialog(
         if (hasOrderBy) {
         #>
         order_by: order_by + 1,<#
+        }
+        #><#
+        if (hasVersion) {
+        #>
+        version: 0,<#
         }
         #><#
         for (const inlineForeignTab of inlineForeignTabs) {
