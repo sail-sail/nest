@@ -459,6 +459,11 @@ export async function findAll(
             }
           }
           #><#
+          if (hasVersion) {
+          #>
+          version<#
+          }
+          #><#
           if (hasIsDeleted) {
           #>
           is_deleted<#
@@ -599,6 +604,11 @@ export async function findOne(
           #>
           <#=column_name#><#
             }
+          }
+          #><#
+          if (hasVersion) {
+          #>
+          version<#
           }
           #><#
           if (hasIsDeleted) {
@@ -895,6 +905,16 @@ export async function findById(
           #>
           <#=column_name#><#
             }
+          }
+          #><#
+          if (hasVersion) {
+          #>
+          version<#
+          }
+          #><#
+          if (hasIsDeleted) {
+          #>
+          is_deleted<#
           }
           #><#
           for (const inlineForeignTab of inlineForeignTabs) {
@@ -2169,6 +2189,11 @@ export async function getDefaultInput() {<#
   }
   #>
   const defaultInput: <#=inputName#> = {<#
+    if (hasVersion) {
+    #>
+    version: 0,<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
