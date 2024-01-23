@@ -52,7 +52,6 @@ export async function findAll(
           is_enabled_lbl
           order_by
           rem
-          version
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -107,7 +106,6 @@ export async function findOne(
           is_enabled_lbl
           order_by
           rem
-          version
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -237,7 +235,6 @@ export async function findById(
           is_enabled_lbl
           order_by
           rem
-          version
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -414,7 +411,6 @@ export function useDownloadImportTemplate(routePath: string) {
             val
             order_by
             rem
-            version
           }
         }
       `,
@@ -468,7 +464,6 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             rem
-            version
             create_usr_id
             create_usr_id_lbl
             create_time
@@ -486,7 +481,6 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             order_by
             rem
-            version
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl
@@ -598,11 +592,10 @@ export async function findLastOrderBy(
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: OptbizInput = {
-    version: 0,
+    version: 1,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
-    version: 1,
   };
   return defaultInput;
 }

@@ -2191,7 +2191,7 @@ export async function getDefaultInput() {<#
   const defaultInput: <#=inputName#> = {<#
     if (hasVersion) {
     #>
-    version: 0,<#
+    version: 1,<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
