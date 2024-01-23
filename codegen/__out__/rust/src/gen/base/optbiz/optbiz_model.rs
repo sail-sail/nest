@@ -76,6 +76,8 @@ pub struct OptbizModel {
   pub update_time_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 版本号
+  pub version: u32,
 }
 
 impl FromRow<'_, MySqlRow> for OptbizModel {
@@ -84,6 +86,8 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     let tenant_id = row.try_get("tenant_id")?;
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
+    // 版本号
+    let version = row.try_get("version")?;
     // ID
     let id: OptbizId = row.try_get("id")?;
     // 名称
@@ -128,6 +132,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     let model = Self {
       tenant_id,
       is_sys,
+      version,
       is_deleted,
       id,
       lbl,
@@ -287,6 +292,8 @@ pub struct OptbizInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 版本号
+  pub version: Option<u32>,
 }
 
 impl From<OptbizModel> for OptbizInput {
@@ -296,6 +303,7 @@ impl From<OptbizModel> for OptbizInput {
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
       is_sys: model.is_sys.into(),
+      version: model.version.into(),
       // 名称
       lbl: model.lbl.into(),
       // 键
