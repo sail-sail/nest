@@ -8,7 +8,6 @@ const hasIsMonth = columns.some((column) => column.isMonth);
 const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
-const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
@@ -3510,7 +3509,7 @@ export async function updateById(
     }<#
     if (hasVersion) {
     #>
-    if (input.version != null && input.version > 0) {
+    if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");
