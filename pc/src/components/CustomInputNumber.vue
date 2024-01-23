@@ -36,7 +36,7 @@
       un-w="full"
       un-min="h-8"
       un-line-height="normal"
-      un-break-words
+      un-whitespace-nowrap
       class="custom_input_number_readonly"
       v-bind="$attrs"
     >
