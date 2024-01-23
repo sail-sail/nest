@@ -47,7 +47,7 @@
     un-min="h-7.5"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="custom_tree_select_readonly"
     v-bind="$attrs"
   >
     <el-tag
@@ -61,10 +61,9 @@
   <div
     v-else
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"

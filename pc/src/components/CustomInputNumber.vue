@@ -30,13 +30,13 @@
   >
     <div
       un-b="1 solid [var(--el-border-color)]"
-      un-p="x-2.75 y-1"
+      un-p="x-2.5 y-1"
       un-box-border
       un-rounded
       un-w="full"
       un-min="h-8"
       un-line-height="normal"
-      un-break-words
+      un-whitespace-nowrap
       class="custom_input_number_readonly"
       v-bind="$attrs"
     >
@@ -123,8 +123,14 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 function onChange() {
-  emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
 </script>

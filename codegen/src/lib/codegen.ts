@@ -96,6 +96,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     hasTenant_id,
     hasCreateUsrId,
     hasCreateTime,
+    hasVersion,
     cache,
     log,
     list_page,

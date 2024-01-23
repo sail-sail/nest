@@ -97,14 +97,14 @@ if (!detailCustomDialogType) {
     </div><#
     if (hasIsDeleted) {
     #>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -114,7 +114,7 @@ if (!detailCustomDialogType) {
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template><#
@@ -2053,7 +2053,12 @@ async function showDialog(
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
-  dialogModel = {
+  dialogModel = {<#
+    if (hasVersion) {
+    #>
+    version: 0,<#
+    }
+    #>
   };
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
@@ -2152,6 +2157,11 @@ async function showDialog(
         if (hasOrderBy) {
         #>
         order_by: order_by + 1,<#
+        }
+        #><#
+        if (hasVersion) {
+        #>
+        version: 0,<#
         }
         #><#
         for (const inlineForeignTab of inlineForeignTabs) {
