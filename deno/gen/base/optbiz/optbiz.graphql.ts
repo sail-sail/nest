@@ -27,8 +27,6 @@ type OptbizModel {
   order_by: Int!
   "备注"
   rem: String!
-  "版本号"
-  version: Int!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -45,6 +43,8 @@ type OptbizModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "版本号"
+  version: Int!
   "是否已删除"
   is_deleted: Int!
 }
@@ -69,8 +69,6 @@ type OptbizFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "版本号"
-  version: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -109,8 +107,6 @@ input OptbizInput {
   order_by: Int
   "备注"
   rem: String
-  "版本号"
-  version: Int
   "创建人"
   create_usr_id: UsrId
   "创建人"
@@ -127,6 +123,8 @@ input OptbizInput {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
+  "版本号"
+  version: Int!
 }
 input OptbizSearch {
   "是否已删除"
@@ -153,8 +151,6 @@ input OptbizSearch {
   "备注"
   rem: String
   rem_like: String
-  "版本号"
-  version: [Int!]
   "创建人"
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean

@@ -18,14 +18,11 @@ import Unocss from "unocss/vite";
 
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import defineOptions from "unplugin-vue-define-options/vite";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import VueDevTools from "vite-plugin-vue-devtools";
+import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
+
+// import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,9 +30,9 @@ export default defineConfig({
     Inspector({
       toggleButtonPos: "top-left",
     }),
-    VueDevTools(),
+    // VueDevTools(),
     vue(),
-    reactivityTransform(),
+    ReactivityTransform(),
     defineOptions(),
     vueJsx(),
     Icons({

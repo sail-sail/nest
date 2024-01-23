@@ -21,14 +21,14 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -38,7 +38,7 @@
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template>
@@ -409,6 +409,7 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    version: 0,
   };
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
@@ -448,6 +449,7 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
+        version: 0,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -817,7 +819,6 @@ async function onInitI18ns() {
     "启用",
     "排序",
     "备注",
-    "版本号",
     "创建人",
     "创建时间",
     "更新人",

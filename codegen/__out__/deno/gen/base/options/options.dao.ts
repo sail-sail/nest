@@ -139,14 +139,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.version && search?.version?.length > 0) {
-    if (search.version[0] != null) {
-      whereQuery += ` and t.version >= ${ args.push(search.version[0]) }`;
-    }
-    if (search.version[1] != null) {
-      whereQuery += ` and t.version <= ${ args.push(search.version[1]) }`;
-    }
-  }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
@@ -446,7 +438,6 @@ export async function getFieldComments(): Promise<OptionsFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
-    version: await n("版本号"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -824,9 +815,6 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.version !== undefined) {
-    sql += `,version`;
-  }
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
   }
@@ -867,9 +855,6 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.version !== undefined) {
-    sql += `,${ args.push(input.version) }`;
   }
   if (input.is_sys !== undefined) {
     sql += `,${ args.push(input.is_sys) }`;
@@ -1017,12 +1002,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.version !== undefined) {
-    if (input.version != oldModel.version) {
-      sql += `version = ${ args.push(input.version) },`;
-      updateFldNum++;
-    }
-  }
   if (input.is_sys !== undefined) {
     if (input.is_sys != oldModel.is_sys) {
       sql += `is_sys = ${ args.push(input.is_sys) },`;
@@ -1038,7 +1017,7 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    if (input.version != null && input.version > 0) {
+    if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");
