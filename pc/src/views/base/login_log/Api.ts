@@ -154,6 +154,7 @@ export async function findById(
           create_usr_id_lbl
           create_time
           create_time_lbl
+          is_deleted
         }
       }
     `,

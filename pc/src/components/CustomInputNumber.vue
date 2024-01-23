@@ -123,8 +123,14 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 function onChange() {
-  emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
 </script>
