@@ -224,27 +224,6 @@ async fn get_where_query(
     }
   }
   {
-    let version: Vec<u32> = match &search {
-      Some(item) => item.version.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let version_gt: Option<u32> = match &version.len() {
-      0 => None,
-      _ => version[0].into(),
-    };
-    let version_lt: Option<u32> = match &version.len() {
-      0 => None,
-      1 => None,
-      _ => version[1].into(),
-    };
-    if let Some(version_gt) = version_gt {
-      where_query += &format!(" and t.version >= {}", args.push(version_gt.into()));
-    }
-    if let Some(version_lt) = version_lt {
-      where_query += &format!(" and t.version <= {}", args.push(version_lt.into()));
-    }
-  }
-  {
     let create_usr_id: Vec<UsrId> = match &search {
       Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -533,7 +512,6 @@ pub async fn get_field_comments(
     "启用".into(),
     "排序".into(),
     "备注".into(),
-    "版本号".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
@@ -567,15 +545,14 @@ pub async fn get_field_comments(
     is_enabled_lbl: vec[7].to_owned(),
     order_by: vec[8].to_owned(),
     rem: vec[9].to_owned(),
-    version: vec[10].to_owned(),
-    create_usr_id: vec[11].to_owned(),
-    create_usr_id_lbl: vec[12].to_owned(),
-    create_time: vec[13].to_owned(),
-    create_time_lbl: vec[14].to_owned(),
-    update_usr_id: vec[15].to_owned(),
-    update_usr_id_lbl: vec[16].to_owned(),
-    update_time: vec[17].to_owned(),
-    update_time_lbl: vec[18].to_owned(),
+    create_usr_id: vec[10].to_owned(),
+    create_usr_id_lbl: vec[11].to_owned(),
+    create_time: vec[12].to_owned(),
+    create_time_lbl: vec[13].to_owned(),
+    update_usr_id: vec[14].to_owned(),
+    update_usr_id_lbl: vec[15].to_owned(),
+    update_time: vec[16].to_owned(),
+    update_time_lbl: vec[17].to_owned(),
   };
   Ok(field_comments)
 }
@@ -929,12 +906,6 @@ pub async fn create(
     sql_values += ",?";
     args.push(rem.into());
   }
-  // 版本号
-  if let Some(version) = input.version {
-    sql_fields += ",version";
-    sql_values += ",?";
-    args.push(version.into());
-  }
   // 更新人
   if let Some(update_usr_id) = input.update_usr_id {
     sql_fields += ",update_usr_id";
@@ -1102,12 +1073,6 @@ pub async fn update_by_id(
     sql_fields += ",rem = ?";
     args.push(rem.into());
   }
-  // 版本号
-  if let Some(version) = input.version {
-    field_num += 1;
-    sql_fields += ",version = ?";
-    args.push(version.into());
-  }
   // 系统字段
   if let Some(is_sys) = input.is_sys {
     field_num += 1;
@@ -1116,7 +1081,6 @@ pub async fn update_by_id(
   }
   
   if field_num > 0 {
-    
     if let Some(version) = input.version {
       if version > 0 {
         let version2 = get_version_by_id(id.clone()).await?;
