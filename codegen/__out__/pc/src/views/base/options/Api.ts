@@ -61,6 +61,7 @@ export async function findAll(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          version
           is_deleted
         }
       }
@@ -115,6 +116,7 @@ export async function findOne(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          version
           is_deleted
         }
       }
@@ -244,6 +246,8 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          version
+          is_deleted
         }
       }
     `,
@@ -594,6 +598,7 @@ export async function findLastOrderBy(
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: OptionsInput = {
+    version: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
