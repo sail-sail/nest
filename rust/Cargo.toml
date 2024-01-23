@@ -50,7 +50,7 @@ smallvec = { version = "1.11", features = ["union", "serde"] }
 uuid = { version = "1.6", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.10"
 deadpool-redis = "0.14"
-redis = { version = "0.24", features = ["tokio-rustls-comp"], default-features = false }
+redis = { version = "0.24", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
