@@ -67,7 +67,7 @@
       </template>
     </el-dropdown>
     <div
-      v-if="item.closeable !== false && tabs.length > 1"
+      v-if="item.closeable !== false"
       class="tab_close_div"
     >
       <ElIconClose
