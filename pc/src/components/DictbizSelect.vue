@@ -1,6 +1,7 @@
 <template>
 <ElSelectV2
   v-if="readonly !== true"
+  :key="key"
   :options="options4SelectV2"
   filterable
   collapse-tags
@@ -300,6 +301,18 @@ function onValueChange() {
 }
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
+
+let key = $ref(0);
+
+watch(
+  () => options4SelectV2,
+  () => {
+    key++;
+  },
+  {
+    deep: true,
+  },
+);
 
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {
