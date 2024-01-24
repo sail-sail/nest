@@ -75,6 +75,7 @@ function_name = "0.3"
 enum-iterator = "1.4"
 derive_more = "0.99"
 derive_builder = "0.12"
+strum = { version = "0.25", features = ["derive"] }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"
