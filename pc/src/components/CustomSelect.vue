@@ -358,7 +358,10 @@ async function refreshDropdownWidth() {
   }
   await nextTick();
   const el = t.proxy.$el as HTMLDivElement;
-  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement;
+  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null;
+  if (!wrapperEl) {
+    return;
+  }
   const id = wrapperEl.getAttribute("aria-describedby");
   if (!id) {
     return;
