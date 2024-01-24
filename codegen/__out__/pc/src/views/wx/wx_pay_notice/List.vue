@@ -1267,7 +1267,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看"),
+    title: await nsAsync("查看") + await nsAsync("微信支付通知"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
