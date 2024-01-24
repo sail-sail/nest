@@ -46,6 +46,7 @@ function watchFn() {
         `${ pjPath }/*.diff`,
         `${ pjPath }/*.md`,
         `${ pjPath }/error.js`,
+        `${ pjPath }/**/*.test.ts`,
         `${ pjPath }/**/*.dao.ts`,
         `${ pjPath }/**/*.service.ts`,
       ],
