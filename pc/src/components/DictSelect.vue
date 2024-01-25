@@ -25,7 +25,22 @@
   @keyup.enter.stop
   @change="valueChg"
 >
-  <!--传递插槽-->
+  <template
+    v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+    #header
+  >
+    <el-checkbox
+      v-model="isSelectAll"
+      :indeterminate="isIndeterminate"
+      un-w="full"
+      un-p="l-3"
+      un-box-border
+    >
+      <span>
+        ({{ ns("全选") }})
+      </span>
+    </el-checkbox>
+  </template>
   <template
     v-for="(item, key, index) in $slots"
     :key="index"
@@ -106,6 +121,7 @@ const props = withDefaults(
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    showSelectAll?: boolean;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
@@ -128,6 +144,7 @@ const props = withDefaults(
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    showSelectAll: true,
     disabled: undefined,
     readonly: undefined,
   },
@@ -143,6 +160,49 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+let isSelectAll = $computed({
+  get() {
+    if (!modelValue) {
+      return false;
+    }
+    if (!Array.isArray(modelValue)) {
+      return false;
+    }
+    if (modelValue.length === 0) {
+      return false;
+    }
+    if (modelValue.length === options4SelectV2.length) {
+      return true;
+    }
+    return false;
+  },
+  set(val: boolean) {
+    if (val) {
+      modelValue = options4SelectV2.map((item) => item.value);
+    } else {
+      modelValue = [ ];
+    }
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+  },
+});
+
+const isIndeterminate = $computed(() => {
+  if (!modelValue) {
+    return false;
+  }
+  if (!Array.isArray(modelValue)) {
+    return false;
+  }
+  if (modelValue.length === 0) {
+    return false;
+  }
+  if (modelValue.length === options4SelectV2.length) {
+    return false;
+  }
+  return true;
+});
 
 function valueChg() {
   emit("update:modelValue", modelValue);
@@ -232,6 +292,11 @@ const emit = defineEmits<{
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
+
+const {
+  ns,
+  initSysI18ns,
+} = useI18n();
 
 const modelLabels = $computed(() => {
   if (modelValue == null) {

@@ -38,6 +38,22 @@
     @keyup.enter.stop
   >
     <template
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      #header
+    >
+      <el-checkbox
+        v-model="isSelectAll"
+        :indeterminate="isIndeterminate"
+        un-w="full"
+        un-p="l-3"
+        un-box-border
+      >
+        <span>
+          ({{ ns("全选") }})
+        </span>
+      </el-checkbox>
+    </template>
+    <template
       v-for="(item, key, index) in $slots"
       :key="index"
       #[key]
@@ -165,6 +181,11 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+const {
+  ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type OptionsMap = (item: any) => OptionType;
@@ -183,6 +204,7 @@ const props = withDefaults(
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    showSelectAll?: boolean;
     init?: boolean;
     disabled?: boolean;
     readonly?: boolean;
@@ -205,6 +227,7 @@ const props = withDefaults(
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    showSelectAll: true,
     init: true,
     disabled: undefined,
     readonly: undefined,
@@ -231,6 +254,49 @@ watch(
     modelLabel = props.modelLabel;
   },
 );
+
+let isSelectAll = $computed({
+  get() {
+    if (!modelValue) {
+      return false;
+    }
+    if (!Array.isArray(modelValue)) {
+      return false;
+    }
+    if (modelValue.length === 0) {
+      return false;
+    }
+    if (modelValue.length === options4SelectV2.length) {
+      return true;
+    }
+    return false;
+  },
+  set(val: boolean) {
+    if (val) {
+      modelValue = options4SelectV2.map((item) => item.value);
+    } else {
+      modelValue = [ ];
+    }
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+  },
+});
+
+const isIndeterminate = $computed(() => {
+  if (!modelValue) {
+    return false;
+  }
+  if (!Array.isArray(modelValue)) {
+    return false;
+  }
+  if (modelValue.length === 0) {
+    return false;
+  }
+  if (modelValue.length === options4SelectV2.length) {
+    return false;
+  }
+  return true;
+});
 
 const modelValueComputed = $computed(() => {
   if (!modelLabel) {
@@ -508,6 +574,15 @@ watch(
 if (props.init) {
   refreshEfc();
 }
+
+async function initFrame() {
+  const codes = [
+    "全选",
+  ];
+  await initSysI18ns(codes);
+}
+
+initFrame();
 
 usrStore.onLogin(refreshEfc);
 
