@@ -460,6 +460,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasVersion = true;
   }
+  if (tables[table_name]?.opts?.hasVersion === true && tables[table_name]?.opts?.isRealData == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.isRealData = true;
+  }
   return records2;
 }
 

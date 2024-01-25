@@ -411,6 +411,7 @@ defineOptions({
   name: "登录日志",
 });
 
+const pagePath = "/base/login_log";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -420,7 +421,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/login_log");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -428,7 +429,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/login_log");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 

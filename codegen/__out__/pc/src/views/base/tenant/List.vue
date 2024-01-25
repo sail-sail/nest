@@ -553,7 +553,13 @@
                   v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                  @change="updateById(
+                    row.id,
+                    {
+                      order_by: row.order_by,
+                    },
+                    { notLoading: true },
+                  )"
                 ></CustomInputNumber>
               </template>
             </el-table-column>
@@ -708,6 +714,7 @@ defineOptions({
   name: "租户",
 });
 
+const pagePath = "/base/tenant";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -717,7 +724,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/tenant");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -725,7 +732,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/tenant");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1204,7 +1211,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/tenant"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -1307,7 +1314,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/tenant"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板

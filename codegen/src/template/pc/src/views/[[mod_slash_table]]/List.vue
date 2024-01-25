@@ -1045,7 +1045,18 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                  @change="updateById(
+                    row.id,
+                    {<#
+                      if (hasVersion) {
+                      #>
+                      version: row.version,<#
+                      }
+                      #>
+                      order_by: row.order_by,
+                    },
+                    { notLoading: true },
+                  )"
                 ></CustomInputNumber>
               </template>
             </el-table-column>
@@ -1656,16 +1667,25 @@ if (hasForeignTabs) {
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
 #><#
+if (opts?.isRealData) {
+#>
+
+import {
+  publish,
+} from "@/compositions/websocket";<#
+}
+#>
+
+<#
 let optionsName = table_comment;
 if (list_tree) {
   optionsName = optionsName + "List";
 }
-#>
-
-defineOptions({
+#>defineOptions({
   name: "<#=optionsName#>",
 });
 
+const pagePath = "/<#=mod#>/<#=table#>";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -1675,7 +1695,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -1683,7 +1703,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -2063,7 +2083,17 @@ let {
     }
     #>
   },
-));
+));<#
+if (opts?.tableSelectable) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  $$(tableRef),
+  pagePath,
+  dataGrid,
+);<#
+}
+#>
 
 watch(
   () => selectedIds,
@@ -2508,7 +2538,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -2656,7 +2686,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/<#=mod#>/<#=table#>"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
@@ -2809,7 +2839,18 @@ async function onImportExcel() {
   if (msg) {
     ElMessageBox.alert(msg)
   }
-  if (succNum > 0) {
+  if (succNum > 0) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "import",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -3096,7 +3137,18 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "delete",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
@@ -3242,6 +3294,17 @@ async function onRevertByIds() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "revert",
+      }),
+      payload: num,
+    });<#
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     search.is_deleted = 0;<#

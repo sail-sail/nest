@@ -64,6 +64,8 @@ if (!detailCustomDialogType) {
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"<#
   if (opts?.noAdd !== true || opts?.noEdit !== true) {
@@ -1168,7 +1170,7 @@ if (!detailCustomDialogType) {
       #>
       
       <el-button
-        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -1731,6 +1733,16 @@ let locale = $computed(() => {
   }
 });<#
 }
+#><#
+if (opts?.isRealData) {
+#>
+
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";<#
+}
 #>
 
 const emit = defineEmits<{
@@ -1742,17 +1754,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/<#=mod#>/<#=table#>";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -2020,7 +2034,12 @@ async function showDialog(
   builtInModel = arg?.builtInModel;
   showBuildIn = false;
   isReadonly = false;
-  isLocked = false;
+  isLocked = false;<#
+  if (opts?.isRealData) {
+  #>
+  isShowEditCallbackConfirm = false;<#
+  }
+  #>
   is_deleted = model?.is_deleted ?? 0;
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -2331,7 +2350,42 @@ async function onReset() {
     message: await nsAsync("表单重置完毕"),
     type: "success",
   });
+}<#
+if (opts?.isRealData) {
+#>
+
+let isShowEditCallbackConfirm = false;
+
+/** 订阅编辑消息回调 */
+async function subscribeEditCallback(id?: <#=Table_Up#>Id) {
+  if (!id) {
+    return;
+  }
+  if (id !== dialogModel.id) {
+    return;
+  }
+  if (isShowEditCallbackConfirm) {
+    return;
+  }
+  isShowEditCallbackConfirm = true;
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("<#=table_comment#>")),
+      {
+        confirmButtonText: await nsAsync("刷新"),
+        cancelButtonText: await nsAsync("取消"),
+        type: "warning",
+      },
+    );
+    isShowEditCallbackConfirm = false;
+  } catch (err) {
+    isShowEditCallbackConfirm = false;
+    return;
+  }
+  await onRefresh();
+}<#
 }
+#>
 
 /** 刷新 */
 async function onRefresh() {
@@ -2543,10 +2597,8 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
-    customDialogRef?.focus();
-    await onSave();
-  }
+  customDialogRef?.focus();
+  await onSave();
 }
 
 /** 保存并返回id */
@@ -2557,10 +2609,7 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if (dialogAction === "view") {
-    return;
-  }
-  if (dialogAction === "edit" && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
     return;
   }
   if (dialogAction === "add" && !permit("add")) {
@@ -2609,7 +2658,18 @@ async function save() {
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
-    dialogModel.id = id;
+    dialogModel.id = id;<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "add",
+      }),
+      payload: id,
+    });<#
+    }
+    #>
     msg = await nsAsync("新增成功");
   }<#
   }
@@ -2659,7 +2719,18 @@ async function save() {
     id = await updateById(
       dialogModel.id,
       dialogModel2,
-    );
+    );<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "edit",
+      }),
+      payload: id,
+    });<#
+    }
+    #>
     msg = await nsAsync("编辑成功");
   }<#
   }
@@ -2886,10 +2957,46 @@ watch(
 }
 #>
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {<#
+  if (opts?.isRealData) {
+  #>
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );<#
+  }
+  #>
+}
+
+async function onDialogClose() {<#
+  if (opts?.isRealData) {
+  #>
+  isShowEditCallbackConfirm = true;
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );<#
+  }
+  #>
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -2898,8 +3005,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({

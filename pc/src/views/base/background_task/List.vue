@@ -528,6 +528,7 @@ defineOptions({
   name: "后台任务",
 });
 
+const pagePath = "/base/background_task";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -537,7 +538,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/background_task");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -545,7 +546,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/background_task");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 

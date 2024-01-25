@@ -592,6 +592,7 @@ defineOptions({
   name: "操作记录",
 });
 
+const pagePath = "/base/operation_record";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -601,7 +602,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/operation_record");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -609,7 +610,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/operation_record");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1086,7 +1087,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/operation_record"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {

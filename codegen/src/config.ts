@@ -703,6 +703,9 @@ export interface TablesConfigItem {
     /** 表格的selectable, 行是否可以选择 */
     tableSelectable?: string;
     
+    /** 是否添加实时数据推送功能, hasVersion为true时默认为true, 否则默认为false */
+    isRealData?: boolean;
+    
   },
   columns?: TableCloumn[];
   records?: any[];

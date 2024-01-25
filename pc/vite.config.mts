@@ -117,6 +117,7 @@ export default defineConfig({
           ],
           "@/compositions/List": [
             "usePage",
+            "useSubscribeList",
             "useSelect",
             "useSelectOne",
             "monthrangeSearch",
@@ -281,6 +282,7 @@ export default defineConfig({
         target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       "/graphql": {
         target: "http://127.0.0.1:4001",

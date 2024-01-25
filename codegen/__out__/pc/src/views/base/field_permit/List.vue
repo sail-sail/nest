@@ -620,6 +620,7 @@ defineOptions({
   name: "字段权限List",
 });
 
+const pagePath = "/base/field_permit";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -629,7 +630,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/field_permit");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -637,7 +638,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/field_permit");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1089,7 +1090,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/field_permit"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -1192,7 +1193,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/field_permit"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板

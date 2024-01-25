@@ -647,6 +647,7 @@ defineOptions({
   name: "国际化List",
 });
 
+const pagePath = "/base/i18n";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -656,7 +657,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/i18n");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -664,7 +665,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/i18n");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1120,7 +1121,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/i18n"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -1223,7 +1224,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/i18n"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
