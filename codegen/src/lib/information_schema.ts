@@ -483,8 +483,12 @@ export async function getSchema(
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
   tables[table_name].opts = tables[table_name].opts || { };
-  tables[table_name].opts.table = table_name;
-  // tables[table_name].opts.tableUp = table_name.substring(0,1).toUpperCase() + table_name.substring(1);
+  tables[table_name].opts.table_name = table_name;
+  const mod = table_name.substring(0, table_name.indexOf("_"));
+  const table = table_name.substring(table_name.indexOf("_") + 1);
+  tables[table_name].opts.mod = mod;
+  tables[table_name].opts.table = table;
+  tables[table_name].opts.tableUp = table.substring(0,1).toUpperCase() + table.substring(1);
   tables[table_name].opts.table_comment = await getTableComment(context, table_name);
   const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;

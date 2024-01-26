@@ -43,6 +43,7 @@
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
         @row-dblclick="onRowDblclick"
+        :is-locked="isLocked ? '1' : '0'"
       ></slot>
     </div>
     <div
@@ -205,7 +206,7 @@ async function onRowDblclick(row: { id: any }) {
 }
 
 async function onSave() {
-  if (props.isLocked) {
+  if (isLocked) {
     return;
   }
   dialogVisible = false;

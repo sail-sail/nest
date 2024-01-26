@@ -92,6 +92,7 @@
             prop="domain_ids"
           >
             <CustomSelect
+              ref="domain_idsRef"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
               v-model="dialogModel.domain_ids"
               :method="getDomainList"
@@ -104,7 +105,24 @@
               :placeholder="`${ ns('请选择') } ${ n('所属域名') }`"
               multiple
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            >
+              <template
+                v-if="domainPermit('add')"
+                #footer
+              >
+                <div
+                  un-flex="~"
+                  un-justify-center
+                >
+                  <el-button
+                    plain
+                    @click="domain_idsOpenAddDialog"
+                  >
+                    {{ ns("新增") }}{{ ns("域名") }}
+                  </el-button>
+                </div>
+              </template>
+            </CustomSelect>
           </el-form-item>
         </template>
         
@@ -235,6 +253,11 @@
       
     </div>
   </div>
+  
+  <!-- 域名 -->
+  <DomainDetailDialog
+    ref="domainDetailDialogRef"
+  ></DomainDetailDialog>
 </CustomDialog>
 </template>
 
@@ -265,6 +288,9 @@ import {
   getDomainList,
 } from "./Api";
 
+// 域名
+import DomainDetailDialog from "@/views/base/domain/Detail.vue";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -287,6 +313,9 @@ const {
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+
+// 域名
+const domainPermit = permitStore.getPermit("/base/domain");
 
 let inited = $ref(false);
 
@@ -345,6 +374,34 @@ watchEffect(async () => {
     ],
   };
 });
+
+// 域名
+let domainDetailDialogRef = $ref<InstanceType<typeof DomainDetailDialog>>();
+let domain_idsRef = $ref<InstanceType<typeof CustomSelect>>();
+
+/** 打开新增域名对话框 */
+async function domain_idsOpenAddDialog() {
+  if (!domain_idsRef || !domainDetailDialogRef) {
+    return;
+  }
+  const {
+    changedIds,
+  } = await domainDetailDialogRef.showDialog({
+    title: await nsAsync("新增") + await nsAsync("域名"),
+    action: "add",
+  });
+  if (changedIds.length > 0) {
+    dialogModel.domain_ids = dialogModel.domain_ids || [ ];
+    for (const id of changedIds) {
+      if (dialogModel.domain_ids.includes(id)) {
+        continue;
+      }
+      dialogModel.domain_ids.push(id);
+    }
+    await domain_idsRef.refresh();
+  }
+  domain_idsRef.focus();
+}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";

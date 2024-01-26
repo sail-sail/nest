@@ -116,6 +116,7 @@
           </div>
           
           <el-checkbox
+            v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
             :false-label="0"
@@ -1463,7 +1464,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -1480,7 +1481,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: DictbizDetailModel,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }

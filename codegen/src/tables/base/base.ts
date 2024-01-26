@@ -102,6 +102,9 @@ export default defineConfig({
         require: true,
         align: "left",
         width: 280,
+        foreignKey: {
+          hasSelectAdd: true,
+        },
       },
       {
         COLUMN_NAME: "menu_ids",

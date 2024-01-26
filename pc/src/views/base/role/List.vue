@@ -103,6 +103,7 @@
           </div>
           
           <el-checkbox
+            v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
             :false-label="0"
@@ -1571,7 +1572,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -1588,7 +1589,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: RoleModel,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -1879,8 +1880,9 @@ async function onMenu_ids(row: RoleModel) {
   }
   row.menu_ids = row.menu_ids || [ ];
   const res = await menu_idsListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("菜单"),
     selectedIds: row.menu_ids,
-    isLocked: row.is_locked == 1,
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,
   });
   if (isLocked) {
     return;
@@ -1919,8 +1921,9 @@ async function onPermit_ids(row: RoleModel) {
   }
   row.permit_ids = row.permit_ids || [ ];
   const res = await permit_idsListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("按钮权限"),
     selectedIds: row.permit_ids,
-    isLocked: row.is_locked == 1,
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,
   });
   if (isLocked) {
     return;
@@ -1959,8 +1962,9 @@ async function onData_permit_ids(row: RoleModel) {
   }
   row.data_permit_ids = row.data_permit_ids || [ ];
   const res = await data_permit_idsListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("数据权限"),
     selectedIds: row.data_permit_ids,
-    isLocked: row.is_locked == 1,
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,
   });
   if (isLocked) {
     return;

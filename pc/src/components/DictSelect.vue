@@ -1,7 +1,6 @@
 <template>
 <ElSelectV2
   v-if="readonly !== true"
-  :key="key"
   :options="options4SelectV2"
   filterable
   collapse-tags
@@ -225,17 +224,15 @@ function valueChg() {
   emit("change", models);
 }
 
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
-
-let key = $ref(0);
+let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
 watch(
   () => options4SelectV2,
-  () => {
-    key++;
-  },
-  {
-    deep: true,
+  async () => {
+    const oldModelValue = modelValue;
+    modelValue = undefined;
+    await nextTick();
+    modelValue = oldModelValue;
   },
 );
 
@@ -295,7 +292,6 @@ const emit = defineEmits<{
 
 const {
   ns,
-  initSysI18ns,
 } = useI18n();
 
 const modelLabels = $computed(() => {
@@ -361,6 +357,7 @@ async function refreshEfc() {
     return;
   }
   inited = false;
+  await nextTick();
   [ dictModels ] = await getDict([ code ]);
   options4SelectV2 = dictModels.map(props.optionsMap);
   if (props.pinyinFilterable) {

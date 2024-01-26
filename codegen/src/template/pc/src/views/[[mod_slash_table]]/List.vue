@@ -415,6 +415,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <el-checkbox
+            v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
             :false-label="0"
@@ -3038,7 +3039,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -3063,7 +3064,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: <#=modelName#>,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -3482,6 +3483,7 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const foreignSchema = foreignKey && optTables[foreignKey.mod + "_" + foreignTable];
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
@@ -3494,13 +3496,14 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   const res = await <#=column_name#>ListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("<#=foreignSchema?.opts?.table_comment#>"),
     selectedIds: row.<#=column_name#>,<#
     if (hasLocked) {
     #>
-    isLocked: row.is_locked == 1,<#
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,<#
     } else {
     #>
-    isLocked: false,<#
+    isLocked: row.is_deleted == 1,<#
     }
     #>
   });

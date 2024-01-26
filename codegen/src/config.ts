@@ -244,6 +244,11 @@ export interface TableCloumn {
     selectType?: "select" | "selectInput" | "tree";
     
     /**
+     * 当 selectType 为 select 或者 不设置时, 下拉框是否有增加按钮, 默认为: false
+     */
+    hasSelectAdd?: boolean;
+    
+    /**
      * 外键关联的默认排序
      */
     defaultSort?: {
@@ -593,9 +598,19 @@ export interface TablesConfigItem {
     onlyCodegenDeno?: boolean;
     
     /**
+     * 模块_表名
+     */
+    table_name?: string;
+    
+    /**
      * 表名
      */
     table?: string;
+    
+    /**
+     * 模块
+     */
+    mod?: string;
     
     /**
      * 首字母大写的表名

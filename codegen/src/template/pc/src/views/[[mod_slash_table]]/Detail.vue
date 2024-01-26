@@ -287,6 +287,11 @@ if (!detailCustomDialogType) {
               @change="old_default_org_id = dialogModel.default_org_id;"<#
               }
               #><#
+              if (foreignKey.hasSelectAdd && !(mod === "base" && table === "usr" && column_name === "default_org_id")) {
+              #>
+              ref="<#=column_name#>Ref"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
@@ -336,7 +341,28 @@ if (!detailCustomDialogType) {
               @change="onJobId"<#
               }
               #>
-            ></CustomSelect><#
+            ><#
+              if (foreignKey.hasSelectAdd) {
+              #>
+              <template
+                v-if="<#=foreignSchema.opts.table#>Permit('add')"
+                #footer
+              >
+                <div
+                  un-flex="~"
+                  un-justify-center
+                >
+                  <el-button
+                    plain
+                    @click="<#=column_name#>OpenAddDialog"
+                  >
+                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                  </el-button>
+                </div>
+              </template>
+            <#
+            }
+          #></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
               if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
                 selectInputForeign_Table_Ups.push(Foreign_Table_Up);
@@ -1224,7 +1250,52 @@ if (!detailCustomDialogType) {
       </div>
       
     </div>
-  </div>
+  </div><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (column.noAdd && column.noEdit) continue;
+    if (column.isAtt) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_locked") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "version") continue;
+    if (column_name === "tenant_id") continue;
+    if (column_name === "org_id") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) continue;
+    if (foreignKey && foreignKey.showType === "dialog") {
+      continue;
+    }
+    if (!foreignKey.hasSelectAdd || (foreignKey.selectType !== "select" && foreignKey.selectType != null)) {
+      continue;
+    }
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    }
+    if (!foreignSchema) {
+      throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+  #>
+  
+  <!-- <#=foreignSchema.opts.table_comment#> -->
+  <<#=foreignSchema.opts.tableUp#>DetailDialog
+    ref="<#=foreignSchema.opts.table#>DetailDialogRef"
+  ></<#=foreignSchema.opts.tableUp#>DetailDialog><#
+  }
+  #>
 </CustomDialog>
 </template>
 
@@ -1719,6 +1790,59 @@ import {
 } from "@/views/<#=mod#>/<#=table#>/Api";<#
 }
 #><#
+if (opts?.isRealData) {
+#>
+
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noAdd && column.noEdit) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column_name === "org_id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (!foreignKey.hasSelectAdd || (foreignKey.selectType !== "select" && foreignKey.selectType != null)) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+#>
+
+// <#=foreignSchema.opts.table_comment#>
+import <#=foreignSchema.opts.tableUp#>DetailDialog from "@/views/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>/Detail.vue";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -1732,16 +1856,6 @@ let locale = $computed(() => {
     return "zh_TW";
   }
 });<#
-}
-#><#
-if (opts?.isRealData) {
-#>
-
-import {
-  subscribe,
-  publish,
-  unSubscribe,
-} from "@/compositions/websocket";<#
 }
 #>
 
@@ -1766,7 +1880,50 @@ const {
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const permit = permitStore.getPermit(pagePath);<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noAdd && column.noEdit) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column_name === "org_id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (!foreignKey.hasSelectAdd || (foreignKey.selectType !== "select" && foreignKey.selectType != null)) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+#>
+
+// <#=foreignSchema.opts.table_comment#>
+const <#=foreignSchema.opts.table#>Permit = permitStore.getPermit("/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>");<#
+}
+#>
 
 let inited = $ref(false);
 
@@ -1978,7 +2135,75 @@ watchEffect(async () => {
     }
     #>
   };
-});
+});<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noAdd && column.noEdit) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column_name === "org_id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (!foreignKey.hasSelectAdd || (foreignKey.selectType !== "select" && foreignKey.selectType != null)) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+#>
+
+// <#=foreignSchema.opts.table_comment#>
+let <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
+let <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
+
+/** 打开新增<#=foreignSchema.opts.table_comment#>对话框 */
+async function <#=column_name#>OpenAddDialog() {
+  if (!<#=column_name#>Ref || !<#=foreignSchema.opts.table#>DetailDialogRef) {
+    return;
+  }
+  const {
+    changedIds,
+  } = await <#=foreignSchema.opts.table#>DetailDialogRef.showDialog({
+    title: await nsAsync("新增") + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
+    action: "add",
+  });
+  if (changedIds.length > 0) {
+    dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ];
+    for (const id of changedIds) {
+      if (dialogModel.<#=column_name#>.includes(id)) {
+        continue;
+      }
+      dialogModel.<#=column_name#>.push(id);
+    }
+    await <#=column_name#>Ref.refresh();
+  }
+  <#=column_name#>Ref.focus();
+}<#
+}
+#>
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";

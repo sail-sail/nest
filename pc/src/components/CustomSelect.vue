@@ -9,7 +9,7 @@
   }"
 >
   <ElSelectV2
-    :key="key"
+    ref="selectRef"
     :options="options4SelectV2"
     filterable
     collapse-tags
@@ -401,17 +401,15 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
-
-let key = $ref(0);
+let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
 
 watch(
   () => options4SelectV2,
-  () => {
-    key++;
-  },
-  {
-    deep: true,
+  async () => {
+    const oldModelValue = modelValue;
+    modelValue = undefined;
+    await nextTick();
+    modelValue = oldModelValue;
   },
 );
 
@@ -504,6 +502,7 @@ async function refreshEfc() {
   } else {
     inited = true;
   }
+  await nextTick();
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
   if (props.pinyinFilterable) {
@@ -537,7 +536,7 @@ function onChange() {
   emit("change", models);
 }
 
-
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
 let selectDivRef = $ref<HTMLDivElement>();
 
 async function refreshWrapperHeight() {
@@ -590,12 +589,25 @@ onMounted(() => {
   refreshWrapperHeight();
 });
 
+function focus() {
+  selectRef?.focus();
+}
+
+function blur() {
+  selectRef?.blur();
+}
+
 defineExpose({
   refresh: refreshEfc,
+  focus,
+  blur,
 });
 </script>
 
 <style scoped lang="scss">
+.custom_select_placeholder {
+  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+}
 .custom_select_space_normal {
   :deep(.el-select-v2__placeholder) {
     line-height: normal;
