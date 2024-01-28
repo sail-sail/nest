@@ -928,7 +928,7 @@ function getTableColumns(): ColumnType[] {
       label: "父部门",
       prop: "parent_id_lbl",
       sortBy: "parent_id",
-      width: 140,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

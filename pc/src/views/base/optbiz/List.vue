@@ -716,6 +716,12 @@ const emit = defineEmits<{
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
+useSubscribeList(
+  $$(tableRef),
+  pagePath,
+  dataGrid,
+);
+
 /** 搜索 */
 function initSearch() {
   return {

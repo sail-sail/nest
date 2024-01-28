@@ -1722,7 +1722,17 @@ const emit = defineEmits<{
 }>();
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+if (opts?.isRealData) {
+#>
+
+useSubscribeList(
+  $$(tableRef),
+  pagePath,
+  dataGrid,
+);<#
+}
+#>
 
 /** 搜索 */
 function initSearch() {

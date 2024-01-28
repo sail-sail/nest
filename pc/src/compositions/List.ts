@@ -1192,6 +1192,7 @@ export async function initListI18ns() {
   await initSysI18ns(codes);
 }
 
+/** 表格数据的实时监听 */
 export function useSubscribeList<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   pagePath: string,

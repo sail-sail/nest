@@ -771,6 +771,31 @@ export async function getSchema(
     }
   }
   tablesConfigItemMap[table_name] = tables[table_name];
+  
+  // 外键关联的默认width
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.foreignKey && !column.foreignKey.multiple && (column.width == null || column.align == null)) {
+      const foreignKey = column.foreignKey;
+      const foreignSchema = tables[foreignKey.mod + "_" + foreignKey.table];
+      if (!foreignSchema?.columns) {
+        throw new Error(`表: ${ table_name }, 列: ${ column.COLUMN_NAME }, 对应的外键关联表不存在: foreignKey: ${ JSON.stringify(foreignKey) }`);
+      }
+      let foreignLbl = foreignKey.lbl || "lbl";
+      if (Array.isArray(foreignLbl)) {
+        foreignLbl = foreignLbl[0];
+      }
+      const foreignColumn = foreignSchema.columns.find((item) => item.COLUMN_NAME === foreignLbl);
+      if (foreignColumn) {
+        if (column.width == null && foreignColumn.width != null) {
+          column.width = foreignColumn.width;
+        }
+        if (column.align == null && foreignColumn.align != null) {
+          column.align = foreignColumn.align;
+        }
+      }
+    }
+  }
   return tables[table_name];
 }
 

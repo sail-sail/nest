@@ -959,7 +959,7 @@ function getTableColumns(): ColumnType[] {
       label: "父菜单",
       prop: "parent_id_lbl",
       sortBy: "parent_id",
-      width: 140,
+      width: 160,
       sortable: "custom",
       align: "left",
       headerAlign: "center",
