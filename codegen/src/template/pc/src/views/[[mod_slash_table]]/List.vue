@@ -375,60 +375,62 @@ const hasAtt = columns.some((item) => item.isAtt);
         label=" "
         prop="idsChecked"
       >
-        <el-checkbox
-          v-model="idsChecked"
-          :false-label="0"
-          :true-label="1"
-          :disabled="selectedIds.length === 0"
-          @change="onIdsChecked"
+        <div
+          un-flex="~ nowrap"
+          un-justify-between
+          un-w="full"
         >
-          <span>{{ ns('已选择') }}</span>
-          <span
-            un-m="l-0.5"
-            un-text="blue"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
+          <div
+            un-flex="~ nowrap"
+            un-items-center
+            un-gap="x-1.5"
           >
-            {{ selectedIds.length }}
-          </span>
-        </el-checkbox>
-        <el-icon
-          v-show="selectedIds.length > 0"
-          :title="ns('清空已选择')"
-          un-cursor-pointer
-          un-m="l-1.5"
-          un-text="hover:red"
-          @click="onEmptySelected"
-        >
-          <ElIconRemove />
-        </el-icon>
-      </el-form-item><#
-      if ((opts.noDelete !== true && opts.noRevert !== true) || hasIsDeleted) {
-      #>
+            <el-checkbox
+              v-model="idsChecked"
+              :false-label="0"
+              :true-label="1"
+              :disabled="selectedIds.length === 0"
+              @change="onIdsChecked"
+            >
+              <span>{{ ns('已选择') }}</span>
+              <span
+                v-if="selectedIds.length > 0"
+                un-m="l-0.5"
+                un-text="blue"
+              >
+                {{ selectedIds.length }}
+              </span>
+            </el-checkbox>
+            <el-icon
+              v-show="selectedIds.length > 0"
+              :title="ns('清空已选择')"
+              un-cursor-pointer
+              un-text="hover:red"
+              @click="onEmptySelected"
+            >
+              <ElIconRemove />
+            </el-icon>
+          </div><#
+          if ((opts.noDelete !== true && opts.noRevert !== true) && hasIsDeleted) {
+          #>
+          
+          <el-checkbox
+            v-if="!isLocked"
+            :set="search.is_deleted = search.is_deleted ?? 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox><#
+          }
+          #>
+        </div>
+      </el-form-item>
       
       <el-form-item
         label=" "
-        prop="is_deleted"
-      >
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted ?? 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="recycleChg"
-        >
-          <span>{{ ns('回收站') }}</span>
-        </el-checkbox>
-      </el-form-item><#
-      }
-      #>
-      
-      <el-form-item
-        label=" "
-        un-self-start
-        un-flex="~ nowrap"
-        un-w="full"
-        un-p="l-1"
-        un-box-border
       >
         
         <el-button
@@ -1045,7 +1047,18 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                  @change="updateById(
+                    row.id,
+                    {<#
+                      if (hasVersion) {
+                      #>
+                      version: row.version,<#
+                      }
+                      #>
+                      order_by: row.order_by,
+                    },
+                    { notLoading: true },
+                  )"
                 ></CustomInputNumber>
               </template>
             </el-table-column>
@@ -1656,16 +1669,25 @@ if (hasForeignTabs) {
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
 #><#
+if (opts?.isRealData) {
+#>
+
+import {
+  publish,
+} from "@/compositions/websocket";<#
+}
+#>
+
+<#
 let optionsName = table_comment;
 if (list_tree) {
   optionsName = optionsName + "List";
 }
-#>
-
-defineOptions({
+#>defineOptions({
   name: "<#=optionsName#>",
 });
 
+const pagePath = "/<#=mod#>/<#=table#>";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -1675,7 +1697,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -1683,7 +1705,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1700,7 +1722,43 @@ const emit = defineEmits<{
 }>();
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+if (opts?.isRealData) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  pagePath,
+  async function(data) {
+    const action = data.action;
+    if (action === "add") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "edit") {
+      const id = data.id;
+      if (tableData.some((model) => model.id === id)) {
+        await dataGrid();
+      }
+      return;
+    }
+    if (action === "delete") {
+      const ids = data.ids;
+      selectedIds = selectedIds.filter((id) => !ids.includes(id));
+      await dataGrid(true);
+      return;
+    }
+    if (action === "import") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "revert") {
+      await dataGrid(true);
+      return;
+    }
+  },
+);<#
+}
+#>
 
 /** 搜索 */
 function initSearch() {
@@ -2063,7 +2121,17 @@ let {
     }
     #>
   },
-));
+));<#
+if (opts?.tableSelectable) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  $$(tableRef),
+  pagePath,
+  dataGrid,
+);<#
+}
+#>
 
 watch(
   () => selectedIds,
@@ -2508,7 +2576,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -2656,7 +2724,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/<#=mod#>/<#=table#>"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
@@ -2809,7 +2877,18 @@ async function onImportExcel() {
   if (msg) {
     ElMessageBox.alert(msg)
   }
-  if (succNum > 0) {
+  if (succNum > 0) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "import",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -2996,7 +3075,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -3021,7 +3100,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: <#=modelName#>,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -3096,7 +3175,18 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "delete",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
@@ -3242,6 +3332,17 @@ async function onRevertByIds() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "revert",
+      }),
+      payload: num,
+    });<#
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     search.is_deleted = 0;<#
@@ -3418,6 +3519,7 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const foreignSchema = foreignKey && optTables[foreignKey.mod + "_" + foreignTable];
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
@@ -3430,13 +3532,14 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   const res = await <#=column_name#>ListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("<#=foreignSchema?.opts?.table_comment#>"),
     selectedIds: row.<#=column_name#>,<#
     if (hasLocked) {
     #>
-    isLocked: row.is_locked == 1,<#
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,<#
     } else {
     #>
-    isLocked: false,<#
+    isLocked: row.is_deleted == 1,<#
     }
     #>
   });

@@ -2,6 +2,8 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.insert="onInsert"
@@ -184,7 +186,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -262,6 +264,12 @@ import type {
   OptionsInput,
 } from "#/types";
 
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -271,17 +279,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/base/options";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/options");
+} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/options");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -387,6 +397,7 @@ async function showDialog(
   showBuildIn = false;
   isReadonly = false;
   isLocked = false;
+  isShowEditCallbackConfirm = false;
   is_deleted = model?.is_deleted ?? 0;
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -541,6 +552,37 @@ async function onReset() {
   });
 }
 
+let isShowEditCallbackConfirm = false;
+
+/** 订阅编辑消息回调 */
+async function subscribeEditCallback(id?: OptionsId) {
+  if (!id) {
+    return;
+  }
+  if (id !== dialogModel.id) {
+    return;
+  }
+  if (isShowEditCallbackConfirm) {
+    return;
+  }
+  isShowEditCallbackConfirm = true;
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("系统选项")),
+      {
+        confirmButtonText: await nsAsync("刷新"),
+        cancelButtonText: await nsAsync("取消"),
+        type: "warning",
+      },
+    );
+    isShowEditCallbackConfirm = false;
+  } catch (err) {
+    isShowEditCallbackConfirm = false;
+    return;
+  }
+  await onRefresh();
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -671,10 +713,8 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
-    customDialogRef?.focus();
-    await onSave();
-  }
+  customDialogRef?.focus();
+  await onSave();
 }
 
 /** 保存并返回id */
@@ -685,10 +725,7 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if (dialogAction === "view") {
-    return;
-  }
-  if (dialogAction === "edit" && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
     return;
   }
   if (dialogAction === "add" && !permit("add")) {
@@ -711,6 +748,13 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "add",
+      }),
+      payload: id,
+    });
     msg = await nsAsync("新增成功");
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
@@ -728,6 +772,13 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "edit",
+      }),
+      payload: id,
+    });
     msg = await nsAsync("编辑成功");
   }
   if (id) {
@@ -787,10 +838,38 @@ async function onSave() {
   });
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );
+}
+
+async function onDialogClose() {
+  isShowEditCallbackConfirm = true;
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -799,8 +878,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({
