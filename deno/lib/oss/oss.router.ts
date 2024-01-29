@@ -9,10 +9,6 @@ import {
   TMP_PATH,
 } from "/lib/context.ts";
 
-import * as ossServie from "./oss.service.ts";
-
-import * as tmpfileService from "/lib/tmpfile/tmpfile.service.ts";
-
 import {
   resize,
 } from "/lib/image/mod.ts";
@@ -43,7 +39,10 @@ router.post("upload", async function(ctx) {
   if (!file) {
     throw new Error("file must a form-data file!");
   }
-  const id = await ossServie.upload(file);
+  const {
+    upload
+  } = await import("./oss.service.ts");
+  const id = await upload(file);
   ctx.response.body = {
     code: 0,
     data: id,
@@ -54,6 +53,10 @@ router.post("upload", async function(ctx) {
 async function download(ctx: RouterContext<any>) {
   const request = ctx.request;
   const response = ctx.response;
+  const {
+    statObject,
+    getObject,
+  } = await import("./oss.service.ts");
   try {
     let filename: string | undefined = ctx.params?.filename;
     const searchParams = request.url.searchParams;
@@ -69,7 +72,7 @@ async function download(ctx: RouterContext<any>) {
     if (filename) {
       filename = encodeURIComponent(filename);
     }
-    const stats = await ossServie.statObject(id);
+    const stats = await statObject(id);
     if (stats) {
       if (stats.contentType) {
         response.headers.set("Content-Type", stats.contentType);
@@ -90,7 +93,7 @@ async function download(ctx: RouterContext<any>) {
       }
     }
     response.headers.set("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
-    const objInfo = await ossServie.getObject(id);
+    const objInfo = await getObject(id);
     if (!objInfo || !objInfo.body) {
       const err = new Error("NotFound");
       // deno-lint-ignore no-explicit-any
@@ -122,6 +125,10 @@ router.get("download", <any>download);
 router.get("img", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
+  const {
+    statObject,
+    getObject,
+  } = await import("./oss.service.ts");
   try {
     let filename: string | undefined = ctx.params?.filename;
     const searchParams = request.url.searchParams;
@@ -141,7 +148,7 @@ router.get("img", async function(ctx) {
     if (filename) {
       filename = encodeURIComponent(filename);
     }
-    const stats = await ossServie.statObject(id);
+    const stats = await statObject(id);
     if (!stats) {
       const err = new Error("NotFound");
       // deno-lint-ignore no-explicit-any
@@ -166,7 +173,7 @@ router.get("img", async function(ctx) {
       return;
     }
     if (!f) {
-      const objInfo = await ossServie.getObject(id);
+      const objInfo = await getObject(id);
       if (!objInfo || !objInfo.body) {
         const err = new Error("NotFound");
         // deno-lint-ignore no-explicit-any
@@ -182,7 +189,7 @@ router.get("img", async function(ctx) {
       }
     }
     if (!is_img) {
-      const objInfo = await ossServie.getObject(id);
+      const objInfo = await getObject(id);
       if (!objInfo || !objInfo.body) {
         const err = new Error("NotFound");
         // deno-lint-ignore no-explicit-any
@@ -206,7 +213,12 @@ router.get("img", async function(ctx) {
     if (q) {
       cache_id += `-q${ q }`;
     }
-    const img_stats = await tmpfileService.statObject(cache_id);
+    const {
+      statObject: statObjectTmpfile,
+      getObject: getObjectTmpfile,
+      putObject: putObjectTmpfile,
+    } = await import("/lib/tmpfile/tmpfile.service.ts");
+    const img_stats = await statObjectTmpfile(cache_id);
     if (img_stats) {
       if (img_stats.contentType) {
         response.headers.set("Content-Type", img_stats.contentType);
@@ -226,7 +238,7 @@ router.get("img", async function(ctx) {
         return;
       }
       response.headers.set("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
-      const objInfo = await tmpfileService.getObject(cache_id);
+      const objInfo = await getObjectTmpfile(cache_id);
       if (!objInfo || !objInfo.body) {
         const err = new Error("NotFound");
         // deno-lint-ignore no-explicit-any
@@ -239,7 +251,7 @@ router.get("img", async function(ctx) {
       response.body = content;
       return;
     }
-    const objInfo = await ossServie.getObject(id);
+    const objInfo = await getObject(id);
     if (!objInfo || !objInfo.body) {
       const err = new Error("NotFound");
       // deno-lint-ignore no-explicit-any
@@ -287,13 +299,13 @@ router.get("img", async function(ctx) {
     response.headers.set("Content-Type", content_type);
     
     // 缓存图片到tmpfile
-    await tmpfileService.putObject(
+    await putObjectTmpfile(
       cache_id,
       content2,
       content_type,
     );
     
-    const img_stats2 = await tmpfileService.statObject(cache_id);
+    const img_stats2 = await statObjectTmpfile(cache_id);
     if (img_stats2) {
       if (img_stats2.etag) {
         response.headers.set("ETag", img_stats2.etag);

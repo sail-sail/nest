@@ -101,6 +101,13 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 let shouldShowPlaceholder = $computed(() => {
   return modelValue == null || modelValue === "";
 });

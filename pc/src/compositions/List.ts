@@ -8,6 +8,12 @@ import type {
 
 import dayjs from "dayjs";
 
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";
+
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch<T>(
   props: Record<string, any>,
@@ -1184,4 +1190,150 @@ export async function initListI18ns() {
     "正在导入...",
   ];
   await initSysI18ns(codes);
+}
+
+type UseSubscribeListData<T> = {
+  action: "add",
+  id: T,
+} | {
+  action: "edit",
+  id: T,
+} | {
+  action: "delete",
+  ids: T[],
+} | {
+  action: "import",
+  num: number,
+} | {
+  action: "revert",
+  num: number,
+};
+
+/** 表格数据的实时监听 */
+export function useSubscribeList<T>(
+  pagePath: string,
+  callback: (data: UseSubscribeListData<T>) => Promise<void> | void,
+) {
+  async function add(id?: T) {
+    if (!id) {
+      return;
+    }
+    await callback({
+      action: "add",
+      id,
+    });
+  }
+  async function edit(id?: T) {
+    if (!id) {
+      return;
+    }
+    await callback({
+      action: "edit",
+      id,
+    });
+  }
+  async function deleteFn(ids?: T[]) {
+    if (!ids || ids.length === 0) {
+      return;
+    }
+    await callback({
+      action: "delete",
+      ids,
+    });
+  }
+  async function importFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "import",
+      num,
+    });
+  }
+  async function revertFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "revert",
+      num,
+    });
+  }
+  onBeforeUnmount(() => {
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "add",
+      }),
+      add,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "edit",
+      }),
+      edit,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "delete",
+      }),
+      deleteFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "import",
+      }),
+      importFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "revert",
+      }),
+      revertFn,
+    );
+  });
+  
+  subscribe<T>(
+    JSON.stringify({
+      pagePath,
+      action: "add",
+    }),
+    add,
+  );
+  
+  subscribe<T>(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    edit,
+  );
+  
+  subscribe<T[]>(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    deleteFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "import",
+    }),
+    importFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "revert",
+    }),
+    revertFn,
+  );
 }
