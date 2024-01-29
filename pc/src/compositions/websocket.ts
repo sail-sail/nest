@@ -33,7 +33,7 @@ async function reConnect() {
     time = reConnectNum * 200;
   }
   await new Promise((resolve) => setTimeout(resolve, time));
-  // await connect();
+  await connect();
 }
   
 async function connect() {
