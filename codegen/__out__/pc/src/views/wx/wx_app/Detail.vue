@@ -2,6 +2,8 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.insert="onInsert"
@@ -197,7 +199,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -284,17 +286,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/wx/wx_app";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/wx/wx_app");
+} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/wx/wx_app");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -718,10 +722,8 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
-    customDialogRef?.focus();
-    await onSave();
-  }
+  customDialogRef?.focus();
+  await onSave();
 }
 
 /** 保存并返回id */
@@ -732,10 +734,7 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if (dialogAction === "view") {
-    return;
-  }
-  if (dialogAction === "edit" && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
     return;
   }
   if (dialogAction === "add" && !permit("add")) {
@@ -834,10 +833,23 @@ async function onSave() {
   });
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+}
+
+async function onDialogClose() {
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -846,8 +858,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({

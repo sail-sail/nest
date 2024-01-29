@@ -2,6 +2,8 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.ctrl.arrow-down="onPageDown"
@@ -407,17 +409,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/wx/wx_pay_notice";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/wx/wx_pay_notice");
+} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/wx/wx_pay_notice");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -723,10 +727,23 @@ async function nextId() {
   return true;
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+}
+
+async function onDialogClose() {
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -735,8 +752,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({
