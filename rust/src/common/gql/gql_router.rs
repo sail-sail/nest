@@ -88,7 +88,7 @@ pub async fn graphql_handler_get(
     headers.insert(key, value.to_owned());
   }
   let now1 = Instant::now();
-  let response_time = format!("t;dur={}", now1.saturating_duration_since(now0).as_millis());
+  let response_time = format!("app;dur={}", now1.saturating_duration_since(now0).as_millis());
   let response_time = poem::http::header::HeaderValue::from_str(&response_time);
   let response_time = match response_time {
     Ok(response_time) => response_time,
@@ -158,7 +158,7 @@ pub async fn graphql_handler(
     headers.insert(key, value.to_owned());
   }
   let now1 = Instant::now();
-  let response_time = format!("t;dur={}", now1.saturating_duration_since(now0).as_millis());
+  let response_time = format!("app;dur={}", now1.saturating_duration_since(now0).as_millis());
   let response_time = poem::http::header::HeaderValue::from_str(&response_time);
   let response_time = match response_time {
     Ok(response_time) => response_time,
