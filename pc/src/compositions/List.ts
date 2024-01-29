@@ -1192,44 +1192,72 @@ export async function initListI18ns() {
   await initSysI18ns(codes);
 }
 
+type UseSubscribeListData<T> = {
+  action: "add",
+  id: T,
+} | {
+  action: "edit",
+  id: T,
+} | {
+  action: "delete",
+  ids: T[],
+} | {
+  action: "import",
+  num: number,
+} | {
+  action: "revert",
+  num: number,
+};
+
 /** 表格数据的实时监听 */
 export function useSubscribeList<T>(
-  tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   pagePath: string,
-  dataGrid: Function,
+  callback: (data: UseSubscribeListData<T>) => Promise<void> | void,
 ) {
   async function add(id?: T) {
     if (!id) {
       return;
     }
-    await dataGrid(true);
+    await callback({
+      action: "add",
+      id,
+    });
   }
   async function edit(id?: T) {
     if (!id) {
       return;
     }
-    const tableData = tableRef.value?.data ?? [ ];
-    if (tableData.some((model) => model.id === id)) {
-      await dataGrid();
-    }
+    await callback({
+      action: "edit",
+      id,
+    });
   }
   async function deleteFn(ids?: T[]) {
     if (!ids || ids.length === 0) {
       return;
     }
-    await dataGrid(true);
+    await callback({
+      action: "delete",
+      ids,
+    });
   }
   async function importFn(num?: number) {
     if (!num) {
       return;
     }
-    await dataGrid(true);
+    await callback({
+      action: "import",
+      num,
+    });
   }
   async function revertFn(num?: number) {
     if (!num) {
       return;
     }
-    await dataGrid(true);
+    await callback({
+      action: "revert",
+      num,
+    });
   }
   onBeforeUnmount(() => {
     unSubscribe(

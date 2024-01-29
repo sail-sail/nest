@@ -1726,10 +1726,36 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();<#
 if (opts?.isRealData) {
 #>
 
-useSubscribeList(
-  $$(tableRef),
+useSubscribeList<<#=Table_Up#>Id>(
   pagePath,
-  dataGrid,
+  async function(data) {
+    const action = data.action;
+    if (action === "add") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "edit") {
+      const id = data.id;
+      if (tableData.some((model) => model.id === id)) {
+        await dataGrid();
+      }
+      return;
+    }
+    if (action === "delete") {
+      const ids = data.ids;
+      selectedIds = selectedIds.filter((id) => !ids.includes(id));
+      await dataGrid(true);
+      return;
+    }
+    if (action === "import") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "revert") {
+      await dataGrid(true);
+      return;
+    }
+  },
 );<#
 }
 #>
