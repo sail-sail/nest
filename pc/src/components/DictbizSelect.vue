@@ -28,7 +28,22 @@
   @keyup.enter.stop
   @change="onValueChange"
 >
-  <!--传递插槽-->
+  <template
+    v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+    #header
+  >
+    <el-checkbox
+      v-model="isSelectAll"
+      :indeterminate="isIndeterminate"
+      un-w="full"
+      un-p="l-3"
+      un-box-border
+    >
+      <span>
+        ({{ ns("全选") }})
+      </span>
+    </el-checkbox>
+  </template>
   <template
     v-for="(item, key, index) in $slots"
     :key="index"
@@ -161,6 +176,7 @@ const props = withDefaults(
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    showSelectAll?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string;
@@ -186,6 +202,7 @@ const props = withDefaults(
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    showSelectAll: true,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
@@ -213,6 +230,49 @@ watch(
     modelLabel = props.modelLabel;
   },
 );
+
+let isSelectAll = $computed({
+  get() {
+    if (!modelValue) {
+      return false;
+    }
+    if (!Array.isArray(modelValue)) {
+      return false;
+    }
+    if (modelValue.length === 0) {
+      return false;
+    }
+    if (modelValue.length === options4SelectV2.length) {
+      return true;
+    }
+    return false;
+  },
+  set(val: boolean) {
+    if (val) {
+      modelValue = options4SelectV2.map((item) => item.value);
+    } else {
+      modelValue = [ ];
+    }
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+  },
+});
+
+const isIndeterminate = $computed(() => {
+  if (!modelValue) {
+    return false;
+  }
+  if (!Array.isArray(modelValue)) {
+    return false;
+  }
+  if (modelValue.length === 0) {
+    return false;
+  }
+  if (modelValue.length === options4SelectV2.length) {
+    return false;
+  }
+  return true;
+});
 
 const modelValueComputed = $computed(() => {
   if (!modelLabel) {
@@ -299,7 +359,17 @@ function onValueChange() {
   emit("change", models);
 }
 
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
+let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>([ ]);
+
+watch(
+  () => options4SelectV2,
+  async () => {
+    const oldModelValue = modelValue;
+    modelValue = undefined;
+    await nextTick();
+    modelValue = oldModelValue;
+  },
+);
 
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {
@@ -310,7 +380,10 @@ async function refreshDropdownWidth() {
   }
   await nextTick();
   const el = t.proxy.$el as HTMLDivElement;
-  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement;
+  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null;
+  if (!wrapperEl) {
+    return;
+  }
   const id = wrapperEl.getAttribute("aria-describedby");
   if (!id) {
     return;
@@ -352,6 +425,11 @@ const emit = defineEmits<{
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
+
+const {
+  ns,
+  initSysI18ns,
+} = useI18n();
 
 const modelLabels = $computed(() => {
   if (!modelValue) {
@@ -426,6 +504,7 @@ async function refreshEfc() {
     return;
   }
   inited = false;
+  await nextTick();
   [ dictbizModels ] = await getDictbiz([ code ]);
   options4SelectV2 = dictbizModels.map(props.optionsMap);
   if (props.pinyinFilterable) {
@@ -448,6 +527,15 @@ watch(
     immediate: true,
   },
 );
+
+async function initFrame() {
+  const codes = [
+    "全选",
+  ];
+  await initSysI18ns(codes);
+}
+
+initFrame();
 
 defineExpose({
   refresh: refreshEfc,
