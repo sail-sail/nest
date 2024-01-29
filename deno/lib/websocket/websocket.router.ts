@@ -7,85 +7,15 @@ import {
   Router,
 } from "oak";
 
-import { wsClient } from "./websocket.dao.ts";
+import {
+  callbacksMap,
+  socketMap,
+  clientIdTopicsMap,
+} from "./websocket.constants.ts";
 
 const router = new Router({
   prefix: "/api/websocket/",
 });
-
-const socketMap = new Map<string, WebSocket>();
-// deno-lint-ignore no-explicit-any
-const callbacksMap = new Map<string, ((data: any) => void)[]>();
-const clientIdTopicsMap = new Map<string, string[]>();
-
-wsClient.subscribe = function(topic: string, callback: (data: string) => void) {
-  let callbacks = callbacksMap.get(topic);
-  if (!callbacks) {
-    callbacks = [ ];
-    callbacksMap.set(topic, callbacks);
-  }
-  if (!callbacks.includes(callback)) {
-    callbacks.push(callback);
-  }
-};
-
-wsClient.publish = function<T>(
-  data: {
-    topic: string;
-    payload: T;
-  },
-  isValidCurrClientId?: boolean,
-) {
-  const topic = data.topic;
-  if (isValidCurrClientId) {
-    const callbacks = callbacksMap.get(topic);
-    if (callbacks && callbacks.length > 0) {
-      for (const callback of callbacks) {
-        callback(data.payload);
-      }
-    }
-  }
-  const dataStr = JSON.stringify(data);
-  for (const [ clientId, topics ] of clientIdTopicsMap) {
-    if (!topics.includes(topic)) {
-      continue;
-    }
-    const socket = socketMap.get(clientId);
-    if (!socket) {
-      continue;
-    }
-    if (socket.readyState !== WebSocket.OPEN) {
-      socketMap.delete(clientId);
-      clientIdTopicsMap.delete(clientId);
-      try {
-        socket.close();
-      } catch (_err) {
-        error(_err);
-      }
-      continue;
-    }
-    socket.send(dataStr);
-  }
-};
-
-// deno-lint-ignore ban-types
-wsClient.unSubscribe = function(topic: string, callback: Function) {
-  const callbacks = callbacksMap.get(topic);
-  if (callbacks && callbacks.length > 0) {
-    // deno-lint-ignore no-explicit-any
-    const index = callbacks.indexOf(callback as any);
-    if (index >= 0) {
-      callbacks.splice(index, 1);
-    }
-  }
-  if (!callbacks || callbacks.length === 0) {
-    callbacksMap.delete(topic);
-  }
-};
-
-wsClient.closeClient = function() {
-  callbacksMap.clear();
-};
 
 function onopen(socket: WebSocket, clientId: string) {
   const socketOld = socketMap.get(clientId);
@@ -143,13 +73,13 @@ router.get("upgrade", async function(ctx) {
   socket.onerror = function(err0) {
     const err = err0 as ErrorEvent;
     // log(`websocket: clientId ${ clientId } onerror`);
-    error(err);
+    // error(err);
     try {
       if (socket.readyState === WebSocket.OPEN) {
         socket.close(1000, err.message);
       }
     } catch (_err) {
-      error(_err);
+      // error(_err);
     }
     socketMap.delete(clientId);
     clientIdTopicsMap.delete(clientId);
@@ -165,7 +95,7 @@ router.get("upgrade", async function(ctx) {
     }
     // log(eventData);
     try {
-      const obj = JSON.parse(eventData as string);
+      const obj = JSON.parse(eventData);
       const action = obj.action;
       const data = obj.data;
       if (action === "subscribe") {
