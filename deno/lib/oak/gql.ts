@@ -22,7 +22,13 @@ import {
   type DocumentNode,
 } from "graphql";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
+
+import {
+  handleRequestId,
+} from "/lib/oak/request_id.ts";
 
 // import {
 //   Decimal,
@@ -187,8 +193,6 @@ const queryCacheMap = new Map<string, {
   validationErrors: readonly GraphQLError[],
 }>();
 
-const requestIdMap = new Map<string, number>();
-
 async function handleGraphql(
   gqlObj: {
     query: string,
@@ -315,37 +319,19 @@ async function handleGraphql(
   return result;
 }
 
-function handleRequestId(requestId?: string | null) {
-  if (!requestId) {
-    return;
-  }
-  if (requestIdMap.has(requestId)) {
-    if (requestIdMap.get(requestId)) {
-      clearTimeout(requestIdMap.get(requestId));
-    }
-    requestIdMap.set(requestId, setTimeout(() => {
-      requestIdMap.delete(requestId);
-    }, 1000 * 60 * 2));
-    throw new ServiceException(`Request ID is duplicated: ${ requestId }`, "request_id_duplicated");
-  }
-  requestIdMap.set(requestId, setTimeout(() => {
-    requestIdMap.delete(requestId);
-  }, 1000 * 60 * 2));
-}
-
 gqlRouter.post("/graphql", async function(ctx) {
   const request = ctx.request;
   handleRequestId(request.headers.get("Request-ID"));
   const response = ctx.response;
-  const body = request.body();
-  if (body.type !== "json") {
+  if (!request.hasBody || request.body.type() !== "json") {
     response.body = {
       code: 1,
       errMsg: "Invalid request body",
     };
     return;
   }
-  const gqlObj = await body.value;
+  const body = request.body;
+  const gqlObj = await body.json();
   try {
     response.body = await handleGraphql(gqlObj);
   } catch (err) {
