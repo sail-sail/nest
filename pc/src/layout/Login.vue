@@ -259,7 +259,7 @@ async function onLogin() {
   } catch (err) {
     return;
   }
-  removeTabs();
+  // removeTabs();
   const loginModel = await login(model);
   if (!loginModel.authorization) {
     return;

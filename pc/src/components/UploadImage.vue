@@ -183,7 +183,7 @@ import type {
 } from "#/types";
 
 const emit = defineEmits<
-  (e: "update:modelValue", value: string) => void
+  (e: "update:modelValue", value?: string | null) => void
 >();
 
 const props = withDefaults(

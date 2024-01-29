@@ -43,56 +43,58 @@
         label=" "
         prop="idsChecked"
       >
-        <el-checkbox
-          v-model="idsChecked"
-          :false-label="0"
-          :true-label="1"
-          :disabled="selectedIds.length === 0"
-          @change="onIdsChecked"
+        <div
+          un-flex="~ nowrap"
+          un-justify-between
+          un-w="full"
         >
-          <span>{{ ns('已选择') }}</span>
-          <span
-            un-m="l-0.5"
-            un-text="blue"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
+          <div
+            un-flex="~ nowrap"
+            un-items-center
+            un-gap="x-1.5"
           >
-            {{ selectedIds.length }}
-          </span>
-        </el-checkbox>
-        <el-icon
-          v-show="selectedIds.length > 0"
-          :title="ns('清空已选择')"
-          un-cursor-pointer
-          un-m="l-1.5"
-          un-text="hover:red"
-          @click="onEmptySelected"
-        >
-          <ElIconRemove />
-        </el-icon>
+            <el-checkbox
+              v-model="idsChecked"
+              :false-label="0"
+              :true-label="1"
+              :disabled="selectedIds.length === 0"
+              @change="onIdsChecked"
+            >
+              <span>{{ ns('已选择') }}</span>
+              <span
+                v-if="selectedIds.length > 0"
+                un-m="l-0.5"
+                un-text="blue"
+              >
+                {{ selectedIds.length }}
+              </span>
+            </el-checkbox>
+            <el-icon
+              v-show="selectedIds.length > 0"
+              :title="ns('清空已选择')"
+              un-cursor-pointer
+              un-text="hover:red"
+              @click="onEmptySelected"
+            >
+              <ElIconRemove />
+            </el-icon>
+          </div>
+          
+          <el-checkbox
+            v-if="!isLocked"
+            :set="search.is_deleted = search.is_deleted ?? 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </div>
       </el-form-item>
       
       <el-form-item
         label=" "
-        prop="is_deleted"
-      >
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted ?? 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="recycleChg"
-        >
-          <span>{{ ns('回收站') }}</span>
-        </el-checkbox>
-      </el-form-item>
-      
-      <el-form-item
-        label=" "
-        un-self-start
-        un-flex="~ nowrap"
-        un-w="full"
-        un-p="l-1"
-        un-box-border
       >
         
         <el-button
@@ -386,6 +388,7 @@ defineOptions({
   name: "登录日志",
 });
 
+const pagePath = "/base/login_log";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -395,7 +398,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/login_log");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -403,7 +406,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/login_log");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -812,7 +815,7 @@ async function onSortChange(
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -827,7 +830,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: LoginLogModel,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
