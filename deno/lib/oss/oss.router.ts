@@ -1,49 +1,44 @@
 import {
   Router,
-  type FormDataFile,
   type RouterContext,
 } from "oak";
 
 import {
   error,
-  TMP_PATH,
 } from "/lib/context.ts";
 
 import {
   resize,
 } from "/lib/image/mod.ts";
 
+import {
+  handleRequestId,
+} from "/lib/oak/request_id.ts";
+
 const router = new Router({
   prefix: "/api/oss/",
 });
 
 router.post("upload", async function(ctx) {
-  const body = ctx.request.body();
-  if (body.type !== "form-data") {
-    ctx.response.status = 415;
+  const request = ctx.request;
+  handleRequestId(request.headers.get("Request-ID"));
+  const body = request.body;
+  const contentType = body.type().toLocaleLowerCase();
+  const response = ctx.response;
+  if (!request.hasBody || contentType !== "form-data") {
+    response.status = 415;
     return;
   }
-  let file: FormDataFile | undefined = undefined;
-  for await (const [ name, value ] of body.value.stream({
-    outPath: TMP_PATH,
-    prefix: "oss_upload_",
-    maxFileSize: 50 * 1024 * 1024, // 50Mb
-  })) {
-    if (name === "file") {
-      if (value instanceof String) {
-        throw new Error("file must a form-data file!");
-      }
-      file = value as FormDataFile;
-    }
-  }
-  if (!file) {
+  const formData = await body.formData();
+  const file = formData.get("file");
+  if (!file || !(file instanceof File)) {
     throw new Error("file must a form-data file!");
   }
   const {
     upload
   } = await import("./oss.service.ts");
   const id = await upload(file);
-  ctx.response.body = {
+  response.body = {
     code: 0,
     data: id,
   };

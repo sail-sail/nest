@@ -43,7 +43,7 @@ async function connect() {
     socket.onmessage = function(event) {
       // console.log(`websocket: clientId ${ clientId } onmessage`);
       const eventData = event.data;
-      console.log(eventData);
+      // console.log(eventData);
       if (typeof eventData !== "string") {
         return;
       }
