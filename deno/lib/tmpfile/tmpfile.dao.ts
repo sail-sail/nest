@@ -1,13 +1,17 @@
-import {
-  type FormDataFile,
-} from "oak";
-
-import {
-  type S3Bucket,
+import type {
+  S3Bucket,
 } from "S3";
 
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
+
+import type {
+  S3Error,
+} from "S3/S3Error";
+
+import {
+  error
+} from "/lib/context.ts";
 
 let _bucket: S3Bucket | undefined;
 
@@ -34,24 +38,27 @@ export async function getBucket() {
 }
 
 export async function upload(
-  file: FormDataFile,
+  file: File,
 ) {
-  const bucket = await getBucket();
-  let content = file.content;
-  if (!content) {
-    content = await Deno.readFile(file.filename!);
-  }
+  
+  const content = await file.arrayBuffer();
   const meta: {
     filename?: string;
   } = { };
-  if (file.originalName) {
-    meta.filename = encodeURIComponent(file.originalName);
+  if (file.name) {
+    meta.filename = encodeURIComponent(file.name);
   }
   const id = shortUuidV4<string>();
-  await bucket.putObject(id, content, {
-    contentType: file.contentType,
-    meta,
-  })
+  try {
+    const bucket = await getBucket();
+    await bucket.putObject(id, new Uint8Array(content), {
+      contentType: file.type,
+      meta,
+    })
+  } catch(_err: unknown) {
+    const err = _err as S3Error;
+    error("oss.upload S3Error: " + err.response);
+  }
   return id;
 }
 
