@@ -90,7 +90,9 @@ function hasSelectInputFn(
 export async function codegen(context: Context, schema: TablesConfigItem, table_names: string[]) {
   const opts = schema.opts;
   let {
+    mod,
     table,
+    table_name,
     table_comment,
     defaultSort,
     hasTenant_id,
@@ -109,11 +111,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   const formatMsg = formatMsg0;
   const uniqueID = uniqueID0;
   const isEmpty = isEmpty0;
-  console.log(`${chalk.gray("生成表:")} ${chalk.green(table)}`);
-  const mod_table = table;
-  const mod = table.substring(0, table.indexOf("_"));
-  const mod_slash_table = table.replace("_", "/");
-  table = table.substring(table.indexOf("_") + 1);
+  console.log(`${chalk.gray("生成表:")} ${chalk.green(table_name)}`);
+  const mod_table = table_name;
+  const mod_slash_table = table_name.replace("_", "/");
   const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
   const Table_Up_IN = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
