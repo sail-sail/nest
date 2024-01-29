@@ -147,7 +147,7 @@ async function compile() {
     }
     let cmds = [
       "compile",
-      "--unstable",
+      "--unstable-ffi",
       // `--allow-read=${ allowReads.join(",") }`,
       `--allow-read`,
       // `--allow-write=${ allowWrites.join(",") }`,
