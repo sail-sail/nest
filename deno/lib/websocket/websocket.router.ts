@@ -1,5 +1,5 @@
 import {
-  log,
+  // log,
   error,
 } from "/lib/context.ts";
 
@@ -14,6 +14,7 @@ const router = new Router({
 });
 
 const socketMap = new Map<string, WebSocket>();
+// deno-lint-ignore no-explicit-any
 const callbacksMap = new Map<string, ((data: any) => void)[]>();
 const clientIdTopicsMap = new Map<string, string[]>();
 
@@ -67,9 +68,11 @@ wsClient.publish = function<T>(
   }
 };
 
+// deno-lint-ignore ban-types
 wsClient.unSubscribe = function(topic: string, callback: Function) {
   const callbacks = callbacksMap.get(topic);
   if (callbacks && callbacks.length > 0) {
+    // deno-lint-ignore no-explicit-any
     const index = callbacks.indexOf(callback as any);
     if (index >= 0) {
       callbacks.splice(index, 1);

@@ -1,29 +1,26 @@
-import {
-  shortUuidV4,
-} from "/lib/util/string_util.ts";
 
 export const wsClient = {
   
-  clientId: shortUuidV4<string>(),
-  
   /** 订阅主题topic */
   subscribe(
-    topic: string,
-    callback: ((data: string) => void),
+    _topic: string,
+    _callback: ((data: string) => void),
   ) { },
   
   /** 发布消息 */
   publish(
-    data: {
+    _data: {
       topic: string;
+      // deno-lint-ignore no-explicit-any
       payload: any;
     },
   ) { },
   
   /** 取消订阅主题topic */
   unSubscribe(
-    topic: string,
-    callback: Function,
+    _topic: string,
+    // deno-lint-ignore ban-types
+    _callback: Function,
   ) { },
   
   /** 关闭客户端 */

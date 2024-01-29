@@ -1,44 +1,40 @@
 import {
   Router,
-  type FormDataFile,
   type RouterContext,
 } from "oak";
 
 import {
-  TMP_PATH,
   error,
 } from "/lib/context.ts";
 
-import * as tmpfileServie from "./tmpfile.service.ts";
+import {
+  handleRequestId,
+} from "/lib/oak/request_id.ts";
 
 const router = new Router({
   prefix: "/api/tmpfile/",
 });
 
 router.post("upload", async function(ctx) {
-  const body = ctx.request.body();
-  if (body.type !== "form-data") {
-    ctx.response.status = 415;
+  const request = ctx.request;
+  handleRequestId(request.headers.get("Request-ID"));
+  const body = request.body;
+  const contentType = body.type().toLocaleLowerCase();
+  const response = ctx.response;
+  if (!request.hasBody || contentType !== "form-data") {
+    response.status = 415;
     return;
   }
-  let file: FormDataFile|undefined = undefined;
-  for await (const [ name, value ] of body.value.stream({
-    outPath: TMP_PATH,
-    prefix: "tmpfile_upload_",
-    maxFileSize: 50 * 1024 * 1024, // 50Mb
-  })) {
-    if (name === "file") {
-      if (value instanceof String) {
-        throw new Error("file must a form-data file!");
-      }
-      file = value as FormDataFile;
-    }
-  }
-  if (!file) {
+  const formData = await body.formData();
+  const file = formData.get("file");
+  if (!file || !(file instanceof File)) {
     throw new Error("file must a form-data file!");
   }
-  const id = await tmpfileServie.upload(file);
-  ctx.response.body = {
+  const {
+    upload
+  } = await import("./tmpfile.service.ts");
+  const id = await upload(file);
+  response.body = {
     code: 0,
     data: id,
   };
@@ -48,6 +44,11 @@ router.post("upload", async function(ctx) {
 async function download(ctx: RouterContext<any>) {
   const request = ctx.request;
   const response = ctx.response;
+  const {
+    statObject,
+    getObject,
+    deleteObject,
+  } = await import("./tmpfile.service.ts");
   try {
     let filename: string|undefined = ctx.params?.filename;
     const searchParams = request.url.searchParams;
@@ -67,7 +68,7 @@ async function download(ctx: RouterContext<any>) {
     if (filename) {
       filename = encodeURIComponent(filename);
     }
-    const stats = await tmpfileServie.statObject(id);
+    const stats = await statObject(id);
     if (stats) {
       if (stats.contentType) {
         response.headers.set("Content-Type", stats.contentType);
@@ -88,10 +89,10 @@ async function download(ctx: RouterContext<any>) {
       }
     }
     response.headers.set("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
-    const objInfo = await tmpfileServie.getObject(id);
+    const objInfo = await getObject(id);
     if (stats?.meta?.once === "1") {
       if (remove === "1") {
-        await tmpfileServie.deleteObject(id);
+        await deleteObject(id);
       }
     }
     const res = new Response(objInfo.body);
