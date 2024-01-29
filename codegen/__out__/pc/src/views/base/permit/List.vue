@@ -79,56 +79,58 @@
         label=" "
         prop="idsChecked"
       >
-        <el-checkbox
-          v-model="idsChecked"
-          :false-label="0"
-          :true-label="1"
-          :disabled="selectedIds.length === 0"
-          @change="onIdsChecked"
+        <div
+          un-flex="~ nowrap"
+          un-justify-between
+          un-w="full"
         >
-          <span>{{ ns('已选择') }}</span>
-          <span
-            un-m="l-0.5"
-            un-text="blue"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
+          <div
+            un-flex="~ nowrap"
+            un-items-center
+            un-gap="x-1.5"
           >
-            {{ selectedIds.length }}
-          </span>
-        </el-checkbox>
-        <el-icon
-          v-show="selectedIds.length > 0"
-          :title="ns('清空已选择')"
-          un-cursor-pointer
-          un-m="l-1.5"
-          un-text="hover:red"
-          @click="onEmptySelected"
-        >
-          <ElIconRemove />
-        </el-icon>
+            <el-checkbox
+              v-model="idsChecked"
+              :false-label="0"
+              :true-label="1"
+              :disabled="selectedIds.length === 0"
+              @change="onIdsChecked"
+            >
+              <span>{{ ns('已选择') }}</span>
+              <span
+                v-if="selectedIds.length > 0"
+                un-m="l-0.5"
+                un-text="blue"
+              >
+                {{ selectedIds.length }}
+              </span>
+            </el-checkbox>
+            <el-icon
+              v-show="selectedIds.length > 0"
+              :title="ns('清空已选择')"
+              un-cursor-pointer
+              un-text="hover:red"
+              @click="onEmptySelected"
+            >
+              <ElIconRemove />
+            </el-icon>
+          </div>
+          
+          <el-checkbox
+            v-if="!isLocked"
+            :set="search.is_deleted = search.is_deleted ?? 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </div>
       </el-form-item>
       
       <el-form-item
         label=" "
-        prop="is_deleted"
-      >
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted ?? 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="recycleChg"
-        >
-          <span>{{ ns('回收站') }}</span>
-        </el-checkbox>
-      </el-form-item>
-      
-      <el-form-item
-        label=" "
-        un-self-start
-        un-flex="~ nowrap"
-        un-w="full"
-        un-p="l-1"
-        un-box-border
       >
         
         <el-button
@@ -611,6 +613,7 @@ defineOptions({
   name: "按钮权限List",
 });
 
+const pagePath = "/base/permit";
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -620,7 +623,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/permit");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -628,7 +631,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/permit");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1068,7 +1071,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/permit"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -1101,7 +1104,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增"),
+    title: await nsAsync("新增") + await nsAsync("按钮权限"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1137,7 +1140,7 @@ async function openCopy() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制"),
+    title: await nsAsync("复制") + await nsAsync("按钮权限"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1171,7 +1174,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/permit"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
@@ -1266,7 +1269,7 @@ async function openEdit() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑"),
+    title: await nsAsync("编辑") + await nsAsync("按钮权限"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1287,7 +1290,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -1304,7 +1307,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: PermitModel,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -1326,7 +1329,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看"),
+    title: await nsAsync("查看") + await nsAsync("按钮权限"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),

@@ -125,13 +125,15 @@ export default defineStore("tabs", function() {
         }
       }
     }
-    if (idx !== -1) {
-      tabs.splice(idx, 1);
-      const idx2 = keepAliveNames.findIndex((item) => item === tab.name);
-      if (idx2 !== -1) {
-        keepAliveNames.splice(idx2, 1);
+    setTimeout(() => {
+      if (idx !== -1) {
+        const idx2 = keepAliveNames.findIndex((item) => item === tab.name);
+        if (idx2 !== -1) {
+          keepAliveNames.splice(idx2, 1);
+        }
+        tabs.splice(idx, 1);
       }
-    }
+    }, 0);
   }
   
   /** 关闭当前路由对应的选项卡 */

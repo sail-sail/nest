@@ -117,6 +117,7 @@ export default defineConfig({
           ],
           "@/compositions/List": [
             "usePage",
+            "useSubscribeList",
             "useSelect",
             "useSelectOne",
             "monthrangeSearch",
@@ -253,6 +254,24 @@ export default defineConfig({
     // __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
     __VUE_OPTIONS_API__: true,
   },
+  preview: {
+    port: 4000,
+    open: false,
+    cors: true,
+    strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:4001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/graphql": {
+        target: "http://127.0.0.1:4001",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   server: {
     port: 4000,
     open: false,
@@ -263,6 +282,7 @@ export default defineConfig({
         target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       "/graphql": {
         target: "http://127.0.0.1:4001",

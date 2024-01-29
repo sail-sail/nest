@@ -2,6 +2,8 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.insert="onInsert"
@@ -90,6 +92,7 @@
             prop="domain_ids"
           >
             <CustomSelect
+              ref="domain_idsRef"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
               v-model="dialogModel.domain_ids"
               :method="getDomainList"
@@ -102,7 +105,24 @@
               :placeholder="`${ ns('请选择') } ${ n('所属域名') }`"
               multiple
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            >
+              <template
+                v-if="domainPermit('add')"
+                #footer
+              >
+                <div
+                  un-flex="~"
+                  un-justify-center
+                >
+                  <el-button
+                    plain
+                    @click="domain_idsOpenAddDialog"
+                  >
+                    {{ ns("新增") }}{{ ns("域名") }}
+                  </el-button>
+                </div>
+              </template>
+            </CustomSelect>
           </el-form-item>
         </template>
         
@@ -180,7 +200,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -233,6 +253,11 @@
       
     </div>
   </div>
+  
+  <!-- 域名 -->
+  <DomainDetailDialog
+    ref="domainDetailDialogRef"
+  ></DomainDetailDialog>
 </CustomDialog>
 </template>
 
@@ -263,6 +288,9 @@ import {
   getDomainList,
 } from "./Api";
 
+// 域名
+import DomainDetailDialog from "@/views/base/domain/Detail.vue";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -272,17 +300,22 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/base/tenant";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/tenant");
+} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/tenant");
+const permit = permitStore.getPermit(pagePath);
+
+// 域名
+const domainPermit = permitStore.getPermit("/base/domain");
 
 let inited = $ref(false);
 
@@ -341,6 +374,34 @@ watchEffect(async () => {
     ],
   };
 });
+
+// 域名
+let domainDetailDialogRef = $ref<InstanceType<typeof DomainDetailDialog>>();
+let domain_idsRef = $ref<InstanceType<typeof CustomSelect>>();
+
+/** 打开新增域名对话框 */
+async function domain_idsOpenAddDialog() {
+  if (!domain_idsRef || !domainDetailDialogRef) {
+    return;
+  }
+  const {
+    changedIds,
+  } = await domainDetailDialogRef.showDialog({
+    title: await nsAsync("新增") + await nsAsync("域名"),
+    action: "add",
+  });
+  if (changedIds.length > 0) {
+    dialogModel.domain_ids = dialogModel.domain_ids || [ ];
+    for (const id of changedIds) {
+      if (dialogModel.domain_ids.includes(id)) {
+        continue;
+      }
+      dialogModel.domain_ids.push(id);
+    }
+    await domain_idsRef.refresh();
+  }
+  domain_idsRef.focus();
+}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -687,10 +748,8 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
-    customDialogRef?.focus();
-    await onSave();
-  }
+  customDialogRef?.focus();
+  await onSave();
 }
 
 /** 保存并返回id */
@@ -701,10 +760,7 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if (dialogAction === "view") {
-    return;
-  }
-  if (dialogAction === "edit" && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
     return;
   }
   if (dialogAction === "add" && !permit("add")) {
@@ -803,10 +859,23 @@ async function onSave() {
   });
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+}
+
+async function onDialogClose() {
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -815,8 +884,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({
