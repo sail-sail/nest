@@ -102,6 +102,9 @@ export default defineConfig({
         require: true,
         align: "left",
         width: 280,
+        foreignKey: {
+          hasSelectAdd: true,
+        },
       },
       {
         COLUMN_NAME: "menu_ids",
@@ -355,18 +358,15 @@ export default defineConfig({
         require: false,
         search: true,
         sortable: true,
-        width: 140,
         foreignKey: {
           table: "menu",
           column: "id",
           lbl: "lbl",
-          multiple: false,
           defaultSort: {
             prop: "order_by",
             order: "ascending",
           },
         },
-        align: "left",
         fixed: "left",
       },
       {
@@ -546,13 +546,10 @@ export default defineConfig({
         COLUMN_NAME: "lang_id",
         require: true,
         search: true,
-        width: 120,
       },
       {
         COLUMN_NAME: "menu_id",
         search: true,
-        align: "left",
-        width: 160,
       },
       {
         COLUMN_NAME: "code",
@@ -603,8 +600,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -661,8 +656,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -724,8 +717,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -1012,14 +1003,11 @@ export default defineConfig({
           table: "dept",
           column: "id",
           lbl: "lbl",
-          multiple: false,
           defaultSort: {
             prop: "order_by",
             order: "ascending",
           },
         },
-        width: 140,
-        align: "left",
         fixed: "left",
       },
       {

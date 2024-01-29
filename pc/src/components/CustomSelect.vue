@@ -9,6 +9,7 @@
   }"
 >
   <ElSelectV2
+    ref="selectRef"
     :options="options4SelectV2"
     filterable
     collapse-tags
@@ -36,6 +37,22 @@
     :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
     @keyup.enter.stop
   >
+    <template
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      #header
+    >
+      <el-checkbox
+        v-model="isSelectAll"
+        :indeterminate="isIndeterminate"
+        un-w="full"
+        un-p="l-3"
+        un-box-border
+      >
+        <span>
+          ({{ ns("全选") }})
+        </span>
+      </el-checkbox>
+    </template>
     <template
       v-for="(item, key, index) in $slots"
       :key="index"
@@ -164,6 +181,11 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+const {
+  ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type OptionsMap = (item: any) => OptionType;
@@ -182,6 +204,7 @@ const props = withDefaults(
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    showSelectAll?: boolean;
     init?: boolean;
     disabled?: boolean;
     readonly?: boolean;
@@ -204,6 +227,7 @@ const props = withDefaults(
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    showSelectAll: true,
     init: true,
     disabled: undefined,
     readonly: undefined,
@@ -230,6 +254,49 @@ watch(
     modelLabel = props.modelLabel;
   },
 );
+
+let isSelectAll = $computed({
+  get() {
+    if (!modelValue) {
+      return false;
+    }
+    if (!Array.isArray(modelValue)) {
+      return false;
+    }
+    if (modelValue.length === 0) {
+      return false;
+    }
+    if (modelValue.length === options4SelectV2.length) {
+      return true;
+    }
+    return false;
+  },
+  set(val: boolean) {
+    if (val) {
+      modelValue = options4SelectV2.map((item) => item.value);
+    } else {
+      modelValue = [ ];
+    }
+    emit("update:modelValue", modelValue);
+    emit("change", modelValue);
+  },
+});
+
+const isIndeterminate = $computed(() => {
+  if (!modelValue) {
+    return false;
+  }
+  if (!Array.isArray(modelValue)) {
+    return false;
+  }
+  if (modelValue.length === 0) {
+    return false;
+  }
+  if (modelValue.length === options4SelectV2.length) {
+    return false;
+  }
+  return true;
+});
 
 const modelValueComputed = $computed(() => {
   if (!modelLabel) {
@@ -334,7 +401,17 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
+let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
+
+watch(
+  () => options4SelectV2,
+  async () => {
+    const oldModelValue = modelValue;
+    modelValue = undefined;
+    await nextTick();
+    modelValue = oldModelValue;
+  },
+);
 
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {
@@ -345,7 +422,10 @@ async function refreshDropdownWidth() {
   }
   await nextTick();
   const el = t.proxy.$el as HTMLDivElement;
-  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement;
+  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null;
+  if (!wrapperEl) {
+    return;
+  }
   const id = wrapperEl.getAttribute("aria-describedby");
   if (!id) {
     return;
@@ -422,6 +502,7 @@ async function refreshEfc() {
   } else {
     inited = true;
   }
+  await nextTick();
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
   if (props.pinyinFilterable) {
@@ -455,7 +536,7 @@ function onChange() {
   emit("change", models);
 }
 
-
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
 let selectDivRef = $ref<HTMLDivElement>();
 
 async function refreshWrapperHeight() {
@@ -493,18 +574,40 @@ if (props.init) {
   refreshEfc();
 }
 
+async function initFrame() {
+  const codes = [
+    "全选",
+  ];
+  await initSysI18ns(codes);
+}
+
+initFrame();
+
 usrStore.onLogin(refreshEfc);
 
 onMounted(() => {
   refreshWrapperHeight();
 });
 
+function focus() {
+  selectRef?.focus();
+}
+
+function blur() {
+  selectRef?.blur();
+}
+
 defineExpose({
   refresh: refreshEfc,
+  focus,
+  blur,
 });
 </script>
 
 <style scoped lang="scss">
+.custom_select_placeholder {
+  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+}
 .custom_select_space_normal {
   :deep(.el-select-v2__placeholder) {
     line-height: normal;
