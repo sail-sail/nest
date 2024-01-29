@@ -1,14 +1,10 @@
-import {
-  type FormDataFile,
-} from "oak";
-
 import * as ossDao from "./oss.dao.ts";
 
 /**
  * 上传文件
- * @param {FormDataFile} file
+ * @param {File} file
  */
-export async function upload(file: FormDataFile) {
+export async function upload(file: File) {
   const result = await ossDao.upload(file);
   return result;
 }
