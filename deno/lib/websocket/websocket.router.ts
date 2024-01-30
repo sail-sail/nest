@@ -30,7 +30,7 @@ function onopen(socket: WebSocket, clientId: string) {
     //   log(msg);
     // }
     socketMap.delete(clientId);
-    clientIdTopicsMap.delete(clientId);
+    // clientIdTopicsMap.delete(clientId);
   }
   // log(`websocket: clientId ${ clientId } onopen`);
   socketMap.set(clientId, socket);
