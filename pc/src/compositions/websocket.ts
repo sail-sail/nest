@@ -105,7 +105,7 @@ async function connect() {
   }
   if (socket && socket.readyState === WebSocket.CONNECTING) {
     while (true) {
-      if (socket.readyState !== WebSocket.CONNECTING) {
+      if (!socket || socket.readyState !== WebSocket.CONNECTING) {
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 100));

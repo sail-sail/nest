@@ -25,7 +25,7 @@ export function subscribe<T>(
 }
 
 /** 发布消息 */
-export function publish<T>(
+export async function publish<T>(
   data: {
     topic: string;
     payload: T;
@@ -37,7 +37,7 @@ export function publish<T>(
     const callbacks = callbacksMap.get(topic);
     if (callbacks && callbacks.length > 0) {
       for (const callback of callbacks) {
-        callback(data.payload);
+        await callback(data.payload);
       }
     }
   }
