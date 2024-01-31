@@ -33,7 +33,7 @@ async function reConnect() {
     time = reConnectNum * 200;
   }
   await new Promise((resolve) => setTimeout(resolve, time));
-  // await connect();
+  await connect();
 }
   
 async function connect() {
@@ -92,7 +92,7 @@ async function connect() {
       }),
     ]);
     for (const [ topic ] of topicCallbackMap) {
-      socket.send(JSON.stringify({
+      socket?.send(JSON.stringify({
         action: "subscribe",
         data: {
           topics: [ topic ],
@@ -105,7 +105,7 @@ async function connect() {
   }
   if (socket && socket.readyState === WebSocket.CONNECTING) {
     while (true) {
-      if (socket.readyState !== WebSocket.CONNECTING) {
+      if (!socket || socket.readyState !== WebSocket.CONNECTING) {
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
