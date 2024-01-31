@@ -1755,6 +1755,12 @@ useSubscribeList<<#=Table_Up#>Id>(
       await dataGrid(true);
       return;
     }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
   },
 );<#
 }
@@ -3219,7 +3225,18 @@ async function onForceDeleteByIds() {
     return;
   }
   const num = await forceDeleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      payload: num,
+    });<#
+    }
+    #>
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
     dirtyStore.fireDirty(pageName);
