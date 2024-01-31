@@ -745,6 +745,12 @@ useSubscribeList<OptionsId>(
       await dataGrid(true);
       return;
     }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
   },
 );
 
@@ -1600,6 +1606,13 @@ async function onForceDeleteByIds() {
   }
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      payload: num,
+    });
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
     dirtyStore.fireDirty(pageName);
