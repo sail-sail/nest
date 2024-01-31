@@ -1207,6 +1207,9 @@ type UseSubscribeListData<T> = {
 } | {
   action: "revert",
   num: number,
+} | {
+  action: "forceDelete",
+  num: number,
 };
 
 /** 表格数据的实时监听 */
@@ -1259,6 +1262,15 @@ export function useSubscribeList<T>(
       num,
     });
   }
+  async function forceDeleteFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "forceDelete",
+      num,
+    });
+  }
   onBeforeUnmount(() => {
     unSubscribe(
       JSON.stringify({
@@ -1294,6 +1306,13 @@ export function useSubscribeList<T>(
         action: "revert",
       }),
       revertFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      forceDeleteFn,
     );
   });
   
@@ -1335,5 +1354,13 @@ export function useSubscribeList<T>(
       action: "revert",
     }),
     revertFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "forceDelete",
+    }),
+    forceDeleteFn,
   );
 }
