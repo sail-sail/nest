@@ -14,7 +14,7 @@ export async function runCronJob(
     runCronJob: Mutation["runCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!) {
+      mutation($id: CronJobId!) {
         runCronJob(id: $id)
       }
     `,
