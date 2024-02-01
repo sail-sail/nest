@@ -387,6 +387,8 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
@@ -400,6 +402,7 @@ async function showDialog(
       ids?: I18nId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
@@ -420,6 +423,9 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
@@ -459,7 +465,7 @@ async function showDialog(
     const [
       data,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -546,7 +552,7 @@ async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });
@@ -754,7 +760,7 @@ async function onSaveAndCopy() {
   const [
     data,
   ] = await Promise.all([
-    findOne({
+    findOneModel({
       id,
       is_deleted,
     }),

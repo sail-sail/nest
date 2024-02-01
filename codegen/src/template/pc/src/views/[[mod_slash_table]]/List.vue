@@ -2231,6 +2231,12 @@ function getTableColumns(): ColumnType[] {
     if (column.showOverflowTooltip == null) {
       column.showOverflowTooltip = true;
     }
+    let fixed = column.fixed;
+    if (fixed === false) {
+      fixed = undefined;
+    } else if (fixed === true) {
+      fixed = "left";
+    }
   #><#
     if (column.isImg) {
     #>
@@ -2262,9 +2268,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2298,9 +2304,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2342,9 +2348,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2383,9 +2389,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
