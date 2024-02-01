@@ -912,6 +912,7 @@ export default defineConfig({
         search: true,
         width: 180,
         fixed: false,
+        align: "center",
       },
       {
         COLUMN_NAME: "old_data",
@@ -929,12 +930,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "create_time",
         search: true,
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
       },
     ],
   },

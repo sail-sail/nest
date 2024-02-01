@@ -116,10 +116,13 @@ const modelLabel = $computed(() => {
   if (modelValue == null) {
     return "";
   }
+  if (isNaN(Number(modelValue))) {
+    return modelValue;
+  }
   if (props.precision === 0) {
     return modelValue;
   }
-  return modelValue.toFixed(props.precision);
+  return Number(modelValue).toFixed(props.precision);
 });
 
 function onChange() {
