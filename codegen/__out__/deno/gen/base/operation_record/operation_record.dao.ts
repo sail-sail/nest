@@ -367,6 +367,7 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     module_lbl: await n("模块名称"),
     method: await n("方法"),
     method_lbl: await n("方法名称"),
+    comp_path: await n("页面路径"),
     lbl: await n("操作"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
@@ -594,6 +595,13 @@ export async function validate(
     input.method_lbl,
     50,
     fieldComments.method_lbl,
+  );
+  
+  // 页面路径
+  await validators.chars_max_length(
+    input.comp_path,
+    100,
+    fieldComments.comp_path,
   );
   
   // 操作

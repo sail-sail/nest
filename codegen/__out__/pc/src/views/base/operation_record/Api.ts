@@ -43,6 +43,7 @@ export async function findAll(
           module_lbl
           method
           method_lbl
+          comp_path
           lbl
           old_data
           new_data
@@ -90,6 +91,7 @@ export async function findOne(
           module_lbl
           method
           method_lbl
+          comp_path
           lbl
           old_data
           new_data
@@ -156,6 +158,7 @@ export async function findById(
           module_lbl
           method
           method_lbl
+          comp_path
           lbl
           old_data
           new_data
@@ -324,6 +327,7 @@ export function useExportExcel(routePath: string) {
             module_lbl
             method
             method_lbl
+            comp_path
             lbl
             old_data
             new_data
@@ -337,6 +341,7 @@ export function useExportExcel(routePath: string) {
             module_lbl
             method
             method_lbl
+            comp_path
             lbl
             old_data
             new_data

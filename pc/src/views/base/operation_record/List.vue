@@ -451,6 +451,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.old_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'old_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -460,6 +469,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.new_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'new_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -521,6 +539,12 @@
     ref="detailRef"
   ></Detail>
   
+  <component
+    :ref="(el: any) => moduleComponentRef = el"
+    v-if="moduleComponent"
+    :is="moduleComponent"
+  ></component>
+  
 </div>
 </template>
 
@@ -544,6 +568,10 @@ import type {
   OperationRecordModel,
   OperationRecordSearch,
 } from "#/types";
+
+import {
+  getDetailByCompPath,
+} from "./Api2";
 
 defineOptions({
   name: "操作记录",
@@ -660,6 +688,8 @@ const props = defineProps<{
   method_like?: string; // 方法
   method_lbl?: string; // 方法名称
   method_lbl_like?: string; // 方法名称
+  comp_path?: string; // 页面路径
+  comp_path_like?: string; // 页面路径
   lbl?: string; // 操作
   lbl_like?: string; // 操作
   old_data?: string; // 操作前数据
@@ -827,17 +857,15 @@ function getTableColumns(): ColumnType[] {
       label: "操作前数据",
       prop: "old_data",
       width: 100,
-      align: "left",
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "操作后数据",
       prop: "new_data",
       width: 100,
-      align: "left",
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "创建人",
@@ -1181,6 +1209,65 @@ async function onRevertByIds() {
     await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
+  }
+}
+
+let moduleComponent = shallowRef<Component>();
+let moduleComponentRef = shallowRef<any>();
+
+/** 打开操作前数据对话框 */
+async function openDataDialog(
+  id: OperationRecordId,
+  lbl: string,
+  type: "old_data" | "new_data",
+) {
+  tableFocus();
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  const comp_path = model.comp_path;
+  if (!comp_path) {
+    return;
+  }
+  const module_lbl = model.module_lbl;
+  let title = "";
+  if (type === "old_data") {
+    title = lbl + " - " + await nsAsync("操作前数据");
+  } else if (type === "new_data") {
+    title += lbl + " - " + await nsAsync("操作后数据");
+  }
+  moduleComponent.value = (await getDetailByCompPath(comp_path))?.default;
+  if (!moduleComponent.value) {
+    ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
+    return;
+  }
+  let dataObj: any = undefined;
+  try {
+    dataObj = JSON.parse(model[type]);
+  } catch (err) {
+    console.error(err);
+  }
+  if (!dataObj) {
+    return;
+  }
+  await nextTick();
+  if ((moduleComponentRef.value as any).showDialog) {
+    if ([ "create", "updateById", ].includes(model.method)) {
+      if (!dataObj.id) {
+        return;
+      }
+      await (moduleComponentRef.value as any).showDialog({
+        title: lbl,
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: [ dataObj.id ],
+        },
+        findOne: () => dataObj,
+      });
+      tableFocus();
+    }
   }
 }
 

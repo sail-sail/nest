@@ -660,6 +660,8 @@ const props = defineProps<{
   method_like?: string; // 方法
   method_lbl?: string; // 方法名称
   method_lbl_like?: string; // 方法名称
+  comp_path?: string; // 页面路径
+  comp_path_like?: string; // 页面路径
   lbl?: string; // 操作
   lbl_like?: string; // 操作
   old_data?: string; // 操作前数据

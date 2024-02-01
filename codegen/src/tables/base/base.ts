@@ -909,7 +909,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "comp_path",
-        onlyCodegenDeno: true,
+        noList: true,
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "lbl",
