@@ -23,8 +23,6 @@ type OperationRecordModel {
   old_data: String!
   "操作后数据"
   new_data: String!
-  "备注"
-  rem: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -61,8 +59,6 @@ type OperationRecordFieldComment {
   old_data: String!
   "操作后数据"
   new_data: String!
-  "备注"
-  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -97,8 +93,6 @@ input OperationRecordInput {
   old_data: String
   "操作后数据"
   new_data: String
-  "备注"
-  rem: String
   "创建人"
   create_usr_id: UsrId
   "创建人"
@@ -144,9 +138,6 @@ input OperationRecordSearch {
   "操作后数据"
   new_data: String
   new_data_like: String
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
