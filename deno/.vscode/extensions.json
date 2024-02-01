@@ -7,6 +7,8 @@
     "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
     "graphql.vscode-graphql",
+    "graphql.vscode-graphql-execution",
+    "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
