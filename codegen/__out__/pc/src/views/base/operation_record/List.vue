@@ -418,26 +418,8 @@
           :key="col.prop"
         >
           
-          <!-- 模块 -->
-          <template v-if="'module' === col.prop && (showBuildIn || builtInSearch?.module == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 模块名称 -->
-          <template v-else-if="'module_lbl' === col.prop && (showBuildIn || builtInSearch?.module_lbl == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 方法 -->
-          <template v-else-if="'method' === col.prop && (showBuildIn || builtInSearch?.method == null)">
+          <template v-if="'module_lbl' === col.prop && (showBuildIn || builtInSearch?.module_lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -474,15 +456,6 @@
           
           <!-- 操作后数据 -->
           <template v-else-if="'new_data' === col.prop && (showBuildIn || builtInSearch?.new_data == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -711,8 +684,6 @@ const props = defineProps<{
   old_data_like?: string; // 操作前数据
   new_data?: string; // 操作后数据
   new_data_like?: string; // 操作后数据
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -849,25 +820,9 @@ let tableData = $ref<OperationRecordModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "模块",
-      prop: "module",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "模块名称",
       prop: "module_lbl",
       width: 180,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "方法",
-      prop: "method",
-      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -887,12 +842,11 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "操作前数据",
       prop: "old_data",
-      width: 280,
+      width: 100,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -900,15 +854,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "操作后数据",
       prop: "new_data",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "备注",
-      prop: "rem",
-      width: 280,
+      width: 100,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1266,14 +1212,11 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "模块",
     "模块名称",
-    "方法",
     "方法名称",
     "操作",
     "操作前数据",
     "操作后数据",
-    "备注",
     "创建人",
     "创建时间",
     "更新人",

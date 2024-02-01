@@ -162,15 +162,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
-  if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
-  }
-  if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-  }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
@@ -405,7 +396,6 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     lbl: await n("操作"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
-    rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -657,13 +647,6 @@ export async function validate(
     fieldComments.new_data,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
@@ -787,9 +770,6 @@ export async function create(
   if (input.new_data !== undefined) {
     sql += `,new_data`;
   }
-  if (input.rem !== undefined) {
-    sql += `,rem`;
-  }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
@@ -836,9 +816,6 @@ export async function create(
   }
   if (input.new_data !== undefined) {
     sql += `,${ args.push(input.new_data) }`;
-  }
-  if (input.rem !== undefined) {
-    sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
   const res = await execute(sql, args);
@@ -986,12 +963,6 @@ export async function updateById(
   if (input.new_data !== undefined) {
     if (input.new_data != oldModel.new_data) {
       sql += `new_data = ${ args.push(input.new_data) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.rem !== undefined) {
-    if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
