@@ -378,7 +378,6 @@ export async function create<#=Table_Up2#>(
     method: "create",
     method_lbl: "创建",
     lbl: "创建",
-    old_data: "{}",
     new_data: JSON.stringify(new_data),
   });<#
   }
@@ -527,7 +526,6 @@ export async function deleteByIds<#=Table_Up2#>(
     method_lbl: "删除",
     lbl: "删除",
     old_data: JSON.stringify(old_data),
-    new_data: "{}",
   });<#
   }
   #>
@@ -574,7 +572,6 @@ export async function defaultById<#=Table_Up2#>(
     method_lbl: "默认",
     lbl: "默认",
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -625,7 +622,6 @@ export async function enableByIds<#=Table_Up2#>(
     method_lbl: "启用",
     lbl: "启用",
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -675,11 +671,7 @@ export async function lockByIds<#=Table_Up2#>(
     method: "lockByIds",
     method_lbl: is_locked ? "锁定" : "解锁",
     lbl: is_locked ? "锁定" : "解锁",
-    old_data: "",
-    new_data: JSON.stringify({
-      ids,
-      is_locked,
-    }),
+    new_data: JSON.stringify(ids),
   });<#
   }
   #>
@@ -725,7 +717,6 @@ export async function revertByIds<#=Table_Up2#>(
     method: "revertByIds",
     method_lbl: "还原",
     lbl: "还原",
-    old_data: "[]",
     new_data: JSON.stringify(ids),
   });<#
   }
@@ -752,13 +743,22 @@ export async function forceDeleteByIds<#=Table_Up2#>(
     "force_delete",
   );
   
-  const {
+  const {<#
+    if (log) {
+    #>
+    findAll,<#
+    }
+    #>
     forceDeleteByIds,
   } = await import("./<#=table#>.service.ts");<#
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const old_data = await findAll({
+    ids,
+    is_deleted: 1,
+  });<#
   }
   #>
   const res = await forceDeleteByIds(ids);<#
@@ -771,8 +771,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
     method: "forceDeleteByIds",
     method_lbl: "彻底删除",
     lbl: "彻底删除",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
+    old_data: JSON.stringify(old_data),
   });<#
   }
   #>
