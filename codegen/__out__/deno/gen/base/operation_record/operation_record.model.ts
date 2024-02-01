@@ -21,11 +21,16 @@ declare const operationRecordId: unique symbol;
 export type OperationRecordId = Distinct<string, typeof operationRecordId>;
 
 export interface OperationRecordSearch extends OperationRecordSearchType {
+  /** 页面路径 */
+  comp_path?: string;
+  comp_path_like?: string;
   tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
 export interface OperationRecordModel extends OperationRecordModelType {
+  /** 页面路径 */
+  comp_path: string;
   create_usr_id: UsrId;
   create_time?: string | null;
   update_usr_id: UsrId;
@@ -34,6 +39,8 @@ export interface OperationRecordModel extends OperationRecordModelType {
 }
 
 export interface OperationRecordInput extends OperationRecordInputType {
+  /** 页面路径 */
+  comp_path?: string;
   create_usr_id?: UsrId | null;
   create_time?: string | null;
   update_usr_id?: UsrId | null;

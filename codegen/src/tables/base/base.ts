@@ -908,6 +908,10 @@ export default defineConfig({
         width: 180,
       },
       {
+        COLUMN_NAME: "comp_path",
+        onlyCodegenDeno: true,
+      },
+      {
         COLUMN_NAME: "lbl",
         search: true,
         width: 180,

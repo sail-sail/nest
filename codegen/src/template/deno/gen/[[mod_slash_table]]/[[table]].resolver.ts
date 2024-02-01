@@ -377,6 +377,7 @@ export async function create<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "create",
     method_lbl: "创建",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "创建",
     new_data: JSON.stringify(new_data),
   });<#
@@ -469,6 +470,7 @@ export async function updateById<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "updateById",
     method_lbl: "修改",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "修改",
     old_data: JSON.stringify(old_data),
     new_data: JSON.stringify(new_data),
@@ -524,6 +526,7 @@ export async function deleteByIds<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "deleteByIds",
     method_lbl: "删除",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "删除",
     old_data: JSON.stringify(old_data),
   });<#
@@ -570,6 +573,7 @@ export async function defaultById<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "defaultById",
     method_lbl: "默认",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "默认",
     old_data: JSON.stringify(ids),
   });<#
@@ -620,6 +624,7 @@ export async function enableByIds<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "enableByIds",
     method_lbl: "启用",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "启用",
     old_data: JSON.stringify(ids),
   });<#
@@ -670,6 +675,7 @@ export async function lockByIds<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "lockByIds",
     method_lbl: is_locked ? "锁定" : "解锁",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: is_locked ? "锁定" : "解锁",
     new_data: JSON.stringify(ids),
   });<#
@@ -716,6 +722,7 @@ export async function revertByIds<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "revertByIds",
     method_lbl: "还原",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "还原",
     new_data: JSON.stringify(ids),
   });<#
@@ -770,6 +777,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
     module_lbl: "<#=table_comment#>",
     method: "forceDeleteByIds",
     method_lbl: "彻底删除",
+    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "彻底删除",
     old_data: JSON.stringify(old_data),
   });<#

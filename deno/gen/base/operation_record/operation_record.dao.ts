@@ -135,6 +135,15 @@ async function getWhereQuery(
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
+  if (search?.comp_path !== undefined) {
+    whereQuery += ` and t.comp_path = ${ args.push(search.comp_path) }`;
+  }
+  if (search?.comp_path === null) {
+    whereQuery += ` and t.comp_path is null`;
+  }
+  if (isNotEmpty(search?.comp_path_like)) {
+    whereQuery += ` and t.comp_path like ${ args.push("%" + sqlLike(search?.comp_path_like) + "%") }`;
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -715,6 +724,9 @@ export async function create(
   if (input.method_lbl !== undefined) {
     sql += `,method_lbl`;
   }
+  if (input.comp_path !== undefined) {
+    sql += `,comp_path`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -761,6 +773,9 @@ export async function create(
   }
   if (input.method_lbl !== undefined) {
     sql += `,${ args.push(input.method_lbl) }`;
+  }
+  if (input.comp_path !== undefined) {
+    sql += `,${ args.push(input.comp_path) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -899,6 +914,12 @@ export async function updateById(
   if (input.method_lbl !== undefined) {
     if (input.method_lbl != oldModel.method_lbl) {
       sql += `method_lbl = ${ args.push(input.method_lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.comp_path !== undefined) {
+    if (input.comp_path != oldModel.comp_path) {
+      sql += `comp_path = ${ args.push(input.comp_path) },`;
       updateFldNum++;
     }
   }

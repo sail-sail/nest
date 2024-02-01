@@ -468,6 +468,7 @@ CREATE TABLE if not exists `base_operation_record` (
   `module_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '模块名称',
   `method` varchar(50) NOT NULL DEFAULT '' COMMENT '方法',
   `method_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '方法名称',
+  `comp_path` varchar(100) NOT NULL DEFAULT '' COMMENT '页面路径',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '操作',
   `old_data` varchar(5000) NOT NULL DEFAULT '' COMMENT '操作前数据',
   `new_data` varchar(5000) NOT NULL DEFAULT '' COMMENT '操作后数据',
