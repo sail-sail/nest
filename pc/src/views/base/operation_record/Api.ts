@@ -46,7 +46,6 @@ export async function findAll(
           lbl
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -98,7 +97,6 @@ export async function findOne(
           lbl
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -169,7 +167,6 @@ export async function findById(
           lbl
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -291,7 +288,6 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             old_data
             new_data
-            rem
           }
         }
       `,
@@ -343,7 +339,6 @@ export function useExportExcel(routePath: string) {
             lbl
             old_data
             new_data
-            rem
             create_usr_id
             create_usr_id_lbl
             create_time
@@ -361,7 +356,6 @@ export function useExportExcel(routePath: string) {
             lbl
             old_data
             new_data
-            rem
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl

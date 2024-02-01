@@ -198,9 +198,9 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "left";
       }
-      if (item.fixed === undefined) {
+      if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === null) {
+      } else if (item.fixed === false) {
         delete item.fixed;
       }
     }
