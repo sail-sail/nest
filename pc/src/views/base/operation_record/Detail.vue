@@ -159,23 +159,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-grid="col-span-2"
-          >
-            <CustomInput
-              v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
@@ -643,14 +626,11 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "模块",
     "模块名称",
-    "方法",
     "方法名称",
     "操作",
     "操作前数据",
     "操作后数据",
-    "备注",
     "创建人",
     "创建时间",
     "更新人",
