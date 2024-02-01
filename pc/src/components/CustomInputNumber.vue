@@ -40,16 +40,7 @@
       class="custom_input_number_readonly"
       v-bind="$attrs"
     >
-      <template
-        v-if="!(modelValue ?? '')"
-      >
-        {{ props.readonlyPlaceholder ?? defaultLabel }}
-      </template>
-      <template
-        v-else
-      >
-        {{ modelValue ?? defaultLabel }}
-      </template>
+      {{ modelLabel }}
     </div>
   </template>
   <template
@@ -59,16 +50,7 @@
       class="custom_input_number_readonly readonly_border_none"
       v-bind="$attrs"
     >
-      <template
-        v-if="!(modelValue ?? '')"
-      >
-        {{ props.readonlyPlaceholder ?? defaultLabel }}
-      </template>
-      <template
-        v-else
-      >
-        {{ modelValue ?? defaultLabel }}
-      </template>
+      {{ modelLabel }}
     </div>
   </template>
 </template>
@@ -109,18 +91,18 @@ const props = withDefaults(
   },
 );
 
-let defaultLabel = $computed(() => {
-  const val = 0;
-  return val.toFixed(props.precision);
-});
-
 let modelValue = $ref(props.modelValue);
 
 watch(
-  () => props.modelValue,
-  () => {
-    modelValue = Number(props.modelValue);
-  },
+  () => modelValue,
+  async () => {
+    emit("update:modelValue", modelValue);
+    if (modelValue == null) {
+      await nextTick();
+      modelValue = 0;
+      emit("update:modelValue", modelValue);
+    }
+  }
 );
 
 watch(
@@ -130,7 +112,18 @@ watch(
   },
 );
 
+const modelLabel = $computed(() => {
+  if (modelValue == null) {
+    return "";
+  }
+  if (props.precision === 0) {
+    return modelValue;
+  }
+  return modelValue.toFixed(props.precision);
+});
+
 function onChange() {
+  emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
 </script>
