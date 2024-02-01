@@ -50,10 +50,6 @@ export async function findAll(
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -101,10 +97,6 @@ export async function findOne(
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -171,10 +163,6 @@ export async function findById(
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -343,10 +331,6 @@ export function useExportExcel(routePath: string) {
             create_usr_id_lbl
             create_time
             create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
           }
           getFieldCommentsOperationRecord {
             module
@@ -358,8 +342,6 @@ export function useExportExcel(routePath: string) {
             new_data
             create_usr_id_lbl
             create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
         }
       `,

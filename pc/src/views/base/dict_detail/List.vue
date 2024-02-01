@@ -1165,13 +1165,27 @@ async function useFindCount(
   );
 }
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "order_by",
   order: "ascending",
 };
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -1180,7 +1194,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;

@@ -567,7 +567,7 @@ async function showDialog(
       if (!permit("edit")) {
         isLocked = true;
       } else {
-        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
       }
     }
   });

@@ -481,24 +481,6 @@
             </el-table-column>
           </template>
           
-          <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
@@ -695,8 +677,6 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -839,7 +819,7 @@ function getTableColumns(): ColumnType[] {
       label: "操作",
       prop: "lbl",
       width: 180,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -872,25 +852,6 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
-      sortable: "custom",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新人",
-      prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新时间",
-      prop: "update_time_lbl",
-      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1004,13 +965,27 @@ async function useFindCount(
   );
 }
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "create_time",
   order: "descending",
 };
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -1019,7 +994,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;
@@ -1219,8 +1194,6 @@ async function initI18nsEfc() {
     "操作后数据",
     "创建人",
     "创建时间",
-    "更新人",
-    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),
