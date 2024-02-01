@@ -182,26 +182,6 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
-  }
-  if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
-  }
-  if (search?.update_time && search?.update_time?.length > 0) {
-    if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
-    }
-    if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
-    }
-  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -220,8 +200,6 @@ async function getFromQuery() {
     base_operation_record t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -290,7 +268,6 @@ export async function findAll(
   let sql = `
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
   `;
@@ -359,18 +336,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 更新时间
-    if (model.update_time) {
-      const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
-        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.update_time_lbl = "";
-    }
   }
   
   return result;
@@ -400,10 +365,6 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -652,13 +613,6 @@ export async function validate(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
 }
