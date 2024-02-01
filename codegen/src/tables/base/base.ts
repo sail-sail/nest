@@ -611,7 +611,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "lbl",
@@ -619,7 +619,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "rem",
@@ -667,7 +667,7 @@ export default defineConfig({
         search: true,
         width: 220,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "scope",
@@ -728,7 +728,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "lbl",
@@ -736,7 +736,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "type",
@@ -890,6 +890,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "module",
         width: 120,
+        noList: true,
       },
       {
         COLUMN_NAME: "module_lbl",
@@ -899,6 +900,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "method",
         width: 120,
+        noList: true,
       },
       {
         COLUMN_NAME: "method_lbl",
@@ -909,19 +911,17 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         search: true,
         width: 180,
+        fixed: false,
       },
       {
         COLUMN_NAME: "old_data",
         align: "left",
-        width: 280,
+        width: 100,
       },
       {
         COLUMN_NAME: "new_data",
         align: "left",
-        width: 280,
-      },
-      {
-        COLUMN_NAME: "rem",
+        width: 100,
       },
       {
         COLUMN_NAME: "create_usr_id",
