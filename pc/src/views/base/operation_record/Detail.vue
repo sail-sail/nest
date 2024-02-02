@@ -133,6 +133,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.time == null)">
+          <el-form-item
+            :label="n('耗时(毫秒)')"
+            prop="time"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.time"
+              :placeholder="`${ ns('请输入') } ${ n('耗时(毫秒)') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.old_data == null)">
           <el-form-item
             :label="n('操作前数据')"
@@ -271,6 +284,7 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
 let dialogNotice = $ref("");
 
 let dialogModel: OperationRecordInput = $ref({
@@ -336,6 +350,7 @@ let findOneModel = findOne;
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: OperationRecordInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -352,6 +367,9 @@ async function showDialog(
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -368,6 +386,8 @@ async function showDialog(
   is_deleted = model?.is_deleted ?? 0;
   if (arg?.findOne) {
     findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -629,6 +649,7 @@ async function onInitI18ns() {
     "模块名称",
     "方法名称",
     "操作",
+    "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
     "创建人",
