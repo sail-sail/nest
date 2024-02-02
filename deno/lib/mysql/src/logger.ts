@@ -34,7 +34,7 @@ export async function configLogger(config: LoggerConfig) {
     if (!config.logger) {
       await log.setup({
         handlers: {
-          console: new log.handlers.ConsoleHandler(level),
+          console: new log.ConsoleHandler(level),
         },
         loggers: {
           default: {
