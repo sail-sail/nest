@@ -9,7 +9,7 @@
   :controls="props.controls"
   v-bind="$attrs"
   v-model="modelValue"
-  :clearable="!props.disabled"
+  :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
   :placeholder="props.placeholder"
   @change="onChange"
@@ -71,6 +71,7 @@ const props = withDefaults(
     step?: number;
     stepStrictly?: boolean;
     controls?: boolean;
+    clearable?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     readonlyBorder?: boolean;
@@ -83,6 +84,7 @@ const props = withDefaults(
     step: 1,
     stepStrictly: false,
     controls: false,
+    clearable: false,
     disabled: undefined,
     readonly: undefined,
     readonlyBorder: true,
@@ -96,25 +98,24 @@ let modelValue = $ref(props.modelValue);
 watch(
   () => props.modelValue,
   () => {
+    if (props.modelValue == null) {
+      modelValue = undefined;
+      return;
+    }
+    if (isNaN(Number(props.modelValue.toString()))) {
+      modelValue = undefined;
+      return;
+    }
     modelValue = Number(props.modelValue);
   },
 );
 
 watch(
   () => modelValue,
-  async () => {
-    emit("update:modelValue", modelValue);
-    if (modelValue == null) {
-      await nextTick();
-      modelValue = 0;
-      emit("update:modelValue", modelValue);
-    }
-  }
-);
-
-watch(
-  () => modelValue,
   () => {
+    if (modelValue === null) {
+      modelValue = undefined;
+    }
     emit("update:modelValue", modelValue);
   },
 );
@@ -133,6 +134,9 @@ const modelLabel = $computed(() => {
 });
 
 function onChange() {
+  if (modelValue === null) {
+    modelValue = undefined;
+  }
   emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
