@@ -77,6 +77,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       @keyup.enter="onSearch"
     ><#
+      const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -311,6 +312,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </el-form-item>
       </template><#
       } else if (column_type.startsWith("int")) {
+        searchIntColumns.push(column);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
@@ -2436,7 +2438,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
-  clearDirty();
+  clearDirty();<#
+  for (const searchIntColumn of searchIntColumns) {
+  #>
+  
+  // <#=searchIntColumn.COLUMN_COMMENT#>
+  if (search.<#=searchIntColumn.COLUMN_NAME#>) {
+    search.<#=searchIntColumn.COLUMN_NAME#> = search.<#=searchIntColumn.COLUMN_NAME#>.filter((item) => item != null);
+  }<#
+  }
+  #>
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
