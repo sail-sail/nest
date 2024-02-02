@@ -1231,7 +1231,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("微信JSAPI下单")));
     return;
   }
   const search = getDataSearch();
