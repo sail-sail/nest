@@ -206,7 +206,7 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
+      <!-- <el-dropdown
         trigger="click"
         un-m="x-3"
       >
@@ -252,7 +252,7 @@
             
           </el-dropdown-menu>
         </template>
-      </el-dropdown>
+      </el-dropdown> -->
       
     </template>
     
@@ -418,26 +418,8 @@
           :key="col.prop"
         >
           
-          <!-- 模块 -->
-          <template v-if="'module' === col.prop && (showBuildIn || builtInSearch?.module == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 模块名称 -->
-          <template v-else-if="'module_lbl' === col.prop && (showBuildIn || builtInSearch?.module_lbl == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 方法 -->
-          <template v-else-if="'method' === col.prop && (showBuildIn || builtInSearch?.method == null)">
+          <template v-if="'module_lbl' === col.prop && (showBuildIn || builtInSearch?.module_lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -463,12 +445,30 @@
             </el-table-column>
           </template>
           
+          <!-- 耗时(毫秒) -->
+          <template v-else-if="'time' === col.prop && (showBuildIn || builtInSearch?.time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 操作前数据 -->
           <template v-else-if="'old_data' === col.prop && (showBuildIn || builtInSearch?.old_data == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.old_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'old_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -478,15 +478,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-            </el-table-column>
-          </template>
-          
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.new_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'new_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -501,24 +501,6 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -565,6 +547,12 @@
   <Detail
     ref="detailRef"
   ></Detail>
+  
+  <component
+    :ref="(el: any) => moduleComponentRef = el"
+    v-if="moduleComponent"
+    :is="moduleComponent"
+  ></component>
   
 </div>
 </template>
@@ -707,12 +695,11 @@ const props = defineProps<{
   method_lbl_like?: string; // 方法名称
   lbl?: string; // 操作
   lbl_like?: string; // 操作
+  time?: string; // 耗时(毫秒)
   old_data?: string; // 操作前数据
   old_data_like?: string; // 操作前数据
   new_data?: string; // 操作后数据
   new_data_like?: string; // 操作后数据
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -722,10 +709,9 @@ const builtInSearchType: { [key: string]: string } = {
   isLocked: "0|1",
   isFocus: "0|1",
   ids: "string[]",
+  time: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -849,25 +835,9 @@ let tableData = $ref<OperationRecordModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "模块",
-      prop: "module",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "模块名称",
       prop: "module_lbl",
       width: 180,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "方法",
-      prop: "method",
-      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -884,34 +854,31 @@ function getTableColumns(): ColumnType[] {
       label: "操作",
       prop: "lbl",
       width: 180,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
+    },
+    {
+      label: "耗时(毫秒)",
+      prop: "time",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "操作前数据",
       prop: "old_data",
-      width: 280,
-      align: "left",
+      width: 100,
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "操作后数据",
       prop: "new_data",
-      width: 280,
-      align: "left",
+      width: 100,
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "备注",
-      prop: "rem",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "创建人",
@@ -926,25 +893,6 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
-      sortable: "custom",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新人",
-      prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新时间",
-      prop: "update_time_lbl",
-      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1058,13 +1006,27 @@ async function useFindCount(
   );
 }
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "create_time",
   order: "descending",
 };
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -1073,7 +1035,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;
@@ -1138,7 +1100,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("操作记录")));
     return;
   }
   const search = getDataSearch();
@@ -1176,11 +1138,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("操作记录")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1193,7 +1155,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
     emit("remove", num);
   }
 }
@@ -1209,11 +1171,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("操作记录")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1224,7 +1186,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1241,11 +1203,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("操作记录")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1258,26 +1220,122 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
     emit("revert", num);
+  }
+}
+
+let moduleComponent = shallowRef<Component>();
+let moduleComponentRef = shallowRef<any>();
+
+/** 打开操作前数据对话框 */
+async function openDataDialog(
+  id: OperationRecordId,
+  lbl: string,
+  type: "old_data" | "new_data",
+) {
+  tableFocus();
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  const module = model.module;
+  if (!module) {
+    return;
+  }
+  const module_lbl = model.module_lbl;
+  let title = "";
+  if (type === "old_data") {
+    title = lbl + " - " + await nsAsync("操作前数据");
+  } else if (type === "new_data") {
+    title += lbl + " - " + await nsAsync("操作后数据");
+  }
+  moduleComponent.value = (await getDetailByModule(module))?.default;
+  if (!moduleComponent.value) {
+    ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
+    return;
+  }
+  let dataObj: any = undefined;
+  try {
+    dataObj = JSON.parse(model[type]);
+  } catch (err) {
+    console.error(err);
+  }
+  if (!dataObj) {
+    return;
+  }
+  await nextTick();
+  const method = model.method;
+  if ((moduleComponentRef.value as any).showDialog) {
+    if ([ "create", "updateById", ].includes(method)) {
+      if (!dataObj.id) {
+        return;
+      }
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: [ dataObj.id ],
+        },
+        findOne: () => dataObj,
+      });
+      tableFocus();
+    } else if ([ "deleteByIds" ].includes(method)) {
+      if (!Array.isArray(dataObj) || dataObj.length === 0) {
+        ElMessage.warning(await nsAsync("未找到数据"));
+        return;
+      }
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: dataObj.map((item: any) => item.id),
+        },
+        findOne: ({ id }: { id: string }) => dataObj.find((item: any) => item.id === id),
+      });
+      tableFocus();
+    } else if ([ "lockByIds", "revertByIds" ].includes(method)) {
+      if (!Array.isArray(dataObj) || dataObj.length === 0) {
+        ElMessage.warning(await nsAsync("未找到数据"));
+        return;
+      }
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: dataObj,
+        },
+      });
+      tableFocus();
+    }
+  }
+}
+
+async function getDetailByModule(
+  module: string,
+) {
+  if (!module) {
+    return;
   }
 }
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "模块",
     "模块名称",
-    "方法",
     "方法名称",
     "操作",
+    "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "备注",
     "创建人",
     "创建时间",
-    "更新人",
-    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),

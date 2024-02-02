@@ -77,6 +77,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       @keyup.enter="onSearch"
     ><#
+      const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -311,6 +312,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </el-form-item>
       </template><#
       } else if (column_type.startsWith("int")) {
+        searchIntColumns.push(column);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
@@ -1755,6 +1757,12 @@ useSubscribeList<<#=Table_Up#>Id>(
       await dataGrid(true);
       return;
     }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
   },
 );<#
 }
@@ -2225,6 +2233,12 @@ function getTableColumns(): ColumnType[] {
     if (column.showOverflowTooltip == null) {
       column.showOverflowTooltip = true;
     }
+    let fixed = column.fixed;
+    if (fixed === false) {
+      fixed = undefined;
+    } else if (fixed === true) {
+      fixed = "left";
+    }
   #><#
     if (column.isImg) {
     #>
@@ -2256,9 +2270,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2292,9 +2306,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2336,9 +2350,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2377,9 +2391,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2424,7 +2438,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
-  clearDirty();
+  clearDirty();<#
+  for (const searchIntColumn of searchIntColumns) {
+  #>
+  
+  // <#=searchIntColumn.COLUMN_COMMENT#>
+  if (search.<#=searchIntColumn.COLUMN_NAME#>) {
+    search.<#=searchIntColumn.COLUMN_NAME#> = search.<#=searchIntColumn.COLUMN_NAME#>.filter((item) => item != null);
+  }<#
+  }
+  #>
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
@@ -2534,22 +2557,36 @@ async function useFindCount(
 if (defaultSort && defaultSort.prop) {
 #>
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
 };<#
 } else {
 #>
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "",
   order: "ascending",
 };<#
 }
 #>
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -2558,7 +2595,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;
@@ -2682,7 +2719,7 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const {
@@ -3046,7 +3083,7 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const {
@@ -3114,7 +3151,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const search = getDataSearch();<#
@@ -3162,11 +3199,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3190,7 +3227,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("remove", num);
   }
 }
@@ -3206,11 +3243,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3219,9 +3256,20 @@ async function onForceDeleteByIds() {
     return;
   }
   const num = await forceDeleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      payload: num,
+    });<#
+    }
+    #>
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -3244,9 +3292,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的数据");
+      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("请选择需要 禁用 的数据");
+      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("<#=table_comment#>"));
     }
     ElMessage.warning(msg);
     return;
@@ -3255,9 +3303,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 条数据成功", num);
+      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("禁用 {0} 条数据成功", num);
+      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3282,9 +3330,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的数据");
+      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("请选择需要 解锁 的数据");
+      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("<#=table_comment#>"));
     }
     ElMessage.warning(msg);
     return;
@@ -3293,9 +3341,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 条数据成功", num);
+      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("解锁 {0} 条数据成功", num);
+      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3318,11 +3366,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3350,9 +3398,34 @@ async function onRevertByIds() {
     #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("revert", num);
   }
+}<#
+}
+#><#
+if (mod === "base" && table === "operation_record") {
+  const keys = Object.keys(optTables);
+#>
+
+async function getDetailByModule(
+  module: string,
+) {
+  if (!module) {
+    return;
+  }<#
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const tableSchema = optTables[key];
+    if (!tableSchema.opts.log) {
+      continue;
+    }
+  #>
+  if (module === "<#=key#>") {
+    return await import("@/views/<#=tableSchema.opts.mod#>/<#=tableSchema.opts.table#>/Detail.vue");
+  }<#
+  }
+  #>
 }<#
 }
 #><#
@@ -3366,11 +3439,11 @@ if (hasForeignTabsButton || hasForeignTabsMore) {
 async function onOpenForeignTabs() {
   tableFocus();
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一条数据"));
+    ElMessage.warning(await nsAsync("只能选择一个 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const id = selectedIds[0];

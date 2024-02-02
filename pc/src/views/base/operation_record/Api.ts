@@ -44,17 +44,13 @@ export async function findAll(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -96,17 +92,13 @@ export async function findOne(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -167,17 +159,13 @@ export async function findById(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
-          rem
           create_usr_id
           create_usr_id_lbl
           create_time
           create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
           is_deleted
         }
       }
@@ -289,9 +277,9 @@ export function useDownloadImportTemplate(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
-            rem
           }
         }
       `,
@@ -341,17 +329,13 @@ export function useExportExcel(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
-            rem
             create_usr_id
             create_usr_id_lbl
             create_time
             create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
           }
           getFieldCommentsOperationRecord {
             module
@@ -359,13 +343,11 @@ export function useExportExcel(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
-            rem
             create_usr_id_lbl
             create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
           }
         }
       `,
@@ -397,6 +379,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: OperationRecordInput = {
+    time: 0,
   };
   return defaultInput;
 }
