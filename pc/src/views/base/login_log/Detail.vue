@@ -221,6 +221,8 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: LoginLogInput = $ref({
@@ -287,10 +289,13 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: LoginLogInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -300,12 +305,16 @@ async function showDialog(
       ids?: LoginLogId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -320,12 +329,18 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (!permit("edit")) {
       isLocked = true;
@@ -359,7 +374,7 @@ async function showDialog(
     const [
       data,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -439,7 +454,7 @@ async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });

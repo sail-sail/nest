@@ -362,7 +362,9 @@ export async function create<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const uniqueType = unique_type;
@@ -370,15 +372,16 @@ export async function create<#=Table_Up2#>(
   if (log) {
   #>
   
-  const new_data = await findById(id);
+  const new_data = await findById<#=Table_Up2#>(id);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "create",
     method_lbl: "创建",
     lbl: "创建",
-    old_data: "{}",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(new_data),
   });<#
   }
@@ -456,6 +459,8 @@ export async function updateById<#=Table_Up2#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
   const old_data = await findById<#=Table_Up2#>(id);<#
   }
   #>
@@ -463,14 +468,16 @@ export async function updateById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const new_data = await findById(id2);
+  const new_data = await findById<#=Table_Up2#>(id2);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "updateById",
     method_lbl: "修改",
     lbl: "修改",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
     new_data: JSON.stringify(new_data),
   });<#
@@ -490,12 +497,7 @@ export async function deleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
-  const {<#
-    if (log) {
-    #>
-    findAll,<#
-    }
-    #>
+  const {
     deleteByIds,
   } = await import("./<#=table#>.service.ts");
   
@@ -511,7 +513,9 @@ export async function deleteByIds<#=Table_Up2#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findAll({
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
     ids,
   });<#
   }
@@ -520,14 +524,15 @@ export async function deleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "deleteByIds",
     method_lbl: "删除",
     lbl: "删除",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
-    new_data: "{}",
   });<#
   }
   #>
@@ -560,21 +565,24 @@ export async function defaultById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await defaultById(id);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "defaultById",
     method_lbl: "默认",
     lbl: "默认",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -611,21 +619,24 @@ export async function enableByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await enableByIds(ids, is_enabled);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "enableByIds",
     method_lbl: "启用",
     lbl: "启用",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -662,24 +673,24 @@ export async function lockByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await lockByIds(ids, is_locked);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "lockByIds",
     method_lbl: is_locked ? "锁定" : "解锁",
     lbl: is_locked ? "锁定" : "解锁",
-    old_data: "",
-    new_data: JSON.stringify({
-      ids,
-      is_locked,
-    }),
+    time: end_time.getTime() - begin_time.getTime(),
+    new_data: JSON.stringify(ids),
   });<#
   }
   #>
@@ -712,20 +723,23 @@ export async function revertByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await revertByIds(ids);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "revertByIds",
     method_lbl: "还原",
     lbl: "还原",
-    old_data: "[]",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(ids),
   });<#
   }
@@ -758,21 +772,28 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
+    ids,
+    is_deleted: 1,
+  });<#
   }
   #>
   const res = await forceDeleteByIds(ids);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "forceDeleteByIds",
     method_lbl: "彻底删除",
     lbl: "彻底删除",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data: JSON.stringify(old_data),
   });<#
   }
   #>

@@ -10,6 +10,7 @@
         :key="item"
         type="info"
         style="margin: 1px;"
+        :disable-transitions="true"
       >
         {{ item }}
       </el-tag>
@@ -24,6 +25,7 @@
       <el-tag
         type="info"
         style="margin: 1px;"
+        :disable-transitions="true"
       >
         {{ item }}
       </el-tag>
@@ -35,6 +37,7 @@
       :key="item"
       type="info"
       style="margin: 1px;"
+      :disable-transitions="true"
     >
       {{ item }}
     </el-tag>

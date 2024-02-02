@@ -894,6 +894,8 @@ export async function findById(
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
             const foreignKey = column.foreignKey;
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
           #><#
             if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
               || data_type === "datetime" || data_type === "date"
@@ -1824,6 +1826,8 @@ export function useExportExcel(routePath: string) {
                 column_comment = column_comment.substring(0, column_comment.indexOf("["));
               }
               const foreignKey = column.foreignKey;
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
             #><#
               if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
                 || data_type === "datetime" || data_type === "date"

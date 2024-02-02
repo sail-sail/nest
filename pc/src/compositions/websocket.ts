@@ -92,7 +92,7 @@ async function connect() {
       }),
     ]);
     for (const [ topic ] of topicCallbackMap) {
-      socket.send(JSON.stringify({
+      socket?.send(JSON.stringify({
         action: "subscribe",
         data: {
           topics: [ topic ],

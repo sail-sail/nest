@@ -280,6 +280,8 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: DomainInput = $ref({
@@ -346,10 +348,13 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: DomainInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -359,12 +364,16 @@ async function showDialog(
       ids?: DomainId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -379,12 +388,18 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (dialogAction === "add") {
       isLocked = false;
@@ -392,7 +407,7 @@ async function showDialog(
       if (!permit("edit")) {
         isLocked = true;
       } else {
-        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
       }
     }
   });
@@ -426,7 +441,7 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -471,6 +486,9 @@ async function showDialog(
 watch(
   () => [ isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (oldDialogNotice != null) {
+      return;
+    }
     if (is_deleted) {
       dialogNotice = await nsAsync("(已删除)");
       return;
@@ -537,7 +555,7 @@ async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });
@@ -742,7 +760,7 @@ async function onSaveAndCopy() {
     data,
     order_by,
   ] = await Promise.all([
-    findOne({
+    findOneModel({
       id,
       is_deleted,
     }),
