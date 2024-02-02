@@ -404,6 +404,7 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
 let dialogNotice = $ref("");
 
 let dialogModel: UsrInput = $ref({
@@ -491,6 +492,7 @@ let findOneModel = findOne;
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: UsrInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -507,6 +509,9 @@ async function showDialog(
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -523,6 +528,8 @@ async function showDialog(
   is_deleted = model?.is_deleted ?? 0;
   if (arg?.findOne) {
     findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -614,6 +621,9 @@ async function showDialog(
 watch(
   () => [ isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (oldDialogNotice != null) {
+      return;
+    }
     if (is_deleted) {
       dialogNotice = await nsAsync("(已删除)");
       return;

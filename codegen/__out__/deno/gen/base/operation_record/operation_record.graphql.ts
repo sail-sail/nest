@@ -19,6 +19,8 @@ type OperationRecordModel {
   method_lbl: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: Int!
   "操作前数据"
   old_data: String!
   "操作后数据"
@@ -47,6 +49,8 @@ type OperationRecordFieldComment {
   method_lbl: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: String!
   "操作前数据"
   old_data: String!
   "操作后数据"
@@ -73,6 +77,8 @@ input OperationRecordInput {
   method_lbl: String
   "操作"
   lbl: String
+  "耗时(毫秒)"
+  time: Int
   "操作前数据"
   old_data: String
   "操作后数据"
@@ -108,6 +114,8 @@ input OperationRecordSearch {
   "操作"
   lbl: String
   lbl_like: String
+  "耗时(毫秒)"
+  time: [Int!]
   "操作前数据"
   old_data: String
   old_data_like: String

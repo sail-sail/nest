@@ -144,6 +144,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.time && search?.time?.length > 0) {
+    if (search.time[0] != null) {
+      whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
+    }
+    if (search.time[1] != null) {
+      whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
+    }
+  }
   if (search?.old_data !== undefined) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
   }
@@ -359,6 +367,7 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     method: await n("方法"),
     method_lbl: await n("方法名称"),
     lbl: await n("操作"),
+    time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
     create_usr_id: await n("创建人"),
@@ -718,6 +727,9 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (input.time !== undefined) {
+    sql += `,time`;
+  }
   if (input.old_data !== undefined) {
     sql += `,old_data`;
   }
@@ -764,6 +776,9 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.time !== undefined) {
+    sql += `,${ args.push(input.time) }`;
   }
   if (input.old_data !== undefined) {
     sql += `,${ args.push(input.old_data) }`;
@@ -905,6 +920,12 @@ export async function updateById(
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.time !== undefined) {
+    if (input.time != oldModel.time) {
+      sql += `time = ${ args.push(input.time) },`;
       updateFldNum++;
     }
   }
