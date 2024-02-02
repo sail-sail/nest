@@ -310,6 +310,7 @@ let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
 let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: I18nInput = $ref({
@@ -439,6 +440,7 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (!permit("edit")) {
       isLocked = true;
