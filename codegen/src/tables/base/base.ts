@@ -915,6 +915,9 @@ export default defineConfig({
         align: "center",
       },
       {
+        COLUMN_NAME: "time",
+      },
+      {
         COLUMN_NAME: "old_data",
         align: "left",
         width: 100,
