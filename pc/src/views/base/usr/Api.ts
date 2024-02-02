@@ -259,7 +259,6 @@ export async function findById(
           img
           lbl
           username
-          password
           org_ids
           org_ids_lbl
           default_org_id
@@ -666,7 +665,6 @@ export function useExportExcel(routePath: string) {
             img
             lbl
             username
-            password
             org_ids
             org_ids_lbl
             default_org_id

@@ -94,6 +94,13 @@ const props = withDefaults(
 let modelValue = $ref(props.modelValue);
 
 watch(
+  () => props.modelValue,
+  () => {
+    modelValue = Number(props.modelValue);
+  },
+);
+
+watch(
   () => modelValue,
   async () => {
     emit("update:modelValue", modelValue);

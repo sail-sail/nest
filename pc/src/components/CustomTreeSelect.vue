@@ -54,6 +54,7 @@
       v-for="label in modelLabels"
       :key="label"
       type="info"
+      :disable-transitions="true"
     >
       {{ label }}
     </el-tag>
