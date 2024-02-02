@@ -908,17 +908,14 @@ export default defineConfig({
         width: 180,
       },
       {
-        COLUMN_NAME: "comp_path",
-        noList: true,
-        noAdd: true,
-        noEdit: true,
-      },
-      {
         COLUMN_NAME: "lbl",
         search: true,
         width: 180,
         fixed: false,
         align: "center",
+      },
+      {
+        COLUMN_NAME: "time",
       },
       {
         COLUMN_NAME: "old_data",

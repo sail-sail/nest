@@ -135,15 +135,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
-  if (search?.comp_path !== undefined) {
-    whereQuery += ` and t.comp_path = ${ args.push(search.comp_path) }`;
-  }
-  if (search?.comp_path === null) {
-    whereQuery += ` and t.comp_path is null`;
-  }
-  if (isNotEmpty(search?.comp_path_like)) {
-    whereQuery += ` and t.comp_path like ${ args.push("%" + sqlLike(search?.comp_path_like) + "%") }`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -152,6 +143,14 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.time && search?.time?.length > 0) {
+    if (search.time[0] != null) {
+      whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
+    }
+    if (search.time[1] != null) {
+      whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
+    }
   }
   if (search?.old_data !== undefined) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
@@ -367,8 +366,8 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     module_lbl: await n("模块名称"),
     method: await n("方法"),
     method_lbl: await n("方法名称"),
-    comp_path: await n("页面路径"),
     lbl: await n("操作"),
+    time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
     create_usr_id: await n("创建人"),
@@ -597,13 +596,6 @@ export async function validate(
     fieldComments.method_lbl,
   );
   
-  // 页面路径
-  await validators.chars_max_length(
-    input.comp_path,
-    100,
-    fieldComments.comp_path,
-  );
-  
   // 操作
   await validators.chars_max_length(
     input.lbl,
@@ -732,11 +724,11 @@ export async function create(
   if (input.method_lbl !== undefined) {
     sql += `,method_lbl`;
   }
-  if (input.comp_path !== undefined) {
-    sql += `,comp_path`;
-  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
+  }
+  if (input.time !== undefined) {
+    sql += `,time`;
   }
   if (input.old_data !== undefined) {
     sql += `,old_data`;
@@ -782,11 +774,11 @@ export async function create(
   if (input.method_lbl !== undefined) {
     sql += `,${ args.push(input.method_lbl) }`;
   }
-  if (input.comp_path !== undefined) {
-    sql += `,${ args.push(input.comp_path) }`;
-  }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.time !== undefined) {
+    sql += `,${ args.push(input.time) }`;
   }
   if (input.old_data !== undefined) {
     sql += `,${ args.push(input.old_data) }`;
@@ -925,15 +917,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.comp_path !== undefined) {
-    if (input.comp_path != oldModel.comp_path) {
-      sql += `comp_path = ${ args.push(input.comp_path) },`;
-      updateFldNum++;
-    }
-  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.time !== undefined) {
+    if (input.time != oldModel.time) {
+      sql += `time = ${ args.push(input.time) },`;
       updateFldNum++;
     }
   }

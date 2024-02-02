@@ -1273,7 +1273,7 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   const {
@@ -1452,7 +1452,7 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   const {
@@ -1510,7 +1510,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   const search = getDataSearch();
@@ -1548,11 +1548,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1565,7 +1565,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
     emit("remove", num);
   }
 }
@@ -1581,11 +1581,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1596,7 +1596,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1615,9 +1615,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的数据");
+      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("请选择需要 禁用 的数据");
+      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("系统字典明细"));
     }
     ElMessage.warning(msg);
     return;
@@ -1626,9 +1626,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 条数据成功", num);
+      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("禁用 {0} 条数据成功", num);
+      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1649,9 +1649,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的数据");
+      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("请选择需要 解锁 的数据");
+      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("系统字典明细"));
     }
     ElMessage.warning(msg);
     return;
@@ -1660,9 +1660,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 条数据成功", num);
+      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("解锁 {0} 条数据成功", num);
+      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1681,11 +1681,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("系统字典明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1698,7 +1698,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
     emit("revert", num);
   }
 }

@@ -362,7 +362,9 @@ export async function create<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const uniqueType = unique_type;
@@ -370,15 +372,16 @@ export async function create<#=Table_Up2#>(
   if (log) {
   #>
   
-  const new_data = await findById(id);
+  const new_data = await findById<#=Table_Up2#>(id);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "create",
     method_lbl: "创建",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "创建",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(new_data),
   });<#
   }
@@ -456,6 +459,8 @@ export async function updateById<#=Table_Up2#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
   const old_data = await findById<#=Table_Up2#>(id);<#
   }
   #>
@@ -463,15 +468,16 @@ export async function updateById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const new_data = await findById(id2);
+  const new_data = await findById<#=Table_Up2#>(id2);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "updateById",
     method_lbl: "修改",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "修改",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
     new_data: JSON.stringify(new_data),
   });<#
@@ -491,12 +497,7 @@ export async function deleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
-  const {<#
-    if (log) {
-    #>
-    findAll,<#
-    }
-    #>
+  const {
     deleteByIds,
   } = await import("./<#=table#>.service.ts");
   
@@ -512,7 +513,9 @@ export async function deleteByIds<#=Table_Up2#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findAll({
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
     ids,
   });<#
   }
@@ -521,13 +524,14 @@ export async function deleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "deleteByIds",
     method_lbl: "删除",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "删除",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
   });<#
   }
@@ -561,20 +565,23 @@ export async function defaultById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await defaultById(id);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "defaultById",
     method_lbl: "默认",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "默认",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
   });<#
   }
@@ -612,20 +619,23 @@ export async function enableByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await enableByIds(ids, is_enabled);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "enableByIds",
     method_lbl: "启用",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "启用",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
   });<#
   }
@@ -663,20 +673,23 @@ export async function lockByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await lockByIds(ids, is_locked);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "lockByIds",
     method_lbl: is_locked ? "锁定" : "解锁",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: is_locked ? "锁定" : "解锁",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(ids),
   });<#
   }
@@ -710,20 +723,23 @@ export async function revertByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await revertByIds(ids);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "revertByIds",
     method_lbl: "还原",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "还原",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(ids),
   });<#
   }
@@ -750,19 +766,16 @@ export async function forceDeleteByIds<#=Table_Up2#>(
     "force_delete",
   );
   
-  const {<#
-    if (log) {
-    #>
-    findAll,<#
-    }
-    #>
+  const {
     forceDeleteByIds,
   } = await import("./<#=table#>.service.ts");<#
   if (log) {
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findAll({
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
     ids,
     is_deleted: 1,
   });<#
@@ -772,13 +785,14 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "forceDeleteByIds",
     method_lbl: "彻底删除",
-    comp_path: "@/views/<#=mod#>/<#=table#>/Detail.vue",
     lbl: "彻底删除",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
   });<#
   }

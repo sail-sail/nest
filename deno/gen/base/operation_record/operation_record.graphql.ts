@@ -17,10 +17,10 @@ type OperationRecordModel {
   method: String!
   "方法名称"
   method_lbl: String!
-  "页面路径"
-  comp_path: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: Int!
   "操作前数据"
   old_data: String!
   "操作后数据"
@@ -47,10 +47,10 @@ type OperationRecordFieldComment {
   method: String!
   "方法名称"
   method_lbl: String!
-  "页面路径"
-  comp_path: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: String!
   "操作前数据"
   old_data: String!
   "操作后数据"
@@ -75,10 +75,10 @@ input OperationRecordInput {
   method: String
   "方法名称"
   method_lbl: String
-  "页面路径"
-  comp_path: String
   "操作"
   lbl: String
+  "耗时(毫秒)"
+  time: Int
   "操作前数据"
   old_data: String
   "操作后数据"
@@ -111,12 +111,11 @@ input OperationRecordSearch {
   "方法名称"
   method_lbl: String
   method_lbl_like: String
-  "页面路径"
-  comp_path: String
-  comp_path_like: String
   "操作"
   lbl: String
   lbl_like: String
+  "耗时(毫秒)"
+  time: [Int!]
   "操作前数据"
   old_data: String
   old_data_like: String
