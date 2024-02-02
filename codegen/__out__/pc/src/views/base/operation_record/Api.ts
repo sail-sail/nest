@@ -44,6 +44,7 @@ export async function findAll(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
           create_usr_id
@@ -91,6 +92,7 @@ export async function findOne(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
           create_usr_id
@@ -157,6 +159,7 @@ export async function findById(
           method
           method_lbl
           lbl
+          time
           old_data
           new_data
           create_usr_id
@@ -274,6 +277,7 @@ export function useDownloadImportTemplate(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
           }
@@ -325,6 +329,7 @@ export function useExportExcel(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
             create_usr_id
@@ -338,6 +343,7 @@ export function useExportExcel(routePath: string) {
             method
             method_lbl
             lbl
+            time
             old_data
             new_data
             create_usr_id_lbl
@@ -373,6 +379,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: OperationRecordInput = {
+    time: 0,
   };
   return defaultInput;
 }
