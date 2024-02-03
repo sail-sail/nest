@@ -1,3 +1,6 @@
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
 use anyhow::Result;
 
 #[allow(unused_imports)]
@@ -118,7 +121,13 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
-    let err_msg = i18n_dao::ns("不能修改已经锁定的数据".to_owned(), None).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), "菜单".to_owned()),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "不能修改已经锁定的 {0}".to_owned(),
+      map.into(),
+    ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
   
@@ -154,9 +163,12 @@ pub async fn delete_by_ids(
     ids.push(id);
   }
   if ids.is_empty() && len > 0 {
+    let map = HashMap::from([
+      ("0".to_owned(), "菜单".to_owned()),
+    ]);
     let err_msg = i18n_dao::ns(
-      "不能删除已经锁定的数据".to_owned(),
-      None,
+      "不能删除已经锁定的 {0}",
+      map.into(),
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }

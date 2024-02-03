@@ -110,8 +110,7 @@ pub async fn ws_upgrade(
                 continue;
               }
               let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
-              let old_topics = client_id_topics_map.get(&client_id)
-                .map(|topics| topics.clone());
+              let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 client_id_topics_map.insert(client_id.clone(), vec![]);
               }
@@ -210,8 +209,7 @@ pub async fn ws_upgrade(
                 continue;
               }
               let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
-              let old_topics = client_id_topics_map.get(&client_id)
-                .map(|topics| topics.clone());
+              let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 continue;
               }
