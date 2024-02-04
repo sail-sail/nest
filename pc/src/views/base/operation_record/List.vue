@@ -1298,7 +1298,7 @@ async function openDataDialog(
         findOne: ({ id }: { id: string }) => dataObj.find((item: any) => item.id === id),
       });
       tableFocus();
-    } else if ([ "lockByIds", "revertByIds" ].includes(method)) {
+    } else if ([ "lockByIds", "revertByIds", "enableByIds", "disableByIds" ].includes(method)) {
       if (!Array.isArray(dataObj) || dataObj.length === 0) {
         ElMessage.warning(await nsAsync("未找到数据"));
         return;
