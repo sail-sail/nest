@@ -422,27 +422,20 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
-  const el = t.proxy.$el as HTMLDivElement;
-  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null;
-  if (!wrapperEl) {
+  const selectRef = t.refs.selectRef as any;
+  if (!selectRef) {
     return;
   }
-  const id = wrapperEl.getAttribute("aria-describedby");
-  if (!id) {
-    return;
-  }
-  const popperEl = document.getElementById(id) as HTMLDivElement | null;
-  if (!popperEl) {
-    return;
-  }
-  const optionItemEls = popperEl.querySelectorAll(".el-select-dropdown__option-item");
-  if (!optionItemEls || optionItemEls.length === 0) {
-    return;
-  }
-  const dropdownListEl = popperEl.querySelector(".el-select-dropdown__list") as HTMLDivElement | null;
+  const dropdownListEl = selectRef?.$refs?.menuRef?.listRef?.windowRef;
   if (!dropdownListEl) {
     return;
   }
+  dropdownListEl.style.minWidth = "unset";
+  const optionItemEls = dropdownListEl.querySelectorAll(".el-select-dropdown__item");
+  if (!optionItemEls || optionItemEls.length === 0) {
+    return;
+  }
+  
   const popperWidth = parseInt(dropdownListEl.style.width);
   if (!popperWidth) {
     return;
@@ -456,7 +449,7 @@ async function refreshDropdownWidth() {
     }
   }
   if (maxWidth > popperWidth) {
-    dropdownListEl.style.minWidth = `${ maxWidth }px`;
+    dropdownListEl.style.minWidth = `${ (maxWidth + 52) }px`;
   }
 }
 
@@ -531,7 +524,7 @@ function onChange() {
     modelValues = modelValue?.split(",") || [ ];
   }
   for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue)!;
+    const model = data.find((item) => props.optionsMap(item).value === value)!;
     models.push(model);
   }
   emit("change", models);
@@ -545,11 +538,11 @@ async function refreshWrapperHeight() {
   if (!selectDivRef) {
     return;
   }
-  const phder = selectDivRef?.querySelector(".el-select-v2__placeholder") as HTMLDivElement | null | undefined;
+  const phder = selectDivRef?.querySelector(".el-select__placeholder") as HTMLDivElement | null | undefined;
   if (!phder) {
     return;
   }
-  const wrapper = selectDivRef?.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null | undefined;
+  const wrapper = selectDivRef?.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
   if (!wrapper) {
     return;
   }
@@ -610,14 +603,14 @@ defineExpose({
   @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
 }
 .custom_select_space_normal {
-  :deep(.el-select-v2__placeholder) {
+  :deep(.el-select__placeholder) {
     line-height: normal;
     white-space: normal;
     top: calc(50% - 2px);
   }
 }
 .custom_select_isShowModelLabel {
-  :deep(.el-select-v2__placeholder),.custom_select_readonly {
+  :deep(.el-select__placeholder),.custom_select_readonly {
     color: red;
   }
 }
