@@ -63,7 +63,7 @@ html,body {
 .el-dialog.custom_dialog {
   height: 90vh;
   --el-dialog-width: 960px;
-  --el-dialog-padding-primary: 10px;
+  --el-dialog-padding-primary: 0;
   .el-dialog__footer {
     display: none;
   }
@@ -105,7 +105,7 @@ html,body {
     .el-dialog__headerbtn {
       width: 30px;
       height: 30px;
-      right: 10px;
+      right: 5px;
       top: 5px;
     }
     .el-dialog__headerbtn .el-dialog__close:hover {
@@ -132,6 +132,7 @@ html,body {
       padding: 10px;
       padding-right: 26px;
       color: var(--el-text-color-regular);
+      margin-right: 10px;
     }
     .title_lbl {
       flex: 1 0 0;
