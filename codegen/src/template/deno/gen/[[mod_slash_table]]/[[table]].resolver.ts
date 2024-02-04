@@ -336,12 +336,7 @@ export async function create<#=Table_Up2#>(
   }
   #>
   
-  const {<#
-    if (log) {
-    #>
-    findById,<#
-    }
-    #>
+  const {
     validate,
     setIdByLbl,
     create,
@@ -435,12 +430,7 @@ export async function updateById<#=Table_Up2#>(
   }
   #>
   
-  const {<#
-    if (log) {
-    #>
-    findById,<#
-    }
-    #>
+  const {
     setIdByLbl,
     updateById,
   } = await import("./<#=table#>.service.ts");
@@ -628,11 +618,18 @@ export async function enableByIds<#=Table_Up2#>(
   if (log) {
   #>
   
+  let method = "";
+  if (is_enabled) {
+    method = "enableByIds";
+  } else {
+    method = "disableByIds";
+  }
+  
   const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "enableByIds",
+    method,
     method_lbl: "启用",
     lbl: "启用",
     time: end_time.getTime() - begin_time.getTime(),
