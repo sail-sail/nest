@@ -85,8 +85,6 @@ function watchFn() {
         const arr = [
           "run",
           "-A",
-          "--import-map",
-          "./import_map.json",
           "--no-check",
           "./lib/script/hmr.ts",
         ];
@@ -219,8 +217,6 @@ function start() {
     // `--allow-write=${ allowWrites.join(",") }`,
     // `--allow-env=${ allowEnvs.join(",") }`,
     // `--allow-net=${ allowNets.join(",") }`,
-    "--import-map",
-    "./import_map.json",
     "--no-check",
     "./mod.ts",
   ];

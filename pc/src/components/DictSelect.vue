@@ -13,16 +13,20 @@
   @clear="clearClk"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue !== '' ? modelValue : undefined"
-  @update:model-value="modelValue = $event"
+  :model-value="modelValueComputed"
+  @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="dict_select"
+  :class="{
+    dict_select_isShowModelLabel: isShowModelLabel && inited,
+  }"
   :multiple="props.multiple"
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
   @keyup.enter.stop
-  @change="valueChg"
+  @change="onValueChange"
 >
   <template
     v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
@@ -65,14 +69,37 @@
     class="dict_select_readonly"
     v-bind="$attrs"
   >
-    <el-tag
-      v-for="label in modelLabels"
-      :key="label"
-      type="info"
-      :disable-transitions="true"
+    <template
+      v-if="modelLabels.length === 0"
     >
-      {{ label }}
-    </el-tag>
+      <span
+        class="dict_select_placeholder"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        v-if="isShowModelLabel"
+        class="dict_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <div
+        v-else
+      >
+        <el-tag
+          v-for="label in modelLabels"
+          :key="label"
+          type="info"
+          :disable-transitions="true"
+        >
+          {{ label }}
+        </el-tag>
+      </div>
+    </template>
   </div>
   <div
     v-else
@@ -85,9 +112,37 @@
     un-line-height="normal"
     un-break-words
     class="dict_select_readonly"
+    :class="{
+      'dict_select_placeholder': shouldShowPlaceholder,
+      dict_select_isShowModelLabel: isShowModelLabel,
+    }"
     v-bind="$attrs"
   >
-    {{ modelLabels[0] ?? "" }}
+    <template
+      v-if="!modelLabels[0]"
+    >
+      <span
+        class="dict_select_placeholder"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </span>
+    </template>
+    <template
+      v-else
+    >
+      <span
+        v-if="isShowModelLabel"
+        class="dict_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <span
+        v-else
+        class="dict_select_readonly"
+      >
+        {{ modelLabels[0] || "" }}
+      </span>
+    </template>
   </div>
 </template>
 </template>
@@ -118,12 +173,15 @@ const props = withDefaults(
     pinyinFilterable?: boolean;
     height?: number;
     modelValue?: any;
+    modelLabel?: string;
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
     showSelectAll?: boolean;
     disabled?: boolean;
     readonly?: boolean;
+    placeholder?: string;
+    readonlyPlaceholder?: string;
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -141,12 +199,15 @@ const props = withDefaults(
     pinyinFilterable: false,
     height: 300,
     modelValue: undefined,
+    modelLabel: undefined,
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
     showSelectAll: true,
     disabled: undefined,
     readonly: undefined,
+    placeholder: undefined,
+    readonlyPlaceholder: undefined,
   },
 );
 
@@ -158,6 +219,16 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
+    modelLabel = props.modelLabel;
+  },
+);
+
+let modelLabel = $ref(props.modelLabel);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    modelLabel = props.modelLabel;
   },
 );
 
@@ -204,7 +275,71 @@ const isIndeterminate = $computed(() => {
   return true;
 });
 
-function valueChg() {
+const modelValueComputed = $computed(() => {
+  if (!modelLabel) {
+    return modelValue;
+  }
+  if (!props.multiple) {
+    if (modelValue == null || modelValue === "") {
+      return modelLabel;
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
+    if (!item || item.label !== modelLabel) {
+      return modelLabel;
+    }
+    return modelValue;
+  } else {
+    if (modelValue == null || modelValue.length === 0) {
+      return modelLabel;
+    }
+    const labels: string[] = modelLabel.split(",")
+      .filter((item: string) => item)
+      .map((item) => item.trim());
+    if (labels.length !== modelValue.length) {
+      return modelLabel;
+    }
+    for (let i = 0; i < modelValue.length; i++) {
+      const item = modelValue[i];
+      if (item !== labels[i]) {
+        return modelLabel;
+      }
+    }
+    return modelValue;
+  }
+});
+
+const isShowModelLabel = $computed(() => {
+  if (modelLabel == null) {
+    return false;
+  }
+  return modelValueComputed === modelLabel;
+});
+
+let shouldShowPlaceholder = $computed(() => {
+  if (props.multiple) {
+    return modelValue == null || modelValue.length === 0;
+  }
+  return modelValue == null || modelValue === "";
+});
+
+function modelValueUpdate(value?: string | string[] | null) {
+  nextTick(() => {
+    modelLabel = undefined;
+  });
+  modelValue = value;
+  emit("update:modelValue", value);
+  if (!props.multiple) {
+    emit("update:modelLabel", modelLabels[0]);
+  } else {
+    if (Array.isArray(modelLabels)) {
+      emit("update:modelLabel", modelLabels.join(","));
+    } else {
+      emit("update:modelLabel", "");
+    }
+  }
+}
+
+function onValueChange() {
   emit("update:modelValue", modelValue);
   if (!props.multiple) {
     const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
@@ -247,27 +382,20 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
-  const el = t.proxy.$el as HTMLDivElement;
-  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement | null;
-  if (!wrapperEl) {
+  const selectRef = t.refs.selectRef as any;
+  if (!selectRef) {
     return;
   }
-  const id = wrapperEl.getAttribute("aria-describedby");
-  if (!id) {
-    return;
-  }
-  const popperEl = document.getElementById(id) as HTMLDivElement | null;
-  if (!popperEl) {
-    return;
-  }
-  const optionItemEls = popperEl.querySelectorAll(".el-select-dropdown__option-item");
-  if (!optionItemEls || optionItemEls.length === 0) {
-    return;
-  }
-  const dropdownListEl = popperEl.querySelector(".el-select-dropdown__list") as HTMLDivElement | null;
+  const dropdownListEl = selectRef?.$refs?.menuRef?.listRef?.windowRef;
   if (!dropdownListEl) {
     return;
   }
+  dropdownListEl.style.minWidth = "unset";
+  const optionItemEls = dropdownListEl.querySelectorAll(".el-select-dropdown__item");
+  if (!optionItemEls || optionItemEls.length === 0) {
+    return;
+  }
+  
   const popperWidth = parseInt(dropdownListEl.style.width);
   if (!popperWidth) {
     return;
@@ -281,12 +409,13 @@ async function refreshDropdownWidth() {
     }
   }
   if (maxWidth > popperWidth) {
-    dropdownListEl.style.minWidth = `${ maxWidth }px`;
+    dropdownListEl.style.minWidth = `${ (maxWidth + 52) }px`;
   }
 }
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelLabel", value?: string | null): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
@@ -382,3 +511,18 @@ watch(
   },
 );
 </script>
+
+<style scoped lang="scss">
+.dict_select_space_normal {
+  :deep(.el-select__placeholder) {
+    line-height: normal;
+    white-space: normal;
+    top: calc(50% - 2px);
+  }
+}
+.dict_select_isShowModelLabel {
+  :deep(.el-select__placeholder),.dict_select_readonly {
+    color: red;
+  }
+}
+</style>

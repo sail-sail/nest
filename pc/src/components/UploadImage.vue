@@ -321,6 +321,10 @@ async function onDelete() {
 let showUpload = $ref(false);
 
 function imgMouseenter() {
+  if (props.readonly) {
+    showUpload = false;
+    return;
+  }
   showUpload = true;
 }
 
