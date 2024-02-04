@@ -6,12 +6,12 @@
   "scripts": {
     "start": "node lib/script/mother.js",
     "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.ts",
-    "typecheck": "deno check --unstable-ffi --import-map=./import_map.json ./mod.ts",
-    "build": "deno run -A --import-map=./import_map.json ./lib/script/build.ts --target linux",
+    "typecheck": "deno check --unstable-ffi ./mod.ts",
+    "build": "deno run -A ./lib/script/build.ts --target linux",
     "publish": "node lib/script/publish.js",
-    "build:win": "deno run -A --import-map=./import_map.json ./lib/script/build.ts",
+    "build:win": "deno run -A ./lib/script/build.ts",
     "codegen": "cd .. && npm run codegen",
-    "db_gen_crypto_key": "deno run -A --import-map=./import_map.json ./lib/script/db_gen_crypto_key.ts",
+    "db_gen_crypto_key": "deno run -A ./lib/script/db_gen_crypto_key.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
