@@ -29,7 +29,7 @@
     :class="{
       'custom_select_space_normal': true,
     }"
-    @change="onChange"
+    @change="onValueChange"
     :multiple="props.multiple"
     :clearable="!props.disabled"
     :disabled="props.disabled"
@@ -510,7 +510,7 @@ async function refreshEfc() {
   inited = true;
 }
 
-function onChange() {
+function onValueChange() {
   if (!props.multiple) {
     const model = data.find((item) => props.optionsMap(item).value === modelValue);
     emit("change", model);

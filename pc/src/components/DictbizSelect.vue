@@ -376,7 +376,7 @@ async function refreshDropdownWidth() {
   if (!props.autoWidth) {
     return;
   }
-  if (!t || !t.refs || !t.refs.selectRef) {
+  if (!t || !t.proxy || !t.proxy.$el) {
     return;
   }
   await nextTick();
