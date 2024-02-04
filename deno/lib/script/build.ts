@@ -157,8 +157,6 @@ async function compile() {
       // `--allow-net=${ allowNets.join(",") }`,
       `--allow-net`,
       `--allow-ffi`,
-      "--import-map",
-      "./import_map.json",
     ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);
