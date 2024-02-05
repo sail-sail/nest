@@ -21,7 +21,9 @@
         un-overflow="hidden"
         un-justify="center"
       >
-        <el-empty description="页面不存在!">
+        <el-empty
+          :description="ns('页面不存在')"
+        >
           <el-button
             un-w="[200px]"
             
