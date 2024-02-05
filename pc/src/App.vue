@@ -58,7 +58,8 @@ const usrStore = useUsrStore();
 const router = useRouter();
 const route = useRoute();
 
-function goBack() {
+async function goBack() {
+  await tabsStore.closeOtherTabs();
   router.back();
   if (route.matched.length === 0) {
     window.location.reload();
