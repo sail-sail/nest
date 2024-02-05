@@ -30,7 +30,7 @@
             @click="goBack"
           >
             <span un-text="[18px]">
-              返 回
+              {{ ns("返回") }}
             </span>
           </el-button>
         </el-empty>
