@@ -34,6 +34,7 @@
       }
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
-    "diffEditor.wordWrap": "off"
+    "diffEditor.wordWrap": "off",
+    "editor.formatOnSave": false
   }
 }
