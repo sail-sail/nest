@@ -551,7 +551,7 @@ async function refreshWrapperHeight() {
     return;
   }
   wrapper.style.transition = "none";
-  wrapper.style.height = `${ (height + 14) }px`;
+  wrapper.style.minHeight = `${ (height + 14) }px`;
 }
 
 watch(
