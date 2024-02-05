@@ -21,7 +21,9 @@
         un-overflow="hidden"
         un-justify="center"
       >
-        <el-empty description="页面不存在!">
+        <el-empty
+          :description="ns('页面不存在')"
+        >
           <el-button
             un-w="[200px]"
             
@@ -30,7 +32,7 @@
             @click="goBack"
           >
             <span un-text="[18px]">
-              返 回
+              {{ ns("返回") }}
             </span>
           </el-button>
         </el-empty>
@@ -58,7 +60,8 @@ const usrStore = useUsrStore();
 const router = useRouter();
 const route = useRoute();
 
-function goBack() {
+async function goBack() {
+  await tabsStore.closeOtherTabs();
   router.back();
   if (route.matched.length === 0) {
     window.location.reload();
