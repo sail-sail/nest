@@ -485,3 +485,7 @@ html:is(.dark) {
 ).is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label:before {
   color: var(--readonly_font_color);
 }
+
+.v-header-order-drag-sortable-drag {
+  color: red;
+}
