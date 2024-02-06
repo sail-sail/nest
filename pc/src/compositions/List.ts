@@ -1103,9 +1103,15 @@ export function useTableColumns<T>(
   
   tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   
-  function storeColumns(tableColumns2?: any) {
+  async function storeColumns(tableColumns2?: any, force?: boolean) {
     if (tableColumns2) {
       tableColumns.value = tableColumns2;
+    }
+    if (force) {
+      const oldTableColumns = tableColumns.value;
+      tableColumns.value = [ ];
+      await nextTick();
+      tableColumns.value = [ ...oldTableColumns ];
     }
     window.localStorage.setItem(persistKey, JSON.stringify(tableColumns.value));
   }
