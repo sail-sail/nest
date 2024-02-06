@@ -197,7 +197,7 @@ const props = withDefaults(
       };
     },
     pinyinFilterable: false,
-    height: 300,
+    height: 400,
     modelValue: undefined,
     modelLabel: undefined,
     autoWidth: true,
