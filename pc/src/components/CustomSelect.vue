@@ -9,7 +9,7 @@
   }"
 >
   <el-tooltip
-    :disabled="props.multiple"
+    :disabled="selectRef?.dropdownMenuVisible || props.multiple"
   >
     <template
       #content
