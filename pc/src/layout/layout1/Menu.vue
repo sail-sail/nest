@@ -3,6 +3,7 @@
   un-flex="~ col"
   un-overflow-hidden
   un-w="full"
+  un-bg="[#072540] dark:black"
 >
   <div
     un-flex="~"
