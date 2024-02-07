@@ -1,27 +1,109 @@
 <template>
-<el-menu
-  class="AppMenu"
+<div
+  un-flex="~ col"
+  un-overflow-hidden
   un-w="full"
-  :default-active="defaultActive"
-  :collapse="menuStore.isCollapse"
-  :collapse-transition="false"
-  unique-opened
-  :router="false"
-  @open="menuOpen"
-  @close="menuClose"
-  @select="menuSelect"
 >
-  <AppSubMenu
-    :children="(menuStore.menus as any[])"
-    :opened-index="openedIndex"
-  ></AppSubMenu>
-</el-menu>
+  <div
+    un-flex="~"
+    un-overflow-hidden
+    un-text="white"
+    un-h="8"
+    un-justify-end
+    un-items-center
+  >
+    <div
+      v-if="!menuStore.isCollapse"
+      un-flex="~ [1_0_0]"
+      un-overflow-hidden
+      un-w="full"
+      un-h="full"
+      un-justify-center
+    >
+      <div
+        un-flex="~ [1_0_0]"
+        un-justify-center
+        un-items-center
+        un-b="1 solid gray-600 hover:[var(--el-color-primary)]"
+        un-m="x-2 y-1"
+        un-rounded="md"
+        un-text="gray hover:[var(--el-color-primary)]"
+        un-pos-relative
+      >
+        <div
+          v-show="!menuStore.search && !menuSearchForcused"
+          un-flex="~ [1_0_0]"
+          un-h="full"
+          un-justify-center
+          un-items-center
+          un-cursor-pointer
+          @click="menuSearchClk"
+        >
+          <el-icon
+            un-text="hover:[var(--el-color-primary)]"
+          >
+            <ElIconSearch />
+          </el-icon>
+          <span
+            un-m="l-1"
+          >
+            菜单导航
+          </span>
+        </div>
+        <input
+          v-show="menuStore.search || menuSearchForcused"
+          v-model="menuStore.search"
+          un-w="full"
+          un-h="full"
+          un-rounded="md"
+          un-text="3 white center"
+          un-b="none"
+          un-p="l-4 r-6"
+          un-bg="transparent"
+          clearable
+          :placeholder="ns('菜单导航')"
+          un-pos-absolute
+          un-left="0"
+          un-top="0"
+          @blur="menuSearchBlur"
+          ref="menuSearchInputRef"
+          un-box-border
+        />
+        <el-icon
+          v-show="menuStore.search"
+          un-pos="absolute"
+          un-right="2"
+          un-top="1"
+          un-text="gray hover:red"
+          un-cursor-pointer
+          @click="menuStore.search = '';menuSearchForcused = false"
+        >
+          <ElIconClose />
+        </el-icon>
+      </div>
+    </div>
+  </div>
+  <el-menu
+    class="AppMenu"
+    un-w="full"
+    :default-active="defaultActive"
+    :collapse="menuStore.isCollapse"
+    :collapse-transition="false"
+    unique-opened
+    :router="false"
+    @open="menuOpen"
+    @close="menuClose"
+    @select="menuSelect"
+  >
+    <AppSubMenu
+      :children="(menuStore.menus as any[])"
+      :opened-index="openedIndex"
+    ></AppSubMenu>
+  </el-menu>
+</div>
 </template>
 
 <script lang="ts" setup>
-import useMenuStore from "@/store/menu";
-import useUsrStore from "@/store/usr";
-
 import {
   getMenus,
 } from "./Api";
@@ -37,6 +119,29 @@ import type {
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 const tabsStore = useTabsStore();
+
+const {
+  ns,
+  nsAsync,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
+let menuSearchForcused = $ref(false);
+let menuSearchInputRef = $ref<HTMLInputElement>();
+
+function menuSearchClk() {
+  menuSearchForcused = true;
+  nextTick(() => {
+    menuSearchInputRef?.focus();
+  });
+}
+
+function menuSearchBlur() {
+  if (!menuStore.search) {
+    menuSearchForcused = false;
+  }
+}
 
 let openedIndex = $ref<MenuId[]>([ ]);
 let selectedRouteNext = $ref(false);
