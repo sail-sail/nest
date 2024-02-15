@@ -20,8 +20,8 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.214.0/",
-    "oak": "https://deno.land/x/oak@v13.0.0/mod.ts",
+    "std/": "https://deno.land/std@0.215.0/",
+    "oak": "https://deno.land/x/oak@v13.1.0/mod.ts",
     "graphql": "https://esm.sh/graphql@16.8.1",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
     "redis": "https://deno.land/x/redis@v0.32.1/mod.ts",

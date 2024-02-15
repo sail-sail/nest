@@ -9,7 +9,8 @@
   }"
 >
   <el-tooltip
-    :disabled="selectRef?.dropdownMenuVisible || props.multiple"
+    :disabled="(selectRef?.dropdownMenuVisible || props.multiple)
+      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
   >
     <template
       #content
@@ -23,33 +24,19 @@
         un-line-height="normal"
         un-break-words
         :class="{
-          'custom_select_placeholder': shouldShowPlaceholder,
           custom_select_isShowModelLabel: isShowModelLabel,
         }"
       >
-        <template
-          v-if="!modelLabels[0]"
+        <span
+          v-if="isShowModelLabel"
         >
-          <span
-            class="custom_select_placeholder"
-          >
-            {{ props.readonlyPlaceholder ?? "" }}
-          </span>
-        </template>
-        <template
+          {{ props.modelLabel || "" }}
+        </span>
+        <span
           v-else
         >
-          <span
-            v-if="isShowModelLabel"
-          >
-            {{ props.modelLabel || "" }}
-          </span>
-          <span
-            v-else
-          >
-            {{ modelLabels[0] || "" }}
-          </span>
-        </template>
+          {{ modelLabels[0] || "" }}
+        </span>
       </div>
     </template>
     <ElSelectV2
