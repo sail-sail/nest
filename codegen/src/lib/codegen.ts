@@ -205,45 +205,95 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             return item.substring(0, 1).toUpperCase() + item.substring(1);
           }).join("");
           let lbl = "";
-          if (lbls.length === 0) {
-            lbl += `<%const data = _data_.data;%>`;
-            lbl += `<%const selectList = { };%>`;
-            lbl += `<%const comment = data.getFieldComments${ Table_Up_IN };%>`;
-          }
-          lbl += `<%=comment.`;
-          if (
-            (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
-            || (data_type === "date" || data_type === "datetime")
-          ) {
-            lbl += column_name + "_lbl";
+          if (!isImport) {
+            if (lbls.length === 0) {
+              lbl += `<%initJs: const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { }; const columns = _data_.columns; var xSplit = columns.findIndex((column) => !column.fixed); if (xSplit === -1) { xSplit = 0; }%>`;
+              lbl += `<%_freezePane_({ xSplit, ySplit: 1 })%>`;
+              lbl += `<%_setSheetName_(sheetName)%>`;
+            }
+            lbl += `<% var prop = "`;
+            if (
+              (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+              || (data_type === "date" || data_type === "datetime")
+            ) {
+              lbl += column_name + "_lbl";
+            } else {
+              lbl += column_name;
+            }
+            lbl += `"; var column = columns.find((column) => column.prop === prop); var idx = columns.indexOf(column); %><%_setC_(idx !== -1 ? _charPlus_("A", idx) : _col)%><%=column.label%><%_cols_({ min: _col, width: column.width, hidden: column.hidden })%>`;
+            // Excel里面的下拉框
+            if (
+              (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
+              || (selectList.length > 0 || column.dict || column.dictbiz)
+            ) {
+              if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
+                lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
+              } else if (column.dict) {
+                lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
+              } else if (column.dictbiz) {
+                lbl += `<%selectList.${ column_name } = data.getDictbiz.find((item) => item[0]?.code === "${ column.dictbiz }")?.map((item) => item.lbl) || [ ]%>`;
+              } else if (selectList.length > 0) {
+                lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
+              }
+              lbl += `<%selectList.${ column_name } && selectList.${ column_name }.length > 0 && _dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
+              if (require) {
+                lbl += `, allowBlank: '0'`;
+              }
+              lbl += ` })%>`;
+            }
           } else {
-            lbl += column_name;
-          }
-          lbl += `%>`;
-          // Excel里面的下拉框
-          if (
-            (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
-            || (selectList.length > 0 || column.dict || column.dictbiz)
-          ) {
-            if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
-              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
-            } else if (column.dict) {
-              lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
-            } else if (column.dictbiz) {
-              lbl += `<%selectList.${ column_name } = data.getDictbiz.find((item) => item[0]?.code === "${ column.dictbiz }")?.map((item) => item.lbl) || [ ]%>`;
-            } else if (selectList.length > 0) {
-              lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
+            if (lbls.length === 0) {
+              lbl += `<%initJs: const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { }; const comment = data.getFieldComments${ Table_Up_IN };%>`;
+              lbl += `<%_setSheetName_(sheetName)%>`;
             }
-            lbl += `<%selectList.${ column_name } && selectList.${ column_name }.length > 0 && _dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
-            if (require) {
-              lbl += `, allowBlank: '0'`;
+            lbl += `<%=comment.`;
+            if (
+              (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+              || (data_type === "date" || data_type === "datetime")
+            ) {
+              lbl += column_name + "_lbl";
+            } else {
+              lbl += column_name;
             }
-            lbl += ` })%>`;
+            lbl += `%>`;
+            // Excel里面的下拉框
+            if (
+              (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
+              || (selectList.length > 0 || column.dict || column.dictbiz)
+            ) {
+              if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
+                lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
+              } else if (column.dict) {
+                lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
+              } else if (column.dictbiz) {
+                lbl += `<%selectList.${ column_name } = data.getDictbiz.find((item) => item[0]?.code === "${ column.dictbiz }")?.map((item) => item.lbl) || [ ]%>`;
+              } else if (selectList.length > 0) {
+                lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
+              }
+              lbl += `<%selectList.${ column_name } && selectList.${ column_name }.length > 0 && _dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
+              if (require) {
+                lbl += `, allowBlank: '0'`;
+              }
+              lbl += ` })%>`;
+            }
           }
           lbls.push(lbl);
           let str = "";
           if (fields.length === 0) {
             str += `<%forRow model in data.findAll${ Table_Up_IN }%>`;
+          }
+          str += `<% var prop = "`;
+          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+            str += column_name + "_lbl";
+          } else {
+            str += column_name;
+          }
+          str += `";`;
+          if (!isImport) {
+            str += ` var column = columns.find((column) => column.prop === prop); var idx = columns.indexOf(column);`;
+            str += ` _col = idx !== -1 ? _charPlus_("A", idx) : _col;`;
+            str += ` %>`;
+            str += `<%_setC_(_col)%>`;
           }
           str += "<%";
           if (data_type === "varchar") {
@@ -260,16 +310,11 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += "=";
           }
           if (data_type === "date" || data_type === "datetime") {
-            str += `model.${ column_name } ? new Date(model.${ column_name }) : ""`;
+            str += `model[prop] ? new Date(model[prop]) : ""`;
           } else {
-            str += "model.";
-            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
-              str += column_name + "_lbl";
-            } else {
-              str += column_name;
-            }
+            str += "model[prop]";
           }
-          str += "%>";
+          str += `%>`;
           fields.push(str);
         }
         const buffer2 = await ejsexcel.renderExcel(buffer, { lbls, fields });

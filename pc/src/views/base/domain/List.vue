@@ -206,8 +206,15 @@
         >
           <span
             v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            un-text="red"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -1183,10 +1190,9 @@ let exportExcel = $ref(useExportExcel(pagePath));
 async function onExport() {
   const search2 = getDataSearch();
   await exportExcel.workerFn(
+    toExcelColumns(tableColumns),
     search2,
-    [
-      sort,
-    ],
+    [ sort ],
   );
 }
 
