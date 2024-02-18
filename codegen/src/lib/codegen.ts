@@ -220,7 +220,12 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             } else {
               lbl += column_name;
             }
-            lbl += `"; var column = columns.find((column) => column.prop === prop); var idx = columns.indexOf(column); %><%_setC_(idx !== -1 ? _charPlus_("A", idx) : _col)%><%=column.label%><%_cols_({ min: _col, width: column.width, hidden: column.hidden })%>`;
+            lbl += `"; var column = columns.find((column) => column.prop === prop); var idx = columns.indexOf(column);`;
+            lbl += ` _col = idx !== -1 ? _charPlus_("A", idx) : _col;`;
+            lbl += ` %>`;
+            lbl += `<%_setC_(_col)%>`;
+            lbl += `<%=column.label%>`;
+            lbl += `<%_cols_({ min: _col, width: column.width, hidden: column.hidden })%>`;
             // Excel里面的下拉框
             if (
               (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
