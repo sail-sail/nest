@@ -59,6 +59,7 @@
       class="custom_select"
       :class="{
         'custom_select_space_normal': true,
+        dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
       }"
       @change="onValueChange"
       :multiple="props.multiple"
