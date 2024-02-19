@@ -4,7 +4,7 @@
   :key="item.id"
 >
   <el-sub-menu
-    v-if="!item.route_path"
+    v-if="!item.route_path && item._isShow !== false"
     :index="item.id"
     :show-timeout="0"
     :hide-timeout="0"
@@ -24,7 +24,7 @@
     ></AppSubMenu>
   </el-sub-menu>
   <el-menu-item
-    v-else
+    v-else-if="item._isShow !== false"
     :index="item.id"
     :route="{ path: item.route_path }"
     :class="{ top_menu_item: lvl === 1 }"
@@ -51,6 +51,7 @@ import type {
 
 type MenuModel = MenuModel0 & {
   children: MenuModel[];
+  _isShow?: boolean;
 }
 
 const props = withDefaults(

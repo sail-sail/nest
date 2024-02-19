@@ -46,6 +46,14 @@ declare global {
     fixed?: boolean | "left" | "right";
   }
   
+  interface ExcelColumnType {
+    prop: string;
+    label: string;
+    width?: string | number;
+    fixed?: boolean;
+    hidden?: "1" | "0";
+  }
+  
   interface FormItemRule extends FormItemRule2 {
   }
   

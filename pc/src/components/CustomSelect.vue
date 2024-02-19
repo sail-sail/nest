@@ -8,59 +8,91 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <ElSelectV2
-    ref="selectRef"
-    :options="options4SelectV2"
-    filterable
-    collapse-tags
-    collapse-tags-tooltip
-    default-first-option
-    :height="props.height"
-    :remote="props.pinyinFilterable"
-    :remote-method="filterMethod"
-    @visible-change="handleVisibleChange"
-    @clear="onClear"
-    un-w="full"
-    v-bind="$attrs"
-    :model-value="modelValueComputed"
-    @update:model-value="modelValueUpdate"
-    :loading="!inited"
-    class="custom_select"
-    :class="{
-      'custom_select_space_normal': true,
-    }"
-    @change="onValueChange"
-    :multiple="props.multiple"
-    :clearable="!props.disabled"
-    :disabled="props.disabled"
-    :readonly="props.readonly"
-    :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
-    @keyup.enter.stop
+  <el-tooltip
+    :disabled="(selectRef?.dropdownMenuVisible || props.multiple)
+      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
   >
     <template
-      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
-      #header
+      #content
     >
-      <el-checkbox
-        v-model="isSelectAll"
-        :indeterminate="isIndeterminate"
-        un-w="full"
-        un-p="l-3"
+      <div
+        un-flex="~ gap-1 wrap"
+        un-items-center
         un-box-border
+        un-rounded
+        un-w="full"
+        un-line-height="normal"
+        un-break-words
+        :class="{
+          custom_select_isShowModelLabel: isShowModelLabel,
+        }"
       >
-        <span>
-          ({{ ns("全选") }})
+        <span
+          v-if="isShowModelLabel"
+        >
+          {{ props.modelLabel || "" }}
         </span>
-      </el-checkbox>
+        <span
+          v-else
+        >
+          {{ modelLabels[0] || "" }}
+        </span>
+      </div>
     </template>
-    <template
-      v-for="(item, key, index) in $slots"
-      :key="index"
-      #[key]
+    <ElSelectV2
+      ref="selectRef"
+      :options="options4SelectV2"
+      filterable
+      collapse-tags
+      collapse-tags-tooltip
+      default-first-option
+      :height="props.height"
+      :remote="props.pinyinFilterable"
+      :remote-method="filterMethod"
+      @visible-change="handleVisibleChange"
+      @clear="onClear"
+      un-w="full"
+      v-bind="$attrs"
+      :model-value="modelValueComputed"
+      @update:model-value="modelValueUpdate"
+      :loading="!inited"
+      class="custom_select"
+      :class="{
+        'custom_select_space_normal': true,
+      }"
+      @change="onValueChange"
+      :multiple="props.multiple"
+      :clearable="!props.disabled"
+      :disabled="props.disabled"
+      :readonly="props.readonly"
+      :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
+      @keyup.enter.stop
     >
-      <slot :name="key"></slot>
-    </template>
-  </ElSelectV2>
+      <template
+        v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+        #header
+      >
+        <el-checkbox
+          v-model="isSelectAll"
+          :indeterminate="isIndeterminate"
+          un-w="full"
+          un-p="l-3"
+          un-box-border
+        >
+          <span>
+            ({{ ns("全选") }})
+          </span>
+        </el-checkbox>
+      </template>
+      <template
+        v-for="(item, key, index) in $slots"
+        :key="index"
+        #[key]
+      >
+        <slot :name="key"></slot>
+      </template>
+    </ElSelectV2>
+  </el-tooltip>
 </div>
 <template
   v-else
@@ -221,7 +253,7 @@ const props = withDefaults(
       };
     },
     pinyinFilterable: false,
-    height: 300,
+    height: 400,
     options4SelectV2: () => [ ],
     modelValue: undefined,
     modelLabel: undefined,
@@ -404,15 +436,15 @@ function onClear() {
 
 let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
 
-watch(
-  () => options4SelectV2,
-  async () => {
-    const oldModelValue = modelValue;
-    modelValue = undefined;
-    await nextTick();
-    modelValue = oldModelValue;
-  },
-);
+// watch(
+//   () => options4SelectV2,
+//   async () => {
+//     const oldModelValue = modelValue;
+//     modelValue = undefined;
+//     await nextTick();
+//     modelValue = oldModelValue;
+//   },
+// );
 
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {

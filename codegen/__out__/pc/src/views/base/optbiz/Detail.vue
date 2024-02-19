@@ -407,6 +407,7 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   isShowEditCallbackConfirm = false;
+  isShowDeleteCallbackConfirm = false;
   is_deleted = model?.is_deleted ?? 0;
   if (arg?.findOne) {
     findOneModel = arg.findOne;
@@ -599,6 +600,43 @@ async function subscribeEditCallback(id?: OptbizId) {
     return;
   }
   await onRefresh();
+}
+
+let isShowDeleteCallbackConfirm = false;
+
+/** 订阅删除消息回调 */
+async function subscribeDeleteCallback(ids?: OptbizId[]) {
+  if (!ids) {
+    return;
+  }
+  if (!dialogModel.id) {
+    return;
+  }
+  if (!ids.includes(dialogModel.id)) {
+    return;
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    return;
+  }
+  if (isShowDeleteCallbackConfirm) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("业务选项")),
+      {
+        confirmButtonText: await nsAsync("关闭"),
+        cancelButtonText: await nsAsync("暂不关闭"),
+        type: "warning",
+      },
+    );
+  } catch {
+    return;
+  }
+  onCloseResolve({
+    type: "cancel",
+    changedIds,
+  });
 }
 
 /** 刷新 */
@@ -864,16 +902,31 @@ async function onDialogOpen() {
     }),
     subscribeEditCallback,
   );
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
+  );
 }
 
 async function onDialogClose() {
   isShowEditCallbackConfirm = true;
+  isShowDeleteCallbackConfirm = true;
   unSubscribe(
     JSON.stringify({
       pagePath,
       action: "edit",
     }),
     subscribeEditCallback,
+  );
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
   );
 }
 
