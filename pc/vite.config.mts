@@ -70,6 +70,7 @@ export default defineConfig({
         {
           "@/utils/excel_util": [
             "getExcelData",
+            "toExcelColumns",
             "useRenderExcel",
             "saveAsExcel",
           ],

@@ -286,12 +286,6 @@ export interface TableCloumn {
   
   /**
    * 外键关联是否多对多
-   * @type {{
-   *     table: string,
-   *     column1: string,
-   *     column2: string,
-   *   }}
-   * 
    */
   many2many?: {
     
@@ -472,6 +466,8 @@ export interface TableCloumn {
    */
   searchMultiple?: boolean,
   
+  /** 搜索条件是否默认收起, 默认为false */
+  isSearchExpand?: boolean,
   
   /**
    * 此字段对应的冗余字段
