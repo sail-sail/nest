@@ -132,7 +132,12 @@ function onClear() {
   emit("clear");
 }
 
+function focus() {
+  inputRef?.focus();
+}
+
 defineExpose({
   inputRef: $$(inputRef),
+  focus,
 });
 </script>

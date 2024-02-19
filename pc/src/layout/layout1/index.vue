@@ -336,7 +336,6 @@ import type {
 const router = useRouter();
 
 const {
-  n,
   ns,
   nsAsync,
   initI18ns,
