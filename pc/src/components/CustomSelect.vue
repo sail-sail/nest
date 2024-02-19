@@ -136,15 +136,64 @@
       </span>
       <div
         v-else
+        un-flex="~ wrap"
+        un-gap="x-1 y-1"
+        un-m="y-1"
       >
-        <el-tag
-          v-for="label in modelLabels"
-          :key="label"
-          type="info"
-          :disable-transitions="true"
+        <template
+          v-if="readonlyCollapseTags"
         >
-          {{ label }}
-        </el-tag>
+          <el-tag
+            v-for="label in modelLabels.slice(0, props.readonlyMaxCollapseTags)"
+            :key="label"
+            type="info"
+            :disable-transitions="true"
+          >
+            {{ label }}
+          </el-tag>
+          <el-tooltip
+            v-if="modelLabels.length > props.readonlyMaxCollapseTags"
+          >
+            <el-tag
+              type="info"
+              :disable-transitions="true"
+              @click="() => readonlyCollapseTags = false"
+              un-cursor-pointer
+            >
+              {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
+            </el-tag>
+            <template
+              #content
+            >
+              <div
+                un-flex="~ wrap"
+                un-gap="x-1 y-1"
+                un-m="y-1"
+              >
+                <el-tag
+                  v-for="label in modelLabels.slice(props.readonlyMaxCollapseTags)"
+                  :key="label"
+                  type="info"
+                  :disable-transitions="true"
+                >
+                  {{ label }}
+                </el-tag>
+              </div>
+            </template>
+          </el-tooltip>
+        </template>
+        <template
+          v-else
+        >
+          <el-tag
+            v-for="label in modelLabels"
+            :key="label"
+            type="info"
+            :disable-transitions="true"
+          >
+            {{ label }}
+          </el-tag>
+        </template>
       </div>
     </template>
   </div>
@@ -243,6 +292,8 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    readonlyCollapseTags?: boolean;
+    readonlyMaxCollapseTags?: number;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -266,6 +317,8 @@ const props = withDefaults(
     readonly: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    readonlyCollapseTags: true,
+    readonlyMaxCollapseTags: 10,
   },
 );
 
@@ -285,6 +338,15 @@ watch(
   () => props.modelLabel,
   () => {
     modelLabel = props.modelLabel;
+  },
+);
+
+let readonlyCollapseTags = $ref(props.readonlyCollapseTags);
+
+watch(
+  () => props.readonlyCollapseTags,
+  () => {
+    readonlyCollapseTags = props.readonlyCollapseTags;
   },
 );
 
