@@ -384,7 +384,6 @@ export async function forceDeleteByIds(
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -406,13 +405,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/base/org.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("组织") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("组织");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/base/org.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -426,7 +432,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -434,71 +439,76 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: OrgSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: OrgSearch, $sort: [SortInput!]) {
-          findAllOrg(search: $search, sort: $sort) {
-            id
-            lbl
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
-          getFieldCommentsOrg {
-            lbl
-            is_locked_lbl
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
     try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/base/org.xlsx`,
-        {
-          data,
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: OrgSearch, $sort: [SortInput!]) {
+            findAllOrg(search: $search, sort: $sort) {
+              id
+              lbl
+              is_locked
+              is_locked_lbl
+              is_enabled
+              is_enabled_lbl
+              order_by
+              rem
+              create_usr_id
+              create_usr_id_lbl
+              create_time
+              create_time_lbl
+              update_usr_id
+              update_usr_id_lbl
+              update_time
+              update_time_lbl
+            }
+            getDict(codes: [
+              "is_locked",
+              "is_enabled",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("组织"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("组织");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/base/org.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,

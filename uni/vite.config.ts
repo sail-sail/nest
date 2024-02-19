@@ -99,10 +99,6 @@ export default defineConfig({
           "@/components/CustomForm/CustomForm.vue": [
             [ "default", "CustomForm" ]
           ],
-          "@/utils/WxWorkUtil": [
-            "wxwGetAppid",
-            "initWxWorkCfg",
-          ],
         },
       ],
       resolvers: [

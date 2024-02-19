@@ -1493,7 +1493,6 @@ export async function get<#=Foreign_Table_Up#>Tree() {
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -1765,13 +1764,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("<#=table_comment#>") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("<#=table_comment#>");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -1785,7 +1791,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -1793,228 +1798,65 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: <#=searchName#>,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: <#=searchName#>, $sort: [SortInput!]) {
-          findAll<#=Table_Up2#>(search: $search, sort: $sort) {<#
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
+    try {
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: <#=searchName#>, $sort: [SortInput!]) {
+            findAll<#=Table_Up2#>(search: $search, sort: $sort) {<#
+              for (let i = 0; i < columns.length; i++) {
+                const column = columns[i];
+                if (column.ignoreCodegen) continue;
+                if (column.onlyCodegenDeno) continue;
+                const column_name = column.COLUMN_NAME;
+                if (
+                  [
+                    "is_deleted", "is_sys",
+                    "tenant_id", "tenant_id_lbl",
+                    "org_id", "org_id_lbl",
+                  ].includes(column_name)
+                ) continue;
+                let column_type = column.COLUMN_TYPE;
+                let data_type = column.DATA_TYPE;
+                let column_comment = column.COLUMN_COMMENT;
+                let selectList = [ ];
+                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+                if (selectStr) {
+                  selectList = eval(`(${ selectStr })`);
+                }
+                if (column_comment.includes("[")) {
+                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
+                }
+                const foreignKey = column.foreignKey;
+                const isPassword = column.isPassword;
+                if (isPassword) continue;
+              #><#
+                if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                  || data_type === "datetime" || data_type === "date"
+                ) {
+              #>
+              <#=column_name#>
+              <#=column_name#>_lbl<#
+                } else {
+              #>
+              <#=column_name#><#
+                }
               }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
-              const foreignKey = column.foreignKey;
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-            #><#
-              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-                || data_type === "datetime" || data_type === "date"
-              ) {
-            #>
-            <#=column_name#>
-            <#=column_name#>_lbl<#
-              } else {
-            #>
-            <#=column_name#><#
-              }
-            }
-            #>
-          }
-          getFieldComments<#=Table_Up2#> {<#
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
-              const foreignKey = column.foreignKey;
-              if (column_name === "id") {
-                continue;
-              }
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-            #><#
-              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-                || data_type === "datetime" || data_type === "date"
-              ) {
-            #>
-            <#=column_name#>_lbl<#
-              } else {
-            #>
-            <#=column_name#><#
-              }
-            }
-            #>
-          }<#
-          const foreignTableArrTmp2 = [];
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            if (column.notImportExportList) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "id",
-                "is_deleted", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
-              ].includes(column_name)
-            ) continue;
-            let column_type = column.COLUMN_TYPE;
-            let data_type = column.DATA_TYPE;
-            const column_comment = column.COLUMN_COMMENT;
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            const foreignKey = column.foreignKey;
-            if (!foreignKey) continue;
-            if (!foreignKey.lbl) continue;
-            const foreignTable = foreignKey && foreignKey.table;
-            if (foreignTableArrTmp2.includes(foreignTable)) continue;
-            foreignTableArrTmp2.push(foreignTable);
-            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-            const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-              return item.substring(0, 1).toUpperCase() + item.substring(1);
-            }).join("");
-          #>
-          findAll<#=Foreign_Table_Up#> {
-            <#=foreignKey.lbl#>
-          }<#
-          }
-          #><#
-          hasDict = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            if (column.notImportExportList) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "id",
-                "is_deleted", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
-              ].includes(column_name)
-            ) continue;
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dict) {
-              hasDict = true;
-              break;
-            }
-          }
-          if (hasDict) {
-          #>
-          getDict(codes: [<#
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
-              if (column.notImportExportList) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
-              const foreignKey = column.foreignKey;
-              if (column_name === "id") {
-                continue;
-              }
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-            #><#
-              if (column.dict) {
-            #>
-            "<#=column.dict#>",<#
-              }
-            #><#
-            }
-            #>
-          ]) {
-            code
-            lbl
-          }<#
-          }
-          #><#
-          hasDictbiz = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            if (column.notImportExportList) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "id",
-                "is_deleted", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
-              ].includes(column_name)
-            ) continue;
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dictbiz) {
-              hasDictbiz = true;
-              break;
-            }
-          }
-          if (hasDictbiz) {
-          #>
-          getDictbiz(codes: [<#
+              #>
+            }<#
+            const foreignTableArrTmp2 = [];
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -2032,44 +1874,180 @@ export function useExportExcel(routePath: string) {
               let column_type = column.COLUMN_TYPE;
               let data_type = column.DATA_TYPE;
               const column_comment = column.COLUMN_COMMENT;
-              const foreignKey = column.foreignKey;
               const isPassword = column.isPassword;
               if (isPassword) continue;
-            #><#
-              if (column.dictbiz) {
+              const foreignKey = column.foreignKey;
+              if (!foreignKey) continue;
+              if (!foreignKey.lbl) continue;
+              const foreignTable = foreignKey && foreignKey.table;
+              if (foreignTableArrTmp2.includes(foreignTable)) continue;
+              foreignTableArrTmp2.push(foreignTable);
+              const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+              const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+                return item.substring(0, 1).toUpperCase() + item.substring(1);
+              }).join("");
             #>
-            "<#=column.dictbiz#>",<#
-              }
+            findAll<#=Foreign_Table_Up#> {
+              <#=foreignKey.lbl#>
+            }<#
+            }
             #><#
+            hasDict = false;
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
+              const column_name = column.COLUMN_NAME;
+              if (
+                [
+                  "id",
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+              if (column.dict) {
+                hasDict = true;
+                break;
+              }
+            }
+            if (hasDict) {
+            #>
+            getDict(codes: [<#
+              for (let i = 0; i < columns.length; i++) {
+                const column = columns[i];
+                if (column.ignoreCodegen) continue;
+                if (column.onlyCodegenDeno) continue;
+                if (column.notImportExportList) continue;
+                const column_name = column.COLUMN_NAME;
+                if (
+                  [
+                    "is_deleted", "is_sys",
+                    "tenant_id", "tenant_id_lbl",
+                    "org_id", "org_id_lbl",
+                  ].includes(column_name)
+                ) continue;
+                let column_type = column.COLUMN_TYPE;
+                let data_type = column.DATA_TYPE;
+                let column_comment = column.COLUMN_COMMENT;
+                let selectList = [ ];
+                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+                if (selectStr) {
+                  selectList = eval(`(${ selectStr })`);
+                }
+                if (column_comment.includes("[")) {
+                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
+                }
+                const foreignKey = column.foreignKey;
+                if (column_name === "id") {
+                  continue;
+                }
+                const isPassword = column.isPassword;
+                if (isPassword) continue;
+              #><#
+                if (column.dict) {
+              #>
+              "<#=column.dict#>",<#
+                }
+              #><#
+              }
+              #>
+            ]) {
+              code
+              lbl
+            }<#
+            }
+            #><#
+            hasDictbiz = false;
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              if (column.notImportExportList) continue;
+              const column_name = column.COLUMN_NAME;
+              if (
+                [
+                  "id",
+                  "is_deleted", "is_sys",
+                  "tenant_id", "tenant_id_lbl",
+                  "org_id", "org_id_lbl",
+                ].includes(column_name)
+              ) continue;
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+              if (column.dictbiz) {
+                hasDictbiz = true;
+                break;
+              }
+            }
+            if (hasDictbiz) {
+            #>
+            getDictbiz(codes: [<#
+              for (let i = 0; i < columns.length; i++) {
+                const column = columns[i];
+                if (column.ignoreCodegen) continue;
+                if (column.onlyCodegenDeno) continue;
+                if (column.notImportExportList) continue;
+                const column_name = column.COLUMN_NAME;
+                if (
+                  [
+                    "id",
+                    "is_deleted", "is_sys",
+                    "tenant_id", "tenant_id_lbl",
+                    "org_id", "org_id_lbl",
+                  ].includes(column_name)
+                ) continue;
+                let column_type = column.COLUMN_TYPE;
+                let data_type = column.DATA_TYPE;
+                const column_comment = column.COLUMN_COMMENT;
+                const foreignKey = column.foreignKey;
+                const isPassword = column.isPassword;
+                if (isPassword) continue;
+              #><#
+                if (column.dictbiz) {
+              #>
+              "<#=column.dictbiz#>",<#
+                }
+              #><#
+              }
+              #>
+            ]) {
+              code
+              lbl
+            }<#
             }
             #>
-          ]) {
-            code
-            lbl
-          }<#
           }
-          #>
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
-    try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
-        {
-          data,
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("<#=table_comment#>"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("<#=table_comment#>");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,
