@@ -649,11 +649,13 @@ async function refreshWrapperHeight() {
 }
 
 watch(
-  () => modelValue && inited && !props.multiple && options4SelectV2.length > 0,
-  (val) => {
-    if (!val) {
-      return;
-    }
+  () => [
+    modelValue,
+    inited,
+    !props.multiple,
+    options4SelectV2.length > 0,
+  ],
+  () => {
     refreshWrapperHeight();
   },
 );
