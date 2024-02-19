@@ -74,7 +74,7 @@ export async function request<T>(
     };
   } catch(errTmp) {
     err = errTmp;
-    const errStr = err ?? err.toString();
+    const errStr = err && err.toString();
     if (errStr === "TypeError: Failed to fetch") {
       err = "网络连接失败，请稍后再试";
     }
