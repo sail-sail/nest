@@ -239,7 +239,6 @@ export async function findById(
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -283,13 +282,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/wx/pay_transactions_jsapi.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("微信JSAPI下单") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("微信JSAPI下单");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/wx/pay_transactions_jsapi.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -303,7 +309,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -311,98 +316,91 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: PayTransactionsJsapiSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
-          findAllPayTransactionsJsapi(search: $search, sort: $sort) {
-            id
-            appid
-            mchid
-            description
-            out_trade_no
-            transaction_id
-            trade_state
-            trade_state_lbl
-            trade_state_desc
-            success_time
-            success_time_lbl
-            time_expire
-            attach
-            attach2
-            notify_url
-            support_fapiao
-            support_fapiao_lbl
-            total_fee
-            currency
-            currency_lbl
-            openid
-            prepay_id
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
-          getFieldCommentsPayTransactionsJsapi {
-            appid
-            mchid
-            description
-            out_trade_no
-            transaction_id
-            trade_state_lbl
-            trade_state_desc
-            success_time_lbl
-            time_expire
-            attach
-            attach2
-            notify_url
-            support_fapiao_lbl
-            total_fee
-            currency_lbl
-            openid
-            prepay_id
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          getDict(codes: [
-            "wx_pay_notice_trade_state",
-            "is_enabled",
-            "wx_pay_notice_currency",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
     try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/wx/pay_transactions_jsapi.xlsx`,
-        {
-          data,
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
+            findAllPayTransactionsJsapi(search: $search, sort: $sort) {
+              id
+              appid
+              mchid
+              description
+              out_trade_no
+              transaction_id
+              trade_state
+              trade_state_lbl
+              trade_state_desc
+              success_time
+              success_time_lbl
+              time_expire
+              attach
+              attach2
+              notify_url
+              support_fapiao
+              support_fapiao_lbl
+              total_fee
+              currency
+              currency_lbl
+              openid
+              prepay_id
+              create_usr_id
+              create_usr_id_lbl
+              create_time
+              create_time_lbl
+              update_usr_id
+              update_usr_id_lbl
+              update_time
+              update_time_lbl
+            }
+            getDict(codes: [
+              "wx_pay_notice_trade_state",
+              "is_enabled",
+              "wx_pay_notice_currency",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("微信JSAPI下单"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("微信JSAPI下单");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/wx/pay_transactions_jsapi.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,
