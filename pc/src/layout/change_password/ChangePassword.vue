@@ -241,7 +241,7 @@ async function onSave() {
   }
 }
 
-/** 点击取消关闭按钮 */
+/** 点击关闭按钮 */
 function onClose() {
   onCloseResolve({
     type: "cancel",

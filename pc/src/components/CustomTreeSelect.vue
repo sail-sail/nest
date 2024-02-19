@@ -5,6 +5,7 @@
   collapse-tags
   collapse-tags-tooltip
   default-first-option
+  :height="props.height"
   class="custom_tree_select"
   node-key="id"
   vaule-key="id"
@@ -112,7 +113,7 @@ const props = withDefaults(
     readonly?: boolean;
   }>(),
   {
-    height: 300,
+    height: 400,
     modelValue: undefined,
     autoWidth: true,
     maxWidth: 550,
@@ -251,3 +252,9 @@ defineExpose({
   refresh: refreshEfc,
 });
 </script>
+
+<style lang="scss">
+.el-select-dropdown__wrap {
+  max-height: 400px;
+}
+</style>
