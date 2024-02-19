@@ -2271,7 +2271,8 @@ async function showDialog(
   isLocked = false;<#
   if (opts?.isRealData) {
   #>
-  isShowEditCallbackConfirm = false;<#
+  isShowEditCallbackConfirm = false;
+  isShowDeleteCallbackConfirm = false;<#
   }
   #>
   is_deleted = model?.is_deleted ?? 0;
@@ -2626,6 +2627,43 @@ async function subscribeEditCallback(id?: <#=Table_Up#>Id) {
     return;
   }
   await onRefresh();
+}
+
+let isShowDeleteCallbackConfirm = false;
+
+/** 订阅删除消息回调 */
+async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
+  if (!ids) {
+    return;
+  }
+  if (!dialogModel.id) {
+    return;
+  }
+  if (!ids.includes(dialogModel.id)) {
+    return;
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    return;
+  }
+  if (isShowDeleteCallbackConfirm) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("<#=table_comment#>")),
+      {
+        confirmButtonText: await nsAsync("关闭"),
+        cancelButtonText: await nsAsync("暂不关闭"),
+        type: "warning",
+      },
+    );
+  } catch {
+    return;
+  }
+  onCloseResolve({
+    type: "cancel",
+    changedIds,
+  });
 }<#
 }
 #>
@@ -3209,6 +3247,13 @@ async function onDialogOpen() {<#
       action: "edit",
     }),
     subscribeEditCallback,
+  );
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
   );<#
   }
   #>
@@ -3218,12 +3263,20 @@ async function onDialogClose() {<#
   if (opts?.isRealData) {
   #>
   isShowEditCallbackConfirm = true;
+  isShowDeleteCallbackConfirm = true;
   unSubscribe(
     JSON.stringify({
       pagePath,
       action: "edit",
     }),
     subscribeEditCallback,
+  );
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
   );<#
   }
   #>

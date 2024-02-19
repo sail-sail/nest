@@ -78,6 +78,28 @@ import dayjs from "dayjs";
   return rows;
 }
 
+function toExcelColWidth(width?: string | number) {
+  let excelWidth: string | undefined;
+  if (width && !isNaN(Number(width))) {
+    excelWidth = (Number(width) / 13 * 22).toFixed(0);
+  }
+  return excelWidth;
+}
+
+export function toExcelColumns(tableColumns: ColumnType[]): ExcelColumnType[] {
+  const columns: ExcelColumnType[] = tableColumns.map((column) => {
+    return {
+      prop: column.prop,
+      label: column.label,
+      width: toExcelColWidth(column.width),
+      align: column.align,
+      fixed: column.fixed === "left" || column.fixed === true,
+      hidden: column.hide === true ? "1" : "0",
+    };
+  });
+  return columns;
+}
+
 /**
  * 渲染excel模板
  */
