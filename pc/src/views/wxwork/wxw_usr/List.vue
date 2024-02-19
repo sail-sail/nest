@@ -118,6 +118,22 @@
           <span>{{ ns('重置') }}</span>
         </el-button>
         
+        <div
+          un-m="l-2"
+          un-flex="~"
+          un-items-end
+          un-gap="x-2"
+        >
+          
+          <TableSearchStaging
+            :search="search"
+            :page-path="pagePath"
+            :filename="__filename"
+            @search="onSearchStaging"
+          ></TableSearchStaging>
+          
+        </div>
+        
       </el-form-item>
       
     </el-form>
@@ -218,8 +234,15 @@
         >
           <span
             v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            un-text="red"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -544,6 +567,7 @@ defineOptions({
 });
 
 const pagePath = "/wxwork/wxw_usr";
+const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -587,7 +611,7 @@ async function onWxwSyncUsr() {
   ElMessage.success(await nsAsync("企微用户正在同步, 这可能需要一点时间, 请稍后刷新查看..."));
 }
 
-/** 搜索 */
+/** 查询 */
 function initSearch() {
   return {
     is_deleted: 0,
@@ -603,10 +627,19 @@ async function recycleChg() {
   await dataGrid(true);
 }
 
-/** 搜索 */
+/** 查询 */
 async function onSearch() {
   tableFocus();
   await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: WxwUsrSearch) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
 }
 
 /** 刷新 */
@@ -618,7 +651,7 @@ async function onRefresh() {
 
 let isSearchReset = $ref(false);
 
-/** 重置搜索 */
+/** 重置查询 */
 async function onSearchReset() {
   tableFocus();
   isSearchReset = true;
@@ -631,7 +664,7 @@ async function onSearchReset() {
   isSearchReset = false;
 }
 
-/** 清空搜索框事件 */
+/** 清空查询框事件 */
 async function onSearchClear() {
   tableFocus();
   await dataGrid(true);
@@ -679,7 +712,7 @@ const propsNotInSearch: string[] = [
   "isFocus",
 ];
 
-/** 内置搜索条件 */
+/** 内置查询条件 */
 const builtInSearch: WxwUsrSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
@@ -841,7 +874,7 @@ let {
 } = $(useTableColumns<WxwUsrModel>(
   $$(tableColumns),
   {
-    persistKey: new URL(import.meta.url).pathname,
+    persistKey: __filename,
   },
 ));
 
@@ -973,10 +1006,9 @@ let exportExcel = $ref(useExportExcel(pagePath));
 async function onExport() {
   const search2 = getDataSearch();
   await exportExcel.workerFn(
+    toExcelColumns(tableColumns),
     search2,
-    [
-      sort,
-    ],
+    [ sort ],
   );
 }
 
