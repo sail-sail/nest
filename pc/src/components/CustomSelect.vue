@@ -436,15 +436,15 @@ function onClear() {
 
 let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
 
-watch(
-  () => options4SelectV2,
-  async () => {
-    const oldModelValue = modelValue;
-    modelValue = undefined;
-    await nextTick();
-    modelValue = oldModelValue;
-  },
-);
+// watch(
+//   () => options4SelectV2,
+//   async () => {
+//     const oldModelValue = modelValue;
+//     modelValue = undefined;
+//     await nextTick();
+//     modelValue = oldModelValue;
+//   },
+// );
 
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {

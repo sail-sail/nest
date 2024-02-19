@@ -362,15 +362,15 @@ function onValueChange() {
 
 let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
-watch(
-  () => options4SelectV2,
-  async () => {
-    const oldModelValue = modelValue;
-    modelValue = undefined;
-    await nextTick();
-    modelValue = oldModelValue;
-  },
-);
+// watch(
+//   () => options4SelectV2,
+//   async () => {
+//     const oldModelValue = modelValue;
+//     modelValue = undefined;
+//     await nextTick();
+//     modelValue = oldModelValue;
+//   },
+// );
 
 let dictModels = $ref<DictModel[]>([ ]);
 

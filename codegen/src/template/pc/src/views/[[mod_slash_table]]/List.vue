@@ -77,6 +77,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       @keyup.enter="onSearch"
     ><#
+      let hasSearchExpand = false;
       const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -101,6 +102,10 @@ const hasAtt = columns.some((item) => item.isAtt);
         }
         const require = column.require;
         const search = column.search;
+        const isSearchExpand = column.isSearchExpand;
+        if (isSearchExpand && !hasSearchExpand) {
+          hasSearchExpand = true;
+        }
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -123,7 +128,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         && typeof opts?.list_tree !== "string"
       ) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -150,7 +155,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         && typeof opts?.list_tree === "string"
       ) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -174,7 +179,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (foreignKey) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -197,7 +202,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -229,7 +234,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -263,7 +268,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -298,7 +303,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -314,7 +319,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column_type.startsWith("int")) {
         searchIntColumns.push(column);
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -355,7 +360,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
+      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -455,6 +460,39 @@ const hasAtt = columns.some((item) => item.isAtt);
           </template>
           <span>{{ ns('重置') }}</span>
         </el-button>
+        
+        <div
+          un-m="l-2"
+          un-flex="~"
+          un-items-end
+          un-gap="x-2"
+        ><#
+          if (hasSearchExpand) {
+          #>
+          
+          <div
+            un-text="3 gray hover:[var(--el-color-primary)]"
+            un-cursor-pointer
+            un-flex="~"
+            un-justify-end
+            un-h="5.5"
+            un-overflow-hidden
+            @click="isSearchExpand = !isSearchExpand"
+          >
+            <span v-if="isSearchExpand">收起</span>
+            <span v-else>展开</span>
+          </div><#
+          }
+          #>
+          
+          <TableSearchStaging
+            :search="search"
+            :page-path="pagePath"
+            :filename="__filename"
+            @search="onSearchStaging"
+          ></TableSearchStaging>
+          
+        </div>
         
       </el-form-item>
       
@@ -1697,6 +1735,7 @@ if (list_tree) {
 });
 
 const pagePath = "/<#=mod#>/<#=table#>";
+const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -1775,7 +1814,7 @@ useSubscribeList<<#=Table_Up#>Id>(
 }
 #>
 
-/** 搜索 */
+/** 查询 */
 function initSearch() {
   return {<#
     if (hasIsDeleted) {
@@ -1817,7 +1856,12 @@ function initSearch() {
   } as <#=searchName#>;
 }
 
-let search = $ref(initSearch());
+let search = $ref(initSearch());<#
+if (hasSearchExpand) {
+#>
+let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
+}
+#>
 
 /** 回收站 */
 async function recycleChg() {
@@ -1826,10 +1870,19 @@ async function recycleChg() {
   await dataGrid(true);
 }
 
-/** 搜索 */
+/** 查询 */
 async function onSearch() {
   tableFocus();
   await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: <#=searchName#>) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
 }
 
 /** 刷新 */
@@ -1841,7 +1894,7 @@ async function onRefresh() {
 
 let isSearchReset = $ref(false);
 
-/** 重置搜索 */
+/** 重置查询 */
 async function onSearchReset() {
   tableFocus();
   isSearchReset = true;
@@ -1854,7 +1907,7 @@ async function onSearchReset() {
   isSearchReset = false;
 }
 
-/** 清空搜索框事件 */
+/** 清空查询框事件 */
 async function onSearchClear() {
   tableFocus();
   await dataGrid(true);
@@ -2063,7 +2116,7 @@ const propsNotInSearch: string[] = [
   "isFocus",
 ];
 
-/** 内置搜索条件 */
+/** 内置查询条件 */
 const builtInSearch: <#=searchName#> = $(initBuiltInSearch(
   props,
   builtInSearchType,
@@ -2434,7 +2487,7 @@ let {
 } = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
-    persistKey: new URL(import.meta.url).pathname,
+    persistKey: __filename,
   },
 ));
 
