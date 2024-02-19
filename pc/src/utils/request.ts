@@ -22,7 +22,7 @@ export async function request<T>(
 ): Promise<T> {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
-  let err: Error | undefined;
+  let err: any;
   let res: {
     data: any;
     header: Headers;
@@ -61,7 +61,10 @@ export async function request<T>(
       body,
     });
     if (resFt.status !== 200) {
-      const errMsg = resFt.statusText || resFt.status.toString();
+      let errMsg = resFt.statusText || resFt.status.toString();
+      if (errMsg === "Internal Server Error") {
+        errMsg = "系统正在维护，请稍后再试";
+      }
       throw errMsg;
     }
     const data = await resFt.json();
@@ -70,7 +73,11 @@ export async function request<T>(
       header: resFt.headers,
     };
   } catch(errTmp) {
-    err = (errTmp as Error);
+    err = errTmp;
+    const errStr = err ?? err.toString();
+    if (errStr === "TypeError: Failed to fetch") {
+      err = "网络连接失败，请稍后再试";
+    }
   } finally {
     if (!config.notLoading) {
       indexStore.minusLoading();
