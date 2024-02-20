@@ -12,9 +12,13 @@ globalThis.process.env = globalThis.process.env || { };
 
 export function createApp() {
   const app = createSSRApp(App);
-  const pinia = Pinia.createPinia();
+  let pinia = app.config.globalProperties.$pinia || null;
+  if (!pinia) {
+    pinia = Pinia.createPinia();
+    app.config.globalProperties.$pinia = pinia;
+    app.use(pinia);
+  }
   cfg.pinia = pinia;
-  app.use(pinia);
   Pinia.setActivePinia(pinia);
   app.use(tmui, { } as Tmui.tmuiConfig);
   return {

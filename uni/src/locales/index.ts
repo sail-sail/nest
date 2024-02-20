@@ -10,9 +10,7 @@ export function getLocale(): string {
   if (lang) {
     return lang;
   }
-  const systemInfo = uni.getSystemInfoSync();
-  
-  let sysLang = systemInfo.language?.toLowerCase() || "zh-cn";
+  let sysLang = uni.getLocale() || "zh-cn";
   if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(sysLang) > -1) {
     sysLang = "zh-cn";
   }
