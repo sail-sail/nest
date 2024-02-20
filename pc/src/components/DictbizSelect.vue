@@ -24,6 +24,7 @@
         un-line-height="normal"
         un-break-words
         :class="{
+          'custom_select_space_normal': true,
           custom_select_isShowModelLabel: isShowModelLabel,
         }"
       >
@@ -639,7 +640,7 @@ async function refreshWrapperHeight() {
     return;
   }
   wrapper.style.transition = "none";
-  wrapper.style.minHeight = `${ (height + 14) }px`;
+  wrapper.style.minHeight = `${ (height + 8) }px`;
 }
 
 watch(
@@ -689,7 +690,14 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+.custom_select_div {
+  height: 32px;
+}
+.custom_select_placeholder {
+  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+}
 .dictbiz_select_space_normal {
+  height: auto;
   :deep(.el-select__placeholder) {
     line-height: normal;
     white-space: normal;
