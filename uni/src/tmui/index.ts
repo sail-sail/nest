@@ -4,17 +4,17 @@ import { setDomDarkOrWhite } from './tool/theme/util';
 import preview, * as util from './tool/function/util';
 import { language, languageByGlobal } from "./tool/lib/language"
 import { share } from "./tool/lib/share"
-import { App, nextTick, ref } from "vue"
+import { App, nextTick} from "vue"
 import PageJsonInit from "../pages.json"
-import { useTmRouterAfter, useTmRouterBefore } from "./tool/router/index"
+import { useTmRouterBefore } from "./tool/router/index"
 import tmuiconfigdefault from "./tool/lib/tmuiconfigDefault"
-import { pagesType, tabBarItemType, tabBarType, beforeRouterOpts, pagesCustomType } from './interface';
+import { pagesType, tabBarType, pagesCustomType } from './interface';
 import * as Pinia from 'pinia';
 let pages: Array<pagesType> = [];
 if (typeof PageJsonInit?.pages == 'undefined') {
 	PageJsonInit.pages = [];
 }
-PageJsonInit.pages.forEach((el:any) => {
+PageJsonInit.pages.forEach((el: any) => {
 	let customType: pagesCustomType = <pagesCustomType>(el?.style?.navigationStyle ?? "default");
 	let bg = (el.style?.navigationBarBackgroundColor ?? PageJsonInit?.globalStyle?.navigationBarBackgroundColor ?? '#FFFFFF') || '#FFFFFF'
 	let txtColor = (el.style?.navigationBarTextStyle ?? PageJsonInit?.globalStyle?.navigationBarTextStyle ?? 'black') || 'black'
@@ -25,8 +25,8 @@ PageJsonInit.pages.forEach((el:any) => {
 		navigationBarTextStyle: txtColor
 	})
 })
-if (Array.isArray((PageJsonInit as any)?.subPackages ?? null)) {
-	(PageJsonInit as any)?.subPackages.forEach((el: any) => {
+if (Array.isArray(PageJsonInit?.subPackages ?? null)) {
+	PageJsonInit?.subPackages.forEach((el: any) => {
 		let rootPath = el.root;
 		el.pages.forEach((el2: any) => {
 			let elany: any = el2;
@@ -51,14 +51,15 @@ let tabBar: tabBarType = pagers?.tabBar ?? {
 }
 
 // custom icon
-let cusutomIconList: any[] = [];
+let cusutomIconList = [];
 // #ifdef APP
 cusutomIconList = fontJson;
 // #endif
 let $tm = {
 	tabBar: tabBar,
 	pages: pages,
-	isOpenDarkModel:(PageJsonInit?.globalStyle?.navigationBarBackgroundColor??"").indexOf("@")>-1,
+	globalNavStyle: (PageJsonInit?.globalStyle.navigationStyle ?? ""),
+	isOpenDarkModel: (PageJsonInit?.globalStyle?.navigationBarBackgroundColor ?? "").indexOf("@") > -1,
 	isColor: (color: string) => {
 		const reg1 = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
 		const reg2 = /^(rgb|RGB|rgba|RGBA)/;
@@ -78,7 +79,6 @@ let $tm = {
 	],
 	config: tmuiconfigdefault as Tmui.tmuiConfig
 };
-
 
 export default {
 	/**
@@ -151,9 +151,9 @@ export default {
 			}
 		})
 		// #ifdef H5
-		window.addEventListener('popstate', (ev) => {
+		window.addEventListener('popstate', (ev: any) => {
 			linsInko({
-				path: ev.state.forward,
+				path: ev?.state?.forward ?? "",
 				context: null,
 				openType: "navigateBack"
 			})
@@ -165,9 +165,12 @@ export default {
 			setDomDarkOrWhite();
 			// #endif
 			obj.path = obj.path[0] == "/" ? obj.path.substr(1) : obj.path
-			useTmRouterBefore(obj)
+			// useTmRouterBefore(obj)
+			options.router?.useTmRouterBefore ? options.router?.useTmRouterBefore(obj) : useTmRouterBefore(obj)
 		}
-		options =util.deepObjectMerge($tm.config, options)
+
+		options = util.deepObjectMerge($tm.config, options)
+
 		const pinia = app.config.globalProperties.$pinia || null
 		const tmPiniaPlugin = (context: Pinia.PiniaPluginContext) => {
 			if (context.store.$id === 'tmpinia') {
@@ -188,28 +191,16 @@ export default {
 		// #endif
 		let appconfig = {};
 		// #ifdef MP
-		
-		if($tm.config.shareDisable){
+
+		if (!$tm.config.shareDisable) {
 			const { onShareAppMessage, onShareTimeline } = share()
 			appconfig = { ...appconfig, onShareAppMessage, onShareTimeline }
+
 		}
 		// #endif
 
 		app.mixin({
 			...appconfig,
-			onShow(){
-				// $mpType
-				
-				// setTimeout(function() {
-				// 	if(app.config.globalProperties.$pinia.state.value?.tmpinia?.tmStore){
-				// 		const {dark} = app.config.globalProperties.$pinia.state.value.tmpinia.tmStore;
-				// 		console.log(dark)
-				// 		if(dark){
-				// 			//暂不实现。
-				// 		}
-				// 	}
-				// }, 10);
-			}
 		})
 
 
@@ -218,13 +209,13 @@ export default {
 			...$tm,
 			config: options
 		}
-		
+
 		/**对外暴露 */
-		uni.$tm = $tm as any;
-		// #ifdef APP
-		util.setCookie('$tm',$tm)
+		uni.$tm = $tm;
+		// #ifdef APP-VUE
+		uni.setStorageSync("$tm", JSON.stringify($tm.config.theme));
 		// #endif
-		
+
 		/**app应用上下文的暴露 */
 		app.config.globalProperties.tm = $tm;
 	}
