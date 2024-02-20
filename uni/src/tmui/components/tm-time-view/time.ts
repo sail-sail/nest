@@ -18,10 +18,11 @@ function rangeNumber(from = 0, to = 0) {
 }
 
 /** 根据显示的时间字段返回相关的时间列的可选选项. */
-export function rangeTimeArray(dateStr: string | number | Date, start: string | number | Date, end: string | number | Date, detail: showDetail) {
+export function rangeTimeArray(dateStr: string | number | Date | dayjs.Dayjs, start: string | number | Date | dayjs.Dayjs, end: string | number | Date | dayjs.Dayjs, detail: showDetail) {
 	let startDayjs = DayJs(start);
 	let endDayjs = DayJs(end);
 	let dateDayjs = DayJs(dateStr);
+
 	// 计算每一列表数组开始和结束的数字.
 	let dateArray = {
 		year: [] as Array<number>,
@@ -31,63 +32,49 @@ export function rangeTimeArray(dateStr: string | number | Date, start: string | 
 		minute: [] as Array<number>,
 		second: [] as Array<number>,
 	};
-	// 计算年
-	// dateArray.push()
-	// 计算月,这里要判断如果大于开始的时候,月就从开始计算,如果小于结束,就以结束计算,如果是在之间就从0开始.
-	//后面的月,天,时,分秒,都是同一道理.
 
-	function getar(timeType: dateType) {
-
-		let temp: Array<number> = []
-		if (timeType == 'year') {
-			temp = rangeNumber(startDayjs.get("year"), endDayjs.get("year"));
-		} else if (timeType == 'month') {
-			setd(timeDetailType.month, timeDetailType.year)
-		} else if (timeType == 'date') {
-			setd(timeDetailType.day, timeDetailType.month)
-		} else if (timeType == 'hour') {
-			setd(timeDetailType.hour, timeDetailType.day)
-		} else if (timeType == 'minute') {
-			setd(timeDetailType.minute, timeDetailType.hour)
-		} else if (timeType == 'second') {
-			setd(timeDetailType.second, timeDetailType.minute)
-		}
-
-		function setd(type: timeDetailType, timeType: timeDetailType) {
-			let start = 0
-			let end = 0
-			let nowtm = dateDayjs
-			if (dateDayjs.isSameOrBefore(startDayjs, timeType)) {
-				nowtm = startDayjs
-				start = startDayjs.get(type)
-				end = startDayjs.endOf(timeType).get(type)
-				if (nowtm.isSame(endDayjs, timeType)) {
-					end = endDayjs.get(type)
-				}
-			} else if (dateDayjs.isSameOrAfter(endDayjs, timeType)) {
-				nowtm = endDayjs
-				start = endDayjs.startOf(timeType).get(type)
-				end = endDayjs.get(type)
-				if (nowtm.isSame(startDayjs, timeType)) {
-					start = startDayjs.get(type)
-				}
-			} else {
-				start = dateDayjs.startOf(timeType).get(type)
-				end = dateDayjs.endOf(timeType).get(type)
-			}
-			temp = rangeNumber(start, end)
-
-		}
-		dateArray[timeType] = temp;
-
+	// 计算年份数组
+	let startYear = startDayjs.year();
+	let endYear = endDayjs.year();
+	for (let year = startYear; year <= endYear; year++) {
+		dateArray.year.push(year);
 	}
-	let key: any = ""
-	for (key in detail) {
-		if (key == "day") {
-			key = "date"
-		}
-		getar(key)
+
+	// 计算月份数组
+	let startMonth = dateDayjs.isSame(startDayjs, 'year') ? startDayjs.month() : 0;
+	let endMonth = dateDayjs.isSame(endDayjs, 'year') ? endDayjs.month() : 11;
+	for (let month = startMonth; month <= endMonth; month++) {
+		dateArray.month.push(month);
 	}
+	
+	// 计算日期数组
+	let startDate = dateDayjs.isSame(startDayjs, 'month') ? startDayjs.date() : 1;
+	let endDate = dateDayjs.isSame(endDayjs, 'month') ? endDayjs.date() : dateDayjs.daysInMonth();
+	for (let date = startDate; date <= endDate; date++) {
+		dateArray.date.push(date);
+	}
+
+	// 计算小时数组
+	let startHour = dateDayjs.isSame(startDayjs, 'date') ? startDayjs.hour() : 0;
+	let endHour = dateDayjs.isSame(endDayjs, 'date') ? endDayjs.hour() : 23;
+	for (let hour = startHour; hour <= endHour; hour++) {
+		dateArray.hour.push(hour);
+	}
+
+	// 计算分钟数组
+	let startMinute = dateDayjs.isSame(startDayjs, 'hour') ? startDayjs.minute() : 0;
+	let endMinute = dateDayjs.isSame(endDayjs, 'hour') ? endDayjs.minute() : 59;
+	for (let minute = startMinute; minute <= endMinute; minute++) {
+		dateArray.minute.push(minute);
+	}
+
+	// 计算秒钟数组
+	let startSecond = dateDayjs.isSame(startDayjs, 'minute') ? startDayjs.second() : 0;
+	let endSecond = dateDayjs.isSame(endDayjs, 'minute') ? endDayjs.second() : 59;
+	for (let second = startSecond; second <= endSecond; second++) {
+		dateArray.second.push(second);
+	}
+
 	return dateArray;
 }
 
@@ -107,12 +94,26 @@ export function getIndexNowbydate(tmArray: timeArrayType, nowtime: dayjs.Dayjs, 
 		[timeDetailType.minute, detail.minute],
 		[timeDetailType.second, detail.second]
 	];
-
-	const idx = intermediate.filter(m => m[1]).map(m => {
-		const type = m[0] as timeDetailType;
-		const index = tmArray[type].findIndex(n => n === d.get(type))
-		return index === -1 ? 0 : index;
-	});
+	
+	const order_str = ['year', 'month', 'date', 'hour', 'minute', 'second'];
+	let order = []
+	for (const key of order_str) {
+		let keys = key == 'date'?'day':key
+		if (detail[keys]) {
+		  order.push(key);
+		}
+	}
+	let idx = []
+	for(let i=0;i<order.length;i++){
+		let index = tmArray[order[i]].findIndex(n => n === d.get(order[i]))
+		idx.push(index === -1 ? 0 : index)
+	}
+	
+	// const idx = intermediate.filter(m => m[1]).map(m => {
+	// 	const type = m[0] as timeDetailType;
+	// 	let index = tmArray[type].findIndex(n => n === d.get(type))
+	// 	return index === -1 ? 0 : index;
+	// });
 
 	return [
 		...idx,
@@ -125,8 +126,8 @@ export function getIndexNowbydate(tmArray: timeArrayType, nowtime: dayjs.Dayjs, 
  * @param nowtime
  * @param detail
  */
-export function getNowbyIndex(tmArray: timeArrayType, nowIndex: Array<number>, detail: showDetail) {
-	const intermediate = [
+export function getNowbyIndex(tmArray: timeArrayType, nowIndex: Array<number>, detail: showDetail, start:any,end:any) {
+	let intermediate = [
 		[timeDetailType.year, detail.year],
 		[timeDetailType.month, detail.month],
 		[timeDetailType.day, detail.day],
@@ -134,20 +135,48 @@ export function getNowbyIndex(tmArray: timeArrayType, nowIndex: Array<number>, d
 		[timeDetailType.minute, detail.minute],
 		[timeDetailType.second, detail.second]
 	];
-	function getValue(type: timeDetailType) {
-		const index = intermediate.filter(m => m[1]).findIndex(m => m[0] === type);
-		if (index !== -1) {
-			return tmArray[type][nowIndex[index]];
+	const order_str = ['year', 'month', 'date', 'hour', 'minute', 'second'];
+	let order = []
+	
+	for (const key of order_str) {
+		let keys = key == 'date'?'day':key
+		if (detail[keys]) {
+		  order.push({
+			  type:key,
+			  index:nowIndex[order_str.indexOf(key)]
+		  });
 		}
-		return tmArray[type][tmArray[type].length - 1];
 	}
-
-	let year = getValue(timeDetailType.year);
-	let month = getValue(timeDetailType.month);
-	let date = getValue(timeDetailType.day);
-	let hour = getValue(timeDetailType.hour);
-	let minute = getValue(timeDetailType.minute);
-	let second = getValue(timeDetailType.second);
+	
+	
+	for(let i=0;i<order.length;i++){
+		order[i].index = nowIndex[i]
+	}
+	
+	
+	function getValue(type: timeDetailType) {
+		
+		const index = order.findIndex(m => m.type === type);
+		if (index > -1) {
+			return tmArray[type][order[index].index];
+		}
+		return tmArray[type][0];
+	}
+	
+	// function getValue(type: timeDetailType) {
+	// 	const index = intermediate.filter(m => m[1]).findIndex(m => m[0] === type);
+	// 	if (index !== -1) {
+	// 		return tmArray[type][nowIndex[index]];
+	// 	}
+	// 	return tmArray[type][tmArray[type].length - 1];
+	// }
+	let s = DayJs(start)
+	let year = detail.year?getValue(timeDetailType.year):s.year();
+	let month =  detail.month?getValue(timeDetailType.month):s.month();
+	let date = detail.day?getValue(timeDetailType.day):s.date();
+	let hour =  detail.hour?getValue(timeDetailType.hour):s.hour();
+	let minute = detail.minute?getValue(timeDetailType.minute):s.minute();
+	let second = detail.second?getValue(timeDetailType.second):s.second();
 
 	let str = year
 		+ "/" +

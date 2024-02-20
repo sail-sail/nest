@@ -20,7 +20,7 @@
     "@graphql-codegen/typescript-operations": "4.1.2",
     "@types/node": "20.11.19",
     "chokidar": "3.6.0",
-    "dotenv": "16.4.4",
+    "dotenv": "16.4.5",
     "graphql": "16.8.1",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",

@@ -34,6 +34,7 @@
     "chakrounanas.turbo-console-log",
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
-    "jacobpfeifer.pfeifer-hurl"
+    "jacobpfeifer.pfeifer-hurl",
+    "tmui-helper.tmui-helper"
   ]
 }
