@@ -183,6 +183,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
               "tenant_id", "tenant_id_lbl",
               "org_id", "org_id_lbl",
             ].includes(column_name)
+            || column.noList
           ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
@@ -207,8 +208,13 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           let lbl = "";
           if (!isImport) {
             if (lbls.length === 0) {
-              lbl += `<%initJs: const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { }; const columns = _data_.columns; var xSplit = columns.findIndex((column) => !column.fixed); if (xSplit === -1) { xSplit = 0; }%>`;
-              lbl += `<%_freezePane_({ xSplit, ySplit: 1 })%>`;
+              lbl += `<%initJs:`;
+              lbl += ` const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { };`;
+              lbl += ` const columns = _data_.columns;`;
+              lbl += ` columns.sort((a,b) => { if (a.fixed && !b.fixed) return -1; if (!a.fixed && b.fixed) return 1; return 0; });`;
+              lbl += ` var xSplit = columns.findIndex((column) => !column.fixed); if (xSplit === -1) { xSplit = 0; }`;
+              lbl += ` %>`;
+              lbl += `<%_freezePane_({ xSplit, ySplit: 1, topLeftCell: _charPlus_(_col,xSplit)+"2" })%>`;
               lbl += `<%_setSheetName_(sheetName)%>`;
             }
             lbl += `<% var prop = "`;
