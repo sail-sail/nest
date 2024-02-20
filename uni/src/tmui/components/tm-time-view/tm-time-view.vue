@@ -269,7 +269,6 @@ const maskStyle = computed(() => {
   }
   return str_black;
 });
-
 _col.value = rangeTimeArray(
   _nowtimeValue.value,
   _startTime.value,
@@ -278,22 +277,31 @@ _col.value = rangeTimeArray(
 );
 
 function colchange(e: any) {
-  let changedate = getNowbyIndex(_col.value, e.detail.value, showCol.value);
-  _col.value = rangeTimeArray(
-    changedate,
-    _startTime.value,
-    _endTime.value,
-    showCol.value
-  );
-  _nowtime.value = DayJs(changedate);
-  nextTick(() => {
-    colIndex.value = e.detail.value;
-    changedate = getNowbyIndex(_col.value, e.detail.value, showCol.value);
-    _nowtime.value = DayJs(changedate);
-    emits("update:modelValue", _nowtime.value.format("YYYY/MM/DD HH:mm:ss"));
-    emits("update:modelStr", _nowtime.value.format(props.format));
-    emits("change", _nowtime.value.format(props.format));
-  });
+ 
+  let changedate = getNowbyIndex(_col.value, e.detail.value, showCol.value, _startTime.value,_endTime.value);
+  let testDate  = checkNowDateisBetween(changedate, _startTime.value,_endTime.value)
+  
+
+   
+  let testRang = rangeTimeArray(
+      testDate,
+      _startTime.value,
+      _endTime.value,
+      showCol.value
+    );
+  
+  
+ 
+  
+  _nowtime.value = DayJs(testDate);
+  colIndex.value = getIndexNowbydate(testRang, _nowtime.value, showCol.value);
+  emits("update:modelValue", _nowtime.value.format("YYYY/MM/DD HH:mm:ss"));
+  emits("update:modelStr", _nowtime.value.format(props.format));
+  emits("change", _nowtime.value.format(props.format));
+ 
+  _col.value= testRang;
+
+  
 }
 
 watch(
@@ -358,32 +366,6 @@ onMounted(() => {
   });
 });
 
-// function setNowtime(data:number,type:timeDetailType){
-// 	 let d= DayJs(toRaw(_nowtime.value));
-// 	 const old = _nowtimeValue.value;
-// 	_nowtime.value  =  DayJs(d[type](data))
-// 	if(isDisabledDate(_nowtime.value.format())){
-// 		nextTick(()=>_nowtime.value  =  DayJs(old))
-// 		return;
-// 	}
-// 	emits('update:modelValue',_nowtime.value.format("YYYY/MM/DD HH:mm:ss"))
-// 	emits('update:modelStr',_nowtime.value.format(props.format))
-// 	nextTick(()=>emits('change',_nowtime.value.format(props.format)))
-// }
-// //检测当前选中的时间是否处于被禁用的日期中。
-// function isDisabledDate(nowtime:string){
-// 	let d = DayJs(nowtime)
-//     let len = props.disabledDate.filter(el=>{
-//         return d.isSame(el,timeDetailType.day)
-//     })
-//     return len.length>0;
-// }
-// watch(()=>props.modelValue,(newval,oldval)=>{
-// 	if(DayJs(props.modelValue).isValid()==false||!oldval) return;
-// 	_nowtime.value = DayJs(props.modelValue)
-// 	_col.value = rangeTimeArray(_nowtimeValue.value,_startTime.value,_endTime.value,props.showDetail)
-// 	emits('update:modelStr',_nowtime.value.format(props.format))
-// })
 
 onUpdated(() => nvuegetClientRect());
 

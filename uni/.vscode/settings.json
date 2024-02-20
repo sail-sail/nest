@@ -50,16 +50,7 @@
   "unocss.root": "",
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
-  "terminal.integrated.confirmOnKill": "never",
-  "terminal.integrated.env.windows": {
-    "VUE_EDITOR": "code"
-  },
-  "volar.icon.preview": false,
-  "volar.icon.splitEditors": false,
-  "volar.codeLens.references": false,
-  "volar.diagnostics.delay": 10,
   "editor.quickSuggestionsDelay": 0,
-  "references.preferredLocation": "peek",
   "typescript.suggest.autoImports": false,
   "typescript.updateImportsOnFileMove.enabled": "never"
 }

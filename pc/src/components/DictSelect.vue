@@ -1,57 +1,99 @@
 <template>
-<ElSelectV2
+<div
   v-if="readonly !== true"
-  :options="options4SelectV2"
-  filterable
-  collapse-tags
-  collapse-tags-tooltip
-  default-first-option
-  :height="props.height"
-  :remote="props.pinyinFilterable"
-  :remote-method="filterMethod"
-  @visible-change="handleVisibleChange"
-  @clear="clearClk"
+  ref="selectDivRef"
   un-w="full"
-  v-bind="$attrs"
-  :model-value="modelValueComputed"
-  @update:model-value="modelValueUpdate"
-  :loading="!inited"
-  class="dict_select"
+  class="custom_select_div"
   :class="{
-    dict_select_isShowModelLabel: isShowModelLabel && inited,
+    custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
-  :multiple="props.multiple"
-  :clearable="!props.disabled"
-  :disabled="props.disabled"
-  :readonly="props.readonly"
-  :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
-  @keyup.enter.stop
-  @change="onValueChange"
 >
-  <template
-    v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
-    #header
+  <el-tooltip
+    :disabled="(selectRef?.dropdownMenuVisible || props.multiple)
+      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
   >
-    <el-checkbox
-      v-model="isSelectAll"
-      :indeterminate="isIndeterminate"
-      un-w="full"
-      un-p="l-3"
-      un-box-border
+    <template
+      #content
     >
-      <span>
-        ({{ ns("全选") }})
-      </span>
-    </el-checkbox>
-  </template>
-  <template
-    v-for="(item, key, index) in $slots"
-    :key="index"
-    #[key]
-  >
-    <slot :name="key"></slot>
-  </template>
-</ElSelectV2>
+      <div
+        un-flex="~ gap-1 wrap"
+        un-items-center
+        un-box-border
+        un-rounded
+        un-w="full"
+        un-line-height="normal"
+        un-break-words
+        :class="{
+          custom_select_isShowModelLabel: isShowModelLabel,
+        }"
+      >
+        <span
+          v-if="isShowModelLabel"
+        >
+          {{ props.modelLabel || "" }}
+        </span>
+        <span
+          v-else
+        >
+          {{ modelLabels[0] || "" }}
+        </span>
+      </div>
+    </template>
+    <ElSelectV2
+      ref="selectRef"
+      :options="options4SelectV2"
+      filterable
+      collapse-tags
+      collapse-tags-tooltip
+      default-first-option
+      :height="props.height"
+      :remote="props.pinyinFilterable"
+      :remote-method="filterMethod"
+      @visible-change="handleVisibleChange"
+      @clear="onClear"
+      un-w="full"
+      v-bind="$attrs"
+      :model-value="modelValueComputed"
+      @update:model-value="modelValueUpdate"
+      :loading="!inited"
+      class="dict_select"
+      :class="{
+        dict_select_isShowModelLabel: isShowModelLabel && inited,
+      }"
+      @change="onValueChange"
+      :multiple="props.multiple"
+      :clearable="!props.disabled"
+      :disabled="props.disabled"
+      :readonly="props.readonly"
+      :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
+      @keyup.enter.stop
+    >
+      <template
+        v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+        #header
+      >
+        <el-checkbox
+          v-model="isSelectAll"
+          :indeterminate="isIndeterminate"
+          un-w="full"
+          un-p="l-3"
+          un-box-border
+        >
+          <span>
+            ({{ ns("全选") }})
+          </span>
+        </el-checkbox>
+      </template>
+      <template
+        v-for="(item, key, index) in $slots"
+        :key="index"
+        #[key]
+      >
+        <slot :name="key"></slot>
+      </template>
+    </ElSelectV2>
+  </el-tooltip>
+</div>
 <template
   v-else
 >
@@ -59,7 +101,7 @@
     v-if="props.multiple"
     un-flex="~ gap-1 wrap"
     un-b="1 solid [var(--el-border-color)]"
-    un-p="y-0.75 x-1.5"
+    un-p="x-2"
     un-box-border
     un-rounded
     un-w="full"
@@ -67,7 +109,10 @@
     un-line-height="normal"
     un-break-words
     class="dict_select_readonly"
-    v-bind="$attrs"
+    :class="{
+      'custom_select_placeholder': shouldShowPlaceholder,
+      custom_select_isShowModelLabel: isShowModelLabel,
+    }"
   >
     <template
       v-if="modelLabels.length === 0"
@@ -89,15 +134,64 @@
       </span>
       <div
         v-else
+        un-flex="~ wrap"
+        un-gap="x-1 y-1"
+        un-m="y-1"
       >
-        <el-tag
-          v-for="label in modelLabels"
-          :key="label"
-          type="info"
-          :disable-transitions="true"
+        <template
+          v-if="readonlyCollapseTags"
         >
-          {{ label }}
-        </el-tag>
+          <el-tag
+            v-for="label in modelLabels.slice(0, props.readonlyMaxCollapseTags)"
+            :key="label"
+            type="info"
+            :disable-transitions="true"
+          >
+            {{ label }}
+          </el-tag>
+          <el-tooltip
+            v-if="modelLabels.length > props.readonlyMaxCollapseTags"
+          >
+            <el-tag
+              type="info"
+              :disable-transitions="true"
+              @click="() => readonlyCollapseTags = false"
+              un-cursor-pointer
+            >
+              {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
+            </el-tag>
+            <template
+              #content
+            >
+              <div
+                un-flex="~ wrap"
+                un-gap="x-1 y-1"
+                un-m="y-1"
+              >
+                <el-tag
+                  v-for="label in modelLabels.slice(props.readonlyMaxCollapseTags)"
+                  :key="label"
+                  type="info"
+                  :disable-transitions="true"
+                >
+                  {{ label }}
+                </el-tag>
+              </div>
+            </template>
+          </el-tooltip>
+        </template>
+        <template
+          v-else
+        >
+          <el-tag
+            v-for="label in modelLabels"
+            :key="label"
+            type="info"
+            :disable-transitions="true"
+          >
+            {{ label }}
+          </el-tag>
+        </template>
       </div>
     </template>
   </div>
@@ -116,11 +210,10 @@
       'dict_select_placeholder': shouldShowPlaceholder,
       dict_select_isShowModelLabel: isShowModelLabel,
     }"
-    v-bind="$attrs"
   >
     <template
       v-if="!modelLabels[0]"
-    >
+  >
       <span
         class="dict_select_placeholder"
       >
@@ -164,6 +257,13 @@ export type DictModel = GetDict & {
 
 const t = getCurrentInstance();
 
+const emit = defineEmits<{
+  (e: "update:modelValue", value?: any): void,
+  (e: "update:modelLabel", value?: string | null): void,
+  (e: "change", value?: any): void,
+  (e: "clear"): void,
+}>();
+
 type OptionsMap = (item: DictModel) => OptionType;
 
 const props = withDefaults(
@@ -182,6 +282,8 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    readonlyCollapseTags?: boolean;
+    readonlyMaxCollapseTags?: number;
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -208,6 +310,8 @@ const props = withDefaults(
     readonly: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    readonlyCollapseTags: true,
+    readonlyMaxCollapseTags: 10,
   },
 );
 
@@ -229,6 +333,15 @@ watch(
   () => props.modelLabel,
   () => {
     modelLabel = props.modelLabel;
+  },
+);
+
+let readonlyCollapseTags = $ref(props.readonlyCollapseTags);
+
+watch(
+  () => props.readonlyCollapseTags,
+  () => {
+    readonlyCollapseTags = props.readonlyCollapseTags;
   },
 );
 
@@ -372,8 +485,6 @@ let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>
 //   },
 // );
 
-let dictModels = $ref<DictModel[]>([ ]);
-
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {
     return;
@@ -413,15 +524,11 @@ async function refreshDropdownWidth() {
   }
 }
 
-const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
-  (e: "update:modelLabel", value?: string | null): void,
-  (e: "change", value?: any | any[] | null): void,
-  (e: "clear"): void,
-}>();
+let dictModels = $ref<DictModel[]>([ ]);
 
 const {
   ns,
+  initSysI18ns,
 } = useI18n();
 
 const modelLabels = $computed(() => {
@@ -447,9 +554,19 @@ const modelLabels = $computed(() => {
   return labels;
 });
 
-function clearClk() {
-  modelValue = undefined;
+function onClear() {
+  if (!props.multiple) {
+    modelValue = "";
+    emit("update:modelValue", modelValue);
+    emit("update:modelLabel", "");
+    emit("change", modelValue);
+    emit("clear");
+    return;
+  }
+  modelValue = [ ];
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", "");
+  emit("change", modelValue);
   emit("clear");
 }
 
@@ -501,6 +618,42 @@ async function refreshEfc() {
   inited = true;
 }
 
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+let selectDivRef = $ref<HTMLDivElement>();
+
+async function refreshWrapperHeight() {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (!selectDivRef) {
+    return;
+  }
+  const phder = selectDivRef?.querySelector(".el-select__placeholder") as HTMLDivElement | null | undefined;
+  if (!phder) {
+    return;
+  }
+  const wrapper = selectDivRef?.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
+  if (!wrapper) {
+    return;
+  }
+  const height = phder.offsetHeight;
+  if (height === 0) {
+    return;
+  }
+  wrapper.style.transition = "none";
+  wrapper.style.minHeight = `${ (height + 14) }px`;
+}
+
+watch(
+  () => [
+    modelValue,
+    inited,
+    !props.multiple,
+    options4SelectV2.length > 0,
+  ],
+  () => {
+    refreshWrapperHeight();
+  },
+);
+
 watch(
   () => props.code,
   async () => {
@@ -510,6 +663,29 @@ watch(
     immediate: true,
   },
 );
+
+async function initFrame() {
+  const codes = [
+    "全选",
+  ];
+  await initSysI18ns(codes);
+}
+
+initFrame();
+
+function focus() {
+  selectRef?.focus();
+}
+
+function blur() {
+  selectRef?.blur();
+}
+
+defineExpose({
+  refresh: refreshEfc,
+  focus,
+  blur,
+});
 </script>
 
 <style scoped lang="scss">
