@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-ceintl.vscode-language-pack-zh-hans",
+    "editorconfig.editorconfig",
+    "graphql.vscode-graphql",
+    "graphql.vscode-graphql-execution",
+    "graphql.vscode-graphql-syntax",
+    "howardzuo.vscode-npm-dependency",
+    "antfu.unocss",
+    "vue.volar",
+    "maggie.eslint-rules-zh-plugin",
+    "tmui-helper.tmui-helper"
+  ]
+}

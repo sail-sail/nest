@@ -18,6 +18,7 @@ declare module 'vue' {
     TmCarousel: typeof import('./components/tm-carousel/tm-carousel.vue')['default']
     TmCascader: typeof import('./components/tm-cascader/tm-cascader.vue')['default']
     TmCell: typeof import('./components/tm-cell/tm-cell.vue')['default']
+    TmChart: typeof import('./components/tm-chart/tm-chart.vue')['default']
     TmCheckbox: typeof import('./components/tm-checkbox/tm-checkbox.vue')['default']
     TmCheckboxGroup: typeof import('./components/tm-checkbox-group/tm-checkbox-group.vue')['default']
     TmCityCascader: typeof import('./components/tm-city-cascader/tm-city-cascader.vue')['default']
