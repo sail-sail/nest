@@ -28,7 +28,6 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="onSave"
       >
         
         <el-form-item

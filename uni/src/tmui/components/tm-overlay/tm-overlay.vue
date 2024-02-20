@@ -7,15 +7,16 @@
 	<!-- #endif -->
 
 		<view
+			@touchmove.prevent=""
 			v-if="showMask"
 			class="l-0 t-0"
 			:style="[
 				_inContent && !isNvue
 					? { width: '100%', height: '100%', top: '0px', position: 'absolute' }
 					: {
-							width: width + 'px',
-							height: height + 'px',
-							top: top + 'px',
+							width: sysinfo.width + 'px',
+							height: sysinfo.height + 'px',
+							top: 0 + 'px',
 							position: 'fixed'
 					  },
 				zIndex ? { zIndex: zIndex } : ''
@@ -26,18 +27,18 @@
 				:class="[
 					bgColor_rp && !props.transprent && ani ? 'blurOnOpacity' : 'blurOffOpacity', 
 				'overlay',
-				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
-				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
+				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
+				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
 				]"
 				:style="[
 					bgColor_rp && !props.transprent ? { backgroundColor: showMask ? bgColor_rp : '' } : '',
-					_inContent && !isNvue ? { width: '100%', height: '100%' } : { width: width + 'px', height: height + 'px' },
+					_inContent && !isNvue ? { width: '100%', height: '100%' } : { width: sysinfo.width + 'px', height: sysinfo.height + 'px' },
 					{ transitionDuration: props.duration + 'ms' }
 				]"
 			></view>
 			<!-- #ifndef APP-NVUE -->
 			<view
-				@click.stop="(closeByclick as any)"
+				@click.stop="closeByclick"
 				:class="[
 					align_rpx,
 					' absolute flex flex-col  l-0 t-0 ',
@@ -47,16 +48,16 @@
 					props.contentAnimation && ani ? 'blurOnOpacity ' : '',
 					props.contentAnimation && !ani ? 'blurOffOpacity overlay' : ''
 				]"
-				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: width + 'px', height: height + 'px' }, customCSSStyle]"
+				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: sysinfo.width + 'px', height: sysinfo.height + 'px' }, customCSSStyle]"
 			>
 				<slot></slot>
 			</view>
 			<!-- #endif -->
 			<!-- #ifdef APP-NVUE -->
 			<view
-				@click.stop="(closeByclick as any)"
+				@click.stop="closeByclick"
 				:class="[align_rpx, ' absolute flex flex-col  l-0 t-0 ', customClass]"
-				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: width + 'px', height: height + 'px' }, customCSSStyle]"
+				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: sysinfo.width + 'px', height: sysinfo.height + 'px' }, customCSSStyle]"
 			>
 				<slot></slot>
 			</view>
@@ -91,6 +92,8 @@ import {
 import { cssstyle, tmVuetify } from "../../tool/lib/interface";
 import { custom_props, computedClass, computedStyle } from "../../tool/lib/minxs";
 import { useTmpiniaStore } from "../../tool/lib/tmpinia";
+import { useWindowInfo } from '../../tool/useFun/useWindowInfo'
+
 // #ifdef APP-PLUS-NVUE
 const dom = uni.requireNativePlugin("dom");
 const animation = uni.requireNativePlugin("animation");
@@ -151,22 +154,8 @@ const proxy = getCurrentInstance()?.proxy ?? null;
 const customCSSStyle = computedStyle(props);
 //自定类
 const customClass = computedClass(props);
-const sysinfo = inject(
-  "tmuiSysInfo",
-  computed(() => {
-    return {
-      bottom: 0,
-      height: 750,
-      width: uni.upx2px(750),
-      top: 0,
-      isCustomHeader: false,
-      sysinfo: null,
-    };
-  })
-);
-const width = computed(() => sysinfo.value.width);
-const height = computed(() => sysinfo.value.height);
-const top = computed(() => sysinfo.value.top);
+const sysinfo = useWindowInfo();
+
 const isAniing = ref(false);
 let timids = uni.$tm.u.getUid(1);
 let timerId = NaN;
@@ -182,6 +171,8 @@ const bgColor_rp = computed(() => {
 });
 const _inContent = ref(props.inContent);
 const isNvue = ref(false);
+let timerIdth:any = NaN;
+let timerIdth_flas = false;
 // #ifdef APP-NVUE
 _inContent.value = false;
 isNvue.value = true;
@@ -192,21 +183,26 @@ onMounted(() => {
   open(props.show);
 });
 
-function debounce(func: Function, wait = 500, immediate = false) {
-  // 清除定时器
-  if (!isNaN(timerId)) clearTimeout(timerId);
-  // 立即执行，此类情况一般用不到
+function throttle(func: Function, wait = 500, immediate = true) {
   if (immediate) {
-    var callNow = !timerId;
-    timerId = setTimeout(() => {
-      timerId = NaN;
-    }, wait) as any;
-    if (callNow) typeof func === "function" && func();
-  } else {
-    // 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-    timerId = setTimeout(() => {
+    if (!timerIdth_flas) {
+      timerIdth_flas = true;
+      // 如果是立即执行，则在wait毫秒内开始时执行
       typeof func === "function" && func();
-    }, wait) as any;
+
+      timerIdth = setTimeout(() => {
+        timerIdth_flas = false;
+      }, wait);
+    }
+  } else {
+    if (!timerIdth_flas) {
+      timerIdth_flas = true;
+      // 如果是非立即执行，则在wait毫秒内的结束处执行
+      timerIdth = setTimeout(() => {
+        timerIdth_flas = false;
+        typeof func === "function" && func();
+      }, wait);
+    }
   }
 }
 
@@ -215,21 +211,25 @@ function close() {
     clearTimeout(timerId);
     timerId = NaN;
   }
+  
   open(false);
 }
 
 function closeByclick(e: Event) {
+
   try {
     e.stopPropagation();
     e.stopImmediatePropagation();
   } catch (e) {
     //TODO handle the exception
   }
-  emits("click", e);
+  
   if (timerId) {
     clearTimeout(timerId);
     timerId = NaN;
   }
+  
+  emits("click", e);
   if (!props.overlayClick) return;
   open(false);
 }
@@ -292,13 +292,14 @@ function fadeInNvue(off: boolean = false) {
         },
         () => {}
       );
-    }, 50) as any;
+    }, 50);
   }
 }
 function fadeInVue(off = false) {
   if (showMask.value == off) return;
-  uni.$tm.u.throttle(
+  throttle(
     function () {
+		
       if (off == false) {
         ani.value = false;
         setTimeout(function () {
