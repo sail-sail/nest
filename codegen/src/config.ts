@@ -40,6 +40,12 @@ export interface TableCloumn {
   noList?: boolean;
   
   /**
+   * 前端不允许导出这个字段
+   * 默认为false
+   */
+  noExport?: boolean;
+  
+  /**
    * List页面表格是否 showOverflowTooltip
    * 默认为true
    */
