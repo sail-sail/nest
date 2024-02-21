@@ -121,8 +121,12 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
+    let table_comment = i18n_dao::ns(
+      "菜单".to_owned(),
+      None,
+    ).await?;
     let map = HashMap::from([
-      ("0".to_owned(), "菜单".to_owned()),
+      ("0".to_owned(), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
       "不能修改已经锁定的 {0}".to_owned(),
@@ -163,8 +167,12 @@ pub async fn delete_by_ids(
     ids.push(id);
   }
   if ids.is_empty() && len > 0 {
+    let table_comment = i18n_dao::ns(
+      "菜单".to_owned(),
+      None,
+    ).await?;
     let map = HashMap::from([
-      ("0".to_owned(), "菜单".to_owned()),
+      ("0".to_owned(), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
       "不能删除已经锁定的 {0}",

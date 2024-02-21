@@ -503,10 +503,10 @@ export async function findByUnique(
       return [ ];
     }
     let parent_id: MenuId[] = [ ];
-    if (!Array.isArray(search0.parent_id)) {
-      parent_id.push(search0.parent_id, search0.parent_id);
+    if (!Array.isArray(search0.parent_id) && search0.parent_id != null) {
+      parent_id = [ search0.parent_id, search0.parent_id ];
     } else {
-      parent_id = search0.parent_id;
+      parent_id = search0.parent_id || [ ];
     }
     if (search0.lbl == null) {
       return [ ];
@@ -560,7 +560,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("菜单")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: MenuId = await updateById(
@@ -1303,7 +1303,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("菜单"));
       }
     }
   }

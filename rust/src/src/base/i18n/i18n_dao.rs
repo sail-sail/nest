@@ -17,6 +17,9 @@ use crate::gen::base::menu::menu_model::{MenuSearch, MenuId};
 
 lazy_static! {
   static ref REG: Regex = Regex::new(r"\{([\s\S]*?)\}").unwrap();
+  static ref SERVER_I18N_ENABLE: bool = std::env::var("server_i18n_enable")
+    .map(|v| v.parse().unwrap_or(true))
+    .unwrap_or(true);
 }
 
 pub struct NRoute {
@@ -158,6 +161,21 @@ pub async fn n_lang(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = *SERVER_I18N_ENABLE;
+  if !server_i18n_enable {
+    let mut i18n_lbl = code;
+    if let Some(map) = map {
+      let res: Cow<str> = REG.replace_all(&i18n_lbl, |caps: &Captures| {
+        let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
+        let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
+        value
+      });
+      i18n_lbl = res.to_string();
+    }
+    return Ok(i18n_lbl);
+  }
+  
   let options = Options::new();
   
   let options = options.set_is_debug(false);

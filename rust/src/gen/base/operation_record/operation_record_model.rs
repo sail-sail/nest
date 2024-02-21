@@ -50,9 +50,9 @@ pub struct OperationRecordModel {
   /// 耗时(毫秒)
   pub time: u32,
   /// 操作前数据
-  pub old_data: String,
+  pub old_data: Option<String>,
   /// 操作后数据
-  pub new_data: String,
+  pub new_data: Option<String>,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -84,9 +84,9 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // 耗时(毫秒)
     let time: u32 = row.try_get("time")?;
     // 操作前数据
-    let old_data: String = row.try_get("old_data")?;
+    let old_data: Option<String> = row.try_get("old_data")?;
     // 操作后数据
-    let new_data: String = row.try_get("new_data")?;
+    let new_data: Option<String> = row.try_get("new_data")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -256,9 +256,9 @@ impl From<OperationRecordModel> for OperationRecordInput {
       // 耗时(毫秒)
       time: model.time.into(),
       // 操作前数据
-      old_data: model.old_data.into(),
+      old_data: model.old_data,
       // 操作后数据
-      new_data: model.new_data.into(),
+      new_data: model.new_data,
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
