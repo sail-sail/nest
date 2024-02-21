@@ -525,7 +525,7 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl ?? "";
+    const lbl = search0.lbl;
     const modelTmps = await findAll({
       dictbiz_id,
       lbl,
