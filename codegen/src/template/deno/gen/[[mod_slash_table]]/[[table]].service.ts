@@ -3,7 +3,6 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -16,11 +15,10 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up2 + "model";
-  fieldCommentName = Table_Up2 + "fieldComment";
-  inputName = Table_Up2 + "input";
-  searchName = Table_Up2 + "search";
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";

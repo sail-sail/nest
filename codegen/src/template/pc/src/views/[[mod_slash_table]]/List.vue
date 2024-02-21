@@ -8,12 +8,6 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
-let Table_Up2 = Table_Up;
-if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
-  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
-) {
-  Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-}
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -21,10 +15,10 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  modelName = Table_Up2 + "model";
-  fieldCommentName = Table_Up2 + "fieldComment";
-  inputName = Table_Up2 + "input";
-  searchName = Table_Up2 + "search";
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -83,6 +77,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       @keyup.enter="onSearch"
     ><#
+      let hasSearchExpand = false;
+      const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -106,18 +102,16 @@ const hasAtt = columns.some((item) => item.isAtt);
         }
         const require = column.require;
         const search = column.search;
+        const isSearchExpand = column.isSearchExpand;
+        if (isSearchExpand && !hasSearchExpand) {
+          hasSearchExpand = true;
+        }
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
-        let Foreign_Table_Up2 = Foreign_Table_Up;
-        if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-          && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-        ) {
-          Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-        }
         let foreignSchema = undefined;
         if (foreignKey) {
           foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -134,7 +128,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         && typeof opts?.list_tree !== "string"
       ) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -142,8 +136,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomTreeSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up2#>Tree"
-            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
+            :method="get<#=Foreign_Table_Up#>Tree"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -161,7 +155,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         && typeof opts?.list_tree === "string"
       ) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -185,7 +179,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (foreignKey) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -193,8 +187,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             v-model="search.<#=column_name#>"
-            :method="get<#=Foreign_Table_Up2#>List"
-            :options-map="((item: <#=Foreign_Table_Up2#>Model) => {
+            :method="get<#=Foreign_Table_Up#>List"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
@@ -208,7 +202,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -240,7 +234,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -274,7 +268,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -309,7 +303,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -323,21 +317,50 @@ const hasAtt = columns.some((item) => item.isAtt);
         </el-form-item>
       </template><#
       } else if (column_type.startsWith("int")) {
+        searchIntColumns.push(column);
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <CustomInputNumber
-            v-model="search.<#=column_name#>"
-            @clear="onSearchClear"
-          ></CustomInputNumber>
+          <div
+            un-flex="~"
+            un-w="full"
+            un-gap="x-1"
+            class="searchform_number_range"
+            :set="search.<#=column_name#> = search.<#=column_name#> ?? [ ]"
+          >
+            <CustomInputNumber
+              un-flex="[1_0_0]"
+              v-model="search.<#=column_name#>[0]"
+              @clear="onSearchClear"
+              :placeholder="ns('最小值')"
+              @change="() => {
+                search.<#=column_name#> = search.<#=column_name#> ?? [ ];
+                if (search.<#=column_name#>[1] == null) {
+                  search.<#=column_name#>[1] = search.<#=column_name#>[0];
+                }
+              }"
+            ></CustomInputNumber>
+            <CustomInputNumber
+              un-flex="[1_0_0]"
+              v-model="search.<#=column_name#>[1]"
+              @clear="onSearchClear"
+              :placeholder="ns('最大值')"
+              @change="() => {
+                search.<#=column_name#> = search.<#=column_name#> ?? [ ];
+                if (search.<#=column_name#>[0] == null) {
+                  search.<#=column_name#>[0] = search.<#=column_name#>[1];
+                }
+              }"
+            ></CustomInputNumber>
+          </div>
         </el-form-item>
       </template><#
       } else {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
+      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -359,60 +382,62 @@ const hasAtt = columns.some((item) => item.isAtt);
         label=" "
         prop="idsChecked"
       >
-        <el-checkbox
-          v-model="idsChecked"
-          :false-label="0"
-          :true-label="1"
-          :disabled="selectedIds.length === 0"
-          @change="onIdsChecked"
+        <div
+          un-flex="~ nowrap"
+          un-justify-between
+          un-w="full"
         >
-          <span>{{ ns('已选择') }}</span>
-          <span
-            un-m="l-0.5"
-            un-text="blue"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
+          <div
+            un-flex="~ nowrap"
+            un-items-center
+            un-gap="x-1.5"
           >
-            {{ selectedIds.length }}
-          </span>
-        </el-checkbox>
-        <el-icon
-          v-show="selectedIds.length > 0"
-          :title="ns('清空已选择')"
-          un-cursor-pointer
-          un-m="l-1.5"
-          un-text="hover:red"
-          @click="onEmptySelected"
-        >
-          <ElIconRemove />
-        </el-icon>
-      </el-form-item><#
-      if ((opts.noDelete !== true && opts.noRevert !== true) || hasIsDeleted) {
-      #>
+            <el-checkbox
+              v-model="idsChecked"
+              :false-label="0"
+              :true-label="1"
+              :disabled="selectedIds.length === 0"
+              @change="onIdsChecked"
+            >
+              <span>{{ ns('已选择') }}</span>
+              <span
+                v-if="selectedIds.length > 0"
+                un-m="l-0.5"
+                un-text="blue"
+              >
+                {{ selectedIds.length }}
+              </span>
+            </el-checkbox>
+            <el-icon
+              v-show="selectedIds.length > 0"
+              :title="ns('清空已选择')"
+              un-cursor-pointer
+              un-text="hover:red"
+              @click="onEmptySelected"
+            >
+              <ElIconRemove />
+            </el-icon>
+          </div><#
+          if ((opts.noDelete !== true && opts.noRevert !== true) && hasIsDeleted) {
+          #>
+          
+          <el-checkbox
+            v-if="!isLocked"
+            :set="search.is_deleted = search.is_deleted ?? 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox><#
+          }
+          #>
+        </div>
+      </el-form-item>
       
       <el-form-item
         label=" "
-        prop="is_deleted"
-      >
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted ?? 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="recycleChg"
-        >
-          <span>{{ ns('回收站') }}</span>
-        </el-checkbox>
-      </el-form-item><#
-      }
-      #>
-      
-      <el-form-item
-        label=" "
-        un-self-start
-        un-flex="~ nowrap"
-        un-w="full"
-        un-p="l-1"
-        un-box-border
       >
         
         <el-button
@@ -435,6 +460,39 @@ const hasAtt = columns.some((item) => item.isAtt);
           </template>
           <span>{{ ns('重置') }}</span>
         </el-button>
+        
+        <div
+          un-m="l-2"
+          un-flex="~"
+          un-items-end
+          un-gap="x-2"
+        ><#
+          if (hasSearchExpand) {
+          #>
+          
+          <div
+            un-text="3 gray hover:[var(--el-color-primary)]"
+            un-cursor-pointer
+            un-flex="~"
+            un-justify-end
+            un-h="5.5"
+            un-overflow-hidden
+            @click="isSearchExpand = !isSearchExpand"
+          >
+            <span v-if="isSearchExpand">收起</span>
+            <span v-else>展开</span>
+          </div><#
+          }
+          #>
+          
+          <TableSearchStaging
+            :search="search"
+            :page-path="pagePath"
+            :filename="__filename"
+            @search="onSearchStaging"
+          ></TableSearchStaging>
+          
+        </div>
         
       </el-form-item>
       
@@ -569,9 +627,16 @@ const hasAtt = columns.some((item) => item.isAtt);
            if (opts.noExport !== true) {
          #>
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
+            un-text="red"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -598,7 +663,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -606,7 +671,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -767,9 +832,15 @@ const hasAtt = columns.some((item) => item.isAtt);
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -787,7 +858,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -795,7 +866,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -887,7 +958,12 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="id"
           type="selection"
           align="center"
-          width="50"
+          width="50"<#
+          if (opts?.tableSelectable) {
+          #>
+          :selectable="tableSelectable"<#
+          }
+          #>
         ></el-table-column>
         
         <template
@@ -1024,7 +1100,18 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                  @change="updateById(
+                    row.id,
+                    {<#
+                      if (hasVersion) {
+                      #>
+                      version: row.version,<#
+                      }
+                      #>
+                      order_by: row.order_by,
+                    },
+                    { notLoading: true },
+                  )"
                 ></CustomInputNumber>
               </template>
             </el-table-column>
@@ -1607,12 +1694,6 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
-  let Foreign_Table_Up2 = Foreign_Table_Up;
-  if (Foreign_Table_Up && /^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 1))
-    && !/^[A-Za-z]+$/.test(Foreign_Table_Up.charAt(Foreign_Table_Up.length - 2))
-  ) {
-    Foreign_Table_Up2 = Foreign_Table_Up && Foreign_Table_Up.substring(0, Foreign_Table_Up.length - 1) + Foreign_Table_Up.substring(Foreign_Table_Up.length - 1).toUpperCase();
-  }
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   if (!foreignSchema) {
     continue;
@@ -1631,7 +1712,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up2#>Tree,
+  get<#=Foreign_Table_Up#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
 #><#
@@ -1641,16 +1722,26 @@ if (hasForeignTabs) {
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
 #><#
+if (opts?.isRealData) {
+#>
+
+import {
+  publish,
+} from "@/compositions/websocket";<#
+}
+#>
+
+<#
 let optionsName = table_comment;
 if (list_tree) {
   optionsName = optionsName + "List";
 }
-#>
-
-defineOptions({
+#>defineOptions({
   name: "<#=optionsName#>",
 });
 
+const pagePath = "/<#=mod#>/<#=table#>";
+const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -1660,15 +1751,15 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
-const clearDirty = dirtyStore.onDirty(onRefresh);
+const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1685,9 +1776,51 @@ const emit = defineEmits<{
 }>();
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+if (opts?.isRealData) {
+#>
 
-/** 搜索 */
+useSubscribeList<<#=Table_Up#>Id>(
+  pagePath,
+  async function(data) {
+    const action = data.action;
+    if (action === "add") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "edit") {
+      const id = data.id;
+      if (tableData.some((model) => model.id === id)) {
+        await dataGrid();
+      }
+      return;
+    }
+    if (action === "delete") {
+      const ids = data.ids;
+      selectedIds = selectedIds.filter((id) => !ids.includes(id));
+      await dataGrid(true);
+      return;
+    }
+    if (action === "import") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "revert") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
+  },
+);<#
+}
+#>
+
+/** 查询 */
 function initSearch() {
   return {<#
     if (hasIsDeleted) {
@@ -1729,17 +1862,33 @@ function initSearch() {
   } as <#=searchName#>;
 }
 
-let search = $ref(initSearch());
+let search = $ref(initSearch());<#
+if (hasSearchExpand) {
+#>
+let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
+}
+#>
 
 /** 回收站 */
 async function recycleChg() {
+  tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
 }
 
-/** 搜索 */
+/** 查询 */
 async function onSearch() {
+  tableFocus();
   await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: <#=searchName#>) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
 }
 
 /** 刷新 */
@@ -1751,8 +1900,9 @@ async function onRefresh() {
 
 let isSearchReset = $ref(false);
 
-/** 重置搜索 */
+/** 重置查询 */
 async function onSearchReset() {
+  tableFocus();
   isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
@@ -1763,13 +1913,15 @@ async function onSearchReset() {
   isSearchReset = false;
 }
 
-/** 清空搜索框事件 */
+/** 清空查询框事件 */
 async function onSearchClear() {
+  tableFocus();
   await dataGrid(true);
 }
 
 /** 点击已选择 */
 async function onIdsChecked() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -1970,7 +2122,7 @@ const propsNotInSearch: string[] = [
   "isFocus",
 ];
 
-/** 内置搜索条件 */
+/** 内置查询条件 */
 const builtInSearch: <#=searchName#> = $(initBuiltInSearch(
   props,
   builtInSearchType,
@@ -2012,7 +2164,13 @@ let {
   {
     isPagination,
   },
-));
+));<#
+if (opts?.tableSelectable) {
+#>
+function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSelectable#>
+}<#
+}
+#>
 
 /** 表格选择功能 */
 let {
@@ -2030,9 +2188,24 @@ let {
 } = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
-    multiple: $$(multiple),
+    multiple: $$(multiple),<#
+    if (opts?.tableSelectable) {
+    #>
+    tableSelectable,<#
+    }
+    #>
   },
-));
+));<#
+if (opts?.tableSelectable) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  $$(tableRef),
+  pagePath,
+  dataGrid,
+);<#
+}
+#>
 
 watch(
   () => selectedIds,
@@ -2053,6 +2226,7 @@ function resetSelectedIds() {
 
 /** 取消已选择筛选 */
 async function onEmptySelected() {
+  tableFocus();
   resetSelectedIds();
   if (idsChecked === 1) {
     idsChecked = 0;
@@ -2125,6 +2299,12 @@ function getTableColumns(): ColumnType[] {
     if (column.showOverflowTooltip == null) {
       column.showOverflowTooltip = true;
     }
+    let fixed = column.fixed;
+    if (fixed === false) {
+      fixed = undefined;
+    } else if (fixed === true) {
+      fixed = "left";
+    }
   #><#
     if (column.isImg) {
     #>
@@ -2156,9 +2336,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2192,9 +2372,9 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "<#=column.headerAlign#>",<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2236,9 +2416,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2277,9 +2457,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
-      if (column.fixed !== undefined) {
+      if (fixed) {
       #>
-      fixed: "<#=column.fixed#>",<#
+      fixed: "<#=fixed#>",<#
       }
       #>
     },<#
@@ -2313,7 +2493,7 @@ let {
 } = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
-    persistKey: new URL(import.meta.url).pathname,
+    persistKey: __filename,
   },
 ));
 
@@ -2324,7 +2504,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
-  clearDirty();
+  clearDirty();<#
+  for (const searchIntColumn of searchIntColumns) {
+  #>
+  
+  // <#=searchIntColumn.COLUMN_COMMENT#>
+  if (search.<#=searchIntColumn.COLUMN_NAME#>) {
+    search.<#=searchIntColumn.COLUMN_NAME#> = search.<#=searchIntColumn.COLUMN_NAME#>.filter((item) => item != null);
+  }<#
+  }
+  #>
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
@@ -2434,22 +2623,36 @@ async function useFindCount(
 if (defaultSort && defaultSort.prop) {
 #>
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
 };<#
 } else {
 #>
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "",
   order: "ascending",
 };<#
 }
 #>
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -2458,7 +2661,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;
@@ -2476,16 +2679,15 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
   const search2 = getDataSearch();
   await exportExcel.workerFn(
+    toExcelColumns(tableColumns),
     search2,
-    [
-      sort,
-    ],
+    [ sort ],
   );
 }
 
@@ -2552,7 +2754,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增"),
+    title: await nsAsync("新增") + await nsAsync("<#=table_comment#>"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -2582,13 +2784,13 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制"),
+    title: await nsAsync("复制") + await nsAsync("<#=table_comment#>"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -2624,7 +2826,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/<#=mod#>/<#=table#>"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
@@ -2777,7 +2979,18 @@ async function onImportExcel() {
   if (msg) {
     ElMessageBox.alert(msg)
   }
-  if (succNum > 0) {
+  if (succNum > 0) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "import",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -2935,13 +3148,13 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑"),
+    title: await nsAsync("编辑") + await nsAsync("<#=table_comment#>"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -2964,7 +3177,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -2989,7 +3202,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: <#=modelName#>,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -2998,11 +3211,12 @@ async function onRowDblclick(
 
 /** 打开查看 */
 async function openView() {
+  tableFocus();
   if (!detailRef) {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const search = getDataSearch();<#
@@ -3014,7 +3228,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看"),
+    title: await nsAsync("查看") + await nsAsync("<#=table_comment#>"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3050,11 +3264,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3063,17 +3277,29 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "delete",
+      }),
+      payload: selectedIds,
+    });<#
+    }
+    #>
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("remove", num);
   }
 }
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -3082,11 +3308,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3095,9 +3321,20 @@ async function onForceDeleteByIds() {
     return;
   }
   const num = await forceDeleteByIds(selectedIds);
-  if (num) {
+  if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      payload: num,
+    });<#
+    }
+    #>
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -3120,9 +3357,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的数据");
+      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("请选择需要 禁用 的数据");
+      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("<#=table_comment#>"));
     }
     ElMessage.warning(msg);
     return;
@@ -3131,9 +3368,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 条数据成功", num);
+      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("禁用 {0} 条数据成功", num);
+      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3158,9 +3395,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的数据");
+      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("请选择需要 解锁 的数据");
+      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("<#=table_comment#>"));
     }
     ElMessage.warning(msg);
     return;
@@ -3169,9 +3406,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 条数据成功", num);
+      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("解锁 {0} 条数据成功", num);
+      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3194,11 +3431,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3208,6 +3445,17 @@ async function onRevertByIds() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {<#
+    if (opts?.isRealData) {
+    #>
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "revert",
+      }),
+      payload: num,
+    });<#
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     search.is_deleted = 0;<#
@@ -3215,9 +3463,34 @@ async function onRevertByIds() {
     #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("revert", num);
   }
+}<#
+}
+#><#
+if (mod === "base" && table === "operation_record") {
+  const keys = Object.keys(optTables);
+#>
+
+async function getDetailByModule(
+  module: string,
+) {
+  if (!module) {
+    return;
+  }<#
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const tableSchema = optTables[key];
+    if (!tableSchema.opts.log) {
+      continue;
+    }
+  #>
+  if (module === "<#=key#>") {
+    return await import("@/views/<#=tableSchema.opts.mod#>/<#=tableSchema.opts.table#>/Detail.vue");
+  }<#
+  }
+  #>
 }<#
 }
 #><#
@@ -3229,12 +3502,13 @@ if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
 async function onOpenForeignTabs() {
+  tableFocus();
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一条数据"));
+    ElMessage.warning(await nsAsync("只能选择一个 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const id = selectedIds[0];
@@ -3383,6 +3657,7 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const foreignSchema = foreignKey && optTables[foreignKey.mod + "_" + foreignTable];
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
@@ -3395,13 +3670,14 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   const res = await <#=column_name#>ListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("<#=foreignSchema?.opts?.table_comment#>"),
     selectedIds: row.<#=column_name#>,<#
     if (hasLocked) {
     #>
-    isLocked: row.is_locked == 1,<#
+    isLocked: row.is_locked == 1 || row.is_deleted == 1,<#
     } else {
     #>
-    isLocked: false,<#
+    isLocked: row.is_deleted == 1,<#
     }
     #>
   });

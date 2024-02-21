@@ -103,7 +103,11 @@
         un-m="r-4"
       >
         <template
-          v-if="loginInfo && loginInfo.org_id_models"
+          v-if="
+            loginInfo &&
+            loginInfo.org_id_models &&
+            !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
+          "
         >
           <el-dropdown
             trigger="click"
@@ -332,7 +336,6 @@ import type {
 const router = useRouter();
 
 const {
-  n,
   ns,
   nsAsync,
   initI18ns,

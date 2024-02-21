@@ -183,7 +183,7 @@ import type {
 } from "#/types";
 
 const emit = defineEmits<
-  (e: "update:modelValue", value: string) => void
+  (e: "update:modelValue", value?: string | null) => void
 >();
 
 const props = withDefaults(
@@ -321,6 +321,10 @@ async function onDelete() {
 let showUpload = $ref(false);
 
 function imgMouseenter() {
+  if (props.readonly) {
+    showUpload = false;
+    return;
+  }
   showUpload = true;
 }
 

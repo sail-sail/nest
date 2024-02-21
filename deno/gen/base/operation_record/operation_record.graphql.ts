@@ -19,12 +19,12 @@ type OperationRecordModel {
   method_lbl: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: Int!
   "操作前数据"
   old_data: String!
   "操作后数据"
   new_data: String!
-  "备注"
-  rem: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -33,14 +33,6 @@ type OperationRecordModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
-  update_usr_id: UsrId!
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -57,12 +49,12 @@ type OperationRecordFieldComment {
   method_lbl: String!
   "操作"
   lbl: String!
+  "耗时(毫秒)"
+  time: String!
   "操作前数据"
   old_data: String!
   "操作后数据"
   new_data: String!
-  "备注"
-  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -71,14 +63,6 @@ type OperationRecordFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input OperationRecordInput {
   ""
@@ -93,12 +77,12 @@ input OperationRecordInput {
   method_lbl: String
   "操作"
   lbl: String
+  "耗时(毫秒)"
+  time: Int
   "操作前数据"
   old_data: String
   "操作后数据"
   new_data: String
-  "备注"
-  rem: String
   "创建人"
   create_usr_id: UsrId
   "创建人"
@@ -107,14 +91,6 @@ input OperationRecordInput {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input OperationRecordSearch {
   "是否已删除"
@@ -138,25 +114,19 @@ input OperationRecordSearch {
   "操作"
   lbl: String
   lbl_like: String
+  "耗时(毫秒)"
+  time: [Int!]
   "操作前数据"
   old_data: String
   old_data_like: String
   "操作后数据"
   new_data: String
   new_data_like: String
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
-  "更新人"
-  update_usr_id: [UsrId!]
-  update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找操作记录总数"

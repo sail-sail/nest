@@ -4,6 +4,12 @@ import { getEnv, getEnvs } from "/lib/env.ts";
 
 import { copyDir } from "/lib/util/fs_util.ts";
 
+const separator = Deno.build.os == "windows" ? ";" : ":";
+const path = Deno.env.get("path") || "";
+const paths = path.split(separator);
+const npmDir = paths.find((path) => path.endsWith("npm")) || "";
+const pnpmCmd = `${ npmDir }/pnpm${ Deno.build.os == "windows" ? ".cmd" : "" }`;
+
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
   if (index === -1) {
@@ -36,7 +42,7 @@ async function copyEnv() {
 
 async function gqlgen() {
   console.log("gqlgen");
-  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+  const command = new Deno.Command(pnpmCmd, {
     cwd: denoDir,
     args: [
       "run",
@@ -147,7 +153,7 @@ async function compile() {
     }
     let cmds = [
       "compile",
-      "--unstable",
+      "--unstable-ffi",
       // `--allow-read=${ allowReads.join(",") }`,
       `--allow-read`,
       // `--allow-write=${ allowWrites.join(",") }`,
@@ -157,8 +163,6 @@ async function compile() {
       // `--allow-net=${ allowNets.join(",") }`,
       `--allow-net`,
       `--allow-ffi`,
-      "--import-map",
-      "./import_map.json",
     ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);
@@ -183,7 +187,7 @@ async function compile() {
 
 async function pc() {
   console.log("pc");
-  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+  const command = new Deno.Command(pnpmCmd, {
     cwd: pcDir,
     args: [
       "run",
@@ -203,7 +207,7 @@ async function pc() {
 
 async function uni() {
   console.log("uni");
-  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+  const command = new Deno.Command(pnpmCmd, {
     cwd: uniDir,
     args: [
       "run",
@@ -227,7 +231,7 @@ async function uni() {
 
 async function docs() {
   console.log("docs");
-  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+  const command = new Deno.Command(pnpmCmd, {
     cwd: denoDir + "/../",
     args: [
       "run",
@@ -244,7 +248,7 @@ async function docs() {
 
 async function publish() {
   console.log("publish");
-  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+  const command = new Deno.Command(pnpmCmd, {
     cwd: denoDir,
     args: [
       "run",

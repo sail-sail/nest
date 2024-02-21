@@ -33,7 +33,7 @@
 >
   <div
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
     un-w="full"
@@ -101,6 +101,13 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 let shouldShowPlaceholder = $computed(() => {
   return modelValue == null || modelValue === "";
 });
@@ -125,7 +132,12 @@ function onClear() {
   emit("clear");
 }
 
+function focus() {
+  inputRef?.focus();
+}
+
 defineExpose({
   inputRef: $$(inputRef),
+  focus,
 });
 </script>

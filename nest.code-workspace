@@ -23,7 +23,6 @@
     "deno.enable": true,
     "deno.lint": true,
     "deno.unstable": true,
-    "deno.importMap": "./import_map.json",
     "unocss.root": "uni",
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
@@ -34,6 +33,8 @@
         "target": "./codegen/template/<basename>"
       }
     ],
-    "diffEditor.wordWrap": "off"
+    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
+    "diffEditor.wordWrap": "off",
+    "editor.formatOnSave": false
   }
 }
