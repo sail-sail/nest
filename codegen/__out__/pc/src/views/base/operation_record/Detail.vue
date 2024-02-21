@@ -2,12 +2,12 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.i="onInsert"
 >
   <template #extra_header>
     <div
@@ -18,14 +18,14 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -35,7 +35,7 @@
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template>
@@ -133,6 +133,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.time == null)">
+          <el-form-item
+            :label="n('耗时(毫秒)')"
+            prop="time"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.time"
+              :placeholder="`${ ns('请输入') } ${ n('耗时(毫秒)') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.old_data == null)">
           <el-form-item
             :label="n('操作前数据')"
@@ -154,23 +167,6 @@
             <CustomInput
               v-model="dialogModel.new_data"
               :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-grid="col-span-2"
-          >
-            <CustomInput
-              v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -268,18 +264,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/base/operation_record";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/operation_record");
+} = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/operation_record");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -287,6 +284,8 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: OperationRecordInput = $ref({
@@ -346,10 +345,13 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: OperationRecordInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -359,12 +361,16 @@ async function showDialog(
       ids?: OperationRecordId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -379,12 +385,18 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (!permit("edit")) {
       isLocked = true;
@@ -418,7 +430,7 @@ async function showDialog(
     const [
       data,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -452,13 +464,6 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}
-
-/** 键盘按 Insert */
-async function onInsert() {
-  isReadonly = !isReadonly;
-  await nextTick();
-  customDialogRef?.focus();
 }
 
 /** 重置 */
@@ -505,7 +510,7 @@ async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });
@@ -605,10 +610,23 @@ async function nextId() {
   return true;
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+}
+
+async function onDialogClose() {
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -617,8 +635,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({
@@ -630,18 +648,14 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "模块",
     "模块名称",
-    "方法",
     "方法名称",
     "操作",
+    "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "备注",
     "创建人",
     "创建时间",
-    "更新人",
-    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

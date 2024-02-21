@@ -95,6 +95,7 @@ async function getSchema0(
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -197,9 +198,9 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "left";
       }
-      if (item.fixed === undefined) {
+      if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === null) {
+      } else if (item.fixed === false) {
         delete item.fixed;
       }
     }
@@ -455,6 +456,14 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateUsrId = true;
   }
+  if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasVersion = true;
+  }
+  if (tables[table_name]?.opts?.hasVersion === true && tables[table_name]?.opts?.isRealData == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.isRealData = true;
+  }
   return records2;
 }
 
@@ -474,8 +483,12 @@ export async function getSchema(
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
   tables[table_name].opts = tables[table_name].opts || { };
-  tables[table_name].opts.table = table_name;
-  // tables[table_name].opts.tableUp = table_name.substring(0,1).toUpperCase() + table_name.substring(1);
+  tables[table_name].opts.table_name = table_name;
+  const mod = table_name.substring(0, table_name.indexOf("_"));
+  const table = table_name.substring(table_name.indexOf("_") + 1);
+  tables[table_name].opts.mod = mod;
+  tables[table_name].opts.table = table;
+  tables[table_name].opts.tableUp = table.substring(0,1).toUpperCase() + table.substring(1);
   tables[table_name].opts.table_comment = await getTableComment(context, table_name);
   const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;
@@ -758,6 +771,31 @@ export async function getSchema(
     }
   }
   tablesConfigItemMap[table_name] = tables[table_name];
+  
+  // 外键关联的默认width
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.foreignKey && !column.foreignKey.multiple && (column.width == null || column.align == null)) {
+      const foreignKey = column.foreignKey;
+      const foreignSchema = tables[foreignKey.mod + "_" + foreignKey.table];
+      if (!foreignSchema?.columns) {
+        throw new Error(`表: ${ table_name }, 列: ${ column.COLUMN_NAME }, 对应的外键关联表不存在: foreignKey: ${ JSON.stringify(foreignKey) }`);
+      }
+      let foreignLbl = foreignKey.lbl || "lbl";
+      if (Array.isArray(foreignLbl)) {
+        foreignLbl = foreignLbl[0];
+      }
+      const foreignColumn = foreignSchema.columns.find((item) => item.COLUMN_NAME === foreignLbl);
+      if (foreignColumn) {
+        if (column.width == null && foreignColumn.width != null) {
+          column.width = foreignColumn.width;
+        }
+        if (column.align == null && foreignColumn.align != null) {
+          column.align = foreignColumn.align;
+        }
+      }
+    }
+  }
   return tables[table_name];
 }
 

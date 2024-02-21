@@ -83,56 +83,58 @@
         label=" "
         prop="idsChecked"
       >
-        <el-checkbox
-          v-model="idsChecked"
-          :false-label="0"
-          :true-label="1"
-          :disabled="selectedIds.length === 0"
-          @change="onIdsChecked"
+        <div
+          un-flex="~ nowrap"
+          un-justify-between
+          un-w="full"
         >
-          <span>{{ ns('已选择') }}</span>
-          <span
-            un-m="l-0.5"
-            un-text="blue"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
+          <div
+            un-flex="~ nowrap"
+            un-items-center
+            un-gap="x-1.5"
           >
-            {{ selectedIds.length }}
-          </span>
-        </el-checkbox>
-        <el-icon
-          v-show="selectedIds.length > 0"
-          :title="ns('清空已选择')"
-          un-cursor-pointer
-          un-m="l-1.5"
-          un-text="hover:red"
-          @click="onEmptySelected"
-        >
-          <ElIconRemove />
-        </el-icon>
+            <el-checkbox
+              v-model="idsChecked"
+              :false-label="0"
+              :true-label="1"
+              :disabled="selectedIds.length === 0"
+              @change="onIdsChecked"
+            >
+              <span>{{ ns('已选择') }}</span>
+              <span
+                v-if="selectedIds.length > 0"
+                un-m="l-0.5"
+                un-text="blue"
+              >
+                {{ selectedIds.length }}
+              </span>
+            </el-checkbox>
+            <el-icon
+              v-show="selectedIds.length > 0"
+              :title="ns('清空已选择')"
+              un-cursor-pointer
+              un-text="hover:red"
+              @click="onEmptySelected"
+            >
+              <ElIconRemove />
+            </el-icon>
+          </div>
+          
+          <el-checkbox
+            v-if="!isLocked"
+            :set="search.is_deleted = search.is_deleted ?? 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </div>
       </el-form-item>
       
       <el-form-item
         label=" "
-        prop="is_deleted"
-      >
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted ?? 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="recycleChg"
-        >
-          <span>{{ ns('回收站') }}</span>
-        </el-checkbox>
-      </el-form-item>
-      
-      <el-form-item
-        label=" "
-        un-self-start
-        un-flex="~ nowrap"
-        un-w="full"
-        un-p="l-1"
-        un-box-border
       >
         
         <el-button
@@ -155,6 +157,22 @@
           </template>
           <span>{{ ns('重置') }}</span>
         </el-button>
+        
+        <div
+          un-m="l-2"
+          un-flex="~"
+          un-items-end
+          un-gap="x-2"
+        >
+          
+          <TableSearchStaging
+            :search="search"
+            :page-path="pagePath"
+            :filename="__filename"
+            @search="onSearchStaging"
+          ></TableSearchStaging>
+          
+        </div>
         
       </el-form-item>
       
@@ -243,9 +261,16 @@
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
+            un-text="red"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -263,7 +288,7 @@
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -271,7 +296,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -347,9 +372,15 @@
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -367,7 +398,7 @@
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -375,7 +406,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -624,6 +655,8 @@ defineOptions({
   name: "数据权限List",
 });
 
+const pagePath = "/base/data_permit";
+const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
@@ -633,15 +666,15 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/base/data_permit");
+} = useI18n(pagePath);
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
-const clearDirty = dirtyStore.onDirty(onRefresh);
+const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit("/base/data_permit");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -660,7 +693,7 @@ const emit = defineEmits<{
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
-/** 搜索 */
+/** 查询 */
 function initSearch() {
   return {
     is_deleted: 0,
@@ -672,13 +705,24 @@ let search = $ref(initSearch());
 
 /** 回收站 */
 async function recycleChg() {
+  tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
 }
 
-/** 搜索 */
+/** 查询 */
 async function onSearch() {
+  tableFocus();
   await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: DataPermitSearch) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
 }
 
 /** 刷新 */
@@ -690,8 +734,9 @@ async function onRefresh() {
 
 let isSearchReset = $ref(false);
 
-/** 重置搜索 */
+/** 重置查询 */
 async function onSearchReset() {
+  tableFocus();
   isSearchReset = true;
   search = initSearch();
   idsChecked = 0;
@@ -702,13 +747,15 @@ async function onSearchReset() {
   isSearchReset = false;
 }
 
-/** 清空搜索框事件 */
+/** 清空查询框事件 */
 async function onSearchClear() {
+  tableFocus();
   await dataGrid(true);
 }
 
 /** 点击已选择 */
 async function onIdsChecked() {
+  tableFocus();
   await dataGrid(true);
 }
 
@@ -760,7 +807,7 @@ const propsNotInSearch: string[] = [
   "isFocus",
 ];
 
-/** 内置搜索条件 */
+/** 内置查询条件 */
 const builtInSearch: DataPermitSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
@@ -839,6 +886,7 @@ function resetSelectedIds() {
 
 /** 取消已选择筛选 */
 async function onEmptySelected() {
+  tableFocus();
   resetSelectedIds();
   if (idsChecked === 1) {
     idsChecked = 0;
@@ -977,7 +1025,7 @@ let {
 } = $(useTableColumns<DataPermitModel>(
   $$(tableColumns),
   {
-    persistKey: new URL(import.meta.url).pathname,
+    persistKey: __filename,
   },
 ));
 
@@ -1058,13 +1106,27 @@ async function useFindCount(
   );
 }
 
-const defaultSort: Sort = {
+const _defaultSort: Sort = {
   prop: "create_time",
   order: "descending",
 };
 
+const defaultSort: Sort = $computed(() => {
+  if (_defaultSort.prop === "") {
+    return _defaultSort;
+  }
+  const sort2: Sort = {
+    ..._defaultSort,
+  };
+  const column = tableColumns.find((item) => item.sortBy === _defaultSort.prop);
+  if (column) {
+    sort2.prop = column.prop;
+  }
+  return sort2;
+});
+
 let sort = $ref<Sort>({
-  ...defaultSort,
+  ..._defaultSort,
 });
 
 /** 排序 */
@@ -1073,7 +1135,7 @@ async function onSortChange(
 ) {
   if (!order) {
     sort = {
-      ...defaultSort,
+      ..._defaultSort,
     };
     await dataGrid();
     return;
@@ -1089,16 +1151,15 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/base/data_permit"));
+let exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
   const search2 = getDataSearch();
   await exportExcel.workerFn(
+    toExcelColumns(tableColumns),
     search2,
-    [
-      sort,
-    ],
+    [ sort ],
   );
 }
 
@@ -1122,7 +1183,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增"),
+    title: await nsAsync("新增") + await nsAsync("数据权限"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1152,13 +1213,13 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("数据权限")));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制"),
+    title: await nsAsync("复制") + await nsAsync("数据权限"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1192,7 +1253,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/data_permit"));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
 
 /**
  * 下载导入模板
@@ -1283,13 +1344,13 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的数据"));
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("数据权限")));
     return;
   }
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑"),
+    title: await nsAsync("编辑") + await nsAsync("数据权限"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1310,7 +1371,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
@@ -1327,7 +1388,7 @@ async function onRowEnter(e: KeyboardEvent) {
 async function onRowDblclick(
   row: DataPermitModel,
 ) {
-  if (props.selectedIds != null) {
+  if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
   }
@@ -1336,11 +1397,12 @@ async function onRowDblclick(
 
 /** 打开查看 */
 async function openView() {
+  tableFocus();
   if (!detailRef) {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("数据权限")));
     return;
   }
   const search = getDataSearch();
@@ -1348,7 +1410,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看"),
+    title: await nsAsync("查看") + await nsAsync("数据权限"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1378,11 +1440,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("数据权限")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("数据权限")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1395,13 +1457,14 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("数据权限")));
     emit("remove", num);
   }
 }
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1410,11 +1473,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("数据权限")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("数据权限")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1425,7 +1488,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("数据权限")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1442,11 +1505,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("数据权限")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("数据权限")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1459,7 +1522,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("数据权限")));
     emit("revert", num);
   }
 }

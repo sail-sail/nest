@@ -12,9 +12,9 @@ async function exec() {
   console.log(command);
   let origin = execSync(command).toString().trim();
   origin = origin.split("/")[0];
-  command = `git pull ${ origin } main`;
-  console.log(command);
-  execSync(command, { stdio: "inherit" });
+  // command = `git pull ${ origin } main`;
+  // console.log(command);
+  // execSync(command, { stdio: "inherit" });
   if (parentBranchs.length > 0) {
     for (let i = 0; i < parentBranchs.length; i++) {
       const branch = parentBranchs[i];

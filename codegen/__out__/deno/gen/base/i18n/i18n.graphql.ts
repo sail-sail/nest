@@ -6,7 +6,7 @@ defineGraphql(resolver, /* GraphQL */ `
 scalar I18nId
 
 
-type I18Nmodel {
+type I18nModel {
   "ID"
   id: I18nId!
   "语言"
@@ -42,7 +42,7 @@ type I18Nmodel {
   "是否已删除"
   is_deleted: Int!
 }
-type I18NfieldComment {
+type I18nFieldComment {
   "ID"
   id: String!
   "语言"
@@ -76,7 +76,7 @@ type I18NfieldComment {
   "更新时间"
   update_time_lbl: String!
 }
-input I18Ninput {
+input I18nInput {
   ""
   id: I18nId
   "语言"
@@ -110,7 +110,7 @@ input I18Ninput {
   "更新时间"
   update_time_lbl: String
 }
-input I18Nsearch {
+input I18nSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -145,27 +145,27 @@ input I18Nsearch {
 }
 type Query {
   "根据条件查找国际化总数"
-  findCountI18N(search: I18Nsearch): Int!
+  findCountI18n(search: I18nSearch): Int!
   "根据搜索条件和分页查找国际化列表"
-  findAllI18N(search: I18Nsearch, page: PageInput, sort: [SortInput!]): [I18Nmodel!]!
+  findAllI18n(search: I18nSearch, page: PageInput, sort: [SortInput!]): [I18nModel!]!
   "获取国际化字段注释"
-  getFieldCommentsI18N: I18NfieldComment!
+  getFieldCommentsI18n: I18nFieldComment!
   "根据条件查找第一个国际化"
-  findOneI18N(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
+  findOneI18n(search: I18nSearch, sort: [SortInput!]): I18nModel
   "根据 id 查找国际化"
-  findByIdI18N(id: I18nId!): I18Nmodel
+  findByIdI18n(id: I18nId!): I18nModel
 }
 type Mutation {
   "创建国际化"
-  createI18N(model: I18Ninput!, unique_type: UniqueType): I18nId!
+  createI18n(model: I18nInput!, unique_type: UniqueType): I18nId!
   "根据 id 修改国际化"
-  updateByIdI18N(id: I18nId!, model: I18Ninput!): I18nId!
+  updateByIdI18n(id: I18nId!, model: I18nInput!): I18nId!
   "根据 ids 删除国际化"
-  deleteByIdsI18N(ids: [I18nId!]!): Int!
+  deleteByIdsI18n(ids: [I18nId!]!): Int!
   "根据 ids 还原国际化"
-  revertByIdsI18N(ids: [I18nId!]!): Int!
+  revertByIdsI18n(ids: [I18nId!]!): Int!
   "根据 ids 彻底删除国际化"
-  forceDeleteByIdsI18N(ids: [I18nId!]!): Int!
+  forceDeleteByIdsI18n(ids: [I18nId!]!): Int!
 }
 
 `);

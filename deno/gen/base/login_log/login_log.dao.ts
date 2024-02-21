@@ -793,7 +793,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("登录日志"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -803,7 +803,7 @@ export async function updateById(
   const oldModel = await findById(id);
   
   if (!oldModel) {
-    throw await ns("修改失败, 数据已被删除");
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("登录日志"));
   }
   
   const args = new QueryArgs();

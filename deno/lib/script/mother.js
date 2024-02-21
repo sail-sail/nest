@@ -46,6 +46,7 @@ function watchFn() {
         `${ pjPath }/*.diff`,
         `${ pjPath }/*.md`,
         `${ pjPath }/error.js`,
+        `${ pjPath }/**/*.test.ts`,
         `${ pjPath }/**/*.dao.ts`,
         `${ pjPath }/**/*.service.ts`,
       ],
@@ -84,8 +85,6 @@ function watchFn() {
         const arr = [
           "run",
           "-A",
-          "--import-map",
-          "./import_map.json",
           "--no-check",
           "./lib/script/hmr.ts",
         ];
@@ -212,14 +211,12 @@ function start() {
     "run",
     "--unstable-hmr",
     "--inspect",
-    "--unstable",
+    "--unstable-ffi",
     "-A",
     // `--allow-read=${ allowReads.join(",") }`,
     // `--allow-write=${ allowWrites.join(",") }`,
     // `--allow-env=${ allowEnvs.join(",") }`,
     // `--allow-net=${ allowNets.join(",") }`,
-    "--import-map",
-    "./import_map.json",
     "--no-check",
     "./mod.ts",
   ];

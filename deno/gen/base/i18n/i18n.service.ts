@@ -7,10 +7,10 @@ import type {
 } from "/gen/types.ts";
 
 import type {
-  I18Ninput,
-  I18Nmodel,
-  I18Nsearch,
-  I18NfieldComment,
+  I18nInput,
+  I18nModel,
+  I18nSearch,
+  I18nFieldComment,
   I18nId,
 } from "./i18n.model.ts";
 
@@ -18,11 +18,11 @@ import * as i18nDao from "./i18n.dao.ts";
 
 /**
  * 根据条件查找国际化总数
- * @param {I18Nsearch} search? 搜索条件
+ * @param {I18nSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: I18Nsearch,
+  search?: I18nSearch,
 ): Promise<number> {
   search = search || { };
   const data = await i18nDao.findCount(search);
@@ -31,24 +31,24 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找国际化列表
- * @param {I18Nsearch} search? 搜索条件
+ * @param {I18nSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<I18Nmodel[]>} 
+ * @return {Promise<I18nModel[]>} 
  */
 export async function findAll(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<I18Nmodel[]> {
+): Promise<I18nModel[]> {
   search = search || { };
-  const models: I18Nmodel[] = await i18nDao.findAll(search, page, sort);
+  const models: I18nModel[] = await i18nDao.findAll(search, page, sort);
   return models;
 }
 
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
-  input: I18Ninput,
+  input: I18nInput,
 ) {
   const data = await i18nDao.setIdByLbl(input);
   return data;
@@ -56,12 +56,12 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个国际化
- * @param {I18Nsearch} search? 搜索条件
+ * @param {I18nSearch} search? 搜索条件
  */
 export async function findOne(
-  search?: I18Nsearch,
+  search?: I18nSearch,
   sort?: SortInput|SortInput[],
-): Promise<I18Nmodel | undefined> {
+): Promise<I18nModel | undefined> {
   search = search || { };
   const model = await i18nDao.findOne(search, sort);
   return model;
@@ -73,17 +73,17 @@ export async function findOne(
  */
 export async function findById(
   id?: I18nId | null,
-): Promise<I18Nmodel | undefined> {
+): Promise<I18nModel | undefined> {
   const model = await i18nDao.findById(id);
   return model;
 }
 
 /**
  * 根据搜索条件查找国际化是否存在
- * @param {I18Nsearch} search? 搜索条件
+ * @param {I18nSearch} search? 搜索条件
  */
 export async function exist(
-  search?: I18Nsearch,
+  search?: I18nSearch,
 ): Promise<boolean> {
   search = search || { };
   const data = await i18nDao.exist(search);
@@ -106,7 +106,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: I18Ninput,
+  input: I18nInput,
 ): Promise<void> {
   const data = await i18nDao.validate(input);
   return data;
@@ -114,11 +114,11 @@ export async function validate(
 
 /**
  * 创建数据
- * @param {I18Ninput} input
+ * @param {I18nInput} input
  * @return {Promise<I18nId>} id
  */
 export async function create(
-  input: I18Ninput,
+  input: I18nInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -130,12 +130,12 @@ export async function create(
 /**
  * 根据 id 修改国际化
  * @param {I18nId} id
- * @param {I18Ninput} input
+ * @param {I18nInput} input
  * @return {Promise<I18nId>}
  */
 export async function updateById(
   id: I18nId,
-  input: I18Ninput,
+  input: I18nInput,
 ): Promise<I18nId> {
   
   const id2: I18nId = await i18nDao.updateById(id, input);
@@ -192,7 +192,7 @@ export async function forceDeleteByIds(
 /**
  * 获取国际化字段注释
  */
-export async function getFieldComments(): Promise<I18NfieldComment> {
+export async function getFieldComments(): Promise<I18nFieldComment> {
   const data = await i18nDao.getFieldComments();
   return data;
 }
