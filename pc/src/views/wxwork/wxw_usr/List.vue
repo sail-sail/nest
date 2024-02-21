@@ -233,7 +233,7 @@
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
             un-text="red"
           >
             {{ ns('正在导出') }}
@@ -260,7 +260,7 @@
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -268,7 +268,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -344,9 +344,15 @@
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -364,7 +370,7 @@
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -372,7 +378,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
