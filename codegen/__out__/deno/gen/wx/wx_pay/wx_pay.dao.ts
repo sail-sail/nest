@@ -544,7 +544,7 @@ export async function findByUnique(
     if (search0.appid == null) {
       return [ ];
     }
-    const appid = search0.appid;
+    const appid = search0.appid ?? "";
     const modelTmps = await findAll({
       appid,
     });
@@ -554,7 +554,7 @@ export async function findByUnique(
     if (search0.notify_url == null) {
       return [ ];
     }
-    const notify_url = search0.notify_url;
+    const notify_url = search0.notify_url ?? "";
     const modelTmps = await findAll({
       notify_url,
     });
@@ -606,7 +606,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("微信支付设置")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxPayId = await updateById(
@@ -1486,7 +1486,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("微信支付设置"));
       }
     }
   }
