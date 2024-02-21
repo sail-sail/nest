@@ -510,20 +510,14 @@ export async function findByUnique(
   }
   const models: DictModel[] = [ ];
   {
-    if (search0.code == null) {
-      return [ ];
-    }
-    const code = search0.code;
+    const code = search0.code ?? "";
     const modelTmps = await findAll({
       code,
     });
     models.push(...modelTmps);
   }
   {
-    if (search0.lbl == null) {
-      return [ ];
-    }
-    const lbl = search0.lbl;
+    const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       lbl,
     });
@@ -575,7 +569,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("系统字典")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictId = await updateById(
@@ -1355,7 +1349,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("系统字典"));
       }
     }
   }

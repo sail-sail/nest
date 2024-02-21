@@ -475,23 +475,17 @@ export async function findByUnique(
   }
   const models: DataPermitModel[] = [ ];
   {
-    if (search0.menu_id == null) {
-      return [ ];
-    }
     let menu_id: MenuId[] = [ ];
-    if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id, search0.menu_id);
+    if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
+      menu_id = [ search0.menu_id, search0.menu_id ];
     } else {
-      menu_id = search0.menu_id;
-    }
-    if (search0.scope == null) {
-      return [ ];
+      menu_id = search0.menu_id || [ ];
     }
     let scope: DataPermitScope[] = [ ];
-    if (!Array.isArray(search0.scope)) {
-      scope.push(search0.scope, search0.scope);
+    if (!Array.isArray(search0.scope) && search0.scope != null) {
+      scope = [ search0.scope, search0.scope ];
     } else {
-      scope = search0.scope;
+      scope = search0.scope || [ ];
     }
     const modelTmps = await findAll({
       menu_id,
@@ -541,7 +535,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("数据权限")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: DataPermitId = await updateById(
@@ -1112,7 +1106,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("数据权限"));
       }
     }
   }

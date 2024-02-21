@@ -513,19 +513,13 @@ export async function findByUnique(
   }
   const models: DictbizDetailModel[] = [ ];
   {
-    if (search0.dictbiz_id == null) {
-      return [ ];
-    }
     let dictbiz_id: DictbizId[] = [ ];
-    if (!Array.isArray(search0.dictbiz_id)) {
-      dictbiz_id.push(search0.dictbiz_id, search0.dictbiz_id);
+    if (!Array.isArray(search0.dictbiz_id) && search0.dictbiz_id != null) {
+      dictbiz_id = [ search0.dictbiz_id, search0.dictbiz_id ];
     } else {
-      dictbiz_id = search0.dictbiz_id;
+      dictbiz_id = search0.dictbiz_id || [ ];
     }
-    if (search0.lbl == null) {
-      return [ ];
-    }
-    const lbl = search0.lbl;
+    const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       dictbiz_id,
       lbl,
@@ -574,7 +568,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("业务字典明细")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictbizDetailId = await updateById(
@@ -1372,7 +1366,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("业务字典明细"));
       }
     }
   }

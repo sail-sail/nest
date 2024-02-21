@@ -2052,22 +2052,16 @@ export async function findByUnique(
         throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
       }
       const column_name = column.COLUMN_NAME;
-      if (column_name === 'id') {
-        continue;
-      }
-      if (column_name === 'org_id') {
-        continue;
-      }
-      if (column_name === 'tenant_id') {
-        continue;
-      }
-      if (column_name === 'is_sys') {
-        continue;
-      }
-      if (column_name === 'is_deleted') {
-        continue;
-      }
-      if (column_name === 'is_hidden') {
+      if (
+        [
+          "id",
+          "org_id",
+          "tenant_id",
+          "is_sys",
+          "is_deleted",
+          "is_hidden",
+        ].includes(column_name)
+      ) {
         continue;
       }
       const data_type = column.DATA_TYPE;
@@ -2079,10 +2073,7 @@ export async function findByUnique(
       }).join("");
       const isPassword = column.isPassword;
       if (isPassword) continue;
-    #>
-    if (search0.<#=unique#> == null) {
-      return [ ];
-    }<#
+    #><#
     if (
       foreignKey
       || data_type === "datetime"
@@ -2118,14 +2109,14 @@ export async function findByUnique(
       }
     #>
     let <#=unique#>: <#=_data_type#>[] = [ ];
-    if (!Array.isArray(search0.<#=unique#>)) {
-      <#=unique#>.push(search0.<#=unique#>, search0.<#=unique#>);
+    if (!Array.isArray(search0.<#=unique#>) && search0.<#=unique#> != null) {
+      <#=unique#> = [ search0.<#=unique#>, search0.<#=unique#> ];
     } else {
-      <#=unique#> = search0.<#=unique#>;
+      <#=unique#> = search0.<#=unique#> || [ ];
     }<#
     } else {
     #>
-    const <#=unique#> = search0.<#=unique#>;<#
+    const <#=unique#> = search0.<#=unique#> ?? "";<#
     }
     #><#
     }
@@ -2216,7 +2207,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("<#=table_comment#>")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: <#=Table_Up#>Id = await updateById(
@@ -3512,7 +3503,7 @@ export async function updateById(
     if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
-        throw await ns("数据已被修改，请刷新后重试");
+        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
       }
       sql += `version = ${ args.push(version + 1) },`;
     }<#
@@ -4042,7 +4033,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
       }
     }
   }<#

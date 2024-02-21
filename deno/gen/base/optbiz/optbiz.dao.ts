@@ -491,14 +491,8 @@ export async function findByUnique(
   }
   const models: OptbizModel[] = [ ];
   {
-    if (search0.lbl == null) {
-      return [ ];
-    }
-    const lbl = search0.lbl;
-    if (search0.ky == null) {
-      return [ ];
-    }
-    const ky = search0.ky;
+    const lbl = search0.lbl ?? "";
+    const ky = search0.ky ?? "";
     const modelTmps = await findAll({
       lbl,
       ky,
@@ -547,7 +541,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("业务选项")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: OptbizId = await updateById(
@@ -1103,7 +1097,7 @@ export async function updateById(
     if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
-        throw await ns("数据已被修改，请刷新后重试");
+        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
       }
       sql += `version = ${ args.push(version + 1) },`;
     }
@@ -1365,7 +1359,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("业务选项"));
       }
     }
   }
