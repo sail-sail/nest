@@ -473,11 +473,11 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl ?? "";
+    const lbl = search0.lbl;
     if (search0.ky == null) {
       return [ ];
     }
-    const ky = search0.ky ?? "";
+    const ky = search0.ky;
     const modelTmps = await findAll({
       lbl,
       ky,
