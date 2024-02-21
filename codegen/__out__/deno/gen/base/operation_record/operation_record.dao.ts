@@ -433,7 +433,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("操作记录")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: OperationRecordId = await updateById(
@@ -601,20 +601,6 @@ export async function validate(
     input.lbl,
     100,
     fieldComments.lbl,
-  );
-  
-  // 操作前数据
-  await validators.chars_max_length(
-    input.old_data,
-    5000,
-    fieldComments.old_data,
-  );
-  
-  // 操作后数据
-  await validators.chars_max_length(
-    input.new_data,
-    5000,
-    fieldComments.new_data,
   );
   
   // 创建人
@@ -1053,7 +1039,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("操作记录"));
       }
     }
   }
