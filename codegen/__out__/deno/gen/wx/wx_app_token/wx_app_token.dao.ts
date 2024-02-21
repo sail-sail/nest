@@ -372,10 +372,10 @@ export async function findByUnique(
       return [ ];
     }
     let wx_app_id: WxAppId[] = [ ];
-    if (!Array.isArray(search0.wx_app_id)) {
-      wx_app_id.push(search0.wx_app_id, search0.wx_app_id);
+    if (!Array.isArray(search0.wx_app_id) && search0.wx_app_id != null) {
+      wx_app_id = [ search0.wx_app_id, search0.wx_app_id ];
     } else {
-      wx_app_id = search0.wx_app_id;
+      wx_app_id = search0.wx_app_id || [ ];
     }
     const modelTmps = await findAll({
       wx_app_id,
@@ -423,7 +423,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("小程序接口凭据")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxAppTokenId = await updateById(
@@ -934,7 +934,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("小程序接口凭据"));
       }
     }
   }
