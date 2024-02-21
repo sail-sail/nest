@@ -2119,7 +2119,7 @@ export async function findByUnique(
     }<#
     } else {
     #>
-    const <#=unique#> = search0.<#=unique#> ?? "";<#
+    const <#=unique#> = search0.<#=unique#>;<#
     }
     #><#
     }
