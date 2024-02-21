@@ -793,6 +793,9 @@ export async function findByUnique(
   }
   const models: UsrModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
     const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       lbl,
@@ -800,6 +803,9 @@ export async function findByUnique(
     models.push(...modelTmps);
   }
   {
+    if (search0.username == null) {
+      return [ ];
+    }
     const username = search0.username ?? "";
     const modelTmps = await findAll({
       username,

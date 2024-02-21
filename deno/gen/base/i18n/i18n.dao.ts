@@ -443,17 +443,26 @@ export async function findByUnique(
   }
   const models: I18nModel[] = [ ];
   {
+    if (search0.lang_id == null) {
+      return [ ];
+    }
     let lang_id: LangId[] = [ ];
     if (!Array.isArray(search0.lang_id) && search0.lang_id != null) {
       lang_id = [ search0.lang_id, search0.lang_id ];
     } else {
       lang_id = search0.lang_id || [ ];
     }
+    if (search0.menu_id == null) {
+      return [ ];
+    }
     let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
       menu_id = [ search0.menu_id, search0.menu_id ];
     } else {
       menu_id = search0.menu_id || [ ];
+    }
+    if (search0.code == null) {
+      return [ ];
     }
     const code = search0.code ?? "";
     const modelTmps = await findAll({

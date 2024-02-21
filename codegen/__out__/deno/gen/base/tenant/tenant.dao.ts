@@ -632,6 +632,9 @@ export async function findByUnique(
   }
   const models: TenantModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
     const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       lbl,

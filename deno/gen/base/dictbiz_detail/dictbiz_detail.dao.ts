@@ -513,11 +513,17 @@ export async function findByUnique(
   }
   const models: DictbizDetailModel[] = [ ];
   {
+    if (search0.dictbiz_id == null) {
+      return [ ];
+    }
     let dictbiz_id: DictbizId[] = [ ];
     if (!Array.isArray(search0.dictbiz_id) && search0.dictbiz_id != null) {
       dictbiz_id = [ search0.dictbiz_id, search0.dictbiz_id ];
     } else {
       dictbiz_id = search0.dictbiz_id || [ ];
+    }
+    if (search0.lbl == null) {
+      return [ ];
     }
     const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({

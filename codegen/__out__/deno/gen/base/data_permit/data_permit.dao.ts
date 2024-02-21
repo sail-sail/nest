@@ -475,11 +475,17 @@ export async function findByUnique(
   }
   const models: DataPermitModel[] = [ ];
   {
+    if (search0.menu_id == null) {
+      return [ ];
+    }
     let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
       menu_id = [ search0.menu_id, search0.menu_id ];
     } else {
       menu_id = search0.menu_id || [ ];
+    }
+    if (search0.scope == null) {
+      return [ ];
     }
     let scope: DataPermitScope[] = [ ];
     if (!Array.isArray(search0.scope) && search0.scope != null) {

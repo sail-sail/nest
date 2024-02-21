@@ -2073,7 +2073,10 @@ export async function findByUnique(
       }).join("");
       const isPassword = column.isPassword;
       if (isPassword) continue;
-    #><#
+    #>
+    if (search0.<#=unique#> == null) {
+      return [ ];
+    }<#
     if (
       foreignKey
       || data_type === "datetime"

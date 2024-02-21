@@ -492,11 +492,17 @@ export async function findByUnique(
   }
   const models: DictDetailModel[] = [ ];
   {
+    if (search0.dict_id == null) {
+      return [ ];
+    }
     let dict_id: DictId[] = [ ];
     if (!Array.isArray(search0.dict_id) && search0.dict_id != null) {
       dict_id = [ search0.dict_id, search0.dict_id ];
     } else {
       dict_id = search0.dict_id || [ ];
+    }
+    if (search0.lbl == null) {
+      return [ ];
     }
     const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
