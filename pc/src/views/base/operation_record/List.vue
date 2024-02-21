@@ -222,7 +222,7 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <!-- <el-dropdown
+      <el-dropdown
         trigger="click"
         un-m="x-3"
       >
@@ -275,7 +275,7 @@
             
           </el-dropdown-menu>
         </template>
-      </el-dropdown> -->
+      </el-dropdown>
       
     </template>
     
@@ -1288,16 +1288,18 @@ async function openDataDialog(
   } else if (type === "new_data") {
     title += lbl + " - " + await nsAsync("操作后数据");
   }
-  moduleComponent.value = (await getDetailByModule(module))?.default;
+  moduleComponent.value = (await getDetailByModule(module))?.["default"];
   if (!moduleComponent.value) {
     ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
     return;
   }
   let dataObj: any = undefined;
-  try {
-    dataObj = JSON.parse(model[type]);
-  } catch (err) {
-    console.error(err);
+  if (model[type]) {
+    try {
+      dataObj = JSON.parse(model[type] as string);
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (!dataObj) {
     return;
@@ -1305,7 +1307,7 @@ async function openDataDialog(
   await nextTick();
   const method = model.method;
   if ((moduleComponentRef.value as any).showDialog) {
-    if ([ "create", "updateById", ].includes(method)) {
+    if ([ "create", "updateById" ].includes(method)) {
       if (!dataObj.id) {
         return;
       }
@@ -1320,7 +1322,7 @@ async function openDataDialog(
         findOne: () => dataObj,
       });
       tableFocus();
-    } else if ([ "deleteByIds" ].includes(method)) {
+    } else if ([ "deleteByIds", "forceDeleteByIds" ].includes(method)) {
       if (!Array.isArray(dataObj) || dataObj.length === 0) {
         ElMessage.warning(await nsAsync("未找到数据"));
         return;
