@@ -459,7 +459,7 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl;
+    const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       lbl,
     });
@@ -469,11 +469,11 @@ export async function findByUnique(
     if (search0.corpid == null) {
       return [ ];
     }
-    const corpid = search0.corpid;
+    const corpid = search0.corpid ?? "";
     if (search0.agentid == null) {
       return [ ];
     }
-    const agentid = search0.agentid;
+    const agentid = search0.agentid ?? "";
     const modelTmps = await findAll({
       corpid,
       agentid,
@@ -485,10 +485,10 @@ export async function findByUnique(
       return [ ];
     }
     let domain_id: DomainId[] = [ ];
-    if (!Array.isArray(search0.domain_id)) {
-      domain_id.push(search0.domain_id, search0.domain_id);
+    if (!Array.isArray(search0.domain_id) && search0.domain_id != null) {
+      domain_id = [ search0.domain_id, search0.domain_id ];
     } else {
-      domain_id = search0.domain_id;
+      domain_id = search0.domain_id || [ ];
     }
     const modelTmps = await findAll({
       domain_id,
@@ -548,7 +548,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("企微应用")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwAppId = await updateById(
@@ -1399,7 +1399,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("企微应用"));
       }
     }
   }
