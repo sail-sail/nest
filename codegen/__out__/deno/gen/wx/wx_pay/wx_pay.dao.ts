@@ -544,7 +544,7 @@ export async function findByUnique(
     if (search0.appid == null) {
       return [ ];
     }
-    const appid = search0.appid ?? "";
+    const appid = search0.appid;
     const modelTmps = await findAll({
       appid,
     });
@@ -554,7 +554,7 @@ export async function findByUnique(
     if (search0.notify_url == null) {
       return [ ];
     }
-    const notify_url = search0.notify_url ?? "";
+    const notify_url = search0.notify_url;
     const modelTmps = await findAll({
       notify_url,
     });

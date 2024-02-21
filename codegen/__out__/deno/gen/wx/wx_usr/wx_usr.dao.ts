@@ -568,7 +568,7 @@ export async function findByUnique(
     if (search0.openid == null) {
       return [ ];
     }
-    const openid = search0.openid ?? "";
+    const openid = search0.openid;
     const modelTmps = await findAll({
       openid,
     });
