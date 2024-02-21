@@ -248,8 +248,8 @@ class Pay extends Base {
   // 时间戳
   // 随机字符串
   // 预支付交易会话ID
-  protected sign(str: string) {
-    return this.sha256WithRsa(str);
+  protected async sign(str: string) {
+    return await this.sha256WithRsa(str);
   }
   // 获取序列号
   public getSN(fileData?: string | Buffer): string {
@@ -267,40 +267,13 @@ class Pay extends Base {
    * @param data 待加密字符
    * @param privatekey 私钥key  key.pem   fs.readFileSync(keyPath)
    */
-  // public sha256WithRsa(data: string): string {
-  //   if (!this.privateKey) throw new Error('缺少秘钥文件');
-  //   return crypto
-  //     .createSign('RSA-SHA256')
-  //     .update(data)
-  //     .sign(this.privateKey, 'base64');
-  // }
-  async sha256WithRsa(data: string): Promise<string> {
+  // deno-lint-ignore require-await
+  public async sha256WithRsa(data: string): Promise<string> {
     if (!this.privateKey) throw new Error('缺少秘钥文件');
-    // 将数据转换为 ArrayBuffer
-    const encoder = new TextEncoder();
-    const encodedData = encoder.encode(data);
-    const privateKey = await global.crypto.subtle.importKey(
-      "pkcs8",
-      this.privateKey,
-      {
-        name: "RSASSA-PKCS1-v1_5",
-        hash: {name: "SHA-256"},
-      },
-      false,
-      ["sign"]
-    );
-    // 创建签名
-    const signature = await global.crypto.subtle.sign(
-      {
-        name: "RSASSA-PKCS1-v1_5",
-        hash: {name: "SHA-256"},
-      },
-      privateKey,
-      encodedData
-    );
-    // 将签名转换为字符串
-    const signatureBase64 = encodeBase64(signature);
-    return signatureBase64;
+    return crypto
+      .createSign('RSA-SHA256')
+      .update(data)
+      .sign(this.privateKey, 'base64');
   }
   /**
    * 获取授权认证信息
