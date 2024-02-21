@@ -22,9 +22,9 @@ type OperationRecordModel {
   "耗时(毫秒)"
   time: Int!
   "操作前数据"
-  old_data: String!
+  old_data: String
   "操作后数据"
-  new_data: String!
+  new_data: String
   "创建人"
   create_usr_id: UsrId!
   "创建人"

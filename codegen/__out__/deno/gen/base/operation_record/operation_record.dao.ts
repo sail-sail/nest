@@ -603,20 +603,6 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 操作前数据
-  await validators.chars_max_length(
-    input.old_data,
-    5000,
-    fieldComments.old_data,
-  );
-  
-  // 操作后数据
-  await validators.chars_max_length(
-    input.new_data,
-    5000,
-    fieldComments.new_data,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,

@@ -921,11 +921,17 @@ export default defineConfig({
         COLUMN_NAME: "old_data",
         align: "left",
         width: 100,
+        noAdd: true,
+        noEdit: true,
+        noExport: true,
       },
       {
         COLUMN_NAME: "new_data",
         align: "left",
         width: 100,
+        noAdd: true,
+        noEdit: true,
+        noExport: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
