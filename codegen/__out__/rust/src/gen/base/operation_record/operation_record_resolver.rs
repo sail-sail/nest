@@ -1,3 +1,6 @@
+#[allow(unused_imports)]
+use std::time::Instant;
+
 use anyhow::Result;
 
 use crate::common::context::Options;

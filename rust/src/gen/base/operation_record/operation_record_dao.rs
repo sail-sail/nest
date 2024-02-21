@@ -209,6 +209,27 @@ async fn get_where_query(
     }
   }
   {
+    let time: Vec<u32> = match &search {
+      Some(item) => item.time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let time_gt: Option<u32> = match &time.len() {
+      0 => None,
+      _ => time[0].into(),
+    };
+    let time_lt: Option<u32> = match &time.len() {
+      0 => None,
+      1 => None,
+      _ => time[1].into(),
+    };
+    if let Some(time_gt) = time_gt {
+      where_query += &format!(" and t.time >= {}", args.push(time_gt.into()));
+    }
+    if let Some(time_lt) = time_lt {
+      where_query += &format!(" and t.time <= {}", args.push(time_lt.into()));
+    }
+  }
+  {
     let old_data = match &search {
       Some(item) => item.old_data.clone(),
       None => None,
@@ -246,27 +267,6 @@ async fn get_where_query(
         " and t.new_data like {}",
         args.push(
           format!("%{}%", sql_like(&new_data_like)).into()
-        ),
-      );
-    }
-  }
-  {
-    let rem = match &search {
-      Some(item) => item.rem.clone(),
-      None => None,
-    };
-    if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
-    }
-    let rem_like = match &search {
-      Some(item) => item.rem_like.clone(),
-      None => None,
-    };
-    if let Some(rem_like) = rem_like {
-      where_query += &format!(
-        " and t.rem like {}",
-        args.push(
-          format!("%{}%", sql_like(&rem_like)).into()
         ),
       );
     }
@@ -318,62 +318,13 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
-  {
-    let update_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !update_usr_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let update_usr_id_is_null: bool = match &search {
-      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
-    }
-  }
-  {
-    let update_time: Vec<chrono::NaiveDateTime> = match &search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      _ => update_time[0].into(),
-    };
-    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      1 => None,
-      _ => update_time[1].into(),
-    };
-    if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
-    }
-    if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
-    }
-  }
   Ok(where_query)
 }
 
 async fn get_from_query() -> Result<String> {
   let from_query = r#"base_operation_record t
     left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
+      on create_usr_id_lbl.id = t.create_usr_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -420,7 +371,6 @@ pub async fn find_all(
     select
       t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -523,17 +473,13 @@ pub async fn get_field_comments(
     "方法".into(),
     "方法名称".into(),
     "操作".into(),
+    "耗时(毫秒)".into(),
     "操作前数据".into(),
     "操作后数据".into(),
-    "备注".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
     "创建时间".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
   ];
   
   let map = n_route.n_batch(
@@ -555,17 +501,13 @@ pub async fn get_field_comments(
     method: vec[3].to_owned(),
     method_lbl: vec[4].to_owned(),
     lbl: vec[5].to_owned(),
-    old_data: vec[6].to_owned(),
-    new_data: vec[7].to_owned(),
-    rem: vec[8].to_owned(),
+    time: vec[6].to_owned(),
+    old_data: vec[7].to_owned(),
+    new_data: vec[8].to_owned(),
     create_usr_id: vec[9].to_owned(),
     create_usr_id_lbl: vec[10].to_owned(),
     create_time: vec[11].to_owned(),
     create_time_lbl: vec[12].to_owned(),
-    update_usr_id: vec[13].to_owned(),
-    update_usr_id_lbl: vec[14].to_owned(),
-    update_time: vec[15].to_owned(),
-    update_time_lbl: vec[16].to_owned(),
   };
   Ok(field_comments)
 }
@@ -850,6 +792,12 @@ pub async fn create(
     sql_values += ",?";
     args.push(lbl.into());
   }
+  // 耗时(毫秒)
+  if let Some(time) = input.time {
+    sql_fields += ",time";
+    sql_values += ",?";
+    args.push(time.into());
+  }
   // 操作前数据
   if let Some(old_data) = input.old_data {
     sql_fields += ",old_data";
@@ -861,24 +809,6 @@ pub async fn create(
     sql_fields += ",new_data";
     sql_values += ",?";
     args.push(new_data.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
   }
   
   let sql = format!(
@@ -1048,6 +978,12 @@ pub async fn update_by_id(
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
   }
+  // 耗时(毫秒)
+  if let Some(time) = input.time {
+    field_num += 1;
+    sql_fields += ",time = ?";
+    args.push(time.into());
+  }
   // 操作前数据
   if let Some(old_data) = input.old_data {
     field_num += 1;
@@ -1059,12 +995,6 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += ",new_data = ?";
     args.push(new_data.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    field_num += 1;
-    sql_fields += ",rem = ?";
-    args.push(rem.into());
   }
   
   if field_num > 0 {
