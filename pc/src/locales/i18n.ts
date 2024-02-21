@@ -39,6 +39,9 @@ async function initI18ns(
   codes: string[],
   routePath: string | null,
 ) {
+  if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+    return;
+  }
   initI18nLblsLang();
   if (!i18nLblsLang) {
     return;
@@ -106,6 +109,9 @@ export function useI18n(routePath?: string | null) {
 }
 
 function initI18nLblsLang() {
+  if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+    return;
+  }
   const usrStore = useUsrStore();
   const lang = usrStore.lang;
   if (!i18nLblsLang) {
@@ -144,6 +150,9 @@ function getLbl(
   routePath: string | null,
   ...args: any[]
 ) {
+  if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+    return setLblArgs(code, args);
+  }
   initI18nLblsLang();
   if (!i18nLblsLang) {
     return "";
@@ -159,9 +168,10 @@ function getLbl(
   // 如果 i18nLbl 不存在, 则到服务器获取, 获取之后再缓存到本地
   if (!i18nLbls[key]) {
     (async function() {
-        i18nLbls[key] = await n0(lang, routePath, code, { notLoading: true });
-        localStorage.setItem(`i18nLblsLang`, JSON.stringify(i18nLblsLang));
-        i18nLblRef.value = setLblArgs(i18nLbls[key], args);
+      await nextTick();
+      i18nLbls[key] = await n0(lang, routePath, code, { notLoading: true });
+      localStorage.setItem(`i18nLblsLang`, JSON.stringify(i18nLblsLang));
+      i18nLblRef.value = setLblArgs(i18nLbls[key], args);
     })();
   }
   return i18nLblRef.value;
@@ -173,6 +183,9 @@ async function getLblAsync(
   routePath: string | null,
   ...args: any[]
 ) {
+  if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+    return setLblArgs(code, args);
+  }
   initI18nLblsLang();
   if (!i18nLblsLang) {
     return "";
@@ -187,6 +200,7 @@ async function getLblAsync(
   let i18nLblRef = setLblArgs(code, args);
   // 如果 i18nLbl 不存在, 则到服务器获取, 获取之后再缓存到本地
   if (!i18nLbls[key]) {
+    await nextTick();
     i18nLbls[key] = await n0(lang, routePath, code, { notLoading: true });
     localStorage.setItem(`i18nLblsLang`, JSON.stringify(i18nLblsLang));
     i18nLblRef = setLblArgs(i18nLbls[key], args);

@@ -184,6 +184,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
               "org_id", "org_id_lbl",
             ].includes(column_name)
             || column.noList
+            || column.noExport
           ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;

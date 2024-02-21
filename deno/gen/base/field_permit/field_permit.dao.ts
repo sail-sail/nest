@@ -458,10 +458,10 @@ export async function findByUnique(
       return [ ];
     }
     let menu_id: MenuId[] = [ ];
-    if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id, search0.menu_id);
+    if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
+      menu_id = [ search0.menu_id, search0.menu_id ];
     } else {
-      menu_id = search0.menu_id;
+      menu_id = search0.menu_id || [ ];
     }
     if (search0.code == null) {
       return [ ];
@@ -515,7 +515,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("字段权限")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: FieldPermitId = await updateById(
@@ -1086,7 +1086,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("字段权限"));
       }
     }
   }
