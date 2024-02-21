@@ -146,32 +146,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.old_data == null)">
-          <el-form-item
-            :label="n('操作前数据')"
-            prop="old_data"
-          >
-            <CustomInput
-              v-model="dialogModel.old_data"
-              :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.new_data == null)">
-          <el-form-item
-            :label="n('操作后数据')"
-            prop="new_data"
-          >
-            <CustomInput
-              v-model="dialogModel.new_data"
-              :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
