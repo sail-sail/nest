@@ -6,7 +6,7 @@ import {
   Router,
 } from "oak";
 
-// import * as wx_pay_noticeService from "./wx_pay_notice.service.ts";
+import * as wx_pay_noticeService from "./wx_pay_notice.service.ts";
 
 const routerPrefix = "/api/wx_pay_notice/";
 
@@ -15,13 +15,13 @@ const router = new Router({
 });
 
 router.post("pay_notice", async function(ctx) {
-  const req = ctx.request;
-  const res = ctx.response;
-  const headers = req.headers;
+  const request = ctx.request;
+  const response = ctx.response;
+  const headers = request.headers;
   const context = useContext();
   context.notVerifyToken = true;
   try {
-    const body = await req.body().value;
+    const body = await request.body.json();
     const params = {
       body,
       signature: headers.get("wechatpay-signature")!,
@@ -29,12 +29,12 @@ router.post("pay_notice", async function(ctx) {
       nonce: headers.get("wechatpay-nonce")!,
       timestamp: headers.get("wechatpay-timestamp")!,
     };
-    const notify_url = req.url.pathname;
-    // await wx_pay_noticeService.pay_notice(notify_url, params);
+    const notify_url = request.url.pathname;
+    await wx_pay_noticeService.pay_notice(notify_url, params);
   } catch (err) {
     throw err;
   } finally {
-    res.status = 200;
+    response.status = 200;
   }
 });
 

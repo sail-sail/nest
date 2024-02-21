@@ -16,12 +16,12 @@ const router = new Router({
 router.post("/wx_usr/code2Session", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
-  const body = request.body();
+  const body = request.body;
   const model: {
     appid: string;
     code: string;
     lang: string;
-  } = await body.value;
+  } = await body.json();
   const context = useContext();
   context.notVerifyToken = true;
   context.lang = model.lang;
