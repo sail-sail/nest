@@ -564,7 +564,7 @@ export async function findByUnique(
     if (search0.cron == null) {
       return [ ];
     }
-    const cron = search0.cron ?? "";
+    const cron = search0.cron;
     const modelTmps = await findAll({
       job_id,
       cron,
