@@ -627,7 +627,7 @@ const hasAtt = columns.some((item) => item.isAtt);
            if (opts.noExport !== true) {
          #>
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
             un-text="red"
           >
             {{ ns('正在导出') }}
@@ -663,7 +663,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -671,7 +671,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
@@ -832,9 +832,15 @@ const hasAtt = columns.some((item) => item.isAtt);
           plain
         >
           <span
-            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+            v-if="exportExcel.workerStatus === 'RUNNING'"
           >
             {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else-if="exportExcel.loading"
+            un-text="red"
+          >
+            {{ ns('正在为导出加载数据') }}
           </span>
           <span
             v-else
@@ -852,7 +858,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           >
             
             <el-dropdown-item
-              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
+              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
             >
@@ -860,7 +866,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-else
+              v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
             >
