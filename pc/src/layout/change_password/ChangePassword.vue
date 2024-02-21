@@ -27,7 +27,6 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="onSave"
       >
         
         <el-form-item
@@ -241,7 +240,7 @@ async function onSave() {
   }
 }
 
-/** 点击取消关闭按钮 */
+/** 点击关闭按钮 */
 function onClose() {
   onCloseResolve({
     type: "cancel",

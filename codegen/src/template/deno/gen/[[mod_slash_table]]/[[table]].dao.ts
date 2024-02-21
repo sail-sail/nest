@@ -8,7 +8,6 @@ const hasIsMonth = columns.some((column) => column.isMonth);
 const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
-const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
@@ -23,11 +22,10 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up2 + "model";
-  fieldCommentName = Table_Up2 + "fieldComment";
-  inputName = Table_Up2 + "input";
-  searchName = Table_Up2 + "search";
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -39,9 +37,10 @@ const hasDict = columns.some((column) => {
     return false;
   }
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
   return column.dict;
 });
 const hasDictbiz = columns.some((column) => {
@@ -49,9 +48,10 @@ const hasDictbiz = columns.some((column) => {
     return false;
   }
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
-  }
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
 const hasMany2many = columns.some((column) => {
@@ -941,14 +941,23 @@ export async function findAll(
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
+        const modelLabel = column.modelLabel;
       #><#
         if (foreignKey && foreignKey.type === "many2many") {
       #>
-      ,max(<#=column_name#>) <#=column_name#>
+      ,max(<#=column_name#>) <#=column_name#><#
+        if (!modelLabel) {
+      #>
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
+        }
+      #><#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
+      #><#
+        if (!modelLabel) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
+        }
+      #><#
         }
       #><#
       }
@@ -2777,6 +2786,14 @@ export async function create(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `,<#=modelLabel#>`;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -2903,6 +2920,14 @@ export async function create(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `,${ args.push(input.<#=modelLabel#>) }`;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -3333,7 +3358,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -3343,7 +3368,7 @@ export async function updateById(
   const oldModel = await findById(id);
   
   if (!oldModel) {
-    throw await ns("修改失败, 数据已被删除");
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));
   }<#
   if (mod === "base" && table === "role") {
   #>
@@ -3385,6 +3410,16 @@ export async function updateById(
       continue;
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  if (isNotEmpty(input.<#=modelLabel#>)) {
+    sql += `<#=modelLabel#> = ?,`;
+    args.push(input.<#=modelLabel#>);
+    updateFldNum++;
+  }<#
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -3474,7 +3509,7 @@ export async function updateById(
     }<#
     if (hasVersion) {
     #>
-    if (input.version != null && input.version > 0) {
+    if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");

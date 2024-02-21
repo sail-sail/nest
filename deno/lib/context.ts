@@ -77,6 +77,10 @@ async function redisClient() {
   if (_redisClient) {
     return _redisClient;
   }
+  const context = useMaybeContext();
+  if (context && !context.cacheEnabled) {
+    return;
+  }
   const cacheEnable = await getEnv("cache_enable");
   if (cacheEnable !== "true") {
     return;
@@ -625,8 +629,10 @@ export async function commit(conn?: PoolConnection, opt?: { debug?: boolean }): 
   }
 }
 
-export async function close() {
-  const context = useContext();
+export async function close(context: Context) {
+  if (!context) {
+    context = useContext();
+  }
   if (context.conn) {
     const conn = context.conn;
     context.conn = undefined;

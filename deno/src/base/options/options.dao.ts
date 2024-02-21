@@ -26,6 +26,7 @@ export async function updateI18n_version() {
   if (!optionsModel) {
     const i18n_version = "1";
     await createOptions({
+      version: 1,
       lbl: "国际化版本号",
       ky: "i18n_version",
       val: i18n_version,
@@ -39,6 +40,7 @@ export async function updateI18n_version() {
   await updateOptionsById(
     optionsModel.id,
     {
+      version: optionsModel.version,
       val: i18n_version,
     },
   );

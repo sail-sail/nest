@@ -2,12 +2,12 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.i="onInsert"
 >
   <template #extra_header>
     <div
@@ -18,14 +18,14 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -35,7 +35,7 @@
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template>
@@ -201,18 +201,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/base/login_log";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/login_log");
+} = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/login_log");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -220,6 +221,8 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: LoginLogInput = $ref({
@@ -286,10 +289,13 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: LoginLogInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -299,12 +305,16 @@ async function showDialog(
       ids?: LoginLogId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -319,12 +329,18 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (!permit("edit")) {
       isLocked = true;
@@ -358,7 +374,7 @@ async function showDialog(
     const [
       data,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -392,13 +408,6 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}
-
-/** 键盘按 Insert */
-async function onInsert() {
-  isReadonly = !isReadonly;
-  await nextTick();
-  customDialogRef?.focus();
 }
 
 /** 重置 */
@@ -445,7 +454,7 @@ async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });
@@ -544,10 +553,23 @@ async function nextId() {
   return true;
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+}
+
+async function onDialogClose() {
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -556,8 +578,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({

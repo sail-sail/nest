@@ -1,5 +1,5 @@
 import type {
-  I18Nmodel,
+  I18nModel,
 } from "/gen/base/i18n/i18n.model.ts";
 
 import {
@@ -85,7 +85,7 @@ export async function nLang(
     menu_id = menuModel?.id;
   }
   if (langModel) {
-    let i18nModel: I18Nmodel | undefined
+    let i18nModel: I18nModel | undefined
     if (menu_id) {
       i18nModel = await findOneI18n({
         lang_id: [ langModel.id ],

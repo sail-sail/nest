@@ -244,6 +244,11 @@ export interface TableCloumn {
     selectType?: "select" | "selectInput" | "tree";
     
     /**
+     * 当 selectType 为 select 或者 不设置时, 下拉框是否有增加按钮, 默认为: false
+     */
+    hasSelectAdd?: boolean;
+    
+    /**
      * 外键关联的默认排序
      */
     defaultSort?: {
@@ -281,12 +286,6 @@ export interface TableCloumn {
   
   /**
    * 外键关联是否多对多
-   * @type {{
-   *     table: string,
-   *     column1: string,
-   *     column2: string,
-   *   }}
-   * 
    */
   many2many?: {
     
@@ -467,6 +466,14 @@ export interface TableCloumn {
    */
   searchMultiple?: boolean,
   
+  /** 搜索条件是否默认收起, 默认为false */
+  isSearchExpand?: boolean,
+  
+  /**
+   * 此字段对应的冗余字段
+   */
+  modelLabel?: string;
+  
 }
 
 /**
@@ -587,9 +594,19 @@ export interface TablesConfigItem {
     onlyCodegenDeno?: boolean;
     
     /**
+     * 模块_表名
+     */
+    table_name?: string;
+    
+    /**
      * 表名
      */
     table?: string;
+    
+    /**
+     * 模块
+     */
+    mod?: string;
     
     /**
      * 首字母大写的表名
@@ -611,6 +628,9 @@ export interface TablesConfigItem {
     
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
+    
+    /** 是否有 version 字段 */
+    hasVersion?: boolean;
     
     /**
      * 默认排序字段
@@ -690,6 +710,12 @@ export interface TablesConfigItem {
     
     /** 是否生成 SelectInput 跟 SelectList 界面 */
     hasSelectInput?: boolean;
+    
+    /** 表格的selectable, 行是否可以选择 */
+    tableSelectable?: string;
+    
+    /** 是否添加实时数据推送功能, hasVersion为true时默认为true, 否则默认为false */
+    isRealData?: boolean;
     
   },
   columns?: TableCloumn[];

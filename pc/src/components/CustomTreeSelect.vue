@@ -5,6 +5,7 @@
   collapse-tags
   collapse-tags-tooltip
   default-first-option
+  :height="props.height"
   class="custom_tree_select"
   node-key="id"
   vaule-key="id"
@@ -47,13 +48,14 @@
     un-min="h-7.5"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="custom_tree_select_readonly"
     v-bind="$attrs"
   >
     <el-tag
       v-for="label in modelLabels"
       :key="label"
       type="info"
+      :disable-transitions="true"
     >
       {{ label }}
     </el-tag>
@@ -61,10 +63,9 @@
   <div
     v-else
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
-    un-m="l-1"
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
@@ -112,7 +113,7 @@ const props = withDefaults(
     readonly?: boolean;
   }>(),
   {
-    height: 300,
+    height: 400,
     modelValue: undefined,
     autoWidth: true,
     maxWidth: 550,
@@ -251,3 +252,9 @@ defineExpose({
   refresh: refreshEfc,
 });
 </script>
+
+<style lang="scss">
+.el-select-dropdown__wrap {
+  max-height: 400px;
+}
+</style>

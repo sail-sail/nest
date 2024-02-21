@@ -13,9 +13,13 @@ import type {
 type MenuModel = MenuModel0 & {
   children?: MenuModel[];
   oldRoute_path: string;
+  _isShow?: boolean;
 }
 
 export default defineStore("menu", function() {
+  
+  /** 菜单搜索关键字 */
+  let search = $ref("");
   
   let menus = $ref<MenuModel[]>([ ]);
   
@@ -127,6 +131,21 @@ export default defineStore("menu", function() {
     return parentIds;
   }
   
+  function getParentMenus(id: MenuId): MenuModel[] {
+    let parentMenus: MenuModel[] = [ ];
+    let parent_id = id;
+    while (parent_id) {
+      const parentMenu = getMenuById(parent_id);
+      if (parentMenu) {
+        parentMenus.push(parentMenu);
+        parent_id = parentMenu.parent_id;
+      } else {
+        parent_id = "" as MenuId;
+      }
+    }
+    return parentMenus;
+  }
+  
   function clear() {
     menus = [ ];
   }
@@ -136,6 +155,48 @@ export default defineStore("menu", function() {
   }
   
   let isCollapse = $ref(false);
+  let hide = $ref(false);
+  
+  function searchMenu(search: string) {
+    treeMenu(menus, (item) => {
+      if (!item.route_path) {
+        item._isShow = false;
+        return true;
+      }
+      if (item.lbl.includes(search)) {
+        item._isShow = true;
+        const parentMenus = getParentMenus(item.id);
+        for (let i = 0; i < parentMenus.length; i++) {
+          const parentMenu = parentMenus[i];
+          parentMenu._isShow = true;
+        }
+      } else {
+        item._isShow = false;
+      }
+      return true;
+    });
+  }
+  
+  let searchTimer: NodeJS.Timeout | undefined = undefined;
+  
+  watch(
+    () => search,
+    () => {
+      if (searchTimer) {
+        clearTimeout(searchTimer);
+      }
+      if (isEmpty(search)) {
+        treeMenu(menus, (item) => {
+          item._isShow = true;
+          return true;
+        });
+        return;
+      }
+      searchTimer = setTimeout(() => {
+        searchMenu(search);
+      }, 300);
+    },
+  );
   
   return $$({
     menus,
@@ -146,6 +207,8 @@ export default defineStore("menu", function() {
     getParentIds,
     clear,
     reset,
+    hide,
+    search,
     getLblByPath,
   });
 }, {

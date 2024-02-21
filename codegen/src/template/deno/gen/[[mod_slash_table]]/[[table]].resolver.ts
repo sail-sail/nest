@@ -9,6 +9,7 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let Table_Up2 = Table_Up;
 let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
@@ -16,11 +17,10 @@ let searchName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
-  const Table_Up2 = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up2 + "model";
-  fieldCommentName = Table_Up2 + "fieldComment";
-  inputName = Table_Up2 + "input";
-  searchName = Table_Up2 + "search";
+  modelName = Table_Up2 + "Model";
+  fieldCommentName = Table_Up2 + "FieldComment";
+  inputName = Table_Up2 + "Input";
+  searchName = Table_Up2 + "Search";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -74,7 +74,7 @@ import type {<#
 } from "/gen/types.ts";
 
 import type {<#
-  if (opts.noAdd !== true && opts.noEdit !== true) {
+  if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
   <#=inputName#>,<#
   }
@@ -106,7 +106,7 @@ import "./cron_job.service.ts";<#
 /**
  * 根据条件查找<#=table_comment#>总数
  */
-export async function findCount<#=Table_Up#>(
+export async function findCount<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ): Promise<number> {
   
@@ -128,7 +128,7 @@ export async function findCount<#=Table_Up#>(
 /**
  * 根据搜索条件和分页查找<#=table_comment#>列表
  */
-export async function findAll<#=Table_Up#>(
+export async function findAll<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -183,7 +183,7 @@ export async function findAll<#=Table_Up#>(
 /**
  * 获取<#=table_comment#>字段注释
  */
-export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {
+export async function getFieldComments<#=Table_Up2#>(): Promise<<#=fieldCommentName#>> {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
   const res = await getFieldComments();
   return res;
@@ -194,7 +194,7 @@ if (hasSummary) {
 /**
  * 根据搜索条件查找<#=table_comment#>合计
  */
-export async function findSummary<#=Table_Up#>(
+export async function findSummary<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Summary> {
   const { findSummary } = await import("./<#=table#>.service.ts");
@@ -207,7 +207,7 @@ export async function findSummary<#=Table_Up#>(
 /**
  * 根据条件查找第一个<#=table_comment#>
  */
-export async function findOne<#=Table_Up#>(
+export async function findOne<#=Table_Up2#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
@@ -257,7 +257,7 @@ export async function findOne<#=Table_Up#>(
 /**
  * 根据 id 查找<#=table_comment#>
  */
-export async function findById<#=Table_Up#>(
+export async function findById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
@@ -297,7 +297,7 @@ if (opts.noAdd !== true) {
 /**
  * 创建<#=table_comment#>
  */
-export async function create<#=Table_Up#>(
+export async function create<#=Table_Up2#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<<#=Table_Up#>Id> {<#
@@ -336,12 +336,7 @@ export async function create<#=Table_Up#>(
   }
   #>
   
-  const {<#
-    if (log) {
-    #>
-    findById,<#
-    }
-    #>
+  const {
     validate,
     setIdByLbl,
     create,
@@ -362,7 +357,9 @@ export async function create<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const uniqueType = unique_type;
@@ -370,15 +367,16 @@ export async function create<#=Table_Up#>(
   if (log) {
   #>
   
-  const new_data = await findById(id);
+  const new_data = await findById<#=Table_Up2#>(id);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "create",
     method_lbl: "创建",
     lbl: "创建",
-    old_data: "{}",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(new_data),
   });<#
   }
@@ -393,7 +391,7 @@ if (opts.noEdit !== true) {
 /**
  * 根据 id 修改<#=table_comment#>
  */
-export async function updateById<#=Table_Up#>(
+export async function updateById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {<#
@@ -432,12 +430,7 @@ export async function updateById<#=Table_Up#>(
   }
   #>
   
-  const {<#
-    if (log) {
-    #>
-    findById,<#
-    }
-    #>
+  const {
     setIdByLbl,
     updateById,
   } = await import("./<#=table#>.service.ts");
@@ -456,21 +449,25 @@ export async function updateById<#=Table_Up#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findById<#=Table_Up#>(id);<#
+  
+  const begin_time = new Date();
+  const old_data = await findById<#=Table_Up2#>(id);<#
   }
   #>
   const id2: <#=Table_Up#>Id = await updateById(id, input);<#
   if (log) {
   #>
   
-  const new_data = await findById(id2);
+  const new_data = await findById<#=Table_Up2#>(id2);
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "updateById",
     method_lbl: "修改",
     lbl: "修改",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
     new_data: JSON.stringify(new_data),
   });<#
@@ -486,16 +483,11 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 删除<#=table_comment#>
  */
-export async function deleteByIds<#=Table_Up#>(
+export async function deleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
-  const {<#
-    if (log) {
-    #>
-    findAll,<#
-    }
-    #>
+  const {
     deleteByIds,
   } = await import("./<#=table#>.service.ts");
   
@@ -511,7 +503,9 @@ export async function deleteByIds<#=Table_Up#>(
   #>
   
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findAll({
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
     ids,
   });<#
   }
@@ -520,14 +514,15 @@ export async function deleteByIds<#=Table_Up#>(
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "deleteByIds",
     method_lbl: "删除",
     lbl: "删除",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
-    new_data: "{}",
   });<#
   }
   #>
@@ -541,7 +536,7 @@ export async function deleteByIds<#=Table_Up#>(
 /**
  * 根据 id 设置默认<#=table_comment#>
  */
-export async function defaultById<#=Table_Up#>(
+export async function defaultById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<number> {
   
@@ -560,21 +555,24 @@ export async function defaultById<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await defaultById(id);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "defaultById",
     method_lbl: "默认",
     lbl: "默认",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -588,7 +586,7 @@ export async function defaultById<#=Table_Up#>(
 /**
  * 根据 ids 启用或者禁用<#=table_comment#>
  */
-export async function enableByIds<#=Table_Up#>(
+export async function enableByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
@@ -611,21 +609,31 @@ export async function enableByIds<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await enableByIds(ids, is_enabled);<#
   if (log) {
   #>
   
+  let method = "";
+  if (is_enabled) {
+    method = "enableByIds";
+  } else {
+    method = "disableByIds";
+  }
+  
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "enableByIds",
+    method,
     method_lbl: "启用",
     lbl: "启用",
+    time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(ids),
-    new_data: "[]",
   });<#
   }
   #>
@@ -639,7 +647,7 @@ export async function enableByIds<#=Table_Up#>(
 /**
  * 根据 ids 锁定或者解锁<#=table_comment#>
  */
-export async function lockByIds<#=Table_Up#>(
+export async function lockByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
@@ -662,24 +670,24 @@ export async function lockByIds<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await lockByIds(ids, is_locked);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "lockByIds",
     method_lbl: is_locked ? "锁定" : "解锁",
     lbl: is_locked ? "锁定" : "解锁",
-    old_data: "",
-    new_data: JSON.stringify({
-      ids,
-      is_locked,
-    }),
+    time: end_time.getTime() - begin_time.getTime(),
+    new_data: JSON.stringify(ids),
   });<#
   }
   #>
@@ -693,7 +701,7 @@ if (opts.noRevert !== true && hasIsDeleted) {
 /**
  * 根据 ids 还原<#=table_comment#>
  */
-export async function revertByIds<#=Table_Up#>(
+export async function revertByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   
@@ -712,20 +720,23 @@ export async function revertByIds<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
   }
   #>
   const res = await revertByIds(ids);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "revertByIds",
     method_lbl: "还原",
     lbl: "还原",
-    old_data: "[]",
+    time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(ids),
   });<#
   }
@@ -740,7 +751,7 @@ if (opts.noDelete !== true && hasIsDeleted) {
 /**
  * 根据 ids 彻底删除<#=table_comment#>
  */
-export async function forceDeleteByIds<#=Table_Up#>(
+export async function forceDeleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
   const context = useContext();
@@ -758,21 +769,28 @@ export async function forceDeleteByIds<#=Table_Up#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = await findAll<#=Table_Up2#>({
+    ids,
+    is_deleted: 1,
+  });<#
   }
   #>
   const res = await forceDeleteByIds(ids);<#
   if (log) {
   #>
   
+  const end_time = new Date();
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "forceDeleteByIds",
     method_lbl: "彻底删除",
     lbl: "彻底删除",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data: JSON.stringify(old_data),
   });<#
   }
   #>
@@ -786,7 +804,7 @@ if (hasOrderBy) {
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
-export async function findLastOrderBy<#=Table_Up#>(): Promise<number> {
+export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");
   const res = findLastOrderBy();
   return res;

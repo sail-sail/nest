@@ -8,6 +8,12 @@ import type {
 
 import dayjs from "dayjs";
 
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";
+
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch<T>(
   props: Record<string, any>,
@@ -146,7 +152,7 @@ export function usePage<T>(
 export function useSelect<T = any, Id = string>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
-    tableSelectable?: ((row: T, index?: number) => boolean),
+    tableSelectable?: ((row: T, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
   },
@@ -328,23 +334,32 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
-    }
-    const selectedIdx = idx - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        idx = data.length - 1;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -360,10 +375,26 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    const selectedIdx = 0;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    let idx = -1;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -379,32 +410,62 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
-      selectedIds = [
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
-      const selectedIdx = data.length - 1;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        idx = data.length - 1;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
       selectedIds = [
         ...selectedIds,
-        data[selectedIdx][rowKey],
+        data[idx][rowKey],
       ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
-    const selectedIdx = idx - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [
-        ...selectedIds,
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-    }
+    // if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
+    //   const selectedIdx = data.length - 1;
+    //   selectedIds = [
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    //   return;
+    // }
+    // const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    // if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
+    //   const selectedIdx = data.length - 1;
+    //   selectedIds = [
+    //     ...selectedIds,
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    //   return;
+    // }
+    // const selectedIdx = idx - 1;
+    // if (data[selectedIdx]?.[rowKey]) {
+    //   selectedIds = [
+    //     ...selectedIds,
+    //     data[selectedIdx][rowKey],
+    //   ];
+    //   scrollIntoViewIfNeeded(selectedIdx);
+    // }
   }
   
   /**
@@ -429,21 +490,32 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
-      selectedIds = [ data[0][rowKey] ];
-      scrollIntoViewIfNeeded(0);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
-      selectedIds = [ data[0][rowKey] ];
-      scrollIntoViewIfNeeded(0);
-      return;
-    }
-    const selectedIdx = idx + 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        idx = 0;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -563,10 +635,26 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    const selectedIdx = data.length - 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [ data[selectedIdx][rowKey] ];
-      scrollIntoViewIfNeeded(selectedIdx);
+    let idx = data.length;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx--;
+      if (idx < 0) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
+      selectedIds = [ data[idx][rowKey] ];
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -582,31 +670,35 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
-      const selectedIdx = 0;
-      selectedIds = [
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
+    let idx = 0;
+    if (selectedIds.length > 0) {
+      idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+      if (idx === -1) {
+        idx = 0;
+      }
     }
-    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
-    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
-      const selectedIdx = 0;
+    const hasMoveMap = new Map<Id, boolean>();
+    while (true) {
+      idx++;
+      if (idx >= data.length) {
+        break;
+      }
+      if (!data[idx]?.[rowKey]) {
+        break;
+      }
+      if (hasMoveMap.has(data[idx][rowKey])) {
+        break;
+      }
+      hasMoveMap.set(data[idx][rowKey], true);
+      if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
+        continue;
+      }
       selectedIds = [
         ...selectedIds,
-        data[selectedIdx][rowKey],
+        data[idx][rowKey],
       ];
-      scrollIntoViewIfNeeded(selectedIdx);
-      return;
-    }
-    const selectedIdx = idx + 1;
-    if (data[selectedIdx]?.[rowKey]) {
-      selectedIds = [
-        ...selectedIds,
-        data[selectedIdx][rowKey],
-      ];
-      scrollIntoViewIfNeeded(selectedIdx);
+      scrollIntoViewIfNeeded(idx);
+      break;
     }
   }
   
@@ -636,7 +728,7 @@ export function useSelect<T = any, Id = string>(
       multiple = false;
     }
     const tableSelectable = opts?.tableSelectable;
-    if (tableSelectable && !tableSelectable(row)) {
+    if (tableSelectable && !tableSelectable(row, tableRef.value?.data?.findIndex((item) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
       if (column && column.type !== "selection") {
         selectedIds = [ ];
       }
@@ -679,6 +771,10 @@ export function useSelect<T = any, Id = string>(
     }
     if (isRef(opts?.multiple) && opts?.multiple.value === false) {
       multiple = false;
+    }
+    const tableSelectable = opts?.tableSelectable;
+    if (tableSelectable && !tableSelectable(row, tableRef.value?.data?.findIndex((item) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
+      return;
     }
     const id = (row as any)[rowKey];
     if (selectedIds.includes(id)) {
@@ -1007,9 +1103,15 @@ export function useTableColumns<T>(
   
   tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   
-  function storeColumns(tableColumns2?: any) {
+  async function storeColumns(tableColumns2?: any, force?: boolean) {
     if (tableColumns2) {
       tableColumns.value = tableColumns2;
+    }
+    if (force) {
+      const oldTableColumns = tableColumns.value;
+      tableColumns.value = [ ];
+      await nextTick();
+      tableColumns.value = [ ...oldTableColumns ];
     }
     window.localStorage.setItem(persistKey, JSON.stringify(tableColumns.value));
   }
@@ -1094,4 +1196,177 @@ export async function initListI18ns() {
     "正在导入...",
   ];
   await initSysI18ns(codes);
+}
+
+type UseSubscribeListData<T> = {
+  action: "add",
+  id: T,
+} | {
+  action: "edit",
+  id: T,
+} | {
+  action: "delete",
+  ids: T[],
+} | {
+  action: "import",
+  num: number,
+} | {
+  action: "revert",
+  num: number,
+} | {
+  action: "forceDelete",
+  num: number,
+};
+
+/** 表格数据的实时监听 */
+export function useSubscribeList<T>(
+  pagePath: string,
+  callback: (data: UseSubscribeListData<T>) => Promise<void> | void,
+) {
+  async function add(id?: T) {
+    if (!id) {
+      return;
+    }
+    await callback({
+      action: "add",
+      id,
+    });
+  }
+  async function edit(id?: T) {
+    if (!id) {
+      return;
+    }
+    await callback({
+      action: "edit",
+      id,
+    });
+  }
+  async function deleteFn(ids?: T[]) {
+    if (!ids || ids.length === 0) {
+      return;
+    }
+    await callback({
+      action: "delete",
+      ids,
+    });
+  }
+  async function importFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "import",
+      num,
+    });
+  }
+  async function revertFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "revert",
+      num,
+    });
+  }
+  async function forceDeleteFn(num?: number) {
+    if (!num) {
+      return;
+    }
+    await callback({
+      action: "forceDelete",
+      num,
+    });
+  }
+  onBeforeUnmount(() => {
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "add",
+      }),
+      add,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "edit",
+      }),
+      edit,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "delete",
+      }),
+      deleteFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "import",
+      }),
+      importFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "revert",
+      }),
+      revertFn,
+    );
+    unSubscribe(
+      JSON.stringify({
+        pagePath,
+        action: "forceDelete",
+      }),
+      forceDeleteFn,
+    );
+  });
+  
+  subscribe<T>(
+    JSON.stringify({
+      pagePath,
+      action: "add",
+    }),
+    add,
+  );
+  
+  subscribe<T>(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    edit,
+  );
+  
+  subscribe<T[]>(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    deleteFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "import",
+    }),
+    importFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "revert",
+    }),
+    revertFn,
+  );
+  
+  subscribe<number>(
+    JSON.stringify({
+      pagePath,
+      action: "forceDelete",
+    }),
+    forceDeleteFn,
+  );
 }

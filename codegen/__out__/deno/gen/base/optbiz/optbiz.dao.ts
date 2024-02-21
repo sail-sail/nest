@@ -160,14 +160,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.version && search?.version?.length > 0) {
-    if (search.version[0] != null) {
-      whereQuery += ` and t.version >= ${ args.push(search.version[0]) }`;
-    }
-    if (search.version[1] != null) {
-      whereQuery += ` and t.version <= ${ args.push(search.version[1]) }`;
-    }
-  }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
@@ -467,7 +459,6 @@ export async function getFieldComments(): Promise<OptbizFieldComment> {
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
-    version: await n("版本号"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -854,9 +845,6 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.version !== undefined) {
-    sql += `,version`;
-  }
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
   }
@@ -906,9 +894,6 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.version !== undefined) {
-    sql += `,${ args.push(input.version) }`;
   }
   if (input.is_sys !== undefined) {
     sql += `,${ args.push(input.is_sys) }`;
@@ -1040,7 +1025,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("业务选项"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1050,7 +1035,7 @@ export async function updateById(
   const oldModel = await findById(id);
   
   if (!oldModel) {
-    throw await ns("修改失败, 数据已被删除");
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("业务选项"));
   }
   
   const args = new QueryArgs();
@@ -1100,12 +1085,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.version !== undefined) {
-    if (input.version != oldModel.version) {
-      sql += `version = ${ args.push(input.version) },`;
-      updateFldNum++;
-    }
-  }
   if (input.is_sys !== undefined) {
     if (input.is_sys != oldModel.is_sys) {
       sql += `is_sys = ${ args.push(input.is_sys) },`;
@@ -1121,7 +1100,7 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    if (input.version != null && input.version > 0) {
+    if (input.version != null) {
       const version = await getVersionById(id);
       if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");
