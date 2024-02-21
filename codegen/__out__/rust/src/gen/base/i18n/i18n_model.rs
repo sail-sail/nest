@@ -30,7 +30,7 @@ use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "I18nModel")]
 pub struct I18nModel {
   /// ID
   pub id: I18nId,
@@ -134,7 +134,7 @@ impl FromRow<'_, MySqlRow> for I18nModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "I18nFieldComment")]
 pub struct I18nFieldComment {
   /// ID
   pub id: String,
@@ -171,7 +171,7 @@ pub struct I18nFieldComment {
 }
 
 #[derive(InputObject, Default, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "I18nSearch")]
 pub struct I18nSearch {
   /// ID
   pub id: Option<I18nId>,
@@ -213,7 +213,7 @@ pub struct I18nSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "I18nInput")]
 pub struct I18nInput {
   /// ID
   pub id: Option<I18nId>,

@@ -217,6 +217,12 @@ async fn main() -> Result<(), std::io::Error> {
       get(common::tmpfile::tmpfile_router::download),
     );
     
+    // websocket
+    app = app.at(
+      "/api/websocket/upgrade",
+      get(common::websocket::websocket_router::ws_upgrade),
+    );
+    
     app
   };
   let app = app

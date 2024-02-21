@@ -136,9 +136,10 @@ pub async fn n_batch(
 
 #[allow(dead_code)]
 pub async fn ns(
-  code: String,
+  code: impl Into<String>,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let code = code.into();
   let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);

@@ -60,7 +60,10 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
-#>use anyhow::Result;
+#>#[allow(unused_imports)]
+use std::time::Instant;
+
+use anyhow::Result;
 
 use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
@@ -290,7 +293,13 @@ pub async fn find_by_id(
 pub async fn create(
   input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {
+) -> Result<<#=Table_Up#>Id> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   let input = <#=table#>_service::set_id_by_lbl(
     input,
@@ -308,13 +317,24 @@ pub async fn create(
   if (log) {
   #>
   
-  let new_data = <#=table#>_service::find_by_id(
+  let new_data = find_by_id(
     id.clone(),
     None,
   ).await?;
   
   let method_lbl = ns("新增".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
   
   log(
     OperationRecordInput {
@@ -323,7 +343,7 @@ pub async fn create(
       method: "create".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
-      old_data: "{}".to_owned().into(),
+      time: time.into(),
       new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
     },
@@ -382,7 +402,13 @@ pub async fn update_by_id(
   id: <#=Table_Up#>Id,
   input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {
+) -> Result<<#=Table_Up#>Id> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   let input = <#=table#>_service::set_id_by_lbl(
     input,
@@ -395,7 +421,7 @@ pub async fn update_by_id(
   if (log) {
   #>
   
-  let old_data = <#=table#>_service::find_by_id(
+  let old_data = find_by_id(
     id.clone(),
     None,
   ).await?;<#
@@ -410,7 +436,7 @@ pub async fn update_by_id(
   if (log) {
   #>
   
-  let new_data = <#=table#>_service::find_by_id(
+  let new_data = find_by_id(
     res.clone(),
     None,
   ).await?;
@@ -418,13 +444,25 @@ pub async fn update_by_id(
   let method_lbl = ns("修改".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "update".to_owned().into(),
+      method: "updateById".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
+      time: time.into(),
       old_data: serde_json::to_string(&old_data)?.into(),
       new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
@@ -441,7 +479,13 @@ pub async fn update_by_id(
 pub async fn delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -450,7 +494,7 @@ pub async fn delete_by_ids(
   if (log) {
   #>
   
-  let old_data = <#=table#>_service::find_all(
+  let old_data = find_all(
     <#=Table_Up#>Search {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -472,15 +516,26 @@ pub async fn delete_by_ids(
   let method_lbl = ns("删除".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "delete".to_owned().into(),
+      method: "deleteByIds".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
+      time: time.into(),
       old_data: serde_json::to_string(&old_data)?.into(),
-      new_data: "[]".to_owned().into(),
       ..Default::default()
     },
   ).await?;<#
@@ -497,7 +552,13 @@ if (hasDefault) {
 pub async fn default_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -520,15 +581,26 @@ pub async fn default_by_id(
   let method_lbl = ns("默认".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "default".to_owned().into(),
+      method: "defaultById".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
+      time: time.into(),
       old_data: old_data.into(),
-      new_data: "[]".to_owned().into(),
       ..Default::default()
     },
   ).await?;<#
@@ -564,7 +636,13 @@ pub async fn enable_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   is_enabled: u8,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -585,18 +663,42 @@ pub async fn enable_by_ids(
   if (log) {
   #>
   
-  let method_lbl = ns("启用".to_owned(), None).await?;
+  let method_lbl = {
+    if is_enabled == 0 {
+      ns("禁用".to_owned(), None).await?
+    } else {
+      ns("启用".to_owned(), None).await?
+    }
+  };
+  let method = {
+    if is_enabled == 0 {
+      "disableByIds".to_owned()
+    } else {
+      "enableByIds".to_owned()
+    }
+  };
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
   
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "enable".to_owned().into(),
+      method: method.into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       old_data: old_data.into(),
-      new_data: "[]".to_owned().into(),
+      time: time.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -633,7 +735,13 @@ pub async fn lock_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -664,6 +772,17 @@ pub async fn lock_by_ids(
   };
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
@@ -671,7 +790,7 @@ pub async fn lock_by_ids(
       method: "lockByIds".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
-      old_data: "".to_owned().into(),
+      time: time.into(),
       new_data: new_data.into(),
       ..Default::default()
     },
@@ -701,7 +820,13 @@ pub async fn get_field_comments(
 pub async fn revert_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -724,6 +849,17 @@ pub async fn revert_by_ids(
   let method_lbl = ns("还原".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
@@ -731,7 +867,7 @@ pub async fn revert_by_ids(
       method: "revertByIds".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
-      old_data: "[]".to_owned().into(),
+      time: time.into(),
       new_data: new_data.into(),
       ..Default::default()
     },
@@ -747,7 +883,13 @@ pub async fn revert_by_ids(
 pub async fn force_delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
@@ -770,6 +912,17 @@ pub async fn force_delete_by_ids(
   let method_lbl = ns("彻底删除".to_owned(), None).await?;
   let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
   
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
   log(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
@@ -777,8 +930,8 @@ pub async fn force_delete_by_ids(
       method: "force_delete".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
+      time: time.into(),
       old_data: old_data.into(),
-      new_data: "[]".to_owned().into(),
       ..Default::default()
     },
   ).await?;<#

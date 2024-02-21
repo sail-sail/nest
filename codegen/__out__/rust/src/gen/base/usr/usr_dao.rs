@@ -1550,7 +1550,7 @@ pub async fn update_by_id(
   // 密码
   if let Some(password) = input.password {
     if !password.is_empty() {
-       field_num += 1;
+      field_num += 1;
       sql_fields += ",password = ?";
       args.push(get_password(password)?.into());
     }

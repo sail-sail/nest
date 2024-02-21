@@ -47,12 +47,12 @@ pub struct OperationRecordModel {
   pub method_lbl: String,
   /// 操作
   pub lbl: String,
+  /// 耗时(毫秒)
+  pub time: u32,
   /// 操作前数据
   pub old_data: String,
   /// 操作后数据
   pub new_data: String,
-  /// 备注
-  pub rem: String,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -61,14 +61,6 @@ pub struct OperationRecordModel {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   pub create_time_lbl: String,
-  /// 更新人
-  pub update_usr_id: UsrId,
-  /// 更新人
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  pub update_time: Option<chrono::NaiveDateTime>,
-  /// 更新时间
-  pub update_time_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
@@ -89,12 +81,12 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     let method_lbl: String = row.try_get("method_lbl")?;
     // 操作
     let lbl: String = row.try_get("lbl")?;
+    // 耗时(毫秒)
+    let time: u32 = row.try_get("time")?;
     // 操作前数据
     let old_data: String = row.try_get("old_data")?;
     // 操作后数据
     let new_data: String = row.try_get("new_data")?;
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -102,16 +94,6 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
-    };
-    // 更新人
-    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
-    // 更新时间
-    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
@@ -127,17 +109,13 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       method,
       method_lbl,
       lbl,
+      time,
       old_data,
       new_data,
-      rem,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
       create_time_lbl,
-      update_usr_id,
-      update_usr_id_lbl,
-      update_time,
-      update_time_lbl,
     };
     
     Ok(model)
@@ -159,12 +137,12 @@ pub struct OperationRecordFieldComment {
   pub method_lbl: String,
   /// 操作
   pub lbl: String,
+  /// 耗时(毫秒)
+  pub time: String,
   /// 操作前数据
   pub old_data: String,
   /// 操作后数据
   pub new_data: String,
-  /// 备注
-  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -173,14 +151,6 @@ pub struct OperationRecordFieldComment {
   pub create_time: String,
   /// 创建时间
   pub create_time_lbl: String,
-  /// 更新人
-  pub update_usr_id: String,
-  /// 更新人
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  pub update_time: String,
-  /// 更新时间
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default, Debug)]
@@ -213,6 +183,8 @@ pub struct OperationRecordSearch {
   pub lbl: Option<String>,
   /// 操作
   pub lbl_like: Option<String>,
+  /// 耗时(毫秒)
+  pub time: Option<Vec<u32>>,
   /// 操作前数据
   pub old_data: Option<String>,
   /// 操作前数据
@@ -221,22 +193,12 @@ pub struct OperationRecordSearch {
   pub new_data: Option<String>,
   /// 操作后数据
   pub new_data_like: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
-  /// 备注
-  pub rem_like: Option<String>,
   /// 创建人
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 更新人
-  pub update_usr_id: Option<Vec<UsrId>>,
-  /// 更新人
-  pub update_usr_id_is_null: Option<bool>,
-  /// 更新时间
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -259,12 +221,12 @@ pub struct OperationRecordInput {
   pub method_lbl: Option<String>,
   /// 操作
   pub lbl: Option<String>,
+  /// 耗时(毫秒)
+  pub time: Option<u32>,
   /// 操作前数据
   pub old_data: Option<String>,
   /// 操作后数据
   pub new_data: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<UsrId>,
   /// 创建人
@@ -273,14 +235,6 @@ pub struct OperationRecordInput {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   pub create_time_lbl: Option<String>,
-  /// 更新人
-  pub update_usr_id: Option<UsrId>,
-  /// 更新人
-  pub update_usr_id_lbl: Option<String>,
-  /// 更新时间
-  pub update_time: Option<chrono::NaiveDateTime>,
-  /// 更新时间
-  pub update_time_lbl: Option<String>,
 }
 
 impl From<OperationRecordModel> for OperationRecordInput {
@@ -299,24 +253,18 @@ impl From<OperationRecordModel> for OperationRecordInput {
       method_lbl: model.method_lbl.into(),
       // 操作
       lbl: model.lbl.into(),
+      // 耗时(毫秒)
+      time: model.time.into(),
       // 操作前数据
       old_data: model.old_data.into(),
       // 操作后数据
       new_data: model.new_data.into(),
-      // 备注
-      rem: model.rem.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
-      // 更新人
-      update_usr_id: model.update_usr_id.into(),
-      update_usr_id_lbl: model.update_usr_id_lbl.into(),
-      // 更新时间
-      update_time: model.update_time,
-      update_time_lbl: model.update_time_lbl.into(),
     }
   }
 }
@@ -339,20 +287,16 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       method_lbl: input.method_lbl,
       // 操作
       lbl: input.lbl,
+      // 耗时(毫秒)
+      time: input.time.map(|x| vec![x, x]),
       // 操作前数据
       old_data: input.old_data,
       // 操作后数据
       new_data: input.new_data,
-      // 备注
-      rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| vec![x, x]),
-      // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x]),
-      // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

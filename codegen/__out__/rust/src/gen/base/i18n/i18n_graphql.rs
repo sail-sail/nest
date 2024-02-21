@@ -23,6 +23,7 @@ pub struct I18nGenQuery;
 impl I18nGenQuery {
   
   /// 根据搜索条件和分页查找国际化列表
+  #[graphql(name = "findAllI18n")]
   async fn find_all_i18n(
     &self,
     ctx: &Context<'_>,
@@ -44,6 +45,7 @@ impl I18nGenQuery {
   }
   
   /// 根据条件查找国际化总数
+  #[graphql(name = "findCountI18n")]
   async fn find_count_i18n(
     &self,
     ctx: &Context<'_>,
@@ -61,6 +63,7 @@ impl I18nGenQuery {
   }
   
   /// 根据条件查找第一个国际化
+  #[graphql(name = "findOneI18n")]
   async fn find_one_i18n(
     &self,
     ctx: &Context<'_>,
@@ -80,6 +83,7 @@ impl I18nGenQuery {
   }
   
   /// 根据 id 查找国际化
+  #[graphql(name = "findByIdI18n")]
   async fn find_by_id_i18n(
     &self,
     ctx: &Context<'_>,
@@ -97,6 +101,7 @@ impl I18nGenQuery {
   }
   
   /// 获取国际化字段注释
+  #[graphql(name = "getFieldCommentsI18n")]
   async fn get_field_comments_i18n(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +124,7 @@ pub struct I18nGenMutation;
 impl I18nGenMutation {
   
   /// 创建国际化
+  #[graphql(name = "createI18n")]
   async fn create_i18n(
     &self,
     ctx: &Context<'_>,
@@ -142,6 +148,7 @@ impl I18nGenMutation {
   }
   
   /// 根据 id 修改国际化
+  #[graphql(name = "updateByIdI18n")]
   async fn update_by_id_i18n(
     &self,
     ctx: &Context<'_>,
@@ -162,6 +169,7 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 删除国际化
+  #[graphql(name = "deleteByIdsI18n")]
   async fn delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
@@ -180,6 +188,7 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 还原国际化
+  #[graphql(name = "revertByIdsI18n")]
   async fn revert_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
@@ -198,6 +207,7 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 彻底删除国际化
+  #[graphql(name = "forceDeleteByIdsI18n")]
   async fn force_delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,

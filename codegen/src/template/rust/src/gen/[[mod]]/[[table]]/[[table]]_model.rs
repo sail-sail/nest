@@ -144,7 +144,11 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 #>
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Model"<#
+}
+#>)]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
   #>
@@ -337,6 +341,12 @@ pub struct <#=tableUP#>Model {<#
   pub is_deleted: u8,<#
   }
   #><#
+  if (hasVersion) {
+  #>
+  /// 版本号
+  pub version: u32,<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     if (!inlineForeignSchema) {
@@ -381,6 +391,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // 隐藏字段
     let is_hidden = row.try_get("is_hidden")?;<#
+    }
+    #><#
+    if (hasVersion) {
+    #>
+    // 版本号
+    let version = row.try_get("version")?;<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -612,6 +628,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       is_sys,<#
       }
       #><#
+      if (hasVersion) {
+      #>
+      version,<#
+      }
+      #><#
       if (hasIsHidden) {
       #>
       is_hidden,<#
@@ -690,7 +711,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>FieldComment"<#
+}
+#>)]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -755,7 +780,11 @@ pub struct <#=tableUP#>FieldComment {<#
 }
 
 #[derive(InputObject, Default, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Search"<#
+}
+#>)]
 pub struct <#=tableUP#>Search {
   /// ID
   pub id: Option<<#=Table_Up#>Id>,
@@ -964,7 +993,11 @@ pub struct <#=tableUP#>Search {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case"<#
+if (table === "i18n") {
+#>, name = "<#=tableUP#>Input"<#
+}
+#>)]
 pub struct <#=tableUP#>Input {
   /// ID
   pub id: Option<<#=Table_Up#>Id>,<#
@@ -1158,6 +1191,12 @@ pub struct <#=tableUP#>Input {
   #><#
   }
   #><#
+  if (hasVersion) {
+  #>
+  /// 版本号
+  pub version: Option<u32>,<#
+  }
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     if (!inlineForeignSchema) {
@@ -1199,6 +1238,11 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       if (hasIsSys) {
       #>
       is_sys: model.is_sys.into(),<#
+      }
+      #><#
+      if (hasVersion) {
+      #>
+      version: model.version.into(),<#
       }
       #><#
       if (hasIsHidden) {
