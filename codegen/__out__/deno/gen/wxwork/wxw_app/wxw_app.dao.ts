@@ -459,7 +459,7 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl ?? "";
+    const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
     });
@@ -469,11 +469,11 @@ export async function findByUnique(
     if (search0.corpid == null) {
       return [ ];
     }
-    const corpid = search0.corpid ?? "";
+    const corpid = search0.corpid;
     if (search0.agentid == null) {
       return [ ];
     }
-    const agentid = search0.agentid ?? "";
+    const agentid = search0.agentid;
     const modelTmps = await findAll({
       corpid,
       agentid,

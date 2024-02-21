@@ -411,7 +411,7 @@ export async function findByUnique(
     if (search0.type == null) {
       return [ ];
     }
-    const type = search0.type ?? "";
+    const type = search0.type;
     const modelTmps = await findAll({
       wxw_app_id,
       type,
@@ -422,7 +422,7 @@ export async function findByUnique(
     if (search0.access_token == null) {
       return [ ];
     }
-    const access_token = search0.access_token ?? "";
+    const access_token = search0.access_token;
     const modelTmps = await findAll({
       access_token,
     });
