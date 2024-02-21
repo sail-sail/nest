@@ -406,7 +406,7 @@ export async function findByUnique(
     if (search0.userid == null) {
       return [ ];
     }
-    const userid = search0.userid ?? "";
+    const userid = search0.userid;
     const modelTmps = await findAll({
       userid,
     });
@@ -416,7 +416,7 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl ?? "";
+    const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
     });
