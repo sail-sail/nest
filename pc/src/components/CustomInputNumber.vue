@@ -9,7 +9,7 @@
   :controls="props.controls"
   v-bind="$attrs"
   v-model="modelValue"
-  :clearable="!props.disabled"
+  :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
   :placeholder="props.placeholder"
   @change="onChange"
@@ -30,26 +30,17 @@
   >
     <div
       un-b="1 solid [var(--el-border-color)]"
-      un-p="x-2.75 y-1"
+      un-p="x-2.5 y-1"
       un-box-border
       un-rounded
       un-w="full"
       un-min="h-8"
       un-line-height="normal"
-      un-break-words
+      un-whitespace-nowrap
       class="custom_input_number_readonly"
       v-bind="$attrs"
     >
-      <template
-        v-if="!(modelValue ?? '')"
-      >
-        {{ props.readonlyPlaceholder ?? defaultLabel }}
-      </template>
-      <template
-        v-else
-      >
-        {{ modelValue ?? defaultLabel }}
-      </template>
+      {{ modelLabel }}
     </div>
   </template>
   <template
@@ -59,16 +50,7 @@
       class="custom_input_number_readonly readonly_border_none"
       v-bind="$attrs"
     >
-      <template
-        v-if="!(modelValue ?? '')"
-      >
-        {{ props.readonlyPlaceholder ?? defaultLabel }}
-      </template>
-      <template
-        v-else
-      >
-        {{ modelValue ?? defaultLabel }}
-      </template>
+      {{ modelLabel }}
     </div>
   </template>
 </template>
@@ -89,6 +71,7 @@ const props = withDefaults(
     step?: number;
     stepStrictly?: boolean;
     controls?: boolean;
+    clearable?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     readonlyBorder?: boolean;
@@ -101,6 +84,7 @@ const props = withDefaults(
     step: 1,
     stepStrictly: false,
     controls: false,
+    clearable: false,
     disabled: undefined,
     readonly: undefined,
     readonlyBorder: true,
@@ -109,21 +93,50 @@ const props = withDefaults(
   },
 );
 
-let defaultLabel = $computed(() => {
-  const val = 0;
-  return val.toFixed(props.precision);
-});
-
 let modelValue = $ref(props.modelValue);
 
 watch(
   () => props.modelValue,
   () => {
+    if (props.modelValue == null) {
+      modelValue = undefined;
+      return;
+    }
+    if (isNaN(Number(props.modelValue.toString()))) {
+      modelValue = undefined;
+      return;
+    }
     modelValue = Number(props.modelValue);
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    if (modelValue === null) {
+      modelValue = undefined;
+    }
+    emit("update:modelValue", modelValue);
+  },
+);
+
+const modelLabel = $computed(() => {
+  if (modelValue == null) {
+    return "";
+  }
+  if (isNaN(Number(modelValue))) {
+    return modelValue;
+  }
+  if (props.precision === 0) {
+    return modelValue;
+  }
+  return Number(modelValue).toFixed(props.precision);
+});
+
 function onChange() {
+  if (modelValue === null) {
+    modelValue = undefined;
+  }
   emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }

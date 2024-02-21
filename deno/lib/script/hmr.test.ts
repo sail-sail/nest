@@ -11,6 +11,6 @@ const filenames = [
   "D:/hugjs/nest/deno/src/menu/menu.dao.ts",
 ];
 await handelChg(context, filenames);
-await close();
+await close(context);
 
-// deno run --inspect-brk -A --import-map=../../import_map.json --no-check .\hmr.test.ts -c=D:/hugjs/nest/deno
+// deno run --inspect-brk -A .\hmr.test.ts -c=D:/hugjs/nest/deno

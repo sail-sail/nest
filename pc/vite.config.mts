@@ -18,14 +18,11 @@ import Unocss from "unocss/vite";
 
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import defineOptions from "unplugin-vue-define-options/vite";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import VueDevTools from "vite-plugin-vue-devtools";
+import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
+
+// import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,9 +30,9 @@ export default defineConfig({
     Inspector({
       toggleButtonPos: "top-left",
     }),
-    VueDevTools(),
+    // VueDevTools(),
     vue(),
-    reactivityTransform(),
+    ReactivityTransform(),
     defineOptions(),
     vueJsx(),
     Icons({
@@ -73,6 +70,7 @@ export default defineConfig({
         {
           "@/utils/excel_util": [
             "getExcelData",
+            "toExcelColumns",
             "useRenderExcel",
             "saveAsExcel",
           ],
@@ -120,6 +118,7 @@ export default defineConfig({
           ],
           "@/compositions/List": [
             "usePage",
+            "useSubscribeList",
             "useSelect",
             "useSelectOne",
             "monthrangeSearch",
@@ -256,6 +255,24 @@ export default defineConfig({
     // __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
     __VUE_OPTIONS_API__: true,
   },
+  preview: {
+    port: 4000,
+    open: false,
+    cors: true,
+    strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:4001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/graphql": {
+        target: "http://127.0.0.1:4001",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   server: {
     port: 4000,
     open: false,
@@ -266,6 +283,7 @@ export default defineConfig({
         target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       "/graphql": {
         target: "http://127.0.0.1:4001",

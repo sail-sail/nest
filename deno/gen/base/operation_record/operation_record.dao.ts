@@ -144,6 +144,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.time && search?.time?.length > 0) {
+    if (search.time[0] != null) {
+      whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
+    }
+    if (search.time[1] != null) {
+      whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
+    }
+  }
   if (search?.old_data !== undefined) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
   }
@@ -161,15 +169,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
-  }
-  if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
-  }
-  if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -191,26 +190,6 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
-  }
-  if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
-  }
-  if (search?.update_time && search?.update_time?.length > 0) {
-    if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
-    }
-    if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
-    }
-  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -229,8 +208,6 @@ async function getFromQuery() {
     base_operation_record t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -299,7 +276,6 @@ export async function findAll(
   let sql = `
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery() }
   `;
@@ -368,18 +344,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 更新时间
-    if (model.update_time) {
-      const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
-        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.update_time_lbl = "";
-    }
   }
   
   return result;
@@ -403,17 +367,13 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     method: await n("方法"),
     method_lbl: await n("方法名称"),
     lbl: await n("操作"),
+    time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
-    rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -657,25 +617,11 @@ export async function validate(
     fieldComments.new_data,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
 }
@@ -781,14 +727,14 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (input.time !== undefined) {
+    sql += `,time`;
+  }
   if (input.old_data !== undefined) {
     sql += `,old_data`;
   }
   if (input.new_data !== undefined) {
     sql += `,new_data`;
-  }
-  if (input.rem !== undefined) {
-    sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
@@ -831,14 +777,14 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
+  if (input.time !== undefined) {
+    sql += `,${ args.push(input.time) }`;
+  }
   if (input.old_data !== undefined) {
     sql += `,${ args.push(input.old_data) }`;
   }
   if (input.new_data !== undefined) {
     sql += `,${ args.push(input.new_data) }`;
-  }
-  if (input.rem !== undefined) {
-    sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
   const res = await execute(sql, args);
@@ -929,7 +875,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("操作记录"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -939,7 +885,7 @@ export async function updateById(
   const oldModel = await findById(id);
   
   if (!oldModel) {
-    throw await ns("修改失败, 数据已被删除");
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("操作记录"));
   }
   
   const args = new QueryArgs();
@@ -977,6 +923,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.time !== undefined) {
+    if (input.time != oldModel.time) {
+      sql += `time = ${ args.push(input.time) },`;
+      updateFldNum++;
+    }
+  }
   if (input.old_data !== undefined) {
     if (input.old_data != oldModel.old_data) {
       sql += `old_data = ${ args.push(input.old_data) },`;
@@ -986,12 +938,6 @@ export async function updateById(
   if (input.new_data !== undefined) {
     if (input.new_data != oldModel.new_data) {
       sql += `new_data = ${ args.push(input.new_data) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.rem !== undefined) {
-    if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }

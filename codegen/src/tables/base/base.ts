@@ -102,6 +102,9 @@ export default defineConfig({
         require: true,
         align: "left",
         width: 280,
+        foreignKey: {
+          hasSelectAdd: true,
+        },
       },
       {
         COLUMN_NAME: "menu_ids",
@@ -355,18 +358,15 @@ export default defineConfig({
         require: false,
         search: true,
         sortable: true,
-        width: 140,
         foreignKey: {
           table: "menu",
           column: "id",
           lbl: "lbl",
-          multiple: false,
           defaultSort: {
             prop: "order_by",
             order: "ascending",
           },
         },
-        align: "left",
         fixed: "left",
       },
       {
@@ -546,13 +546,10 @@ export default defineConfig({
         COLUMN_NAME: "lang_id",
         require: true,
         search: true,
-        width: 120,
       },
       {
         COLUMN_NAME: "menu_id",
         search: true,
-        align: "left",
-        width: 160,
       },
       {
         COLUMN_NAME: "code",
@@ -603,8 +600,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -616,7 +611,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "lbl",
@@ -624,7 +619,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "rem",
@@ -661,8 +656,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -674,7 +667,7 @@ export default defineConfig({
         search: true,
         width: 220,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "scope",
@@ -724,8 +717,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
-        width: 160,
-        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -737,7 +728,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "lbl",
@@ -745,7 +736,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
-        fixed: null,
+        fixed: false,
       },
       {
         COLUMN_NAME: "type",
@@ -814,9 +805,6 @@ export default defineConfig({
         COLUMN_NAME: "rem",
       },
       {
-        COLUMN_NAME: "version",
-      },
-      {
         COLUMN_NAME: "create_usr_id",
       },
       {
@@ -874,9 +862,6 @@ export default defineConfig({
         COLUMN_NAME: "rem",
       },
       {
-        COLUMN_NAME: "version",
-      },
-      {
         COLUMN_NAME: "create_usr_id",
       },
       {
@@ -905,6 +890,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "module",
         width: 120,
+        noList: true,
       },
       {
         COLUMN_NAME: "module_lbl",
@@ -914,6 +900,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "method",
         width: 120,
+        noList: true,
       },
       {
         COLUMN_NAME: "method_lbl",
@@ -924,19 +911,21 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         search: true,
         width: 180,
+        fixed: false,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "time",
       },
       {
         COLUMN_NAME: "old_data",
         align: "left",
-        width: 280,
+        width: 100,
       },
       {
         COLUMN_NAME: "new_data",
         align: "left",
-        width: 280,
-      },
-      {
-        COLUMN_NAME: "rem",
+        width: 100,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -944,12 +933,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "create_time",
         search: true,
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -1018,14 +1001,11 @@ export default defineConfig({
           table: "dept",
           column: "id",
           lbl: "lbl",
-          multiple: false,
           defaultSort: {
             prop: "order_by",
             order: "ascending",
           },
         },
-        width: 140,
-        align: "left",
         fixed: "left",
       },
       {

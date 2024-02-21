@@ -1,6 +1,6 @@
-import {
-  type Context as OakContext,
-  type Middleware,
+import type {
+  Context as OakContext,
+  Middleware,
 } from "oak";
 
 import {

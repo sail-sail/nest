@@ -2,12 +2,14 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @open="onDialogOpen"
+  @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
   @keydown.insert="onInsert"
+  @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.i="onInsert"
   @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
@@ -21,14 +23,14 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted">
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
         :title="ns('锁定')"
       >
         <ElIconUnlock
           class="unlock_but"
-          @click="isReadonly = true"
+          @click="isReadonly = true;"
         >
         </ElIconUnlock>
       </div>
@@ -38,7 +40,7 @@
       >
         <ElIconLock
           class="lock_but"
-          @click="isReadonly = false"
+          @click="isReadonly = false;"
         ></ElIconLock>
       </div>
     </template>
@@ -184,7 +186,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -262,6 +264,12 @@ import type {
   OptionsInput,
 } from "#/types";
 
+import {
+  subscribe,
+  publish,
+  unSubscribe,
+} from "@/compositions/websocket";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -271,18 +279,19 @@ const emit = defineEmits<{
   ],
 }>();
 
+const pagePath = "/base/options";
+
 const {
   n,
   ns,
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/options");
+} = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/options");
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -290,6 +299,8 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
+let oldDialogNotice: string | undefined = undefined;
+let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: OptionsInput = $ref({
@@ -356,10 +367,13 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
+let findOneModel = findOne;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
+    notice?: string;
     builtInModel?: OptionsInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
@@ -369,12 +383,16 @@ async function showDialog(
       ids?: OptionsId[];
       is_deleted?: number | null;
     };
+    findOne?: typeof findOne;
     action: DialogAction;
   },
 ) {
   inited = false;
   dialogTitle = arg?.title ?? "";
   oldDialogTitle = dialogTitle;
+  const notice = arg?.notice;
+  oldDialogNotice = notice;
+  dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: $$(dialogTitle),
@@ -388,13 +406,21 @@ async function showDialog(
   showBuildIn = false;
   isReadonly = false;
   isLocked = false;
+  isShowEditCallbackConfirm = false;
+  isShowDeleteCallbackConfirm = false;
   is_deleted = model?.is_deleted ?? 0;
+  if (arg?.findOne) {
+    findOneModel = arg.findOne;
+  } else {
+    findOneModel = findOne;
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    oldIsLocked = toValue(arg?.isLocked) ?? false;
     
     if (dialogAction === "add") {
       isLocked = false;
@@ -402,7 +428,7 @@ async function showDialog(
       if (!permit("edit")) {
         isLocked = true;
       } else {
-        isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
       }
     }
   });
@@ -410,6 +436,7 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    version: 0,
   };
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
@@ -436,7 +463,7 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      findOne({
+      findOneModel({
         id: model.id,
         is_deleted,
       }),
@@ -449,6 +476,7 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
+        version: 0,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -479,6 +507,9 @@ async function showDialog(
 watch(
   () => [ isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (oldDialogNotice != null) {
+      return;
+    }
     if (is_deleted) {
       dialogNotice = await nsAsync("(已删除)");
       return;
@@ -540,12 +571,80 @@ async function onReset() {
   });
 }
 
+let isShowEditCallbackConfirm = false;
+
+/** 订阅编辑消息回调 */
+async function subscribeEditCallback(id?: OptionsId) {
+  if (!id) {
+    return;
+  }
+  if (id !== dialogModel.id) {
+    return;
+  }
+  if (isShowEditCallbackConfirm) {
+    return;
+  }
+  isShowEditCallbackConfirm = true;
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("系统选项")),
+      {
+        confirmButtonText: await nsAsync("刷新"),
+        cancelButtonText: await nsAsync("取消"),
+        type: "warning",
+      },
+    );
+    isShowEditCallbackConfirm = false;
+  } catch (err) {
+    isShowEditCallbackConfirm = false;
+    return;
+  }
+  await onRefresh();
+}
+
+let isShowDeleteCallbackConfirm = false;
+
+/** 订阅删除消息回调 */
+async function subscribeDeleteCallback(ids?: OptionsId[]) {
+  if (!ids) {
+    return;
+  }
+  if (!dialogModel.id) {
+    return;
+  }
+  if (!ids.includes(dialogModel.id)) {
+    return;
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    return;
+  }
+  if (isShowDeleteCallbackConfirm) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(
+      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("系统选项")),
+      {
+        confirmButtonText: await nsAsync("关闭"),
+        cancelButtonText: await nsAsync("暂不关闭"),
+        type: "warning",
+      },
+    );
+  } catch {
+    return;
+  }
+  onCloseResolve({
+    type: "cancel",
+    changedIds,
+  });
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
-  const data = await findOne({
+  const data = await findOneModel({
     id: dialogModel.id,
     is_deleted,
   });
@@ -670,10 +769,8 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
   e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy" || dialogAction === "edit") {
-    customDialogRef?.focus();
-    await onSave();
-  }
+  customDialogRef?.focus();
+  await onSave();
 }
 
 /** 保存并返回id */
@@ -684,10 +781,7 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if (dialogAction === "view") {
-    return;
-  }
-  if (dialogAction === "edit" && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
     return;
   }
   if (dialogAction === "add" && !permit("add")) {
@@ -710,6 +804,13 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "add",
+      }),
+      payload: id,
+    });
     msg = await nsAsync("新增成功");
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
@@ -727,6 +828,13 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
+    publish({
+      topic: JSON.stringify({
+        pagePath,
+        action: "edit",
+      }),
+      payload: id,
+    });
     msg = await nsAsync("编辑成功");
   }
   if (id) {
@@ -751,7 +859,7 @@ async function onSaveAndCopy() {
     data,
     order_by,
   ] = await Promise.all([
-    findOne({
+    findOneModel({
       id,
       is_deleted,
     }),
@@ -786,10 +894,53 @@ async function onSave() {
   });
 }
 
-/** 点击取消关闭按钮 */
-function onClose() {
+async function onDialogOpen() {
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );
+  subscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
+  );
+}
+
+async function onDialogClose() {
+  isShowEditCallbackConfirm = true;
+  isShowDeleteCallbackConfirm = true;
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "edit",
+    }),
+    subscribeEditCallback,
+  );
+  unSubscribe(
+    JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    subscribeDeleteCallback,
+  );
+}
+
+async function onBeforeClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
+  }
+  return true;
+}
+
+/** 点击取消关闭按钮 */
+async function onClose() {
+  if (!await onBeforeClose()) {
+    return;
   }
   onCloseResolve({
     type: "cancel",
@@ -798,8 +949,8 @@ function onClose() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (readonlyWatchStop) {
-    readonlyWatchStop();
+  if (!await onBeforeClose()) {
+    return;
   }
   done(false);
   onCloseResolve({
@@ -818,7 +969,6 @@ async function onInitI18ns() {
     "启用",
     "排序",
     "备注",
-    "版本号",
     "创建人",
     "创建时间",
     "更新人",

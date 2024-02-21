@@ -4,10 +4,139 @@ title: 关于tmUi3.0的更新日志
 
 ##### 开发指南 tmui.design
 
-# TMUI 3.0 by tm-vuefity 3.0
+# TMUI 3.0
 
 ### :couplekiss: 更新日志
-## 3.1.05（2023-5-xx）
+
+## 3.1.1 (2023-1-31)
+**【插播一条广告】tmui4.0 x版本已发布，现招募种子用户，价格199元终身授权，还可免费使用我开发的原生插件截止2.28号**
+* **[注意]我本人没有测试uniapp 3.99sdk，我还在使用uniapp sdk 3.0.0-3090520231028001,即10月28号发布的版本，请大家使用时自行测试验证新的sdk是否有问题。**
+由于Uni官方后面更新可以使用x版本怕问题太多，不敢使用，请大家谨慎在生产中使用。建议维持我cli的版本即可，切莫尝鲜。
+* tm-form,校验时机改为输入内容即校验，之前是首次不校验。并为ref函数validate校验提供了字段校验参数，允许你只校验部分字段。
+* tmui组件vsocde文档提示插件，请在vscode中搜索插件：tmui-helper进行安装。
+* util工具函数中isPasswordOfOther校验字母数字时可能有误。
+* useTheme，round计算时重复了个2导致写圆角时，第4个失败，使用了第3个的值。
+* tm-slide-switch提高了部分平台报错的兼容问题。
+* index.ts删除了一些不使用而导入的值，可能导致某些功能异常。
+* tm-segtab,修改外部更改值时，不会触发。
+* tm-text,新增aging，适配微信端字号自动适配
+* nvue图表兼容配置函数[见issue](https://gitee.com/LYTB/tmui-design/pulls/213/files).更新此版本需要同步去gitee上下载hybrid覆盖你的项目上同名目录。
+* tm-keyboard,优化安全区域 [见issue](https://gitee.com/LYTB/tmui-design/pulls/212/files)
+* tm-carousel，新增imgModel，图片缩放模式
+* tm-cell,新增hover-class属性
+* tm-col,新增justify属性，可选参数与align相同。
+* css库增加了三人居中的baseLine对齐类,flex-row-baseline-[start,center,end]
+* tm-radio,buttom模式微信和网页的样式有差异。
+* tm-qrcode，微信真机上可能设置Logo报错.
+* tm-overlay,设置为底部内容不可滚动，相对应的是所有弹层组件底部内容都将无法滚动。
+* tm-avatar,增加errorImg，当头像出错时，使用此错误的占位图片代替img
+* tm-popover，增加defaultShow属性，默认是否显示展开。
+* tm-time-view,tm-time-picker等时间组件，如果你设置为时分，或者 时秒，这种类似的非标准需求，首次选中时会被默认的设置为起始位置，导致首次选中出错。
+## 3.1.09（2023-11-1）
+* **特别提醒：新的sdk3.8.12（含）后如果你不更新为最新的的sdk为3.95,但使用了hbx新版本,nvue平台会白屏，因此请大家注意更新为最新sdk与hbx匹配，否则白屏。**
+* **[特别提醒]keyboard键盘上个版本拼写错了，把正确的删除了。错误的留下了，大意了，这次改正了。你们正式的项目升级注意更新下keyboard这个组件导入**
+* [优化]所有弹层类组件的定位使用了新的useHooks函数，解决了底部在安全区域和非常安全区域可能出现的错位问题。
+* [优化]因微信新版本引擎渲染节点与旧版本有点差异。导致部分组件可能出现错误的布局。针对这些已经增加了修复优化。如果大家发现哪些组件在新引擎上有问题，请及时在gitee上提交问题，我好修复兼容。
+* [优化]input组件，增加了customicon是否自定义图标，searchBgColor搜索按钮背景，searchWidth搜索按钮宽属性。
+* [优化]tmTabbar，增加了place属性，是否占位。
+* [优化]virtual虚拟列表，增加了scrollViewInTo属性用于手动定位列表当前滚动的具体锚点位置，top,bottom
+* [重磅]**添加了一系列实用的useHooks函数，解构即可使用，类似于vue3流行的VueUse,解构出来的值是动态可变的以最终值为准，使用方便效率高。**
+* 也是为了解决一些功能组件的界面可能不符合你的预期，因此做成useHooks方便大家自定义界面，直接使用功能。类似我提供底层api基础功能，你负责界面显示,这样就可个性化界面了，而不用实现功能逻辑。
+* 一个useHooks一个文件，因此你不用，就不会增加文件大小。不用担心包过大的问题。
+* [修复]tmCv渲染修复了文字渲染位置计算错误，导致文字排版可能错位。
+* [优化]tm-stepper组件经过项目验证，发现还是失去焦点时，再检查数据合法性比较好一点，因此现在输入值时，失去焦点才会校正。另外发现在华为鸿蒙系统中，如果一个输入框两边都有按钮贴在一起布局，会出现bug.该bug在京东微信商城小程序和一些其它大厂小程序都验证存在。因此本次更新修复兼容。
+* [优化]tm-weekbar新增了：itemSelectedBgColor，方便定义选中时的背景，更聚焦更美观。见示例demo
+* [优化]tm-action-menu优化如果底部没有安全区域时增加间隙。
+* [优化]tm-more新增：lightMaskColor，darkMaskColor渐变颜色组，主要是有些应用场景可能遮罩不一定是黑或者白可能会设置其它个性化的渐变色。
+* [优化]tm-input,增加：clearAndEyeColor：清除按钮，显示密码按钮的颜色
+* [优化]tm-scrolly增加refresher开启或者彬下拉刷新
+* [修复]tm-time-between时间范围选择器，修复可能出现的invidate的场景，具体表现概率性表现为时间超过当前日期时出现。具体原因在于变动逻辑上顺序我可能有误导致的。
+* [增强]css工具类，新增了grid排版,gap间隙设置（相比margin,padding增加间隙优势明显）vue包增加2kb,注意：nvue不支持。
+* [增强]tm-Carousel针对list如果为object时，如果含有text字段，就会在轮播的底部显示出轮播的文本，方便新闻轮播。见示例。
+* [优化]tm-calendar新增confirmText，textUnit方便定义其它语言。
+* [更多]更新和修改了许多其它文件，具体请使用git对比发现。
+
+## 3.1.08（2023-7-26）
+* 本次升级建议大家升级到3.8.7，目前测试良好。
+* [修改]升级tmui cli底层sdk至3.8.7,已经配置了vite.config.js已经可以支持编译到淘系小程序。
+* [修复]小程序全局分享shareDisable为true关闭分享，false为开启。与文档描述不符。
+* [更改]修改所有动画弹层类动效函数为cubic-bezier(.04,.78,.42,1),效果是打开是快-慢。关闭时快-慢,好像速度更快。
+* [优化]tm-scrolly下拉功能，修复在ios下scrolly下拉不正常
+* [优化]timebetween，代码优化
+* [优化]删除demo中index.vue页面的冗余代码。
+* [修复优化]tm-color-view,因uni sdk3.8.xx以来canvas组件反复bug出现。导致我这个组件此版本后渲染异常在微信上。本版本兼容更新了3.8.xx，可以正常了。但低于这sdk版本会出错
+* 所以现在要正常使用请使用3.8.xx以上吧
+* [优化]tminput的focus添加返回event参数。
+* [优化]补充类型和优化类型文件
+* [优化]tm-divider,新增showLable属性，同时新增插槽label，用于自定义文字区域布局。
+* [优化]css库修正。[见gitee](https://gitee.com/LYTB/tmui-design/issues/I7IG3C)
+* [优化]tmrow,tmcol，在3.8.7 sdk开始莫名的在微信小程序端tmcol内部高度设置无效，只能设置外部高度解决的问题【已修复】。
+* [优化修复]tm-radio,tmcheckbox优化通过设置direction="customCol"如果label为多行时，在h5,微信小程序无法断行。顺便补下文档
+* [修复]upload组件，新增的after函数，默认返回有误。同时状态文件处添加当前的上传进度值,优化，如果当前在上传中不允许删除操作。
+* [优化]更新了tm-cascader组件，增加了异步加载数据用例以及优化异步加载。
+* [优化]tmRender增加了ref方法saveImg保存图片的方法。如果大家用来生成海报，可以此来保存图片.优化可能出现的问题。
+* [优化]tmCropimg,修改默认宽和高为250,（暂不支持nvue剪切）
+* [优化]tmSlider样式修改。
+* [修复]tm-codeinput，字段type值dot,line样式没有生效。同时新增showLine控制是否显示占位符。
+* [优化]tm-filterMenu组件，如果当你放置在父组件设定了transform中时，弹出定位将失败，位置错乱，本质上这个是原生css属性受限。无dom平台（小程序）解决不了。但好在有的平台支持使用根组件来解决。
+因此版本升级允许你放置在相关父组件中：比如当你把这组件放到swiper-item中现在也能正常弹出，但支持的平台仅限：微信小程序，淘系列，h5,nvue，使用场景见[gitee](https://gitee.com/LYTB/tmui-design/issues/I7LH6M)
+* [优化]公共参数round属性升级后属性为[number]|number，规则与margin相同即：圆角,[x]或者直接数字x表示全部,[x,x]表示顶左，顶右，[x,x,x]表示顶左，顶右，底右，[x,x,x,x]顶左，顶右，底右，底左 
+* [修复]tm-segtab，由于在非nvue平台不同分辨率下（特别是奇数倍率），uni.upx2px转换为rpx后会丢失0.5px导致上下错位。现在改为calc的百分比计算，让内容居中。
+* [修复]tm-tabs导航可能的计算，导致实际宽度大于内容宽度（左右线性动画模式时产生的问题。）
+* [优化]tm-drawer，优化在非nvue平台。动画未结束前点击遮罩不允许关闭。
+* [修复]tm-scrolly，底部加载更多在vue平台内容未居中.
+* [优化]tm-sku,新增了属性value,用来默认选中产品规格，注意规则请数据data规则以-区分比如：a-b-b
+* [优化]tm-input，新增searchWidth，用来改变搜索按钮的宽度，默认为0根据文字自动宽，
+* [优化]其它[见gitee PR](https://gitee.com/LYTB/tmui-design/pulls/170)
+* [优化]tmHtml组件[跟随原作者](https://github.com/jin-yufeng/mp-html/)更新到2.4.2版本
+* [优化]tmSideMenu,新增disabledPull，是否禁用下拉刷新功能。
+* [优化]radio,checkedbox的属性beforChecked拼写错误修正为beforeChecked，并传递了当前的vale值，可以在函数内直接取得。
+* [优化]tmCountdown新增formatType，指定倒计时的类型，比如指定SS，当你设定300秒时，以300递减而不会进位到分。
+* [优化]tmFloatButton项目类型中增加了可选参数	openType?:string,callback?:Function<event:any,item:actionsItem>，各子按钮或者主按钮统一调用你给定的回调函数，并把参数传递给自己的。
+* [更新]修改文档，修复文档错误描述。
+## 3.1.07（2023-6-28）
+* [修复]tm-app,在app vue页面类型没有铺满全屏.
+* [修复]app ios nvue 下tm-picker组件显示异常 [见gitee](https://gitee.com/LYTB/tmui-design/issues/I7CN16)
+* [修复]时间范围选择器，在format 为 HH:mm 时，出现无效数据的bug，[见gitee](https://gitee.com/LYTB/tmui-design/pulls/166/files)
+* [修复]tm-Segtab,在vue页面，使用gutter属性时，宽度计算有误。（nvue不受影响）[见gitee](https://gitee.com/LYTB/tmui-design/issues/I7D4FN)
+* [修复]tm-steps,当添加小标题时错乱。[见gitee](https://gitee.com/LYTB/tmui-design/issues/I7D5CD)
+* [优化]tm-alert,点击事件返回：item,index
+* [优化]tm-action-menu,[见gitee](https://gitee.com/LYTB/tmui-design/issues/I7C9LV)
+* 增加了事件：open-data，各家小程序开放事件统一在这触发获取：头像，电话，联系人等。
+* [优化]tm-button,去掉了兼容pc的hover效果
+* [修复]tm-stepper,修复在小微信小程序中当值为""时，如果最小值为0,此时用户可以通过删除输入框的值让输入框为"",而不是0。当最小值为负数时，用户清空输入框时，自动设置为最小的负数，而不是0
+* [修复]tm-switch,在vue页面，没对齐（nvue不受影响）
+* [修复]tm-overlay，如果同一个页面使用多个这组件，并同时触发显示或者关闭等动作，由于触发了节流，导致只有一个能触发。修复后可同时调用。
+* [优化]tm-upload,开放props属性chooesefileAfter，用于在传前最后一次文件列表的动态修改。上传以你return后的文件列表为准。
+* [优化]tm-input,事件keyboardheightchange补充上，$event属性。
+* [优化]forom-item,添加属性labelWidth，可以单独控制标题宽度。
+* [优化]tm-switch,增加offIcon属性，关闭时显示的图标，默认没有。
+* [优化]tm-cascader，优化标题显示为text标题，而不是显示id标题.
+* [修复]tm-translate，动画在app vue页面因兼容嵌套导致所有在app vue页面类型的动画失效。现已修复
+* [修复]tm-time-between,新增modelStr(一般用来显示，因为可能是一个不标准的时间格式，给后台时请使用v-model变量)，它是受fomat影响输出，但不允许输入，输入请用v-model来更改。这里只管输出format格式的时间。
+* [优化]tm-tree,添加了选中后文字显示主题色。也增加了禁用时节点文本为禁用色，但如果节点为父节点时，被禁用选中了，文本禁用色不生效（因为它的子节点可以选）[场景需求见gitee](https://gitee.com/LYTB/tmui-design/issues/I7FKZ3)
+* [优化]tm-filterMenu-item,增加了自定义标识属性uuid，[场景需求见gitee](https://gitee.com/LYTB/tmui-design/issues/I7FG7N)
+## 3.1.06（2023-6-6）
+* [注意事项]3.8.3 uni sdk发布了，经过测试可以编译nvue app了。可能第一次编译会报appprieview的标点符号错误，
+我已经找到了问题是：uni sdk自己编译的html文件末尾少了个";"导致的，重新编译就正常预览了。但依然无法编译到支付宝。如果要编译到支付宝请继续使用3.6.18的 uni sdk见gitee库的备份json文件。
+* [修复]tm-dragList数据变动不更新问题。
+* [修复]tm-slide-switch，无法手动更改状态值。解决页面无法滚动问题
+* [修复]signBoard,qrCode组件在支付宝中无法保存和获取图片资源。
+* [文档]Scrolly文档现在重写编写，之前的文档存在错误，误导了大家的使用，导致使用出错。
+* [修复]tm-translate，组件ref的play方法失效，导致手动播放动画无法播放。
+* [修复]tm-segtab，动态修改list时，定位样式错乱。
+* [优化]tm-tag，增加了属性：before-close，关闭前执行的回调。
+* [优化]tm-upload,增加show-status 属性，以控制是否显示上传的状态栏。
+* [优化]tm-roll-notice,list类型增加了object,object[]类型支持，也同步增加了rangeKey来指定显示的文本字段。
+* [优化]修正util.getUid函数的类型。
+* [优化]tm-waterfall,见[PR功能日志](https://gitee.com/LYTB/tmui-design/pulls/159)
+* [优化]tm-tabs,tm-scrollx，隐藏在安卓上的滚动条。
+* [优化]tm-icon，文档少了一个属性customicon，现已修正了文档。
+* [修复]tm-tabbar-item，少了一个属性customicon，导致如果你填写了自定图标名称，不能显示，要显示需要开启这个属性为true
+* [优化]tm-side-menu，属性单词require修正为required。
+* [修复]tm-button,loading状态下还能触发click.
+* [修复]tm-image,margin左右间距缺省第二个参数读取。
+## 3.1.05（2023-5-15）
 * [文档]升级了文档网站到vitepress
 **[重要提示]目前来说从3.7.10-3.7.11无法编译到nvue。3.8.12 alpha及3.7.9(含以下)可以编译到nvue.然后3.6.18(不含，以上)无法编译到支付宝。原因是uni sdk自己的插件问题，我无力修复。我只能把坑放到这大家避免。想要编译到支付宝请参考3.1.04的说明。**
 **如果uni升级解决了问题，我会在日志中说明。如果你可以解决上面问题欢迎到我的gitee上提供解决方案。感谢。**

@@ -63,7 +63,7 @@ html,body {
 .el-dialog.custom_dialog {
   height: 90vh;
   --el-dialog-width: 960px;
-  --el-dialog-padding-primary: 10px;
+  --el-dialog-padding-primary: 0;
   .el-dialog__footer {
     display: none;
   }
@@ -105,7 +105,7 @@ html,body {
     .el-dialog__headerbtn {
       width: 30px;
       height: 30px;
-      right: 10px;
+      right: 5px;
       top: 5px;
     }
     .el-dialog__headerbtn .el-dialog__close:hover {
@@ -132,6 +132,7 @@ html,body {
       padding: 10px;
       padding-right: 26px;
       color: var(--el-text-color-regular);
+      margin-right: 10px;
     }
     .title_lbl {
       flex: 1 0 0;
@@ -436,4 +437,55 @@ body .el-input-number.is-without-controls .el-input__inner {
       margin: 0;
     }
   }
+}
+
+:root {
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.4);
+}
+
+:root {
+  --readonly_font_color: #888;
+}
+html:is(.dark) {
+  --readonly_font_color: #bbb;
+}
+.dict_select_readonly,
+.dictbiz_select_readonly,
+.custom_select_readonly,
+.custom_input_readonly,
+.custom_date_picker_readonly,
+.custom_input_number_readonly,
+.custom_switch_readonly,
+.custom_checkbox_readonly,
+.custom_tree_select_readonly {
+  color: var(--readonly_font_color);
+}
+
+.el-form-item:has(
+  .dict_select_readonly,
+  .dictbiz_select_readonly,
+  .custom_select_readonly,
+  .custom_input_readonly,
+  .custom_date_picker_readonly,
+  .custom_input_number_readonly,
+  .custom_switch_readonly,
+  .custom_checkbox_readonly,
+  .custom_tree_select_readonly
+).is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label-wrap>.el-form-item__label:before,
+.el-form-item:has(
+  .dict_select_readonly,
+  .dictbiz_select_readonly,
+  .custom_select_readonly,
+  .custom_input_readonly,
+  .custom_date_picker_readonly,
+  .custom_input_number_readonly,
+  .custom_switch_readonly,
+  .custom_checkbox_readonly,
+  .custom_tree_select_readonly
+).is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label:before {
+  color: var(--readonly_font_color);
+}
+
+.v-header-order-drag-sortable-drag {
+  color: red;
 }

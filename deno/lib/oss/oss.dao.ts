@@ -1,8 +1,4 @@
 import type {
-  FormDataFile,
-} from "oak";
-
-import type {
   S3Bucket,
 } from "S3";
 
@@ -42,30 +38,27 @@ export async function getBucket() {
 }
 
 export async function upload(
-  file: FormDataFile,
+  file: File,
   opt?: {
     notDownloadMulti?: boolean,
   },
 ) {
-  const bucket = await getBucket();
-  let content = file.content;
-  if (!content) {
-    content = await Deno.readFile(file.filename!);
-  }
+  const content = await file.arrayBuffer();
   const meta: {
     filename?: string;
     once?: string;
   } = { };
-  if (file.originalName) {
-    meta.filename = encodeURIComponent(file.originalName);
+  if (file.name) {
+    meta.filename = encodeURIComponent(file.name);
   }
   if (opt?.notDownloadMulti) {
     meta.once = "1";
   }
   const id = shortUuidV4<string>();
   try {
-    await bucket.putObject(id, content, {
-      contentType: file.contentType,
+    const bucket = await getBucket();
+    await bucket.putObject(id, new Uint8Array(content), {
+      contentType: file.type,
       meta,
     });
   } catch(_err: unknown) {
