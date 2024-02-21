@@ -277,8 +277,6 @@ export function useDownloadImportTemplate(routePath: string) {
             method_lbl
             lbl
             time
-            old_data
-            new_data
           }
         }
       `,
