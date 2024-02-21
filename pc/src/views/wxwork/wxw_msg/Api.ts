@@ -167,6 +167,7 @@ export async function findById(
           create_time
           create_time_lbl
           errmsg
+          is_deleted
         }
       }
     `,
@@ -305,7 +306,6 @@ export async function getWxwAppList() {
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -341,13 +341,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/wxwork/wxw_msg.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("企微消息") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("企微消息");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/wxwork/wxw_msg.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -361,7 +368,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -369,68 +375,74 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: WxwMsgSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: WxwMsgSearch, $sort: [SortInput!]) {
-          findAllWxwMsg(search: $search, sort: $sort) {
-            id
-            wxw_app_id
-            wxw_app_id_lbl
-            errcode
-            errcode_lbl
-            touser
-            title
-            description
-            btntxt
-            create_time
-            create_time_lbl
-            errmsg
-          }
-          getFieldCommentsWxwMsg {
-            wxw_app_id_lbl
-            errcode_lbl
-            touser
-            title
-            description
-            btntxt
-            create_time_lbl
-            errmsg
-          }
-          findAllWxwApp {
-            lbl
-          }
-          getDict(codes: [
-            "wxw_msg_errcode",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
     try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/wxwork/wxw_msg.xlsx`,
-        {
-          data,
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: WxwMsgSearch, $sort: [SortInput!]) {
+            findAllWxwMsg(search: $search, sort: $sort) {
+              id
+              wxw_app_id
+              wxw_app_id_lbl
+              errcode
+              errcode_lbl
+              touser
+              title
+              description
+              btntxt
+              create_time
+              create_time_lbl
+              errmsg
+            }
+            findAllWxwApp {
+              lbl
+            }
+            getDict(codes: [
+              "wxw_msg_errcode",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("企微消息"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("企微消息");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/wxwork/wxw_msg.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,
