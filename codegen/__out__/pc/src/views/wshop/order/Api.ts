@@ -320,6 +320,7 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -560,7 +561,6 @@ export async function getCardList() {
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -602,13 +602,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/wshop/order.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("订单") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("订单");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/wshop/order.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -622,7 +629,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -630,110 +636,104 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: OrderSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: OrderSearch, $sort: [SortInput!]) {
-          findAllOrder(search: $search, sort: $sort) {
-            id
-            lbl
-            company
-            phone
-            status
-            status_lbl
-            usr_id
-            usr_id_lbl
-            card_id
-            card_id_lbl
-            price
-            type
-            type_lbl
-            amt
-            give_amt
-            integral
-            balance
-            give_balance
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
-          getFieldCommentsOrder {
-            lbl
-            company
-            phone
-            status_lbl
-            usr_id_lbl
-            card_id_lbl
-            price
-            type_lbl
-            amt
-            give_amt
-            integral
-            balance
-            give_balance
-            is_locked_lbl
-            is_enabled_lbl
-            rem
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          findAllUsr {
-            lbl
-          }
-          findAllCard {
-            lbl
-          }
-          getDict(codes: [
-            "is_locked",
-            "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
-            "order_status",
-            "order_type",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
     try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/wshop/order.xlsx`,
-        {
-          data,
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: OrderSearch, $sort: [SortInput!]) {
+            findAllOrder(search: $search, sort: $sort) {
+              id
+              lbl
+              company
+              phone
+              status
+              status_lbl
+              usr_id
+              usr_id_lbl
+              card_id
+              card_id_lbl
+              price
+              type
+              type_lbl
+              amt
+              give_amt
+              integral
+              balance
+              give_balance
+              is_locked
+              is_locked_lbl
+              is_enabled
+              is_enabled_lbl
+              rem
+              create_usr_id
+              create_usr_id_lbl
+              create_time
+              create_time_lbl
+              update_usr_id
+              update_usr_id_lbl
+              update_time
+              update_time_lbl
+            }
+            findAllUsr {
+              lbl
+            }
+            findAllCard {
+              lbl
+            }
+            getDict(codes: [
+              "is_locked",
+              "is_enabled",
+            ]) {
+              code
+              lbl
+            }
+            getDictbiz(codes: [
+              "order_status",
+              "order_type",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("订单"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("订单");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/wshop/order.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,

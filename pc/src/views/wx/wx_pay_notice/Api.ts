@@ -229,6 +229,7 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -246,7 +247,6 @@ export async function findById(
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -292,13 +292,20 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    const buffer = await workerFn(
-      `${ location.origin }/import_template/wx/wx_pay_notice.xlsx`,
-      {
-        data,
-      },
-    );
-    saveAsExcel(buffer, `${ await nAsync("微信支付通知") }${ await nsAsync("导入") }`);
+    try {
+      const sheetName = await nsAsync("微信支付通知");
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/wx/wx_pay_notice.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+    } catch (err) {
+      ElMessage.error(await nsAsync("下载失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
@@ -312,7 +319,6 @@ export function useDownloadImportTemplate(routePath: string) {
  */
 export function useExportExcel(routePath: string) {
   const {
-    nAsync,
     nsAsync,
   } = useI18n(routePath);
   const {
@@ -320,102 +326,94 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
+  
+  const loading = ref(false);
+  
   async function workerFn2(
+    columns: ExcelColumnType[],
     search?: WxPayNoticeSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const data = await query({
-      query: /* GraphQL */ `
-        query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
-          findAllWxPayNotice(search: $search, sort: $sort) {
-            id
-            appid
-            mchid
-            openid
-            out_trade_no
-            transaction_id
-            trade_type
-            trade_type_lbl
-            trade_state
-            trade_state_lbl
-            trade_state_desc
-            bank_type
-            attach
-            success_time
-            success_time_lbl
-            total
-            payer_total
-            currency
-            currency_lbl
-            payer_currency
-            payer_currency_lbl
-            device_id
-            rem
-            raw
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
-          getFieldCommentsWxPayNotice {
-            appid
-            mchid
-            openid
-            out_trade_no
-            transaction_id
-            trade_type_lbl
-            trade_state_lbl
-            trade_state_desc
-            bank_type
-            attach
-            success_time_lbl
-            total
-            payer_total
-            currency_lbl
-            payer_currency_lbl
-            device_id
-            rem
-            raw
-            create_usr_id_lbl
-            create_time_lbl
-            update_usr_id_lbl
-            update_time_lbl
-          }
-          getDict(codes: [
-            "wx_unified_order_trade_type",
-            "wx_pay_notice_trade_state",
-            "wx_pay_notice_currency",
-            "wx_pay_notice_currency",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-        search,
-        sort,
-      },
-    }, opt);
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
     try {
-      const buffer = await workerFn(
-        `${ location.origin }/excel_template/wx/wx_pay_notice.xlsx`,
-        {
-          data,
+      const data = await query({
+        query: /* GraphQL */ `
+          query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
+            findAllWxPayNotice(search: $search, sort: $sort) {
+              id
+              appid
+              mchid
+              openid
+              out_trade_no
+              transaction_id
+              trade_type
+              trade_type_lbl
+              trade_state
+              trade_state_lbl
+              trade_state_desc
+              bank_type
+              attach
+              success_time
+              success_time_lbl
+              total
+              payer_total
+              currency
+              currency_lbl
+              payer_currency
+              payer_currency_lbl
+              device_id
+              rem
+              raw
+              create_usr_id
+              create_usr_id_lbl
+              create_time
+              create_time_lbl
+              update_usr_id
+              update_usr_id_lbl
+              update_time
+              update_time_lbl
+            }
+            getDict(codes: [
+              "wx_unified_order_trade_type",
+              "wx_pay_notice_trade_state",
+              "wx_pay_notice_currency",
+              "wx_pay_notice_currency",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
         },
-      );
-      saveAsExcel(buffer, await nAsync("微信支付通知"));
-    } catch (err) {
-      ElMessage.error(await nsAsync("导出失败"));
-      throw err;
+      }, opt);
+      try {
+        const sheetName = await nsAsync("微信支付通知");
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/wx/wx_pay_notice.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error(await nsAsync("导出失败"));
+        throw err;
+      }
+    } finally {
+      loading.value = false;
     }
   }
   return {
+    loading,
     workerFn: workerFn2,
     workerStatus,
     workerTerminate,
