@@ -796,7 +796,7 @@ export async function findByUnique(
     if (search0.lbl == null) {
       return [ ];
     }
-    const lbl = search0.lbl;
+    const lbl = search0.lbl ?? "";
     const modelTmps = await findAll({
       lbl,
     });
@@ -806,7 +806,7 @@ export async function findByUnique(
     if (search0.username == null) {
       return [ ];
     }
-    const username = search0.username;
+    const username = search0.username ?? "";
     const modelTmps = await findAll({
       username,
     });
@@ -858,7 +858,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("用户")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: UsrId = await updateById(
@@ -1778,7 +1778,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("用户"));
       }
     }
   }
