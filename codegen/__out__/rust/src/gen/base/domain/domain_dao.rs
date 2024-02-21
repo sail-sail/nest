@@ -1,3 +1,8 @@
+#[allow(unused_imports)]
+use std::collections::HashMap;
+#[allow(unused_imports)]
+use std::collections::HashSet;
+
 use anyhow::Result;
 use tracing::{info, error};
 use crate::common::util::string::*;
@@ -730,9 +735,16 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = i18n_dao::ns(
-      "记录已经存在".to_owned(),
+    let table_comment = i18n_dao::ns(
+      "域名".to_owned(),
       None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已经存在".to_owned(),
+      map.into(),
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
@@ -979,9 +991,16 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let err_msg = i18n_dao::ns(
-      "数据已删除".to_owned(),
+    let table_comment = i18n_dao::ns(
+      "域名".to_owned(),
       None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "编辑失败, 此 {0} 已被删除".to_owned(),
+      map.into(),
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
@@ -1012,9 +1031,16 @@ pub async fn update_by_id(
         }
       };
       if unique_type == UniqueType::Throw {
-        let err_msg = i18n_dao::ns(
-          "数据已经存在".to_owned(),
+        let table_comment = i18n_dao::ns(
+          "域名".to_owned(),
           None,
+        ).await?;
+        let map = HashMap::from([
+          ("0".to_owned(), table_comment),
+        ]);
+        let err_msg = i18n_dao::ns(
+          "此 {0} 已经存在".to_owned(),
+          map.into(),
         ).await?;
         return Err(SrvErr::msg(err_msg).into());
       } else if unique_type == UniqueType::Ignore {
@@ -1418,9 +1444,16 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = i18n_dao::ns(
-          "数据已经存在".to_owned(),
+        let table_comment = i18n_dao::ns(
+          "域名".to_owned(),
           None,
+        ).await?;
+        let map = HashMap::from([
+          ("0".to_owned(), table_comment),
+        ]);
+        let err_msg = i18n_dao::ns(
+          "此 {0} 已经存在".to_owned(),
+          map.into(),
         ).await?;
         return Err(SrvErr::msg(err_msg).into());
       }
@@ -1540,7 +1573,7 @@ pub async fn validate_is_enabled(
   model: &DomainModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let msg0 = i18n_dao::ns(
+    let table_comment = i18n_dao::ns(
       "域名".to_owned(),
       None,
     ).await?;
@@ -1548,7 +1581,7 @@ pub async fn validate_is_enabled(
       "已禁用".to_owned(),
       None,
     ).await?;
-    let err_msg = msg0 + &msg1;
+    let err_msg = table_comment + &msg1;
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(())
@@ -1561,7 +1594,7 @@ pub async fn validate_option<'a, T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let msg0 = i18n_dao::ns(
+    let table_comment = i18n_dao::ns(
       "域名".to_owned(),
       None,
     ).await?;
@@ -1569,7 +1602,7 @@ pub async fn validate_option<'a, T>(
       "不存在".to_owned(),
       None,
     ).await?;
-    let err_msg = msg0 + &msg1;
+    let err_msg = table_comment + &msg1;
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
