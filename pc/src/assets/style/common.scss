@@ -489,3 +489,7 @@ html:is(.dark) {
 .v-header-order-drag-sortable-drag {
   color: red;
 }
+
+.el-form-item--default .el-form-item__content {
+  line-height: unset;
+}

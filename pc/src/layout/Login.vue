@@ -51,7 +51,10 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item prop="lang">
+      <el-form-item
+        v-if="VITE_SERVER_I18N_ENABLE !== 'false'"
+        prop="lang"
+      >
         <CustomSelect
           v-model="model.lang"
           :method="getLoginLangs"
@@ -196,6 +199,11 @@ let model = $ref<MutationLoginArgs["input"]>({
   org_id: undefined,
   lang,
 });
+
+const VITE_SERVER_I18N_ENABLE = import.meta.env.VITE_SERVER_I18N_ENABLE;
+if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+  model.lang = "zh-cn";
+}
 
 let loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
 
