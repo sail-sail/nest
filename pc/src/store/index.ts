@@ -25,6 +25,9 @@ export default defineStore("index", function() {
    * 获取 i18n 版本
    */
   async function initI18nVersion() {
+    if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
+      return;
+    }
     const options = await getOptionsByLbl({
       lbl: "国际化版本号",
     });
