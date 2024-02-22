@@ -18,8 +18,8 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -176,6 +176,7 @@
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         >
           

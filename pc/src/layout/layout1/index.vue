@@ -354,10 +354,6 @@ let locales = $ref([
     code: "zh-cn",
     lbl: "简体中文",
   },
-  {
-    code: "en-us",
-    lbl: "English",
-  },
 ]);
 
 // 黑暗模式
@@ -580,21 +576,33 @@ async function getUsrPermitsEfc() {
 
 async function initFrame() {
   if (usrStore.authorization) {
-    const [
-      loginInfoTmp,
-      _,
-      langModels,
-    ] = await Promise.all([
-      getLoginInfo({ notLoading: true }),
-      getUsrPermitsEfc(),
-      getLoginLangs(),
-    ]);
-    loginInfo = loginInfoTmp;
-    usrStore.loginInfo = loginInfo;
-    locales = langModels.map(item => ({
-      code: item.code,
-      lbl: item.lbl,
-    }));
+    if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
+      const [
+        loginInfoTmp,
+        _,
+        langModels,
+      ] = await Promise.all([
+        getLoginInfo({ notLoading: true }),
+        getUsrPermitsEfc(),
+        getLoginLangs(),
+      ]);
+      loginInfo = loginInfoTmp;
+      usrStore.loginInfo = loginInfo;
+      locales = langModels.map(item => ({
+        code: item.code,
+        lbl: item.lbl,
+      }));
+    } else {
+      const [
+        loginInfoTmp,
+        _,
+      ] = await Promise.all([
+        getLoginInfo({ notLoading: true }),
+        getUsrPermitsEfc(),
+      ]);
+      loginInfo = loginInfoTmp;
+      usrStore.loginInfo = loginInfo;
+    }
   }
   inited = true;
 }
