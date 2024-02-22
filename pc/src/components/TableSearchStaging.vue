@@ -1,6 +1,5 @@
 <template>
 <div
-  un-h="5.5"
   un-overflow-hidden
 >
   <el-dropdown
