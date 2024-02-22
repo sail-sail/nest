@@ -14,6 +14,8 @@ import type {
   MenuId,
 } from "/gen/base/menu/menu.model.ts";
 
+import { getEnv } from "/lib/env.ts";
+
 const reg = /\{([\s\S]*?)\}/gm;
 
 export async function n(
@@ -61,6 +63,30 @@ export async function nLang(
   // deno-lint-ignore no-explicit-any
   ...args: any[]
 ) {
+  const server_i18n_enable = await getEnv("server_i18n_enable");
+  if (server_i18n_enable === "false") {
+    if (args.length === 1 && typeof args[0] === "object") {
+      const obj = args[0];
+      let i18nLbl = code;
+      i18nLbl = i18nLbl.replace(reg, (str) => {
+        const str2 = str.substring(1, str.length-1);
+        return obj[str2] ?? str;
+      });
+      return i18nLbl;
+    } else if (args.length > 0) {
+      let i18nLbl = code;
+      i18nLbl = i18nLbl.replace(reg, (str) => {
+        const str2 = str.substring(1, str.length-1);
+        const num = Number(str2);
+        if (isNaN(num)) {
+          return str;
+        }
+        return args[num] ?? str;
+      });
+      return i18nLbl;
+    }
+  }
+  
   const {
     findOne: findOneLang,
   } = await import("/gen/base/lang/lang.dao.ts");
