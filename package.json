@@ -18,6 +18,7 @@
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
     "permit": "cd pc && node src/utils/permit_scan.js",
     "build": "cd deno && npm run build",
+    "build-test": "cd deno && npm run build-test",
     "publish": "cd deno && npm run publish",
     "upgrade": "cd codegen && npm run upgrade",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
