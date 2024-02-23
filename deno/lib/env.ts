@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import {
   configAsync,
   type DotenvConfig,
@@ -18,18 +19,23 @@ let cwd = Deno.cwd();
 
 function initEnv() {
   for (let i = 0; i < Deno.args.length; i++) {
-    const item = Deno.args[i];
+    const item = Deno.args[i].trim();
     if (item.startsWith("-e=") || item.startsWith("--env=")) {
       const envKeyTmp = item.replace(/^-e=/, "").replace(/^--env=/, "");
       if (envKeyTmp) {
         envKey = envKeyTmp;
       }
+    } else if (item === "-e" || item === "--env") {
+      envKey = Deno.args[i+1]?.trim();
     } else if (item.startsWith("-c=") || item.startsWith("--cwd=")) {
       const cwdTmp = item.replace(/^-c=/, "").replace(/^--cwd=/, "");
       if (cwdTmp) {
         cwd = cwdTmp;
         Deno.chdir(cwd);
       }
+    } else if (item === "-c" || item === "--cwd") {
+      cwd = Deno.args[i+1]?.trim();
+      Deno.chdir(cwd);
     }
   }
   if (envKey === "dev") {
@@ -38,12 +44,12 @@ function initEnv() {
     envKey = "production";
   }
   
-  window.process = window.process || { };
-  window.process.env = window.process.env || { };
+  (globalThis as any).process = (globalThis as any).process || { };
+  (globalThis as any).process.env = (globalThis as any).process.env || { };
   if (envKey === "development") {
-    window.process.env.NODE_ENV = "development";
+    (globalThis as any).process.env.NODE_ENV = "development";
   } else {
-    window.process.env.NODE_ENV = "production";
+    (globalThis as any).process.env.NODE_ENV = "production";
   }
 }
 initEnv();
@@ -62,6 +68,11 @@ async function parseEnv() {
       path: `${ cwd }/.env.prod`,
     });
   } else if (!envKey) {
+    parsedEnv = await configAsync({
+      export: false,
+      path: `${ cwd }/.env`,
+    });
+  } else {
     parsedEnv = await configAsync({
       export: false,
       path: `${ cwd }/.env.${ envKey }`,

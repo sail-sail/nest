@@ -48,8 +48,6 @@
       collapse-tags-tooltip
       default-first-option
       :height="props.height"
-      :remote="props.pinyinFilterable"
-      :remote-method="filterMethod"
       @visible-change="handleVisibleChange"
       @clear="onClear"
       un-w="full"
@@ -242,8 +240,6 @@
 </template>
 
 <script lang="ts" setup>
-import { pinyin } from "pinyin-pro";
-
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -252,9 +248,7 @@ import type {
   GetDict,
 } from "@/typings/types";
 
-export type DictModel = GetDict & {
-  __pinyin_label?: string;
-};
+export type DictModel = GetDict;
 
 const t = getCurrentInstance();
 
@@ -271,7 +265,6 @@ const props = withDefaults(
   defineProps<{
     code: string;
     optionsMap?: OptionsMap;
-    pinyinFilterable?: boolean;
     height?: number;
     modelValue?: any;
     modelLabel?: string;
@@ -299,7 +292,6 @@ const props = withDefaults(
         value: item.val,
       };
     },
-    pinyinFilterable: false,
     height: 400,
     modelValue: undefined,
     modelLabel: undefined,
@@ -346,6 +338,9 @@ watch(
   },
 );
 
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+let selectDivRef = $ref<HTMLDivElement>();
+
 let isSelectAll = $computed({
   get() {
     if (!modelValue) {
@@ -357,6 +352,11 @@ let isSelectAll = $computed({
     if (modelValue.length === 0) {
       return false;
     }
+    if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+      if (modelValue.length === selectRef.filteredOptions.length) {
+        return true;
+      }
+    }
     if (modelValue.length === options4SelectV2.length) {
       return true;
     }
@@ -364,7 +364,11 @@ let isSelectAll = $computed({
   },
   set(val: boolean) {
     if (val) {
-      modelValue = options4SelectV2.map((item) => item.value);
+      if (selectRef?.filteredOptions) {
+        modelValue = selectRef.filteredOptions.map((item: OptionType) => item.value);
+      } else {
+        modelValue = options4SelectV2.map((item) => item.value);
+      }
     } else {
       modelValue = [ ];
     }
@@ -382,6 +386,11 @@ const isIndeterminate = $computed(() => {
   }
   if (modelValue.length === 0) {
     return false;
+  }
+  if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+    if (modelValue.length === selectRef.filteredOptions.length) {
+      return false;
+    }
   }
   if (modelValue.length === options4SelectV2.length) {
     return false;
@@ -474,7 +483,7 @@ function onValueChange() {
   emit("change", models);
 }
 
-let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>([ ]);
+let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
 
 // watch(
 //   () => options4SelectV2,
@@ -571,29 +580,22 @@ function onClear() {
   emit("clear");
 }
 
-function filterMethod(value: string) {
-  options4SelectV2 = dictModels.map((item) => {
-    const item2 = props.optionsMap(item);
-    item2.__pinyin_label = item.__pinyin_label;
-    return item2;
-  });
-  if (isEmpty(value)) {
-    return;
-  }
-  options4SelectV2 = options4SelectV2.filter((item) => {
-    return item.label.includes(value)
-    || (item.__pinyin_label && item.__pinyin_label.includes(value));
-  });
-}
+watch(
+  () => [ selectRef?.filteredOptions.length, inited ],
+  async () => {
+    if (!inited) {
+      return;
+    }
+    if (!selectRef || selectRef.filteredOptions.length === 0) {
+      return;
+    }
+    await refreshDropdownWidth();
+  },
+);
 
 function handleVisibleChange(visible: boolean) {
   if (visible) {
     refreshDropdownWidth();
-  }
-  if (props.pinyinFilterable) {
-    if (visible) {
-      filterMethod("");
-    }
   }
 }
 
@@ -608,19 +610,8 @@ async function refreshEfc() {
   await nextTick();
   [ dictModels ] = await getDict([ code ]);
   options4SelectV2 = dictModels.map(props.optionsMap);
-  if (props.pinyinFilterable) {
-    for (let i = 0; i < options4SelectV2.length; i++) {
-      const item = options4SelectV2[i];
-      if (item.label) {
-        dictModels[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
-      }
-    }
-  }
   inited = true;
 }
-
-let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
-let selectDivRef = $ref<HTMLDivElement>();
 
 async function refreshWrapperHeight() {
   await new Promise((resolve) => setTimeout(resolve, 0));

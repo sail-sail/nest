@@ -47,8 +47,6 @@
       collapse-tags-tooltip
       default-first-option
       :height="props.height"
-      :remote="props.pinyinFilterable"
-      :remote-method="filterMethod"
       @visible-change="handleVisibleChange"
       @clear="onClear"
       un-w="full"
@@ -247,8 +245,6 @@
 </template>
 
 <script lang="ts" setup>
-import { pinyin } from "pinyin-pro";
-
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -279,11 +275,10 @@ const props = withDefaults(
   defineProps<{
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
-    pinyinFilterable?: boolean;
     height?: number;
     modelValue?: string | string[] | null;
     modelLabel?: string | null;
-    options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
+    options4SelectV2?: OptionType[];
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
@@ -304,7 +299,6 @@ const props = withDefaults(
         value: item2.id,
       };
     },
-    pinyinFilterable: false,
     height: 400,
     options4SelectV2: () => [ ],
     modelValue: undefined,
@@ -351,6 +345,9 @@ watch(
   },
 );
 
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+let selectDivRef = $ref<HTMLDivElement>();
+
 let isSelectAll = $computed({
   get() {
     if (!modelValue) {
@@ -362,6 +359,11 @@ let isSelectAll = $computed({
     if (modelValue.length === 0) {
       return false;
     }
+    if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+      if (modelValue.length === selectRef.filteredOptions.length) {
+        return true;
+      }
+    }
     if (modelValue.length === options4SelectV2.length) {
       return true;
     }
@@ -369,7 +371,11 @@ let isSelectAll = $computed({
   },
   set(val: boolean) {
     if (val) {
-      modelValue = options4SelectV2.map((item) => item.value);
+      if (selectRef?.filteredOptions) {
+        modelValue = selectRef.filteredOptions.map((item: OptionType) => item.value);
+      } else {
+        modelValue = options4SelectV2.map((item) => item.value);
+      }
     } else {
       modelValue = [ ];
     }
@@ -387,6 +393,11 @@ const isIndeterminate = $computed(() => {
   }
   if (modelValue.length === 0) {
     return false;
+  }
+  if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+    if (modelValue.length === selectRef.filteredOptions.length) {
+      return false;
+    }
   }
   if (modelValue.length === options4SelectV2.length) {
     return false;
@@ -497,7 +508,7 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
+let options4SelectV2 = $shallowRef<OptionType[]>(props.options4SelectV2);
 
 // watch(
 //   () => options4SelectV2,
@@ -548,31 +559,22 @@ async function refreshDropdownWidth() {
   }
 }
 
-function filterMethod(value: string) {
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    options4SelectV2 = data.map((item) => {
-      const item2 = props.optionsMap(item);
-      item2.__pinyin_label = (item as any).__pinyin_label;
-      return item2;
-    });
-  }
-  if (isEmpty(value)) {
-    return;
-  }
-  options4SelectV2 = options4SelectV2.filter((item) => {
-    return item.label.includes(value)
-    || (item.__pinyin_label && item.__pinyin_label.includes(value));
-  });
-}
+watch(
+  () => [ selectRef?.filteredOptions.length, inited ],
+  async () => {
+    if (!inited) {
+      return;
+    }
+    if (!selectRef || selectRef.filteredOptions.length === 0) {
+      return;
+    }
+    await refreshDropdownWidth();
+  },
+);
 
 function handleVisibleChange(visible: boolean) {
   if (visible) {
     refreshDropdownWidth();
-  }
-  if (props.pinyinFilterable) {
-    if (visible) {
-      filterMethod("");
-    }
   }
 }
 
@@ -594,14 +596,6 @@ async function refreshEfc() {
   await nextTick();
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
-  if (props.pinyinFilterable) {
-    for (let i = 0; i < options4SelectV2.length; i++) {
-      const item = options4SelectV2[i];
-      if (item.label) {
-        (data as any)[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
-      }
-    }
-  }
   inited = true;
 }
 
@@ -624,9 +618,6 @@ function onValueChange() {
   }
   emit("change", models);
 }
-
-let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
-let selectDivRef = $ref<HTMLDivElement>();
 
 async function refreshWrapperHeight() {
   await new Promise((resolve) => setTimeout(resolve, 0));

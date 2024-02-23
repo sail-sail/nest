@@ -337,7 +337,8 @@ export function log(...args: any[]) {
     console.log.apply(console, args);
     return;
   }
-  if (window.process.env.NODE_ENV !== "production") {
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV !== "production") {
     args.unshift(`\u001b[90m${ context.req_id }\u001b[39m`);
     // args.unshift("\u001b[34m");
     // args.push("\u001b[39m");
@@ -373,7 +374,8 @@ export function error(...args: any[]) {
     console.error.apply(console, args);
     return;
   }
-  if (window.process.env.NODE_ENV !== "production") {
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV !== "production") {
     args.unshift(`\u001b[90m${ context.req_id }\u001b[39m\u001b[31m`);
     args.push(`\u001b[39m`);
     console.log.apply(console, args);
