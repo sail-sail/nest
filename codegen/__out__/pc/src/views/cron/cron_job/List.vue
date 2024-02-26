@@ -776,15 +776,104 @@ const emit = defineEmits<{
   rowDblclick: [ CronJobModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  ids?: string[]; //ids
+  selectedIds?: CronJobId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: CronJobId; // ID
+  lbl?: string; // 名称
+  lbl_like?: string; // 名称
+  job_id?: string|string[]; // 任务
+  job_id_lbl?: string; // 任务
+  cron?: string; // Cron表达式
+  cron_like?: string; // Cron表达式
+  timezone?: string|string[]; // 时区
+  is_locked?: string|string[]; // 锁定
+  is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  ids: "string[]",
+  job_id: "string[]",
+  job_id_lbl: "string[]",
+  timezone: "string[]",
+  timezone_lbl: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
+  order_by: "number",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+];
+
+/** 内置查询条件 */
+const builtInSearch: CronJobSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: CronJobModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
     job_id: [ ],
   } as CronJobSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
@@ -844,86 +933,6 @@ async function onIdsChecked() {
   tableFocus();
   await dataGrid(true);
 }
-
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: CronJobId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: CronJobId; // ID
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
-  job_id?: string|string[]; // 任务
-  job_id_lbl?: string; // 任务
-  cron?: string; // Cron表达式
-  cron_like?: string; // Cron表达式
-  timezone?: string|string[]; // 时区
-  is_locked?: string|string[]; // 锁定
-  is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-  job_id: "string[]",
-  job_id_lbl: "string[]",
-  timezone: "string[]",
-  timezone_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
-  order_by: "number",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: CronJobSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: CronJobModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -1838,7 +1847,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {
