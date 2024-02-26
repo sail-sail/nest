@@ -38,7 +38,7 @@
     >
       <slot
         v-bind="$attrs"
-        :selected-ids="selectedIds"
+        :selected-ids="oldSelectedIds"
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
@@ -66,7 +66,7 @@
         @click="onRevert"
       >
         <template #icon>
-          <ElIconRefresh />
+          <ElIconRefreshLeft />
         </template>
         <span>{{ ns("还原") }}</span>
       </el-button>
@@ -108,7 +108,7 @@ let dialogVisible = $ref(false);
 let dialogAction = $ref<"select" | "close" | "cancel">("select");
 
 let selectedIds = $ref<string[] | undefined>([ ]);
-let oldSelectedIds: string[] = [ ];
+let oldSelectedIds = $ref<string[] | undefined>([ ]);
 
 let isLocked = $computed(() => {
   return argIsLocked || props.isLocked || false;
@@ -218,6 +218,7 @@ async function onSave() {
 
 function onRevert() {
   selectedIds = oldSelectedIds && [ ...oldSelectedIds ];
+  oldSelectedIds = selectedIds;
 }
 
 function cancelClk() {
