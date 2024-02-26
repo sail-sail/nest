@@ -28,7 +28,7 @@ export function shortUuidV4<T extends any>(): T {
 
 export async function hash(
   data?: string | Uint8Array | ArrayBuffer | null,
-  digestAlgorithmName: DigestAlgorithmName = "SHA-256",
+  digestAlgorithmName: DigestAlgorithmName = "MD5",
 ) {
   if (data === undefined || data === null) {
     return "";
