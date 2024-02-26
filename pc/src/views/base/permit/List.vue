@@ -678,15 +678,93 @@ const emit = defineEmits<{
   rowDblclick: [ PermitModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  ids?: string[]; //ids
+  selectedIds?: PermitId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: PermitId; // ID
+  menu_id?: string|string[]; // 菜单
+  menu_id_lbl?: string; // 菜单
+  code?: string; // 编码
+  code_like?: string; // 编码
+  lbl?: string; // 名称
+  lbl_like?: string; // 名称
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  ids: "string[]",
+  menu_id: "string[]",
+  menu_id_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+];
+
+/** 内置查询条件 */
+const builtInSearch: PermitSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: PermitModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
     menu_id: [ ],
   } as PermitSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
@@ -746,75 +824,6 @@ async function onIdsChecked() {
   tableFocus();
   await dataGrid(true);
 }
-
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: PermitId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: PermitId; // ID
-  menu_id?: string|string[]; // 菜单
-  menu_id_lbl?: string; // 菜单
-  code?: string; // 编码
-  code_like?: string; // 编码
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
-  rem?: string; // 备注
-  rem_like?: string; // 备注
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: PermitSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: PermitModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
@@ -1552,7 +1561,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {
