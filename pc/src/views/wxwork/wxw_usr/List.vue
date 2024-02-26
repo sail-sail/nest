@@ -608,6 +608,69 @@ const emit = defineEmits<{
   rowDblclick: [ WxwUsrModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  ids?: string[]; //ids
+  selectedIds?: WxwUsrId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: WxwUsrId; // ID
+  lbl?: string; // 姓名
+  lbl_like?: string; // 姓名
+  userid?: string; // 用户ID
+  userid_like?: string; // 用户ID
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  ids: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+];
+
+/** 内置查询条件 */
+const builtInSearch: WxwUsrSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: WxwUsrModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
@@ -620,9 +683,16 @@ async function onWxwSyncUsr() {
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
   } as WxwUsrSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
@@ -682,67 +752,6 @@ async function onIdsChecked() {
   tableFocus();
   await dataGrid(true);
 }
-
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: WxwUsrId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: WxwUsrId; // ID
-  lbl?: string; // 姓名
-  lbl_like?: string; // 姓名
-  userid?: string; // 用户ID
-  userid_like?: string; // 用户ID
-  rem?: string; // 备注
-  rem_like?: string; // 备注
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: WxwUsrSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: WxwUsrModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
 
 /** 分页功能 */
 let {
