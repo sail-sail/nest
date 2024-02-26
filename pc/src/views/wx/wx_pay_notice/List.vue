@@ -665,80 +665,13 @@ const emit = defineEmits<{
   rowDblclick: [ WxPayNoticeModel ],
 }>();
 
-/** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
-
-/** 查询 */
-function initSearch() {
-  return {
-    is_deleted: 0,
-  } as WxPayNoticeSearch;
-}
-
-let search = $ref(initSearch());
-
-/** 回收站 */
-async function recycleChg() {
-  tableFocus();
-  selectedIds = [ ];
-  await dataGrid(true);
-}
-
-/** 查询 */
-async function onSearch() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 暂存查询 */
-async function onSearchStaging(searchStaging?: WxPayNoticeSearch) {
-  if (!searchStaging) {
-    return;
-  }
-  search = searchStaging;
-  await onSearch();
-}
-
-/** 刷新 */
-async function onRefresh() {
-  tableFocus();
-  emit("refresh");
-  await dataGrid(true);
-}
-
-let isSearchReset = $ref(false);
-
-/** 重置查询 */
-async function onSearchReset() {
-  tableFocus();
-  isSearchReset = true;
-  search = initSearch();
-  idsChecked = 0;
-  resetSelectedIds();
-  emit("beforeSearchReset");
-  await nextTick();
-  await dataGrid(true);
-  isSearchReset = false;
-}
-
-/** 清空查询框事件 */
-async function onSearchClear() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 点击已选择 */
-async function onIdsChecked() {
-  tableFocus();
-  await dataGrid(true);
-}
-
 const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
   isFocus?: string;
+  propsNotReset?: string[];
   ids?: string[]; //ids
   selectedIds?: WxPayNoticeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -804,6 +737,7 @@ const propsNotInSearch: string[] = [
   "isPagination",
   "isLocked",
   "isFocus",
+  "propsNotReset",
 ];
 
 /** 内置查询条件 */
@@ -830,6 +764,81 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+
+/** 表格 */
+let tableRef = $ref<InstanceType<typeof ElTable>>();
+
+/** 查询 */
+function initSearch() {
+  const search = {
+    is_deleted: 0,
+  } as WxPayNoticeSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
+}
+
+let search = $ref(initSearch());
+
+/** 回收站 */
+async function recycleChg() {
+  tableFocus();
+  selectedIds = [ ];
+  await dataGrid(true);
+}
+
+/** 查询 */
+async function onSearch() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: WxPayNoticeSearch) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
+}
+
+/** 刷新 */
+async function onRefresh() {
+  tableFocus();
+  emit("refresh");
+  await dataGrid(true);
+}
+
+let isSearchReset = $ref(false);
+
+/** 重置查询 */
+async function onSearchReset() {
+  tableFocus();
+  isSearchReset = true;
+  search = initSearch();
+  idsChecked = 0;
+  resetSelectedIds();
+  emit("beforeSearchReset");
+  await nextTick();
+  await dataGrid(true);
+  isSearchReset = false;
+}
+
+/** 清空查询框事件 */
+async function onSearchClear() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 点击已选择 */
+async function onIdsChecked() {
+  tableFocus();
+  await dataGrid(true);
+}
 
 /** 分页功能 */
 let {
@@ -1398,7 +1407,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {
