@@ -94,7 +94,7 @@ export async function many2manyUpdate(
     return false;
   }
   const authModel = await getAuthModel();
-  const usr_id: UsrId = authModel.id;
+  const usr_id: UsrId | undefined = authModel?.id;
   const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
   type Model = {
     id: string,
