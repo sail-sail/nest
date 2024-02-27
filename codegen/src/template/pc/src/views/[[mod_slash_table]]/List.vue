@@ -70,8 +70,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -465,6 +465,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         ><#
           if (hasSearchExpand) {
@@ -1369,7 +1370,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       if (hasEnabled) {
       #>
-      is_enabled="1"<#
+      is_enabled="1"
+      :props-not-reset="[ 'is_enabled' ]"<#
       }
       #>
       v-bind="listSelectProps"
@@ -1395,7 +1397,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       if (hasEnabled) {
       #>
-      is_enabled="1"<#
+      is_enabled="1"
+      :props-not-reset="[ 'is_enabled' ]"<#
       }
       #>
       v-bind="listSelectProps"
@@ -1775,156 +1778,6 @@ const emit = defineEmits<{
   rowDblclick: [ <#=modelName#> ],
 }>();
 
-/** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();<#
-if (opts?.isRealData) {
-#>
-
-useSubscribeList<<#=Table_Up#>Id>(
-  pagePath,
-  async function(data) {
-    const action = data.action;
-    if (action === "add") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "edit") {
-      const id = data.id;
-      if (tableData.some((model) => model.id === id)) {
-        await dataGrid();
-      }
-      return;
-    }
-    if (action === "delete") {
-      const ids = data.ids;
-      selectedIds = selectedIds.filter((id) => !ids.includes(id));
-      await dataGrid(true);
-      return;
-    }
-    if (action === "import") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "revert") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "forceDelete") {
-      if (search.is_deleted === 1) {
-        await dataGrid(true);
-      }
-      return;
-    }
-  },
-);<#
-}
-#>
-
-/** 查询 */
-function initSearch() {
-  return {<#
-    if (hasIsDeleted) {
-    #>
-    is_deleted: 0,<#
-    }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const require = column.require;
-      const search = column.search;
-      if (!search) continue;
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    #><#
-      if (foreignKey) {
-    #>
-    <#=column_name#>: [ ],<#
-      }
-    #><#
-    }
-    #>
-  } as <#=searchName#>;
-}
-
-let search = $ref(initSearch());<#
-if (hasSearchExpand) {
-#>
-let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
-}
-#>
-
-/** 回收站 */
-async function recycleChg() {
-  tableFocus();
-  selectedIds = [ ];
-  await dataGrid(true);
-}
-
-/** 查询 */
-async function onSearch() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 暂存查询 */
-async function onSearchStaging(searchStaging?: <#=searchName#>) {
-  if (!searchStaging) {
-    return;
-  }
-  search = searchStaging;
-  await onSearch();
-}
-
-/** 刷新 */
-async function onRefresh() {
-  tableFocus();
-  emit("refresh");
-  await dataGrid(true);
-}
-
-let isSearchReset = $ref(false);
-
-/** 重置查询 */
-async function onSearchReset() {
-  tableFocus();
-  isSearchReset = true;
-  search = initSearch();
-  idsChecked = 0;
-  resetSelectedIds();
-  emit("beforeSearchReset");
-  await nextTick();
-  await dataGrid(true);
-  isSearchReset = false;
-}
-
-/** 清空查询框事件 */
-async function onSearchClear() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 点击已选择 */
-async function onIdsChecked() {
-  tableFocus();
-  await dataGrid(true);
-}
-
 const props = defineProps<{<#
   if (hasIsDeleted) {
   #>
@@ -1935,6 +1788,7 @@ const props = defineProps<{<#
   isPagination?: string;
   isLocked?: string;
   isFocus?: string;
+  propsNotReset?: string[];
   ids?: string[]; //ids
   selectedIds?: <#=Table_Up#>Id[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -2120,6 +1974,7 @@ const propsNotInSearch: string[] = [
   "isPagination",
   "isLocked",
   "isFocus",
+  "propsNotReset",
 ];
 
 /** 内置查询条件 */
@@ -2146,6 +2001,163 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+
+/** 表格 */
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+if (opts?.isRealData) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  pagePath,
+  async function(data) {
+    const action = data.action;
+    if (action === "add") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "edit") {
+      const id = data.id;
+      if (tableData.some((model) => model.id === id)) {
+        await dataGrid();
+      }
+      return;
+    }
+    if (action === "delete") {
+      const ids = data.ids;
+      selectedIds = selectedIds.filter((id) => !ids.includes(id));
+      await dataGrid(true);
+      return;
+    }
+    if (action === "import") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "revert") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
+  },
+);<#
+}
+#>
+
+/** 查询 */
+function initSearch() {
+  const search = {<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: 0,<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const require = column.require;
+      const search = column.search;
+      if (!search) continue;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    #><#
+      if (foreignKey) {
+    #>
+    <#=column_name#>: [ ],<#
+      }
+    #><#
+    }
+    #>
+  } as <#=searchName#>;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
+}
+
+let search = $ref(initSearch());<#
+if (hasSearchExpand) {
+#>
+let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
+}
+#>
+
+/** 回收站 */
+async function recycleChg() {
+  tableFocus();
+  selectedIds = [ ];
+  await dataGrid(true);
+}
+
+/** 查询 */
+async function onSearch() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: <#=searchName#>) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
+}
+
+/** 刷新 */
+async function onRefresh() {
+  tableFocus();
+  emit("refresh");
+  await dataGrid(true);
+}
+
+let isSearchReset = $ref(false);
+
+/** 重置查询 */
+async function onSearchReset() {
+  tableFocus();
+  isSearchReset = true;
+  search = initSearch();
+  idsChecked = 0;
+  resetSelectedIds();
+  emit("beforeSearchReset");
+  await nextTick();
+  await dataGrid(true);
+  isSearchReset = false;
+}
+
+/** 清空查询框事件 */
+async function onSearchClear() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 点击已选择 */
+async function onIdsChecked() {
+  tableFocus();
+  await dataGrid(true);
+}
 
 /** 分页功能 */
 let {
@@ -3612,7 +3624,7 @@ watch(
     search.is_deleted = builtInSearch.is_deleted;<#
     }
     #>
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {

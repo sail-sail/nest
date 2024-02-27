@@ -16,23 +16,39 @@ use super::websocket_constants::SOCKET_SINK_MAP;
 use super::websocket_constants::CLIENT_ID_TOPICS_MAP;
 // use super::websocket_constants::CALLBACKS_MAP;
 
+const PWD: &str = "0YSCBr1QQSOpOfi6GgH34A";
+
 #[derive(Deserialize)]
 pub struct UpgradeQuery {
   #[serde(rename = "clientId")]
   pub client_id: String,
+  pub pwd: String,
 }
 
 #[handler]
 pub async fn ws_upgrade(
   ws: WebSocket,
-  Query(UpgradeQuery { client_id }): Query<UpgradeQuery>,
+  Query(UpgradeQuery {
+    client_id,
+    pwd,
+  }): Query<UpgradeQuery>,
 ) -> impl IntoResponse {
+  if pwd != PWD {
+    let mut response = Response::builder();
+    return response.status(StatusCode::UNAUTHORIZED).body(
+      json!({
+        "code": 401,
+        "data": "Unauthorized",
+      })
+      .to_string(),
+    );
+  }
   if client_id.is_empty() {
     let mut response = Response::builder();
     return response.status(StatusCode::BAD_REQUEST).body(
       json!({
         "code": 400,
-        "message": "clientId is required!",
+        "data": "clientId is required!",
       })
       .to_string(),
     );
