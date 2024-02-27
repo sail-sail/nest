@@ -8,21 +8,27 @@ const {
   remove,
   mkdir,
   move,
+  readFile,
+  writeFile,
 } = require("fs-extra");
 
 const argv = minimist(process.argv.slice(2));
 
 const target = argv.target || "";
+const env = argv.env || "prod";
 
 const projectDir = `${ __dirname }/../../../../`;
 const buildDir = process.cwd() + "/../build/" + target;
 const commands = (argv.command || "").split(",").filter((v) => v);
-const projectName = ecosystem.apps[0].name;
+const projectName = ecosystem.apps[0].script.replace("./", "");
 
 async function copyEnv() {
   console.log("copyEnv");
-  await copy(`${ projectDir }/rust` + "/ecosystem.config.js", buildDir + "/rust/ecosystem.config.js");
-  await copy(`${ projectDir }/rust` + "/.env.prod", buildDir + "/rust/.env");
+  const ecosystemStr = await readFile(`${ projectDir }/rust/ecosystem.config.js`, "utf8");
+  const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
+  await mkdir(`${ buildDir }/rust`, { recursive: true });
+  await writeFile(buildDir + "/rust/ecosystem.config.js", ecosystemStr2);
+  await copy(`${ projectDir }/rust` + "/.env." + env, buildDir + "/rust/.env");
 }
 
 async function gqlgen() {
@@ -80,14 +86,6 @@ async function compile() {
   await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/${ projectName }`, `${ buildDir }/rust/${ projectName }`);
 }
 
-// async function publish() {
-//   console.log("publish");
-//   child_process.execSync("npm run publish", {
-//     cwd: `${ projectDir }/rust`,
-//     stdio: "inherit",
-//   });
-// }
-
 if (commands.length > 0) {
   console.log("commands", commands);
 }
@@ -107,8 +105,6 @@ if (commands.length > 0) {
       await uni();
     } else if (command === "docs") {
       await docs();
-    } else if (command === "publish") {
-      await publish();
     }
   }
   if (commands.length === 0) {
@@ -124,7 +120,6 @@ if (commands.length > 0) {
     await pc();
     await uni();
     // await docs();
-    // await publish();
     process.exit(0);
   }
 })();
