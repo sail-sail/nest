@@ -17,7 +17,7 @@
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
     "permit": "cd pc && node src/utils/permit_scan.js",
-    "build": "cd deno && npm run build",
+    "build-prod": "cd deno && npm run build-prod",
     "build-test": "cd deno && npm run build-test",
     "publish": "cd deno && npm run publish",
     "upgrade": "cd codegen && npm run upgrade",
