@@ -2204,7 +2204,8 @@ let {
 } = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
-    multiple: $$(multiple),<#
+    multiple: $$(multiple),
+    isListSelectDialog,<#
     if (opts?.tableSelectable) {
     #>
     tableSelectable,<#
@@ -3219,6 +3220,9 @@ async function onRowDblclick(
   row: <#=modelName#>,
   column: TableColumnCtx<<#=modelName#>>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
