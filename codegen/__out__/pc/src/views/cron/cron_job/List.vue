@@ -970,6 +970,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1572,6 +1573,9 @@ async function onRowDblclick(
   row: CronJobModel,
   column: TableColumnCtx<CronJobModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
