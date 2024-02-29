@@ -916,6 +916,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1497,6 +1498,9 @@ async function onRowDblclick(
   row: JobModel,
   column: TableColumnCtx<JobModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
