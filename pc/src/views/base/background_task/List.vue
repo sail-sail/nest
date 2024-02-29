@@ -770,6 +770,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1103,6 +1104,9 @@ async function onRowDblclick(
   row: BackgroundTaskModel,
   column: TableColumnCtx<BackgroundTaskModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }

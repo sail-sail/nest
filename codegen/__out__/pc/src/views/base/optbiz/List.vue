@@ -970,6 +970,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1567,6 +1568,9 @@ async function onRowDblclick(
   row: OptbizModel,
   column: TableColumnCtx<OptbizModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
