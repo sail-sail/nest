@@ -919,6 +919,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1524,6 +1525,9 @@ async function onRowDblclick(
   row: WxUsrModel,
   column: TableColumnCtx<WxUsrModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }

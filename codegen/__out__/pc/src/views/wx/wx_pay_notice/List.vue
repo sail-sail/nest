@@ -876,6 +876,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1304,6 +1305,9 @@ async function onRowDblclick(
   row: WxPayNoticeModel,
   column: TableColumnCtx<WxPayNoticeModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
