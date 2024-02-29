@@ -851,6 +851,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1270,6 +1271,9 @@ async function onRowDblclick(
   row: PayTransactionsJsapiModel,
   column: TableColumnCtx<PayTransactionsJsapiModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
   if (column.type === "selection") {
     return;
   }
