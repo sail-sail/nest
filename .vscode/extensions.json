@@ -7,6 +7,8 @@
     "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
     "graphql.vscode-graphql",
+    "graphql.vscode-graphql-execution",
+    "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
@@ -24,7 +26,7 @@
     "denoland.vscode-deno",
     "antfu.browse-lite",
     "antfu.where-am-i",
-    "zixuanchen.vitest-explorer",
+    "vitest.explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
     "britesnow.vscode-toggle-quotes",
@@ -32,6 +34,8 @@
     "chakrounanas.turbo-console-log",
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
-    "jacobpfeifer.pfeifer-hurl"
+    "jacobpfeifer.pfeifer-hurl",
+    "tmui-helper.tmui-helper",
+    "ms-vscode.vscode-speech"
   ]
 }

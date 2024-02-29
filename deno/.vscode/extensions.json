@@ -35,6 +35,7 @@
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
-    "tmui-helper.tmui-helper"
+    "tmui-helper.tmui-helper",
+    "ms-vscode.vscode-speech"
   ]
 }
