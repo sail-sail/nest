@@ -44,6 +44,7 @@
         @row-enter="onRowEnter"
         @row-dblclick="onRowDblclick"
         :is-locked="isLocked ? '1' : '0'"
+        is-list-select-dialog="1"
       ></slot>
     </div>
     <div
