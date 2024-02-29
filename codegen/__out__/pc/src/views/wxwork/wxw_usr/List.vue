@@ -599,6 +599,7 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: WxwUsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -617,6 +618,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
 };
 
@@ -628,6 +630,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -654,6 +657,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
