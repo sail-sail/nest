@@ -1037,7 +1037,11 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: CronJobLogModel,
+  column: TableColumnCtx<CronJobLogModel>,
 ) {
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
