@@ -8,16 +8,91 @@ import {
 
 import Sortable from "sortablejs";
 
+function getTextWidth(textContent: string) {
+  const text = textContent.replace(/[\u0391-\uFFE5]/g, "aa");
+  // 大写字母的个数
+  const upperCaseSize = text.match(/[A-Z]/g)?.length || 0;
+  const textWidth = (text.length - upperCaseSize) * 8 + upperCaseSize * 10.5;
+  return textWidth;
+}
+
 export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
   const bindVal: Function = binding.value;
   if (!bindVal) {
     console.error("请设置正确的 v-header-order-drag 参数值!", el, binding.value);
     return;
   }
-  const headTr = el.querySelector(".el-table__header-wrapper>.el-table__header thead tr") as HTMLTableElement;
+  const headTr = el.querySelector(".el-table__header-wrapper .el-table__header thead tr") as HTMLTableElement;
   if (!headTr) {
     return;
   }
+  const thEls = headTr.querySelectorAll(".el-table__cell") as NodeListOf<HTMLTableElement>;
+  thEls.forEach((thEl, i) => {
+    thEl.addEventListener("mousedown", function(event) {
+      const rect = thEl.getBoundingClientRect();
+      if (rect.width > 12 && rect.right - event.pageX < 12) {
+        thEl.classList.add("noclick");
+      }
+    });
+    thEl.addEventListener("dblclick", function(event) {
+      const rect = thEl.getBoundingClientRect();
+      if (rect.width > 12 && rect.right - event.pageX < 12) {
+        event.stopPropagation();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      } else {
+        return;
+      }
+      const tableBodyEl = el.querySelector(".el-table__body-wrapper .el-table__body");
+      const tbodyEl = tableBodyEl?.querySelector("tbody");
+      if (!tbodyEl) {
+        return;
+      }
+      const tableRowEls = tbodyEl.querySelectorAll(".el-table__row");
+      let maxWidth = getTextWidth(thEl.textContent || "");
+      for (let k = 0; k < tableRowEls.length; k++) {
+        const rowEl = tableRowEls[k];
+        const tdEls = rowEl.querySelectorAll(".el-table__cell");
+        const tdEl = tdEls[i];
+        if (!tdEl) {
+          continue;
+        }
+        if (tdEl.querySelector("input")) {
+          maxWidth = 0;
+          break;
+        }
+        if (tdEl.querySelector("button")) {
+          maxWidth = 0;
+          break;
+        }
+        if (tdEl.querySelector(".el-switch")) {
+          maxWidth = 0;
+          break;
+        }
+        if (tdEl.querySelector(".el-select")) {
+          maxWidth = 0;
+          break;
+        }
+        const text = tdEl.textContent;
+        if (!text) {
+          continue;
+        }
+        const textWidth = getTextWidth(text);
+        if (textWidth > maxWidth) {
+          maxWidth = textWidth;
+        }
+      }
+      const bindValue = bindVal();
+      const tableColumns = bindValue.tableColumns;
+      const storeColumns = bindValue.storeColumns;
+      const offset = bindValue.offset || 1;
+      const column = tableColumns[i - offset];
+      if (maxWidth > 0) {
+        column.width = maxWidth + 20;
+      }
+      storeColumns(tableColumns);
+    });
+  });
   Sortable.create(
     headTr,
     {
@@ -31,7 +106,7 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
         const bindValue = bindVal();
         const tableColumns = bindValue.tableColumns;
         const storeColumns = bindValue.storeColumns;
-        const offset = bindValue.offset || 0;
+        const offset = bindValue.offset || 1;
         oldIndex = oldIndex - offset;
         newIndex = newIndex - offset;
         
@@ -102,6 +177,7 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
         }
         return filter;
       },
+      preventOnFilter: false,
     }
   );
 }
