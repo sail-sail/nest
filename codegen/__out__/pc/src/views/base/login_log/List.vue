@@ -908,7 +908,11 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: LoginLogModel,
+  column: TableColumnCtx<LoginLogModel>,
 ) {
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
