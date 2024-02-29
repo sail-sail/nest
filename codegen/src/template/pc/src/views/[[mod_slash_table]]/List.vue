@@ -908,7 +908,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     >
       <el-table
         ref="tableRef"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
+        v-header-order-drag="() => ({ tableColumns, storeColumns })"
         :data="tableData"
         :row-class-name="rowClassName"
         border
