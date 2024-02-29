@@ -1522,7 +1522,11 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxUsrModel,
+  column: TableColumnCtx<WxUsrModel>,
 ) {
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
