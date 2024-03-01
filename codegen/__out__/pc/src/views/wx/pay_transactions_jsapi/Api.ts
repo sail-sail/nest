@@ -410,7 +410,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PayTransactionsJsapiInput = {
-    trade_state: PayTransactionsJsapiTradeState.NOTPAY,
+    trade_state: PayTransactionsJsapiTradeState.Notpay,
     trade_state_desc: "未支付",
     support_fapiao: 0,
     total_fee: 0,
