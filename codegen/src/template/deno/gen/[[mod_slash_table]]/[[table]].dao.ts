@@ -241,7 +241,12 @@ import {
 
 import {
   UniqueType,
-  SortOrderEnum,
+  SortOrderEnum,<#
+  if (hasDataPermit()) {
+  #>
+  DataPermitScope,<#
+  }
+  #>
 } from "/gen/types.ts";
 
 import type {
@@ -588,17 +593,22 @@ const route_path = "/<#=mod#>/<#=table#>";
 async function getWhereQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    notDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<string> {<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
-  const dataPermitModels = await getDataPermits(route_path);
-  const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
-  const hasRolePermit = dataPermitModels.some((item) => item.type === "role");
-  const hasDeptPermit = dataPermitModels.some((item) => item.type === "dept");
-  const hasDeptParentPermit = dataPermitModels.some((item) => item.type === "dept_parent");
-  const hasTenantPermit = dataPermitModels.some((item) => item.type === "tenant");<#
+  const dataPermitModels = await getDataPermits(route_path, options);
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept);
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant);<#
   }
   #>
   let whereQuery = "";<#
@@ -609,7 +619,7 @@ async function getWhereQuery(
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
-  if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasUsrPermit) {
+  if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasCreatePermit) {
     const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       whereQuery += ` and t.create_usr_id = ${ args.push(authModel.id) }`;
@@ -776,14 +786,22 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-async function getFromQuery() {<#
+async function getFromQuery(
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    notDataPermit?: boolean,<#
+    }
+    #>
+  },
+) {<#
   if (hasDataPermit()) {
   #>
-  const dataPermitModels = await getDataPermits(route_path);
-  const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
-  const hasRolePermit = dataPermitModels.some((item) => item.type === "role");
-  const hasDeptPermit = dataPermitModels.some((item) => item.type === "dept" || item.type === "dept_parent");
-  const hasTenantPermit = dataPermitModels.some((item) => item.type === "tenant");<#
+  const dataPermitModels = await getDataPermits(route_path, options);
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept || item.scope === DataPermitScope.DeptParent);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant);<#
   }
   #>
   let fromQuery = `
@@ -863,7 +881,12 @@ async function getFromQuery() {<#
  */
 export async function findCount(
   search?: <#=searchName#>,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    notDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
@@ -878,7 +901,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
+          ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -921,7 +944,12 @@ export async function findAll(
   search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    notDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<<#=modelName#>[]> {
   const table = "<#=mod#>_<#=table#>";
@@ -963,7 +991,7 @@ export async function findAll(
       }
       #>
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -2246,7 +2274,12 @@ if (hasSummary) {
  */
 export async function findSummary(
   search?: <#=searchName#>,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    notDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=mod#>_<#=table#>";
@@ -2278,7 +2311,7 @@ export async function findSummary(
       }
       #>
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(options) }
     where
       ${ await getWhereQuery(args, search, options) }
   `;
