@@ -2255,7 +2255,7 @@ export async function getDefaultInput() {<#
           }).join("");
           let defaultValue_Up = column.COLUMN_DEFAULT.toString();
           defaultValue_Up = defaultValue_Up.split("_").map(function(item) {
-            return item.substring(0, 1).toUpperCase() + item.substring(1);
+            return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
           }).join("");
           defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
         } else {
