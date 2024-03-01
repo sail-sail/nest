@@ -179,7 +179,10 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-async function getFromQuery() {
+async function getFromQuery(
+  options?: {
+  },
+) {
   let fromQuery = `
     cron_cron_job_log t
     left join cron_cron_job cron_job_id_lbl
@@ -210,7 +213,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
+          ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -253,7 +256,7 @@ export async function findAll(
     select t.*
       ,cron_job_id_lbl.lbl cron_job_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
