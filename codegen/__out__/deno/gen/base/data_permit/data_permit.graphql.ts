@@ -11,6 +11,8 @@ enum DataPermitScope {
   create
   "本部门"
   dept
+  "本部门极其父部门"
+  dept_parent
   "本角色"
   role
   "本租户"

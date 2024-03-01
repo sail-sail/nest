@@ -11,7 +11,13 @@ import {
  */
 export async function getDataPermits(
   route_path: string,
+  options?: {
+    notDataPermit?: boolean,
+  },
 ) {
+  if (options?.notDataPermit) {
+    return [ ];
+  }
   const menuModel = await findOneMenu({
     route_path,
   });
