@@ -189,7 +189,10 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-async function getFromQuery() {
+async function getFromQuery(
+  options?: {
+  },
+) {
   let fromQuery = `
     base_domain t
     left join base_usr create_usr_id_lbl
@@ -222,7 +225,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
+          ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -269,7 +272,7 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
