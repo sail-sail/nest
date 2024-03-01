@@ -221,7 +221,10 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-async function getFromQuery() {
+async function getFromQuery(
+  options?: {
+  },
+) {
   let fromQuery = `
     wxwork_wxw_usr t
   `;
@@ -250,7 +253,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
+          ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -295,7 +298,7 @@ export async function findAll(
   let sql = `
     select t.*
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
