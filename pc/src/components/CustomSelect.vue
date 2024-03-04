@@ -687,9 +687,6 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-// .custom_select_div {
-//   height: 32px;
-// }
 .custom_select_div,.custom_select_readonly {
   :deep(.el-tag) {
     height: auto;
