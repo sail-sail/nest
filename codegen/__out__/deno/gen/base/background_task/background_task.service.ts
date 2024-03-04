@@ -32,7 +32,8 @@ export async function findCount(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data = await background_taskDao.findCount(search);
+  const data = await background_taskDao.findCount(search, {
+  });
   return data;
 }
 
@@ -54,7 +55,8 @@ export async function findAll(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
+  const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -80,7 +82,8 @@ export async function findOne(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const model = await background_taskDao.findOne(search, sort);
+  const model = await background_taskDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -91,7 +94,8 @@ export async function findOne(
 export async function findById(
   id?: BackgroundTaskId | null,
 ): Promise<BackgroundTaskModel | undefined> {
-  const model = await background_taskDao.findById(id);
+  const model = await background_taskDao.findById(id, {
+  });
   return model;
 }
 
@@ -108,7 +112,8 @@ export async function exist(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data = await background_taskDao.exist(search);
+  const data = await background_taskDao.exist(search, {
+  });
   return data;
 }
 
@@ -119,7 +124,8 @@ export async function exist(
 export async function existById(
   id?: BackgroundTaskId | null,
 ): Promise<boolean> {
-  const data = await background_taskDao.existById(id);
+  const data = await background_taskDao.existById(id, {
+  });
   return data;
 }
 

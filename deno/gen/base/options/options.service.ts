@@ -27,7 +27,8 @@ export async function findCount(
   search?: OptionsSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await optionsDao.findCount(search);
+  const data = await optionsDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel[]> {
   search = search || { };
-  const models: OptionsModel[] = await optionsDao.findAll(search, page, sort);
+  const models: OptionsModel[] = await optionsDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel | undefined> {
   search = search || { };
-  const model = await optionsDao.findOne(search, sort);
+  const model = await optionsDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: OptionsId | null,
 ): Promise<OptionsModel | undefined> {
-  const model = await optionsDao.findById(id);
+  const model = await optionsDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: OptionsSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await optionsDao.exist(search);
+  const data = await optionsDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: OptionsId | null,
 ): Promise<boolean> {
-  const data = await optionsDao.existById(id);
+  const data = await optionsDao.existById(id, {
+  });
   return data;
 }
 
@@ -154,7 +160,8 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await optionsDao.findById(id);
+  const model = await optionsDao.findById(id, {
+  });
   if (model && model.is_sys === 1) {
     // 名称
     input.lbl = undefined;

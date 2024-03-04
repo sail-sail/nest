@@ -27,7 +27,8 @@ export async function findCount(
   search?: DomainSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await domainDao.findCount(search);
+  const data = await domainDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel[]> {
   search = search || { };
-  const models: DomainModel[] = await domainDao.findAll(search, page, sort);
+  const models: DomainModel[] = await domainDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel | undefined> {
   search = search || { };
-  const model = await domainDao.findOne(search, sort);
+  const model = await domainDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: DomainId | null,
 ): Promise<DomainModel | undefined> {
-  const model = await domainDao.findById(id);
+  const model = await domainDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: DomainSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await domainDao.exist(search);
+  const data = await domainDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: DomainId | null,
 ): Promise<boolean> {
-  const data = await domainDao.existById(id);
+  const data = await domainDao.existById(id, {
+  });
   return data;
 }
 
