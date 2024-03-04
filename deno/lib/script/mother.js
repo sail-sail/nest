@@ -4,6 +4,7 @@ const chokidar = require("chokidar");
 const pjPath = path.resolve(`${ __dirname }/../../`).replace(/\\/gm, "/");
 const child_process = require("child_process");
 // const dotenv = require("dotenv");
+const os = require("os");
 
 // const buf = fs.readFileSync(`${ __dirname }/../../.env.dev`);
 // const conf = dotenv.parse(buf);
@@ -117,7 +118,7 @@ stopWatch = false;
 watchFn();
 start();
 function start() {
-  child_process.execSync(os.platform === "win32" ? "cls": "clear", { stdio: "inherit" });
+  child_process.execSync(os.platform() === "win32" ? "cls": "clear", { stdio: "inherit" });
   console.error('Mother process is running.');
   if (restartNum > 0) {
     console.log(`第 ${ restartNum } 次重启!`);
