@@ -55,8 +55,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
