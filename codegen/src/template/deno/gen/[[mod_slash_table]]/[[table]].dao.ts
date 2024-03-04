@@ -2067,7 +2067,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    }, options);
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -2674,7 +2674,8 @@ export async function validate(
 export async function create(
   input: <#=inputName#>,
   options?: {
-    uniqueType?: UniqueType;<#
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;<#
     if (hasEncrypt) {
     #>
     isEncrypt?: boolean;<#
