@@ -486,7 +486,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    }, options);
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -758,6 +758,7 @@ export async function create(
   input: OptbizInput,
   options?: {
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<OptbizId> {
   const table = "base_optbiz";
