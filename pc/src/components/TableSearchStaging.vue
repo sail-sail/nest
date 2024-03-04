@@ -81,7 +81,7 @@ const props = defineProps<{
   filename: string;
 }>();
 
-export type SearchStagingType = {
+type SearchStagingType = {
   name: string;
   value: T;
 };
