@@ -2025,7 +2025,7 @@ watchEffect(async () => {
     // <#=column_comment#>
     <#=column_name#>: [
       {
-        required: true,
+        required: <#=(!!require).toString()#>,
         message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },<#
         for (let j = 0; j < validators.length; j++) {
@@ -2126,7 +2126,7 @@ watchEffect(async () => {
     // <#=column_comment#>
     <#=column_name#>: [
       {
-        required: true,
+        required: <#=(!!require).toString()#>,
         message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
       },
     ],<#

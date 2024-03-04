@@ -25,7 +25,8 @@ export async function findCount(
   search?: I18nSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await i18nDao.findCount(search);
+  const data = await i18nDao.findCount(search, {
+  });
   return data;
 }
 
@@ -42,7 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<I18nModel[]> {
   search = search || { };
-  const models: I18nModel[] = await i18nDao.findAll(search, page, sort);
+  const models: I18nModel[] = await i18nDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -63,7 +65,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<I18nModel | undefined> {
   search = search || { };
-  const model = await i18nDao.findOne(search, sort);
+  const model = await i18nDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -74,7 +77,8 @@ export async function findOne(
 export async function findById(
   id?: I18nId | null,
 ): Promise<I18nModel | undefined> {
-  const model = await i18nDao.findById(id);
+  const model = await i18nDao.findById(id, {
+  });
   return model;
 }
 
@@ -86,7 +90,8 @@ export async function exist(
   search?: I18nSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await i18nDao.exist(search);
+  const data = await i18nDao.exist(search, {
+  });
   return data;
 }
 
@@ -97,7 +102,8 @@ export async function exist(
 export async function existById(
   id?: I18nId | null,
 ): Promise<boolean> {
-  const data = await i18nDao.existById(id);
+  const data = await i18nDao.existById(id, {
+  });
   return data;
 }
 

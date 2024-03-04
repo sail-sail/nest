@@ -596,7 +596,7 @@ async function getWhereQuery(
   options?: {<#
     if (hasDataPermit()) {
     #>
-    notDataPermit?: boolean,<#
+    hasDataPermit?: boolean,<#
     }
     #>
   },
@@ -790,7 +790,7 @@ async function getFromQuery(
   options?: {<#
     if (hasDataPermit()) {
     #>
-    notDataPermit?: boolean,<#
+    hasDataPermit?: boolean,<#
     }
     #>
   },
@@ -884,7 +884,7 @@ export async function findCount(
   options?: {<#
     if (hasDataPermit()) {
     #>
-    notDataPermit?: boolean,<#
+    hasDataPermit?: boolean,<#
     }
     #>
   },
@@ -947,7 +947,7 @@ export async function findAll(
   options?: {<#
     if (hasDataPermit()) {
     #>
-    notDataPermit?: boolean,<#
+    hasDataPermit?: boolean,<#
     }
     #>
   },
@@ -2056,13 +2056,18 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
  */
 export async function findByUnique(
   search0: <#=inputName#>,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<<#=modelName#>[]> {
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, options);
     if (!model) {
       return [ ];
     }
@@ -2159,7 +2164,7 @@ export async function findByUnique(
       <#=unique#>,<#
       }
       #>
-    });
+    }, undefined, undefined, options);
     models.push(...modelTmps);
   }<#
   }
@@ -2277,7 +2282,7 @@ export async function findSummary(
   options?: {<#
     if (hasDataPermit()) {
     #>
-    notDataPermit?: boolean,<#
+    hasDataPermit?: boolean,<#
     }
     #>
   },
@@ -2333,14 +2338,19 @@ export async function findSummary(
 export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<<#=modelName#> | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -2351,13 +2361,18 @@ export async function findOne(
  */
 export async function findById(
   id?: <#=Table_Up#>Id | null,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<<#=modelName#> | undefined> {
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -2367,10 +2382,15 @@ export async function findById(
  */
 export async function exist(
   search?: <#=searchName#>,
-  options?: {
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -2381,6 +2401,13 @@ export async function exist(
  */
 export async function existById(
   id?: <#=Table_Up#>Id | null,
+  options?: {<#
+    if (hasDataPermit()) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
 ) {
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
