@@ -85,6 +85,7 @@ export async function nLang(
       });
       return i18nLbl;
     }
+    return code;
   }
   
   const {
