@@ -27,7 +27,8 @@ export async function findCount(
   search?: CronJobSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await cron_jobDao.findCount(search);
+  const data = await cron_jobDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<CronJobModel[]> {
   search = search || { };
-  const models: CronJobModel[] = await cron_jobDao.findAll(search, page, sort);
+  const models: CronJobModel[] = await cron_jobDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<CronJobModel | undefined> {
   search = search || { };
-  const model = await cron_jobDao.findOne(search, sort);
+  const model = await cron_jobDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: CronJobId | null,
 ): Promise<CronJobModel | undefined> {
-  const model = await cron_jobDao.findById(id);
+  const model = await cron_jobDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: CronJobSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await cron_jobDao.exist(search);
+  const data = await cron_jobDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: CronJobId | null,
 ): Promise<boolean> {
-  const data = await cron_jobDao.existById(id);
+  const data = await cron_jobDao.existById(id, {
+  });
   return data;
 }
 
