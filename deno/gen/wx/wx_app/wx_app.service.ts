@@ -27,7 +27,8 @@ export async function findCount(
   search?: WxAppSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await wx_appDao.findCount(search);
+  const data = await wx_appDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<WxAppModel[]> {
   search = search || { };
-  const models: WxAppModel[] = await wx_appDao.findAll(search, page, sort);
+  const models: WxAppModel[] = await wx_appDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<WxAppModel | undefined> {
   search = search || { };
-  const model = await wx_appDao.findOne(search, sort);
+  const model = await wx_appDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: WxAppId | null,
 ): Promise<WxAppModel | undefined> {
-  const model = await wx_appDao.findById(id);
+  const model = await wx_appDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: WxAppSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await wx_appDao.exist(search);
+  const data = await wx_appDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: WxAppId | null,
 ): Promise<boolean> {
-  const data = await wx_appDao.existById(id);
+  const data = await wx_appDao.existById(id, {
+  });
   return data;
 }
 

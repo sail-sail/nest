@@ -25,7 +25,8 @@ export async function findCount(
   search?: WxPayNoticeSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await wx_pay_noticeDao.findCount(search);
+  const data = await wx_pay_noticeDao.findCount(search, {
+  });
   return data;
 }
 
@@ -42,7 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<WxPayNoticeModel[]> {
   search = search || { };
-  const models: WxPayNoticeModel[] = await wx_pay_noticeDao.findAll(search, page, sort);
+  const models: WxPayNoticeModel[] = await wx_pay_noticeDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -63,7 +65,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<WxPayNoticeModel | undefined> {
   search = search || { };
-  const model = await wx_pay_noticeDao.findOne(search, sort);
+  const model = await wx_pay_noticeDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -74,7 +77,8 @@ export async function findOne(
 export async function findById(
   id?: WxPayNoticeId | null,
 ): Promise<WxPayNoticeModel | undefined> {
-  const model = await wx_pay_noticeDao.findById(id);
+  const model = await wx_pay_noticeDao.findById(id, {
+  });
   return model;
 }
 
@@ -86,7 +90,8 @@ export async function exist(
   search?: WxPayNoticeSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await wx_pay_noticeDao.exist(search);
+  const data = await wx_pay_noticeDao.exist(search, {
+  });
   return data;
 }
 
@@ -97,7 +102,8 @@ export async function exist(
 export async function existById(
   id?: WxPayNoticeId | null,
 ): Promise<boolean> {
-  const data = await wx_pay_noticeDao.existById(id);
+  const data = await wx_pay_noticeDao.existById(id, {
+  });
   return data;
 }
 

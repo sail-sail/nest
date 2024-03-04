@@ -363,7 +363,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, options);
     if (!model) {
       return [ ];
     }
@@ -382,7 +382,7 @@ export async function findByUnique(
     }
     const modelTmps = await findAll({
       wxo_app_id,
-    });
+    }, undefined, undefined, options);
     models.push(...modelTmps);
   }
   return models;
@@ -462,7 +462,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -479,7 +479,7 @@ export async function findById(
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -492,7 +492,7 @@ export async function exist(
   options?: {
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -503,6 +503,8 @@ export async function exist(
  */
 export async function existById(
   id?: WxoAppTokenId | null,
+  options?: {
+  },
 ) {
   const table = "wx_wxo_app_token";
   const method = "existById";
