@@ -311,8 +311,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <el-checkbox
             un-w="full"
             v-model="search.<#=column_name#>"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
           >{{ n('<#=column_comment#>') }}</el-checkbox>
         </el-form-item>
       </template><#
@@ -394,8 +394,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -425,8 +425,8 @@ const hasAtt = columns.some((item) => item.isAtt);
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>

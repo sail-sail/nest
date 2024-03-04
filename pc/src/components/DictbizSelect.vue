@@ -681,8 +681,20 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-.custom_select_div {
-  height: 32px;
+.custom_select_div,.custom_select_readonly {
+  :deep(.el-tag) {
+    height: auto;
+    line-height: normal;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    box-sizing: border-box;
+    .el-tag__content {
+      white-space: normal;
+      .el-select__tags-text {
+        white-space: normal;
+      }
+    }
+  }
 }
 .custom_select_placeholder {
   @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
