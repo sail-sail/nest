@@ -27,7 +27,8 @@ export async function findCount(
   search?: MenuSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await menuDao.findCount(search);
+  const data = await menuDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel[]> {
   search = search || { };
-  const models: MenuModel[] = await menuDao.findAll(search, page, sort);
+  const models: MenuModel[] = await menuDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel | undefined> {
   search = search || { };
-  const model = await menuDao.findOne(search, sort);
+  const model = await menuDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: MenuId | null,
 ): Promise<MenuModel | undefined> {
-  const model = await menuDao.findById(id);
+  const model = await menuDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: MenuSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await menuDao.exist(search);
+  const data = await menuDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: MenuId | null,
 ): Promise<boolean> {
-  const data = await menuDao.existById(id);
+  const data = await menuDao.existById(id, {
+  });
   return data;
 }
 

@@ -27,7 +27,8 @@ export async function findCount(
   search?: LangSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await langDao.findCount(search);
+  const data = await langDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel[]> {
   search = search || { };
-  const models: LangModel[] = await langDao.findAll(search, page, sort);
+  const models: LangModel[] = await langDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel | undefined> {
   search = search || { };
-  const model = await langDao.findOne(search, sort);
+  const model = await langDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: LangId | null,
 ): Promise<LangModel | undefined> {
-  const model = await langDao.findById(id);
+  const model = await langDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: LangSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await langDao.exist(search);
+  const data = await langDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: LangId | null,
 ): Promise<boolean> {
-  const data = await langDao.existById(id);
+  const data = await langDao.existById(id, {
+  });
   return data;
 }
 
@@ -141,7 +147,8 @@ export async function updateById(
 ): Promise<LangId> {
   
   // 不能修改系统记录的系统字段
-  const model = await langDao.findById(id);
+  const model = await langDao.findById(id, {
+  });
   if (model && model.is_sys === 1) {
   }
   
