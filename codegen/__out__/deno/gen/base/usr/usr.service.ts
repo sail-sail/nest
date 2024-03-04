@@ -27,7 +27,8 @@ export async function findCount(
   search?: UsrSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await usrDao.findCount(search);
+  const data = await usrDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel[]> {
   search = search || { };
-  const models: UsrModel[] = await usrDao.findAll(search, page, sort);
+  const models: UsrModel[] = await usrDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel | undefined> {
   search = search || { };
-  const model = await usrDao.findOne(search, sort);
+  const model = await usrDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: UsrId | null,
 ): Promise<UsrModel | undefined> {
-  const model = await usrDao.findById(id);
+  const model = await usrDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: UsrSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await usrDao.exist(search);
+  const data = await usrDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: UsrId | null,
 ): Promise<boolean> {
-  const data = await usrDao.existById(id);
+  const data = await usrDao.existById(id, {
+  });
   return data;
 }
 

@@ -117,7 +117,7 @@ stopWatch = false;
 watchFn();
 start();
 function start() {
-  child_process.execSync("cls", { stdio: "inherit" });
+  child_process.execSync(os.platform === "win32" ? "cls": "clear", { stdio: "inherit" });
   console.error('Mother process is running.');
   if (restartNum > 0) {
     console.log(`第 ${ restartNum } 次重启!`);
