@@ -394,7 +394,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    }, options);
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -656,6 +656,7 @@ export async function create(
   input: WxwAppTokenInput,
   options?: {
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<WxwAppTokenId> {
   const table = "wxwork_wxw_app_token";
