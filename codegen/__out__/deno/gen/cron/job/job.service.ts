@@ -27,7 +27,8 @@ export async function findCount(
   search?: JobSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await jobDao.findCount(search);
+  const data = await jobDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<JobModel[]> {
   search = search || { };
-  const models: JobModel[] = await jobDao.findAll(search, page, sort);
+  const models: JobModel[] = await jobDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<JobModel | undefined> {
   search = search || { };
-  const model = await jobDao.findOne(search, sort);
+  const model = await jobDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: JobId | null,
 ): Promise<JobModel | undefined> {
-  const model = await jobDao.findById(id);
+  const model = await jobDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: JobSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await jobDao.exist(search);
+  const data = await jobDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: JobId | null,
 ): Promise<boolean> {
-  const data = await jobDao.existById(id);
+  const data = await jobDao.existById(id, {
+  });
   return data;
 }
 
@@ -146,7 +152,8 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await jobDao.findById(id);
+  const model = await jobDao.findById(id, {
+  });
   if (model && model.is_sys === 1) {
     // 编码
     input.code = undefined;
