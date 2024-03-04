@@ -27,7 +27,8 @@ export async function findCount(
   search?: DictDetailSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await dict_detailDao.findCount(search);
+  const data = await dict_detailDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DictDetailModel[]> {
   search = search || { };
-  const models: DictDetailModel[] = await dict_detailDao.findAll(search, page, sort);
+  const models: DictDetailModel[] = await dict_detailDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DictDetailModel | undefined> {
   search = search || { };
-  const model = await dict_detailDao.findOne(search, sort);
+  const model = await dict_detailDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: DictDetailId | null,
 ): Promise<DictDetailModel | undefined> {
-  const model = await dict_detailDao.findById(id);
+  const model = await dict_detailDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: DictDetailSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await dict_detailDao.exist(search);
+  const data = await dict_detailDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: DictDetailId | null,
 ): Promise<boolean> {
-  const data = await dict_detailDao.existById(id);
+  const data = await dict_detailDao.existById(id, {
+  });
   return data;
 }
 
@@ -146,7 +152,8 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await dict_detailDao.findById(id);
+  const model = await dict_detailDao.findById(id, {
+  });
   if (model && model.is_sys === 1) {
   }
   
