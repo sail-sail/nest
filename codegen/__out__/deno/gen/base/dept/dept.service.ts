@@ -27,7 +27,8 @@ export async function findCount(
   search?: DeptSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await deptDao.findCount(search);
+  const data = await deptDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel[]> {
   search = search || { };
-  const models: DeptModel[] = await deptDao.findAll(search, page, sort);
+  const models: DeptModel[] = await deptDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel | undefined> {
   search = search || { };
-  const model = await deptDao.findOne(search, sort);
+  const model = await deptDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: DeptId | null,
 ): Promise<DeptModel | undefined> {
-  const model = await deptDao.findById(id);
+  const model = await deptDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: DeptSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await deptDao.exist(search);
+  const data = await deptDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: DeptId | null,
 ): Promise<boolean> {
-  const data = await deptDao.existById(id);
+  const data = await deptDao.existById(id, {
+  });
   return data;
 }
 

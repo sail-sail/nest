@@ -27,7 +27,8 @@ export async function findCount(
   search?: OptbizSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await optbizDao.findCount(search);
+  const data = await optbizDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OptbizModel[]> {
   search = search || { };
-  const models: OptbizModel[] = await optbizDao.findAll(search, page, sort);
+  const models: OptbizModel[] = await optbizDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OptbizModel | undefined> {
   search = search || { };
-  const model = await optbizDao.findOne(search, sort);
+  const model = await optbizDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: OptbizId | null,
 ): Promise<OptbizModel | undefined> {
-  const model = await optbizDao.findById(id);
+  const model = await optbizDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: OptbizSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await optbizDao.exist(search);
+  const data = await optbizDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: OptbizId | null,
 ): Promise<boolean> {
-  const data = await optbizDao.existById(id);
+  const data = await optbizDao.existById(id, {
+  });
   return data;
 }
 
@@ -154,7 +160,8 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await optbizDao.findById(id);
+  const model = await optbizDao.findById(id, {
+  });
   if (model && model.is_sys === 1) {
     // 名称
     input.lbl = undefined;

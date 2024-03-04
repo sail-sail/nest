@@ -27,7 +27,8 @@ export async function findCount(
   search?: OrgSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await orgDao.findCount(search);
+  const data = await orgDao.findCount(search, {
+  });
   return data;
 }
 
@@ -44,7 +45,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel[]> {
   search = search || { };
-  const models: OrgModel[] = await orgDao.findAll(search, page, sort);
+  const models: OrgModel[] = await orgDao.findAll(search, page, sort, {
+  });
   return models;
 }
 
@@ -65,7 +67,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel | undefined> {
   search = search || { };
-  const model = await orgDao.findOne(search, sort);
+  const model = await orgDao.findOne(search, sort, {
+  });
   return model;
 }
 
@@ -76,7 +79,8 @@ export async function findOne(
 export async function findById(
   id?: OrgId | null,
 ): Promise<OrgModel | undefined> {
-  const model = await orgDao.findById(id);
+  const model = await orgDao.findById(id, {
+  });
   return model;
 }
 
@@ -88,7 +92,8 @@ export async function exist(
   search?: OrgSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await orgDao.exist(search);
+  const data = await orgDao.exist(search, {
+  });
   return data;
 }
 
@@ -99,7 +104,8 @@ export async function exist(
 export async function existById(
   id?: OrgId | null,
 ): Promise<boolean> {
-  const data = await orgDao.existById(id);
+  const data = await orgDao.existById(id, {
+  });
   return data;
 }
 
