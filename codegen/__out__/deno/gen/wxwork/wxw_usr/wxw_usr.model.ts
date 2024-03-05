@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxwUsrInput as WxwUsrInputType,
@@ -49,7 +47,6 @@ export interface WxwUsrSearch extends WxwUsrSearchType {
   qr_code?: string;
   qr_code_like?: string;
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface WxwUsrModel extends WxwUsrModelType {
