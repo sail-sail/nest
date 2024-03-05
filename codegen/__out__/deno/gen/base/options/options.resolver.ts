@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找系统选项总数
  */
 export async function findCountOptions(
-  search?: OptionsSearch & { $extra?: SearchExtra[] },
+  search?: OptionsSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountOptions(
  * 根据搜索条件和分页查找系统选项列表
  */
 export async function findAllOptions(
-  search?: OptionsSearch & { $extra?: SearchExtra[] },
+  search?: OptionsSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OptionsModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
  * 根据条件查找第一个系统选项
  */
 export async function findOneOptions(
-  search?: OptionsSearch & { $extra?: SearchExtra[] },
+  search?: OptionsSearch,
   sort?: SortInput[],
 ): Promise<OptionsModel | undefined> {
   

@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找字段权限总数
  */
 export async function findCountFieldPermit(
-  search?: FieldPermitSearch & { $extra?: SearchExtra[] },
+  search?: FieldPermitSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountFieldPermit(
  * 根据搜索条件和分页查找字段权限列表
  */
 export async function findAllFieldPermit(
-  search?: FieldPermitSearch & { $extra?: SearchExtra[] },
+  search?: FieldPermitSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<FieldPermitModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldCom
  * 根据条件查找第一个字段权限
  */
 export async function findOneFieldPermit(
-  search?: FieldPermitSearch & { $extra?: SearchExtra[] },
+  search?: FieldPermitSearch,
   sort?: SortInput[],
 ): Promise<FieldPermitModel | undefined> {
   

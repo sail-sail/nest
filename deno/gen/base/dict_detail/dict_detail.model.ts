@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   DictDetailInput as DictDetailInputType,
@@ -17,7 +15,6 @@ declare const dictDetailId: unique symbol;
 export type DictDetailId = Distinct<string, typeof dictDetailId>;
 
 export interface DictDetailSearch extends DictDetailSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface DictDetailModel extends DictDetailModelType {

@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   TenantInput as TenantInputType,
@@ -17,7 +15,6 @@ declare const tenantId: unique symbol;
 export type TenantId = Distinct<string, typeof tenantId>;
 
 export interface TenantSearch extends TenantSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface TenantModel extends TenantModelType {

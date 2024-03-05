@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   DictbizDetailInput as DictbizDetailInputType,
@@ -22,7 +20,6 @@ export type DictbizDetailId = Distinct<string, typeof dictbizDetailId>;
 
 export interface DictbizDetailSearch extends DictbizDetailSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface DictbizDetailModel extends DictbizDetailModelType {
