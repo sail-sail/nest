@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找域名总数
  */
 export async function findCountDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDomain(
  * 根据搜索条件和分页查找域名列表
  */
 export async function findAllDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DomainModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
  * 根据条件查找第一个域名
  */
 export async function findOneDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
   sort?: SortInput[],
 ): Promise<DomainModel | undefined> {
   

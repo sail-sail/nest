@@ -59,10 +59,6 @@ import Decimal from "decimal.js";<#
 }
 #>
 
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
 import type {<#
   if (opts.noAdd !== true) {
   #>
@@ -107,7 +103,7 @@ import "./cron_job.service.ts";<#
  * 根据条件查找<#=table_comment#>总数
  */
 export async function findCount<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
 ): Promise<number> {
   
   const {
@@ -129,7 +125,7 @@ export async function findCount<#=Table_Up2#>(
  * 根据搜索条件和分页查找<#=table_comment#>列表
  */
 export async function findAll<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
@@ -195,7 +191,7 @@ if (hasSummary) {
  * 根据搜索条件查找<#=table_comment#>合计
  */
 export async function findSummary<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
   const { findSummary } = await import("./<#=table#>.service.ts");
   const res = await findSummary(search);
@@ -208,7 +204,7 @@ export async function findSummary<#=Table_Up2#>(
  * 根据条件查找第一个<#=table_comment#>
  */
 export async function findOne<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   

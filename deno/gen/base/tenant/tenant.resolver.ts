@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找租户总数
  */
 export async function findCountTenant(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountTenant(
  * 根据搜索条件和分页查找租户列表
  */
 export async function findAllTenant(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<TenantModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
  * 根据条件查找第一个租户
  */
 export async function findOneTenant(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   sort?: SortInput[],
 ): Promise<TenantModel | undefined> {
   

@@ -210,11 +210,13 @@ body .el-table--small {
   // }
   .el-table__header {
     thead tr {
-      height: 36.67px;
+      // height: 36.67px;
+      height: 37px;
     }
   }
   .el-table__row {
-    height: 36.67px;
+    // height: 36.67px;
+    height: 37px;
   }
   .cell {
     padding-top: 2px;

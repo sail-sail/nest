@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找业务字典明细总数
  */
 export async function findCountDictbizDetail(
-  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDictbizDetail(
  * 根据搜索条件和分页查找业务字典明细列表
  */
 export async function findAllDictbizDetail(
-  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DictbizDetailModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFiel
  * 根据条件查找第一个业务字典明细
  */
 export async function findOneDictbizDetail(
-  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch,
   sort?: SortInput[],
 ): Promise<DictbizDetailModel | undefined> {
   

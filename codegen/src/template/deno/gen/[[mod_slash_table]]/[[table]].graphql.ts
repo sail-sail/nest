@@ -276,6 +276,57 @@ type <#=modelName#> {<#
   "<#=inlineForeignTab.label#>"
   <#=table#>_models: [<#=modelName#>!]<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = foreignKey.table;
+    const mod = foreignKey.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=comment#>"
+  <#=column_name#>_models: [<#=modelName#>!]<#
+  }
   #>
 }
 type <#=fieldCommentName#> {<#
@@ -508,6 +559,57 @@ input <#=inputName#> {<#
   #>
   "<#=inlineForeignTab.label#>"
   <#=table#>_models: [<#=inputName#>!]<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = foreignKey.table;
+    const mod = foreignKey.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+  #>
+  "<#=comment#>"
+  <#=column_name#>_models: [<#=modelName#>!]<#
   }
   #>
 }

@@ -8,7 +8,7 @@
   :step-strictly="props.stepStrictly"
   :controls="props.controls"
   v-bind="$attrs"
-  v-model="modelValue"
+  v-model="modelValueComputed"
   :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
   :placeholder="props.placeholder"
@@ -57,6 +57,7 @@
 </template>
 
 <script lang="ts" setup>
+import Decimal from "decimal.js-light";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
@@ -102,11 +103,7 @@ watch(
       modelValue = undefined;
       return;
     }
-    if (isNaN(Number(props.modelValue.toString()))) {
-      modelValue = undefined;
-      return;
-    }
-    modelValue = Number(props.modelValue);
+    modelValue = props.modelValue;
   },
 );
 
@@ -119,6 +116,33 @@ watch(
     emit("update:modelValue", modelValue);
   },
 );
+
+const modelValueComputed = $computed({
+  get() {
+    if (modelValue instanceof Decimal) {
+      return modelValue.toNumber();
+    }
+    const type = typeof modelValue;
+    if (type === "string") {
+      if (modelValue === "") {
+        return 0;
+      }
+      const num = Number(modelValue);
+      if (isNaN(num)) {
+        return modelValue;
+      }
+      return num;
+    }
+    return modelValue;
+  },
+  set(value?: number) {
+    if (modelValue instanceof Decimal) {
+      modelValue = new Decimal(value ?? 0);
+      return;
+    }
+    modelValue = value;
+  },
+});
 
 const modelLabel = $computed(() => {
   if (modelValue == null) {

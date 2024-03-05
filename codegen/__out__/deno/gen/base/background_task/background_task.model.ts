@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   BackgroundTaskInput as BackgroundTaskInputType,
@@ -22,7 +20,6 @@ export type BackgroundTaskId = Distinct<string, typeof backgroundTaskId>;
 
 export interface BackgroundTaskSearch extends BackgroundTaskSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface BackgroundTaskModel extends BackgroundTaskModelType {

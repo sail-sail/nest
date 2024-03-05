@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   RoleInput as RoleInputType,
@@ -22,7 +20,6 @@ export type RoleId = Distinct<string, typeof roleId>;
 
 export interface RoleSearch extends RoleSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface RoleModel extends RoleModelType {

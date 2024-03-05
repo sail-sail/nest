@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   OptionsInput as OptionsInputType,
@@ -17,7 +15,6 @@ declare const optionsId: unique symbol;
 export type OptionsId = Distinct<string, typeof optionsId>;
 
 export interface OptionsSearch extends OptionsSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface OptionsModel extends OptionsModelType {

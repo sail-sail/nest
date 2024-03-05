@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   OrgInput as OrgInputType,
@@ -22,7 +20,6 @@ export type OrgId = Distinct<string, typeof orgId>;
 
 export interface OrgSearch extends OrgSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface OrgModel extends OrgModelType {

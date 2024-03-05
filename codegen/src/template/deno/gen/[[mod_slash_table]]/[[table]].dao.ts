@@ -510,6 +510,71 @@ const deleteByIdsTableUps = [ ];
 const revertByIdsTableUps = [ ];
 const updateByIdTableUps = [ ];
 const forceDeleteByIdsUps = [ ];
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = foreignKey.table;
+  const mod = foreignKey.mod;
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+}
+#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
@@ -773,16 +838,6 @@ async function getWhereQuery(
   #><#
   }
   #>
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 

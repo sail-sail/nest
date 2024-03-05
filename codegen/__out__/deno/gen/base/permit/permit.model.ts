@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   PermitInput as PermitInputType,
@@ -17,7 +15,6 @@ declare const permitId: unique symbol;
 export type PermitId = Distinct<string, typeof permitId>;
 
 export interface PermitSearch extends PermitSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface PermitModel extends PermitModelType {
