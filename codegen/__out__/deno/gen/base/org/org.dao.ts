@@ -182,16 +182,6 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 

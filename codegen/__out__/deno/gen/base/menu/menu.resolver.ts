@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找菜单总数
  */
 export async function findCountMenu(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountMenu(
  * 根据搜索条件和分页查找菜单列表
  */
 export async function findAllMenu(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<MenuModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
  * 根据条件查找第一个菜单
  */
 export async function findOneMenu(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   sort?: SortInput[],
 ): Promise<MenuModel | undefined> {
   

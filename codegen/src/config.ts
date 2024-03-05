@@ -317,6 +317,11 @@ export interface TableCloumn {
   },
   
   /**
+   * 多对多关联时, 如果中间表需要编辑, 则设置为true, 默认为false
+   */
+  inlineMany2manyTab?: boolean;
+  
+  /**
    * 是否必填
    */
   require?: boolean,
