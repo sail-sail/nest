@@ -772,7 +772,7 @@ if (!detailCustomDialogType) {
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
-                const width = (column.width || 180) + 38;
+                const width = column.width || 180;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
               #>

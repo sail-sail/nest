@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   MenuInput as MenuInputType,
@@ -17,7 +15,6 @@ declare const menuId: unique symbol;
 export type MenuId = Distinct<string, typeof menuId>;
 
 export interface MenuSearch extends MenuSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface MenuModel extends MenuModelType {

@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   LoginLogInput as LoginLogInputType,
@@ -22,7 +20,6 @@ export type LoginLogId = Distinct<string, typeof loginLogId>;
 
 export interface LoginLogSearch extends LoginLogSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface LoginLogModel extends LoginLogModelType {

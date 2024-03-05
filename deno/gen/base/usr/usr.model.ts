@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   UsrInput as UsrInputType,
@@ -19,7 +17,6 @@ export type UsrId = Distinct<string, typeof usrId>;
 export interface UsrSearch extends UsrSearchType {
   tenant_id?: string | null;
   is_hidden?: (0|1)[];
-  $extra?: SearchExtra[];
 }
 
 export interface UsrModel extends UsrModelType {
