@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxoAppTokenInput as WxoAppTokenInputType,
@@ -17,7 +15,6 @@ declare const wxoAppTokenId: unique symbol;
 export type WxoAppTokenId = Distinct<string, typeof wxoAppTokenId>;
 
 export interface WxoAppTokenSearch extends WxoAppTokenSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface WxoAppTokenModel extends WxoAppTokenModelType {

@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找微信JSAPI下单总数
  */
 export async function findCountPayTransactionsJsapi(
-  search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
+  search?: PayTransactionsJsapiSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountPayTransactionsJsapi(
  * 根据搜索条件和分页查找微信JSAPI下单列表
  */
 export async function findAllPayTransactionsJsapi(
-  search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
+  search?: PayTransactionsJsapiSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransac
  * 根据条件查找第一个微信JSAPI下单
  */
 export async function findOnePayTransactionsJsapi(
-  search?: PayTransactionsJsapiSearch & { $extra?: SearchExtra[] },
+  search?: PayTransactionsJsapiSearch,
   sort?: SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
   

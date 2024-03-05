@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxUsrInput as WxUsrInputType,
@@ -27,7 +25,6 @@ export type WxUsrId = Distinct<string, typeof wxUsrId>;
 export interface WxUsrSearch extends WxUsrSearchType {
   tenant_id?: string | null;
   org_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface WxUsrModel extends WxUsrModelType {

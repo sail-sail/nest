@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找微信支付设置总数
  */
 export async function findCountWxPay(
-  search?: WxPaySearch & { $extra?: SearchExtra[] },
+  search?: WxPaySearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxPay(
  * 根据搜索条件和分页查找微信支付设置列表
  */
 export async function findAllWxPay(
-  search?: WxPaySearch & { $extra?: SearchExtra[] },
+  search?: WxPaySearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxPayModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
  * 根据条件查找第一个微信支付设置
  */
 export async function findOneWxPay(
-  search?: WxPaySearch & { $extra?: SearchExtra[] },
+  search?: WxPaySearch,
   sort?: SortInput[],
 ): Promise<WxPayModel | undefined> {
   

@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxAppInput as WxAppInputType,
@@ -22,7 +20,6 @@ export type WxAppId = Distinct<string, typeof wxAppId>;
 
 export interface WxAppSearch extends WxAppSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface WxAppModel extends WxAppModelType {
