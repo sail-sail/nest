@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找小程序用户总数
  */
 export async function findCountWxUsr(
-  search?: WxUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxUsrSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxUsr(
  * 根据搜索条件和分页查找小程序用户列表
  */
 export async function findAllWxUsr(
-  search?: WxUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxUsrSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxUsrModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxUsr(): Promise<WxUsrFieldComment> {
  * 根据条件查找第一个小程序用户
  */
 export async function findOneWxUsr(
-  search?: WxUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxUsrSearch,
   sort?: SortInput[],
 ): Promise<WxUsrModel | undefined> {
   

@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   PayTransactionsJsapiInput as PayTransactionsJsapiInputType,
@@ -27,7 +25,6 @@ export type PayTransactionsJsapiId = Distinct<string, typeof payTransactionsJsap
 export interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
   tenant_id?: string | null;
   org_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {

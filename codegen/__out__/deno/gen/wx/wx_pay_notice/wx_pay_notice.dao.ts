@@ -309,16 +309,6 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
@@ -678,7 +668,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    }, options);
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -987,6 +977,7 @@ export async function create(
   input: WxPayNoticeInput,
   options?: {
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<WxPayNoticeId> {
   const table = "wx_wx_pay_notice";

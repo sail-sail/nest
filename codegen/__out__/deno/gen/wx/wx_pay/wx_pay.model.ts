@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxPayInput as WxPayInputType,
@@ -22,7 +20,6 @@ export type WxPayId = Distinct<string, typeof wxPayId>;
 
 export interface WxPaySearch extends WxPaySearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface WxPayModel extends WxPayModelType {
