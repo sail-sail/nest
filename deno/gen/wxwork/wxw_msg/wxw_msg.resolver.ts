@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找企微消息总数
  */
 export async function findCountWxwMsg(
-  search?: WxwMsgSearch & { $extra?: SearchExtra[] },
+  search?: WxwMsgSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountWxwMsg(
  * 根据搜索条件和分页查找企微消息列表
  */
 export async function findAllWxwMsg(
-  search?: WxwMsgSearch & { $extra?: SearchExtra[] },
+  search?: WxwMsgSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxwMsgModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
  * 根据条件查找第一个企微消息
  */
 export async function findOneWxwMsg(
-  search?: WxwMsgSearch & { $extra?: SearchExtra[] },
+  search?: WxwMsgSearch,
   sort?: SortInput[],
 ): Promise<WxwMsgModel | undefined> {
   

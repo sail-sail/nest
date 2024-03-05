@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   WxwMsgInput as WxwMsgInputType,
@@ -28,7 +26,6 @@ export interface WxwMsgSearch extends WxwMsgSearchType {
   msgid?: string;
   msgid_like?: string;
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface WxwMsgModel extends WxwMsgModelType {
