@@ -270,16 +270,6 @@ async function getWhereQuery(
   if (search?.is_hidden && search?.is_hidden?.length > 0) {
     whereQuery += ` and t.is_hidden in ${ args.push(search?.is_hidden) }`;
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 

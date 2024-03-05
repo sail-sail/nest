@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   DeptInput as DeptInputType,
@@ -27,7 +25,6 @@ export type DeptId = Distinct<string, typeof deptId>;
 export interface DeptSearch extends DeptSearchType {
   tenant_id?: string | null;
   org_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface DeptModel extends DeptModelType {

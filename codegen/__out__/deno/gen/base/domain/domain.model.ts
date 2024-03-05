@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   DomainInput as DomainInputType,
@@ -17,7 +15,6 @@ declare const domainId: unique symbol;
 export type DomainId = Distinct<string, typeof domainId>;
 
 export interface DomainSearch extends DomainSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface DomainModel extends DomainModelType {

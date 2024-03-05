@@ -31,9 +31,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
 const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
-#>import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+#>
 
 import type {
   <#=inputName#> as <#=inputName#>Type,
@@ -212,7 +210,6 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
   is_hidden?: (0|1)[];<#
   }
   #>
-  $extra?: SearchExtra[];
 }
 
 export interface <#=modelName#> extends <#=modelName#>Type {<#

@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找业务选项总数
  */
 export async function findCountOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountOptbiz(
  * 根据搜索条件和分页查找业务选项列表
  */
 export async function findAllOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OptbizModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
  * 根据条件查找第一个业务选项
  */
 export async function findOneOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
   sort?: SortInput[],
 ): Promise<OptbizModel | undefined> {
   

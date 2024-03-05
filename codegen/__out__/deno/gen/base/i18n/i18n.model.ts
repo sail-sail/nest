@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   I18nInput as I18nInputType,
@@ -17,7 +15,6 @@ declare const i18nId: unique symbol;
 export type I18nId = Distinct<string, typeof i18nId>;
 
 export interface I18nSearch extends I18nSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface I18nModel extends I18nModelType {
