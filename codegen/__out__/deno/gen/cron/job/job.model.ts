@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   JobInput as JobInputType,
@@ -22,7 +20,6 @@ export type JobId = Distinct<string, typeof jobId>;
 
 export interface JobSearch extends JobSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface JobModel extends JobModelType {

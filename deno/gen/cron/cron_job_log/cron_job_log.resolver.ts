@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找任务执行日志总数
  */
 export async function findCountCronJobLog(
-  search?: CronJobLogSearch & { $extra?: SearchExtra[] },
+  search?: CronJobLogSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountCronJobLog(
  * 根据搜索条件和分页查找任务执行日志列表
  */
 export async function findAllCronJobLog(
-  search?: CronJobLogSearch & { $extra?: SearchExtra[] },
+  search?: CronJobLogSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<CronJobLogModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsCronJobLog(): Promise<CronJobLogFieldComme
  * 根据条件查找第一个任务执行日志
  */
 export async function findOneCronJobLog(
-  search?: CronJobLogSearch & { $extra?: SearchExtra[] },
+  search?: CronJobLogSearch,
   sort?: SortInput[],
 ): Promise<CronJobLogModel | undefined> {
   

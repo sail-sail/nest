@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找任务总数
  */
 export async function findCountJob(
-  search?: JobSearch & { $extra?: SearchExtra[] },
+  search?: JobSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountJob(
  * 根据搜索条件和分页查找任务列表
  */
 export async function findAllJob(
-  search?: JobSearch & { $extra?: SearchExtra[] },
+  search?: JobSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<JobModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsJob(): Promise<JobFieldComment> {
  * 根据条件查找第一个任务
  */
 export async function findOneJob(
-  search?: JobSearch & { $extra?: SearchExtra[] },
+  search?: JobSearch,
   sort?: SortInput[],
 ): Promise<JobModel | undefined> {
   

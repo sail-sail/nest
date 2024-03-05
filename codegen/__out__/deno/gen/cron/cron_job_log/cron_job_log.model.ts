@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   CronJobLogInput as CronJobLogInputType,
@@ -22,7 +20,6 @@ export type CronJobLogId = Distinct<string, typeof cronJobLogId>;
 
 export interface CronJobLogSearch extends CronJobLogSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface CronJobLogModel extends CronJobLogModelType {
