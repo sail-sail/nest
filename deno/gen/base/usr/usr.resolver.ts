@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找用户总数
  */
 export async function findCountUsr(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
 ): Promise<number> {
   
   const {
@@ -46,7 +42,7 @@ export async function findCountUsr(
  * 根据搜索条件和分页查找用户列表
  */
 export async function findAllUsr(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<UsrModel[]> {
@@ -80,7 +76,7 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
  * 根据条件查找第一个用户
  */
 export async function findOneUsr(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   sort?: SortInput[],
 ): Promise<UsrModel | undefined> {
   

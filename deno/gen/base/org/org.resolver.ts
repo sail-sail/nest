@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找组织总数
  */
 export async function findCountOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountOrg(
  * 根据搜索条件和分页查找组织列表
  */
 export async function findAllOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OrgModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
  * 根据条件查找第一个组织
  */
 export async function findOneOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
   sort?: SortInput[],
 ): Promise<OrgModel | undefined> {
   
