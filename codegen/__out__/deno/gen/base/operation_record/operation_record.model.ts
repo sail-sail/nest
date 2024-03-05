@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   OperationRecordInput as OperationRecordInputType,
@@ -22,7 +20,6 @@ export type OperationRecordId = Distinct<string, typeof operationRecordId>;
 
 export interface OperationRecordSearch extends OperationRecordSearchType {
   tenant_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface OperationRecordModel extends OperationRecordModelType {

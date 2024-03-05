@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找国际化总数
  */
 export async function findCountI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+  search?: I18nSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountI18n(
  * 根据搜索条件和分页查找国际化列表
  */
 export async function findAllI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+  search?: I18nSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<I18nModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
  * 根据条件查找第一个国际化
  */
 export async function findOneI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+  search?: I18nSearch,
   sort?: SortInput[],
 ): Promise<I18nModel | undefined> {
   

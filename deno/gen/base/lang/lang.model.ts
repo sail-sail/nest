@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   LangInput as LangInputType,
@@ -17,7 +15,6 @@ declare const langId: unique symbol;
 export type LangId = Distinct<string, typeof langId>;
 
 export interface LangSearch extends LangSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface LangModel extends LangModelType {

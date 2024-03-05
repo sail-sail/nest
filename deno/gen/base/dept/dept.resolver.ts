@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找部门总数
  */
 export async function findCountDept(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDept(
  * 根据搜索条件和分页查找部门列表
  */
 export async function findAllDept(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DeptModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
  * 根据条件查找第一个部门
  */
 export async function findOneDept(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   sort?: SortInput[],
 ): Promise<DeptModel | undefined> {
   
