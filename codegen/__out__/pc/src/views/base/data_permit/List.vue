@@ -49,19 +49,6 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
-        <el-form-item
-          :label="n('名称')"
-          prop="lbl_like"
-        >
-          <CustomInput
-            v-model="search.lbl_like"
-            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
-      
       <template v-if="showBuildIn || builtInSearch?.scope == null">
         <el-form-item
           :label="n('范围')"
@@ -496,15 +483,6 @@
             </el-table-column>
           </template>
           
-          <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 范围 -->
           <template v-else-if="'scope_lbl' === col.prop && (showBuildIn || builtInSearch?.scope == null)">
             <el-table-column
@@ -705,8 +683,6 @@ const props = defineProps<{
   id?: DataPermitId; // ID
   menu_id?: string|string[]; // 菜单
   menu_id_lbl?: string; // 菜单
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
   scope?: string|string[]; // 范围
   type?: string|string[]; // 类型
   rem?: string; // 备注
@@ -938,14 +914,6 @@ function getTableColumns(): ColumnType[] {
       prop: "menu_id_lbl",
       sortBy: "menu_id",
       width: 160,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "名称",
-      prop: "lbl",
-      width: 220,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1287,7 +1255,6 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("菜单") ]: "menu_id_lbl",
-    [ await nAsync("名称") ]: "lbl",
     [ await nAsync("范围") ]: "scope_lbl",
     [ await nAsync("类型") ]: "type_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1313,7 +1280,6 @@ async function onImportExcel() {
       {
         key_types: {
           "menu_id_lbl": "string",
-          "lbl": "string",
           "scope_lbl": "string",
           "type_lbl": "string",
           "rem": "string",
@@ -1553,7 +1519,6 @@ async function onRevertByIds() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "菜单",
-    "名称",
     "范围",
     "类型",
     "备注",

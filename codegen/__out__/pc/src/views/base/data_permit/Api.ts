@@ -58,7 +58,6 @@ export async function findAll(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -110,7 +109,6 @@ export async function findOne(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -237,7 +235,6 @@ export async function findById(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -421,7 +418,6 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsDataPermit {
             menu_id_lbl
-            lbl
             scope_lbl
             type_lbl
             rem
@@ -497,7 +493,6 @@ export function useExportExcel(routePath: string) {
               id
               menu_id
               menu_id_lbl
-              lbl
               scope
               scope_lbl
               type

@@ -33,8 +33,6 @@ type DataPermitModel {
   menu_id: MenuId!
   "菜单"
   menu_id_lbl: String
-  "名称"
-  lbl: String!
   "范围"
   scope: DataPermitScope
   "范围"
@@ -71,8 +69,6 @@ type DataPermitFieldComment {
   menu_id: String!
   "菜单"
   menu_id_lbl: String!
-  "名称"
-  lbl: String!
   "范围"
   scope: String!
   "范围"
@@ -107,8 +103,6 @@ input DataPermitInput {
   menu_id: MenuId
   "菜单"
   menu_id_lbl: String
-  "名称"
-  lbl: String
   "范围"
   scope: DataPermitScope
   "范围"
@@ -146,9 +140,6 @@ input DataPermitSearch {
   "菜单"
   menu_id: [MenuId!]
   menu_id_is_null: Boolean
-  "名称"
-  lbl: String
-  lbl_like: String
   "范围"
   scope: [String!]
   "类型"
