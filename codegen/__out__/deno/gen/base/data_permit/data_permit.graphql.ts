@@ -101,7 +101,7 @@ type DataPermitFieldComment {
   update_time_lbl: String!
 }
 input DataPermitInput {
-  ""
+  "ID"
   id: DataPermitId
   "菜单"
   menu_id: MenuId
@@ -181,9 +181,9 @@ type Query {
 }
 type Mutation {
   "创建数据权限"
-  createDataPermit(model: DataPermitInput!, unique_type: UniqueType): DataPermitId!
+  createDataPermit(input: DataPermitInput!, unique_type: UniqueType): DataPermitId!
   "根据 id 修改数据权限"
-  updateByIdDataPermit(id: DataPermitId!, model: DataPermitInput!): DataPermitId!
+  updateByIdDataPermit(id: DataPermitId!, input: DataPermitInput!): DataPermitId!
   "根据 ids 删除数据权限"
   deleteByIdsDataPermit(ids: [DataPermitId!]!): Int!
   "根据 ids 还原数据权限"

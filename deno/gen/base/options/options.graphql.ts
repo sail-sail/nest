@@ -87,7 +87,7 @@ type OptionsFieldComment {
   update_time_lbl: String!
 }
 input OptionsInput {
-  ""
+  "ID"
   id: OptionsId
   "名称"
   lbl: String
@@ -178,9 +178,9 @@ type Query {
 }
 type Mutation {
   "创建系统选项"
-  createOptions(model: OptionsInput!, unique_type: UniqueType): OptionsId!
+  createOptions(input: OptionsInput!, unique_type: UniqueType): OptionsId!
   "根据 id 修改系统选项"
-  updateByIdOptions(id: OptionsId!, model: OptionsInput!): OptionsId!
+  updateByIdOptions(id: OptionsId!, input: OptionsInput!): OptionsId!
   "根据 ids 删除系统选项"
   deleteByIdsOptions(ids: [OptionsId!]!): Int!
   "根据 ids 启用或者禁用系统选项"

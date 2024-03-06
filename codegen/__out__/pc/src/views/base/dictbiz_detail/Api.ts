@@ -160,12 +160,12 @@ export async function findCount(
 
 /**
  * 创建业务字典明细
- * @param {DictbizDetailInput} model
+ * @param {DictbizDetailInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictbizDetailInput,
+  input: DictbizDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
@@ -173,12 +173,12 @@ export async function create(
     createDictbizDetail: Mutation["createDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictbizDetailInput!, $unique_type: UniqueType) {
-        createDictbizDetail(model: $model, unique_type: $unique_type)
+      mutation($input: DictbizDetailInput!, $unique_type: UniqueType) {
+        createDictbizDetail(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -189,25 +189,25 @@ export async function create(
 /**
  * 根据 id 修改业务字典明细
  * @param {DictbizDetailId} id
- * @param {DictbizDetailInput} model
+ * @param {DictbizDetailInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictbizDetailId,
-  model: DictbizDetailInput,
+  input: DictbizDetailInput,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
   const data: {
     updateByIdDictbizDetail: Mutation["updateByIdDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictbizDetailId!, $model: DictbizDetailInput!) {
-        updateByIdDictbizDetail(id: $id, model: $model)
+      mutation($id: DictbizDetailId!, $input: DictbizDetailInput!) {
+        updateByIdDictbizDetail(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictbizDetailId = data.updateByIdDictbizDetail;

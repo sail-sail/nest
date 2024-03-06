@@ -198,12 +198,12 @@ export async function findCount(
 
 /**
  * 创建系统字典
- * @param {DictInput} model
+ * @param {DictInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictInput,
+  input: DictInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictId> {
@@ -211,12 +211,12 @@ export async function create(
     createDict: Mutation["createDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictInput!, $unique_type: UniqueType) {
-        createDict(model: $model, unique_type: $unique_type)
+      mutation($input: DictInput!, $unique_type: UniqueType) {
+        createDict(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -227,25 +227,25 @@ export async function create(
 /**
  * 根据 id 修改系统字典
  * @param {DictId} id
- * @param {DictInput} model
+ * @param {DictInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictId,
-  model: DictInput,
+  input: DictInput,
   opt?: GqlOpt,
 ): Promise<DictId> {
   const data: {
     updateByIdDict: Mutation["updateByIdDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictId!, $model: DictInput!) {
-        updateByIdDict(id: $id, model: $model)
+      mutation($id: DictId!, $input: DictInput!) {
+        updateByIdDict(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictId = data.updateByIdDict;

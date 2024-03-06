@@ -49,7 +49,7 @@ type LoginLogFieldComment {
   create_time_lbl: String!
 }
 input LoginLogInput {
-  ""
+  "ID"
   id: LoginLogId
   "用户名"
   username: String

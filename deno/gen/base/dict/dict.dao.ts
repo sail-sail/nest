@@ -408,7 +408,7 @@ export async function findAll(
     
     // 系统字典明细
     model.dict_detail_models = dict_detail_models
-      .filter((item) => item.dict_id === model.id)
+      .filter((item) => item.dict_id === model.id);
   }
   
   return result;

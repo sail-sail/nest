@@ -165,12 +165,12 @@ export async function findCount(
 
 /**
  * 创建数据权限
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DataPermitInput,
+  input: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
@@ -178,12 +178,12 @@ export async function create(
     createDataPermit: Mutation["createDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DataPermitInput!, $unique_type: UniqueType) {
-        createDataPermit(model: $model, unique_type: $unique_type)
+      mutation($input: DataPermitInput!, $unique_type: UniqueType) {
+        createDataPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -194,25 +194,25 @@ export async function create(
 /**
  * 根据 id 修改数据权限
  * @param {DataPermitId} id
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DataPermitId,
-  model: DataPermitInput,
+  input: DataPermitInput,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DataPermitId!, $model: DataPermitInput!) {
-        updateByIdDataPermit(id: $id, model: $model)
+      mutation($id: DataPermitId!, $input: DataPermitInput!) {
+        updateByIdDataPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DataPermitId = data.updateByIdDataPermit;

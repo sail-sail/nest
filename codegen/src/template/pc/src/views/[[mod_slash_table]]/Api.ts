@@ -536,6 +536,72 @@ export async function findAll(
             #>
           }<#
           }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
           #>
         }
       }
@@ -651,6 +717,72 @@ export async function findOne(
           <#=table#>_models {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
@@ -799,12 +931,12 @@ if (opts.noAdd !== true) {
 
 /**
  * 创建<#=table_comment#>
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
@@ -812,12 +944,12 @@ export async function create(
     create<#=Table_Up2#>: Mutation["create<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: <#=inputName#>!, $unique_type: UniqueType) {
-        create<#=Table_Up2#>(model: $model, unique_type: $unique_type)
+      mutation($input: <#=inputName#>!, $unique_type: UniqueType) {
+        create<#=Table_Up2#>(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -832,25 +964,25 @@ if (opts.noEdit !== true) {
 /**
  * 根据 id 修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: <#=Table_Up#>Id,
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
   const data: {
     updateById<#=Table_Up2#>: Mutation["updateById<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up2#>Id!, $model: <#=inputName#>!) {
-        updateById<#=Table_Up2#>(id: $id, model: $model)
+      mutation($id: <#=Table_Up2#>Id!, $input: <#=inputName#>!) {
+        updateById<#=Table_Up2#>(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: <#=Table_Up#>Id = data.updateById<#=Table_Up2#>;
@@ -954,6 +1086,72 @@ export async function findById(
           <#=table#>_models {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;

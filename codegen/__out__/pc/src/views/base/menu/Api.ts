@@ -187,12 +187,12 @@ export async function findCount(
 
 /**
  * 创建菜单
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: MenuInput,
+  input: MenuInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<MenuId> {
@@ -200,12 +200,12 @@ export async function create(
     createMenu: Mutation["createMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: MenuInput!, $unique_type: UniqueType) {
-        createMenu(model: $model, unique_type: $unique_type)
+      mutation($input: MenuInput!, $unique_type: UniqueType) {
+        createMenu(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -216,25 +216,25 @@ export async function create(
 /**
  * 根据 id 修改菜单
  * @param {MenuId} id
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: MenuId,
-  model: MenuInput,
+  input: MenuInput,
   opt?: GqlOpt,
 ): Promise<MenuId> {
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: MenuId!, $model: MenuInput!) {
-        updateByIdMenu(id: $id, model: $model)
+      mutation($id: MenuId!, $input: MenuInput!) {
+        updateByIdMenu(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: MenuId = data.updateByIdMenu;

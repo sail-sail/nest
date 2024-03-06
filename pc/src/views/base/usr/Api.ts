@@ -186,12 +186,12 @@ export async function findCount(
 
 /**
  * 创建用户
- * @param {UsrInput} model
+ * @param {UsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: UsrInput,
+  input: UsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<UsrId> {
@@ -199,12 +199,12 @@ export async function create(
     createUsr: Mutation["createUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: UsrInput!, $unique_type: UniqueType) {
-        createUsr(model: $model, unique_type: $unique_type)
+      mutation($input: UsrInput!, $unique_type: UniqueType) {
+        createUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -215,25 +215,25 @@ export async function create(
 /**
  * 根据 id 修改用户
  * @param {UsrId} id
- * @param {UsrInput} model
+ * @param {UsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: UsrId,
-  model: UsrInput,
+  input: UsrInput,
   opt?: GqlOpt,
 ): Promise<UsrId> {
   const data: {
     updateByIdUsr: Mutation["updateByIdUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: UsrId!, $model: UsrInput!) {
-        updateByIdUsr(id: $id, model: $model)
+      mutation($id: UsrId!, $input: UsrInput!) {
+        updateByIdUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: UsrId = data.updateByIdUsr;
