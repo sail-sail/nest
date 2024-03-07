@@ -1091,7 +1091,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (opts.noEdit !== true && !column.readonly) {
+            #>
               <template #default="{ row }">
                 <CustomInputNumber
                   v-if="permit('edit')<#
@@ -1114,7 +1116,9 @@ const hasAtt = columns.some((item) => item.isAtt);
                     { notLoading: true },
                   )"
                 ></CustomInputNumber>
-              </template>
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
             } else if (column.whitespacePre) {

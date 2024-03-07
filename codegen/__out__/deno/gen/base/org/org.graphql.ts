@@ -77,7 +77,7 @@ type OrgFieldComment {
   update_time_lbl: String!
 }
 input OrgInput {
-  ""
+  "ID"
   id: OrgId
   "名称"
   lbl: String
@@ -156,9 +156,9 @@ type Query {
 }
 type Mutation {
   "创建组织"
-  createOrg(model: OrgInput!, unique_type: UniqueType): OrgId!
+  createOrg(input: OrgInput!, unique_type: UniqueType): OrgId!
   "根据 id 修改组织"
-  updateByIdOrg(id: OrgId!, model: OrgInput!): OrgId!
+  updateByIdOrg(id: OrgId!, input: OrgInput!): OrgId!
   "根据 ids 删除组织"
   deleteByIdsOrg(ids: [OrgId!]!): Int!
   "根据 ids 启用或者禁用组织"

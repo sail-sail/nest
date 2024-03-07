@@ -282,7 +282,6 @@ drop table if exists `base_data_permit`;
 CREATE TABLE if not exists `base_data_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
-  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `scope` varchar(10) NOT NULL DEFAULT 'tenant' COMMENT '范围,dict:data_permit_scope',
   `type` varchar(10) NOT NULL DEFAULT 'editable' COMMENT '类型,dict:data_permit_type',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',

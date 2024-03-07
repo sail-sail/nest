@@ -119,7 +119,7 @@ type UsrFieldComment {
   update_time_lbl: String!
 }
 input UsrInput {
-  ""
+  "ID"
   id: UsrId
   "头像"
   img: String
@@ -238,9 +238,9 @@ type Query {
 }
 type Mutation {
   "创建用户"
-  createUsr(model: UsrInput!, unique_type: UniqueType): UsrId!
+  createUsr(input: UsrInput!, unique_type: UniqueType): UsrId!
   "根据 id 修改用户"
-  updateByIdUsr(id: UsrId!, model: UsrInput!): UsrId!
+  updateByIdUsr(id: UsrId!, input: UsrInput!): UsrId!
   "根据 ids 删除用户"
   deleteByIdsUsr(ids: [UsrId!]!): Int!
   "根据 ids 启用或者禁用用户"

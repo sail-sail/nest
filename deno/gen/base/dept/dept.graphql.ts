@@ -93,7 +93,7 @@ type DeptFieldComment {
   update_time_lbl: String!
 }
 input DeptInput {
-  ""
+  "ID"
   id: DeptId
   "父部门"
   parent_id: DeptId
@@ -186,9 +186,9 @@ type Query {
 }
 type Mutation {
   "创建部门"
-  createDept(model: DeptInput!, unique_type: UniqueType): DeptId!
+  createDept(input: DeptInput!, unique_type: UniqueType): DeptId!
   "根据 id 修改部门"
-  updateByIdDept(id: DeptId!, model: DeptInput!): DeptId!
+  updateByIdDept(id: DeptId!, input: DeptInput!): DeptId!
   "根据 ids 删除部门"
   deleteByIdsDept(ids: [DeptId!]!): Int!
   "根据 ids 启用或者禁用部门"
