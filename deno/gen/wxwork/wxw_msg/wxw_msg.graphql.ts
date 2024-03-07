@@ -61,7 +61,7 @@ type WxwMsgFieldComment {
   errmsg: String!
 }
 input WxwMsgInput {
-  ""
+  "ID"
   id: WxwMsgId
   "企微应用"
   wxw_app_id: WxwAppId

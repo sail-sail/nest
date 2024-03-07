@@ -29,7 +29,7 @@ type WxwUsrFieldComment {
   rem: String!
 }
 input WxwUsrInput {
-  ""
+  "ID"
   id: WxwUsrId
   "姓名"
   lbl: String
@@ -69,9 +69,9 @@ type Query {
 }
 type Mutation {
   "创建企微用户"
-  createWxwUsr(model: WxwUsrInput!, unique_type: UniqueType): WxwUsrId!
+  createWxwUsr(input: WxwUsrInput!, unique_type: UniqueType): WxwUsrId!
   "根据 id 修改企微用户"
-  updateByIdWxwUsr(id: WxwUsrId!, model: WxwUsrInput!): WxwUsrId!
+  updateByIdWxwUsr(id: WxwUsrId!, input: WxwUsrInput!): WxwUsrId!
   "根据 ids 删除企微用户"
   deleteByIdsWxwUsr(ids: [WxwUsrId!]!): Int!
   "根据 ids 还原企微用户"
