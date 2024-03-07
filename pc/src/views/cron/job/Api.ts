@@ -186,6 +186,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<JobId> {
+  input = intoInput(input);
   const data: {
     createJob: Mutation["createJob"];
   } = await mutation({
@@ -214,6 +215,7 @@ export async function updateById(
   input: JobInput,
   opt?: GqlOpt,
 ): Promise<JobId> {
+  input = intoInput(input);
   const data: {
     updateByIdJob: Mutation["updateByIdJob"];
   } = await mutation({

@@ -202,6 +202,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
+  input = intoInput(input);
   const data: {
     createCronJob: Mutation["createCronJob"];
   } = await mutation({
@@ -230,6 +231,7 @@ export async function updateById(
   input: CronJobInput,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
+  input = intoInput(input);
   const data: {
     updateByIdCronJob: Mutation["updateByIdCronJob"];
   } = await mutation({
