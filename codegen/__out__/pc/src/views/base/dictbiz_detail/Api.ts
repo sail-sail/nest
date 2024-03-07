@@ -196,6 +196,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
+  input = intoInput(input);
   const data: {
     createDictbizDetail: Mutation["createDictbizDetail"];
   } = await mutation({
@@ -224,6 +225,7 @@ export async function updateById(
   input: DictbizDetailInput,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
+  input = intoInput(input);
   const data: {
     updateByIdDictbizDetail: Mutation["updateByIdDictbizDetail"];
   } = await mutation({

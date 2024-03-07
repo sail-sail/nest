@@ -183,6 +183,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrgId> {
+  input = intoInput(input);
   const data: {
     createOrg: Mutation["createOrg"];
   } = await mutation({
@@ -211,6 +212,7 @@ export async function updateById(
   input: OrgInput,
   opt?: GqlOpt,
 ): Promise<OrgId> {
+  input = intoInput(input);
   const data: {
     updateByIdOrg: Mutation["updateByIdOrg"];
   } = await mutation({

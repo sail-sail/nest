@@ -180,6 +180,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<LangId> {
+  input = intoInput(input);
   const data: {
     createLang: Mutation["createLang"];
   } = await mutation({
@@ -208,6 +209,7 @@ export async function updateById(
   input: LangInput,
   opt?: GqlOpt,
 ): Promise<LangId> {
+  input = intoInput(input);
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
