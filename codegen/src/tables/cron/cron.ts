@@ -22,6 +22,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
+        width: 280,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -72,7 +73,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "job_id",
-        width: 140,
         require: true,
         search: true,
       },
