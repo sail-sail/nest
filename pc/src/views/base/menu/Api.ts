@@ -224,6 +224,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<MenuId> {
+  input = intoInput(input);
   const data: {
     createMenu: Mutation["createMenu"];
   } = await mutation({
@@ -252,6 +253,7 @@ export async function updateById(
   input: MenuInput,
   opt?: GqlOpt,
 ): Promise<MenuId> {
+  input = intoInput(input);
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({

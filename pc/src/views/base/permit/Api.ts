@@ -185,6 +185,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PermitId> {
+  input = intoInput(input);
   const data: {
     createPermit: Mutation["createPermit"];
   } = await mutation({
@@ -213,6 +214,7 @@ export async function updateById(
   input: PermitInput,
   opt?: GqlOpt,
 ): Promise<PermitId> {
+  input = intoInput(input);
   const data: {
     updateByIdPermit: Mutation["updateByIdPermit"];
   } = await mutation({
