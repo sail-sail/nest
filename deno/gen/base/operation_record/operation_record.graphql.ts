@@ -65,7 +65,7 @@ type OperationRecordFieldComment {
   create_time_lbl: String!
 }
 input OperationRecordInput {
-  ""
+  "ID"
   id: OperationRecordId
   "模块"
   module: String

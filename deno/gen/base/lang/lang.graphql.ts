@@ -73,7 +73,7 @@ type LangFieldComment {
   update_time_lbl: String!
 }
 input LangInput {
-  ""
+  "ID"
   id: LangId
   "编码"
   code: String
@@ -151,9 +151,9 @@ type Query {
 }
 type Mutation {
   "创建语言"
-  createLang(model: LangInput!, unique_type: UniqueType): LangId!
+  createLang(input: LangInput!, unique_type: UniqueType): LangId!
   "根据 id 修改语言"
-  updateByIdLang(id: LangId!, model: LangInput!): LangId!
+  updateByIdLang(id: LangId!, input: LangInput!): LangId!
   "根据 ids 删除语言"
   deleteByIdsLang(ids: [LangId!]!): Int!
   "根据 ids 启用或者禁用语言"

@@ -89,7 +89,7 @@ type DomainFieldComment {
   update_time_lbl: String!
 }
 input DomainInput {
-  ""
+  "ID"
   id: DomainId
   "协议"
   protocol: String
@@ -179,9 +179,9 @@ type Query {
 }
 type Mutation {
   "创建域名"
-  createDomain(model: DomainInput!, unique_type: UniqueType): DomainId!
+  createDomain(input: DomainInput!, unique_type: UniqueType): DomainId!
   "根据 id 修改域名"
-  updateByIdDomain(id: DomainId!, model: DomainInput!): DomainId!
+  updateByIdDomain(id: DomainId!, input: DomainInput!): DomainId!
   "根据 ids 删除域名"
   deleteByIdsDomain(ids: [DomainId!]!): Int!
   "根据 id 设置默认域名"

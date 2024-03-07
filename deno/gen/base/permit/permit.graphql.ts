@@ -69,7 +69,7 @@ type PermitFieldComment {
   update_time_lbl: String!
 }
 input PermitInput {
-  ""
+  "ID"
   id: PermitId
   "菜单"
   menu_id: MenuId
@@ -142,9 +142,9 @@ type Query {
 }
 type Mutation {
   "创建按钮权限"
-  createPermit(model: PermitInput!, unique_type: UniqueType): PermitId!
+  createPermit(input: PermitInput!, unique_type: UniqueType): PermitId!
   "根据 id 修改按钮权限"
-  updateByIdPermit(id: PermitId!, model: PermitInput!): PermitId!
+  updateByIdPermit(id: PermitId!, input: PermitInput!): PermitId!
   "根据 ids 删除按钮权限"
   deleteByIdsPermit(ids: [PermitId!]!): Int!
   "根据 ids 还原按钮权限"
