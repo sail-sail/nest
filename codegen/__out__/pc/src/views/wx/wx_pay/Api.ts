@@ -204,6 +204,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
+  input = intoInput(input);
   const data: {
     createWxPay: Mutation["createWxPay"];
   } = await mutation({
@@ -232,6 +233,7 @@ export async function updateById(
   input: WxPayInput,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxPay: Mutation["updateByIdWxPay"];
   } = await mutation({
