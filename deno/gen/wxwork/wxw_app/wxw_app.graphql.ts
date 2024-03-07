@@ -69,7 +69,7 @@ type WxwAppFieldComment {
   rem: String!
 }
 input WxwAppInput {
-  ""
+  "ID"
   id: WxwAppId
   "名称"
   lbl: String
@@ -143,9 +143,9 @@ type Query {
 }
 type Mutation {
   "创建企微应用"
-  createWxwApp(model: WxwAppInput!, unique_type: UniqueType): WxwAppId!
+  createWxwApp(input: WxwAppInput!, unique_type: UniqueType): WxwAppId!
   "根据 id 修改企微应用"
-  updateByIdWxwApp(id: WxwAppId!, model: WxwAppInput!): WxwAppId!
+  updateByIdWxwApp(id: WxwAppId!, input: WxwAppInput!): WxwAppId!
   "根据 ids 删除企微应用"
   deleteByIdsWxwApp(ids: [WxwAppId!]!): Int!
   "根据 ids 启用或者禁用企微应用"

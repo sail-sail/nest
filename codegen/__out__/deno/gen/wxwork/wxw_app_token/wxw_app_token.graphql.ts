@@ -45,7 +45,7 @@ type WxwAppTokenFieldComment {
   expires_in: String!
 }
 input WxwAppTokenInput {
-  ""
+  "ID"
   id: WxwAppTokenId
   "企微应用"
   wxw_app_id: WxwAppId
@@ -97,9 +97,9 @@ type Query {
 }
 type Mutation {
   "创建企微应用接口凭据"
-  createWxwAppToken(model: WxwAppTokenInput!, unique_type: UniqueType): WxwAppTokenId!
+  createWxwAppToken(input: WxwAppTokenInput!, unique_type: UniqueType): WxwAppTokenId!
   "根据 id 修改企微应用接口凭据"
-  updateByIdWxwAppToken(id: WxwAppTokenId!, model: WxwAppTokenInput!): WxwAppTokenId!
+  updateByIdWxwAppToken(id: WxwAppTokenId!, input: WxwAppTokenInput!): WxwAppTokenId!
   "根据 ids 删除企微应用接口凭据"
   deleteByIdsWxwAppToken(ids: [WxwAppTokenId!]!): Int!
   "根据 ids 还原企微应用接口凭据"

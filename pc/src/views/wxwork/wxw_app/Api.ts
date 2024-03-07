@@ -27,6 +27,28 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxwAppInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    corpid: model?.corpid,
+    agentid: model?.agentid,
+    domain_id: model?.domain_id,
+    domain_id_lbl: model?.domain_id_lbl,
+    corpsecret: model?.corpsecret,
+    contactsecret: model?.contactsecret,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找企微应用列表
  * @param {WxwAppSearch} search?
@@ -150,12 +172,12 @@ export async function findCount(
 
 /**
  * 创建企微应用
- * @param {WxwAppInput} model
+ * @param {WxwAppInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxwAppInput,
+  input: WxwAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxwAppId> {
@@ -163,12 +185,12 @@ export async function create(
     createWxwApp: Mutation["createWxwApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxwAppInput!, $unique_type: UniqueType) {
-        createWxwApp(model: $model, unique_type: $unique_type)
+      mutation($input: WxwAppInput!, $unique_type: UniqueType) {
+        createWxwApp(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -179,25 +201,25 @@ export async function create(
 /**
  * 根据 id 修改企微应用
  * @param {WxwAppId} id
- * @param {WxwAppInput} model
+ * @param {WxwAppInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxwAppId,
-  model: WxwAppInput,
+  input: WxwAppInput,
   opt?: GqlOpt,
 ): Promise<WxwAppId> {
   const data: {
     updateByIdWxwApp: Mutation["updateByIdWxwApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxwAppId!, $model: WxwAppInput!) {
-        updateByIdWxwApp(id: $id, model: $model)
+      mutation($id: WxwAppId!, $input: WxwAppInput!) {
+        updateByIdWxwApp(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxwAppId = data.updateByIdWxwApp;

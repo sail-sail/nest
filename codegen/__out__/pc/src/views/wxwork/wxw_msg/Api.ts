@@ -23,6 +23,26 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxwMsgInput = {
+    id: model?.id,
+    wxw_app_id: model?.wxw_app_id,
+    wxw_app_id_lbl: model?.wxw_app_id_lbl,
+    errcode: model?.errcode,
+    errcode_lbl: model?.errcode_lbl,
+    touser: model?.touser,
+    title: model?.title,
+    description: model?.description,
+    btntxt: model?.btntxt,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    errmsg: model?.errmsg,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找企微消息列表
  * @param {WxwMsgSearch} search?
