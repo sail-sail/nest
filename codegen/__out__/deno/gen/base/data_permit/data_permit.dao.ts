@@ -103,15 +103,6 @@ async function getWhereQuery(
   if (search?.menu_id_is_null) {
     whereQuery += ` and menu_id_lbl.id is null`;
   }
-  if (search?.lbl !== undefined) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
-  }
-  if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
-  }
   if (search?.scope && !Array.isArray(search?.scope)) {
     search.scope = [ search.scope ];
   }
@@ -430,7 +421,6 @@ export async function getFieldComments(): Promise<DataPermitFieldComment> {
     id: await n("ID"),
     menu_id: await n("菜单"),
     menu_id_lbl: await n("菜单"),
-    lbl: await n("名称"),
     scope: await n("范围"),
     scope_lbl: await n("范围"),
     type: await n("类型"),
@@ -681,13 +671,6 @@ export async function validate(
     fieldComments.menu_id,
   );
   
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    100,
-    fieldComments.lbl,
-  );
-  
   // 范围
   await validators.chars_max_length(
     input.scope,
@@ -806,9 +789,6 @@ export async function create(
   if (input.menu_id !== undefined) {
     sql += `,menu_id`;
   }
-  if (input.lbl !== undefined) {
-    sql += `,lbl`;
-  }
   if (input.scope !== undefined) {
     sql += `,scope`;
   }
@@ -840,9 +820,6 @@ export async function create(
   }
   if (input.menu_id !== undefined) {
     sql += `,${ args.push(input.menu_id) }`;
-  }
-  if (input.lbl !== undefined) {
-    sql += `,${ args.push(input.lbl) }`;
   }
   if (input.scope !== undefined) {
     sql += `,${ args.push(input.scope) }`;
@@ -947,12 +924,6 @@ export async function updateById(
   if (input.menu_id !== undefined) {
     if (input.menu_id != oldModel.menu_id) {
       sql += `menu_id = ${ args.push(input.menu_id) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.lbl !== undefined) {
-    if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }

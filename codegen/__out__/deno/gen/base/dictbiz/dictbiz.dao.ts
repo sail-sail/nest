@@ -429,7 +429,7 @@ export async function findAll(
     
     // 业务字典明细
     model.dictbiz_detail_models = dictbiz_detail_models
-      .filter((item) => item.dictbiz_id === model.id)
+      .filter((item) => item.dictbiz_id === model.id);
   }
   
   return result;

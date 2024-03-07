@@ -33,8 +33,6 @@ type DataPermitModel {
   menu_id: MenuId!
   "菜单"
   menu_id_lbl: String
-  "名称"
-  lbl: String!
   "范围"
   scope: DataPermitScope
   "范围"
@@ -71,8 +69,6 @@ type DataPermitFieldComment {
   menu_id: String!
   "菜单"
   menu_id_lbl: String!
-  "名称"
-  lbl: String!
   "范围"
   scope: String!
   "范围"
@@ -101,14 +97,12 @@ type DataPermitFieldComment {
   update_time_lbl: String!
 }
 input DataPermitInput {
-  ""
+  "ID"
   id: DataPermitId
   "菜单"
   menu_id: MenuId
   "菜单"
   menu_id_lbl: String
-  "名称"
-  lbl: String
   "范围"
   scope: DataPermitScope
   "范围"
@@ -146,9 +140,6 @@ input DataPermitSearch {
   "菜单"
   menu_id: [MenuId!]
   menu_id_is_null: Boolean
-  "名称"
-  lbl: String
-  lbl_like: String
   "范围"
   scope: [String!]
   "类型"
@@ -181,9 +172,9 @@ type Query {
 }
 type Mutation {
   "创建数据权限"
-  createDataPermit(model: DataPermitInput!, unique_type: UniqueType): DataPermitId!
+  createDataPermit(input: DataPermitInput!, unique_type: UniqueType): DataPermitId!
   "根据 id 修改数据权限"
-  updateByIdDataPermit(id: DataPermitId!, model: DataPermitInput!): DataPermitId!
+  updateByIdDataPermit(id: DataPermitId!, input: DataPermitInput!): DataPermitId!
   "根据 ids 删除数据权限"
   deleteByIdsDataPermit(ids: [DataPermitId!]!): Int!
   "根据 ids 还原数据权限"

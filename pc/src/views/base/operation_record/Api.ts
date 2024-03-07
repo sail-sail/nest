@@ -19,6 +19,27 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OperationRecordInput = {
+    id: model?.id,
+    module: model?.module,
+    module_lbl: model?.module_lbl,
+    method: model?.method,
+    method_lbl: model?.method_lbl,
+    lbl: model?.lbl,
+    time: model?.time,
+    old_data: model?.old_data,
+    new_data: model?.new_data,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找操作记录列表
  * @param {OperationRecordSearch} search?

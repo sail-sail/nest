@@ -31,6 +31,28 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: PermitInput = {
+    id: model?.id,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    code: model?.code,
+    lbl: model?.lbl,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找按钮权限列表
  * @param {PermitSearch} search?
@@ -154,12 +176,12 @@ export async function findCount(
 
 /**
  * 创建按钮权限
- * @param {PermitInput} model
+ * @param {PermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: PermitInput,
+  input: PermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PermitId> {
@@ -167,12 +189,12 @@ export async function create(
     createPermit: Mutation["createPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: PermitInput!, $unique_type: UniqueType) {
-        createPermit(model: $model, unique_type: $unique_type)
+      mutation($input: PermitInput!, $unique_type: UniqueType) {
+        createPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -183,25 +205,25 @@ export async function create(
 /**
  * 根据 id 修改按钮权限
  * @param {PermitId} id
- * @param {PermitInput} model
+ * @param {PermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: PermitId,
-  model: PermitInput,
+  input: PermitInput,
   opt?: GqlOpt,
 ): Promise<PermitId> {
   const data: {
     updateByIdPermit: Mutation["updateByIdPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: PermitId!, $model: PermitInput!) {
-        updateByIdPermit(id: $id, model: $model)
+      mutation($id: PermitId!, $input: PermitInput!) {
+        updateByIdPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: PermitId = data.updateByIdPermit;

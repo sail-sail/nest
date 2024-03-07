@@ -295,8 +295,8 @@ type <#=modelName#> {<#
     if (!many2many || !foreignKey) continue;
     if (!column.inlineMany2manyTab) continue;
     const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-    const table = foreignKey.table;
-    const mod = foreignKey.mod;
+    const table = many2many.table;
+    const mod = many2many.mod;
     if (!inlineMany2manySchema) {
       throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
       process.exit(1);
@@ -325,7 +325,7 @@ type <#=modelName#> {<#
     }
   #>
   "<#=comment#>"
-  <#=column_name#>_models: [<#=modelName#>!]<#
+  <#=column_name#>_<#=table#>_models: [<#=modelName#>!]<#
   }
   #>
 }
@@ -470,7 +470,7 @@ input <#=inputName#> {<#
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') column_comment = '';
+    if (column_name === 'id') column_comment = 'ID';
   #><#
     if (foreignKey) {
   #>
@@ -579,8 +579,8 @@ input <#=inputName#> {<#
     if (!many2many || !foreignKey) continue;
     if (!column.inlineMany2manyTab) continue;
     const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-    const table = foreignKey.table;
-    const mod = foreignKey.mod;
+    const table = many2many.table;
+    const mod = many2many.mod;
     if (!inlineMany2manySchema) {
       throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
       process.exit(1);
@@ -609,7 +609,7 @@ input <#=inputName#> {<#
     }
   #>
   "<#=comment#>"
-  <#=column_name#>_models: [<#=modelName#>!]<#
+  <#=column_name#>_<#=table#>_models: [<#=inputName#>!]<#
   }
   #>
 }
@@ -805,13 +805,13 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建<#=table_comment#>"
-  create<#=Table_Up2#>(model: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
+  create<#=Table_Up2#>(input: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据 id 修改<#=table_comment#>"
-  updateById<#=Table_Up2#>(id: <#=Table_Up#>Id!, model: <#=inputName#>!): <#=Table_Up#>Id!<#
+  updateById<#=Table_Up2#>(id: <#=Table_Up#>Id!, input: <#=inputName#>!): <#=Table_Up#>Id!<#
   }
   #><#
   if (opts.noDelete !== true) {

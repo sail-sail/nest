@@ -23,6 +23,30 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OrgInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找组织列表
  * @param {OrgSearch} search?
@@ -150,12 +174,12 @@ export async function findCount(
 
 /**
  * 创建组织
- * @param {OrgInput} model
+ * @param {OrgInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OrgInput,
+  input: OrgInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrgId> {
@@ -163,12 +187,12 @@ export async function create(
     createOrg: Mutation["createOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OrgInput!, $unique_type: UniqueType) {
-        createOrg(model: $model, unique_type: $unique_type)
+      mutation($input: OrgInput!, $unique_type: UniqueType) {
+        createOrg(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -179,25 +203,25 @@ export async function create(
 /**
  * 根据 id 修改组织
  * @param {OrgId} id
- * @param {OrgInput} model
+ * @param {OrgInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OrgId,
-  model: OrgInput,
+  input: OrgInput,
   opt?: GqlOpt,
 ): Promise<OrgId> {
   const data: {
     updateByIdOrg: Mutation["updateByIdOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OrgId!, $model: OrgInput!) {
-        updateByIdOrg(id: $id, model: $model)
+      mutation($id: OrgId!, $input: OrgInput!) {
+        updateByIdOrg(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OrgId = data.updateByIdOrg;

@@ -19,6 +19,23 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: LoginLogInput = {
+    id: model?.id,
+    username: model?.username,
+    is_succ: model?.is_succ,
+    is_succ_lbl: model?.is_succ_lbl,
+    ip: model?.ip,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找登录日志列表
  * @param {LoginLogSearch} search?

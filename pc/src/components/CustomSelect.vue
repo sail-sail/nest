@@ -439,11 +439,68 @@ const modelValueComputed = $computed(() => {
 });
 
 const isShowModelLabel = $computed(() => {
-  if (modelLabel == null) {
+  if (!modelLabel) {
     return false;
   }
-  return modelValueComputed === modelLabel;
+  if (!props.multiple) {
+    if (modelValue == null || modelValue === "") {
+      return false;
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
+    if (!item || item.label !== modelLabel) {
+      console.log(modelValue);
+      return true;
+    }
+    return false;
+  } else {
+    if (modelValue == null || modelValue.length === 0) {
+      return false;
+    }
+    const labels: string[] = modelLabel.split(",")
+      .filter((item: string) => item)
+      .map((item) => item.trim());
+    if (labels.length !== modelValue.length) {
+      return true;
+    }
+    for (let i = 0; i < modelValue.length; i++) {
+      const item = modelValue[i];
+      if (item !== labels[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
 });
+
+// 通过id获取modelLabel
+function getModelLabelById() {
+  if (!props.multiple) {
+    const id = modelValue;
+    if (!id) {
+      return "";
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === id);
+    if (!item) {
+      return "";
+    }
+    return item.label;
+  }
+  let labels: string[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const item = options4SelectV2.find((item: OptionType) => item.value === value);
+    if (!item) {
+      continue;
+    }
+    labels.push(item.label);
+  }
+  return labels.join(",");
+}
+
+function refreshModelLabel() {
+  modelLabel = getModelLabelById();
+  emit("update:modelLabel", modelLabel);
+}
 
 let shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
@@ -681,6 +738,7 @@ function blur() {
 
 defineExpose({
   refresh: refreshEfc,
+  refreshModelLabel,
   focus,
   blur,
 });

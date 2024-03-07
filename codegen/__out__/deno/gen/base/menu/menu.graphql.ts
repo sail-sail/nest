@@ -93,7 +93,7 @@ type MenuFieldComment {
   update_time_lbl: String!
 }
 input MenuInput {
-  ""
+  "ID"
   id: MenuId
   "父菜单"
   parent_id: MenuId
@@ -189,9 +189,9 @@ type Query {
 }
 type Mutation {
   "创建菜单"
-  createMenu(model: MenuInput!, unique_type: UniqueType): MenuId!
+  createMenu(input: MenuInput!, unique_type: UniqueType): MenuId!
   "根据 id 修改菜单"
-  updateByIdMenu(id: MenuId!, model: MenuInput!): MenuId!
+  updateByIdMenu(id: MenuId!, input: MenuInput!): MenuId!
   "根据 ids 删除菜单"
   deleteByIdsMenu(ids: [MenuId!]!): Int!
   "根据 ids 启用或者禁用菜单"
