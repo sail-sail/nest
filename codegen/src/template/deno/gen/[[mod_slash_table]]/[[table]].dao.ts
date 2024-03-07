@@ -529,10 +529,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!many2many || !foreignKey) continue;
   if (!column.inlineMany2manyTab) continue;
   const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-  const table = foreignKey.table;
-  const mod = foreignKey.mod;
+  const table = many2many.table;
+  const mod = many2many.mod;
   if (!inlineMany2manySchema) {
-    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
     process.exit(1);
   }
   const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
@@ -573,6 +573,40 @@ for (let i = 0; i < columns.length; i++) {
   if (!hasForceDeleteByIdsUps) {
     forceDeleteByIdsUps.push(Table_Up);
   }
+#>
+
+import {<#
+  if (!hasFindAllTableUps) {
+  #>
+  findAll as findAll<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  deleteByIds as deleteByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revertByIds as revertByIds<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  updateById as updateById<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
+  }
+  #>
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -1393,6 +1427,43 @@ export async function findAll(
     is_deleted: search?.is_deleted,
   });<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=comment#>
+  const <#=column_name#>_<#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: result.map((item) => item.id),
+    is_deleted: search?.is_deleted,
+  });<#
+  }
   #>
   
   for (let i = 0; i < result.length; i++) {
@@ -1546,7 +1617,42 @@ export async function findAll(
     
     // <#=inlineForeignTab.label#>
     model.<#=table#>_models = <#=table#>_models
-      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)<#
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id);<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      const table = many2many.table;
+      const mod = many2many.mod;
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_<#=table#>_models = <#=column_name#>_<#=table#>_models
+      .filter((item) => item.<#=many2many.column1#> === model.id);<#
     }
     #>
   }

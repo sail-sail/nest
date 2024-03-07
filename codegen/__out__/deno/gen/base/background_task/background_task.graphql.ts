@@ -119,7 +119,7 @@ type BackgroundTaskFieldComment {
   update_time_lbl: String!
 }
 input BackgroundTaskInput {
-  ""
+  "ID"
   id: BackgroundTaskId
   "名称"
   lbl: String

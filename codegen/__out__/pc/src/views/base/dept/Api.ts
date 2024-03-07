@@ -31,6 +31,34 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DeptInput = {
+    id: model?.id,
+    parent_id: model?.parent_id,
+    parent_id_lbl: model?.parent_id_lbl,
+    lbl: model?.lbl,
+    usr_ids: model?.usr_ids,
+    usr_ids_lbl: model?.usr_ids_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找部门列表
  * @param {DeptSearch} search?
@@ -191,12 +219,12 @@ export async function findCount(
 
 /**
  * 创建部门
- * @param {DeptInput} model
+ * @param {DeptInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DeptInput,
+  input: DeptInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DeptId> {
@@ -204,12 +232,12 @@ export async function create(
     createDept: Mutation["createDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DeptInput!, $unique_type: UniqueType) {
-        createDept(model: $model, unique_type: $unique_type)
+      mutation($input: DeptInput!, $unique_type: UniqueType) {
+        createDept(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -220,25 +248,25 @@ export async function create(
 /**
  * 根据 id 修改部门
  * @param {DeptId} id
- * @param {DeptInput} model
+ * @param {DeptInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DeptId,
-  model: DeptInput,
+  input: DeptInput,
   opt?: GqlOpt,
 ): Promise<DeptId> {
   const data: {
     updateByIdDept: Mutation["updateByIdDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DeptId!, $model: DeptInput!) {
-        updateByIdDept(id: $id, model: $model)
+      mutation($id: DeptId!, $input: DeptInput!) {
+        updateByIdDept(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DeptId = data.updateByIdDept;

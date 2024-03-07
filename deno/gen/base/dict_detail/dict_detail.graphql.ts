@@ -89,7 +89,7 @@ type DictDetailFieldComment {
   update_time_lbl: String!
 }
 input DictDetailInput {
-  ""
+  "ID"
   id: DictDetailId
   "系统字典"
   dict_id: DictId
@@ -180,9 +180,9 @@ type Query {
 }
 type Mutation {
   "创建系统字典明细"
-  createDictDetail(model: DictDetailInput!, unique_type: UniqueType): DictDetailId!
+  createDictDetail(input: DictDetailInput!, unique_type: UniqueType): DictDetailId!
   "根据 id 修改系统字典明细"
-  updateByIdDictDetail(id: DictDetailId!, model: DictDetailInput!): DictDetailId!
+  updateByIdDictDetail(id: DictDetailId!, input: DictDetailInput!): DictDetailId!
   "根据 ids 删除系统字典明细"
   deleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
   "根据 ids 启用或者禁用系统字典明细"

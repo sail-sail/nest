@@ -39,6 +39,37 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: RoleInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    home_url: model?.home_url,
+    menu_ids: model?.menu_ids,
+    menu_ids_lbl: model?.menu_ids_lbl,
+    permit_ids: model?.permit_ids,
+    permit_ids_lbl: model?.permit_ids_lbl,
+    data_permit_ids: model?.data_permit_ids,
+    data_permit_ids_lbl: model?.data_permit_ids_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找角色列表
  * @param {RoleSearch} search?
@@ -180,12 +211,12 @@ export async function findCount(
 
 /**
  * 创建角色
- * @param {RoleInput} model
+ * @param {RoleInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: RoleInput,
+  input: RoleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RoleId> {
@@ -193,12 +224,12 @@ export async function create(
     createRole: Mutation["createRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: RoleInput!, $unique_type: UniqueType) {
-        createRole(model: $model, unique_type: $unique_type)
+      mutation($input: RoleInput!, $unique_type: UniqueType) {
+        createRole(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -209,25 +240,25 @@ export async function create(
 /**
  * 根据 id 修改角色
  * @param {RoleId} id
- * @param {RoleInput} model
+ * @param {RoleInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: RoleId,
-  model: RoleInput,
+  input: RoleInput,
   opt?: GqlOpt,
 ): Promise<RoleId> {
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: RoleId!, $model: RoleInput!) {
-        updateByIdRole(id: $id, model: $model)
+      mutation($id: RoleId!, $input: RoleInput!) {
+        updateByIdRole(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: RoleId = data.updateByIdRole;

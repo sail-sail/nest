@@ -36,6 +36,30 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DataPermitInput = {
+    id: model?.id,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    scope: model?.scope,
+    scope_lbl: model?.scope_lbl,
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找数据权限列表
  * @param {DataPermitSearch} search?
@@ -58,7 +82,6 @@ export async function findAll(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -110,7 +133,6 @@ export async function findOne(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -165,12 +187,12 @@ export async function findCount(
 
 /**
  * 创建数据权限
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DataPermitInput,
+  input: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
@@ -178,12 +200,12 @@ export async function create(
     createDataPermit: Mutation["createDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DataPermitInput!, $unique_type: UniqueType) {
-        createDataPermit(model: $model, unique_type: $unique_type)
+      mutation($input: DataPermitInput!, $unique_type: UniqueType) {
+        createDataPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -194,25 +216,25 @@ export async function create(
 /**
  * 根据 id 修改数据权限
  * @param {DataPermitId} id
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DataPermitId,
-  model: DataPermitInput,
+  input: DataPermitInput,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DataPermitId!, $model: DataPermitInput!) {
-        updateByIdDataPermit(id: $id, model: $model)
+      mutation($id: DataPermitId!, $input: DataPermitInput!) {
+        updateByIdDataPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DataPermitId = data.updateByIdDataPermit;
@@ -237,7 +259,6 @@ export async function findById(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -421,7 +442,6 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsDataPermit {
             menu_id_lbl
-            lbl
             scope_lbl
             type_lbl
             rem
@@ -497,7 +517,6 @@ export function useExportExcel(routePath: string) {
               id
               menu_id
               menu_id_lbl
-              lbl
               scope
               scope_lbl
               type
