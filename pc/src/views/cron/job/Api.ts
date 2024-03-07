@@ -23,6 +23,31 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: JobInput = {
+    id: model?.id,
+    code: model?.code,
+    lbl: model?.lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找任务列表
  * @param {JobSearch} search?
@@ -152,12 +177,12 @@ export async function findCount(
 
 /**
  * 创建任务
- * @param {JobInput} model
+ * @param {JobInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: JobInput,
+  input: JobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<JobId> {
@@ -165,12 +190,12 @@ export async function create(
     createJob: Mutation["createJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: JobInput!, $unique_type: UniqueType) {
-        createJob(model: $model, unique_type: $unique_type)
+      mutation($input: JobInput!, $unique_type: UniqueType) {
+        createJob(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -181,25 +206,25 @@ export async function create(
 /**
  * 根据 id 修改任务
  * @param {JobId} id
- * @param {JobInput} model
+ * @param {JobInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: JobId,
-  model: JobInput,
+  input: JobInput,
   opt?: GqlOpt,
 ): Promise<JobId> {
   const data: {
     updateByIdJob: Mutation["updateByIdJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: JobId!, $model: JobInput!) {
-        updateByIdJob(id: $id, model: $model)
+      mutation($id: JobId!, $input: JobInput!) {
+        updateByIdJob(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: JobId = data.updateByIdJob;

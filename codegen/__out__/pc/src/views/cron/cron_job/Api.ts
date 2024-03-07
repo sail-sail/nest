@@ -27,6 +27,35 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: CronJobInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    job_id: model?.job_id,
+    job_id_lbl: model?.job_id_lbl,
+    cron: model?.cron,
+    timezone: model?.timezone,
+    timezone_lbl: model?.timezone_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找定时任务列表
  * @param {CronJobSearch} search?
@@ -164,12 +193,12 @@ export async function findCount(
 
 /**
  * 创建定时任务
- * @param {CronJobInput} model
+ * @param {CronJobInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: CronJobInput,
+  input: CronJobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
@@ -177,12 +206,12 @@ export async function create(
     createCronJob: Mutation["createCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: CronJobInput!, $unique_type: UniqueType) {
-        createCronJob(model: $model, unique_type: $unique_type)
+      mutation($input: CronJobInput!, $unique_type: UniqueType) {
+        createCronJob(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -193,25 +222,25 @@ export async function create(
 /**
  * 根据 id 修改定时任务
  * @param {CronJobId} id
- * @param {CronJobInput} model
+ * @param {CronJobInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: CronJobId,
-  model: CronJobInput,
+  input: CronJobInput,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
   const data: {
     updateByIdCronJob: Mutation["updateByIdCronJob"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: CronJobId!, $model: CronJobInput!) {
-        updateByIdCronJob(id: $id, model: $model)
+      mutation($id: CronJobId!, $input: CronJobInput!) {
+        updateByIdCronJob(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: CronJobId = data.updateByIdCronJob;

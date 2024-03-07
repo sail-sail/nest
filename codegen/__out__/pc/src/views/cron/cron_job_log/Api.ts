@@ -27,6 +27,27 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: CronJobLogInput = {
+    id: model?.id,
+    cron_job_id: model?.cron_job_id,
+    cron_job_id_lbl: model?.cron_job_id_lbl,
+    exec_state: model?.exec_state,
+    exec_state_lbl: model?.exec_state_lbl,
+    exec_result: model?.exec_result,
+    begin_time: model?.begin_time,
+    begin_time_lbl: model?.begin_time_lbl,
+    end_time: model?.end_time,
+    end_time_lbl: model?.end_time_lbl,
+    rem: model?.rem,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找任务执行日志列表
  * @param {CronJobLogSearch} search?

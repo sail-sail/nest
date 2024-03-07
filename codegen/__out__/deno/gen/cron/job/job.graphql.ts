@@ -81,7 +81,7 @@ type JobFieldComment {
   update_time_lbl: String!
 }
 input JobInput {
-  ""
+  "ID"
   id: JobId
   "编码"
   code: String
@@ -165,9 +165,9 @@ type Query {
 }
 type Mutation {
   "创建任务"
-  createJob(model: JobInput!, unique_type: UniqueType): JobId!
+  createJob(input: JobInput!, unique_type: UniqueType): JobId!
   "根据 id 修改任务"
-  updateByIdJob(id: JobId!, model: JobInput!): JobId!
+  updateByIdJob(id: JobId!, input: JobInput!): JobId!
   "根据 ids 删除任务"
   deleteByIdsJob(ids: [JobId!]!): Int!
   "根据 ids 启用或者禁用任务"

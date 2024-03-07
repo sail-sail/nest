@@ -97,7 +97,7 @@ type CronJobFieldComment {
   update_time_lbl: String!
 }
 input CronJobInput {
-  ""
+  "ID"
   id: CronJobId
   "名称"
   lbl: String
@@ -194,9 +194,9 @@ type Query {
 }
 type Mutation {
   "创建定时任务"
-  createCronJob(model: CronJobInput!, unique_type: UniqueType): CronJobId!
+  createCronJob(input: CronJobInput!, unique_type: UniqueType): CronJobId!
   "根据 id 修改定时任务"
-  updateByIdCronJob(id: CronJobId!, model: CronJobInput!): CronJobId!
+  updateByIdCronJob(id: CronJobId!, input: CronJobInput!): CronJobId!
   "根据 ids 删除定时任务"
   deleteByIdsCronJob(ids: [CronJobId!]!): Int!
   "根据 ids 启用或者禁用定时任务"
