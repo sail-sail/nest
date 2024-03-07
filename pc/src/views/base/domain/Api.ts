@@ -192,6 +192,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     createDomain: Mutation["createDomain"];
   } = await mutation({
@@ -220,6 +221,7 @@ export async function updateById(
   input: DomainInput,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     updateByIdDomain: Mutation["updateByIdDomain"];
   } = await mutation({
