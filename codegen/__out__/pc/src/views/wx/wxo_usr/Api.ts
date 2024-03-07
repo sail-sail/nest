@@ -27,6 +27,29 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxoUsrInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    usr_id: model?.usr_id,
+    usr_id_lbl: model?.usr_id_lbl,
+    openid: model?.openid,
+    unionid: model?.unionid,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找公众号用户列表
  * @param {WxoUsrSearch} search?
@@ -152,12 +175,12 @@ export async function findCount(
 
 /**
  * 创建公众号用户
- * @param {WxoUsrInput} model
+ * @param {WxoUsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxoUsrInput,
+  input: WxoUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoUsrId> {
@@ -165,12 +188,12 @@ export async function create(
     createWxoUsr: Mutation["createWxoUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxoUsrInput!, $unique_type: UniqueType) {
-        createWxoUsr(model: $model, unique_type: $unique_type)
+      mutation($input: WxoUsrInput!, $unique_type: UniqueType) {
+        createWxoUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -181,25 +204,25 @@ export async function create(
 /**
  * 根据 id 修改公众号用户
  * @param {WxoUsrId} id
- * @param {WxoUsrInput} model
+ * @param {WxoUsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoUsrId,
-  model: WxoUsrInput,
+  input: WxoUsrInput,
   opt?: GqlOpt,
 ): Promise<WxoUsrId> {
   const data: {
     updateByIdWxoUsr: Mutation["updateByIdWxoUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxoUsrId!, $model: WxoUsrInput!) {
-        updateByIdWxoUsr(id: $id, model: $model)
+      mutation($id: WxoUsrId!, $input: WxoUsrInput!) {
+        updateByIdWxoUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxoUsrId = data.updateByIdWxoUsr;

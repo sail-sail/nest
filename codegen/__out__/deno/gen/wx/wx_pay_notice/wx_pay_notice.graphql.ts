@@ -179,7 +179,7 @@ type WxPayNoticeFieldComment {
   update_time_lbl: String!
 }
 input WxPayNoticeInput {
-  ""
+  "ID"
   id: WxPayNoticeId
   "开发者ID"
   appid: String

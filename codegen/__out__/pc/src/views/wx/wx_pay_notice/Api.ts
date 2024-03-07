@@ -25,6 +25,46 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxPayNoticeInput = {
+    id: model?.id,
+    appid: model?.appid,
+    mchid: model?.mchid,
+    openid: model?.openid,
+    out_trade_no: model?.out_trade_no,
+    transaction_id: model?.transaction_id,
+    trade_type: model?.trade_type,
+    trade_type_lbl: model?.trade_type_lbl,
+    trade_state: model?.trade_state,
+    trade_state_lbl: model?.trade_state_lbl,
+    trade_state_desc: model?.trade_state_desc,
+    bank_type: model?.bank_type,
+    attach: model?.attach,
+    success_time: model?.success_time,
+    success_time_lbl: model?.success_time_lbl,
+    total: model?.total,
+    payer_total: model?.payer_total,
+    currency: model?.currency,
+    currency_lbl: model?.currency_lbl,
+    payer_currency: model?.payer_currency,
+    payer_currency_lbl: model?.payer_currency_lbl,
+    device_id: model?.device_id,
+    rem: model?.rem,
+    raw: model?.raw,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找微信支付通知列表
  * @param {WxPayNoticeSearch} search?

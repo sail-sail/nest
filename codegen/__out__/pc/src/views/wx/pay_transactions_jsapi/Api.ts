@@ -23,6 +23,44 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: PayTransactionsJsapiInput = {
+    id: model?.id,
+    appid: model?.appid,
+    mchid: model?.mchid,
+    description: model?.description,
+    out_trade_no: model?.out_trade_no,
+    transaction_id: model?.transaction_id,
+    trade_state: model?.trade_state,
+    trade_state_lbl: model?.trade_state_lbl,
+    trade_state_desc: model?.trade_state_desc,
+    success_time: model?.success_time,
+    success_time_lbl: model?.success_time_lbl,
+    time_expire: model?.time_expire,
+    attach: model?.attach,
+    attach2: model?.attach2,
+    notify_url: model?.notify_url,
+    support_fapiao: model?.support_fapiao,
+    support_fapiao_lbl: model?.support_fapiao_lbl,
+    total_fee: model?.total_fee,
+    currency: model?.currency,
+    currency_lbl: model?.currency_lbl,
+    openid: model?.openid,
+    prepay_id: model?.prepay_id,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找微信JSAPI下单列表
  * @param {PayTransactionsJsapiSearch} search?

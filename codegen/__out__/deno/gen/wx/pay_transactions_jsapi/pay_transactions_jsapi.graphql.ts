@@ -155,7 +155,7 @@ type PayTransactionsJsapiFieldComment {
   update_time_lbl: String!
 }
 input PayTransactionsJsapiInput {
-  ""
+  "ID"
   id: PayTransactionsJsapiId
   "开发者ID"
   appid: String

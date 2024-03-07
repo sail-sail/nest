@@ -73,7 +73,7 @@ type WxoUsrFieldComment {
   update_time_lbl: String!
 }
 input WxoUsrInput {
-  ""
+  "ID"
   id: WxoUsrId
   "名称"
   lbl: String
@@ -151,9 +151,9 @@ type Query {
 }
 type Mutation {
   "创建公众号用户"
-  createWxoUsr(model: WxoUsrInput!, unique_type: UniqueType): WxoUsrId!
+  createWxoUsr(input: WxoUsrInput!, unique_type: UniqueType): WxoUsrId!
   "根据 id 修改公众号用户"
-  updateByIdWxoUsr(id: WxoUsrId!, model: WxoUsrInput!): WxoUsrId!
+  updateByIdWxoUsr(id: WxoUsrId!, input: WxoUsrInput!): WxoUsrId!
   "根据 ids 删除公众号用户"
   deleteByIdsWxoUsr(ids: [WxoUsrId!]!): Int!
   "根据 ids 还原公众号用户"

@@ -105,7 +105,7 @@ type WxPayFieldComment {
   update_time_lbl: String!
 }
 input WxPayInput {
-  ""
+  "ID"
   id: WxPayId
   "名称"
   lbl: String
@@ -219,9 +219,9 @@ type Query {
 }
 type Mutation {
   "创建微信支付设置"
-  createWxPay(model: WxPayInput!, unique_type: UniqueType): WxPayId!
+  createWxPay(input: WxPayInput!, unique_type: UniqueType): WxPayId!
   "根据 id 修改微信支付设置"
-  updateByIdWxPay(id: WxPayId!, model: WxPayInput!): WxPayId!
+  updateByIdWxPay(id: WxPayId!, input: WxPayInput!): WxPayId!
   "根据 ids 删除微信支付设置"
   deleteByIdsWxPay(ids: [WxPayId!]!): Int!
   "根据 ids 启用或者禁用微信支付设置"

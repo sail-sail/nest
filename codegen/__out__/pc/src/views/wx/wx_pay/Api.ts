@@ -23,6 +23,37 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxPayInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    appid: model?.appid,
+    mchid: model?.mchid,
+    public_key: model?.public_key,
+    private_key: model?.private_key,
+    v3_key: model?.v3_key,
+    payer_client_ip: model?.payer_client_ip,
+    notify_url: model?.notify_url,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找微信支付设置列表
  * @param {WxPaySearch} search?
@@ -164,12 +195,12 @@ export async function findCount(
 
 /**
  * 创建微信支付设置
- * @param {WxPayInput} model
+ * @param {WxPayInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxPayInput,
+  input: WxPayInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
@@ -177,12 +208,12 @@ export async function create(
     createWxPay: Mutation["createWxPay"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxPayInput!, $unique_type: UniqueType) {
-        createWxPay(model: $model, unique_type: $unique_type)
+      mutation($input: WxPayInput!, $unique_type: UniqueType) {
+        createWxPay(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -193,25 +224,25 @@ export async function create(
 /**
  * 根据 id 修改微信支付设置
  * @param {WxPayId} id
- * @param {WxPayInput} model
+ * @param {WxPayInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxPayId,
-  model: WxPayInput,
+  input: WxPayInput,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
   const data: {
     updateByIdWxPay: Mutation["updateByIdWxPay"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxPayId!, $model: WxPayInput!) {
-        updateByIdWxPay(id: $id, model: $model)
+      mutation($id: WxPayId!, $input: WxPayInput!) {
+        updateByIdWxPay(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxPayId = data.updateByIdWxPay;

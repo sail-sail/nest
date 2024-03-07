@@ -89,7 +89,7 @@ type WxAppFieldComment {
   update_time_lbl: String!
 }
 input WxAppInput {
-  ""
+  "ID"
   id: WxAppId
   "原始ID"
   code: String
@@ -180,9 +180,9 @@ type Query {
 }
 type Mutation {
   "创建小程序设置"
-  createWxApp(model: WxAppInput!, unique_type: UniqueType): WxAppId!
+  createWxApp(input: WxAppInput!, unique_type: UniqueType): WxAppId!
   "根据 id 修改小程序设置"
-  updateByIdWxApp(id: WxAppId!, model: WxAppInput!): WxAppId!
+  updateByIdWxApp(id: WxAppId!, input: WxAppInput!): WxAppId!
   "根据 ids 删除小程序设置"
   deleteByIdsWxApp(ids: [WxAppId!]!): Int!
   "根据 ids 启用或者禁用小程序设置"

@@ -109,7 +109,7 @@ type WxUsrFieldComment {
   update_time_lbl: String!
 }
 input WxUsrInput {
-  ""
+  "ID"
   id: WxUsrId
   "名称"
   lbl: String
@@ -228,9 +228,9 @@ type Query {
 }
 type Mutation {
   "创建小程序用户"
-  createWxUsr(model: WxUsrInput!, unique_type: UniqueType): WxUsrId!
+  createWxUsr(input: WxUsrInput!, unique_type: UniqueType): WxUsrId!
   "根据 id 修改小程序用户"
-  updateByIdWxUsr(id: WxUsrId!, model: WxUsrInput!): WxUsrId!
+  updateByIdWxUsr(id: WxUsrId!, input: WxUsrInput!): WxUsrId!
   "根据 ids 删除小程序用户"
   deleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
   "根据 ids 还原小程序用户"

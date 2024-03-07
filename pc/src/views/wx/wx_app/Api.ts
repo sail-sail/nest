@@ -23,6 +23,33 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxAppInput = {
+    id: model?.id,
+    code: model?.code,
+    lbl: model?.lbl,
+    appid: model?.appid,
+    appsecret: model?.appsecret,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找小程序设置列表
  * @param {WxAppSearch} search?
@@ -156,12 +183,12 @@ export async function findCount(
 
 /**
  * 创建小程序设置
- * @param {WxAppInput} model
+ * @param {WxAppInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxAppInput,
+  input: WxAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxAppId> {
@@ -169,12 +196,12 @@ export async function create(
     createWxApp: Mutation["createWxApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxAppInput!, $unique_type: UniqueType) {
-        createWxApp(model: $model, unique_type: $unique_type)
+      mutation($input: WxAppInput!, $unique_type: UniqueType) {
+        createWxApp(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +212,25 @@ export async function create(
 /**
  * 根据 id 修改小程序设置
  * @param {WxAppId} id
- * @param {WxAppInput} model
+ * @param {WxAppInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxAppId,
-  model: WxAppInput,
+  input: WxAppInput,
   opt?: GqlOpt,
 ): Promise<WxAppId> {
   const data: {
     updateByIdWxApp: Mutation["updateByIdWxApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxAppId!, $model: WxAppInput!) {
-        updateByIdWxApp(id: $id, model: $model)
+      mutation($id: WxAppId!, $input: WxAppInput!) {
+        updateByIdWxApp(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxAppId = data.updateByIdWxApp;

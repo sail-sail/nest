@@ -27,6 +27,37 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxoAppInput = {
+    id: model?.id,
+    code: model?.code,
+    lbl: model?.lbl,
+    appid: model?.appid,
+    appsecret: model?.appsecret,
+    token: model?.token,
+    encoding_aes_key: model?.encoding_aes_key,
+    domain_id: model?.domain_id,
+    domain_id_lbl: model?.domain_id_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找公众号设置列表
  * @param {WxoAppSearch} search?
@@ -168,12 +199,12 @@ export async function findCount(
 
 /**
  * 创建公众号设置
- * @param {WxoAppInput} model
+ * @param {WxoAppInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxoAppInput,
+  input: WxoAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
@@ -181,12 +212,12 @@ export async function create(
     createWxoApp: Mutation["createWxoApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxoAppInput!, $unique_type: UniqueType) {
-        createWxoApp(model: $model, unique_type: $unique_type)
+      mutation($input: WxoAppInput!, $unique_type: UniqueType) {
+        createWxoApp(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -197,25 +228,25 @@ export async function create(
 /**
  * 根据 id 修改公众号设置
  * @param {WxoAppId} id
- * @param {WxoAppInput} model
+ * @param {WxoAppInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoAppId,
-  model: WxoAppInput,
+  input: WxoAppInput,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
   const data: {
     updateByIdWxoApp: Mutation["updateByIdWxoApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxoAppId!, $model: WxoAppInput!) {
-        updateByIdWxoApp(id: $id, model: $model)
+      mutation($id: WxoAppId!, $input: WxoAppInput!) {
+        updateByIdWxoApp(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxoAppId = data.updateByIdWxoApp;
