@@ -60,6 +60,19 @@ if (!detailCustomDialogType) {
     detailCustomDialogType = "auto";
   }
 }
+let hasInlineMany2manyTab = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  hasInlineMany2manyTab = true;
+  break;
+}
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -772,7 +785,7 @@ if (!detailCustomDialogType) {
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
-                const width = column.width || 180;
+                const width = (column.width || 180) + 38;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
               #>
@@ -1020,7 +1033,7 @@ if (!detailCustomDialogType) {
                     #>
                     <CustomInputNumber
                       v-model="row.<#=column_name#>"
-                      un-text="right"
+                      un-text="<#=column.align || 'right'#>"
                       placeholder=" "<#
                       if (column.readonly) {
                       #>
@@ -1127,6 +1140,497 @@ if (!detailCustomDialogType) {
                     plain
                     type="danger"
                     @click="<#=table#>Remove(row)"
+                  >
+                    {{ ns('删除') }}
+                  </el-button>
+                  
+                </template>
+              </el-table-column>
+              
+            </el-table>
+          </el-tab-pane><#
+          }
+          #>
+          
+        </el-tabs>
+      </div><#
+      }
+      #><#
+      let inlineMany2manyTabLabel = "";
+      if (hasInlineMany2manyTab) {
+      #>
+      <div
+        un-w="full"
+        un-flex="~ [1_0_0] col"
+        un-overflow-hidden
+      >
+        <el-tabs
+          v-model="inlineMany2manyTabLabel"
+          class="el-flex-tabs"
+          type="card"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-w="full"
+        ><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const column_comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw new Error(`表: ${ mod }_${ table } 不存在`);
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+            if (inlineMany2manyTabLabel === "") {
+              inlineMany2manyTabLabel = column_name;
+            }
+          #>
+          <el-tab-pane
+            label="<#=column_comment#>"
+            name="<#=column_name#>"
+            un-flex="~ [1_0_0] col"
+            un-overflow-hidden
+          >
+            <el-table
+              ref="<#=column_name#>_<#=table#>Ref"
+              un-m="t-2"
+              border
+              size="small"
+              height="100%"
+              :data="dialogModel.<#=column_name#>_<#=table#>_models"
+              class="inlineMany2manyTab_table"
+            >
+              
+              <el-table-column
+                prop="_seq"
+                :label="ns('序号')"
+                align="center"
+                width="50"
+              >
+              </el-table-column><#
+              for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+                const column = inlineMany2manyColumns[i];
+                if (column.ignoreCodegen) continue;
+                if (column.onlyCodegenDeno) continue;
+                if (column.noAdd && column.noEdit) continue;
+                if (column.isAtt) continue;
+                const column_name = column.COLUMN_NAME;
+                if (column_name === "id") continue;
+                if (column_name === "is_deleted") continue;
+                if (column_name === "is_locked") continue;
+                if (column_name === "version") continue;
+                if (column_name === "order_by") continue;
+                if (column_name === "tenant_id") continue;
+                if (column_name === "org_id") continue;
+                let data_type = column.DATA_TYPE;
+                let column_type = column.COLUMN_TYPE;
+                let column_comment = column.COLUMN_COMMENT || "";
+                let selectList = [ ];
+                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+                if (selectStr) {
+                  selectList = eval(`(${ selectStr })`);
+                }
+                if (column_comment.indexOf("[") !== -1) {
+                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
+                }
+                let require = column.require;
+                const foreignKey = column.foreignKey;
+                if (foreignKey && foreignKey.showType === "dialog") {
+                  continue;
+                }
+                const foreignTable = foreignKey && foreignKey.table;
+                const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+                const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+                  return item.substring(0, 1).toUpperCase() + item.substring(1);
+                }).join("");
+                if (column_type == null) {
+                  column_type = "";
+                }
+                let foreignSchema = undefined;
+                if (foreignKey) {
+                  foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+                }
+                const width = (column.width || 180) + 38;
+                const readonlyPlaceholder = column.readonlyPlaceholder;
+                const modelLabel = column.modelLabel;
+                if (many2many.column1 === column_name) {
+                  continue;
+                }
+              #><#
+                if (many2many.column2 !== column_name) {
+              #>
+              
+              <el-table-column
+                prop="<#=column_name#>"
+                :label="n('<#=column_comment#>')"
+                width="<#=width#>"
+                header-align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'"><#
+                    if (column.isImg) {
+                    #><#
+                    } else if (
+                      foreignKey
+                      && (foreignKey.selectType === "select" || foreignKey.selectType == null)
+                      && !foreignSchema?.opts?.list_tree
+                    ) {
+                    #>
+                    <CustomSelect<#
+                      if (foreignKey.multiple) {
+                      #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
+                      }
+                      #>
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      :method="get<#=Foreign_Table_Up#>List"
+                      :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+                        return {
+                          label: item.<#=foreignKey.lbl#>,
+                          value: item.<#=foreignKey.column#>,
+                        };
+                      })"
+                      placeholder=" "<#
+                      if (foreignKey.multiple) {
+                      #>
+                      multiple<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomSelect><#
+                    } else if (foreignKey && foreignKey.selectType === "selectInput") {
+                      if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+                        selectInputForeign_Table_Ups.push(Foreign_Table_Up);
+                      }
+                    #>
+                    <SelectInput<#=Foreign_Table_Up#><#
+                      if (foreignKey.multiple) {
+                      #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
+                      }
+                      #>
+                      v-model="row.<#=column_name#>"
+                      placeholder=" "<#
+                      if (foreignKey.multiple) {
+                      #>
+                      multiple<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    >
+                    </SelectInput<#=Foreign_Table_Up#>><#
+                    } else if (foreignSchema && foreignSchema.opts?.list_tree
+                      && !foreignSchema.opts?.ignoreCodegen
+                      && !foreignSchema.opts?.onlyCodegenDeno
+                    ) {
+                    #>
+                    <CustomTreeSelect<#
+                      if (foreignKey.multiple) {
+                      #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
+                      }
+                      #>
+                      v-model="row.<#=column_name#>"
+                      :method="get<#=Foreign_Table_Up#>Tree"
+                      :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                      if (foreignKey.lbl !== "lbl") {
+                      #>
+                      :props="{
+                        label: '<#=foreignKey.lbl#>',
+                        children: 'children',
+                      }"<#
+                      }
+                      #><#
+                      if (foreignKey.multiple) {
+                      #>
+                      multiple<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomTreeSelect><#
+                    } else if (column.dict) {
+                    #>
+                    <DictSelect
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      code="<#=column.dict#>"
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></DictSelect><#
+                    } else if (column.dictbiz) {
+                    #>
+                    <DictbizSelect
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      code="<#=column.dictbiz#>"
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></DictbizSelect><#
+                    } else if (data_type === "datetime" || data_type === "date") {
+                    #>
+                    <CustomDatePicker
+                      v-model="row.<#=column_name#>"<#
+                      if (data_type === "datetime") {
+                      #>
+                      type="datetime"
+                      format="YYYY-MM-DD HH:mm:ss"
+                      value-format="YYYY-MM-DD HH:mm:ss"<#
+                      } else if (data_type === "date" && !column.isMonth) {
+                      #>
+                      type="date"
+                      format="YYYY-MM-DD"
+                      value-format="YYYY-MM-DD"<#
+                      } else if (column.isMonth) {
+                      #>
+                      type="month"
+                      format="YYYY-MM"
+                      value-format="YYYY-MM-DD"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomDatePicker><#
+                    } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
+                    #>
+                    <CustomCheckbox
+                      v-model="row.<#=column_name#>"
+                      :true-readonly-label="`${ ns('是') }`"
+                      :false-readonly-label="`${ ns('否') }`"<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    >
+                      <#=column_comment#>
+                    </CustomCheckbox><#
+                    } else if (column_type.startsWith("int")) {
+                    #>
+                    <CustomInputNumber
+                      v-model="row.<#=column_name#>"
+                      un-text="<#=column.align || 'right'#>"
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomInputNumber><#
+                    } else if (column.DATA_TYPE === "decimal") {
+                      let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+                      let precision = Number(arr[1]);
+                      let max = "";
+                      if (column.max != null) {
+                        max = column.max;
+                      } else {
+                        for (let m = 0; m < Number(arr[0])-precision; m++) {
+                          max += "9";
+                        }
+                        max = Number(max)+1-Math.pow(10, -precision);
+                      }
+                      let min = column.min;
+                    #>
+                    <CustomInputNumber
+                      v-model="row.<#=column_name#>"
+                      :max="<#=max#>"<#
+                        if (min) {
+                      #>
+                      :min="<#=min#>"<#
+                        }
+                      #>
+                      :precision="<#=precision#>"
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomInputNumber><#
+                    } else {
+                    #>
+                    <CustomInput
+                      v-model="row.<#=column_name#>"
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #>
+                    ></CustomInput><#
+                    }
+                    #>
+                  </template>
+                </template>
+              </el-table-column><#
+                } else {
+              #>
+              
+              <el-table-column
+                prop="<#=column_name#>_lbl"
+                :label="n('<#=column_comment#>')"
+                width="<#=width#>"
+                header-align="center"
+                align="<#=column.align || 'center'#>"
+              ></el-table-column><#
+                }
+              #><#
+              }
+              #>
+              
+              <el-table-column
+                v-if="!isLocked && !isReadonly"
+                prop="_operation"
+                :label="ns('操作')"
+                width="70"
+                align="center"
+                fixed="right"
+              >
+                <template #default="{ row }">
+                  
+                  <el-button
+                    size="small"
+                    plain
+                    type="danger"
+                    @click="<#=column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
                   </el-button>
@@ -1495,6 +1999,96 @@ for (let i = 0; i < columns.length; i++) {
 import {
   get<#=Foreign_Table_Up#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+}
+#><#
+const findAllTableUps = [ ];
+const getDefaultInputTableUps = [ ];
+const inputTableUps = [ ];
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const table = many2many.table;
+  const mod = many2many.mod;
+  const inlineMany2manySchema = optTables[mod + "_" + table];
+  if (!inlineMany2manySchema) {
+    throw `inlineMany2manyTab, 表: ${ mod }_${ table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreign_mod = foreignKey.mod;
+  const foreign_table = foreignKey.table;
+  const foreign_tableUp = foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+  const foreign_Table_Up = foreign_tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  
+#>
+<#
+  if (!findAllTableUps.includes(foreign_Table_Up)) {
+    const hasFindAllTableUps = findAllTableUps.includes(foreign_Table_Up);
+    if (!hasFindAllTableUps) {
+      findAllTableUps.push(foreign_Table_Up);
+    }
+#>
+import {<#
+  if (!hasFindAllTableUps) {
+  #>
+  findAll as findAll<#=foreign_Table_Up#>,<#
+  }
+  #>
+} from "@/views/<#=foreign_mod#>/<#=foreign_table#>/Api";<#
+ }
+#>
+<#
+  if (!getDefaultInputTableUps.includes(Table_Up)) {
+    const hasGetDefaultInputTableUps = getDefaultInputTableUps.includes(Table_Up);
+    if (!hasGetDefaultInputTableUps) {
+      getDefaultInputTableUps.push(Table_Up);
+    }
+#>
+import {<#
+  if (!hasGetDefaultInputTableUps) {
+  #>
+  getDefaultInput as getDefaultInput<#=Table_Up#>,<#
+  }
+  #>
+} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  }
+#>
+<#
+  if (!inputTableUps.includes(Table_Up)) {
+    const hasInputTableUps = inputTableUps.includes(Table_Up);
+    if (!hasInputTableUps) {
+      inputTableUps.push(Table_Up);
+    }
+#>
+import type {<#
+  if (!hasInputTableUps) {
+  #>
+  <#=Table_Up#>Input,<#
+  }
+  #>
+} from "#/types";<#
+  }
+#><#
 }
 #><#
 const selectInputNoRepeats = [ ];
@@ -2670,17 +3264,146 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,<#
-    if (hasIsDeleted) {
+  const [
+    data,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const table = many2many.table;
+      const mod = many2many.mod;
+      const inlineMany2manySchema = optTables[mod + "_" + table];
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const foreign_table = foreignKey.table;
+      const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+      const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineMany2manyColumns = inlineMany2manySchema.columns;
     #>
-    is_deleted,<#
+    
+    // <#=column_comment#>
+    _<#=column_name#>_<#=foreign_table#>_models,<#
     }
     #>
-  });
+  ] = await Promise.all([
+    await findOneModel({
+      id,<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
+    }),<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const table = many2many.table;
+      const mod = many2many.mod;
+      const inlineMany2manySchema = optTables[mod + "_" + table];
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const foreign_table = foreignKey.table;
+      const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+      const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineMany2manyColumns = inlineMany2manySchema.columns;
+    #>
+    await findAll<#=foreign_Table_Up#>({<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
+    }),<#
+    }
+    #>
+  ]);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const table = many2many.table;
+    const mod = many2many.mod;
+    const inlineMany2manySchema = optTables[mod + "_" + table];
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const foreign_table = foreignKey.table;
+    const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+    const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const inlineMany2manyColumns = inlineMany2manySchema.columns;
+  #>
+  
+  // <#=column_comment#>
+  <#=column_name#>_<#=foreign_table#>_models = _<#=column_name#>_<#=foreign_table#>_models;<#
+  }
+  #>
   if (data) {
     dialogModel = {
       ...data,
@@ -2706,7 +3429,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("<#=table_comment#>")));
   }
 }
 
@@ -3235,6 +3958,120 @@ watch(
     }
   },
 );<#
+}
+#><#
+if (hasInlineMany2manyTab) {
+#>
+
+let inlineMany2manyTabLabel = $ref("<#=inlineMany2manyTabLabel#>");<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const table = many2many.table;
+    const mod = many2many.mod;
+    const inlineMany2manySchema = optTables[mod + "_" + table];
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const foreign_table = foreignKey.table;
+    const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+    const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const inlineMany2manyColumns = inlineMany2manySchema.columns;
+#>
+
+// <#=column_comment#>
+let <#=column_name#>_<#=foreign_table#>_models = $ref<<#=foreign_Table_Up#>Model[]>([ ]);
+
+async function <#=column_name#>Remove(row: <#=Table_Up#>Input) {
+  if (dialogModel.<#=column_name#>_<#=table#>_models) {
+    const idx = dialogModel.<#=column_name#>_<#=table#>_models.indexOf(row);
+    if (idx >= 0) {
+      dialogModel.<#=column_name#>_<#=table#>_models.splice(idx, 1);
+    }
+  }
+  if (row.<#=many2many.column2#> && dialogModel.<#=column_name#> && dialogModel.<#=column_name#>.length > 0) {
+    const idx = dialogModel.<#=column_name#>.indexOf(row.<#=many2many.column2#>);
+    if (idx >= 0) {
+      dialogModel.<#=column_name#>.splice(idx, 1);
+    }
+  }
+}
+
+watch(
+  () => dialogModel.<#=column_name#>,
+  async () => {
+    if (!inited) {
+      return;
+    }
+    inlineMany2manyTabLabel = "<#=column_name#>";
+    if (!dialogModel.<#=column_name#> || dialogModel.<#=column_name#>.length === 0) {
+      dialogModel.<#=column_name#>_<#=table#>_models = [ ];
+      return;
+    }
+    const inputs: <#=Table_Up#>Input[] = [ ];
+    for (let i = 0; i < dialogModel.<#=column_name#>.length; i++) {
+      const <#=many2many.column2#> = dialogModel.<#=column_name#>[i];
+      const model = dialogModel.<#=column_name#>_<#=table#>_models?.find((item) => item.<#=many2many.column2#> === <#=many2many.column2#>);
+      if (model) {
+        inputs.push(model);
+        continue;
+      }
+      const input = <#=column_name#>_<#=foreign_table#>_models.find((item) => item.id === <#=many2many.column2#>)!;
+      const defaultInput = await getDefaultInput<#=Table_Up#>();
+      inputs.push({
+        ...defaultInput,
+        <#=many2many.column2#>,
+        <#=many2many.column2#>_lbl: input.lbl,
+        <#=many2many.column1#>: dialogModel.id,
+        <#=many2many.column1#>_lbl: dialogModel.lbl,
+        order_by: i + 1,
+      });
+    }
+    dialogModel.<#=column_name#>_<#=table#>_models = inputs;
+  },
+  {
+    deep: true,
+  },
+);
+
+watch(
+  () => [
+    dialogModel.<#=column_name#>_<#=table#>_models,
+    dialogModel.<#=column_name#>_<#=table#>_models?.length,
+  ],
+  () => {
+    if (!dialogModel.<#=column_name#>_<#=table#>_models) {
+      return;
+    }
+    for (let i = 0; i < dialogModel.<#=column_name#>_<#=table#>_models.length; i++) {
+      const item = dialogModel.<#=column_name#>_<#=table#>_models[i];
+      (item as any)._seq = i + 1;
+    }
+  },
+);<#
+  }
+#><#
 }
 #>
 

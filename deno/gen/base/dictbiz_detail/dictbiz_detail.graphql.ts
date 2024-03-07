@@ -89,7 +89,7 @@ type DictbizDetailFieldComment {
   update_time_lbl: String!
 }
 input DictbizDetailInput {
-  ""
+  "ID"
   id: DictbizDetailId
   "业务字典"
   dictbiz_id: DictbizId
@@ -180,9 +180,9 @@ type Query {
 }
 type Mutation {
   "创建业务字典明细"
-  createDictbizDetail(model: DictbizDetailInput!, unique_type: UniqueType): DictbizDetailId!
+  createDictbizDetail(input: DictbizDetailInput!, unique_type: UniqueType): DictbizDetailId!
   "根据 id 修改业务字典明细"
-  updateByIdDictbizDetail(id: DictbizDetailId!, model: DictbizDetailInput!): DictbizDetailId!
+  updateByIdDictbizDetail(id: DictbizDetailId!, input: DictbizDetailInput!): DictbizDetailId!
   "根据 ids 删除业务字典明细"
   deleteByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
   "根据 ids 启用或者禁用业务字典明细"

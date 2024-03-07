@@ -105,7 +105,7 @@ type RoleFieldComment {
   update_time_lbl: String!
 }
 input RoleInput {
-  ""
+  "ID"
   id: RoleId
   "名称"
   lbl: String
@@ -210,9 +210,9 @@ type Query {
 }
 type Mutation {
   "创建角色"
-  createRole(model: RoleInput!, unique_type: UniqueType): RoleId!
+  createRole(input: RoleInput!, unique_type: UniqueType): RoleId!
   "根据 id 修改角色"
-  updateByIdRole(id: RoleId!, model: RoleInput!): RoleId!
+  updateByIdRole(id: RoleId!, input: RoleInput!): RoleId!
   "根据 ids 删除角色"
   deleteByIdsRole(ids: [RoleId!]!): Int!
   "根据 ids 启用或者禁用角色"
