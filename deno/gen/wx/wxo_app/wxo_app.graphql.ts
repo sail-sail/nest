@@ -105,7 +105,7 @@ type WxoAppFieldComment {
   update_time_lbl: String!
 }
 input WxoAppInput {
-  ""
+  "ID"
   id: WxoAppId
   "原始ID"
   code: String
@@ -207,9 +207,9 @@ type Query {
 }
 type Mutation {
   "创建公众号设置"
-  createWxoApp(model: WxoAppInput!, unique_type: UniqueType): WxoAppId!
+  createWxoApp(input: WxoAppInput!, unique_type: UniqueType): WxoAppId!
   "根据 id 修改公众号设置"
-  updateByIdWxoApp(id: WxoAppId!, model: WxoAppInput!): WxoAppId!
+  updateByIdWxoApp(id: WxoAppId!, input: WxoAppInput!): WxoAppId!
   "根据 ids 删除公众号设置"
   deleteByIdsWxoApp(ids: [WxoAppId!]!): Int!
   "根据 ids 启用或者禁用公众号设置"

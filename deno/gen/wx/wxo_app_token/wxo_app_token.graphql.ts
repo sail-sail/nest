@@ -41,7 +41,7 @@ type WxoAppTokenFieldComment {
   expires_in: String!
 }
 input WxoAppTokenInput {
-  ""
+  "ID"
   id: WxoAppTokenId
   "小程序设置"
   wxo_app_id: WxoAppId
@@ -88,9 +88,9 @@ type Query {
 }
 type Mutation {
   "创建小程序接口凭据"
-  createWxoAppToken(model: WxoAppTokenInput!, unique_type: UniqueType): WxoAppTokenId!
+  createWxoAppToken(input: WxoAppTokenInput!, unique_type: UniqueType): WxoAppTokenId!
   "根据 id 修改小程序接口凭据"
-  updateByIdWxoAppToken(id: WxoAppTokenId!, model: WxoAppTokenInput!): WxoAppTokenId!
+  updateByIdWxoAppToken(id: WxoAppTokenId!, input: WxoAppTokenInput!): WxoAppTokenId!
   "根据 ids 删除小程序接口凭据"
   deleteByIdsWxoAppToken(ids: [WxoAppTokenId!]!): Int!
   "根据 ids 还原小程序接口凭据"
