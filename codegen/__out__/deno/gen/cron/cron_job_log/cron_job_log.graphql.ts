@@ -74,7 +74,7 @@ type CronJobLogFieldComment {
   create_time_lbl: String!
 }
 input CronJobLogInput {
-  ""
+  "ID"
   id: CronJobLogId
   "定时任务"
   cron_job_id: CronJobId
