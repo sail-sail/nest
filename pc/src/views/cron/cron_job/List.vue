@@ -1058,7 +1058,7 @@ function getTableColumns(): ColumnType[] {
       label: "任务",
       prop: "job_id_lbl",
       sortBy: "job_id",
-      width: 140,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
