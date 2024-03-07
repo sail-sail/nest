@@ -39,6 +39,40 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: UsrInput = {
+    id: model?.id,
+    img: model?.img,
+    lbl: model?.lbl,
+    username: model?.username,
+    org_ids: model?.org_ids,
+    org_ids_lbl: model?.org_ids_lbl,
+    default_org_id: model?.default_org_id,
+    default_org_id_lbl: model?.default_org_id_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    dept_ids: model?.dept_ids,
+    dept_ids_lbl: model?.dept_ids_lbl,
+    role_ids: model?.role_ids,
+    role_ids_lbl: model?.role_ids_lbl,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找用户列表
  * @param {UsrSearch} search?

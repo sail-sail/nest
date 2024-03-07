@@ -27,6 +27,33 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictDetailInput = {
+    id: model?.id,
+    dict_id: model?.dict_id,
+    dict_id_lbl: model?.dict_id_lbl,
+    lbl: model?.lbl,
+    val: model?.val,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找系统字典明细列表
  * @param {DictDetailSearch} search?

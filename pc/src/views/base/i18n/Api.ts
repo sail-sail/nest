@@ -35,6 +35,30 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: I18nInput = {
+    id: model?.id,
+    lang_id: model?.lang_id,
+    lang_id_lbl: model?.lang_id_lbl,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    code: model?.code,
+    lbl: model?.lbl,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找国际化列表
  * @param {I18nSearch} search?

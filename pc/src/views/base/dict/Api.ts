@@ -19,12 +19,44 @@ import type {
   DictModel,
 } from "#/types";
 
+import {
+  intoInput as intoInputDictDetail,
+} from "@/views/base/dict_detail/Api";
+
 async function setLblById(
   model?: DictModel | null,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictInput = {
+    id: model?.id,
+    code: model?.code,
+    lbl: model?.lbl,
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+    dict_detail_models: (model?.dict_detail_models ?? [ ]).map(intoInputDictDetail),
+  };
+  return input;
 }
 
 /**
