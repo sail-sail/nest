@@ -227,7 +227,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  (input as any).home_url_lbl = undefined;
+  input = intoInput(input);
   const data: {
     createRole: Mutation["createRole"];
   } = await mutation({
@@ -256,7 +256,7 @@ export async function updateById(
   input: RoleInput,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  (input as any).home_url_lbl = undefined;
+  input = intoInput(input);
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
