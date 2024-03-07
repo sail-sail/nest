@@ -208,6 +208,7 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
+  input = intoInput(input);
   const data: {
     createWxoApp: Mutation["createWxoApp"];
   } = await mutation({
@@ -236,6 +237,7 @@ export async function updateById(
   input: WxoAppInput,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxoApp: Mutation["updateByIdWxoApp"];
   } = await mutation({
