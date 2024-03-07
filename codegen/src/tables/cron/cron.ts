@@ -68,6 +68,7 @@ export default defineConfig({
             column: "cron_job_id",
           },
         ],
+        width: 280,
       },
       {
         COLUMN_NAME: "job_id",
@@ -124,18 +125,21 @@ export default defineConfig({
         foreignKey: {
           showType: "dialog",
         },
+        search: true,
       },
       {
         COLUMN_NAME: "exec_state",
         width: 100,
+        search: true,
       },
       {
         COLUMN_NAME: "exec_result",
-        width: 220,
+        width: 280,
       },
       {
         COLUMN_NAME: "begin_time",
         width: 160,
+        search: true,
       },
       {
         COLUMN_NAME: "end_time",

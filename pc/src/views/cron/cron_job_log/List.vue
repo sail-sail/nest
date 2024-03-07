@@ -26,6 +26,65 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="showBuildIn || builtInSearch?.cron_job_id == null">
+        <el-form-item
+          label="定时任务"
+          prop="cron_job_id"
+        >
+          <CustomSelect
+            :set="search.cron_job_id = search.cron_job_id || [ ]"
+            v-model="search.cron_job_id"
+            :method="getCronJobList"
+            :options-map="((item: CronJobModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('定时任务') }`"
+            multiple
+            @change="onSearch"
+          ></CustomSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.exec_state == null">
+        <el-form-item
+          :label="n('执行状态')"
+          prop="exec_state"
+        >
+          <DictSelect
+            :set="search.exec_state = search.exec_state || [ ]"
+            :model-value="search.exec_state"
+            @update:model-value="search.exec_state = $event"
+            code="cron_job_log_exec_state"
+            :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.begin_time == null">
+        <el-form-item
+          :label="n('开始时间')"
+          prop="begin_time"
+        >
+          <CustomDatePicker
+            :set="search.begin_time = search.begin_time || [ ]"
+            type="daterange"
+            :model-value="(search.begin_time as any)"
+            :start-placeholder="ns('开始')"
+            :end-placeholder="ns('结束')"
+            format="YYYY-MM-DD"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
+            @update:model-value="search.begin_time = $event"
+            @clear="onSearchClear"
+            @change="onSearch"
+          ></CustomDatePicker>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -514,7 +573,12 @@ import {
 import type {
   CronJobLogModel,
   CronJobLogSearch,
+  CronJobModel,
 } from "#/types";
+
+import {
+  getCronJobList, // 定时任务
+} from "./Api";
 
 defineOptions({
   name: "任务执行日志",
@@ -636,6 +700,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
+    cron_job_id: [ ],
   } as CronJobLogSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -812,7 +877,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "执行结果",
       prop: "exec_result",
-      width: 220,
+      width: 280,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
