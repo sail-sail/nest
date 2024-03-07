@@ -185,7 +185,7 @@
               <el-table-column
                 prop="lbl"
                 :label="n('名称')"
-                width="240"
+                width="278"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -202,7 +202,7 @@
               <el-table-column
                 prop="val"
                 :label="n('值')"
-                width="240"
+                width="278"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -219,7 +219,7 @@
               <el-table-column
                 prop="rem"
                 :label="n('备注')"
-                width="280"
+                width="318"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -723,13 +723,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -746,7 +751,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("业务字典")));
   }
 }
 

@@ -106,7 +106,7 @@ type DictFieldComment {
   update_time_lbl: String!
 }
 input DictInput {
-  ""
+  "ID"
   id: DictId
   "编码"
   code: String
@@ -198,9 +198,9 @@ type Query {
 }
 type Mutation {
   "创建系统字典"
-  createDict(model: DictInput!, unique_type: UniqueType): DictId!
+  createDict(input: DictInput!, unique_type: UniqueType): DictId!
   "根据 id 修改系统字典"
-  updateByIdDict(id: DictId!, model: DictInput!): DictId!
+  updateByIdDict(id: DictId!, input: DictInput!): DictId!
   "根据 ids 删除系统字典"
   deleteByIdsDict(ids: [DictId!]!): Int!
   "根据 ids 启用或者禁用系统字典"

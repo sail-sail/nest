@@ -93,7 +93,7 @@ type TenantFieldComment {
   update_time_lbl: String!
 }
 input TenantInput {
-  ""
+  "ID"
   id: TenantId
   "名称"
   lbl: String
@@ -186,9 +186,9 @@ type Query {
 }
 type Mutation {
   "创建租户"
-  createTenant(model: TenantInput!, unique_type: UniqueType): TenantId!
+  createTenant(input: TenantInput!, unique_type: UniqueType): TenantId!
   "根据 id 修改租户"
-  updateByIdTenant(id: TenantId!, model: TenantInput!): TenantId!
+  updateByIdTenant(id: TenantId!, input: TenantInput!): TenantId!
   "根据 ids 删除租户"
   deleteByIdsTenant(ids: [TenantId!]!): Int!
   "根据 ids 启用或者禁用租户"

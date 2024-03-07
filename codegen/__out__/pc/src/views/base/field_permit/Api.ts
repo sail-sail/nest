@@ -35,6 +35,30 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: FieldPermitInput = {
+    id: model?.id,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    code: model?.code,
+    lbl: model?.lbl,
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    rem: model?.rem,
+    create_usr_id: model?.create_usr_id,
+    create_usr_id_lbl: model?.create_usr_id_lbl,
+    create_time: model?.create_time,
+    create_time_lbl: model?.create_time_lbl,
+    update_usr_id: model?.update_usr_id,
+    update_usr_id_lbl: model?.update_usr_id_lbl,
+    update_time: model?.update_time,
+    update_time_lbl: model?.update_time_lbl,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找字段权限列表
  * @param {FieldPermitSearch} search?
@@ -162,12 +186,12 @@ export async function findCount(
 
 /**
  * 创建字段权限
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
@@ -175,12 +199,12 @@ export async function create(
     createFieldPermit: Mutation["createFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: FieldPermitInput!, $unique_type: UniqueType) {
-        createFieldPermit(model: $model, unique_type: $unique_type)
+      mutation($input: FieldPermitInput!, $unique_type: UniqueType) {
+        createFieldPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -191,25 +215,25 @@ export async function create(
 /**
  * 根据 id 修改字段权限
  * @param {FieldPermitId} id
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: FieldPermitId,
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: FieldPermitId!, $model: FieldPermitInput!) {
-        updateByIdFieldPermit(id: $id, model: $model)
+      mutation($id: FieldPermitId!, $input: FieldPermitInput!) {
+        updateByIdFieldPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: FieldPermitId = data.updateByIdFieldPermit;
