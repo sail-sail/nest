@@ -32,8 +32,7 @@
           prop="cron_job_id"
         >
           <CustomSelect
-            :set="search.cron_job_id = search.cron_job_id || [ ]"
-            v-model="search.cron_job_id"
+            v-model="cron_job_id_search"
             :method="getCronJobList"
             :options-map="((item: CronJobModel) => {
               return {
@@ -54,9 +53,8 @@
           prop="exec_state"
         >
           <DictSelect
-            :set="search.exec_state = search.exec_state || [ ]"
-            :model-value="search.exec_state"
-            @update:model-value="search.exec_state = $event"
+            :model-value="exec_state_search"
+            @update:model-value="exec_state_search = $event"
             code="cron_job_log_exec_state"
             :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
             multiple
@@ -700,7 +698,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    cron_job_id: [ ],
   } as CronJobLogSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -712,6 +709,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 定时任务
+const cron_job_id_search = $computed({
+  get() {
+    return search.cron_job_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.cron_job_id = undefined;
+    } else {
+      search.cron_job_id = val;
+    }
+  },
+});
+
+// 执行状态
+const exec_state_search = $computed({
+  get() {
+    return search.exec_state || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.exec_state = undefined;
+    } else {
+      search.exec_state = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
