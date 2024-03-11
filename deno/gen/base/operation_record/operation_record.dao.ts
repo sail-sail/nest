@@ -87,64 +87,49 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.module !== undefined) {
+  if (search?.module != null) {
     whereQuery += ` and t.module = ${ args.push(search.module) }`;
-  }
-  if (search?.module === null) {
-    whereQuery += ` and t.module is null`;
   }
   if (isNotEmpty(search?.module_like)) {
     whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
-  if (search?.module_lbl !== undefined) {
+  if (search?.module_lbl != null) {
     whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
-  }
-  if (search?.module_lbl === null) {
-    whereQuery += ` and t.module_lbl is null`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
     whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
-  if (search?.method !== undefined) {
+  if (search?.method != null) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
-  }
-  if (search?.method === null) {
-    whereQuery += ` and t.method is null`;
   }
   if (isNotEmpty(search?.method_like)) {
     whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
-  if (search?.method_lbl !== undefined) {
+  if (search?.method_lbl != null) {
     whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
-  }
-  if (search?.method_lbl === null) {
-    whereQuery += ` and t.method_lbl is null`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.time && search?.time?.length > 0) {
+  if (search?.time != null) {
     if (search.time[0] != null) {
       whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
     }
@@ -152,37 +137,28 @@ async function getWhereQuery(
       whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
     }
   }
-  if (search?.old_data !== undefined) {
+  if (search?.old_data != null) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
-  }
-  if (search?.old_data === null) {
-    whereQuery += ` and t.old_data is null`;
   }
   if (isNotEmpty(search?.old_data_like)) {
     whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
-  if (search?.new_data !== undefined) {
+  if (search?.new_data != null) {
     whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
-  }
-  if (search?.new_data === null) {
-    whereQuery += ` and t.new_data is null`;
   }
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -194,9 +170,12 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: OperationRecordSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     base_operation_record t
     left join base_usr create_usr_id_lbl
@@ -227,7 +206,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -270,7 +249,7 @@ export async function findAll(
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {

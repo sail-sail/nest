@@ -32,8 +32,7 @@
           prop="dict_id"
         >
           <CustomSelect
-            :set="search.dict_id = search.dict_id || [ ]"
-            v-model="search.dict_id"
+            v-model="dict_id_search"
             :method="getDictList"
             :options-map="((item: DictModel) => {
               return {
@@ -856,7 +855,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    dict_id: [ ],
   } as DictDetailSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -868,6 +866,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 系统字典
+const dict_id_search = $computed({
+  get() {
+    return search.dict_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.dict_id = undefined;
+    } else {
+      search.dict_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {

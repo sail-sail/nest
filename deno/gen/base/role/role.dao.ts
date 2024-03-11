@@ -108,85 +108,70 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.home_url !== undefined) {
+  if (search?.home_url != null) {
     whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
-  }
-  if (search?.home_url === null) {
-    whereQuery += ` and t.home_url is null`;
   }
   if (isNotEmpty(search?.home_url_like)) {
     whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
-  if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
+  if (search?.menu_ids != null && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
-  if (search?.menu_ids && search?.menu_ids.length > 0) {
+  if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
-  }
-  if (search?.menu_ids === null) {
-    whereQuery += ` and base_menu.id is null`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (search?.permit_ids && !Array.isArray(search?.permit_ids)) {
+  if (search?.permit_ids != null && !Array.isArray(search?.permit_ids)) {
     search.permit_ids = [ search.permit_ids ];
   }
-  if (search?.permit_ids && search?.permit_ids.length > 0) {
+  if (search?.permit_ids != null) {
     whereQuery += ` and base_permit.id in ${ args.push(search.permit_ids) }`;
-  }
-  if (search?.permit_ids === null) {
-    whereQuery += ` and base_permit.id is null`;
   }
   if (search?.permit_ids_is_null) {
     whereQuery += ` and base_permit.id is null`;
   }
-  if (search?.data_permit_ids && !Array.isArray(search?.data_permit_ids)) {
+  if (search?.data_permit_ids != null && !Array.isArray(search?.data_permit_ids)) {
     search.data_permit_ids = [ search.data_permit_ids ];
   }
-  if (search?.data_permit_ids && search?.data_permit_ids.length > 0) {
+  if (search?.data_permit_ids != null) {
     whereQuery += ` and base_data_permit.id in ${ args.push(search.data_permit_ids) }`;
-  }
-  if (search?.data_permit_ids === null) {
-    whereQuery += ` and base_data_permit.id is null`;
   }
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
+  if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+  if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
-  if (search?.order_by && search?.order_by?.length > 0) {
+  if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
     }
@@ -194,28 +179,22 @@ async function getWhereQuery(
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -223,19 +202,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -247,17 +223,20 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: RoleSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     base_role t
     left join base_role_menu
       on base_role_menu.role_id = t.id
-      and base_role_menu.is_deleted = 0
+      and base_role_menu.is_deleted = ${ args.push(is_deleted) }
     left join base_menu
       on base_role_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = 0
+      and base_menu.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
@@ -266,20 +245,19 @@ async function getFromQuery(
       from base_role_menu
       inner join base_menu
         on base_menu.id = base_role_menu.menu_id
-        and base_menu.is_deleted = 0
       inner join base_role
         on base_role.id = base_role_menu.role_id
       where
-        base_role_menu.is_deleted = 0
+        base_role_menu.is_deleted = ${ args.push(is_deleted) }
       group by role_id
     ) _menu
       on _menu.role_id = t.id
     left join base_role_permit
       on base_role_permit.role_id = t.id
-      and base_role_permit.is_deleted = 0
+      and base_role_permit.is_deleted = ${ args.push(is_deleted) }
     left join base_permit
       on base_role_permit.permit_id = base_permit.id
-      and base_permit.is_deleted = 0
+      and base_permit.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
@@ -288,20 +266,19 @@ async function getFromQuery(
       from base_role_permit
       inner join base_permit
         on base_permit.id = base_role_permit.permit_id
-        and base_permit.is_deleted = 0
       inner join base_role
         on base_role.id = base_role_permit.role_id
       where
-        base_role_permit.is_deleted = 0
+        base_role_permit.is_deleted = ${ args.push(is_deleted) }
       group by role_id
     ) _permit
       on _permit.role_id = t.id
     left join base_role_data_permit
       on base_role_data_permit.role_id = t.id
-      and base_role_data_permit.is_deleted = 0
+      and base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
     left join base_data_permit
       on base_role_data_permit.data_permit_id = base_data_permit.id
-      and base_data_permit.is_deleted = 0
+      and base_data_permit.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
@@ -310,11 +287,10 @@ async function getFromQuery(
       from base_role_data_permit
       inner join base_data_permit
         on base_data_permit.id = base_role_data_permit.data_permit_id
-        and base_data_permit.is_deleted = 0
       inner join base_role
         on base_role.id = base_role_data_permit.role_id
       where
-        base_role_data_permit.is_deleted = 0
+        base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
       group by role_id
     ) _data_permit
       on _data_permit.role_id = t.id
@@ -348,7 +324,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -401,7 +377,7 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {

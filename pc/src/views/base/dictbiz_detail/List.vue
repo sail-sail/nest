@@ -32,8 +32,7 @@
           prop="dictbiz_id"
         >
           <CustomSelect
-            :set="search.dictbiz_id = search.dictbiz_id || [ ]"
-            v-model="search.dictbiz_id"
+            v-model="dictbiz_id_search"
             :method="getDictbizList"
             :options-map="((item: DictbizModel) => {
               return {
@@ -856,7 +855,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    dictbiz_id: [ ],
   } as DictbizDetailSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -868,6 +866,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 业务字典
+const dictbiz_id_search = $computed({
+  get() {
+    return search.dictbiz_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.dictbiz_id = undefined;
+    } else {
+      search.dictbiz_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
