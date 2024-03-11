@@ -58,8 +58,7 @@
           prop="org_ids"
         >
           <CustomSelect
-            :set="search.org_ids = search.org_ids || [ ]"
-            v-model="search.org_ids"
+            v-model="org_ids_search"
             :method="getOrgList"
             :options-map="((item: OrgModel) => {
               return {
@@ -80,8 +79,7 @@
           prop="dept_ids"
         >
           <CustomTreeSelect
-            :set="search.dept_ids = search.dept_ids || [ ]"
-            v-model="search.dept_ids"
+            v-model="dept_ids_search"
             :method="getDeptTree"
             :options-map="((item: DeptModel) => {
               return {
@@ -102,8 +100,7 @@
           prop="role_ids"
         >
           <CustomSelect
-            :set="search.role_ids = search.role_ids || [ ]"
-            v-model="search.role_ids"
+            v-model="role_ids_search"
             :method="getRoleList"
             :options-map="((item: RoleModel) => {
               return {
@@ -980,9 +977,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    org_ids: [ ],
-    dept_ids: [ ],
-    role_ids: [ ],
   } as UsrSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -994,6 +988,48 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 所属组织
+const org_ids_search = $computed({
+  get() {
+    return search.org_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.org_ids = undefined;
+    } else {
+      search.org_ids = val;
+    }
+  },
+});
+
+// 所属部门
+const dept_ids_search = $computed({
+  get() {
+    return search.dept_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.dept_ids = undefined;
+    } else {
+      search.dept_ids = val;
+    }
+  },
+});
+
+// 拥有角色
+const role_ids_search = $computed({
+  get() {
+    return search.role_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.role_ids = undefined;
+    } else {
+      search.role_ids = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {

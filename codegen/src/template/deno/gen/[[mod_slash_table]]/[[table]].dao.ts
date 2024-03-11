@@ -59,7 +59,7 @@ const hasMany2many = columns.some((column) => {
     return false;
   }
   const foreignKey = column.foreignKey;
-  if (foreignKey && foreignKey.type === "many2many") {
+  if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
     return true;
   }
   return false;
@@ -510,6 +510,10 @@ const deleteByIdsTableUps = [ ];
 const revertByIdsTableUps = [ ];
 const updateByIdTableUps = [ ];
 const forceDeleteByIdsUps = [ ];
+const equalsByUniqueTableUps = [ ];
+const idTableUps = [ ];
+const modelTableUps = [ ];
+const inputTableUps = [ ];
 #><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -532,7 +536,7 @@ for (let i = 0; i < columns.length; i++) {
   const table = many2many.table;
   const mod = many2many.mod;
   if (!inlineMany2manySchema) {
-    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
+    throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
     process.exit(1);
   }
   const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
@@ -545,7 +549,8 @@ for (let i = 0; i < columns.length; i++) {
     deleteByIdsTableUps.includes(Table_Up) &&
     revertByIdsTableUps.includes(Table_Up) &&
     updateByIdTableUps.includes(Table_Up) &&
-    forceDeleteByIdsUps.includes(Table_Up)
+    forceDeleteByIdsUps.includes(Table_Up) &&
+    equalsByUniqueTableUps.includes(Table_Up)
   ) {
     continue;
   }
@@ -572,6 +577,10 @@ for (let i = 0; i < columns.length; i++) {
   const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
   if (!hasForceDeleteByIdsUps) {
     forceDeleteByIdsUps.push(Table_Up);
+  }
+  const hasEqualsByUniqueTableUps = equalsByUniqueTableUps.includes(Table_Up);
+  if (!hasEqualsByUniqueTableUps) {
+    equalsByUniqueTableUps.push(Table_Up);
   }
 #>
 
@@ -605,8 +614,53 @@ import {<#
   #>
   forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
   }
+  #><#
+  if (!hasEqualsByUniqueTableUps) {
+  #>
+  equalsByUnique as equalsByUnique<#=Table_Up#>,<#
+  }
   #>
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = many2many.table;
+  const mod = many2many.mod;
+  if (!inlineMany2manySchema) {
+    throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+#>
+
+import type {
+  <#=Table_Up#>Id,
+  <#=Table_Up#>Model,
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";
+
+import type {
+  <#=Table_Up#>Input,
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -744,7 +798,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }<#
   }
@@ -757,7 +811,7 @@ async function getWhereQuery(
     if (org_id) {
       whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
     }
-  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+  } else if (search?.org_id != null && search?.org_id !== "-") {
     whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }<#
   }
@@ -790,61 +844,55 @@ async function getWhereQuery(
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
   #>
-  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
-  if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and <#=column_name#>_lbl.id in ${ args.push(search.<#=column_name#>) }`;
-  }
-  if (search?.<#=column_name#> === null) {
-    whereQuery += ` and <#=column_name#>_lbl.id is null`;
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=column_name#>_lbl.id is null`;
   }<#
       } else if (foreignKey.type === "many2many") {
   #>
-  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
-  if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
-  }
-  if (search?.<#=column_name#> === null) {
-    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
   }<#
     }
   #><#
-    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+    } else if (column.dict || column.dictbiz) {
   #>
-  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
-  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }<#
   } else if (column_name === "id") {
   #>
-  if (isNotEmpty(search?.<#=column_name#>)) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }<#
   } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
-  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
   }<#
   } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
-  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+  if (search?.<#=column_name#> != null) {
     if (search.<#=column_name#>[0] != null) {
       whereQuery += ` and t.<#=column_name#> >= ${ args.push(search.<#=column_name#>[0]) }`;
     }
@@ -854,16 +902,13 @@ async function getWhereQuery(
   }<#
   } else if (data_type === "tinyint") {
   #>
-  if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
   }<#
   } else if (!column.isEncrypt) {
   #>
-  if (search?.<#=column_name#> !== undefined) {
+  if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
-  }
-  if (search?.<#=column_name#> === null) {
-    whereQuery += ` and t.<#=column_name#> is null`;
   }
   if (isNotEmpty(search?.<#=column_name#>_like)) {
     whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
@@ -876,6 +921,8 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: <#=searchName#>,
   options?: {<#
     if (hasDataPermit()) {
     #>
@@ -884,6 +931,11 @@ async function getFromQuery(
     #>
   },
 ) {<#
+  if (hasIsDeleted) {
+  #>
+  const is_deleted = search?.is_deleted ?? 0;<#
+  }
+  #><#
   if (hasDataPermit()) {
   #>
   const dataPermitModels = await getDataPermits(route_path, options);
@@ -910,11 +962,19 @@ async function getFromQuery(
       if (foreignKey && foreignKey.type === "many2many") {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id<#
+      if (hasIsDeleted) {
+      #>
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ${ args.push(is_deleted) }<#
+      }
+      #>
     left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+      if (hasIsDeleted) {
+      #>
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = ${ args.push(is_deleted) }<#
+      }
+      #>
     left join (
       select
         json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
@@ -927,11 +987,14 @@ async function getFromQuery(
       from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
         on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-        and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
-        on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
+        on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+      if (hasIsDeleted) {
+      #>
       where
-        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ${ args.push(is_deleted) }<#
+      }
+      #>
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
@@ -990,7 +1053,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -1080,7 +1143,7 @@ export async function findAll(
       }
       #>
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -3234,6 +3297,7 @@ export async function create(
     if (foreignKey && foreignKey.type === "json") {
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
   #>
   
   // <#=column_comment#>
@@ -3275,6 +3339,44 @@ export async function create(
       const <#=table#>_model = input.<#=table#>_models[i];
       <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
       await create<#=Table_Up#>(<#=table#>_model);
+    }
+  }<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name#>_<#=table#>_models) {
+    for (const item of input.<#=column_name#>_<#=table#>_models) {
+      await create<#=Table_Up#>({ ...item, <#=many2many.column1#>: input.id });
     }
   }<#
   }
@@ -3806,6 +3908,7 @@ export async function updateById(
     if (foreignKey && foreignKey.type === "json") {
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
   #>
   
   updateFldNum++;
@@ -3830,6 +3933,97 @@ export async function updateById(
   #><#
     }
   #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  {
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=many2many.column1#>: [ id ],
+    });
+    const <#=table#>_create_models: <#=Table_Up#>Input[] = [ ];
+    const <#=table#>_update_models: {
+      id: <#=Table_Up#>Id,
+      input: <#=Table_Up#>Input,
+    }[] = [ ];
+    const <#=table#>_delete_ids: <#=Table_Up#>Id[] = [ ];
+    
+    const <#=column_name#>_<#=table#>_models = input.<#=column_name#>_<#=table#>_models ?? [ ];
+    for (const <#=table#>_model of <#=table#>_models) {
+      let hasIn = false;
+      for (const <#=table#>_model2 of <#=column_name#>_<#=table#>_models) {
+        const isEquals = equalsByUnique<#=Table_Up#>(<#=table#>_model, <#=table#>_model2);
+        if (isEquals) {
+          hasIn = true;
+          break;
+        }
+      }
+      if (!hasIn) {
+        <#=table#>_delete_ids.push(<#=table#>_model.id);
+      }
+    }
+    for (let i = 0; i < <#=column_name#>_<#=table#>_models.length; i++) {
+      const input = <#=column_name#>_<#=table#>_models[i];
+      input.order_by = i + 1;
+      let old_model: <#=Table_Up#>Model | undefined = undefined;
+      for (const model of <#=table#>_models) {
+        const isEquals = equalsByUnique<#=Table_Up#>(model, input);
+        if (isEquals) {
+          old_model = model;
+          break;
+        }
+      }
+      if (old_model) {
+        <#=table#>_update_models.push({
+          id: old_model.id,
+          input,
+        });
+      } else {
+        <#=table#>_create_models.push(input);
+      }
+    }
+    
+    for (const input of <#=table#>_create_models) {
+      await create<#=Table_Up#>(input);
+    }
+    for (let i = 0; i < <#=table#>_update_models.length; i++) {
+      const { id, input } = <#=table#>_update_models[i];
+      await updateById<#=Table_Up#>(id, { ...input, id: undefined });
+    }
+    await deleteByIds<#=Table_Up#>(<#=table#>_delete_ids);
+    await forceDeleteByIds<#=Table_Up#>(<#=table#>_delete_ids);
+    
+    updateFldNum++;
+  }<#
   }
   #><#
   if (cache) {
@@ -3941,9 +4135,54 @@ export async function deleteByIds(
   // <#=inlineForeignTab.label#>
   const <#=table#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
-    is_deleted: 0,
   });
   await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  if (ids && ids.length > 0) {
+    {
+      const <#=table#>_models = await findAll<#=Table_Up#>({
+        <#=many2many.column1#>: ids,
+        is_deleted: 1,
+      });
+      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+    }
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=many2many.column1#>: ids,
+    });
+    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+  }<#
   }
   #><#
   if (cache) {
@@ -4279,6 +4518,47 @@ export async function revertByIds(
   await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
   }
   #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  if (ids && ids.length > 0) {
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=many2many.column1#>: ids,
+      is_deleted: 1,
+    });
+    const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
+    await revertByIds<#=Table_Up#>(<#=table#>_ids);
+  }<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -4367,6 +4647,52 @@ export async function forceDeleteByIds(
     is_deleted: 1,
   });
   await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  if (ids && ids.length > 0) {
+    const <#=table#>_models = await findAll<#=Table_Up#>({
+      <#=many2many.column1#>: ids,
+    });
+    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+    {
+      const <#=table#>_models = await findAll<#=Table_Up#>({
+        <#=many2many.column1#>: ids,
+        is_deleted: 1,
+      });
+      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+    }
+  }<#
   }
   #><#
   if (cache) {
