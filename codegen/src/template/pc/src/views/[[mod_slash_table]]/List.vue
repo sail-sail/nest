@@ -1214,7 +1214,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType)) {
+              if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType) && !column.inlineMany2manyTab) {
             #>
               <template #default="{ row, column }">
                 <LinkList
@@ -1227,6 +1227,17 @@ const hasAtt = columns.some((item) => item.isAtt);
                 ></LinkList>
               </template><#
               } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
+            #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  un-min="w-7.5"
+                  @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
+                >
+                  {{ row[column.property]?.length || 0 }}
+                </el-link>
+              </template><#
+              } else if (column.inlineMany2manyTab) {
             #>
               <template #default="{ row, column }">
                 <el-link
@@ -3732,6 +3743,16 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   await updateById(row.id, { <#=column_name#>: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
+}<#
+  }
+#><#
+  if (column.inlineMany2manyTab) {
+#>
+
+// <#=column_comment#>
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
+  selectedIds = [ row.id ];
+  await openView();
 }<#
   }
 #><#
