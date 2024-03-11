@@ -88,122 +88,86 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.userid !== undefined) {
+  if (search?.userid != null) {
     whereQuery += ` and t.userid = ${ args.push(search.userid) }`;
-  }
-  if (search?.userid === null) {
-    whereQuery += ` and t.userid is null`;
   }
   if (isNotEmpty(search?.userid_like)) {
     whereQuery += ` and t.userid like ${ args.push("%" + sqlLike(search?.userid_like) + "%") }`;
   }
-  if (search?.mobile !== undefined) {
+  if (search?.mobile != null) {
     whereQuery += ` and t.mobile = ${ args.push(search.mobile) }`;
-  }
-  if (search?.mobile === null) {
-    whereQuery += ` and t.mobile is null`;
   }
   if (isNotEmpty(search?.mobile_like)) {
     whereQuery += ` and t.mobile like ${ args.push("%" + sqlLike(search?.mobile_like) + "%") }`;
   }
-  if (search?.gender !== undefined) {
+  if (search?.gender != null) {
     whereQuery += ` and t.gender = ${ args.push(search.gender) }`;
-  }
-  if (search?.gender === null) {
-    whereQuery += ` and t.gender is null`;
   }
   if (isNotEmpty(search?.gender_like)) {
     whereQuery += ` and t.gender like ${ args.push("%" + sqlLike(search?.gender_like) + "%") }`;
   }
-  if (search?.email !== undefined) {
+  if (search?.email != null) {
     whereQuery += ` and t.email = ${ args.push(search.email) }`;
-  }
-  if (search?.email === null) {
-    whereQuery += ` and t.email is null`;
   }
   if (isNotEmpty(search?.email_like)) {
     whereQuery += ` and t.email like ${ args.push("%" + sqlLike(search?.email_like) + "%") }`;
   }
-  if (search?.biz_email !== undefined) {
+  if (search?.biz_email != null) {
     whereQuery += ` and t.biz_email = ${ args.push(search.biz_email) }`;
-  }
-  if (search?.biz_email === null) {
-    whereQuery += ` and t.biz_email is null`;
   }
   if (isNotEmpty(search?.biz_email_like)) {
     whereQuery += ` and t.biz_email like ${ args.push("%" + sqlLike(search?.biz_email_like) + "%") }`;
   }
-  if (search?.direct_leader !== undefined) {
+  if (search?.direct_leader != null) {
     whereQuery += ` and t.direct_leader = ${ args.push(search.direct_leader) }`;
-  }
-  if (search?.direct_leader === null) {
-    whereQuery += ` and t.direct_leader is null`;
   }
   if (isNotEmpty(search?.direct_leader_like)) {
     whereQuery += ` and t.direct_leader like ${ args.push("%" + sqlLike(search?.direct_leader_like) + "%") }`;
   }
-  if (search?.position !== undefined) {
+  if (search?.position != null) {
     whereQuery += ` and t.position = ${ args.push(search.position) }`;
-  }
-  if (search?.position === null) {
-    whereQuery += ` and t.position is null`;
   }
   if (isNotEmpty(search?.position_like)) {
     whereQuery += ` and t.position like ${ args.push("%" + sqlLike(search?.position_like) + "%") }`;
   }
-  if (search?.avatar !== undefined) {
+  if (search?.avatar != null) {
     whereQuery += ` and t.avatar = ${ args.push(search.avatar) }`;
-  }
-  if (search?.avatar === null) {
-    whereQuery += ` and t.avatar is null`;
   }
   if (isNotEmpty(search?.avatar_like)) {
     whereQuery += ` and t.avatar like ${ args.push("%" + sqlLike(search?.avatar_like) + "%") }`;
   }
-  if (search?.thumb_avatar !== undefined) {
+  if (search?.thumb_avatar != null) {
     whereQuery += ` and t.thumb_avatar = ${ args.push(search.thumb_avatar) }`;
-  }
-  if (search?.thumb_avatar === null) {
-    whereQuery += ` and t.thumb_avatar is null`;
   }
   if (isNotEmpty(search?.thumb_avatar_like)) {
     whereQuery += ` and t.thumb_avatar like ${ args.push("%" + sqlLike(search?.thumb_avatar_like) + "%") }`;
   }
-  if (search?.qr_code !== undefined) {
+  if (search?.qr_code != null) {
     whereQuery += ` and t.qr_code = ${ args.push(search.qr_code) }`;
-  }
-  if (search?.qr_code === null) {
-    whereQuery += ` and t.qr_code is null`;
   }
   if (isNotEmpty(search?.qr_code_like)) {
     whereQuery += ` and t.qr_code like ${ args.push("%" + sqlLike(search?.qr_code_like) + "%") }`;
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -212,9 +176,12 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: WxwUsrSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     wxwork_wxw_usr t
   `;
@@ -243,7 +210,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -288,7 +255,7 @@ export async function findAll(
   let sql = `
     select t.*
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {

@@ -32,8 +32,7 @@
           prop="wxw_app_id"
         >
           <CustomSelect
-            :set="search.wxw_app_id = search.wxw_app_id || [ ]"
-            v-model="search.wxw_app_id"
+            v-model="wxw_app_id_search"
             :method="getWxwAppList"
             :options-map="((item: WxwAppModel) => {
               return {
@@ -54,9 +53,8 @@
           prop="errcode"
         >
           <DictSelect
-            :set="search.errcode = search.errcode || [ ]"
-            :model-value="search.errcode"
-            @update:model-value="search.errcode = $event"
+            :model-value="errcode_search"
+            @update:model-value="errcode_search = $event"
             code="wxw_msg_errcode"
             :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
             multiple
@@ -713,7 +711,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    wxw_app_id: [ ],
   } as WxwMsgSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -725,6 +722,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 企微应用
+const wxw_app_id_search = $computed({
+  get() {
+    return search.wxw_app_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.wxw_app_id = undefined;
+    } else {
+      search.wxw_app_id = val;
+    }
+  },
+});
+
+// 发送状态
+const errcode_search = $computed({
+  get() {
+    return search.errcode || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.errcode = undefined;
+    } else {
+      search.errcode = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
