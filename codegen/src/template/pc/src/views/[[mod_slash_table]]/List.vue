@@ -134,8 +134,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>Tree"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -161,8 +160,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>Tree"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -185,8 +183,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>List"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -210,9 +207,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
+            :model-value="<#=column_name#>_search"
+            @update:model-value="<#=column_name#>_search = $event"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -221,9 +217,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           } else {
           #>
           <DictSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>[0]"
-            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            :model-value="<#=column_name#>_search[0]"
+            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             @change="onSearch"
@@ -242,10 +237,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictbizSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            un-w="full"
-            :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
+            :model-value="<#=column_name#>_search"
+            @update:model-value="<#=column_name#>_search = $event"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -254,12 +247,10 @@ const hasAtt = columns.some((item) => item.isAtt);
           } else {
           #>
           <DictbizSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>[0]"
-            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            :model-value="<#=column_name#>_search[0]"
+            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            multiple
             @change="onSearch"
           ></DictbizSelect><#
           }
@@ -2062,37 +2053,6 @@ function initSearch() {
     #>
     is_deleted: 0,<#
     }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const require = column.require;
-      const search = column.search;
-      if (!search) continue;
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    #><#
-      if (foreignKey) {
-    #>
-    <#=column_name#>: [ ],<#
-      }
-    #><#
-    }
     #>
   } as <#=searchName#>;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
@@ -2105,6 +2065,42 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
+  const require = column.require;
+  const search = column.search;
+  if (!search) continue;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+#><#
+  if (foreignKey || column.dict || column.dictbiz) {
+#>
+
+// <#=column_comment#>
+const <#=column_name#>_search = $computed({
+  get() {
+    return search.<#=column_name#> || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.<#=column_name#> = undefined;
+    } else {
+      search.<#=column_name#> = val;
+    }
+  },
+});<#
+  }
+#><#
+}
+#><#
 if (hasSearchExpand) {
 #>
 let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#

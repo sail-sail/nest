@@ -32,8 +32,7 @@
           prop="parent_id"
         >
           <CustomTreeSelect
-            :set="search.parent_id = search.parent_id || [ ]"
-            v-model="search.parent_id"
+            v-model="parent_id_search"
             :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
@@ -853,7 +852,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    parent_id: [ ],
   } as MenuSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -865,6 +863,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 父菜单
+const parent_id_search = $computed({
+  get() {
+    return search.parent_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.parent_id = undefined;
+    } else {
+      search.parent_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
