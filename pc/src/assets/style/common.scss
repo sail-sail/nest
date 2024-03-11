@@ -174,48 +174,13 @@ div.el-overlay.is-message-box::after {
   justify-content: center;
   align-items: center;
 }
-// body .el-table {
-//   flex: 1 0 0;
-//   overflow: hidden;
-//   display: flex;
-//   flex-direction: column;
-//   .el-table__inner-wrapper {
-//     flex: 1 0 0;
-//     overflow: hidden;
-//     display: flex;
-//     flex-direction: column;
-//   }
-//   th.el-table__cell>.cell {
-//     display: flex;
-//     vertical-align: unset;
-//   }
-//   .cell {
-//     line-height: normal;
-//     display: flex;
-//     align-items: center;
-//   }
-//   .el-table__cell.is-center .cell {
-//     justify-content: center;
-//   }
-//   .el-table__cell.is-left .cell {
-//     justify-content: flex-start;
-//   }
-//   .el-table__cell.is-right .cell {
-//     justify-content: flex-end;
-//   }
-// }
 body .el-table--small {
-  // .el-table__cell:first-child .cell {
-  //   padding-left: 3px;
-  // }
   .el-table__header {
     thead tr {
-      // height: 36.67px;
       height: 37px;
     }
   }
   .el-table__row {
-    // height: 36.67px;
     height: 37px;
   }
   .cell {
@@ -233,25 +198,6 @@ body .el-table--small {
     .el-table__footer tr {
       height: 29px;
     }
-  }
-}
-.el-table__body-wrapper tr td.el-table-fixed-column--left,
-.el-table__body-wrapper tr td.el-table-fixed-column--right,
-.el-table__body-wrapper tr th.el-table-fixed-column--left,
-.el-table__body-wrapper tr th.el-table-fixed-column--right,
-.el-table__footer-wrapper tr td.el-table-fixed-column--left,
-.el-table__footer-wrapper tr td.el-table-fixed-column--right,
-.el-table__footer-wrapper tr th.el-table-fixed-column--left,
-.el-table__footer-wrapper tr th.el-table-fixed-column--right,
-.el-table__header-wrapper tr td.el-table-fixed-column--left,
-.el-table__header-wrapper tr td.el-table-fixed-column--right,
-.el-table__header-wrapper tr th.el-table-fixed-column--left,
-.el-table__header-wrapper tr th.el-table-fixed-column--right {
-  background-color: inherit;
-}
-.dark {
-  .el-table {
-    --el-table-tr-bg-color: var(--el-table-header-bg-color);
   }
 }
 .el-table--enable-row-transition .el-table__body td.el-table__cell {
@@ -508,4 +454,14 @@ html:is(.dark) {
   .custom_tree_select_readonly {
     border: none;
   }
+  .el-table__body .el-table__row:last-child>.el-table__cell {
+    border-bottom: none;
+  }
+  .el-table__body .el-table__row:last-child.hover-row>.el-table__cell {
+    --el-table-row-hover-bg-color: initial;
+  }
+}
+
+.table_data_sortable_handle {
+  cursor: move;
 }

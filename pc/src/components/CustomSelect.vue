@@ -323,7 +323,6 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
-    modelLabel = props.modelLabel;
   },
 );
 
