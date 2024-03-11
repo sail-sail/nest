@@ -86,61 +86,52 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.domain_ids && !Array.isArray(search?.domain_ids)) {
+  if (search?.domain_ids != null && !Array.isArray(search?.domain_ids)) {
     search.domain_ids = [ search.domain_ids ];
   }
-  if (search?.domain_ids && search?.domain_ids.length > 0) {
+  if (search?.domain_ids != null) {
     whereQuery += ` and base_domain.id in ${ args.push(search.domain_ids) }`;
-  }
-  if (search?.domain_ids === null) {
-    whereQuery += ` and base_domain.id is null`;
   }
   if (search?.domain_ids_is_null) {
     whereQuery += ` and base_domain.id is null`;
   }
-  if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
+  if (search?.menu_ids != null && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
-  if (search?.menu_ids && search?.menu_ids.length > 0) {
+  if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
-  }
-  if (search?.menu_ids === null) {
-    whereQuery += ` and base_menu.id is null`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
+  if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+  if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
-  if (search?.order_by && search?.order_by?.length > 0) {
+  if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
     }
@@ -148,28 +139,22 @@ async function getWhereQuery(
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -177,19 +162,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -201,17 +183,20 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: TenantSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     base_tenant t
     left join base_tenant_domain
       on base_tenant_domain.tenant_id = t.id
-      and base_tenant_domain.is_deleted = 0
+      and base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
     left join base_domain
       on base_tenant_domain.domain_id = base_domain.id
-      and base_domain.is_deleted = 0
+      and base_domain.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
@@ -220,20 +205,19 @@ async function getFromQuery(
       from base_tenant_domain
       inner join base_domain
         on base_domain.id = base_tenant_domain.domain_id
-        and base_domain.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_domain.tenant_id
       where
-        base_tenant_domain.is_deleted = 0
+        base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
       group by tenant_id
     ) _domain
       on _domain.tenant_id = t.id
     left join base_tenant_menu
       on base_tenant_menu.tenant_id = t.id
-      and base_tenant_menu.is_deleted = 0
+      and base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
     left join base_menu
       on base_tenant_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = 0
+      and base_menu.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
@@ -242,11 +226,10 @@ async function getFromQuery(
       from base_tenant_menu
       inner join base_menu
         on base_menu.id = base_tenant_menu.menu_id
-        and base_menu.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_menu.tenant_id
       where
-        base_tenant_menu.is_deleted = 0
+        base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
@@ -280,7 +263,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -331,7 +314,7 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {

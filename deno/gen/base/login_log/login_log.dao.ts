@@ -91,55 +91,46 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.username !== undefined) {
+  if (search?.username != null) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
-  }
-  if (search?.username === null) {
-    whereQuery += ` and t.username is null`;
   }
   if (isNotEmpty(search?.username_like)) {
     whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
   }
-  if (search?.is_succ && !Array.isArray(search?.is_succ)) {
+  if (search?.is_succ != null && !Array.isArray(search?.is_succ)) {
     search.is_succ = [ search.is_succ ];
   }
-  if (search?.is_succ && search?.is_succ?.length > 0) {
+  if (search?.is_succ != null) {
     whereQuery += ` and t.is_succ in ${ args.push(search.is_succ) }`;
   }
-  if (search?.ip !== undefined) {
+  if (search?.ip != null) {
     whereQuery += ` and t.ip = ${ args.push(search.ip) }`;
-  }
-  if (search?.ip === null) {
-    whereQuery += ` and t.ip is null`;
   }
   if (isNotEmpty(search?.ip_like)) {
     whereQuery += ` and t.ip like ${ args.push("%" + sqlLike(search?.ip_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -151,9 +142,12 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: LoginLogSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     base_login_log t
     left join base_usr create_usr_id_lbl
@@ -184,7 +178,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -227,7 +221,7 @@ export async function findAll(
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {

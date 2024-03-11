@@ -8,6 +8,11 @@ import type {
   FormItemRule as FormItemRule2,
 } from "element-plus";
 
+import type {
+  SortableOptions as SortableOptions2,
+  SortableEvent as SortableEvent2,
+} from "sortablejs";
+
 declare module 'vue-router' {
   interface RouteMeta {
     
@@ -58,6 +63,12 @@ declare global {
   }
   
   interface Sort extends Sort2 {
+  }
+  
+  interface SortableOptions extends SortableOptions2 {
+  }
+  
+  interface SortableEvent extends SortableEvent2 {
   }
   
 }
