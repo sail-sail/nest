@@ -32,8 +32,7 @@
           prop="menu_id"
         >
           <CustomTreeSelect
-            :set="search.menu_id = search.menu_id || [ ]"
-            v-model="search.menu_id"
+            v-model="menu_id_search"
             :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
@@ -772,7 +771,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    menu_id: [ ],
   } as FieldPermitSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -784,6 +782,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 菜单
+const menu_id_search = $computed({
+  get() {
+    return search.menu_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.menu_id = undefined;
+    } else {
+      search.menu_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {

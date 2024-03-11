@@ -59,6 +59,9 @@ export function replaceParams(
         case 'object':
           if (val instanceof Date) return `"${formatDate(val)}"`;
           if (val instanceof Array) {
+            if (val.length === 0) {
+              return "('')";
+            }
             return `(${val
               .map((item) => replaceParams('?', [item]))
               .join(',')})`;

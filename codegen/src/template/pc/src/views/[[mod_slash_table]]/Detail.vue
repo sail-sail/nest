@@ -233,6 +233,7 @@ for (let i = 0; i < columns.length; i++) {
           }
           const readonlyPlaceholder = column.readonlyPlaceholder;
           const modelLabel = column.modelLabel;
+          if (column.inlineMany2manyTab) continue;
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -1214,18 +1215,19 @@ for (let i = 0; i < columns.length; i++) {
             <el-table
               ref="<#=column_name#>_<#=table#>Ref"
               un-m="t-2"
-              border
-              size="small"
+              size="default"
               height="100%"
-              :data="dialogModel.<#=column_name#>_<#=table#>_models"
+              :data="<#=column_name#>_<#=table#>_models"
               class="inlineMany2manyTab_table"
+              :cell-class-name="<#=column_name#>TableCellClassName"
+              v-table-data-sortable="<#=column_name#>TableDataSortableOptions"
             >
               
               <el-table-column
-                prop="_seq"
+                prop="order_by"
                 :label="ns('序号')"
                 align="center"
-                width="50"
+                width="52"
               >
               </el-table-column><#
               for (let i = 0; i < inlineMany2manyColumns.length; i++) {
@@ -1287,7 +1289,7 @@ for (let i = 0; i < columns.length; i++) {
                 header-align="center"
               >
                 <template #default="{ row }">
-                  <template v-if="row._type !== 'add'"><#
+                  <template v-if="row._type !== 'select'"><#
                     if (column.isImg) {
                     #><#
                     } else if (
@@ -1617,16 +1619,27 @@ for (let i = 0; i < columns.length; i++) {
               #>
               
               <el-table-column
-                v-if="!isLocked && !isReadonly"
+                v-if="permit('edit') && !isLocked && !isReadonly"
                 prop="_operation"
                 :label="ns('操作')"
-                width="70"
+                width="72"
                 align="center"
                 fixed="right"
               >
                 <template #default="{ row }">
                   
                   <el-button
+                    v-if="row._type === 'select'"
+                    size="small"
+                    plain
+                    type="primary"
+                    @click="<#=column_name#>Select"
+                  >
+                    {{ ns('选择') }}
+                  </el-button>
+                  
+                  <el-button
+                    v-else
                     size="small"
                     plain
                     type="danger"
@@ -1799,6 +1812,48 @@ for (let i = 0; i < columns.length; i++) {
     ref="<#=foreignSchema.opts.table#>DetailDialogRef"
   ></<#=foreignSchema.opts.tableUp#>DetailDialog><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const table = many2many.table;
+    const mod = many2many.mod;
+    const inlineMany2manySchema = optTables[mod + "_" + table];
+    if (!inlineMany2manySchema) {
+      throw new Error(`表: ${ mod }_${ table } 不存在`);
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  <!-- 权益 -->
+  <ListSelectDialog
+    ref="<#=column_name#>ListSelectDialogRef"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
+  >
+    <<#=foreignTable_Up#>List
+      v-bind="listSelectProps"
+    ></<#=foreignTable_Up#>List>
+  </ListSelectDialog><#
+  }
   #>
 </CustomDialog>
 </template>
@@ -1894,6 +1949,9 @@ if (
     if (column.noAdd && column.noEdit) {
       return false;
     }
+    if (column.inlineMany2manyTab) {
+      return false;
+    }
     const foreignTable = foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -1932,6 +1990,9 @@ import {<#
       continue;
     }
     if (column.noAdd && column.noEdit) {
+      continue;
+    }
+    if (column.inlineMany2manyTab) {
       continue;
     }
     const foreignTable = foreignKey && foreignKey.table;
@@ -2004,6 +2065,7 @@ import {
 const findAllTableUps = [ ];
 const getDefaultInputTableUps = [ ];
 const inputTableUps = [ ];
+const listVueTableUps = [ ];
 #><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -2040,14 +2102,14 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   
-#>
-<#
+#><#
   if (!findAllTableUps.includes(foreign_Table_Up)) {
     const hasFindAllTableUps = findAllTableUps.includes(foreign_Table_Up);
     if (!hasFindAllTableUps) {
       findAllTableUps.push(foreign_Table_Up);
     }
 #>
+
 import {<#
   if (!hasFindAllTableUps) {
   #>
@@ -2056,14 +2118,24 @@ import {<#
   #>
 } from "@/views/<#=foreign_mod#>/<#=foreign_table#>/Api";<#
  }
+#><#
+  if (!listVueTableUps.includes(Table_Up)) {
+    const hasListVueTableUps = listVueTableUps.includes(Table_Up);
+    if (!hasListVueTableUps) {
+      listVueTableUps.push(Table_Up);
+    }
 #>
-<#
+
+import <#=foreign_Table_Up#>List from "@/views/<#=foreign_mod#>/<#=foreign_table#>/List.vue";<#
+  }
+#><#
   if (!getDefaultInputTableUps.includes(Table_Up)) {
     const hasGetDefaultInputTableUps = getDefaultInputTableUps.includes(Table_Up);
     if (!hasGetDefaultInputTableUps) {
       getDefaultInputTableUps.push(Table_Up);
     }
 #>
+
 import {<#
   if (!hasGetDefaultInputTableUps) {
   #>
@@ -2072,14 +2144,14 @@ import {<#
   #>
 } from "@/views/<#=mod#>/<#=table#>/Api";<#
   }
-#>
-<#
+#><#
   if (!inputTableUps.includes(Table_Up)) {
     const hasInputTableUps = inputTableUps.includes(Table_Up);
     if (!hasInputTableUps) {
       inputTableUps.push(Table_Up);
     }
 #>
+
 import type {<#
   if (!hasInputTableUps) {
   #>
@@ -2924,6 +2996,46 @@ async function showDialog(
       #>
       order_by,<#
       }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
+      #>
+      
+      // <#=column_comment#>
+      _<#=column_name#>_<#=foreign_table#>_models,<#
+      }
       #>
     ] = await Promise.all([
       getDefaultInput(),<#
@@ -2931,8 +3043,94 @@ async function showDialog(
       #>
       findLastOrderBy(),<#
       }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
       #>
-    ]);
+      
+      // <#=column_comment#>
+      await findAll<#=foreign_Table_Up#>({<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
+      }),<#
+      }
+      #>
+    ]);<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const table = many2many.table;
+      const mod = many2many.mod;
+      const inlineMany2manySchema = optTables[mod + "_" + table];
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const foreign_table = foreignKey.table;
+      const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+      const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineMany2manyColumns = inlineMany2manySchema.columns;
+    #>
+    
+    // <#=column_comment#>
+    <#=column_name#>_<#=foreign_table#>_models = _<#=column_name#>_<#=foreign_table#>_models;<#
+    }
+    #>
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
@@ -2953,6 +3151,46 @@ async function showDialog(
       #>
       order_by,<#
       }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
+      #>
+      
+      // <#=column_comment#>
+      _<#=column_name#>_<#=foreign_table#>_models,<#
+      }
       #>
     ] = await Promise.all([
       findOneModel({
@@ -2967,8 +3205,94 @@ async function showDialog(
       #>
       findLastOrderBy(),<#
       }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
       #>
-    ]);
+      
+      // <#=column_comment#>
+      await findAll<#=foreign_Table_Up#>({<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
+      }),<#
+      }
+      #>
+    ]);<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const table = many2many.table;
+      const mod = many2many.mod;
+      const inlineMany2manySchema = optTables[mod + "_" + table];
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const foreign_table = foreignKey.table;
+      const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+      const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineMany2manyColumns = inlineMany2manySchema.columns;
+    #>
+    
+    // <#=column_comment#>
+    <#=column_name#>_<#=foreign_table#>_models = _<#=column_name#>_<#=foreign_table#>_models;<#
+    }
+    #>
     if (data) {
       dialogModel = {
         ...data,
@@ -3030,6 +3354,58 @@ async function showDialog(
           ...item,
           id: undefined,
         })) || [ ],<#
+        }
+        #><#
+        for (let i = 0; i < columns.length; i++) {
+          const column = columns[i];
+          if (column.ignoreCodegen) continue;
+          if (column.onlyCodegenDeno) continue;
+          const column_name = column.COLUMN_NAME;
+          const column_comment = column.COLUMN_COMMENT;
+          let is_nullable = column.IS_NULLABLE === "YES";
+          const foreignKey = column.foreignKey;
+          const foreignTable = foreignKey && foreignKey.table;
+          const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+          const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          let data_type = column.DATA_TYPE;
+          const many2many = column.many2many;
+          if (!many2many || !foreignKey) continue;
+          if (!column.inlineMany2manyTab) continue;
+          const table = many2many.table;
+          const mod = many2many.mod;
+          const inlineMany2manySchema = optTables[mod + "_" + table];
+          if (!inlineMany2manySchema) {
+            throw `表: ${ mod }_${ table } 不存在`;
+            process.exit(1);
+          }
+          const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+          const Table_Up = tableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          const foreign_table = foreignKey.table;
+          const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+          const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          const inlineMany2manyColumns = inlineMany2manySchema.columns;
+        #>
+        
+        // <#=column_comment#>
+        <#=column_name#>: data.<#=column_name#>
+          ?.filter((id) => <#=column_name#>_<#=foreign_table#>_models.some((item) => item.id === id))
+          ?? [ ],
+        <#=column_name#>_<#=table#>_models: data.<#=column_name#>_<#=table#>_models
+          ?.filter((item) => <#=column_name#>_<#=foreign_table#>_models.some((item2) => item2.id === item.<#=many2many.column2#>))
+          ?.map((item) => {
+            return {
+              ...item,
+              id: undefined,
+              <#=many2many.column1#>: undefined,
+            };
+          })
+          ?? [ ],<#
         }
         #>
       };
@@ -4001,6 +4377,50 @@ let inlineMany2manyTabLabel = $ref("<#=inlineMany2manyTabLabel#>");<#
 #>
 
 // <#=column_comment#>
+const <#=column_name#>_<#=table#>_models = $computed(() => {
+  return [
+    ...dialogModel.<#=column_name#>_<#=table#>_models ?? [ ],
+    {
+      _type: "select",
+    },
+  ];
+});
+
+const <#=column_name#>TableDataSortableOptions = {
+  handle: ".table_data_sortable_handle",
+  onEnd: async (event: SortableEvent) => {
+    const { oldIndex, newIndex } = event
+    if (oldIndex == null || newIndex == null) {
+      return;
+    }
+    if (!dialogModel.<#=column_name#>_<#=table#>_models) {
+      return;
+    }
+    const oldData = dialogModel.<#=column_name#>_<#=table#>_models[oldIndex];
+    dialogModel.<#=column_name#>_<#=table#>_models.splice(oldIndex, 1);
+    dialogModel.<#=column_name#>_<#=table#>_models.splice(newIndex, 0, oldData);
+    const <#=column_name#>_<#=table#>_modelsOld = dialogModel.<#=column_name#>_<#=table#>_models;
+    dialogModel.<#=column_name#>_<#=table#>_models = [ ];
+    await nextTick();
+    dialogModel.<#=column_name#>_<#=table#>_models = <#=column_name#>_<#=table#>_modelsOld;
+  },
+} as SortableOptions;
+
+function <#=column_name#>TableCellClassName(
+  {
+    row,
+    column,
+  }: {
+    row: <#=Table_Up#>Input;
+    column: TableColumnCtx<<#=Table_Up#>Input>;
+  },
+) {
+  const prop = column.property;
+  if (prop === "order_by") {
+    return "table_data_sortable_handle";
+  }
+}
+
 let <#=column_name#>_<#=foreign_table#>_models = $ref<<#=foreign_Table_Up#>Model[]>([ ]);
 
 async function <#=column_name#>Remove(row: <#=Table_Up#>Input) {
@@ -4016,7 +4436,68 @@ async function <#=column_name#>Remove(row: <#=Table_Up#>Input) {
       dialogModel.<#=column_name#>.splice(idx, 1);
     }
   }
+}<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const column_comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const table = many2many.table;
+  const mod = many2many.mod;
+  const inlineMany2manySchema = optTables[mod + "_" + table];
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreign_table = foreignKey.table;
+  const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+  const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const inlineMany2manyColumns = inlineMany2manySchema.columns;
+#>
+
+let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+let <#=column_name#>_<#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
+
+async function <#=column_name#>Select() {
+  if (!<#=column_name#>ListSelectDialogRef) {
+    return;
+  }
+  if (isLocked) {
+    return;
+  }
+  dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ];
+  const res = await <#=column_name#>ListSelectDialogRef.showDialog({
+    title: await nsAsync("选择") + await nsAsync("<#=column_comment#>"),
+    selectedIds: dialogModel.<#=column_name#>,
+    isLocked: dialogModel.is_locked == 1 || is_deleted == 1,
+  });
+  const action = res.action;
+  if (action !== "select") {
+    return;
+  }
+  const selectedIds2 = res.selectedIds || [ ];
+  dialogModel.<#=column_name#> = selectedIds2;
+}<#
 }
+#>
 
 watch(
   () => dialogModel.<#=column_name#>,
@@ -4045,10 +4526,11 @@ watch(
         <#=many2many.column2#>_lbl: input.lbl,
         <#=many2many.column1#>: dialogModel.id,
         <#=many2many.column1#>_lbl: dialogModel.lbl,
-        order_by: i + 1,
       });
     }
     dialogModel.<#=column_name#>_<#=table#>_models = inputs;
+    await nextTick();
+    rights_ids_rights_pack_rightsRef?.setScrollTop(Number.MAX_VALUE);
   },
   {
     deep: true,
@@ -4056,18 +4538,19 @@ watch(
 );
 
 watch(
-  () => [
-    dialogModel.<#=column_name#>_<#=table#>_models,
-    dialogModel.<#=column_name#>_<#=table#>_models?.length,
-  ],
+  () => dialogModel.<#=column_name#>_<#=table#>_models,
   () => {
-    if (!dialogModel.<#=column_name#>_<#=table#>_models) {
+    if (!inited) {
       return;
     }
+    dialogModel.<#=column_name#>_<#=table#>_models = dialogModel.<#=column_name#>_<#=table#>_models ?? [ ];
     for (let i = 0; i < dialogModel.<#=column_name#>_<#=table#>_models.length; i++) {
       const item = dialogModel.<#=column_name#>_<#=table#>_models[i];
-      (item as any)._seq = i + 1;
+      item.order_by = i + 1;
     }
+  },
+  {
+    deep: true,
   },
 );<#
   }

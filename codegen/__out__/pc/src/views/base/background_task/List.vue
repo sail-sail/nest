@@ -45,9 +45,8 @@
           prop="state"
         >
           <DictSelect
-            :set="search.state = search.state || [ ]"
-            :model-value="search.state"
-            @update:model-value="search.state = $event"
+            :model-value="state_search"
+            @update:model-value="state_search = $event"
             code="background_task_state"
             :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             multiple
@@ -62,9 +61,8 @@
           prop="type"
         >
           <DictSelect
-            :set="search.type = search.type || [ ]"
-            :model-value="search.type"
-            @update:model-value="search.type = $event"
+            :model-value="type_search"
+            @update:model-value="type_search = $event"
             code="background_task_type"
             :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             multiple
@@ -681,6 +679,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 状态
+const state_search = $computed({
+  get() {
+    return search.state || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.state = undefined;
+    } else {
+      search.state = val;
+    }
+  },
+});
+
+// 类型
+const type_search = $computed({
+  get() {
+    return search.type || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.type = undefined;
+    } else {
+      search.type = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {

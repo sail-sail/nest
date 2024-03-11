@@ -32,8 +32,7 @@
           prop="menu_id"
         >
           <CustomTreeSelect
-            :set="search.menu_id = search.menu_id || [ ]"
-            v-model="search.menu_id"
+            v-model="menu_id_search"
             :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
@@ -55,9 +54,8 @@
           prop="scope"
         >
           <DictSelect
-            :set="search.scope = search.scope || [ ]"
-            :model-value="search.scope"
-            @update:model-value="search.scope = $event"
+            :model-value="scope_search"
+            @update:model-value="scope_search = $event"
             code="data_permit_scope"
             :placeholder="`${ ns('请选择') } ${ n('范围') }`"
             multiple
@@ -753,7 +751,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    menu_id: [ ],
   } as DataPermitSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -765,6 +762,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 菜单
+const menu_id_search = $computed({
+  get() {
+    return search.menu_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.menu_id = undefined;
+    } else {
+      search.menu_id = val;
+    }
+  },
+});
+
+// 范围
+const scope_search = $computed({
+  get() {
+    return search.scope || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.scope = undefined;
+    } else {
+      search.scope = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
