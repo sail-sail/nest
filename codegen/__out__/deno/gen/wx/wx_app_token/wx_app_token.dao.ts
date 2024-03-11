@@ -76,37 +76,31 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.wx_app_id && !Array.isArray(search?.wx_app_id)) {
+  if (search?.wx_app_id != null && !Array.isArray(search?.wx_app_id)) {
     search.wx_app_id = [ search.wx_app_id ];
   }
-  if (search?.wx_app_id && search?.wx_app_id.length > 0) {
+  if (search?.wx_app_id != null) {
     whereQuery += ` and wx_app_id_lbl.id in ${ args.push(search.wx_app_id) }`;
-  }
-  if (search?.wx_app_id === null) {
-    whereQuery += ` and wx_app_id_lbl.id is null`;
   }
   if (search?.wx_app_id_is_null) {
     whereQuery += ` and wx_app_id_lbl.id is null`;
   }
-  if (search?.access_token !== undefined) {
+  if (search?.access_token != null) {
     whereQuery += ` and t.access_token = ${ args.push(search.access_token) }`;
-  }
-  if (search?.access_token === null) {
-    whereQuery += ` and t.access_token is null`;
   }
   if (isNotEmpty(search?.access_token_like)) {
     whereQuery += ` and t.access_token like ${ args.push("%" + sqlLike(search?.access_token_like) + "%") }`;
   }
-  if (search?.token_time && search?.token_time?.length > 0) {
+  if (search?.token_time != null) {
     if (search.token_time[0] != null) {
       whereQuery += ` and t.token_time >= ${ args.push(search.token_time[0]) }`;
     }
@@ -114,7 +108,7 @@ async function getWhereQuery(
       whereQuery += ` and t.token_time <= ${ args.push(search.token_time[1]) }`;
     }
   }
-  if (search?.expires_in && search?.expires_in?.length > 0) {
+  if (search?.expires_in != null) {
     if (search.expires_in[0] != null) {
       whereQuery += ` and t.expires_in >= ${ args.push(search.expires_in[0]) }`;
     }
@@ -126,9 +120,12 @@ async function getWhereQuery(
 }
 
 async function getFromQuery(
+  args: QueryArgs,
+  search?: WxAppTokenSearch,
   options?: {
   },
 ) {
+  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `
     wx_wx_app_token t
     left join wx_wx_app wx_app_id_lbl
@@ -159,7 +156,7 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(options) }
+          ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
@@ -205,7 +202,7 @@ export async function findAll(
     select t.*
       ,wx_app_id_lbl.lbl wx_app_id_lbl
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
