@@ -45,8 +45,7 @@
           prop="job_id"
         >
           <CustomSelect
-            :set="search.job_id = search.job_id || [ ]"
-            v-model="search.job_id"
+            v-model="job_id_search"
             :method="getJobList"
             :options-map="((item: JobModel) => {
               return {
@@ -869,7 +868,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    job_id: [ ],
   } as CronJobSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -881,6 +879,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 任务
+const job_id_search = $computed({
+  get() {
+    return search.job_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.job_id = undefined;
+    } else {
+      search.job_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
