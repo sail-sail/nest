@@ -1,5 +1,12 @@
 // deno-lint-ignore-file ban-unused-ignore
 import Decimal from "decimal.js";
+import {
+  log,
+} from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 type SupportTypeElement =
   | string
@@ -17,7 +24,13 @@ export function replaceParams(
   sql: string,
   params?: null | SupportType[]
 ): string {
-  if (!params) return sql;
+  const debug_sql = getParsedEnv("database_debug_sql");
+  if (!params || params.length === 0) {
+    if (debug_sql === "true") {
+      log(sql.trim());
+    }
+    return sql;
+  }
   let paramIndex = 0;
   sql = sql.replace(
     /('[^'\\]*(?:\\.[^'\\]*)*')|("[^"\\]*(?:\\.[^"\\]*)*")|(\?\?)|(\?)/g,
@@ -86,6 +99,9 @@ export function replaceParams(
       }
     }
   );
+  if (debug_sql === "true") {
+    log(sql.trim());
+  }
   return sql;
 }
 
