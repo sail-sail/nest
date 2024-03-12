@@ -775,20 +775,20 @@ export async function query<T = any>(
   if (result != null) {
     return result;
   }
-  let debugSql = "";
+  // let debugSql = "";
   try {
     if (context.is_tran) {
       const conn = await beginTran();
-      if (!opt || opt.debug !== false) {
-        debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
-        log(debugSql);
-      }
+      // if (!opt || opt.debug !== false) {
+      //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
+      //   log(debugSql);
+      // }
       result = (await conn.query(sql, args) as T[]);
     } else {
-      if (!opt || opt.debug !== false) {
-        debugSql = getDebugQuery(sql, args);
-        log(debugSql);
-      }
+      // if (!opt || opt.debug !== false) {
+      //   debugSql = getDebugQuery(sql, args);
+      //   log(debugSql);
+      // }
       const pool = await getClient();
       result = await pool.query(sql, args);
     }
@@ -796,9 +796,9 @@ export async function query<T = any>(
     if (err.code === "EHOSTUNREACH") {
       err.message = "连接数据库失败!";
     }
-    if (debugSql) {
-      error(debugSql);
-    }
+    // if (debugSql) {
+    //   error(debugSql);
+    // }
     throw err;
   }
   await setCache(opt?.cacheKey1, opt?.cacheKey2, result);

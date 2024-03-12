@@ -20,12 +20,13 @@ async function _getMenus(
 ) {
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    select
+    select distinct
       t.id,
       t.parent_id,
       t.lbl,
       t.route_path,
-      t.route_query
+      t.route_query,
+      t.order_by
     from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
@@ -55,7 +56,6 @@ async function _getMenus(
   if (authModel?.id) {
     sql += ` and base_usr_role.usr_id = ${ args.push(authModel.id) }`;
   }
-  sql += ` order by t.order_by asc`;
   
   const table = "base_menu";
   
@@ -68,9 +68,12 @@ async function _getMenus(
     lbl: string,
     route_path: string,
     route_query?: string,
+    order_by: number,
   };
   
   const result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  
+  result.sort((a, b) => a.order_by - b.order_by);
   
   return result;
 }
