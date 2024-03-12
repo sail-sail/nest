@@ -88,6 +88,35 @@ import {
 } from "sqlstring";
 
 import dayjs from "dayjs";<#
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  if (!column_type) {
+    continue;
+  }
+  if (!column_type.startsWith("decimal")) {
+    continue;
+  }
+  const isVirtual = column.isVirtual;
+  if (!isVirtual) continue;
+  hasDecimal = true;
+}
+#><#
+if (hasDecimal) {
+#>
+
+import Decimal from "decimal.js";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -1526,12 +1555,21 @@ export async function findAll(
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
+      const column_default = column.COLUMN_DEFAULT;
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
+      const isVirtual = column.isVirtual;
+    #><#
+      if (column_type && column_type.startsWith("decimal") && isVirtual && !isEncrypt) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = new Decimal(<#=column_default || 0#>);<#
+      }
     #><#
       if (isEncrypt) {
     #>
