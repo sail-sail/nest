@@ -92,7 +92,9 @@ function convertType(field: FieldInfo, val: string, config: ClientConfig): any {
   //   return parseInt(val) > 0;
   // }
   switch (fieldType) {
-    case MYSQL_TYPE_DECIMAL:
+    case MYSQL_TYPE_DECIMAL: {
+      return new Decimal(val);
+    }
     case MYSQL_TYPE_DOUBLE:
     case MYSQL_TYPE_FLOAT:
     // case MYSQL_TYPE_DATETIME2:
