@@ -97,6 +97,10 @@ export async function getEnv(key: string): Promise<string> {
   return parsedEnv[key];
 }
 
+export function getParsedEnv(key: string): string {
+  return parsedEnv[key];
+}
+
 /**
  * 设置环境变量
  * @param {string} key
