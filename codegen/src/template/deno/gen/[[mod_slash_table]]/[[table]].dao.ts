@@ -88,33 +88,6 @@ import {
 } from "sqlstring";
 
 import dayjs from "dayjs";<#
-let hasDecimal = false;
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  if (column.noList) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  if (column_name === "version") continue;
-  const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  if (!column_type) {
-    continue;
-  }
-  if (!column_type.startsWith("decimal")) {
-    continue;
-  }
-  hasDecimal = true;
-}
-#><#
-if (hasDecimal) {
-#>
-
-import Decimal from "decimal.js";<#
-}
-#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -945,8 +918,7 @@ async function getFromQuery(
   const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant);<#
   }
   #>
-  let fromQuery = `
-    <#=mod#>_<#=table#> t<#
+  let fromQuery = `<#=mod#>_<#=table#> t<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1005,8 +977,7 @@ async function getFromQuery(
       }
     #><#
     }
-    #>
-  `;<#
+    #>`;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
@@ -1044,6 +1015,15 @@ export async function findCount(
   const table = "<#=mod#>_<#=table#>";
   const method = "findCount";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const args = new QueryArgs();
   let sql = `
     select
@@ -1053,19 +1033,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(args, search, options) }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;<#
+  sql += ` group by t.id) t`;<#
   if (cache) {
   #>
   
@@ -1107,6 +1080,21 @@ export async function findAll(
   const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (page && Object.keys(page).length > 0) {
+    msg += `page:${ JSON.stringify(page) } `;
+  }
+  if (sort && Object.keys(sort).length > 0) {
+    msg += `sort:${ JSON.stringify(sort) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const args = new QueryArgs();
   let sql = `
     select t.*<#
@@ -1147,14 +1135,9 @@ export async function findAll(
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;<#
+  sql += ` group by t.id`;<#
   if (defaultSort) {
   #>
   
@@ -1542,15 +1525,7 @@ export async function findAll(
       if (column_name === "is_hidden") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -1558,42 +1533,10 @@ export async function findAll(
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
     #><#
-      if (column_type && column_type.startsWith("decimal")) {
-    #>
-    
-    // <#=column_comment#>
-    if (model.<#=column_name#> != null) {
-      model.<#=column_name#> = new Decimal(model.<#=column_name#>);
-    }<#
-      }
-    #><#
-      if (foreignKey && foreignKey.type === "json") {
-    #><#
-      } else if (isEncrypt) {
+      if (isEncrypt) {
     #>
     // <#=column_comment#>
     model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
-      } else if (selectList.length > 0) {
-    #>
-    // <#=column_comment#>
-    let <#=column_name#>_lbl = "";<#
-    for (let i = 0; i < selectList.length; i++) {
-      const item = selectList[i];
-      let value = item.value;
-      let label = item.label;
-      if (typeof(value) === "string") {
-        value = `"${ value }"`;
-      } else if (typeof(value) === "number") {
-        value = value.toString();
-      }
-    #><#=i>0?" else ":""#>if (model.<#=column_name#> === <#=value#>) {
-      <#=column_name#>_lbl = "<#=label#>";
-    }<#
-    }
-    #> else {
-      <#=column_name#>_lbl = String(model.<#=column_name#>);
-    }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
@@ -2636,6 +2579,12 @@ export async function existById(
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
+  let msg = `${ table }.${ method }: `;
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (isEmpty(id as unknown as string)) {
     return false;
   }
@@ -2909,6 +2858,15 @@ export async function create(
 ): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
   const method = "create";
+  
+  let msg = `${ table }.${ method }: `;
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -3465,6 +3423,18 @@ export async function updateTenantById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
   
+  let msg = `${ table }.${ method }: `;
+  if (id) {
+    msg += `id:${ id } `;
+  }
+  if (tenant_id) {
+    msg += `tenant_id:${ tenant_id } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
@@ -3603,6 +3573,18 @@ export async function updateById(
 ): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
+  
+  let msg = `${ table }.${ method }: `;
+  if (id) {
+    msg += `id:${ id } `;
+  }
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -4077,6 +4059,15 @@ export async function deleteByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "deleteByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }<#
@@ -4309,6 +4300,18 @@ export async function enableByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "enableByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (is_enabled !== undefined) {
+    msg += `is_enabled:${ is_enabled } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }<#
@@ -4397,6 +4400,18 @@ export async function lockByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "lockByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (is_locked !== undefined) {
+    msg += `is_locked:${ is_locked } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }<#
@@ -4456,6 +4471,15 @@ export async function revertByIds(
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "revertByIds";
+  
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -4592,6 +4616,15 @@ export async function forceDeleteByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }<#
@@ -4720,12 +4753,17 @@ export async function findLastOrderBy(
   const table = "<#=mod#>_<#=table#>";
   const method = "findLastOrderBy";
   
+  let msg = `${ table }.${ method }: `;
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   let sql = `
     select
       t.order_by order_by
     from
-      <#=mod#>_<#=table#> t
-  `;
+      <#=mod#>_<#=table#> t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);<#
@@ -4752,11 +4790,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += `
-    order by
-      t.order_by desc
-    limit 1
-  `;
+  sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;

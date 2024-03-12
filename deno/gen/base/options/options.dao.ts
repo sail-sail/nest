@@ -171,13 +171,11 @@ async function getFromQuery(
   },
 ) {
   const is_deleted = search?.is_deleted ?? 0;
-  let fromQuery = `
-    base_options t
+  let fromQuery = `base_options t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -194,6 +192,15 @@ export async function findCount(
   const table = "base_options";
   const method = "findCount";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const args = new QueryArgs();
   let sql = `
     select
@@ -203,19 +210,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery(args, search, options) }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -244,6 +244,21 @@ export async function findAll(
   const table = "base_options";
   const method = "findAll";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (page && Object.keys(page).length > 0) {
+    msg += `page:${ JSON.stringify(page) } `;
+  }
+  if (sort && Object.keys(sort).length > 0) {
+    msg += `sort:${ JSON.stringify(sort) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const args = new QueryArgs();
   let sql = `
     select t.*
@@ -254,14 +269,9 @@ export async function findAll(
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -587,6 +597,12 @@ export async function existById(
   const table = "base_options";
   const method = "existById";
   
+  let msg = `${ table }.${ method }: `;
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (isEmpty(id as unknown as string)) {
     return false;
   }
@@ -717,6 +733,15 @@ export async function create(
 ): Promise<OptionsId> {
   const table = "base_options";
   const method = "create";
+  
+  let msg = `${ table }.${ method }: `;
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -905,6 +930,18 @@ export async function updateById(
   const table = "base_options";
   const method = "updateById";
   
+  let msg = `${ table }.${ method }: `;
+  if (id) {
+    msg += `id:${ id } `;
+  }
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
@@ -1040,6 +1077,15 @@ export async function deleteByIds(
   const table = "base_options";
   const method = "deleteByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }
@@ -1108,6 +1154,18 @@ export async function enableByIds(
 ): Promise<number> {
   const table = "base_options";
   const method = "enableByIds";
+  
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (is_enabled !== undefined) {
+    msg += `is_enabled:${ is_enabled } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1179,6 +1237,18 @@ export async function lockByIds(
   const table = "base_options";
   const method = "lockByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (is_locked !== undefined) {
+    msg += `is_locked:${ is_locked } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }
@@ -1226,6 +1296,15 @@ export async function revertByIds(
 ): Promise<number> {
   const table = "base_options";
   const method = "revertByIds";
+  
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1286,6 +1365,15 @@ export async function forceDeleteByIds(
   const table = "base_options";
   const method = "forceDeleteByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }
@@ -1339,23 +1427,24 @@ export async function findLastOrderBy(
   const table = "base_options";
   const method = "findLastOrderBy";
   
+  let msg = `${ table }.${ method }: `;
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   let sql = `
     select
       t.order_by order_by
     from
-      base_options t
-  `;
+      base_options t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += `
-    order by
-      t.order_by desc
-    limit 1
-  `;
+  sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
