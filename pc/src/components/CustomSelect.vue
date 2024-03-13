@@ -313,7 +313,7 @@ const props = withDefaults(
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     readonlyCollapseTags: true,
-    readonlyMaxCollapseTags: 10,
+    readonlyMaxCollapseTags: 1,
   },
 );
 

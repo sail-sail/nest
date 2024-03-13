@@ -27,8 +27,7 @@ export async function findCount(
   search?: FieldPermitSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await field_permitDao.findCount(search, {
-  });
+  const data = await field_permitDao.findCount(search);
   return data;
 }
 
@@ -45,8 +44,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<FieldPermitModel[]> {
   search = search || { };
-  const models: FieldPermitModel[] = await field_permitDao.findAll(search, page, sort, {
-  });
+  const models: FieldPermitModel[] = await field_permitDao.findAll(search, page, sort);
   return models;
 }
 
@@ -67,8 +65,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<FieldPermitModel | undefined> {
   search = search || { };
-  const model = await field_permitDao.findOne(search, sort, {
-  });
+  const model = await field_permitDao.findOne(search, sort);
   return model;
 }
 
@@ -79,8 +76,7 @@ export async function findOne(
 export async function findById(
   id?: FieldPermitId | null,
 ): Promise<FieldPermitModel | undefined> {
-  const model = await field_permitDao.findById(id, {
-  });
+  const model = await field_permitDao.findById(id);
   return model;
 }
 
@@ -92,8 +88,7 @@ export async function exist(
   search?: FieldPermitSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await field_permitDao.exist(search, {
-  });
+  const data = await field_permitDao.exist(search);
   return data;
 }
 
@@ -104,8 +99,7 @@ export async function exist(
 export async function existById(
   id?: FieldPermitId | null,
 ): Promise<boolean> {
-  const data = await field_permitDao.existById(id, {
-  });
+  const data = await field_permitDao.existById(id);
   return data;
 }
 
@@ -147,8 +141,7 @@ export async function updateById(
 ): Promise<FieldPermitId> {
   
   // 不能修改系统记录的系统字段
-  const model = await field_permitDao.findById(id, {
-  });
+  const model = await field_permitDao.findById(id);
   if (model && model.is_sys === 1) {
     // 菜单
     input.menu_id = undefined;

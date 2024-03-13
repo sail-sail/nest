@@ -25,13 +25,13 @@ type OperationRecordModel {
   old_data: String
   "操作后数据"
   new_data: String
-  "创建人"
+  "操作人"
   create_usr_id: UsrId!
-  "创建人"
+  "操作人"
   create_usr_id_lbl: String
-  "创建时间"
+  "操作时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "操作时间"
   create_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
@@ -55,13 +55,13 @@ type OperationRecordFieldComment {
   old_data: String!
   "操作后数据"
   new_data: String!
-  "创建人"
+  "操作人"
   create_usr_id: String!
-  "创建人"
+  "操作人"
   create_usr_id_lbl: String!
-  "创建时间"
+  "操作时间"
   create_time: String!
-  "创建时间"
+  "操作时间"
   create_time_lbl: String!
 }
 input OperationRecordInput {
@@ -83,13 +83,13 @@ input OperationRecordInput {
   old_data: String
   "操作后数据"
   new_data: String
-  "创建人"
+  "操作人"
   create_usr_id: UsrId
-  "创建人"
+  "操作人"
   create_usr_id_lbl: String
-  "创建时间"
+  "操作时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "操作时间"
   create_time_lbl: String
 }
 input OperationRecordSearch {
@@ -122,10 +122,10 @@ input OperationRecordSearch {
   "操作后数据"
   new_data: String
   new_data_like: String
-  "创建人"
+  "操作人"
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
-  "创建时间"
+  "操作时间"
   create_time: [NaiveDateTime!]
 }
 type Query {
