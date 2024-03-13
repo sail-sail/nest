@@ -1724,6 +1724,33 @@ export async function get<#=Foreign_Table_Up#>Tree() {
   );
   return data;
 }<#
+  if (mod === "base" && table === "menu") {
+#>
+
+export const menuDataPermit = {<#
+  const optKeys = Object.keys(optTables);
+  for (let i = 0; i < optKeys.length; i++) {
+    const optKey = optKeys[i];
+    const optTable = optTables[optKey];
+    if (!optTable.opts.dataPermit) {
+      continue;
+    }
+  #>
+  "/<#=optTable.opts.mod#>/<#=optTable.opts.table#>": true,<#
+  }
+  #>
+} as const;
+
+export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
+  const route_path = model.route_path;
+  if (!route_path) {
+    return false;
+  }
+  const isPermit = (menuDataPermit as any)[route_path];
+  return isPermit;
+}<#
+  }
+#><#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
