@@ -27,8 +27,7 @@ export async function findCount(
   search?: DictbizDetailSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await dictbiz_detailDao.findCount(search, {
-  });
+  const data = await dictbiz_detailDao.findCount(search);
   return data;
 }
 
@@ -45,8 +44,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DictbizDetailModel[]> {
   search = search || { };
-  const models: DictbizDetailModel[] = await dictbiz_detailDao.findAll(search, page, sort, {
-  });
+  const models: DictbizDetailModel[] = await dictbiz_detailDao.findAll(search, page, sort);
   return models;
 }
 
@@ -67,8 +65,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DictbizDetailModel | undefined> {
   search = search || { };
-  const model = await dictbiz_detailDao.findOne(search, sort, {
-  });
+  const model = await dictbiz_detailDao.findOne(search, sort);
   return model;
 }
 
@@ -79,8 +76,7 @@ export async function findOne(
 export async function findById(
   id?: DictbizDetailId | null,
 ): Promise<DictbizDetailModel | undefined> {
-  const model = await dictbiz_detailDao.findById(id, {
-  });
+  const model = await dictbiz_detailDao.findById(id);
   return model;
 }
 
@@ -92,8 +88,7 @@ export async function exist(
   search?: DictbizDetailSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await dictbiz_detailDao.exist(search, {
-  });
+  const data = await dictbiz_detailDao.exist(search);
   return data;
 }
 
@@ -104,8 +99,7 @@ export async function exist(
 export async function existById(
   id?: DictbizDetailId | null,
 ): Promise<boolean> {
-  const data = await dictbiz_detailDao.existById(id, {
-  });
+  const data = await dictbiz_detailDao.existById(id);
   return data;
 }
 
@@ -152,8 +146,7 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await dictbiz_detailDao.findById(id, {
-  });
+  const model = await dictbiz_detailDao.findById(id);
   if (model && model.is_sys === 1) {
   }
   

@@ -20,20 +20,25 @@ type SupportTypeElement =
 // Array
 type SupportType = SupportTypeElement | SupportTypeElement[];
 
+const reg = /('[^'\\]*(?:\\.[^'\\]*)*')|("[^"\\]*(?:\\.[^"\\]*)*")|(\?\?)|(\?)/g;
+
 export function replaceParams(
   sql: string,
-  params?: null | SupportType[]
+  params?: null | SupportType[],
+  opt?: {
+    log?: boolean;
+  },
 ): string {
   const debug_sql = getParsedEnv("database_debug_sql");
   if (!params || params.length === 0) {
-    if (debug_sql === "true") {
+    if (debug_sql === "true" && opt?.log === true) {
       log(sql.trim());
     }
     return sql;
   }
   let paramIndex = 0;
   sql = sql.replace(
-    /('[^'\\]*(?:\\.[^'\\]*)*')|("[^"\\]*(?:\\.[^"\\]*)*")|(\?\?)|(\?)/g,
+    reg,
     (str) => {
       if (paramIndex >= params.length) return str;
       // ignore
@@ -99,7 +104,7 @@ export function replaceParams(
       }
     }
   );
-  if (debug_sql === "true") {
+  if (debug_sql === "true" && opt?.log === true) {
     log(sql.trim());
   }
   return sql;
