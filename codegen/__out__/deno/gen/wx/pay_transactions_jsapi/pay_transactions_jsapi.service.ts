@@ -25,8 +25,7 @@ export async function findCount(
   search?: PayTransactionsJsapiSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await pay_transactions_jsapiDao.findCount(search, {
-  });
+  const data = await pay_transactions_jsapiDao.findCount(search);
   return data;
 }
 
@@ -43,8 +42,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
   search = search || { };
-  const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort, {
-  });
+  const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
   return models;
 }
 
@@ -65,8 +63,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
   search = search || { };
-  const model = await pay_transactions_jsapiDao.findOne(search, sort, {
-  });
+  const model = await pay_transactions_jsapiDao.findOne(search, sort);
   return model;
 }
 
@@ -77,8 +74,7 @@ export async function findOne(
 export async function findById(
   id?: PayTransactionsJsapiId | null,
 ): Promise<PayTransactionsJsapiModel | undefined> {
-  const model = await pay_transactions_jsapiDao.findById(id, {
-  });
+  const model = await pay_transactions_jsapiDao.findById(id);
   return model;
 }
 
@@ -90,8 +86,7 @@ export async function exist(
   search?: PayTransactionsJsapiSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await pay_transactions_jsapiDao.exist(search, {
-  });
+  const data = await pay_transactions_jsapiDao.exist(search);
   return data;
 }
 
@@ -102,8 +97,7 @@ export async function exist(
 export async function existById(
   id?: PayTransactionsJsapiId | null,
 ): Promise<boolean> {
-  const data = await pay_transactions_jsapiDao.existById(id, {
-  });
+  const data = await pay_transactions_jsapiDao.existById(id);
   return data;
 }
 
