@@ -27,8 +27,7 @@ export async function findCount(
   search?: RoleSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await roleDao.findCount(search, {
-  });
+  const data = await roleDao.findCount(search);
   return data;
 }
 
@@ -45,8 +44,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
   search = search || { };
-  const models: RoleModel[] = await roleDao.findAll(search, page, sort, {
-  });
+  const models: RoleModel[] = await roleDao.findAll(search, page, sort);
   return models;
 }
 
@@ -67,8 +65,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel | undefined> {
   search = search || { };
-  const model = await roleDao.findOne(search, sort, {
-  });
+  const model = await roleDao.findOne(search, sort);
   return model;
 }
 
@@ -79,8 +76,7 @@ export async function findOne(
 export async function findById(
   id?: RoleId | null,
 ): Promise<RoleModel | undefined> {
-  const model = await roleDao.findById(id, {
-  });
+  const model = await roleDao.findById(id);
   return model;
 }
 
@@ -92,8 +88,7 @@ export async function exist(
   search?: RoleSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await roleDao.exist(search, {
-  });
+  const data = await roleDao.exist(search);
   return data;
 }
 
@@ -104,8 +99,7 @@ export async function exist(
 export async function existById(
   id?: RoleId | null,
 ): Promise<boolean> {
-  const data = await roleDao.existById(id, {
-  });
+  const data = await roleDao.existById(id);
   return data;
 }
 

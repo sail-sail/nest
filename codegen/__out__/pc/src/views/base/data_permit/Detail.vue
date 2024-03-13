@@ -83,6 +83,14 @@
               :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               :readonly="isLocked || isReadonly"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+                disabled: function(item: MenuModel) {
+                  return !item.route_path;
+                },
+              }"
+              :filter-node-method="useMenuTreeFilter"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -257,7 +265,12 @@ import type {
 
 import {
   getMenuTree,
+  useMenuTreeFilter,
 } from "@/views/base/menu/Api";
+
+import type {
+  MenuModel,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
