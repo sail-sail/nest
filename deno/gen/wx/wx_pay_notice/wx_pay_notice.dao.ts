@@ -365,6 +365,13 @@ export async function findAll(
   }
   log(msg);
   
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
     select t.*
@@ -717,6 +724,12 @@ export async function findOne(
   options?: {
   },
 ): Promise<WxPayNoticeModel | undefined> {
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
