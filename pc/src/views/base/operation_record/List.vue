@@ -67,7 +67,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.create_time == null">
         <el-form-item
-          :label="n('创建时间')"
+          :label="n('操作时间')"
           prop="create_time"
         >
           <CustomDatePicker
@@ -520,7 +520,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
+          <!-- 操作人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -529,7 +529,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建时间 -->
+          <!-- 操作时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -935,7 +935,7 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
     },
     {
-      label: "创建人",
+      label: "操作人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
@@ -944,7 +944,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建时间",
+      label: "操作时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
       width: 150,
@@ -1396,8 +1396,8 @@ async function initI18nsEfc() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initListI18ns(),

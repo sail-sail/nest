@@ -188,6 +188,8 @@ async function onFindTree() {
       parent_id = undefined;
     }
   }
+  await nextTick();
+  treeRef?.filter(search_value);
 }
 
 async function onNode(model: ModelTree) {

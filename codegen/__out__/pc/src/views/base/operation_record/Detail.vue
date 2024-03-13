@@ -633,8 +633,8 @@ async function onInitI18ns() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initDetailI18ns(),
