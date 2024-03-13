@@ -96,6 +96,22 @@ export async function createRole(
   unique_type?: UniqueType,
 ): Promise<RoleId> {
   
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
+  
   const {
     validate,
     setIdByLbl,
@@ -126,6 +142,22 @@ export async function updateByIdRole(
   id: RoleId,
   input: RoleInput,
 ): Promise<RoleId> {
+  
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
   
   const {
     setIdByLbl,

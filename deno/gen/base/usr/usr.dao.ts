@@ -1488,23 +1488,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
-      }
-    }
-    sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
-    
-    await delCache();
-    
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
-  }
   
   updateFldNum++;
   
@@ -1556,6 +1539,24 @@ export async function updateById(
       column2: "role_id",
     },
   );
+  
+  if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await getAuthModel();
+      if (authModel?.id !== undefined) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }
+    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
+  }
   
   if (updateFldNum > 0) {
     await delCache();

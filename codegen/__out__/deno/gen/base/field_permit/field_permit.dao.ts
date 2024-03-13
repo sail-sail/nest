@@ -989,6 +989,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;

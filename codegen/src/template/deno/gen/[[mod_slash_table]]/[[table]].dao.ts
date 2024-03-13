@@ -3848,39 +3848,7 @@ export async function updateById(
     }
   #><#
   }
-  #>
-  if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
-      }
-    }<#
-    if (hasVersion) {
-    #>
-    if (input.version != null) {
-      const version = await getVersionById(id);
-      if (version && version > input.version) {
-        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
-      }
-      sql += `version = ${ args.push(version + 1) },`;
-    }<#
-    }
-    #>
-    sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;<#
-    if (cache) {
-    #>
-    
-    await delCache();<#
-    }
-    #>
-    
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
-  }<#
+  #><#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     const table = inlineForeignTab.table;
@@ -4058,7 +4026,40 @@ export async function updateById(
     updateFldNum++;
   }<#
   }
-  #><#
+  #>
+  
+  if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await getAuthModel();
+      if (authModel?.id !== undefined) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }<#
+    if (hasVersion) {
+    #>
+    if (input.version != null) {
+      const version = await getVersionById(id);
+      if (version && version > input.version) {
+        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+      }
+      sql += `version = ${ args.push(version + 1) },`;
+    }<#
+    }
+    #>
+    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;<#
+    if (cache) {
+    #>
+    
+    await delCache();<#
+    }
+    #>
+    
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
+  }<#
   if (cache) {
   #>
   
