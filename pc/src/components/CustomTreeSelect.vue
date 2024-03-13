@@ -7,6 +7,9 @@
   default-first-option
   :height="props.height"
   class="custom_tree_select"
+  :class="{
+    hideDisabledCheckbox: props.hideDisabledCheckbox,
+  }"
   node-key="id"
   vaule-key="id"
   :props="props.props"
@@ -15,7 +18,7 @@
   :check-strictly="true"
   :default-expand-all="true"
   :show-checkbox="true"
-  :check-on-click-node="true"
+  :check-on-click-node="false"
   un-w="full"
   v-bind="$attrs"
   :loading="!inited"
@@ -25,6 +28,7 @@
   @change="onChange"
   @check="onCheck"
   :clearable="!props.disabled"
+  @node-click="onNodeClick"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -79,8 +83,12 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type TreeOptionProps,
+import type {
+  TreeNode,
+} from "element-plus";
+
+import type {
+  TreeOptionProps,
 } from "element-plus/es/components/tree/src/tree.type";
 
 import {
@@ -111,6 +119,7 @@ const props = withDefaults(
     props?: ExtractPropTypes<TreeOptionProps>;
     disabled?: boolean;
     readonly?: boolean;
+    hideDisabledCheckbox?: boolean;
   }>(),
   {
     height: 400,
@@ -125,6 +134,7 @@ const props = withDefaults(
     }),
     disabled: undefined,
     readonly: undefined,
+    hideDisabledCheckbox: true,
   },
 );
 
@@ -190,7 +200,24 @@ function onClear() {
   emit("clear");
 }
 
-function onChange() {
+async function onChange() {
+  await nextTick();
+  if (!props.multiple) {
+    if (!modelValue) {
+      emit("change", undefined);
+      return;
+    }
+    const model = treeSelectFn(data, modelValue as string)!;
+    emit("change", model);
+    return;
+  }
+  let models: any[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const id of modelValues) {
+    const model = treeSelectFn(data, id)!;
+    models.push(model);
+  }
+  emit("change", models);
 }
 
 function treeSelectFn<
@@ -211,6 +238,38 @@ function treeSelectFn<
     }
   }
   return;
+}
+
+async function onNodeClick(data: any, node: TreeNode) {
+  let disabled = props.props.disabled as any;
+  if (disabled instanceof Function) {
+    disabled = disabled(data);
+  }
+  if (disabled) {
+    return;
+  }
+  if (props.multiple) {
+    const modelValueArr: any = Array.isArray(modelValue) ? modelValue : [ modelValue ];
+    if (modelValueArr.includes(data.id)) {
+      return;
+    }
+    if (modelValueArr.includes(data.id)) {
+      modelValueArr.splice(modelValueArr.indexOf(data.id), 1);
+    } else {
+      modelValueArr.push(data.id);
+    }
+    modelValue = modelValueArr;
+    emit("update:modelValue", modelValue);
+    await onChange();
+  } else {
+    if (modelValue === data.id) {
+      modelValue = "";
+    } else {
+      modelValue = data.id;
+    }
+    emit("update:modelValue", modelValue);
+    await onChange();
+  }
 }
 
 function onCheck() {
@@ -253,8 +312,15 @@ defineExpose({
 });
 </script>
 
-<style lang="scss">
-.el-select-dropdown__wrap {
+<style lang="scss" scoped>
+:global(.el-select-dropdown__wrap) {
   max-height: 400px;
+}
+:global(.hideDisabledCheckbox .el-select-dropdown__item.is-disabled) {
+  color: inherit;
+  cursor: pointer;
+}
+:global(.hideDisabledCheckbox .el-checkbox.is-disabled) {
+  display: none;
 }
 </style>

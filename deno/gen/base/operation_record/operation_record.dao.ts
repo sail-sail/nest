@@ -259,6 +259,13 @@ export async function findAll(
   }
   log(msg);
   
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
     select t.*
@@ -315,7 +322,7 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 创建时间
+    // 操作时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
       if (isNaN(create_time.toDate().getTime())) {
@@ -352,10 +359,10 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    create_usr_id: await n("操作人"),
+    create_usr_id_lbl: await n("操作人"),
+    create_time: await n("操作时间"),
+    create_time_lbl: await n("操作时间"),
   };
   return fieldComments;
 }
@@ -447,6 +454,12 @@ export async function findOne(
   options?: {
   },
 ): Promise<OperationRecordModel | undefined> {
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -593,7 +606,7 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 创建人
+  // 操作人
   await validators.chars_max_length(
     input.create_usr_id,
     22,

@@ -73,6 +73,8 @@ for (let i = 0; i < columns.length; i++) {
   hasInlineMany2manyTab = true;
   break;
 }
+const old_mod = mod;
+const old_table = table;
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -447,6 +449,18 @@ for (let i = 0; i < columns.length; i++) {
               if (readonlyPlaceholder) {
               #>
               readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
+              if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
+              #>
+              :props="{
+                label: 'lbl',
+                children: 'children',
+                disabled: function(item: MenuModel) {
+                  return !item.route_path;
+                },
+              }"
+              :filter-node-method="useMenuTreeFilter"<#
               }
               #>
             ></CustomTreeSelect><#
@@ -2058,8 +2072,21 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,
+  get<#=Foreign_Table_Up#>Tree,<#
+  if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
+  #>
+  useMenuTreeFilter,<#
+  }
+  #>
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
+#>
+
+import type {
+  MenuModel,
+} from "#/types";<#
+}
+#><#
 }
 #><#
 const findAllTableUps = [ ];

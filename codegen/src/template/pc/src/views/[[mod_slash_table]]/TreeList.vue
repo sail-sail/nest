@@ -134,7 +134,12 @@ import {
 #>
 
 import {
-  findTree,
+  findTree,<#
+  if (mod === "base" && table === "data_permit") {
+  #>
+  useMenuTreeFilter,<#
+  }
+  #>
 } from "@/views/<#=list_treeForeignKey.mod#>/<#=list_treeForeignKey.table#>/Api";<#
 }
 #>
@@ -205,7 +210,15 @@ function onSearchClear() {
   treeRef?.filter(search_value);
 }
 
-function filterNode(value: string, data: ModelTree) {
+function filterNode(value: string, data: ModelTree) {<#
+  if (mod === "base" && table === "data_permit") {
+  #>
+  const isPermit = useMenuTreeFilter(value, data);
+  if (isPermit !== true) {
+    return false;
+  }<#
+  }
+  #>
   if (!value) {
     return true;
   }
@@ -247,6 +260,8 @@ async function onFindTree() {
       parent_id = undefined;
     }
   }
+  await nextTick();
+  treeRef?.filter(search_value);
 }
 
 async function onNode(model: ModelTree) {

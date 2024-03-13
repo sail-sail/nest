@@ -82,6 +82,7 @@ import List from "./List.vue";
 
 import {
   findTree,
+  useMenuTreeFilter,
 } from "@/views/base/menu/Api";
 
 import type {
@@ -151,6 +152,10 @@ function onSearchClear() {
 }
 
 function filterNode(value: string, data: ModelTree) {
+  const isPermit = useMenuTreeFilter(value, data);
+  if (isPermit !== true) {
+    return false;
+  }
   if (!value) {
     return true;
   }
@@ -188,6 +193,8 @@ async function onFindTree() {
       parent_id = undefined;
     }
   }
+  await nextTick();
+  treeRef?.filter(search_value);
 }
 
 async function onNode(model: ModelTree) {

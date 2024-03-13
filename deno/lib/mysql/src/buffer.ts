@@ -138,7 +138,6 @@ export class BufferWriter {
   writeIntLE(num: number, len: number) {
     const int = new Int32Array(1);
     int[0] = 40;
-    console.log(int);
   }
 
   writeUint16(num: number): BufferWriter {
