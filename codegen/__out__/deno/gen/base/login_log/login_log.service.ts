@@ -25,8 +25,7 @@ export async function findCount(
   search?: LoginLogSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await login_logDao.findCount(search, {
-  });
+  const data = await login_logDao.findCount(search);
   return data;
 }
 
@@ -43,8 +42,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<LoginLogModel[]> {
   search = search || { };
-  const models: LoginLogModel[] = await login_logDao.findAll(search, page, sort, {
-  });
+  const models: LoginLogModel[] = await login_logDao.findAll(search, page, sort);
   return models;
 }
 
@@ -65,8 +63,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<LoginLogModel | undefined> {
   search = search || { };
-  const model = await login_logDao.findOne(search, sort, {
-  });
+  const model = await login_logDao.findOne(search, sort);
   return model;
 }
 
@@ -77,8 +74,7 @@ export async function findOne(
 export async function findById(
   id?: LoginLogId | null,
 ): Promise<LoginLogModel | undefined> {
-  const model = await login_logDao.findById(id, {
-  });
+  const model = await login_logDao.findById(id);
   return model;
 }
 
@@ -90,8 +86,7 @@ export async function exist(
   search?: LoginLogSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await login_logDao.exist(search, {
-  });
+  const data = await login_logDao.exist(search);
   return data;
 }
 
@@ -102,8 +97,7 @@ export async function exist(
 export async function existById(
   id?: LoginLogId | null,
 ): Promise<boolean> {
-  const data = await login_logDao.existById(id, {
-  });
+  const data = await login_logDao.existById(id);
   return data;
 }
 

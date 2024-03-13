@@ -510,6 +510,18 @@ export async function getMenuTree() {
   return data;
 }
 
+export const menuDataPermit = {
+} as const;
+
+export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
+  const route_path = model.route_path;
+  if (!route_path) {
+    return false;
+  }
+  const isPermit = (menuDataPermit as any)[route_path];
+  return isPermit;
+}
+
 /**
  * 下载导入模板
  */

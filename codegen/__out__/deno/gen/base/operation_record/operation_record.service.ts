@@ -25,8 +25,7 @@ export async function findCount(
   search?: OperationRecordSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await operation_recordDao.findCount(search, {
-  });
+  const data = await operation_recordDao.findCount(search);
   return data;
 }
 
@@ -43,8 +42,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel[]> {
   search = search || { };
-  const models: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort, {
-  });
+  const models: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
   return models;
 }
 
@@ -65,8 +63,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel | undefined> {
   search = search || { };
-  const model = await operation_recordDao.findOne(search, sort, {
-  });
+  const model = await operation_recordDao.findOne(search, sort);
   return model;
 }
 
@@ -77,8 +74,7 @@ export async function findOne(
 export async function findById(
   id?: OperationRecordId | null,
 ): Promise<OperationRecordModel | undefined> {
-  const model = await operation_recordDao.findById(id, {
-  });
+  const model = await operation_recordDao.findById(id);
   return model;
 }
 
@@ -90,8 +86,7 @@ export async function exist(
   search?: OperationRecordSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await operation_recordDao.exist(search, {
-  });
+  const data = await operation_recordDao.exist(search);
   return data;
 }
 
@@ -102,8 +97,7 @@ export async function exist(
 export async function existById(
   id?: OperationRecordId | null,
 ): Promise<boolean> {
-  const data = await operation_recordDao.existById(id, {
-  });
+  const data = await operation_recordDao.existById(id);
   return data;
 }
 

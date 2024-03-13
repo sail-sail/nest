@@ -27,8 +27,7 @@ export async function findCount(
   search?: TenantSearch,
 ): Promise<number> {
   search = search || { };
-  const data = await tenantDao.findCount(search, {
-  });
+  const data = await tenantDao.findCount(search);
   return data;
 }
 
@@ -45,8 +44,7 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel[]> {
   search = search || { };
-  const models: TenantModel[] = await tenantDao.findAll(search, page, sort, {
-  });
+  const models: TenantModel[] = await tenantDao.findAll(search, page, sort);
   return models;
 }
 
@@ -67,8 +65,7 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel | undefined> {
   search = search || { };
-  const model = await tenantDao.findOne(search, sort, {
-  });
+  const model = await tenantDao.findOne(search, sort);
   return model;
 }
 
@@ -79,8 +76,7 @@ export async function findOne(
 export async function findById(
   id?: TenantId | null,
 ): Promise<TenantModel | undefined> {
-  const model = await tenantDao.findById(id, {
-  });
+  const model = await tenantDao.findById(id);
   return model;
 }
 
@@ -92,8 +88,7 @@ export async function exist(
   search?: TenantSearch,
 ): Promise<boolean> {
   search = search || { };
-  const data = await tenantDao.exist(search, {
-  });
+  const data = await tenantDao.exist(search);
   return data;
 }
 
@@ -104,8 +99,7 @@ export async function exist(
 export async function existById(
   id?: TenantId | null,
 ): Promise<boolean> {
-  const data = await tenantDao.existById(id, {
-  });
+  const data = await tenantDao.existById(id);
   return data;
 }
 
@@ -152,8 +146,7 @@ export async function updateById(
   }
   
   // 不能修改系统记录的系统字段
-  const model = await tenantDao.findById(id, {
-  });
+  const model = await tenantDao.findById(id);
   if (model && model.is_sys === 1) {
     // 名称
     input.lbl = undefined;
