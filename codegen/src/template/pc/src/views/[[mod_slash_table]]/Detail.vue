@@ -3495,10 +3495,14 @@ watch(
     if (is_deleted) {
       dialogNotice = await nsAsync("(已删除)");
       return;
-    }
+    }<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
     if (!isEditableDataPermit) {
       isLocked = true;
+    }<#
     }
+    #>
     if (isLocked) {<#
       if (hasDataPermit() && hasCreateUsrId) {
       #>

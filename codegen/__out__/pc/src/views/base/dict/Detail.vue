@@ -667,9 +667,6 @@ watch(
       dialogNotice = await nsAsync("(已删除)");
       return;
     }
-    if (!isEditableDataPermit) {
-      isLocked = true;
-    }
     if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
       return;
