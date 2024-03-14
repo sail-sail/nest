@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -81,6 +85,7 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -314,9 +319,14 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<OperationRecordModel>(
     sql,
     args,
+    {
+      debug,
+    },
   );
   
   for (let i = 0; i < result.length; i++) {
@@ -786,7 +796,12 @@ export async function create(
     sql += `,${ args.push(input.new_data) }`;
   }
   sql += `)`;
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   return input.id;
@@ -1018,9 +1033,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: OperationRecordId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();

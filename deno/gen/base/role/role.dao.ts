@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -102,6 +106,7 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -446,12 +451,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<RoleModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   for (const item of result) {
@@ -598,19 +606,20 @@ export async function setIdByLbl(
     if (input.menu_ids_lbl.length === 0) {
       input.menu_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_menu t
         where
-          t.lbl in ${ args.push(input.menu_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.menu_ids_lbl) }`;
       interface Result {
         id: MenuId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.menu_ids = models.map((item: { id: MenuId }) => item.id);
     }
   }
@@ -624,19 +633,20 @@ export async function setIdByLbl(
     if (input.permit_ids_lbl.length === 0) {
       input.permit_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_permit t
         where
-          t.lbl in ${ args.push(input.permit_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.permit_ids_lbl) }`;
       interface Result {
         id: PermitId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.permit_ids = models.map((item: { id: PermitId }) => item.id);
     }
   }
@@ -650,19 +660,20 @@ export async function setIdByLbl(
     if (input.data_permit_ids_lbl.length === 0) {
       input.data_permit_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_data_permit t
         where
-          t.scope in ${ args.push(input.data_permit_ids_lbl) }
-      `;
+          t.scope in ${ args.push(input.data_permit_ids_lbl) }`;
       interface Result {
         id: DataPermitId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.data_permit_ids = models.map((item: { id: DataPermitId }) => item.id);
     }
   }
@@ -1154,7 +1165,12 @@ export async function create(
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   // 菜单权限
@@ -1507,9 +1523,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: RoleId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();

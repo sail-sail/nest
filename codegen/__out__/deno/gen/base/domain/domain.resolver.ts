@@ -218,7 +218,7 @@ export async function defaultByIdDomain(
   
   await usePermit(
     "/base/domain",
-    "default",
+    "edit",
   );
   const res = await defaultById(id);
   return res;
@@ -245,7 +245,7 @@ export async function enableByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -272,7 +272,7 @@ export async function lockByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

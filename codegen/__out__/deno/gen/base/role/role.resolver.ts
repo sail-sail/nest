@@ -222,7 +222,7 @@ export async function enableByIdsRole(
   
   await usePermit(
     "/base/role",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsRole(
   
   await usePermit(
     "/base/role",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -103,6 +107,7 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -112,6 +117,7 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
+  
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
@@ -398,12 +404,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<DeptModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   for (const item of result) {
@@ -519,19 +528,20 @@ export async function setIdByLbl(
     if (input.usr_ids_lbl.length === 0) {
       input.usr_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_usr t
         where
-          t.lbl in ${ args.push(input.usr_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.usr_ids_lbl) }`;
       interface Result {
         id: UsrId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.usr_ids = models.map((item: { id: UsrId }) => item.id);
     }
   }
@@ -1039,7 +1049,12 @@ export async function create(
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   // 部门负责人
@@ -1369,9 +1384,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: DeptId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();

@@ -222,7 +222,7 @@ export async function enableByIdsDept(
   
   await usePermit(
     "/base/dept",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsDept(
   
   await usePermit(
     "/base/dept",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

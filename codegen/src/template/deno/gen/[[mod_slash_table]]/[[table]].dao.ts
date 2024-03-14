@@ -144,6 +144,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -244,9 +248,10 @@ import {
 import {
   UniqueType,
   SortOrderEnum,<#
-  if (hasDataPermit()) {
+  if (hasDataPermit() && hasCreateUsrId) {
   #>
-  DataPermitScope,<#
+  DataPermitScope,
+  DataPermitType,<#
   }
   #>
 } from "/gen/types.ts";
@@ -489,7 +494,7 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignKey.mod#>/<#=foreignTable#
 #><#
 }
 #><#
-if (hasDataPermit()) {
+if (hasDataPermit() && hasCreateUsrId) {
 #>
 
 import {
@@ -499,10 +504,13 @@ import {
 import {
   getAuthDeptIds,
   getAuthAndParentsDeptIds,
+  getParentsDeptIds,
+  getDeptIds,
 } from "/src/base/dept/dept.dao.ts";
 
 import {
   getAuthRoleIds,
+  getRoleIds,
 } from "/src/base/role/role.dao.ts";<#
 }
 #><#
@@ -749,23 +757,13 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
   },
-): Promise<string> {<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  const dataPermitModels = await getDataPermits(route_path, options);
-  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
-  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
-  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept);
-  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent);
-  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant);<#
-  }
-  #>
+): Promise<string> {
   let whereQuery = "";<#
   if (hasIsDeleted) {
   #>
@@ -774,6 +772,18 @@ async function getWhereQuery(
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
+  
+  const dataPermitModels = await getDataPermits(route_path, options);
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept);
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant);<#
+  }
+  #><#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasCreatePermit) {
     const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
@@ -794,6 +804,7 @@ async function getWhereQuery(
   #><#
   if (hasTenant_id) {
   #>
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -807,6 +818,7 @@ async function getWhereQuery(
   #><#
   if (hasOrgId) {
   #>
+  
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
@@ -926,7 +938,7 @@ async function getFromQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -938,7 +950,7 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;<#
   }
   #><#
-  if (hasDataPermit()) {
+  if (hasDataPermit() && hasCreateUsrId) {
   #>
   const dataPermitModels = await getDataPermits(route_path, options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
@@ -1010,16 +1022,10 @@ async function getFromQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
-    fromQuery += `
-      left join base_usr_dept _permit_usr_dept_
-        on _permit_usr_dept_.usr_id  = t.create_usr_id
-    `;
+    fromQuery += ` left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id  = t.create_usr_id`;
   }
   if (!hasTenantPermit && hasRolePermit) {
-    fromQuery += `
-      left join base_usr_role _permit_usr_role_
-        on _permit_usr_role_.usr_id  = t.create_usr_id
-    `;
+    fromQuery += ` left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id  = t.create_usr_id`;
   }<#
   }
   #>
@@ -1034,7 +1040,7 @@ async function getFromQuery(
 export async function findCount(
   search?: <#=searchName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -1099,7 +1105,7 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -1261,6 +1267,8 @@ export async function findAll(
   }
   #>
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<<#=modelName#>>(
     sql,
     args,<#
@@ -1269,9 +1277,15 @@ export async function findAll(
     {
       cacheKey1,
       cacheKey2,
+      debug,
+    },<#
+    } else {
+    #>
+    {
+      debug,
     },<#
     }
-  #>
+    #>
   );<#
   var hasMany2manyTmp = false;
   for (let i = 0; i < columns.length; i++) {
@@ -2047,19 +2061,20 @@ export async function setIdByLbl(
     if (input.<#=column_name#>_lbl.length === 0) {
       input.<#=column_name#> = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           <#=foreignKey.mod#>_<#=foreignTable#> t
         where
-          t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
-      `;
+          t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }`;
       interface Result {
         id: <#=foreignTable_Up#>Id;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.<#=column_name#> = models.map((item: { id: <#=foreignTable_Up#>Id }) => item.id);
     }
   }<#
@@ -2269,7 +2284,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
 export async function findByUnique(
   search0: <#=inputName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -2492,7 +2507,7 @@ if (hasSummary) {
 export async function findSummary(
   search?: <#=searchName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -2551,7 +2566,7 @@ export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput | SortInput[],
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -2580,7 +2595,7 @@ export async function findOne(
 export async function findById(
   id?: <#=Table_Up#>Id | null,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -2601,7 +2616,7 @@ export async function findById(
 export async function exist(
   search?: <#=searchName#>,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -2620,7 +2635,7 @@ export async function exist(
 export async function existById(
   id?: <#=Table_Up#>Id | null,
   options?: {<#
-    if (hasDataPermit()) {
+    if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
@@ -3284,7 +3299,12 @@ export async function create(
   await delCache();<#
   }
   #>
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -3596,6 +3616,83 @@ export async function getVersionById(
   return version;
 }<#
 }
+#><#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds(
+  ids: <#=Table_Up#>Id[],
+) {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const dataPermitModels = await getDataPermits(route_path, {
+    hasDataPermit: true,
+  });
+  
+  if (dataPermitModels.length === 0) {
+    return ids.map(() => 1);
+  }
+  
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
+  
+  const dataPermits = [ ];
+  const models = await findAll({
+    ids,
+  });
+  for (const id of ids) {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      dataPermits.push(0);
+      continue;
+    }
+    if (!model.create_usr_id) {
+      dataPermits.push(1);
+      continue;
+    }
+    if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
+      const authModel = await getAuthModel();
+      if (authModel?.id === model.create_usr_id) {
+        dataPermits.push(1);
+      } else {
+        dataPermits.push(0);
+      }
+    } else if (!hasTenantPermit && hasDeptParentPermit) {
+      const dept_ids = await getAuthAndParentsDeptIds();
+      const model_dept_ids = await getParentsDeptIds(model.create_usr_id);
+      if (model_dept_ids.some((item) => dept_ids.includes(item))) {
+        dataPermits.push(1);
+      } else {
+        dataPermits.push(0);
+      }
+    } else if (!hasTenantPermit && hasDeptPermit) {
+      const dept_ids = await getAuthDeptIds();
+      const model_dept_ids = await getDeptIds(model.create_usr_id);
+      if (model_dept_ids.some((item) => dept_ids.includes(item))) {
+        dataPermits.push(1);
+      } else {
+        dataPermits.push(0);
+      }
+    }
+    
+    if (!hasTenantPermit && hasRolePermit) {
+      const role_ids = await getAuthRoleIds();
+      const model_role_ids = await getRoleIds(model.create_usr_id);
+      if (model_role_ids.some((item) => role_ids.includes(item))) {
+        dataPermits.push(1);
+      } else {
+        dataPermits.push(0);
+      }
+    }
+  }
+  return dataPermits;
+}<#
+}
 #>
 
 /**
@@ -3615,6 +3712,11 @@ export async function updateById(
   input: <#=inputName#>,
   options?: {
     uniqueType?: "ignore" | "throw";<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #><#
     if (hasEncrypt) {
     #>
     isEncrypt?: boolean;<#
@@ -3721,6 +3823,48 @@ export async function updateById(
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  const dataPermitModels = await getDataPermits(route_path, options);
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
+  
+  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
+    throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+  }
+  
+  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
+    const authModel = await getAuthModel();
+    if (oldModel.create_usr_id !== authModel.id) {
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    }
+  } else if (!hasTenantPermit && hasDeptParentPermit) {
+    const dept_ids = await getAuthAndParentsDeptIds();
+    const model_dept_ids = await getParentsDeptIds(oldModel.create_usr_id);
+    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    }
+  } else if (!hasTenantPermit && hasDeptPermit) {
+    const dept_ids = await getAuthDeptIds();
+    const model_dept_ids = await getDeptIds(oldModel.create_usr_id);
+    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    }
+  }
+  
+  if (!hasTenantPermit && hasRolePermit) {
+    const role_ids = await getAuthRoleIds();
+    const model_role_ids = await getRoleIds(oldModel.create_usr_id);
+    if (!model_role_ids.some((item) => role_ids.includes(item))) {
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    }
+  }<#
+  }
+  #><#
   if (mod === "base" && table === "role") {
   #>
   
@@ -4105,7 +4249,12 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {
+  options?: {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
@@ -4123,6 +4272,17 @@ export async function deleteByIds(
   if (!ids || !ids.length) {
     return 0;
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  const dataPermitModels = await getDataPermits(route_path, options);
+  const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
+  const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
+  const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -4134,11 +4294,46 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: <#=Table_Up#>Id = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
+    }<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    
+    if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
+      throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
     }
+    
+    if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
+      const authModel = await getAuthModel();
+      if (oldModel.create_usr_id !== authModel.id) {
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      }
+    } else if (!hasTenantPermit && hasDeptParentPermit) {
+      const dept_ids = await getAuthAndParentsDeptIds();
+      const model_dept_ids = await getParentsDeptIds(oldModel.create_usr_id);
+      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      }
+    } else if (!hasTenantPermit && hasDeptPermit) {
+      const dept_ids = await getAuthDeptIds();
+      const model_dept_ids = await getDeptIds(oldModel.create_usr_id);
+      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      }
+    }
+  
+    if (!hasTenantPermit && hasRolePermit) {
+      const role_ids = await getAuthRoleIds();
+      const model_role_ids = await getRoleIds(oldModel.create_usr_id);
+      if (!model_role_ids.some((item) => role_ids.includes(item))) {
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      }
+    }<#
+    }
+    #>
     const args = new QueryArgs();<#
     if (hasIsDeleted) {
     #>

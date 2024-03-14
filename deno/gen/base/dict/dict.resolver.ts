@@ -222,7 +222,7 @@ export async function enableByIdsDict(
   
   await usePermit(
     "/base/dict",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsDict(
   
   await usePermit(
     "/base/dict",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

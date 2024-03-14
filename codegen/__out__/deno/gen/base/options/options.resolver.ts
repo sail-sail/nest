@@ -222,7 +222,7 @@ export async function enableByIdsOptions(
   
   await usePermit(
     "/base/options",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsOptions(
   
   await usePermit(
     "/base/options",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

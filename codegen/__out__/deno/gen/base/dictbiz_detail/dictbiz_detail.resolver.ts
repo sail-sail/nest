@@ -222,7 +222,7 @@ export async function enableByIdsDictbizDetail(
   
   await usePermit(
     "/base/dictbiz_detail",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsDictbizDetail(
   
   await usePermit(
     "/base/dictbiz_detail",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

@@ -562,8 +562,11 @@ async function showDialog(
 }
 
 watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
+  () => [ inited, isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (!inited) {
+      return;
+    }
     if (oldDialogNotice != null) {
       return;
     }
@@ -571,11 +574,14 @@ watch(
       dialogNotice = await nsAsync("(已删除)");
       return;
     }
+    if (!isEditableDataPermit) {
+      isLocked = true;
+    }
     if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
+      return;
     }
+    dialogNotice = "";
   },
 );
 

@@ -1895,7 +1895,12 @@ import {<#
   updateById,<#
   }
   #>
-  getDefaultInput,
+  getDefaultInput,<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  getEditableDataPermitsByIds,<#
+  }
+  #>
 } from "./Api";
 
 import type {
@@ -2651,7 +2656,12 @@ let dialogModel: <#=inputName#> = $ref({<#
     }
   }
   #>
-} as <#=inputName#>);
+} as <#=inputName#>);<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+let isEditableDataPermit = $ref(true);<#
+}
+#>
 
 let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<number>(0);
@@ -2968,7 +2978,12 @@ async function showDialog(
   isShowDeleteCallbackConfirm = false;<#
   }
   #>
-  is_deleted = model?.is_deleted ?? 0;
+  is_deleted = model?.is_deleted ?? 0;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  isEditableDataPermit = true;<#
+  }
+  #>
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
@@ -3465,8 +3480,15 @@ if (hasLocked) {
 #>
 
 watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
+  () => [ inited, isLocked, is_deleted, dialogNotice<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>, isEditableDataPermit<#
+  }
+  #> ],
   async () => {
+    if (!inited) {
+      return;
+    }
     if (oldDialogNotice != null) {
       return;
     }
@@ -3474,11 +3496,25 @@ watch(
       dialogNotice = await nsAsync("(已删除)");
       return;
     }
-    if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
+    if (!isEditableDataPermit) {
+      isLocked = true;
     }
+    if (isLocked) {<#
+      if (hasDataPermit() && hasCreateUsrId) {
+      #>
+      if (isEditableDataPermit) {
+        dialogNotice = await nsAsync("(已锁定)");
+      } else {
+        dialogNotice = await nsAsync("(无编辑权限)");
+      }<#
+      } else {
+      #>
+      dialogNotice = await nsAsync("(已锁定)");<#
+      }
+      #>
+      return;
+    }
+    dialogNotice = "";
   },
 );<#
 }
@@ -3673,6 +3709,11 @@ async function onRefresh() {
   }
   const [
     data,<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    editableDataPermits,<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -3722,6 +3763,11 @@ async function onRefresh() {
       }
       #>
     }),<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    getEditableDataPermitsByIds([ id ]),<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -3767,6 +3813,11 @@ async function onRefresh() {
     }
     #>
   ]);<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  isEditableDataPermit = editableDataPermits[0] !== 0;<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

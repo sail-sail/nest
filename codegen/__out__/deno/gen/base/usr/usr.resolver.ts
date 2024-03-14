@@ -246,7 +246,7 @@ export async function enableByIdsUsr(
   
   await usePermit(
     "/base/usr",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -273,7 +273,7 @@ export async function lockByIdsUsr(
   
   await usePermit(
     "/base/usr",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

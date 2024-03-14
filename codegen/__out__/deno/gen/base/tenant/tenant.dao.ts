@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -383,12 +387,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<TenantModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   for (const item of result) {
@@ -515,19 +522,20 @@ export async function setIdByLbl(
     if (input.domain_ids_lbl.length === 0) {
       input.domain_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_domain t
         where
-          t.lbl in ${ args.push(input.domain_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.domain_ids_lbl) }`;
       interface Result {
         id: DomainId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.domain_ids = models.map((item: { id: DomainId }) => item.id);
     }
   }
@@ -541,19 +549,20 @@ export async function setIdByLbl(
     if (input.menu_ids_lbl.length === 0) {
       input.menu_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_menu t
         where
-          t.lbl in ${ args.push(input.menu_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.menu_ids_lbl) }`;
       interface Result {
         id: MenuId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.menu_ids = models.map((item: { id: MenuId }) => item.id);
     }
   }
@@ -1009,7 +1018,12 @@ export async function create(
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   // 所属域名
@@ -1267,9 +1281,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: TenantId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();

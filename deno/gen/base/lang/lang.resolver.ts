@@ -222,7 +222,7 @@ export async function enableByIdsLang(
   
   await usePermit(
     "/base/lang",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;

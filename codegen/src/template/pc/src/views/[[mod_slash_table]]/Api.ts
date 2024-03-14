@@ -1040,6 +1040,31 @@ export async function findOne(
   await setLblById(model);
   return model;
 }<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取会员卡是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds(
+  ids: <#=Table_Up2#>Id[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    getEditableDataPermitsByIds<#=Table_Up2#>: Query["getEditableDataPermitsByIds<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ids: [<#=Table_Up2#>Id!]!) {
+        getEditableDataPermitsByIds<#=Table_Up2#>(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.getEditableDataPermitsByIds<#=Table_Up2#>;
+  return res;
+}<#
+}
+#><#
 if (list_tree === true) {
 #>
 

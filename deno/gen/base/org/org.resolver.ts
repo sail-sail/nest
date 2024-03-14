@@ -222,7 +222,7 @@ export async function enableByIdsOrg(
   
   await usePermit(
     "/base/org",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -249,7 +249,7 @@ export async function lockByIdsOrg(
   
   await usePermit(
     "/base/org",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;
