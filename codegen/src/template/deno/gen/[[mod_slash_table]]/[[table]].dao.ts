@@ -3024,8 +3024,12 @@ export async function create(
       #>
       ,create_time<#
       }
+      #><#
+      if (hasUpdateTime) {
       #>
-      ,update_time
+      ,update_time<#
+      }
+      #>
   `;<#
   if (hasTenant_id) {
   #>
@@ -3051,6 +3055,8 @@ export async function create(
     }
   }<#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
@@ -3059,7 +3065,11 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
+  }<#
   }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
   if (input.update_usr_id != null) {
     sql += `,update_usr_id`;
   } else {
@@ -3068,6 +3078,8 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3162,7 +3174,11 @@ export async function create(
   if (hasCreateTime) {
   #>${ args.push(reqDate()) },<#
   }
-  #>${ args.push(reqDate()) }`;<#
+  #><#
+  if (hasUpdateTime) {
+  #>${ args.push(reqDate()) }<#
+  }
+  #>`;<#
   if (hasTenant_id) {
   #>
   if (input.tenant_id != null) {
@@ -3187,6 +3203,8 @@ export async function create(
     }
   }<#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
@@ -3195,7 +3213,11 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }<#
   }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
   if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
@@ -3204,6 +3226,8 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3515,8 +3539,12 @@ export async function updateTenantById(
   const sql = `
     update
       <#=mod#>_<#=table#>
-    set
-      update_time = ${ args.push(reqDate()) },
+    set<#
+      if (hasUpdateTime) {
+      #>
+      update_time = ${ args.push(reqDate()) },<#
+      }
+      #>
       tenant_id = ${ args.push(tenant_id) }
     where
       id = ${ args.push(id) }
@@ -3569,8 +3597,12 @@ export async function updateOrgById(
   const sql = `
     update
       <#=mod#>_<#=table#>
-    set
-      update_time = ${ args.push(reqDate()) },
+    set<#
+      if (hasUpdateTime) {
+      #>
+      update_time = ${ args.push(reqDate()) },<#
+      }
+      #>
       org_id = ${ args.push(org_id) }
     where
       id = ${ args.push(id) }
@@ -4172,7 +4204,9 @@ export async function updateById(
   }
   #>
   
-  if (updateFldNum > 0) {
+  if (updateFldNum > 0) {<#
+    if (hasUpdateUsrId) {
+    #>
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
@@ -4181,6 +4215,8 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }<#
+    }
+    #><#
     if (hasVersion) {
     #>
     if (input.version != null) {
@@ -4191,8 +4227,12 @@ export async function updateById(
       sql += `version = ${ args.push(version + 1) },`;
     }<#
     }
+    #><#
+    if (hasUpdateTime) {
     #>
-    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += `update_time = ${ args.push(new Date()) }`;<#
+    }
+    #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
     if (cache) {
     #>
