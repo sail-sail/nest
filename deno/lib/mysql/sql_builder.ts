@@ -4,10 +4,6 @@ import {
   log,
 } from "/lib/context.ts";
 
-import {
-  getParsedEnv,
-} from "/lib/env.ts";
-
 type SupportTypeElement =
   | string
   | Date
@@ -26,12 +22,11 @@ export function replaceParams(
   sql: string,
   params?: null | SupportType[],
   opt?: {
-    log?: boolean;
+    debug?: boolean;
   },
 ): string {
-  const debug_sql = getParsedEnv("database_debug_sql");
   if (!params || params.length === 0) {
-    if (debug_sql === "true" && opt?.log === true) {
+    if (opt?.debug === true) {
       log(sql.trim());
     }
     return sql;
@@ -104,7 +99,7 @@ export function replaceParams(
       }
     }
   );
-  if (debug_sql === "true" && opt?.log === true) {
+  if (opt?.debug === true) {
     log(sql.trim());
   }
   return sql;
