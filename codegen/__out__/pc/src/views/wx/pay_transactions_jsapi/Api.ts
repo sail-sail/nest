@@ -49,14 +49,6 @@ export function intoInput(
     currency_lbl: model?.currency_lbl,
     openid: model?.openid,
     prepay_id: model?.prepay_id,
-    create_usr_id: model?.create_usr_id,
-    create_usr_id_lbl: model?.create_usr_id_lbl,
-    create_time: model?.create_time,
-    create_time_lbl: model?.create_time_lbl,
-    update_usr_id: model?.update_usr_id,
-    update_usr_id_lbl: model?.update_usr_id_lbl,
-    update_time: model?.update_time,
-    update_time_lbl: model?.update_time_lbl,
   };
   return input;
 }
