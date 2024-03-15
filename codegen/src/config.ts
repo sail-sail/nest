@@ -640,6 +640,12 @@ export interface TablesConfigItem {
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
     
+    /** 是否有 update_usr_id 字段 */
+    hasUpdateUsrId?: boolean;
+    
+    /** 是否有 update_time 字段 */
+    hasUpdateTime?: boolean;
+    
     /** 是否有 version 字段 */
     hasVersion?: boolean;
     
