@@ -36,8 +36,6 @@ export function intoInput(
     title: model?.title,
     description: model?.description,
     btntxt: model?.btntxt,
-    create_time: model?.create_time,
-    create_time_lbl: model?.create_time_lbl,
     errmsg: model?.errmsg,
   };
   return input;
