@@ -16,7 +16,7 @@ async function exec() {
   if (parentBranchs.length > 0) {
     for (let i = 0; i < parentBranchs.length; i++) {
       const branch = parentBranchs[i];
-      command = `git checkout ${ branch }`;
+      command = `git switch ${ branch }`;
       console.log(command);
       execSync(command, { stdio: "inherit" });
       command = "git rev-parse --abbrev-ref @{u}";
@@ -27,7 +27,7 @@ async function exec() {
       console.log(command);
       execSync(command, { stdio: "inherit" });
     }
-    command = `git checkout ${ currentBranch }`;
+    command = `git switch ${ currentBranch }`;
     console.log(command);
     execSync(command, { stdio: "inherit" });
     for (let i = 0; i < parentBranchs.length; i++) {
