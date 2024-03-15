@@ -410,16 +410,18 @@ input <#=inputName#> {<#
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     let data_type = column.DATA_TYPE;
-    if (column_name === "is_sys") {
-      continue;
-    }
-    if (column_name === "org_id") {
-      continue;
-    }
-    if (column_name === "tenant_id") {
-      continue;
-    }
-    if (column_name === 'is_hidden') {
+    if (
+      [
+        "is_sys",
+        "org_id",
+        "tenant_id",
+        "is_hidden",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) {
       continue;
     }
     let _data_type = "String";
