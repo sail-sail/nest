@@ -42,8 +42,6 @@ export function intoInput(
     end_time: model?.end_time,
     end_time_lbl: model?.end_time_lbl,
     rem: model?.rem,
-    create_time: model?.create_time,
-    create_time_lbl: model?.create_time_lbl,
   };
   return input;
 }

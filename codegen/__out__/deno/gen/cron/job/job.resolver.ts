@@ -96,6 +96,22 @@ export async function createJob(
   unique_type?: UniqueType,
 ): Promise<JobId> {
   
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
+  
   const {
     validate,
     setIdByLbl,
@@ -126,6 +142,22 @@ export async function updateByIdJob(
   id: JobId,
   input: JobInput,
 ): Promise<JobId> {
+  
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
   
   const {
     setIdByLbl,
@@ -190,7 +222,7 @@ export async function enableByIdsJob(
   
   await usePermit(
     "/cron/job",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -217,7 +249,7 @@ export async function lockByIdsJob(
   
   await usePermit(
     "/cron/job",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;
