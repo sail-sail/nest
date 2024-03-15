@@ -20,7 +20,7 @@
     "build-prod": "cd deno && npm run build-prod",
     "build-test": "cd deno && npm run build-test",
     "publish": "cd deno && npm run publish",
-    "upgrade": "cd codegen && npm run upgrade",
+    "upgrade": "cd codegen && npm run upgrade && npm run codegen",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm"
