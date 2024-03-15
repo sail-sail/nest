@@ -96,6 +96,22 @@ export async function createDomain(
   unique_type?: UniqueType,
 ): Promise<DomainId> {
   
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
+  
   const {
     validate,
     setIdByLbl,
@@ -126,6 +142,22 @@ export async function updateByIdDomain(
   id: DomainId,
   input: DomainInput,
 ): Promise<DomainId> {
+  
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;
   
   const {
     setIdByLbl,
@@ -186,7 +218,7 @@ export async function defaultByIdDomain(
   
   await usePermit(
     "/base/domain",
-    "default",
+    "edit",
   );
   const res = await defaultById(id);
   return res;
@@ -213,7 +245,7 @@ export async function enableByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -240,7 +272,7 @@ export async function lockByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

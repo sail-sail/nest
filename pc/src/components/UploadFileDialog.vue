@@ -210,7 +210,7 @@ async function showDialog(
   } else {
     nextTick(() => {
       if (fileRef) {
-        fileRef.value = "";
+        (fileRef as any).value = "";
       }
     });
   }

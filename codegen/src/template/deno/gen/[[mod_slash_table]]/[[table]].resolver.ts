@@ -296,7 +296,23 @@ if (opts.noAdd !== true) {
 export async function create<#=Table_Up2#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
-): Promise<<#=Table_Up#>Id> {<#
+): Promise<<#=Table_Up#>Id> {
+  
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -390,7 +406,23 @@ if (opts.noEdit !== true) {
 export async function updateById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<<#=Table_Up#>Id> {<#
+): Promise<<#=Table_Up#>Id> {
+  
+  input.id = undefined;
+  
+  input.create_usr_id = undefined;
+  input.create_usr_id_lbl = undefined;
+  
+  input.create_time = undefined;
+  input.create_time_lbl = undefined;
+  
+  input.update_usr_id = undefined;
+  input.update_usr_id_lbl = undefined;
+  
+  input.update_time = undefined;
+  input.update_time_lbl = undefined;
+  
+  input.is_deleted = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -546,7 +578,7 @@ export async function defaultById<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "default",
+    "edit",
   );<#
   if (log) {
   #>
@@ -600,7 +632,7 @@ export async function enableByIds<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "enable",
+    "edit",
   );<#
   if (log) {
   #>
@@ -661,7 +693,7 @@ export async function lockByIds<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "lock",
+    "edit",
   );<#
   if (log) {
   #>
@@ -791,6 +823,22 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   }
   #>
   return res;
+}<#
+}
+#><#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds<#=Table_Up2#>(
+  ids: <#=Table_Up#>Id[],
+) {
+  const {
+    getEditableDataPermitsByIds,
+  } = await import("./<#=table#>.service.ts");
+  
+  const data = await getEditableDataPermitsByIds(ids);
+  return data;
 }<#
 }
 #><#

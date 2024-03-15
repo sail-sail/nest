@@ -500,9 +500,17 @@ export function intoInput(
       if (column.ignoreCodegen) continue;
       if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
+      if (
+        [
+          "is_deleted", "tenant_id", "org_id",
+          "create_time", "create_time_lbl",
+          "create_usr_id", "create_usr_id_lbl",
+          "update_time", "update_time_lbl",
+          "update_usr_id", "update_usr_id_lbl",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
       let column_type = column.COLUMN_TYPE;
       let data_type = column.DATA_TYPE;
       let column_comment = column.COLUMN_COMMENT;
@@ -1032,6 +1040,31 @@ export async function findOne(
   await setLblById(model);
   return model;
 }<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取会员卡是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds(
+  ids: <#=Table_Up2#>Id[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    getEditableDataPermitsByIds<#=Table_Up2#>: Query["getEditableDataPermitsByIds<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ids: [<#=Table_Up2#>Id!]!) {
+        getEditableDataPermitsByIds<#=Table_Up2#>(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.getEditableDataPermitsByIds<#=Table_Up2#>;
+  return res;
+}<#
+}
+#><#
 if (list_tree === true) {
 #>
 
