@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -96,6 +100,7 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -350,12 +355,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<DictbizModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   
@@ -972,7 +980,12 @@ export async function create(
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   // 业务字典明细
@@ -1181,23 +1194,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
-      }
-    }
-    sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
-    
-    await delCache();
-    
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
-  }
   
   // 业务字典明细
   if (input.dictbiz_detail_models) {
@@ -1226,6 +1222,24 @@ export async function updateById(
       }
       await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
     }
+  }
+  
+  if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await getAuthModel();
+      if (authModel?.id !== undefined) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }
+    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
+    const res = await execute(sql, args);
+    log(JSON.stringify(res));
   }
   
   if (updateFldNum > 0) {
@@ -1273,9 +1287,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: DictbizId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
