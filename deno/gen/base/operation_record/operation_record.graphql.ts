@@ -83,14 +83,6 @@ input OperationRecordInput {
   old_data: String
   "操作后数据"
   new_data: String
-  "操作人"
-  create_usr_id: UsrId
-  "操作人"
-  create_usr_id_lbl: String
-  "操作时间"
-  create_time: NaiveDateTime
-  "操作时间"
-  create_time_lbl: String
 }
 input OperationRecordSearch {
   "是否已删除"
