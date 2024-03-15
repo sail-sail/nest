@@ -79,10 +79,6 @@ input WxwMsgInput {
   description: String
   "按钮文字"
   btntxt: String
-  "发送时间"
-  create_time: NaiveDateTime
-  "发送时间"
-  create_time_lbl: String
   "错误信息"
   errmsg: String
 }
