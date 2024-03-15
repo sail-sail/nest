@@ -298,21 +298,7 @@ export async function create<#=Table_Up2#>(
   unique_type?: UniqueType,
 ): Promise<<#=Table_Up#>Id> {
   
-  input.id = undefined;
-  
-  input.create_usr_id = undefined;
-  input.create_usr_id_lbl = undefined;
-  
-  input.create_time = undefined;
-  input.create_time_lbl = undefined;
-  
-  input.update_usr_id = undefined;
-  input.update_usr_id_lbl = undefined;
-  
-  input.update_time = undefined;
-  input.update_time_lbl = undefined;
-  
-  input.is_deleted = undefined;<#
+  input.id = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -408,21 +394,7 @@ export async function updateById<#=Table_Up2#>(
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {
   
-  input.id = undefined;
-  
-  input.create_usr_id = undefined;
-  input.create_usr_id_lbl = undefined;
-  
-  input.create_time = undefined;
-  input.create_time_lbl = undefined;
-  
-  input.update_usr_id = undefined;
-  input.update_usr_id_lbl = undefined;
-  
-  input.update_time = undefined;
-  input.update_time_lbl = undefined;
-  
-  input.is_deleted = undefined;<#
+  input.id = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
