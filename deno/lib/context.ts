@@ -790,7 +790,7 @@ export async function query<T = any>(
       //   log(debugSql);
       // }
       const pool = await getClient();
-      result = await pool.query(sql, args);
+      result = await pool.query(sql, args, { debug: opt?.debug });
     }
   } catch (err) {
     if (err.code === "EHOSTUNREACH") {
