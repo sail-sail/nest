@@ -96,10 +96,6 @@ input CronJobLogInput {
   end_time_lbl: String
   "备注"
   rem: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
 }
 input CronJobLogSearch {
   "是否已删除"
