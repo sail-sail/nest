@@ -291,11 +291,18 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
     }
   #><#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   create_usr_id: UsrId;
+  create_usr_id_lbl: string;<#
+  }
+  #>
   create_time?: string | null;
+  create_time_lbl: string;
   update_usr_id: UsrId;
-  update_time?: string | null;<#
+  update_time?: string | null;
+  update_time_lbl: string;<#
   if (hasTenant_id) {
   #>
   tenant_id: TenantId;<#
@@ -400,11 +407,19 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
     }
   #><#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   create_usr_id?: UsrId | null;
+  create_usr_id_lbl?: string | null;<#
+  }
+  #>
   create_time?: string | null;
+  create_time_lbl?: string | null;
   update_usr_id?: UsrId | null;
+  update_usr_id_lbl?: string | null;
   update_time?: string | null;
+  update_time_lbl?: string | null;
   is_deleted?: number | null;<#
   if (hasTenant_id) {
   #>

@@ -59,14 +59,6 @@ input LoginLogInput {
   is_succ_lbl: String
   "IP"
   ip: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
 }
 input LoginLogSearch {
   "是否已删除"
