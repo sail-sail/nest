@@ -23,6 +23,7 @@ type DictModel = {
  */
 export async function getDictbiz(
   codes: string[] = [ ],
+  tenant_id?: string,
 ) {
   const table = "base_dictbiz_detail";
   
@@ -30,7 +31,9 @@ export async function getDictbiz(
     return [ ];
   }
   
-  const tenant_id = await getTenant_id();
+  if (!tenant_id) {
+    tenant_id = await getTenant_id();
+  }
   
   const args = new QueryArgs();
   const sql = /*sql*/ `
