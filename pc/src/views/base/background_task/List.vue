@@ -45,9 +45,8 @@
           prop="state"
         >
           <DictSelect
-            :set="search.state = search.state || [ ]"
-            :model-value="search.state"
-            @update:model-value="search.state = $event"
+            :model-value="state_search"
+            @update:model-value="state_search = $event"
             code="background_task_state"
             :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             multiple
@@ -62,9 +61,8 @@
           prop="type"
         >
           <DictSelect
-            :set="search.type = search.type || [ ]"
-            :model-value="search.type"
-            @update:model-value="search.type = $event"
+            :model-value="type_search"
+            @update:model-value="type_search = $event"
             code="background_task_type"
             :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             multiple
@@ -109,8 +107,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -138,8 +136,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -589,6 +587,7 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: BackgroundTaskId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -613,6 +612,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
   state: "string[]",
   state_lbl: "string[]",
@@ -632,6 +632,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -658,6 +659,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -677,6 +679,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 状态
+const state_search = $computed({
+  get() {
+    return search.state || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.state = undefined;
+    } else {
+      search.state = val;
+    }
+  },
+});
+
+// 类型
+const type_search = $computed({
+  get() {
+    return search.type || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.type = undefined;
+    } else {
+      search.type = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -766,6 +796,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1097,7 +1128,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: BackgroundTaskModel,
+  column: TableColumnCtx<BackgroundTaskModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;

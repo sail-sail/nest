@@ -18,6 +18,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   initN,
   ns,
 } from "/src/base/i18n/i18n.ts";
@@ -81,70 +85,56 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.module !== undefined) {
+  if (search?.module != null) {
     whereQuery += ` and t.module = ${ args.push(search.module) }`;
-  }
-  if (search?.module === null) {
-    whereQuery += ` and t.module is null`;
   }
   if (isNotEmpty(search?.module_like)) {
     whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
-  if (search?.module_lbl !== undefined) {
+  if (search?.module_lbl != null) {
     whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
-  }
-  if (search?.module_lbl === null) {
-    whereQuery += ` and t.module_lbl is null`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
     whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
-  if (search?.method !== undefined) {
+  if (search?.method != null) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
-  }
-  if (search?.method === null) {
-    whereQuery += ` and t.method is null`;
   }
   if (isNotEmpty(search?.method_like)) {
     whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
-  if (search?.method_lbl !== undefined) {
+  if (search?.method_lbl != null) {
     whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
-  }
-  if (search?.method_lbl === null) {
-    whereQuery += ` and t.method_lbl is null`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.time && search?.time?.length > 0) {
+  if (search?.time != null) {
     if (search.time[0] != null) {
       whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
     }
@@ -152,37 +142,28 @@ async function getWhereQuery(
       whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
     }
   }
-  if (search?.old_data !== undefined) {
+  if (search?.old_data != null) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
-  }
-  if (search?.old_data === null) {
-    whereQuery += ` and t.old_data is null`;
   }
   if (isNotEmpty(search?.old_data_like)) {
     whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
-  if (search?.new_data !== undefined) {
+  if (search?.new_data != null) {
     whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
-  }
-  if (search?.new_data === null) {
-    whereQuery += ` and t.new_data is null`;
   }
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -190,25 +171,19 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    base_operation_record t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: OperationRecordSearch,
+  options?: {
+  },
+) {
+  const is_deleted = search?.is_deleted ?? 0;
+  let fromQuery = `base_operation_record t
     left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-  `;
+      on create_usr_id_lbl.id = t.create_usr_id`;
   return fromQuery;
 }
 
@@ -225,6 +200,15 @@ export async function findCount(
   const table = "base_operation_record";
   const method = "findCount";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   const args = new QueryArgs();
   let sql = `
     select
@@ -234,19 +218,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   interface Result {
     total: number,
@@ -272,23 +249,40 @@ export async function findAll(
   const table = "base_operation_record";
   const method = "findAll";
   
+  let msg = `${ table }.${ method }: `;
+  if (search && Object.keys(search).length > 0) {
+    msg += `search:${ JSON.stringify(search) } `;
+  }
+  if (page && Object.keys(page).length > 0) {
+    msg += `page:${ JSON.stringify(page) } `;
+  }
+  if (sort && Object.keys(sort).length > 0) {
+    msg += `sort:${ JSON.stringify(sort) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -325,15 +319,20 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<OperationRecordModel>(
     sql,
     args,
+    {
+      debug,
+    },
   );
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 创建时间
+    // 操作时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
       if (isNaN(create_time.toDate().getTime())) {
@@ -370,10 +369,10 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    create_usr_id: await n("操作人"),
+    create_usr_id_lbl: await n("操作人"),
+    create_time: await n("操作时间"),
+    create_time_lbl: await n("操作时间"),
   };
   return fieldComments;
 }
@@ -390,7 +389,7 @@ export async function findByUnique(
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -465,11 +464,17 @@ export async function findOne(
   options?: {
   },
 ): Promise<OperationRecordModel | undefined> {
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -486,7 +491,7 @@ export async function findById(
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -499,7 +504,7 @@ export async function exist(
   options?: {
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -510,9 +515,17 @@ export async function exist(
  */
 export async function existById(
   id?: OperationRecordId | null,
+  options?: {
+  },
 ) {
   const table = "base_operation_record";
   const method = "existById";
+  
+  let msg = `${ table }.${ method }: `;
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -603,7 +616,7 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 创建人
+  // 操作人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
@@ -627,10 +640,20 @@ export async function create(
   input: OperationRecordInput,
   options?: {
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "create";
+  
+  let msg = `${ table }.${ method }: `;
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -773,7 +796,12 @@ export async function create(
     sql += `,${ args.push(input.new_data) }`;
   }
   sql += `)`;
-  const res = await execute(sql, args);
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  const res = await execute(sql, args, {
+    debug,
+  });
   log(JSON.stringify(res));
   
   return input.id;
@@ -795,6 +823,18 @@ export async function updateTenantById(
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "updateTenantById";
+  
+  let msg = `${ table }.${ method }: `;
+  if (id) {
+    msg += `id:${ id } `;
+  }
+  if (tenant_id) {
+    msg += `tenant_id:${ tenant_id } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -837,6 +877,18 @@ export async function updateById(
 ): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "updateById";
+  
+  let msg = `${ table }.${ method }: `;
+  if (id) {
+    msg += `id:${ id } `;
+  }
+  if (input) {
+    msg += `input:${ JSON.stringify(input) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -927,6 +979,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
@@ -965,15 +1018,24 @@ export async function deleteByIds(
   const table = "base_operation_record";
   const method = "deleteByIds";
   
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
+  
   if (!ids || !ids.length) {
     return 0;
   }
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: OperationRecordId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1006,6 +1068,15 @@ export async function revertByIds(
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "revertByIds";
+  
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1059,6 +1130,15 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "forceDeleteByIds";
+  
+  let msg = `${ table }.${ method }: `;
+  if (ids) {
+    msg += `ids:${ JSON.stringify(ids) } `;
+  }
+  if (options && Object.keys(options).length > 0){
+    msg += `options:${ JSON.stringify(options) } `;
+  }
+  log(msg);
   
   if (!ids || !ids.length) {
     return 0;

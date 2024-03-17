@@ -27,6 +27,25 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictbizDetailInput = {
+    id: model?.id,
+    dictbiz_id: model?.dictbiz_id,
+    dictbiz_id_lbl: model?.dictbiz_id_lbl,
+    lbl: model?.lbl,
+    val: model?.val,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找业务字典明细列表
  * @param {DictbizDetailSearch} search?
@@ -160,25 +179,26 @@ export async function findCount(
 
 /**
  * 创建业务字典明细
- * @param {DictbizDetailInput} model
+ * @param {DictbizDetailInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictbizDetailInput,
+  input: DictbizDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
+  input = intoInput(input);
   const data: {
     createDictbizDetail: Mutation["createDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictbizDetailInput!, $unique_type: UniqueType) {
-        createDictbizDetail(model: $model, unique_type: $unique_type)
+      mutation($input: DictbizDetailInput!, $unique_type: UniqueType) {
+        createDictbizDetail(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -189,25 +209,26 @@ export async function create(
 /**
  * 根据 id 修改业务字典明细
  * @param {DictbizDetailId} id
- * @param {DictbizDetailInput} model
+ * @param {DictbizDetailInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictbizDetailId,
-  model: DictbizDetailInput,
+  input: DictbizDetailInput,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
+  input = intoInput(input);
   const data: {
     updateByIdDictbizDetail: Mutation["updateByIdDictbizDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictbizDetailId!, $model: DictbizDetailInput!) {
-        updateByIdDictbizDetail(id: $id, model: $model)
+      mutation($id: DictbizDetailId!, $input: DictbizDetailInput!) {
+        updateByIdDictbizDetail(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictbizDetailId = data.updateByIdDictbizDetail;

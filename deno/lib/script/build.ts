@@ -8,7 +8,8 @@ const separator = Deno.build.os == "windows" ? ";" : ":";
 const path = Deno.env.get("path") || "";
 const paths = path.split(separator);
 const npmDir = paths.find((path) => path.endsWith("npm")) || "";
-const pnpmCmd = `${ npmDir }/pnpm${ Deno.build.os == "windows" ? ".cmd" : "" }`;
+const cmdPostfix = Deno.build.os == "windows" ? ".cmd" : "";
+const pnpmCmd = `${ npmDir == "" ? "pnpm": npmDir+ '/pnpm' }${cmdPostfix}`;
 
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);

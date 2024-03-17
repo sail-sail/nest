@@ -23,6 +23,25 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OptbizInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    ky: model?.ky,
+    val: model?.val,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    version: model?.version,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找业务选项列表
  * @param {OptbizSearch} search?
@@ -156,25 +175,26 @@ export async function findCount(
 
 /**
  * 创建业务选项
- * @param {OptbizInput} model
+ * @param {OptbizInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OptbizInput,
+  input: OptbizInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
+  input = intoInput(input);
   const data: {
     createOptbiz: Mutation["createOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OptbizInput!, $unique_type: UniqueType) {
-        createOptbiz(model: $model, unique_type: $unique_type)
+      mutation($input: OptbizInput!, $unique_type: UniqueType) {
+        createOptbiz(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +205,26 @@ export async function create(
 /**
  * 根据 id 修改业务选项
  * @param {OptbizId} id
- * @param {OptbizInput} model
+ * @param {OptbizInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OptbizId,
-  model: OptbizInput,
+  input: OptbizInput,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
+  input = intoInput(input);
   const data: {
     updateByIdOptbiz: Mutation["updateByIdOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OptbizId!, $model: OptbizInput!) {
-        updateByIdOptbiz(id: $id, model: $model)
+      mutation($id: OptbizId!, $input: OptbizInput!) {
+        updateByIdOptbiz(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OptbizId = data.updateByIdOptbiz;

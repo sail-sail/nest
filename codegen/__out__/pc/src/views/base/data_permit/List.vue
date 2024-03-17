@@ -32,8 +32,7 @@
           prop="menu_id"
         >
           <CustomTreeSelect
-            :set="search.menu_id = search.menu_id || [ ]"
-            v-model="search.menu_id"
+            v-model="menu_id_search"
             :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
@@ -49,28 +48,14 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
-        <el-form-item
-          :label="n('名称')"
-          prop="lbl_like"
-        >
-          <CustomInput
-            v-model="search.lbl_like"
-            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
-      
       <template v-if="showBuildIn || builtInSearch?.scope == null">
         <el-form-item
           :label="n('范围')"
           prop="scope"
         >
           <DictSelect
-            :set="search.scope = search.scope || [ ]"
-            :model-value="search.scope"
-            @update:model-value="search.scope = $event"
+            :model-value="scope_search"
+            @update:model-value="scope_search = $event"
             code="data_permit_scope"
             :placeholder="`${ ns('请选择') } ${ n('范围') }`"
             multiple
@@ -95,8 +80,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -124,8 +109,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -496,15 +481,6 @@
             </el-table-column>
           </template>
           
-          <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 范围 -->
           <template v-else-if="'scope_lbl' === col.prop && (showBuildIn || builtInSearch?.scope == null)">
             <el-table-column
@@ -698,14 +674,13 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: DataPermitId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: DataPermitId; // ID
   menu_id?: string|string[]; // 菜单
   menu_id_lbl?: string; // 菜单
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
   scope?: string|string[]; // 范围
   type?: string|string[]; // 类型
   rem?: string; // 备注
@@ -718,6 +693,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
   menu_id: "string[]",
   menu_id_lbl: "string[]",
@@ -739,6 +715,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -765,6 +742,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -773,7 +751,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    menu_id: [ ],
   } as DataPermitSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -785,6 +762,34 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 菜单
+const menu_id_search = $computed({
+  get() {
+    return search.menu_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.menu_id = undefined;
+    } else {
+      search.menu_id = val;
+    }
+  },
+});
+
+// 范围
+const scope_search = $computed({
+  get() {
+    return search.scope || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.scope = undefined;
+    } else {
+      search.scope = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -874,6 +879,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -933,14 +939,6 @@ function getTableColumns(): ColumnType[] {
       prop: "menu_id_lbl",
       sortBy: "menu_id",
       width: 160,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "名称",
-      prop: "lbl",
-      width: 220,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1282,7 +1280,6 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("菜单") ]: "menu_id_lbl",
-    [ await nAsync("名称") ]: "lbl",
     [ await nAsync("范围") ]: "scope_lbl",
     [ await nAsync("类型") ]: "type_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1308,7 +1305,6 @@ async function onImportExcel() {
       {
         key_types: {
           "menu_id_lbl": "string",
-          "lbl": "string",
           "scope_lbl": "string",
           "type_lbl": "string",
           "rem": "string",
@@ -1397,7 +1393,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DataPermitModel,
+  column: TableColumnCtx<DataPermitModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -1541,7 +1544,6 @@ async function onRevertByIds() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "菜单",
-    "名称",
     "范围",
     "类型",
     "备注",

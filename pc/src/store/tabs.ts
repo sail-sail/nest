@@ -177,20 +177,15 @@ export default defineStore("tabs", function() {
   }
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
-    const redirect_url = localStorage.getItem("redirect_url");
-    if (redirect_url) {
-      localStorage.removeItem("redirect_url");
-      const url = new URL(redirect_url, location.origin);
-      const query: any = { };
-      for (const [key, val] of url.searchParams) {
-        query[key] = val;
-      }
-      const path = url.pathname;
-      const navFail = await router.replace({
-        path,
-        query,
-      });
-      return navFail;
+    let hash = location.hash;
+    if (hash.startsWith("#")) {
+      hash = hash.substring(1);
+    }
+    if (hash.startsWith("/")) {
+      hash = hash.substring(1);
+    }
+    if (hash) {
+      return;
     }
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {

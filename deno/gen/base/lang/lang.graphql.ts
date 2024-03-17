@@ -73,7 +73,7 @@ type LangFieldComment {
   update_time_lbl: String!
 }
 input LangInput {
-  ""
+  "ID"
   id: LangId
   "编码"
   code: String
@@ -87,22 +87,6 @@ input LangInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input LangSearch {
   "是否已删除"
@@ -151,9 +135,9 @@ type Query {
 }
 type Mutation {
   "创建语言"
-  createLang(model: LangInput!, unique_type: UniqueType): LangId!
+  createLang(input: LangInput!, unique_type: UniqueType): LangId!
   "根据 id 修改语言"
-  updateByIdLang(id: LangId!, model: LangInput!): LangId!
+  updateByIdLang(id: LangId!, input: LangInput!): LangId!
   "根据 ids 删除语言"
   deleteByIdsLang(ids: [LangId!]!): Int!
   "根据 ids 启用或者禁用语言"

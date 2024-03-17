@@ -14,12 +14,27 @@ import type {
   DeptId,
 } from "/gen/base/dept/dept.model.ts";
 
+import type {
+  UsrId,
+} from "/gen/base/usr/usr.model.ts";
+
 export async function getAuthDeptIds() {
   const authModel = await getAuthModel(false);
   if (!authModel) {
     return [ ];
   }
   const usr_id = authModel.id;
+  const usrModel = await findByIdUsr(usr_id);
+  if (!usrModel || !usrModel.is_enabled) {
+    return [ ];
+  }
+  const dept_ids = usrModel.dept_ids || [ ];
+  return dept_ids;
+}
+
+export async function getDeptIds(
+  usr_id?: UsrId,
+) {
   const usrModel = await findByIdUsr(usr_id);
   if (!usrModel || !usrModel.is_enabled) {
     return [ ];
@@ -50,6 +65,23 @@ export async function getParentsById(
 export async function getAuthAndParentsDeptIds() {
   
   const dept_ids: DeptId[] = await getAuthDeptIds();
+  
+  const parent_ids: DeptId[] = [
+    ...dept_ids,
+  ];
+  
+  await getParentsById(dept_ids || [ ], parent_ids);
+  return parent_ids;
+}
+
+/**
+ * 获取指定用户及其所有父部门的id
+ */
+export async function getParentsDeptIds(
+  usr_id?: UsrId,
+) {
+  
+  const dept_ids: DeptId[] = await getDeptIds(usr_id);
   
   const parent_ids: DeptId[] = [
     ...dept_ids,

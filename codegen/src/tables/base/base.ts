@@ -662,14 +662,6 @@ export default defineConfig({
         },
       },
       {
-        COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 220,
-        align: "left",
-        fixed: false,
-      },
-      {
         COLUMN_NAME: "scope",
         require: true,
         search: true,

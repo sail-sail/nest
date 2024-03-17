@@ -155,6 +155,7 @@ export function useSelect<T = any, Id = string>(
     tableSelectable?: ((row: T, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
+    isListSelectDialog?: boolean,
   },
 ) {
   
@@ -735,7 +736,27 @@ export function useSelect<T = any, Id = string>(
       return;
     }
     const id = (row as any)[rowKey];
-    if (column && column.type === "selection") {
+    if (opts?.isListSelectDialog) {
+      if (column && column.type === "selection") {
+        if (selectedIds.includes(id)) {
+          selectedIds = selectedIds.filter((item) => item !== id);
+        } else {
+          if (multiple) {
+            selectedIds = [
+              ...selectedIds,
+              id,
+            ];
+          } else {
+            selectedIds = [ id ];
+          }
+        }
+      } else if (!selectedIds.includes(id)) {
+        selectedIds = [
+          ...selectedIds,
+          id,
+        ];
+      }
+    } else if (column && column.type === "selection") {
       if (selectedIds.includes(id)) {
         selectedIds = selectedIds.filter((item) => item !== id);
       } else {
