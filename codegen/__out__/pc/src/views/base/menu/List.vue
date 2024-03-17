@@ -32,8 +32,7 @@
           prop="parent_id"
         >
           <CustomTreeSelect
-            :set="search.parent_id = search.parent_id || [ ]"
-            v-model="search.parent_id"
+            v-model="parent_id_search"
             :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
@@ -77,8 +76,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -106,8 +105,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -768,6 +767,7 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: MenuId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -793,6 +793,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
@@ -815,6 +816,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -841,6 +843,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -849,7 +852,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    parent_id: [ ],
   } as MenuSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -861,6 +863,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 父菜单
+const parent_id_search = $computed({
+  get() {
+    return search.parent_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.parent_id = undefined;
+    } else {
+      search.parent_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -950,6 +966,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1551,7 +1568,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: MenuModel,
+  column: TableColumnCtx<MenuModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;

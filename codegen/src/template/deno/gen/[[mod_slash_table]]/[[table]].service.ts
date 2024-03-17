@@ -83,7 +83,17 @@ export async function findCount(
   }<#
     }
   #>
-  const data = await <#=table#>Dao.findCount(search);
+  const data = await <#=table#>Dao.findCount(search<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return data;
 }
 
@@ -109,7 +119,17 @@ export async function findAll(
   }<#
     }
   #>
-  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
+  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return models;
 }
 
@@ -141,7 +161,17 @@ export async function findSummary(
   }<#
     }
   #>
-  const data = await <#=table#>Dao.findSummary(search);
+  const data = await <#=table#>Dao.findSummary(search<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return data;
 }<#
 }
@@ -165,7 +195,17 @@ export async function findOne(
   }<#
     }
   #>
-  const model = await <#=table#>Dao.findOne(search, sort);
+  const model = await <#=table#>Dao.findOne(search, sort<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return model;
 }
 
@@ -176,7 +216,17 @@ export async function findOne(
 export async function findById(
   id?: <#=Table_Up#>Id | null,
 ): Promise<<#=modelName#> | undefined> {
-  const model = await <#=table#>Dao.findById(id);
+  const model = await <#=table#>Dao.findById(id<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return model;
 }
 
@@ -197,7 +247,17 @@ export async function exist(
   }<#
     }
   #>
-  const data = await <#=table#>Dao.exist(search);
+  const data = await <#=table#>Dao.exist(search<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return data;
 }
 
@@ -208,7 +268,17 @@ export async function exist(
 export async function existById(
   id?: <#=Table_Up#>Id | null,
 ): Promise<boolean> {
-  const data = await <#=table#>Dao.existById(id);
+  const data = await <#=table#>Dao.existById(id<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   return data;
 }
 
@@ -248,6 +318,18 @@ export async function getVersionById(id: <#=Table_Up#>Id) {
   return version;
 }<#
 }
+#><#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds(
+  ids: <#=Table_Up#>Id[],
+) {
+  const data = await <#=table#>Dao.getEditableDataPermitsByIds(ids);
+  return data;
+}<#
+}
 #>
 
 /**
@@ -273,7 +355,17 @@ export async function updateById(
   #>
   
   // 不能修改系统记录的系统字段
-  const model = await <#=table#>Dao.findById(id);
+  const model = await <#=table#>Dao.findById(id<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
   if (model && model.is_sys === 1) {<#
   opts.sys_fields = opts.sys_fields || [ ];
   for (let i = 0; i < opts.sys_fields.length; i++) {
@@ -324,7 +416,17 @@ export async function updateById(
   }
   #>
   
-  const id2: <#=Table_Up#>Id = await <#=table#>Dao.updateById(id, input);<#
+  const id2: <#=Table_Up#>Id = await <#=table#>Dao.updateById(id, input<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);<#
   if (table === "i18n") {
   #>
   
@@ -385,7 +487,17 @@ export async function deleteByIds(
   }
   #>
   
-  const data = await <#=table#>Dao.deleteByIds(ids);<#
+  const data = await <#=table#>Dao.deleteByIds(ids<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);<#
   if (table === "i18n") {
   #>
   

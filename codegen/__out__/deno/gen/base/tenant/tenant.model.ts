@@ -1,6 +1,4 @@
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
+
 
 import type {
   TenantInput as TenantInputType,
@@ -17,25 +15,32 @@ declare const tenantId: unique symbol;
 export type TenantId = Distinct<string, typeof tenantId>;
 
 export interface TenantSearch extends TenantSearchType {
-  $extra?: SearchExtra[];
 }
 
 export interface TenantModel extends TenantModelType {
   /** 系统字段 */
   is_sys: number;
   create_usr_id: UsrId;
+  create_usr_id_lbl: string;
   create_time?: string | null;
+  create_time_lbl: string;
   update_usr_id: UsrId;
+  update_usr_id_lbl: string;
   update_time?: string | null;
+  update_time_lbl: string;
 }
 
 export interface TenantInput extends TenantInputType {
   /** 系统字段 */
   is_sys?: number;
   create_usr_id?: UsrId | null;
+  create_usr_id_lbl?: string | null;
   create_time?: string | null;
+  create_time_lbl?: string | null;
   update_usr_id?: UsrId | null;
+  update_usr_id_lbl?: string | null;
   update_time?: string | null;
+  update_time_lbl?: string | null;
   is_deleted?: number | null;
 }
 

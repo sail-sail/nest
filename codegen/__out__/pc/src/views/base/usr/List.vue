@@ -58,8 +58,7 @@
           prop="org_ids"
         >
           <CustomSelect
-            :set="search.org_ids = search.org_ids || [ ]"
-            v-model="search.org_ids"
+            v-model="org_ids_search"
             :method="getOrgList"
             :options-map="((item: OrgModel) => {
               return {
@@ -80,8 +79,7 @@
           prop="dept_ids"
         >
           <CustomTreeSelect
-            :set="search.dept_ids = search.dept_ids || [ ]"
-            v-model="search.dept_ids"
+            v-model="dept_ids_search"
             :method="getDeptTree"
             :options-map="((item: DeptModel) => {
               return {
@@ -102,8 +100,7 @@
           prop="role_ids"
         >
           <CustomSelect
-            :set="search.role_ids = search.role_ids || [ ]"
-            v-model="search.role_ids"
+            v-model="role_ids_search"
             :method="getRoleList"
             :options-map="((item: RoleModel) => {
               return {
@@ -134,8 +131,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -163,8 +160,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -881,6 +878,7 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: UsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -914,6 +912,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
   org_ids: "string[]",
   org_ids_lbl: "string[]",
@@ -942,6 +941,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -968,6 +968,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -976,9 +977,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-    org_ids: [ ],
-    dept_ids: [ ],
-    role_ids: [ ],
   } as UsrSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -990,6 +988,48 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 所属组织
+const org_ids_search = $computed({
+  get() {
+    return search.org_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.org_ids = undefined;
+    } else {
+      search.org_ids = val;
+    }
+  },
+});
+
+// 所属部门
+const dept_ids_search = $computed({
+  get() {
+    return search.dept_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.dept_ids = undefined;
+    } else {
+      search.dept_ids = val;
+    }
+  },
+});
+
+// 拥有角色
+const role_ids_search = $computed({
+  get() {
+    return search.role_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.role_ids = undefined;
+    } else {
+      search.role_ids = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -1079,6 +1119,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1712,7 +1753,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: UsrModel,
+  column: TableColumnCtx<UsrModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;

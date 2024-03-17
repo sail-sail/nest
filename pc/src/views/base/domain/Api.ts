@@ -23,6 +23,25 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DomainInput = {
+    id: model?.id,
+    protocol: model?.protocol,
+    lbl: model?.lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_default: model?.is_default,
+    is_default_lbl: model?.is_default_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找域名列表
  * @param {DomainSearch} search?
@@ -156,25 +175,26 @@ export async function findCount(
 
 /**
  * 创建域名
- * @param {DomainInput} model
+ * @param {DomainInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DomainInput,
+  input: DomainInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     createDomain: Mutation["createDomain"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DomainInput!, $unique_type: UniqueType) {
-        createDomain(model: $model, unique_type: $unique_type)
+      mutation($input: DomainInput!, $unique_type: UniqueType) {
+        createDomain(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +205,26 @@ export async function create(
 /**
  * 根据 id 修改域名
  * @param {DomainId} id
- * @param {DomainInput} model
+ * @param {DomainInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DomainId,
-  model: DomainInput,
+  input: DomainInput,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     updateByIdDomain: Mutation["updateByIdDomain"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DomainId!, $model: DomainInput!) {
-        updateByIdDomain(id: $id, model: $model)
+      mutation($id: DomainId!, $input: DomainInput!) {
+        updateByIdDomain(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DomainId = data.updateByIdDomain;

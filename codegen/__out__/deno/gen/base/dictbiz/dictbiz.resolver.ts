@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找业务字典总数
  */
 export async function findCountDictbiz(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDictbiz(
  * 根据搜索条件和分页查找业务字典列表
  */
 export async function findAllDictbiz(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DictbizModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
  * 根据条件查找第一个业务字典
  */
 export async function findOneDictbiz(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   sort?: SortInput[],
 ): Promise<DictbizModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createDictbiz(
   input: DictbizInput,
   unique_type?: UniqueType,
 ): Promise<DictbizId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdDictbiz(
   id: DictbizId,
   input: DictbizInput,
 ): Promise<DictbizId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsDictbiz(
   
   await usePermit(
     "/base/dictbiz",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsDictbiz(
   
   await usePermit(
     "/base/dictbiz",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

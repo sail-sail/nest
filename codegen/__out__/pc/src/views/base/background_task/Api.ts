@@ -24,6 +24,27 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: BackgroundTaskInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    state: model?.state,
+    state_lbl: model?.state_lbl,
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    result: model?.result,
+    err_msg: model?.err_msg,
+    begin_time: model?.begin_time,
+    begin_time_lbl: model?.begin_time_lbl,
+    end_time: model?.end_time,
+    end_time_lbl: model?.end_time_lbl,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找后台任务列表
  * @param {BackgroundTaskSearch} search?

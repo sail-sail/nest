@@ -67,7 +67,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.create_time == null">
         <el-form-item
-          :label="n('创建时间')"
+          :label="n('操作时间')"
           prop="create_time"
         >
           <CustomDatePicker
@@ -101,8 +101,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -130,8 +130,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -502,7 +502,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
+          <!-- 操作人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -511,7 +511,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建时间 -->
+          <!-- 操作时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -630,6 +630,7 @@ const props = defineProps<{
   isLocked?: string;
   isFocus?: string;
   propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: OperationRecordId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -657,6 +658,7 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",
   time: "number",
   create_usr_id: "string[]",
@@ -671,6 +673,7 @@ const propsNotInSearch: string[] = [
   "isLocked",
   "isFocus",
   "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -697,6 +700,7 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -805,6 +809,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -908,7 +913,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建人",
+      label: "操作人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
@@ -917,7 +922,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建时间",
+      label: "操作时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
       width: 150,
@@ -1111,7 +1116,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: OperationRecordModel,
+  column: TableColumnCtx<OperationRecordModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -1268,8 +1280,8 @@ async function initI18nsEfc() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initListI18ns(),

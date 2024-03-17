@@ -23,6 +23,25 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OptionsInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    ky: model?.ky,
+    val: model?.val,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+    version: model?.version,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找系统选项列表
  * @param {OptionsSearch} search?
@@ -156,25 +175,26 @@ export async function findCount(
 
 /**
  * 创建系统选项
- * @param {OptionsInput} model
+ * @param {OptionsInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OptionsInput,
+  input: OptionsInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
+  input = intoInput(input);
   const data: {
     createOptions: Mutation["createOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OptionsInput!, $unique_type: UniqueType) {
-        createOptions(model: $model, unique_type: $unique_type)
+      mutation($input: OptionsInput!, $unique_type: UniqueType) {
+        createOptions(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +205,26 @@ export async function create(
 /**
  * 根据 id 修改系统选项
  * @param {OptionsId} id
- * @param {OptionsInput} model
+ * @param {OptionsInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OptionsId,
-  model: OptionsInput,
+  input: OptionsInput,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
+  input = intoInput(input);
   const data: {
     updateByIdOptions: Mutation["updateByIdOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OptionsId!, $model: OptionsInput!) {
-        updateByIdOptions(id: $id, model: $model)
+      mutation($id: OptionsId!, $input: OptionsInput!) {
+        updateByIdOptions(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OptionsId = data.updateByIdOptions;

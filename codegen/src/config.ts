@@ -317,6 +317,11 @@ export interface TableCloumn {
   },
   
   /**
+   * 多对多关联时, 如果中间表需要编辑, 则设置为true, 默认为false
+   */
+  inlineMany2manyTab?: boolean;
+  
+  /**
    * 是否必填
    */
   require?: boolean,
@@ -634,6 +639,12 @@ export interface TablesConfigItem {
     
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
+    
+    /** 是否有 update_usr_id 字段 */
+    hasUpdateUsrId?: boolean;
+    
+    /** 是否有 update_time 字段 */
+    hasUpdateTime?: boolean;
     
     /** 是否有 version 字段 */
     hasVersion?: boolean;

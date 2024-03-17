@@ -360,6 +360,92 @@ import {
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
   }
 }
+#><#
+const intoInputTableUps = [ ];
+#><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let modelName = "";
+  let fieldCommentName = "";
+  let inputName = "";
+  let searchName = "";
+  if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+    && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+  ) {
+    Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+    modelName = Table_Up + "model";
+    fieldCommentName = Table_Up + "fieldComment";
+    inputName = Table_Up + "input";
+    searchName = Table_Up + "search";
+  } else {
+    modelName = Table_Up + "Model";
+    fieldCommentName = Table_Up + "FieldComment";
+    inputName = Table_Up + "Input";
+    searchName = Table_Up + "Search";
+  }
+#>
+<#
+  if (!intoInputTableUps.includes(Table_Up)) {
+    intoInputTableUps.push(Table_Up);
+#>
+import {
+  intoInput as intoInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  }
+#><#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const table = many2many.table;
+  const mod = many2many.mod;
+  const inlineMany2manySchema = optTables[mod + "_" + table];
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const inlineMany2manyColumns = inlineMany2manySchema.columns;
+#>
+<#
+  if (!intoInputTableUps.includes(Table_Up)) {
+    intoInputTableUps.push(Table_Up);
+#>
+import {
+  intoInput as intoInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  }
+#><#
+}
 #>
 
 async function setLblById(
@@ -403,6 +489,131 @@ async function setLblById(
   #><#
   }
   #>
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: <#=inputName#> = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (
+        [
+          "is_deleted", "tenant_id", "org_id",
+          "create_time", "create_time_lbl",
+          "create_usr_id", "create_usr_id_lbl",
+          "update_time", "update_time_lbl",
+          "update_usr_id", "update_usr_id_lbl",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      let column_type = column.COLUMN_TYPE;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+    #><#
+      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    <#=column_name#>: model?.<#=column_name#>,
+    <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
+      } else {
+    #>
+    <#=column_name#>: model?.<#=column_name#>,<#
+      }
+    #><#
+    }
+    #><#
+    if (hasVersion) {
+    #>
+    version: model?.version,<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      if (!inlineForeignSchema) {
+        throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let modelName = "";
+      let fieldCommentName = "";
+      let inputName = "";
+      let searchName = "";
+      if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+        && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+      ) {
+        Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+        modelName = Table_Up + "model";
+        fieldCommentName = Table_Up + "fieldComment";
+        inputName = Table_Up + "input";
+        searchName = Table_Up + "search";
+      } else {
+        modelName = Table_Up + "Model";
+        fieldCommentName = Table_Up + "FieldComment";
+        inputName = Table_Up + "Input";
+        searchName = Table_Up + "Search";
+      }
+    #>
+    <#=table#>_models: (model?.<#=table#>_models ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const table = many2many.table;
+      const mod = many2many.mod;
+      const inlineMany2manySchema = optTables[mod + "_" + table];
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineMany2manyColumns = inlineMany2manySchema.columns;
+    #>
+    <#=column_name#>_<#=table#>_models: (model?.<#=column_name#>_<#=table#>_models ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    }
+    #>
+  };
+  return input;
 }
 
 /**
@@ -457,6 +668,7 @@ export async function findAll(
           #>
           <#=column_name#><#
             }
+          #><#
           }
           #><#
           if (hasVersion) {
@@ -504,6 +716,72 @@ export async function findAll(
           <#=table#>_models {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
@@ -683,6 +961,72 @@ export async function findOne(
             #>
           }<#
           }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
           #>
         }
       }
@@ -696,6 +1040,31 @@ export async function findOne(
   await setLblById(model);
   return model;
 }<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取会员卡是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds(
+  ids: <#=Table_Up2#>Id[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    getEditableDataPermitsByIds<#=Table_Up2#>: Query["getEditableDataPermitsByIds<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ids: [<#=Table_Up2#>Id!]!) {
+        getEditableDataPermitsByIds<#=Table_Up2#>(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.getEditableDataPermitsByIds<#=Table_Up2#>;
+  return res;
+}<#
+}
+#><#
 if (list_tree === true) {
 #>
 
@@ -799,25 +1168,26 @@ if (opts.noAdd !== true) {
 
 /**
  * 创建<#=table_comment#>
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
+  input = intoInput(input);
   const data: {
     create<#=Table_Up2#>: Mutation["create<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: <#=inputName#>!, $unique_type: UniqueType) {
-        create<#=Table_Up2#>(model: $model, unique_type: $unique_type)
+      mutation($input: <#=inputName#>!, $unique_type: UniqueType) {
+        create<#=Table_Up2#>(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -832,25 +1202,26 @@ if (opts.noEdit !== true) {
 /**
  * 根据 id 修改<#=table_comment#>
  * @param {<#=Table_Up#>Id} id
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: <#=Table_Up#>Id,
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
+  input = intoInput(input);
   const data: {
     updateById<#=Table_Up2#>: Mutation["updateById<#=Table_Up2#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up2#>Id!, $model: <#=inputName#>!) {
-        updateById<#=Table_Up2#>(id: $id, model: $model)
+      mutation($id: <#=Table_Up2#>Id!, $input: <#=inputName#>!) {
+        updateById<#=Table_Up2#>(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: <#=Table_Up#>Id = data.updateById<#=Table_Up2#>;
@@ -954,6 +1325,72 @@ export async function findById(
           <#=table#>_models {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              if (column_name === "is_deleted") continue;
+              if (column_name === "tenant_id") continue;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          }
+          #><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            const comment = column.COLUMN_COMMENT;
+            let is_nullable = column.IS_NULLABLE === "YES";
+            const foreignKey = column.foreignKey;
+            const foreignTable = foreignKey && foreignKey.table;
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            let data_type = column.DATA_TYPE;
+            const many2many = column.many2many;
+            if (!many2many || !foreignKey) continue;
+            if (!column.inlineMany2manyTab) continue;
+            const table = many2many.table;
+            const mod = many2many.mod;
+            const inlineMany2manySchema = optTables[mod + "_" + table];
+            if (!inlineMany2manySchema) {
+              throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+              process.exit(1);
+            }
+            const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+            const Table_Up = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const inlineMany2manyColumns = inlineMany2manySchema.columns;
+          #>
+          <#=column_name#>_<#=table#>_models {<#
+            for (let i = 0; i < inlineMany2manyColumns.length; i++) {
+              const column = inlineMany2manyColumns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
@@ -1320,6 +1757,33 @@ export async function get<#=Foreign_Table_Up#>Tree() {
   );
   return data;
 }<#
+  if (mod === "base" && table === "menu") {
+#>
+
+export const menuDataPermit = {<#
+  const optKeys = Object.keys(optTables);
+  for (let i = 0; i < optKeys.length; i++) {
+    const optKey = optKeys[i];
+    const optTable = optTables[optKey];
+    if (!optTable.opts.dataPermit) {
+      continue;
+    }
+  #>
+  "/<#=optTable.opts.mod#>/<#=optTable.opts.table#>": true,<#
+  }
+  #>
+} as const;
+
+export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
+  const route_path = model.route_path;
+  if (!route_path) {
+    return false;
+  }
+  const isPermit = (menuDataPermit as any)[route_path];
+  return isPermit;
+}<#
+  }
+#><#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -2255,7 +2719,7 @@ export async function getDefaultInput() {<#
           }).join("");
           let defaultValue_Up = column.COLUMN_DEFAULT.toString();
           defaultValue_Up = defaultValue_Up.split("_").map(function(item) {
-            return item.substring(0, 1).toUpperCase() + item.substring(1);
+            return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
           }).join("");
           defaultValue = Table_Up + Column_Up + "." + defaultValue_Up;
         } else {

@@ -87,7 +87,7 @@ type OptionsFieldComment {
   update_time_lbl: String!
 }
 input OptionsInput {
-  ""
+  "ID"
   id: OptionsId
   "名称"
   lbl: String
@@ -107,22 +107,6 @@ input OptionsInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
   "版本号"
   version: Int!
 }
@@ -178,9 +162,9 @@ type Query {
 }
 type Mutation {
   "创建系统选项"
-  createOptions(model: OptionsInput!, unique_type: UniqueType): OptionsId!
+  createOptions(input: OptionsInput!, unique_type: UniqueType): OptionsId!
   "根据 id 修改系统选项"
-  updateByIdOptions(id: OptionsId!, model: OptionsInput!): OptionsId!
+  updateByIdOptions(id: OptionsId!, input: OptionsInput!): OptionsId!
   "根据 ids 删除系统选项"
   deleteByIdsOptions(ids: [OptionsId!]!): Int!
   "根据 ids 启用或者禁用系统选项"

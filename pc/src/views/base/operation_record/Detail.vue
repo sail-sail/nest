@@ -481,13 +481,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -504,7 +509,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("操作记录")));
   }
 }
 
@@ -628,8 +633,8 @@ async function onInitI18ns() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initDetailI18ns(),
