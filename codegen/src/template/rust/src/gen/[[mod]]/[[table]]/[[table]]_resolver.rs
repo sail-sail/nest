@@ -570,7 +570,7 @@ pub async fn default_by_id(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "default".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>
@@ -654,7 +654,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>
@@ -753,7 +753,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>

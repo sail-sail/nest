@@ -176,7 +176,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/base/dict".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = dict_service::enable_by_ids(
@@ -215,7 +215,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/base/dict".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = dict_service::lock_by_ids(

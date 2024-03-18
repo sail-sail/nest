@@ -176,7 +176,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/base/menu".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = menu_service::enable_by_ids(
@@ -215,7 +215,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/base/menu".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = menu_service::lock_by_ids(
