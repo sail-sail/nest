@@ -256,6 +256,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
               lbl += ` })%>`;
             }
           } else {
+            if (foreignKey && foreignKey.notSetIdByLbl) {
+              continue;
+            }
             if (lbls.length === 0) {
               lbl += `<%initJs: const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { }; const comment = data.getFieldComments${ Table_Up_IN };%>`;
               lbl += `<%_setSheetName_(sheetName)%>`;
