@@ -176,7 +176,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/base/lang".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = lang_service::enable_by_ids(
