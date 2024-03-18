@@ -178,7 +178,7 @@ impl DeptGenMutation {
   async fn create_dept(
     &self,
     ctx: &Context<'_>,
-    model: DeptInput,
+    input: DeptInput,
     unique_type: Option<UniqueType>,
   ) -> Result<DeptId> {
     let mut options = Options::new();
@@ -191,7 +191,7 @@ impl DeptGenMutation {
       .build()
       .scope({
         dept_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -242,7 +242,7 @@ impl DeptGenMutation {
     &self,
     ctx: &Context<'_>,
     id: DeptId,
-    model: DeptInput,
+    input: DeptInput,
   ) -> Result<DeptId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -251,7 +251,7 @@ impl DeptGenMutation {
       .scope({
         dept_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

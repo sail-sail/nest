@@ -279,7 +279,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn create_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    model: <#=tableUP#>Input,
+    input: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
   ) -> Result<<#=Table_Up#>Id> {
     let mut options = Options::new();
@@ -292,7 +292,7 @@ impl <#=tableUP#>GenMutation {<#
       .build()
       .scope({
         <#=table#>_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -370,7 +370,7 @@ impl <#=tableUP#>GenMutation {<#
     &self,
     ctx: &Context<'_>,
     id: <#=Table_Up#>Id,
-    model: <#=tableUP#>Input,
+    input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -379,7 +379,7 @@ impl <#=tableUP#>GenMutation {<#
       .scope({
         <#=table#>_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

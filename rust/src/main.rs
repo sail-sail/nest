@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![recursion_limit="256"]
 
 #[cfg(not(target_env = "msvc"))]
 #[global_allocator]

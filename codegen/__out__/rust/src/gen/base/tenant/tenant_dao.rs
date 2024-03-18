@@ -33,6 +33,7 @@ use crate::common::context::{
   get_order_by_query,
   get_page_query,
   del_caches,
+  IS_DEBUG,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -396,7 +397,6 @@ async fn get_from_query() -> Result<String> {
 }
 
 /// 根据搜索条件和分页查找租户列表
-#[allow(unused_variables)]
 pub async fn find_all(
   search: Option<TenantSearch>,
   page: Option<PageInput>,
@@ -404,10 +404,36 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  #[allow(unused_variables)]
   let table = "base_tenant";
-  let _method = "find_all";
+  let method = "find_all";
   
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(page) = &page {
+      msg += &format!(" page: {:?}", &page);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  #[allow(unused_variables)]
   let is_deleted = search.as_ref()
     .and_then(|item| item.is_deleted);
   
@@ -475,6 +501,7 @@ pub async fn find_all(
     .try_into()
     .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
   
+  #[allow(unused_variables)]
   for model in &mut res {
     
     // 锁定
@@ -506,9 +533,28 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  #[allow(unused_variables)]
   let table = "base_tenant";
-  let _method = "find_count";
+  let method = "find_count";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -638,6 +684,43 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
   
+  let table = "base_tenant";
+  let method = "find_one";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  if let Some(search) = &search {
+    let id = search.id.clone();
+    if id.is_some() && id.unwrap().is_empty() {
+      return Ok(None);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let page = PageInput {
     pg_offset: 0.into(),
     pg_size: 1.into(),
@@ -661,6 +744,27 @@ pub async fn find_by_id(
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
   
+  let table = "base_tenant";
+  let method = "find_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let search = TenantSearch {
     id: Some(id),
     ..Default::default()
@@ -681,6 +785,29 @@ pub async fn exists(
   options: Option<Options>,
 ) -> Result<bool> {
   
+  let table = "base_tenant";
+  let method = "exists";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let total = find_count(
     search,
     options,
@@ -694,6 +821,27 @@ pub async fn exists_by_id(
   id: TenantId,
   options: Option<Options>,
 ) -> Result<bool> {
+  
+  let table = "base_tenant";
+  let method = "exists_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let search = TenantSearch {
     id: Some(id),
@@ -715,6 +863,30 @@ pub async fn find_by_unique(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
+  
+  let table = "base_tenant";
+  let method = "find_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" search: {:?}", &search);
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -773,8 +945,31 @@ fn equals_by_unique(
 pub async fn check_by_unique(
   input: TenantInput,
   model: TenantModel,
-  unique_type: UniqueType,
+  options: Option<Options>,
 ) -> Result<Option<TenantId>> {
+  
+  let table = "base_tenant";
+  let method = "check_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" model: {:?}", &model);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -782,6 +977,12 @@ pub async fn check_by_unique(
   if !is_equals {
     return Ok(None);
   }
+  
+  let unique_type = options
+    .as_ref()
+    .and_then(|item| item.get_unique_type())
+    .unwrap_or_default();
+  
   if unique_type == UniqueType::Ignore {
     return Ok(None);
   }
@@ -926,15 +1127,43 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+pub fn get_is_debug(
+  options: Option<&Options>,
+) -> bool {
+  let mut is_debug: bool = *IS_DEBUG;
+  if let Some(options) = &options {
+    is_debug = options.get_is_debug();
+  }
+  is_debug
+}
+
 /// 创建租户
-#[allow(unused_mut)]
 pub async fn create(
+  #[allow(unused_mut)]
   mut input: TenantInput,
   options: Option<Options>,
 ) -> Result<TenantId> {
   
   let table = "base_tenant";
-  let _method = "create";
+  let method = "create";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if input.id.is_some() {
     return Err(SrvErr::msg(
@@ -953,19 +1182,23 @@ pub async fn create(
   if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
-      .map(|item|
-        item.get_unique_type().unwrap_or(UniqueType::Throw)
+      .and_then(|item|
+        item.get_unique_type()
       )
-      .unwrap_or(UniqueType::Throw);
+      .unwrap_or_default();
     
     let mut id: Option<TenantId> = None;
     
     for old_model in old_models {
       
+      let options = Options::from(options.clone())
+        .set_unique_type(unique_type);
+      let options = Some(options);
+      
       id = check_by_unique(
         input.clone(),
         old_model,
-        unique_type,
+        options,
       ).await?;
       
       if id.is_some() {
@@ -1190,7 +1423,26 @@ pub async fn update_by_id(
   }
   
   let table = "base_tenant";
-  let _method = "update_by_id";
+  let method = "update_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let now = get_now();
   
@@ -1359,9 +1611,24 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   let table = "base_tenant";
-  let _method = "delete_by_ids";
+  let method = "delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -1421,9 +1688,25 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   let table = "base_tenant";
-  let _method = "enable_by_ids";
+  let method = "enable_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_enabled: {:?}", &is_enabled);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
   
@@ -1521,9 +1804,24 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   let table = "base_tenant";
-  let _method = "revert_by_ids";
+  let method = "revert_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -1605,9 +1903,24 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   let table = "base_tenant";
-  let _method = "force_delete_by_ids";
+  let method = "force_delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -1661,7 +1974,21 @@ pub async fn find_last_order_by(
 ) -> Result<u32> {
   
   let table = "base_tenant";
-  let _method = "find_last_order_by";
+  let method = "find_last_order_by";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();

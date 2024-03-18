@@ -174,7 +174,7 @@ impl MenuGenMutation {
   async fn create_menu(
     &self,
     ctx: &Context<'_>,
-    model: MenuInput,
+    input: MenuInput,
     unique_type: Option<UniqueType>,
   ) -> Result<MenuId> {
     let mut options = Options::new();
@@ -187,7 +187,7 @@ impl MenuGenMutation {
       .build()
       .scope({
         menu_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -198,7 +198,7 @@ impl MenuGenMutation {
     &self,
     ctx: &Context<'_>,
     id: MenuId,
-    model: MenuInput,
+    input: MenuInput,
   ) -> Result<MenuId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -207,7 +207,7 @@ impl MenuGenMutation {
       .scope({
         menu_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

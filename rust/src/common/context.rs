@@ -42,7 +42,7 @@ lazy_static! {
     .parse::<i64>()
     .unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
-  static ref IS_DEBUG: bool = init_debug();
+  pub static ref IS_DEBUG: bool = init_debug();
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
 
@@ -342,10 +342,8 @@ impl Ctx {
     options: Option<Options>,
   ) -> Result<u64> {
     
-    let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.is_tran;
     if let Some(options) = &options {
-      is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
@@ -365,150 +363,72 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query(&sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(arg.to_string());
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
-        let mut debug_sql = sql.to_owned();
-        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-        for arg in debug_args {
-          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-        }
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
+      for arg in args {
+        match arg {
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
+          }
+        };
       }
       let res = {
         self.begin().await?;
@@ -538,150 +458,72 @@ impl Ctx {
       return Ok(rows_affected);
     }
     let mut query = sqlx::query(&sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(arg.to_string());
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
-      let mut debug_sql = sql.to_owned();
-      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-      for arg in debug_args {
-        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
+    for arg in args {
+      match arg {
+        ArgType::Bool(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Decimal(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::String(s) => {
+          query = query.bind(s);
+        }
+        ArgType::CowStr(s) => {
+          query = query.bind(s);
+        }
+        ArgType::TimeStamp(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Date(s) => {
+          query = query.bind(s);
+        }
+        ArgType::DateTime(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Time(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Json(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Uuid(s) => {
+          query = query.bind(s);
+        }
+        ArgType::SmolStr(s) => {
+          query = query.bind(s.to_string());
+        }
+      };
     }
     let res = query.execute(&DB_POOL.clone()).await?;
     let rows_affected = res.rows_affected();
@@ -730,10 +572,8 @@ impl Ctx {
       }
     }
     
-    let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.is_tran;
     if let Some(options) = options.as_ref() {
-      is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
@@ -741,150 +581,72 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(arg.to_string());
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
-        let mut debug_sql = sql.to_owned();
-        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-        for arg in debug_args {
-          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-        }
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
+      for arg in args {
+        match arg {
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
+          }
+        };
       }
       let res = {
         self.begin().await?;
@@ -909,150 +671,72 @@ impl Ctx {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(arg.to_string());
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
-      let mut debug_sql = sql.to_owned();
-      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-      for arg in debug_args {
-        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
+    for arg in args {
+      match arg {
+        ArgType::Bool(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Decimal(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::String(s) => {
+          query = query.bind(s);
+        }
+        ArgType::CowStr(s) => {
+          query = query.bind(s);
+        }
+        ArgType::TimeStamp(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Date(s) => {
+          query = query.bind(s);
+        }
+        ArgType::DateTime(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Time(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Json(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Uuid(s) => {
+          query = query.bind(s);
+        }
+        ArgType::SmolStr(s) => {
+          query = query.bind(s.to_string());
+        }
+      };
     }
     let res = query.fetch_all(&DB_POOL.clone()).await?;
     if let Some(options) = &options {
@@ -1094,10 +778,8 @@ impl Ctx {
       }
     }
     
-    let mut is_debug = true;
     let mut is_tran = self.is_tran;
     if let Some(options) = &options {
-      is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
@@ -1105,150 +787,72 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(arg.to_string());
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
-        let mut debug_sql = sql.to_owned();
-        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-        for arg in debug_args {
-          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-        }
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          match arg {
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::I64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U8(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U16(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::U64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F32(s) => {
-              query = query.bind(s);
-            }
-            ArgType::F64(s) => {
-              query = query.bind(s);
-            }
-            ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::CowStr(s) => {
-              query = query.bind(s);
-            }
-            ArgType::TimeStamp(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-            ArgType::SmolStr(s) => {
-              query = query.bind(s.to_string());
-            }
-          };
-        }
+      for arg in args {
+        match arg {
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+          ArgType::SmolStr(s) => {
+            query = query.bind(s.to_string());
+          }
+        };
       }
       let res = {
         self.begin().await?;
@@ -1274,150 +878,72 @@ impl Ctx {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(arg.to_string());
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
-      let mut debug_sql = sql.to_owned();
-      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-      for arg in debug_args {
-        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        match arg {
-          ArgType::Bool(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::I64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Decimal(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U8(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U16(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::U64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F32(s) => {
-            query = query.bind(s);
-          }
-          ArgType::F64(s) => {
-            query = query.bind(s);
-          }
-          ArgType::String(s) => {
-            query = query.bind(s);
-          }
-          ArgType::CowStr(s) => {
-            query = query.bind(s);
-          }
-          ArgType::TimeStamp(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Date(s) => {
-            query = query.bind(s);
-          }
-          ArgType::DateTime(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Time(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Json(s) => {
-            query = query.bind(s);
-          }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
-          }
-        };
-      }
+    for arg in args {
+      match arg {
+        ArgType::Bool(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::I64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Decimal(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U8(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U16(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::U64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F32(s) => {
+          query = query.bind(s);
+        }
+        ArgType::F64(s) => {
+          query = query.bind(s);
+        }
+        ArgType::String(s) => {
+          query = query.bind(s);
+        }
+        ArgType::CowStr(s) => {
+          query = query.bind(s);
+        }
+        ArgType::TimeStamp(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Date(s) => {
+          query = query.bind(s);
+        }
+        ArgType::DateTime(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Time(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Json(s) => {
+          query = query.bind(s);
+        }
+        ArgType::Uuid(s) => {
+          query = query.bind(s);
+        }
+        ArgType::SmolStr(s) => {
+          query = query.bind(s.to_string());
+        }
+      };
     }
     let res = query.fetch_optional(&DB_POOL.clone()).await?;
     if let Some(res) = &res {
@@ -1768,7 +1294,7 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone)]
+#[derive(Default, new, Clone, Debug)]
 pub struct Options {
   
   /// 是否打印sql调试语句
@@ -1795,6 +1321,10 @@ pub struct Options {
   #[new(default)]
   #[allow(dead_code)]
   is_encrypt: Option<bool>,
+  
+  #[new(default)]
+  #[allow(dead_code)]
+  has_data_permit: Option<bool>,
   
 }
 
@@ -1872,6 +1402,20 @@ impl Options {
   #[allow(dead_code)]
   pub fn get_is_encrypt(&self) -> Option<bool> {
     self.is_encrypt
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_has_data_permit(self, has_data_permit: bool) -> Self {
+    let mut self_ = self;
+    self_.has_data_permit = has_data_permit.into();
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_has_data_permit(&self) -> Option<bool> {
+    self.has_data_permit
   }
   
 }
