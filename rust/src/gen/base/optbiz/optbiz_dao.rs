@@ -50,7 +50,7 @@ async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<OptbizSearch>,
 ) -> Result<String> {
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::new();
   {
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
