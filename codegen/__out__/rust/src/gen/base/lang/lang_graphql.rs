@@ -155,7 +155,7 @@ impl LangGenMutation {
   async fn create_lang(
     &self,
     ctx: &Context<'_>,
-    model: LangInput,
+    input: LangInput,
     unique_type: Option<UniqueType>,
   ) -> Result<LangId> {
     let mut options = Options::new();
@@ -168,7 +168,7 @@ impl LangGenMutation {
       .build()
       .scope({
         lang_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -179,7 +179,7 @@ impl LangGenMutation {
     &self,
     ctx: &Context<'_>,
     id: LangId,
-    model: LangInput,
+    input: LangInput,
   ) -> Result<LangId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -188,7 +188,7 @@ impl LangGenMutation {
       .scope({
         lang_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

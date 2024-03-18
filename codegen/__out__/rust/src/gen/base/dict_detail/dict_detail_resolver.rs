@@ -79,6 +79,10 @@ pub async fn create(
   options: Option<Options>,
 ) -> Result<DictDetailId> {
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = dict_detail_service::set_id_by_lbl(
     input,
   ).await?;
@@ -103,6 +107,10 @@ pub async fn update_by_id(
   input: DictDetailInput,
   options: Option<Options>,
 ) -> Result<DictDetailId> {
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = dict_detail_service::set_id_by_lbl(
     input,

@@ -301,6 +301,10 @@ pub async fn create(
   }
   #>
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = <#=table#>_service::set_id_by_lbl(
     input,
   ).await?;
@@ -409,6 +413,10 @@ pub async fn update_by_id(
   let begin_time = Instant::now();<#
   }
   #>
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = <#=table#>_service::set_id_by_lbl(
     input,

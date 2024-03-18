@@ -81,6 +81,10 @@ pub async fn create(
   options: Option<Options>,
 ) -> Result<RoleId> {
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = role_service::set_id_by_lbl(
     input,
   ).await?;
@@ -122,6 +126,10 @@ pub async fn update_by_id(
   input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleId> {
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = role_service::set_id_by_lbl(
     input,

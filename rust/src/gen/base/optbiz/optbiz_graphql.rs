@@ -176,7 +176,7 @@ impl OptbizGenMutation {
   async fn create_optbiz(
     &self,
     ctx: &Context<'_>,
-    model: OptbizInput,
+    input: OptbizInput,
     unique_type: Option<UniqueType>,
   ) -> Result<OptbizId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl OptbizGenMutation {
       .build()
       .scope({
         optbiz_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl OptbizGenMutation {
     &self,
     ctx: &Context<'_>,
     id: OptbizId,
-    model: OptbizInput,
+    input: OptbizInput,
   ) -> Result<OptbizId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl OptbizGenMutation {
       .scope({
         optbiz_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

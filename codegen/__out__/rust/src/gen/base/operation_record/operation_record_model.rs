@@ -53,6 +53,8 @@ pub struct OperationRecordModel {
   pub old_data: Option<String>,
   /// 操作后数据
   pub new_data: Option<String>,
+  /// 是否已删除
+  pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -61,8 +63,18 @@ pub struct OperationRecordModel {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   pub create_time_lbl: String,
-  /// 是否已删除
-  pub is_deleted: u8,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: UsrId,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for OperationRecordModel {
@@ -97,6 +109,16 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 更新人
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -116,6 +138,10 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       create_usr_id_lbl,
       create_time,
       create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -143,17 +169,17 @@ pub struct OperationRecordFieldComment {
   pub old_data: String,
   /// 操作后数据
   pub new_data: String,
-  /// 创建人
+  /// 操作人
   pub create_usr_id: String,
-  /// 创建人
+  /// 操作人
   pub create_usr_id_lbl: String,
-  /// 创建时间
+  /// 操作时间
   pub create_time: String,
-  /// 创建时间
+  /// 操作时间
   pub create_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordSearch {
   /// ID
@@ -193,12 +219,97 @@ pub struct OperationRecordSearch {
   pub new_data: Option<String>,
   /// 操作后数据
   pub new_data_like: Option<String>,
-  /// 创建人
+  /// 操作人
   pub create_usr_id: Option<Vec<UsrId>>,
-  /// 创建人
+  /// 操作人
   pub create_usr_id_is_null: Option<bool>,
-  /// 创建时间
+  /// 操作时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+}
+
+impl std::fmt::Debug for OperationRecordSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("OperationRecordSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 模块
+    if let Some(ref module) = self.module {
+      item = item.field("module", module);
+    }
+    if let Some(ref module_like) = self.module_like {
+      item = item.field("module_like", module_like);
+    }
+    // 模块名称
+    if let Some(ref module_lbl) = self.module_lbl {
+      item = item.field("module_lbl", module_lbl);
+    }
+    if let Some(ref module_lbl_like) = self.module_lbl_like {
+      item = item.field("module_lbl_like", module_lbl_like);
+    }
+    // 方法
+    if let Some(ref method) = self.method {
+      item = item.field("method", method);
+    }
+    if let Some(ref method_like) = self.method_like {
+      item = item.field("method_like", method_like);
+    }
+    // 方法名称
+    if let Some(ref method_lbl) = self.method_lbl {
+      item = item.field("method_lbl", method_lbl);
+    }
+    if let Some(ref method_lbl_like) = self.method_lbl_like {
+      item = item.field("method_lbl_like", method_lbl_like);
+    }
+    // 操作
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref lbl_like) = self.lbl_like {
+      item = item.field("lbl_like", lbl_like);
+    }
+    // 耗时(毫秒)
+    if let Some(ref time) = self.time {
+      item = item.field("time", time);
+    }
+    // 操作前数据
+    if let Some(ref old_data) = self.old_data {
+      item = item.field("old_data", old_data);
+    }
+    if let Some(ref old_data_like) = self.old_data_like {
+      item = item.field("old_data_like", old_data_like);
+    }
+    // 操作后数据
+    if let Some(ref new_data) = self.new_data {
+      item = item.field("new_data", new_data);
+    }
+    if let Some(ref new_data_like) = self.new_data_like {
+      item = item.field("new_data_like", new_data_like);
+    }
+    // 操作人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 操作时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    item.finish()
+  }
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -228,13 +339,29 @@ pub struct OperationRecordInput {
   /// 操作后数据
   pub new_data: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<UsrId>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<OperationRecordModel> for OperationRecordInput {
@@ -263,8 +390,14 @@ impl From<OperationRecordModel> for OperationRecordInput {
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
       // 创建时间
-      create_time: model.create_time,
+      create_time: model.create_time.into(),
       create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time.into(),
+      update_time_lbl: model.update_time_lbl.into(),
     }
   }
 }
@@ -293,9 +426,9 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       old_data: input.old_data,
       // 操作后数据
       new_data: input.new_data,
-      // 创建人
+      // 操作人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
-      // 创建时间
+      // 操作时间
       create_time: input.create_time.map(|x| vec![x, x]),
       ..Default::default()
     }

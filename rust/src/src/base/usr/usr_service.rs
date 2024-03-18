@@ -17,7 +17,13 @@ use crate::common::auth::auth_dao::{
 
 use crate::common::auth::auth_model::AuthModel;
 
-use crate::gen::base::usr::usr_dao;
+use crate::gen::base::usr::usr_dao::{
+  find_by_id as find_by_id_usr,
+  find_one as find_one_usr,
+  validate_option as validate_option_usr,
+  validate_is_enabled as validate_is_enabled_usr,
+  update_by_id as update_by_id_usr,
+};
 use crate::gen::base::usr::usr_model::{
   UsrInput,
   UsrSearch,
@@ -32,7 +38,7 @@ use super::usr_model::{
 
 use crate::gen::base::login_log::login_log_dao::{
   create as create_login_log,
-  find_count as find_login_log_count,
+  find_count as find_count_login_log,
 };
 use crate::gen::base::login_log::login_log_model::{
   LoginLogInput,
@@ -78,7 +84,7 @@ pub async fn login(
   let begin: NaiveDateTime = now - Duration::minutes(10);
   let end: NaiveDateTime = now;
   
-  let count = find_login_log_count(
+  let count = find_count_login_log(
     LoginLogSearch {
       username: username.clone().into(),
       ip: ip.clone().into(),
@@ -90,7 +96,7 @@ pub async fn login(
   ).await?;
   
   if count == 0 {
-    let count = find_login_log_count(
+    let count = find_count_login_log(
       LoginLogSearch {
         username: username.clone().into(),
         ip: ip.clone().into(),
@@ -110,7 +116,7 @@ pub async fn login(
     }
   }
   
-  let usr_model = usr_dao::find_one(
+  let usr_model = find_one_usr(
     UsrSearch {
       username: username.clone().into(),
       tenant_id: tenant_id.clone().into(),
@@ -147,7 +153,7 @@ pub async fn login(
     );
   }
   let usr_model = usr_model.unwrap();
-  usr_dao::validate_is_enabled(
+  validate_is_enabled_usr(
     &usr_model,
   ).await?;
   
@@ -292,14 +298,14 @@ pub async fn change_password(
   
   let usr_id = auth_model.id;
   
-  let usr_model = usr_dao::find_by_id(
+  let usr_model = find_by_id_usr(
     usr_id.clone(),
     None,
   ).await?;
-  let usr_model = usr_dao::validate_option(
+  let usr_model = validate_option_usr(
     usr_model
   ).await?;
-  usr_dao::validate_is_enabled(
+  validate_is_enabled_usr(
     &usr_model,
   ).await?;
   
@@ -313,7 +319,7 @@ pub async fn change_password(
     return Err(anyhow::anyhow!(err_msg));
   }
   
-  usr_dao::update_by_id(
+  update_by_id_usr(
     usr_id,
     UsrInput {
       password: password.into(),
@@ -329,11 +335,11 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   
   let auth_model = get_auth_model_err()?;
   
-  let usr_model = usr_dao::find_by_id(
+  let usr_model = find_by_id_usr(
     auth_model.id,
     None,
   ).await?;
-  let usr_model = usr_dao::validate_option(
+  let usr_model = validate_option_usr(
     usr_model
   ).await?;
   

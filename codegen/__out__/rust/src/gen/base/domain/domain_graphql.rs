@@ -174,7 +174,7 @@ impl DomainGenMutation {
   async fn create_domain(
     &self,
     ctx: &Context<'_>,
-    model: DomainInput,
+    input: DomainInput,
     unique_type: Option<UniqueType>,
   ) -> Result<DomainId> {
     let mut options = Options::new();
@@ -187,7 +187,7 @@ impl DomainGenMutation {
       .build()
       .scope({
         domain_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -198,7 +198,7 @@ impl DomainGenMutation {
     &self,
     ctx: &Context<'_>,
     id: DomainId,
-    model: DomainInput,
+    input: DomainInput,
   ) -> Result<DomainId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -207,7 +207,7 @@ impl DomainGenMutation {
       .scope({
         domain_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

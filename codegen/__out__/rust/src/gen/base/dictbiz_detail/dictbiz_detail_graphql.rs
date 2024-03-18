@@ -176,7 +176,7 @@ impl DictbizDetailGenMutation {
   async fn create_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
-    model: DictbizDetailInput,
+    input: DictbizDetailInput,
     unique_type: Option<UniqueType>,
   ) -> Result<DictbizDetailId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl DictbizDetailGenMutation {
       .build()
       .scope({
         dictbiz_detail_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl DictbizDetailGenMutation {
     &self,
     ctx: &Context<'_>,
     id: DictbizDetailId,
-    model: DictbizDetailInput,
+    input: DictbizDetailInput,
   ) -> Result<DictbizDetailId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl DictbizDetailGenMutation {
       .scope({
         dictbiz_detail_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

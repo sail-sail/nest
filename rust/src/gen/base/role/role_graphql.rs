@@ -176,7 +176,7 @@ impl RoleGenMutation {
   async fn create_role(
     &self,
     ctx: &Context<'_>,
-    model: RoleInput,
+    input: RoleInput,
     unique_type: Option<UniqueType>,
   ) -> Result<RoleId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl RoleGenMutation {
       .build()
       .scope({
         role_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl RoleGenMutation {
     &self,
     ctx: &Context<'_>,
     id: RoleId,
-    model: RoleInput,
+    input: RoleInput,
   ) -> Result<RoleId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl RoleGenMutation {
       .scope({
         role_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

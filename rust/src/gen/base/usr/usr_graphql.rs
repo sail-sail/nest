@@ -176,7 +176,7 @@ impl UsrGenMutation {
   async fn create_usr(
     &self,
     ctx: &Context<'_>,
-    model: UsrInput,
+    input: UsrInput,
     unique_type: Option<UniqueType>,
   ) -> Result<UsrId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl UsrGenMutation {
       .build()
       .scope({
         usr_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl UsrGenMutation {
     &self,
     ctx: &Context<'_>,
     id: UsrId,
-    model: UsrInput,
+    input: UsrInput,
   ) -> Result<UsrId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl UsrGenMutation {
       .scope({
         usr_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

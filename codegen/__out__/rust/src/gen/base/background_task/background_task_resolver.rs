@@ -81,6 +81,10 @@ pub async fn create(
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = background_task_service::set_id_by_lbl(
     input,
   ).await?;
@@ -122,6 +126,10 @@ pub async fn update_by_id(
   input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = background_task_service::set_id_by_lbl(
     input,

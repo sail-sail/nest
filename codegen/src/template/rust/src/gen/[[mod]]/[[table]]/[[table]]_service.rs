@@ -74,7 +74,15 @@ pub async fn find_all(
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<<#=tableUP#>Model>> {
+) -> Result<Vec<<#=tableUP#>Model>> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let res = <#=table#>_dao::find_all(
     search,
@@ -90,7 +98,15 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<i64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let res = <#=table#>_dao::find_count(
     search,
@@ -105,7 +121,15 @@ pub async fn find_one(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {
+) -> Result<Option<<#=tableUP#>Model>> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let model = <#=table#>_dao::find_one(
     search,
@@ -120,7 +144,15 @@ pub async fn find_one(
 pub async fn find_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {
+) -> Result<Option<<#=tableUP#>Model>> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let model = <#=table#>_dao::find_by_id(
     id,
@@ -147,7 +179,15 @@ pub async fn set_id_by_lbl(
 pub async fn create(
   input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {
+) -> Result<<#=Table_Up#>Id> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let id = <#=table#>_dao::create(
     input,
@@ -165,7 +205,15 @@ pub async fn update_tenant_by_id(
   id: <#=Table_Up#>Id,
   tenant_id: TenantId,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::update_tenant_by_id(
     id,
@@ -186,7 +234,15 @@ pub async fn update_org_by_id(
   id: <#=Table_Up#>Id,
   org_id: OrgId,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::update_org_by_id(
     id,
@@ -207,6 +263,14 @@ pub async fn update_by_id(
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
@@ -306,6 +370,14 @@ pub async fn delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
@@ -383,7 +455,15 @@ if (hasDefault) {
 pub async fn default_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::default_by_id(
     id,
@@ -403,7 +483,15 @@ if (hasEnabled) {
 pub async fn get_is_enabled_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
-) -> Result<bool> {
+) -> Result<bool> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let is_enabled = <#=table#>_dao::get_is_enabled_by_id(
     id,
@@ -419,7 +507,15 @@ pub async fn enable_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::enable_by_ids(
     ids,
@@ -441,7 +537,15 @@ if (hasLocked) {
 pub async fn get_is_locked_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
-) -> Result<bool> {
+) -> Result<bool> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let is_locked = <#=table#>_dao::get_is_locked_by_id(
     id,
@@ -457,7 +561,15 @@ pub async fn lock_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::lock_by_ids(
     ids,
@@ -473,7 +585,15 @@ pub async fn lock_by_ids(
 /// 获取<#=table_comment#>字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
-) -> Result<<#=tableUP#>FieldComment> {
+) -> Result<<#=tableUP#>FieldComment> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let comments = <#=table#>_dao::get_field_comments(
     options,
@@ -487,7 +607,15 @@ pub async fn get_field_comments(
 pub async fn revert_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::revert_by_ids(
     ids,
@@ -502,7 +630,15 @@ pub async fn revert_by_ids(
 pub async fn force_delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u64> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let num = <#=table#>_dao::force_delete_by_ids(
     ids,
@@ -517,7 +653,15 @@ if (hasOrderBy) {
 /// 查找 <#=table_comment#> order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u32> {
+) -> Result<u32> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
   
   let res = <#=table#>_dao::find_last_order_by(
     options,

@@ -21,13 +21,13 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tokio = { version = "1.36", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "2.0", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
-async-graphql = { version = "7.0", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
+async-graphql = { version = "7.0.3", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.1", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "1.4"
 anyhow = "1.0"
-sqlx = { version = "0.7", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.7.4", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
 rust-s3 = { version = "0.33", features = ["tokio-rustls-tls", "tokio-stream", "no-verify-ssl"], default-features = false }
 async-trait = "0.1"
@@ -41,7 +41,7 @@ hex = "0.4"
 base64 = "0.21"
 utf8_slice = "1.0"
 derive-new = "0.6"
-reqwest = { version = "0.11", features = ["rustls-tls", "json", "serde_json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.11.26", features = ["rustls-tls", "json", "serde_json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 sqlformat = "0.2"
