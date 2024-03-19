@@ -278,11 +278,11 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let create_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.create_usr_id.clone(),
+      None => None,
     };
-    if !create_usr_id.is_empty() {
+    if let Some(create_usr_id) = create_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(create_usr_id.len());
         for item in create_usr_id {

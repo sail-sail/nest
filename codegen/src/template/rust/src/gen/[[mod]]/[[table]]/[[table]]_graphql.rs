@@ -267,6 +267,20 @@ pub struct <#=tableUP#>GenMutation;
 
 #[Object(rename_args = "snake_case")]
 impl <#=tableUP#>GenMutation {<#
+    if (opts.noAdd === true && opts.noEdit === true) {
+  #>
+  
+  /// 占位方法, 用于实现 <#=tableUP#>Input
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    input: <#=tableUP#>Input,
+  ) -> Result<<#=Table_Up#>Id> {
+    Err(anyhow::anyhow!(""))
+  }<#
+    }
+  #><#
     if (opts.noAdd !== true) {
   #>
   

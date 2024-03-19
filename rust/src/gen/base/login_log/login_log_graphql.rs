@@ -120,6 +120,16 @@ pub struct LoginLogGenMutation;
 #[Object(rename_args = "snake_case")]
 impl LoginLogGenMutation {
   
+  /// 占位方法, 用于实现 LoginLogInput
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_login_log(
+    &self,
+    ctx: &Context<'_>,
+    input: LoginLogInput,
+  ) -> Result<LoginLogId> {
+    Err(anyhow::anyhow!(""))
+  }
+  
   /// 登录日志根据id修改租户id
   async fn update_tenant_by_id_login_log(
     &self,

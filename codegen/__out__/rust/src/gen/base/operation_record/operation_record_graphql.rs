@@ -120,6 +120,16 @@ pub struct OperationRecordGenMutation;
 #[Object(rename_args = "snake_case")]
 impl OperationRecordGenMutation {
   
+  /// 占位方法, 用于实现 OperationRecordInput
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    input: OperationRecordInput,
+  ) -> Result<OperationRecordId> {
+    Err(anyhow::anyhow!(""))
+  }
+  
   /// 操作记录根据id修改租户id
   async fn update_tenant_by_id_operation_record(
     &self,

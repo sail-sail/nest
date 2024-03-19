@@ -120,6 +120,16 @@ pub struct BackgroundTaskGenMutation;
 #[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenMutation {
   
+  /// 占位方法, 用于实现 BackgroundTaskInput
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_background_task(
+    &self,
+    ctx: &Context<'_>,
+    input: BackgroundTaskInput,
+  ) -> Result<BackgroundTaskId> {
+    Err(anyhow::anyhow!(""))
+  }
+  
   /// 后台任务根据id修改租户id
   async fn update_tenant_by_id_background_task(
     &self,
