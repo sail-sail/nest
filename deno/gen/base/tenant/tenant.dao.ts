@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -251,19 +255,22 @@ async function getFromQuery(
 export async function findCount(
   search?: TenantSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -303,25 +310,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel[]> {
   const table = "base_tenant";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -454,7 +464,7 @@ export async function findAll(
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked !== undefined && model.is_locked !== null) {
+    if (model.is_locked != null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
@@ -464,7 +474,7 @@ export async function findAll(
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+    if (model.is_enabled != null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
@@ -568,17 +578,17 @@ export async function setIdByLbl(
   }
   
   // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_locked = Number(val);
     }
   }
   
   // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled == null) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_enabled = Number(val);
     }
   }
@@ -621,8 +631,24 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
 export async function findByUnique(
   search0: TenantInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel[]> {
+  
+  const table = "base_tenant";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -714,8 +740,28 @@ export async function findOne(
   search?: TenantSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel | undefined> {
+  const table = "base_tenant";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -738,8 +784,23 @@ export async function findOne(
 export async function findById(
   id?: TenantId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel | undefined> {
+  const table = "base_tenant";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -754,8 +815,23 @@ export async function findById(
 export async function exist(
   search?: TenantSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "base_tenant";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -768,16 +844,19 @@ export async function exist(
 export async function existById(
   id?: TenantId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "base_tenant";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -889,6 +968,7 @@ export async function validate(
 export async function create(
   input: TenantInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -896,14 +976,18 @@ export async function create(
   const table = "base_tenant";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -950,7 +1034,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -958,26 +1042,26 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,is_locked`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,is_enabled`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,order_by`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,is_sys`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -985,7 +1069,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -993,26 +1077,26 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,${ args.push(input.is_locked) }`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,${ args.push(input.order_by) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
@@ -1093,23 +1177,27 @@ export async function updateById(
   id: TenantId,
   input: TenantInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<TenantId> {
   const table = "base_tenant";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1147,37 +1235,37 @@ export async function updateById(
     update base_tenant set
   `;
   let updateFldNum = 0;
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     if (input.is_sys != oldModel.is_sys) {
       sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
@@ -1223,7 +1311,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1257,19 +1345,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1335,22 +1426,25 @@ export async function enableByIds(
   ids: TenantId[],
   is_enabled: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "enableByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_enabled != null) {
+      msg += ` is_enabled:${ is_enabled }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (is_enabled !== undefined) {
-    msg += `is_enabled:${ is_enabled } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1370,7 +1464,7 @@ export async function enableByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1417,22 +1511,25 @@ export async function lockByIds(
   ids: TenantId[],
   is_locked: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "lockByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_locked != null) {
+      msg += ` is_locked:${ is_locked }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (is_locked !== undefined) {
-    msg += `is_locked:${ is_locked } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1452,7 +1549,7 @@ export async function lockByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1477,19 +1574,22 @@ export async function lockByIds(
 export async function revertByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1545,19 +1645,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1607,16 +1710,19 @@ export async function forceDeleteByIds(
  */
 export async function findLastOrderBy(
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "findLastOrderBy";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   let sql = `
     select

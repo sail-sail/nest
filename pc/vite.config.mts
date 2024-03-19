@@ -121,7 +121,6 @@ export default defineConfig({
             "useSubscribeList",
             "useSelect",
             "useSelectOne",
-            "monthrangeSearch",
             "useTableColumns",
             "initListI18ns",
             "initBuiltInSearch",

@@ -19,6 +19,11 @@ declare const operationRecordId: unique symbol;
 export type OperationRecordId = Distinct<string, typeof operationRecordId>;
 
 export interface OperationRecordSearch extends OperationRecordSearchType {
+  /** 更新人 */
+  update_usr_id?: UsrId[];
+  update_usr_id_is_null?: boolean;
+  /** 更新时间 */
+  update_time?: string[];
   tenant_id?: string | null;
 }
 
