@@ -199,7 +199,7 @@ async function getFromQuery(
 export async function findCount(
   search?: I18nSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_i18n";

@@ -228,7 +228,7 @@ async function getFromQuery(
 export async function findCount(
   search?: DictbizDetailSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_dictbiz_detail";
