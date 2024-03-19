@@ -220,7 +220,7 @@ async function getFromQuery(
 export async function findCount(
   search?: CronJobLogSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
