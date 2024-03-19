@@ -587,6 +587,15 @@ pub async fn find_all(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  
   let options = Options::from(options)
     .set_is_debug(false);
   let options = Some(options);
@@ -711,6 +720,15 @@ pub async fn find_count(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
   }
   
   let options = Options::from(options)
@@ -880,16 +898,15 @@ pub async fn find_one(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
   if let Some(search) = &search {
-    let id = search.id.clone();
-    if id.is_some() && id.unwrap().is_empty() {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
       return Ok(None);
     }
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -933,6 +950,10 @@ pub async fn find_by_id(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }
+  
+  if id.is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -2186,7 +2207,26 @@ pub async fn lock_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "lock_by_ids";
+  let method = "lock_by_ids";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_locked: {:?}", &is_locked);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
   
   let options = Options::from(options);
   
@@ -2239,6 +2279,10 @@ pub async fn revert_by_ids(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
   }
   
   let options = Options::from(options)
@@ -2338,6 +2382,10 @@ pub async fn force_delete_by_ids(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
   }
   
   let options = Options::from(options)
