@@ -218,7 +218,7 @@ async function getFromQuery(
 export async function findCount(
   search?: OperationRecordSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
