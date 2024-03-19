@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -302,19 +306,22 @@ async function getFromQuery(
 export async function findCount(
   search?: WxPayNoticeSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -351,25 +358,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel[]> {
   const table = "wx_wx_pay_notice";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -568,39 +578,39 @@ export async function setIdByLbl(
   ]);
   
   // 交易类型
-  if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
+  if (isNotEmpty(input.trade_type_lbl) && input.trade_type == null) {
     const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.trade_type = val as WxPayNoticeTradeType;
     }
   }
   
   // 交易状态
-  if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
+  if (isNotEmpty(input.trade_state_lbl) && input.trade_state == null) {
     const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.trade_state = val as WxPayNoticeTradeState;
     }
   }
   
   // 支付完成时间
-  if (isNotEmpty(input.success_time_lbl) && input.success_time === undefined) {
+  if (isNotEmpty(input.success_time_lbl) && input.success_time == null) {
     input.success_time_lbl = String(input.success_time_lbl).trim();
     input.success_time = input.success_time_lbl;
   }
   
   // 货币类型
-  if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
+  if (isNotEmpty(input.currency_lbl) && input.currency == null) {
     const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.currency = val as WxPayNoticeCurrency;
     }
   }
   
   // 用户支付币种
-  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
+  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency == null) {
     const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.payer_currency = val as WxPayNoticePayerCurrency;
     }
   }
@@ -655,8 +665,24 @@ export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
 export async function findByUnique(
   search0: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel[]> {
+  
+  const table = "wx_wx_pay_notice";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -733,8 +759,28 @@ export async function findOne(
   search?: WxPayNoticeSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel | undefined> {
+  const table = "wx_wx_pay_notice";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -757,8 +803,23 @@ export async function findOne(
 export async function findById(
   id?: WxPayNoticeId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel | undefined> {
+  const table = "wx_wx_pay_notice";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -773,8 +834,23 @@ export async function findById(
 export async function exist(
   search?: WxPayNoticeSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "wx_wx_pay_notice";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -787,16 +863,19 @@ export async function exist(
 export async function existById(
   id?: WxPayNoticeId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "wx_wx_pay_notice";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -980,6 +1059,7 @@ export async function validate(
 export async function create(
   input: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -987,14 +1067,18 @@ export async function create(
   const table = "wx_wx_pay_notice";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -1058,7 +1142,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -1066,62 +1150,62 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     sql += `,appid`;
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     sql += `,mchid`;
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     sql += `,openid`;
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     sql += `,out_trade_no`;
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,transaction_id`;
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     sql += `,trade_type`;
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     sql += `,trade_state`;
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     sql += `,trade_state_desc`;
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     sql += `,bank_type`;
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     sql += `,attach`;
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     sql += `,success_time`;
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     sql += `,total`;
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     sql += `,payer_total`;
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     sql += `,currency`;
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     sql += `,payer_currency`;
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     sql += `,device_id`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     sql += `,raw`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -1146,7 +1230,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -1154,62 +1238,62 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     sql += `,${ args.push(input.appid) }`;
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     sql += `,${ args.push(input.mchid) }`;
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     sql += `,${ args.push(input.openid) }`;
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     sql += `,${ args.push(input.out_trade_no) }`;
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,${ args.push(input.transaction_id) }`;
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     sql += `,${ args.push(input.trade_type) }`;
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     sql += `,${ args.push(input.trade_state) }`;
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     sql += `,${ args.push(input.trade_state_desc) }`;
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     sql += `,${ args.push(input.bank_type) }`;
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     sql += `,${ args.push(input.attach) }`;
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     sql += `,${ args.push(input.success_time) }`;
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     sql += `,${ args.push(input.total) }`;
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     sql += `,${ args.push(input.payer_total) }`;
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     sql += `,${ args.push(input.currency) }`;
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     sql += `,${ args.push(input.payer_currency) }`;
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     sql += `,${ args.push(input.device_id) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     sql += `,${ args.push(input.raw) }`;
   }
   sql += `)`;
@@ -1236,22 +1320,25 @@ export async function updateTenantById(
   id: WxPayNoticeId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -1327,23 +1414,27 @@ export async function updateById(
   id: WxPayNoticeId,
   input: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxPayNoticeId> {
   const table = "wx_wx_pay_notice";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1391,109 +1482,109 @@ export async function updateById(
     update wx_wx_pay_notice set
   `;
   let updateFldNum = 0;
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     if (input.appid != oldModel.appid) {
       sql += `appid = ${ args.push(input.appid) },`;
       updateFldNum++;
     }
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
       sql += `mchid = ${ args.push(input.mchid) },`;
       updateFldNum++;
     }
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     if (input.openid != oldModel.openid) {
       sql += `openid = ${ args.push(input.openid) },`;
       updateFldNum++;
     }
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     if (input.out_trade_no != oldModel.out_trade_no) {
       sql += `out_trade_no = ${ args.push(input.out_trade_no) },`;
       updateFldNum++;
     }
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     if (input.transaction_id != oldModel.transaction_id) {
       sql += `transaction_id = ${ args.push(input.transaction_id) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     if (input.trade_type != oldModel.trade_type) {
       sql += `trade_type = ${ args.push(input.trade_type) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     if (input.trade_state != oldModel.trade_state) {
       sql += `trade_state = ${ args.push(input.trade_state) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     if (input.trade_state_desc != oldModel.trade_state_desc) {
       sql += `trade_state_desc = ${ args.push(input.trade_state_desc) },`;
       updateFldNum++;
     }
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     if (input.bank_type != oldModel.bank_type) {
       sql += `bank_type = ${ args.push(input.bank_type) },`;
       updateFldNum++;
     }
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     if (input.attach != oldModel.attach) {
       sql += `attach = ${ args.push(input.attach) },`;
       updateFldNum++;
     }
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     if (input.success_time != oldModel.success_time) {
       sql += `success_time = ${ args.push(input.success_time) },`;
       updateFldNum++;
     }
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     if (input.total != oldModel.total) {
       sql += `total = ${ args.push(input.total) },`;
       updateFldNum++;
     }
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     if (input.payer_total != oldModel.payer_total) {
       sql += `payer_total = ${ args.push(input.payer_total) },`;
       updateFldNum++;
     }
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     if (input.currency != oldModel.currency) {
       sql += `currency = ${ args.push(input.currency) },`;
       updateFldNum++;
     }
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     if (input.payer_currency != oldModel.payer_currency) {
       sql += `payer_currency = ${ args.push(input.payer_currency) },`;
       updateFldNum++;
     }
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     if (input.device_id != oldModel.device_id) {
       sql += `device_id = ${ args.push(input.device_id) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     if (input.raw != oldModel.raw) {
       sql += `raw = ${ args.push(input.raw) },`;
       updateFldNum++;
@@ -1505,7 +1596,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1533,19 +1624,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1584,19 +1678,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1646,19 +1743,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
