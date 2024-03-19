@@ -317,7 +317,7 @@ async function getFromQuery(
 export async function findCount(
   search?: RoleSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_role";

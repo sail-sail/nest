@@ -217,7 +217,7 @@ async function getFromQuery(
 export async function findCount(
   search?: OptbizSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_optbiz";

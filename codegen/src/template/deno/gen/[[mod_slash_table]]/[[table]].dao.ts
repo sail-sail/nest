@@ -1044,7 +1044,7 @@ async function getFromQuery(
 export async function findCount(
   search?: <#=searchName#>,
   options?: {
-    debug: boolean;<#
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
