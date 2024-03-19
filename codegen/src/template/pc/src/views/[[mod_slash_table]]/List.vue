@@ -207,8 +207,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictSelect
-            :model-value="<#=column_name#>_search"
-            @update:model-value="<#=column_name#>_search = $event"
+            v-model="<#=column_name#>_search"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -237,8 +236,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictbizSelect
-            :model-value="<#=column_name#>_search"
-            @update:model-value="<#=column_name#>_search = $event"
+            v-model="<#=column_name#>_search"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -264,8 +262,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <CustomDatePicker
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"<#
+          <CustomDatePicker<#
             if (column.isMonth) {
             #>
             type="monthrange"<#
@@ -274,19 +271,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             type="daterange"<#
             }
             #>
-            :model-value="(search.<#=column_name#> as any)"
+            v-model="<#=column_name#>_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
-            if (column.isMonth) {
-            #>
-            @update:model-value="monthrangeSearch(search, '<#=column_name#>', $event)"<#
-            } else {
-            #>
-            @update:model-value="search.<#=column_name#> = $event"<#
-            }
-            #>
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -2105,6 +2092,25 @@ const <#=column_name#>_search = $computed({
       search.<#=column_name#> = undefined;
     } else {
       search.<#=column_name#> = val;
+    }
+  },
+});<#
+  } else if (data_type === "datetime" || data_type === "date") {
+#>
+
+// <#=column_comment#>
+const <#=column_name#>_search = $computed({
+  get() {
+    return search.<#=column_name#> || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.<#=column_name#> = undefined;
+    } else {
+      search.<#=column_name#> = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      ];
     }
   },
 });<#

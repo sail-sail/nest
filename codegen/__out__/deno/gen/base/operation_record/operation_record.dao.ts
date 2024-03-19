@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -195,19 +199,22 @@ async function getFromQuery(
 export async function findCount(
   search?: OperationRecordSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -244,25 +251,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel[]> {
   const table = "base_operation_record";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -384,8 +394,24 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
 export async function findByUnique(
   search0: OperationRecordInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel[]> {
+  
+  const table = "base_operation_record";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -462,8 +488,28 @@ export async function findOne(
   search?: OperationRecordSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel | undefined> {
+  const table = "base_operation_record";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -486,8 +532,23 @@ export async function findOne(
 export async function findById(
   id?: OperationRecordId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel | undefined> {
+  const table = "base_operation_record";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -502,8 +563,23 @@ export async function findById(
 export async function exist(
   search?: OperationRecordSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "base_operation_record";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -516,16 +592,19 @@ export async function exist(
 export async function existById(
   id?: OperationRecordId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "base_operation_record";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -639,6 +718,7 @@ export async function validate(
 export async function create(
   input: OperationRecordInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -646,14 +726,18 @@ export async function create(
   const table = "base_operation_record";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -709,7 +793,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -717,32 +801,32 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.module !== undefined) {
+  if (input.module != null) {
     sql += `,module`;
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     sql += `,module_lbl`;
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     sql += `,method`;
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     sql += `,method_lbl`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     sql += `,time`;
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     sql += `,old_data`;
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     sql += `,new_data`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -759,7 +843,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -767,32 +851,32 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.module !== undefined) {
+  if (input.module != null) {
     sql += `,${ args.push(input.module) }`;
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     sql += `,${ args.push(input.module_lbl) }`;
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     sql += `,${ args.push(input.method) }`;
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     sql += `,${ args.push(input.method_lbl) }`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     sql += `,${ args.push(input.time) }`;
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     sql += `,${ args.push(input.old_data) }`;
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     sql += `,${ args.push(input.new_data) }`;
   }
   sql += `)`;
@@ -819,22 +903,25 @@ export async function updateTenantById(
   id: OperationRecordId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -872,23 +959,27 @@ export async function updateById(
   id: OperationRecordId,
   input: OperationRecordInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -931,49 +1022,49 @@ export async function updateById(
     update base_operation_record set
   `;
   let updateFldNum = 0;
-  if (input.module !== undefined) {
+  if (input.module != null) {
     if (input.module != oldModel.module) {
       sql += `module = ${ args.push(input.module) },`;
       updateFldNum++;
     }
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     if (input.module_lbl != oldModel.module_lbl) {
       sql += `module_lbl = ${ args.push(input.module_lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     if (input.method != oldModel.method) {
       sql += `method = ${ args.push(input.method) },`;
       updateFldNum++;
     }
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     if (input.method_lbl != oldModel.method_lbl) {
       sql += `method_lbl = ${ args.push(input.method_lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     if (input.time != oldModel.time) {
       sql += `time = ${ args.push(input.time) },`;
       updateFldNum++;
     }
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     if (input.old_data != oldModel.old_data) {
       sql += `old_data = ${ args.push(input.old_data) },`;
       updateFldNum++;
     }
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     if (input.new_data != oldModel.new_data) {
       sql += `new_data = ${ args.push(input.new_data) },`;
       updateFldNum++;
@@ -985,7 +1076,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1013,19 +1104,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1064,19 +1158,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1126,19 +1223,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
