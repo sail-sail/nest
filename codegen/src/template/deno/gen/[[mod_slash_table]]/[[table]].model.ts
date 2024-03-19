@@ -164,7 +164,8 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
     if (foreignKey) {
   #>
   /** <#=column_comment#> */
-  <#=column_name#>?: <#=data_type#>;<#
+  <#=column_name#>?: <#=data_type#>;
+  <#=column_name#>_is_null?: boolean;<#
     } else if (column.dict || column.dictbiz) {
   #>
   /** <#=column_comment#> */

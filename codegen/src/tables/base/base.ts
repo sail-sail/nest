@@ -45,6 +45,7 @@ export default defineConfig({
           column: "id",
           lbl: "scope",
           multiple: true,
+          notSetIdByLbl: true,
         },
       },
       // {
