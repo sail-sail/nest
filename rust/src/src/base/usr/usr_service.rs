@@ -126,7 +126,7 @@ pub async fn login(
     None,
   ).await?;
   
-  if usr_model.is_none() {
+  if usr_model.is_none() || usr_model.as_ref().unwrap().is_enabled == 0 {
     
     create_login_log(
       LoginLogInput {
@@ -153,9 +153,6 @@ pub async fn login(
     );
   }
   let usr_model = usr_model.unwrap();
-  validate_is_enabled_usr(
-    &usr_model,
-  ).await?;
   
   if usr_model.password != get_password(password)? {
     create_login_log(
