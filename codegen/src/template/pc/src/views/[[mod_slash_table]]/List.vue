@@ -2108,8 +2108,8 @@ const <#=column_name#>_search = $computed({
       search.<#=column_name#> = undefined;
     } else {
       search.<#=column_name#> = [
-        dayjs(val[0]).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
-        dayjs(val[1]).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
       ];
     }
   },
