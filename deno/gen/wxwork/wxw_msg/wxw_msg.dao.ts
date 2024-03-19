@@ -233,7 +233,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxwMsgSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";

@@ -241,7 +241,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxwUsrSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
