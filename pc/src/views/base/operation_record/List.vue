@@ -751,8 +751,8 @@ const create_time_search = $computed({
       search.create_time = undefined;
     } else {
       search.create_time = [
-        dayjs(val[0]).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
-        dayjs(val[1]).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
       ];
     }
   },

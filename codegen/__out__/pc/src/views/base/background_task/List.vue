@@ -712,8 +712,8 @@ const begin_time_search = $computed({
       search.begin_time = undefined;
     } else {
       search.begin_time = [
-        dayjs(val[0]).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
-        dayjs(val[1]).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
       ];
     }
   },
