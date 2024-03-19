@@ -53,8 +53,7 @@
           prop="errcode"
         >
           <DictSelect
-            :model-value="errcode_search"
-            @update:model-value="errcode_search = $event"
+            v-model="errcode_search"
             code="wxw_msg_errcode"
             :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
             multiple
@@ -69,14 +68,10 @@
           prop="create_time"
         >
           <CustomDatePicker
-            :set="search.create_time = search.create_time || [ ]"
             type="daterange"
-            :model-value="(search.create_time as any)"
+            v-model="create_time_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -747,6 +742,23 @@ const errcode_search = $computed({
       search.errcode = undefined;
     } else {
       search.errcode = val;
+    }
+  },
+});
+
+// 发送时间
+const create_time_search = $computed({
+  get() {
+    return search.create_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.create_time = undefined;
+    } else {
+      search.create_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
     }
   },
 });

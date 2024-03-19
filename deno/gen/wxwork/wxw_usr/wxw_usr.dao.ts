@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -177,6 +181,40 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id != null) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time != null) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id != null) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time != null) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
+  }
   return whereQuery;
 }
 
@@ -187,7 +225,11 @@ async function getFromQuery(
   },
 ) {
   const is_deleted = search?.is_deleted ?? 0;
-  let fromQuery = `wxwork_wxw_usr t`;
+  let fromQuery = `wxwork_wxw_usr t
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -199,19 +241,22 @@ async function getFromQuery(
 export async function findCount(
   search?: WxwUsrSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -251,25 +296,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwUsrModel[]> {
   const table = "wxwork_wxw_usr";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -281,6 +329,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -375,8 +425,24 @@ export async function getFieldComments(): Promise<WxwUsrFieldComment> {
 export async function findByUnique(
   search0: WxwUsrInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwUsrModel[]> {
+  
+  const table = "wxwork_wxw_usr";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -483,8 +549,28 @@ export async function findOne(
   search?: WxwUsrSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwUsrModel | undefined> {
+  const table = "wxwork_wxw_usr";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -507,8 +593,23 @@ export async function findOne(
 export async function findById(
   id?: WxwUsrId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwUsrModel | undefined> {
+  const table = "wxwork_wxw_usr";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -523,8 +624,23 @@ export async function findById(
 export async function exist(
   search?: WxwUsrSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "wxwork_wxw_usr";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -537,16 +653,19 @@ export async function exist(
 export async function existById(
   id?: WxwUsrId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "wxwork_wxw_usr";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -642,6 +761,7 @@ export async function validate(
 export async function create(
   input: WxwUsrInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -649,14 +769,18 @@ export async function create(
   const table = "wxwork_wxw_usr";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -712,7 +836,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -720,44 +844,44 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.userid !== undefined) {
+  if (input.userid != null) {
     sql += `,userid`;
   }
-  if (input.mobile !== undefined) {
+  if (input.mobile != null) {
     sql += `,mobile`;
   }
-  if (input.gender !== undefined) {
+  if (input.gender != null) {
     sql += `,gender`;
   }
-  if (input.email !== undefined) {
+  if (input.email != null) {
     sql += `,email`;
   }
-  if (input.biz_email !== undefined) {
+  if (input.biz_email != null) {
     sql += `,biz_email`;
   }
-  if (input.direct_leader !== undefined) {
+  if (input.direct_leader != null) {
     sql += `,direct_leader`;
   }
-  if (input.position !== undefined) {
+  if (input.position != null) {
     sql += `,position`;
   }
-  if (input.avatar !== undefined) {
+  if (input.avatar != null) {
     sql += `,avatar`;
   }
-  if (input.thumb_avatar !== undefined) {
+  if (input.thumb_avatar != null) {
     sql += `,thumb_avatar`;
   }
-  if (input.qr_code !== undefined) {
+  if (input.qr_code != null) {
     sql += `,qr_code`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -774,7 +898,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -782,44 +906,44 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.userid !== undefined) {
+  if (input.userid != null) {
     sql += `,${ args.push(input.userid) }`;
   }
-  if (input.mobile !== undefined) {
+  if (input.mobile != null) {
     sql += `,${ args.push(input.mobile) }`;
   }
-  if (input.gender !== undefined) {
+  if (input.gender != null) {
     sql += `,${ args.push(input.gender) }`;
   }
-  if (input.email !== undefined) {
+  if (input.email != null) {
     sql += `,${ args.push(input.email) }`;
   }
-  if (input.biz_email !== undefined) {
+  if (input.biz_email != null) {
     sql += `,${ args.push(input.biz_email) }`;
   }
-  if (input.direct_leader !== undefined) {
+  if (input.direct_leader != null) {
     sql += `,${ args.push(input.direct_leader) }`;
   }
-  if (input.position !== undefined) {
+  if (input.position != null) {
     sql += `,${ args.push(input.position) }`;
   }
-  if (input.avatar !== undefined) {
+  if (input.avatar != null) {
     sql += `,${ args.push(input.avatar) }`;
   }
-  if (input.thumb_avatar !== undefined) {
+  if (input.thumb_avatar != null) {
     sql += `,${ args.push(input.thumb_avatar) }`;
   }
-  if (input.qr_code !== undefined) {
+  if (input.qr_code != null) {
     sql += `,${ args.push(input.qr_code) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
@@ -847,6 +971,7 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -867,22 +992,25 @@ export async function updateTenantById(
   id: WxwUsrId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -922,23 +1050,27 @@ export async function updateById(
   id: WxwUsrId,
   input: WxwUsrInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxwUsrId> {
   const table = "wxwork_wxw_usr";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -981,73 +1113,73 @@ export async function updateById(
     update wxwork_wxw_usr set
   `;
   let updateFldNum = 0;
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.userid !== undefined) {
+  if (input.userid != null) {
     if (input.userid != oldModel.userid) {
       sql += `userid = ${ args.push(input.userid) },`;
       updateFldNum++;
     }
   }
-  if (input.mobile !== undefined) {
+  if (input.mobile != null) {
     if (input.mobile != oldModel.mobile) {
       sql += `mobile = ${ args.push(input.mobile) },`;
       updateFldNum++;
     }
   }
-  if (input.gender !== undefined) {
+  if (input.gender != null) {
     if (input.gender != oldModel.gender) {
       sql += `gender = ${ args.push(input.gender) },`;
       updateFldNum++;
     }
   }
-  if (input.email !== undefined) {
+  if (input.email != null) {
     if (input.email != oldModel.email) {
       sql += `email = ${ args.push(input.email) },`;
       updateFldNum++;
     }
   }
-  if (input.biz_email !== undefined) {
+  if (input.biz_email != null) {
     if (input.biz_email != oldModel.biz_email) {
       sql += `biz_email = ${ args.push(input.biz_email) },`;
       updateFldNum++;
     }
   }
-  if (input.direct_leader !== undefined) {
+  if (input.direct_leader != null) {
     if (input.direct_leader != oldModel.direct_leader) {
       sql += `direct_leader = ${ args.push(input.direct_leader) },`;
       updateFldNum++;
     }
   }
-  if (input.position !== undefined) {
+  if (input.position != null) {
     if (input.position != oldModel.position) {
       sql += `position = ${ args.push(input.position) },`;
       updateFldNum++;
     }
   }
-  if (input.avatar !== undefined) {
+  if (input.avatar != null) {
     if (input.avatar != oldModel.avatar) {
       sql += `avatar = ${ args.push(input.avatar) },`;
       updateFldNum++;
     }
   }
-  if (input.thumb_avatar !== undefined) {
+  if (input.thumb_avatar != null) {
     if (input.thumb_avatar != oldModel.thumb_avatar) {
       sql += `thumb_avatar = ${ args.push(input.thumb_avatar) },`;
       updateFldNum++;
     }
   }
-  if (input.qr_code !== undefined) {
+  if (input.qr_code != null) {
     if (input.qr_code != oldModel.qr_code) {
       sql += `qr_code = ${ args.push(input.qr_code) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
@@ -1059,7 +1191,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1093,19 +1225,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: WxwUsrId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1150,19 +1285,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: WxwUsrId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1218,19 +1356,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxwUsrId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_usr";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;

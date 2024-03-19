@@ -19,6 +19,16 @@ declare const wxwAppId: unique symbol;
 export type WxwAppId = Distinct<string, typeof wxwAppId>;
 
 export interface WxwAppSearch extends WxwAppSearchType {
+  /** 创建人 */
+  create_usr_id?: UsrId[];
+  create_usr_id_is_null?: boolean;
+  /** 创建时间 */
+  create_time?: string[];
+  /** 更新人 */
+  update_usr_id?: UsrId[];
+  update_usr_id_is_null?: boolean;
+  /** 更新时间 */
+  update_time?: string[];
   tenant_id?: string | null;
 }
 
