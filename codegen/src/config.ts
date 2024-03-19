@@ -273,6 +273,9 @@ export interface TableCloumn {
      */
     isLinkForeignTabs?: boolean;
     
+    /** 不允许通过中文变成id, 也意味着不允许导入, 因为导入只能设置中文 */
+    notSetIdByLbl?: boolean;
+    
   },
   
   foreignTabs?: {

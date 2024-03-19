@@ -1168,21 +1168,6 @@ export function useTableColumns<T>(
   });
 }
 
-/**
- * 列表页中的月份控件搜索条件
- */
-export function monthrangeSearch(search: any, key: string, event?: Date[]) {
-  search[key] = search[key] || [ ];
-  if (!event || event.length === 0) {
-    search[key] = [ ];
-    return;
-  }
-  if (event[0] && event[1]) {
-    search[key][0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
-    search[key][1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
-  }
-}
-
 export async function initListI18ns() {
   const {
     initSysI18ns,
