@@ -222,7 +222,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxAppSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_app";

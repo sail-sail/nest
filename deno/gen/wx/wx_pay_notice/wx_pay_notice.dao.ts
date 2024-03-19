@@ -306,7 +306,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxPayNoticeSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
