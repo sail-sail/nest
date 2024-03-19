@@ -54,8 +54,7 @@
           prop="scope"
         >
           <DictSelect
-            :model-value="scope_search"
-            @update:model-value="scope_search = $event"
+            v-model="scope_search"
             code="data_permit_scope"
             :placeholder="`${ ns('请选择') } ${ n('范围') }`"
             multiple
