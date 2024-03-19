@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -175,6 +179,32 @@ async function getWhereQuery(
   if (isNotEmpty(search?.msgid_like)) {
     whereQuery += ` and t.msgid like ${ args.push("%" + sqlLike(search?.msgid_like) + "%") }`;
   }
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id != null) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id != null) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time != null) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
+  }
   return whereQuery;
 }
 
@@ -187,7 +217,11 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `wxwork_wxw_msg t
     left join wxwork_wxw_app wxw_app_id_lbl
-      on wxw_app_id_lbl.id = t.wxw_app_id`;
+      on wxw_app_id_lbl.id = t.wxw_app_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -199,19 +233,22 @@ async function getFromQuery(
 export async function findCount(
   search?: WxwMsgSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -248,25 +285,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwMsgModel[]> {
   const table = "wxwork_wxw_msg";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -279,6 +319,8 @@ export async function findAll(
   let sql = `
     select t.*
       ,wxw_app_id_lbl.lbl wxw_app_id_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -380,7 +422,7 @@ export async function setIdByLbl(
   ]);
   
   // 企微应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id == null) {
     input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
     const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
     if (wxw_appModel) {
@@ -389,9 +431,9 @@ export async function setIdByLbl(
   }
   
   // 发送状态
-  if (isNotEmpty(input.errcode_lbl) && input.errcode === undefined) {
+  if (isNotEmpty(input.errcode_lbl) && input.errcode == null) {
     const val = errcodeDict.find((itemTmp) => itemTmp.lbl === input.errcode_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.errcode = val;
     }
   }
@@ -426,8 +468,24 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
 export async function findByUnique(
   search0: WxwMsgInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwMsgModel[]> {
+  
+  const table = "wxwork_wxw_msg";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -504,8 +562,28 @@ export async function findOne(
   search?: WxwMsgSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwMsgModel | undefined> {
+  const table = "wxwork_wxw_msg";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -528,8 +606,23 @@ export async function findOne(
 export async function findById(
   id?: WxwMsgId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxwMsgModel | undefined> {
+  const table = "wxwork_wxw_msg";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -544,8 +637,23 @@ export async function findById(
 export async function exist(
   search?: WxwMsgSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "wxwork_wxw_msg";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -558,16 +666,19 @@ export async function exist(
 export async function existById(
   id?: WxwMsgId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "wxwork_wxw_msg";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -688,6 +799,7 @@ export async function validate(
 export async function create(
   input: WxwMsgInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -695,14 +807,18 @@ export async function create(
   const table = "wxwork_wxw_msg";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -758,7 +874,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -766,35 +882,35 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.wxw_app_id !== undefined) {
+  if (input.wxw_app_id != null) {
     sql += `,wxw_app_id`;
   }
-  if (input.errcode !== undefined) {
+  if (input.errcode != null) {
     sql += `,errcode`;
   }
-  if (input.touser !== undefined) {
+  if (input.touser != null) {
     sql += `,touser`;
   }
-  if (input.title !== undefined) {
+  if (input.title != null) {
     sql += `,title`;
   }
-  if (input.description !== undefined) {
+  if (input.description != null) {
     sql += `,description`;
   }
-  if (input.url !== undefined) {
+  if (input.url != null) {
     sql += `,url`;
   }
-  if (input.btntxt !== undefined) {
+  if (input.btntxt != null) {
     sql += `,btntxt`;
   }
-  if (input.errmsg !== undefined) {
+  if (input.errmsg != null) {
     sql += `,errmsg`;
   }
-  if (input.msgid !== undefined) {
+  if (input.msgid != null) {
     sql += `,msgid`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -811,7 +927,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -819,35 +935,35 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.wxw_app_id !== undefined) {
+  if (input.wxw_app_id != null) {
     sql += `,${ args.push(input.wxw_app_id) }`;
   }
-  if (input.errcode !== undefined) {
+  if (input.errcode != null) {
     sql += `,${ args.push(input.errcode) }`;
   }
-  if (input.touser !== undefined) {
+  if (input.touser != null) {
     sql += `,${ args.push(input.touser) }`;
   }
-  if (input.title !== undefined) {
+  if (input.title != null) {
     sql += `,${ args.push(input.title) }`;
   }
-  if (input.description !== undefined) {
+  if (input.description != null) {
     sql += `,${ args.push(input.description) }`;
   }
-  if (input.url !== undefined) {
+  if (input.url != null) {
     sql += `,${ args.push(input.url) }`;
   }
-  if (input.btntxt !== undefined) {
+  if (input.btntxt != null) {
     sql += `,${ args.push(input.btntxt) }`;
   }
-  if (input.errmsg !== undefined) {
+  if (input.errmsg != null) {
     sql += `,${ args.push(input.errmsg) }`;
   }
-  if (input.msgid !== undefined) {
+  if (input.msgid != null) {
     sql += `,${ args.push(input.msgid) }`;
   }
   sql += `)`;
@@ -874,22 +990,25 @@ export async function updateTenantById(
   id: WxwMsgId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -927,23 +1046,27 @@ export async function updateById(
   id: WxwMsgId,
   input: WxwMsgInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxwMsgId> {
   const table = "wxwork_wxw_msg";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -986,55 +1109,55 @@ export async function updateById(
     update wxwork_wxw_msg set
   `;
   let updateFldNum = 0;
-  if (input.wxw_app_id !== undefined) {
+  if (input.wxw_app_id != null) {
     if (input.wxw_app_id != oldModel.wxw_app_id) {
       sql += `wxw_app_id = ${ args.push(input.wxw_app_id) },`;
       updateFldNum++;
     }
   }
-  if (input.errcode !== undefined) {
+  if (input.errcode != null) {
     if (input.errcode != oldModel.errcode) {
       sql += `errcode = ${ args.push(input.errcode) },`;
       updateFldNum++;
     }
   }
-  if (input.touser !== undefined) {
+  if (input.touser != null) {
     if (input.touser != oldModel.touser) {
       sql += `touser = ${ args.push(input.touser) },`;
       updateFldNum++;
     }
   }
-  if (input.title !== undefined) {
+  if (input.title != null) {
     if (input.title != oldModel.title) {
       sql += `title = ${ args.push(input.title) },`;
       updateFldNum++;
     }
   }
-  if (input.description !== undefined) {
+  if (input.description != null) {
     if (input.description != oldModel.description) {
       sql += `description = ${ args.push(input.description) },`;
       updateFldNum++;
     }
   }
-  if (input.url !== undefined) {
+  if (input.url != null) {
     if (input.url != oldModel.url) {
       sql += `url = ${ args.push(input.url) },`;
       updateFldNum++;
     }
   }
-  if (input.btntxt !== undefined) {
+  if (input.btntxt != null) {
     if (input.btntxt != oldModel.btntxt) {
       sql += `btntxt = ${ args.push(input.btntxt) },`;
       updateFldNum++;
     }
   }
-  if (input.errmsg !== undefined) {
+  if (input.errmsg != null) {
     if (input.errmsg != oldModel.errmsg) {
       sql += `errmsg = ${ args.push(input.errmsg) },`;
       updateFldNum++;
     }
   }
-  if (input.msgid !== undefined) {
+  if (input.msgid != null) {
     if (input.msgid != oldModel.msgid) {
       sql += `msgid = ${ args.push(input.msgid) },`;
       updateFldNum++;
@@ -1046,7 +1169,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1074,19 +1197,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: WxwMsgId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1125,19 +1251,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: WxwMsgId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1187,19 +1316,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxwMsgId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_msg";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;

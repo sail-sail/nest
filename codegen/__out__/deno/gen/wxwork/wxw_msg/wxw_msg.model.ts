@@ -25,6 +25,14 @@ export interface WxwMsgSearch extends WxwMsgSearchType {
   /** 消息ID */
   msgid?: string;
   msgid_like?: string;
+  /** 创建人 */
+  create_usr_id?: UsrId[];
+  create_usr_id_is_null?: boolean;
+  /** 更新人 */
+  update_usr_id?: UsrId[];
+  update_usr_id_is_null?: boolean;
+  /** 更新时间 */
+  update_time?: string[];
   tenant_id?: string | null;
 }
 
