@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -189,19 +193,22 @@ async function getFromQuery(
 export async function findCount(
   search?: FieldPermitSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "base_field_permit";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -241,25 +248,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<FieldPermitModel[]> {
   const table = "base_field_permit";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -393,7 +403,7 @@ export async function setIdByLbl(
   ]);
   
   // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id == null) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
@@ -402,9 +412,9 @@ export async function setIdByLbl(
   }
   
   // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+  if (isNotEmpty(input.type_lbl) && input.type == null) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.type = val as FieldPermitType;
     }
   }
@@ -443,8 +453,24 @@ export async function getFieldComments(): Promise<FieldPermitFieldComment> {
 export async function findByUnique(
   search0: FieldPermitInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<FieldPermitModel[]> {
+  
+  const table = "base_field_permit";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -547,8 +573,28 @@ export async function findOne(
   search?: FieldPermitSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<FieldPermitModel | undefined> {
+  const table = "base_field_permit";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -571,8 +617,23 @@ export async function findOne(
 export async function findById(
   id?: FieldPermitId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<FieldPermitModel | undefined> {
+  const table = "base_field_permit";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -587,8 +648,23 @@ export async function findById(
 export async function exist(
   search?: FieldPermitSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "base_field_permit";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -601,16 +677,19 @@ export async function exist(
 export async function existById(
   id?: FieldPermitId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "base_field_permit";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -734,6 +813,7 @@ export async function validate(
 export async function create(
   input: FieldPermitInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -741,14 +821,18 @@ export async function create(
   const table = "base_field_permit";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -795,7 +879,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -803,26 +887,26 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     sql += `,menu_id`;
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     sql += `,code`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.type !== undefined) {
+  if (input.type != null) {
     sql += `,type`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,is_sys`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -830,7 +914,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -838,26 +922,26 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     sql += `,${ args.push(input.menu_id) }`;
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     sql += `,${ args.push(input.code) }`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.type !== undefined) {
+  if (input.type != null) {
     sql += `,${ args.push(input.type) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
@@ -911,23 +995,27 @@ export async function updateById(
   id: FieldPermitId,
   input: FieldPermitInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<FieldPermitId> {
   const table = "base_field_permit";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -965,37 +1053,37 @@ export async function updateById(
     update base_field_permit set
   `;
   let updateFldNum = 0;
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     if (input.menu_id != oldModel.menu_id) {
       sql += `menu_id = ${ args.push(input.menu_id) },`;
       updateFldNum++;
     }
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     if (input.code != oldModel.code) {
       sql += `code = ${ args.push(input.code) },`;
       updateFldNum++;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.type !== undefined) {
+  if (input.type != null) {
     if (input.type != oldModel.type) {
       sql += `type = ${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     if (input.is_sys != oldModel.is_sys) {
       sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
@@ -1007,7 +1095,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1041,19 +1129,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: FieldPermitId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_field_permit";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1098,19 +1189,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: FieldPermitId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_field_permit";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1166,19 +1260,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: FieldPermitId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_field_permit";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;

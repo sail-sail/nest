@@ -87,7 +87,11 @@ import {
   escapeId,
 } from "sqlstring";
 
-import dayjs from "dayjs";<#
+import dayjs from "dayjs";
+
+import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";<#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -786,7 +790,7 @@ async function getWhereQuery(
   
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasCreatePermit) {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       whereQuery += ` and t.create_usr_id = ${ args.push(authModel.id) }`;
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
@@ -1039,7 +1043,8 @@ async function getFromQuery(
  */
 export async function findCount(
   search?: <#=searchName#>,
-  options?: {<#
+  options?: {
+    debug: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -1050,14 +1055,16 @@ export async function findCount(
   const table = "<#=mod#>_<#=table#>";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -1104,7 +1111,8 @@ export async function findAll(
   search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput | SortInput[],
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -1115,20 +1123,22 @@ export async function findAll(
   const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -1613,7 +1623,7 @@ export async function findAll(
     
     // <#=column_comment#>
     let <#=column_name#>_lbl = model.<#=column_name#>?.toString() || "";
-    if (model.<#=column_name#> !== undefined && model.<#=column_name#> !== null) {
+    if (model.<#=column_name#> != null) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
       if (dictItem) {
         <#=column_name#>_lbl = dictItem.lbl;
@@ -1971,7 +1981,7 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
       for (let i = 0; i < selectList.length; i++) {
         const item = selectList[i];
@@ -2006,9 +2016,9 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.<#=column_name#> = val as <#=Table_Up#><#=Column_Up#>;
     }
   }<#
@@ -2016,9 +2026,9 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.<#=column_name#> = val;
     }
   }<#
@@ -2028,9 +2038,9 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.<#=column_name#> = Number(val);
     }
   }<#
@@ -2042,7 +2052,7 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
     const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
@@ -2050,6 +2060,7 @@ export async function setIdByLbl(
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+      if (foreignKey.notSetIdByLbl) continue;
   #>
   
   // <#=column_comment#>
@@ -2082,7 +2093,7 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
     input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
     input.<#=column_name#> = input.<#=column_name#>_lbl;<#
     if (column.isMonth) {
@@ -2283,7 +2294,8 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
  */
 export async function findByUnique(
   search0: <#=inputName#>,
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2291,6 +2303,21 @@ export async function findByUnique(
     #>
   },
 ): Promise<<#=modelName#>[]> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -2506,7 +2533,8 @@ if (hasSummary) {
  */
 export async function findSummary(
   search?: <#=searchName#>,
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2515,7 +2543,18 @@ export async function findSummary(
   },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "findSummary";<#
+  const method = "findSummary";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }<#
   const findSummaryColumns = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -2565,7 +2604,8 @@ export async function findSummary(
 export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput | SortInput[],
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2573,6 +2613,25 @@ export async function findOne(
     #>
   },
 ): Promise<<#=modelName#> | undefined> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -2594,7 +2653,8 @@ export async function findOne(
  */
 export async function findById(
   id?: <#=Table_Up#>Id | null,
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2602,6 +2662,20 @@ export async function findById(
     #>
   },
 ): Promise<<#=modelName#> | undefined> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -2615,7 +2689,8 @@ export async function findById(
  */
 export async function exist(
   search?: <#=searchName#>,
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2623,6 +2698,20 @@ export async function exist(
     #>
   },
 ): Promise<boolean> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -2634,7 +2723,8 @@ export async function exist(
  */
 export async function existById(
   id?: <#=Table_Up#>Id | null,
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2645,11 +2735,13 @@ export async function existById(
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -2913,6 +3005,7 @@ export async function validate(
 export async function create(
   input: <#=inputName#>,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;<#
     if (hasEncrypt) {
@@ -2925,14 +3018,18 @@ export async function create(
   const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -3062,7 +3159,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }<#
@@ -3074,7 +3171,7 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }<#
@@ -3117,19 +3214,19 @@ export async function create(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,<#=column_name_mysql#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,<#=column_name_mysql#>`;
   }<#
     } else {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,<#=column_name_mysql#>`;
   }<#
     }
@@ -3163,7 +3260,7 @@ export async function create(
     const val = redundLbl[key];
   #>
   
-  if (input.<#=val#> !== undefined) {
+  if (input.<#=val#> != null) {
     sql += `,<#=val#>`;
   }<#
   }
@@ -3210,7 +3307,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }<#
@@ -3222,7 +3319,7 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }<#
@@ -3263,19 +3360,19 @@ export async function create(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     } else {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     }
@@ -3309,7 +3406,7 @@ export async function create(
     const val = redundLbl[key];
   #>
   
-  if (input.<#=val#> !== undefined) {
+  if (input.<#=val#> != null) {
     sql += `,${ args.push(input.<#=val#>) }`;
   }<#
   }
@@ -3513,22 +3610,25 @@ export async function updateTenantById(
   id: <#=Table_Up#>Id,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -3743,6 +3843,7 @@ export async function updateById(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
@@ -3759,17 +3860,20 @@ export async function updateById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -3957,7 +4061,7 @@ export async function updateById(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     if (isEmpty(input.<#=column_name#>)) {
       input.<#=column_name#> = null;
     }
@@ -3970,7 +4074,7 @@ export async function updateById(
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
@@ -3978,7 +4082,7 @@ export async function updateById(
   }<#
     } else {
   #>
-  if (input.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> != null) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
@@ -4015,7 +4119,7 @@ export async function updateById(
       const val = redundLbl[key];
       const val_mysql = mysqlKeyEscape(val);
   #>
-  if (input.<#=val#> !== undefined) {
+  if (input.<#=val#> != null) {
     if (input.<#=val#> != oldModel.<#=val#>) {
       sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
       updateFldNum++;
@@ -4211,7 +4315,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }<#
@@ -4289,7 +4393,8 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {<#
+  options?: {
+    debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -4300,14 +4405,16 @@ export async function deleteByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -4528,7 +4635,7 @@ export async function defaultById(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -4582,22 +4689,25 @@ export async function enableByIds(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "enableByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_enabled != null) {
+      msg += ` is_enabled:${ is_enabled }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (is_enabled !== undefined) {
-    msg += `is_enabled:${ is_enabled } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -4621,7 +4731,7 @@ export async function enableByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -4682,22 +4792,25 @@ export async function lockByIds(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "lockByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_locked != null) {
+      msg += ` is_locked:${ is_locked }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (is_locked !== undefined) {
-    msg += `is_locked:${ is_locked } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -4721,7 +4834,7 @@ export async function lockByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -4754,19 +4867,22 @@ if (hasIsDeleted) {
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -4898,19 +5014,22 @@ if (hasIsDeleted) {
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -5035,16 +5154,19 @@ if (hasOrderBy) {
  */
 export async function findLastOrderBy(
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "findLastOrderBy";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   let sql = `
     select
