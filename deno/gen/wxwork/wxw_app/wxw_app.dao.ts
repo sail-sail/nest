@@ -239,7 +239,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxwAppSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wxwork_wxw_app";
