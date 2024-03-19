@@ -19,6 +19,11 @@ declare const loginLogId: unique symbol;
 export type LoginLogId = Distinct<string, typeof loginLogId>;
 
 export interface LoginLogSearch extends LoginLogSearchType {
+  /** 更新人 */
+  update_usr_id?: UsrId[];
+  update_usr_id_is_null?: boolean;
+  /** 更新时间 */
+  update_time?: string[];
   tenant_id?: string | null;
 }
 

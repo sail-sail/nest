@@ -290,3 +290,19 @@ export async function decrypt(
     return "";
   }
 }
+
+export function getDebugSearch(
+  // deno-lint-ignore no-explicit-any
+  search?: any,
+) {
+  if (!search) {
+    return "";
+  }
+  const search2 = {
+    ...search,
+  };
+  if (search.is_deleted == 0) {
+    delete search2.is_deleted;
+  }
+  return JSON.stringify(search2);
+}
