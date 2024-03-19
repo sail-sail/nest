@@ -296,7 +296,7 @@ async function getFromQuery(
 export async function findCount(
   search?: PayTransactionsJsapiSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_pay_transactions_jsapi";

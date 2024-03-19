@@ -186,7 +186,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxoAppTokenSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wxo_app_token";

@@ -235,7 +235,7 @@ async function getFromQuery(
 export async function findCount(
   search?: WxoAppSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wxo_app";
