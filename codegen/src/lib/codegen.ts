@@ -1,4 +1,4 @@
-import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile } from "fs-extra";
+import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile, type Stats } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
 import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
@@ -335,15 +335,26 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           fields.push(str);
         }
         const buffer2 = await ejsexcel.renderExcel(buffer, { lbls, fields });
-        let buffer0: Buffer;
+        let stats: Stats | undefined;
         try {
-          buffer0 = await readFile(`${out}/${dir2}`);
-        } catch (errTmp) {
-        }
-        if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
+          stats = await stat(`${out}/${dir2}`);
+        } catch (errTmp) { }
+        // 如果文件大小不一样，或者md5不一样，就写入文件
+        if (!stats || stats.size !== buffer2.length) {
           writeFnArr.push(async function() {
             await writeFile(`${out}/${dir2}`, buffer2);
           });
+        } else {
+          let buffer0: Buffer;
+          try {
+            buffer0 = await readFile(`${out}/${dir2}`);
+          } catch (errTmp) {
+          }
+          if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
+            writeFnArr.push(async function() {
+              await writeFile(`${out}/${dir2}`, buffer2);
+            });
+          }
         }
         return;
       }
@@ -392,12 +403,24 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       );
       try {
         let str2 = await eval(`(async function() { ${ htmlStr }; return _out_; })`,)();
-        let str0: string;
+        
+        let mustWrite = false;
+        let stats: Stats | undefined;
         try {
-          str0 = await readFile(`${out}/${dir2}`, "utf8");
-        } catch (err) {
+          stats = await stat(`${out}/${dir2}`);
+        } catch (errTmp) { }
+        if (!stats || stats.size !== Buffer.from(str2).length) {
+          mustWrite = true;
+        } else {
+          let str0: string;
+          try {
+            str0 = await readFile(`${out}/${dir2}`, "utf8");
+          } catch (errTmp) { }
+          if (!str0 || str0 !== str2) {
+            mustWrite = true;
+          }
         }
-        if (!str0 || str0 !== str2) {
+        if (mustWrite) {
           if (dir2.endsWith(".graphql.ts")) {
             graphqlHasChanged = true;
           }
