@@ -190,7 +190,7 @@ async function getFromQuery(
 export async function findCount(
   search?: LoginLogSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_login_log";
