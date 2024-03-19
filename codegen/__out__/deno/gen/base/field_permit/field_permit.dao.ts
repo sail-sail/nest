@@ -193,7 +193,7 @@ async function getFromQuery(
 export async function findCount(
   search?: FieldPermitSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_field_permit";
