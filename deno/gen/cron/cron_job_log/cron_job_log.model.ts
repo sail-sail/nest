@@ -19,6 +19,14 @@ declare const cronJobLogId: unique symbol;
 export type CronJobLogId = Distinct<string, typeof cronJobLogId>;
 
 export interface CronJobLogSearch extends CronJobLogSearchType {
+  /** 创建人 */
+  create_usr_id?: UsrId[];
+  create_usr_id_is_null?: boolean;
+  /** 更新人 */
+  update_usr_id?: UsrId[];
+  update_usr_id_is_null?: boolean;
+  /** 更新时间 */
+  update_time?: string[];
   tenant_id?: string | null;
 }
 

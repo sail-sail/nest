@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -162,6 +166,32 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id != null) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id != null) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time != null) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
+  }
   return whereQuery;
 }
 
@@ -174,7 +204,11 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `cron_cron_job_log t
     left join cron_cron_job cron_job_id_lbl
-      on cron_job_id_lbl.id = t.cron_job_id`;
+      on cron_job_id_lbl.id = t.cron_job_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -186,19 +220,22 @@ async function getFromQuery(
 export async function findCount(
   search?: CronJobLogSearch,
   options?: {
+    debug: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
   const method = "findCount";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const args = new QueryArgs();
   let sql = `
@@ -235,25 +272,28 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<CronJobLogModel[]> {
   const table = "cron_cron_job_log";
   const method = "findAll";
   
-  let msg = `${ table }.${ method }: `;
-  if (search && Object.keys(search).length > 0) {
-    msg += `search:${ JSON.stringify(search) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (page && Object.keys(page).length > 0) {
-    msg += `page:${ JSON.stringify(page) } `;
-  }
-  if (sort && Object.keys(sort).length > 0) {
-    msg += `sort:${ JSON.stringify(sort) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (search?.id === "") {
     return [ ];
@@ -266,6 +306,8 @@ export async function findAll(
   let sql = `
     select t.*
       ,cron_job_id_lbl.lbl cron_job_id_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -427,7 +469,7 @@ export async function setIdByLbl(
   ]);
   
   // 定时任务
-  if (isNotEmpty(input.cron_job_id_lbl) && input.cron_job_id === undefined) {
+  if (isNotEmpty(input.cron_job_id_lbl) && input.cron_job_id == null) {
     input.cron_job_id_lbl = String(input.cron_job_id_lbl).trim();
     const cron_jobModel = await cron_jobDao.findOne({ lbl: input.cron_job_id_lbl });
     if (cron_jobModel) {
@@ -436,21 +478,21 @@ export async function setIdByLbl(
   }
   
   // 执行状态
-  if (isNotEmpty(input.exec_state_lbl) && input.exec_state === undefined) {
+  if (isNotEmpty(input.exec_state_lbl) && input.exec_state == null) {
     const val = exec_stateDict.find((itemTmp) => itemTmp.lbl === input.exec_state_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.exec_state = val as CronJobLogExecState;
     }
   }
   
   // 开始时间
-  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
+  if (isNotEmpty(input.begin_time_lbl) && input.begin_time == null) {
     input.begin_time_lbl = String(input.begin_time_lbl).trim();
     input.begin_time = input.begin_time_lbl;
   }
   
   // 结束时间
-  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
+  if (isNotEmpty(input.end_time_lbl) && input.end_time == null) {
     input.end_time_lbl = String(input.end_time_lbl).trim();
     input.end_time = input.end_time_lbl;
   }
@@ -486,8 +528,24 @@ export async function getFieldComments(): Promise<CronJobLogFieldComment> {
 export async function findByUnique(
   search0: CronJobLogInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<CronJobLogModel[]> {
+  
+  const table = "cron_cron_job_log";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -564,8 +622,28 @@ export async function findOne(
   search?: CronJobLogSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<CronJobLogModel | undefined> {
+  const table = "cron_cron_job_log";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
   if (search?.id === "") {
     return;
   }
@@ -588,8 +666,23 @@ export async function findOne(
 export async function findById(
   id?: CronJobLogId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<CronJobLogModel | undefined> {
+  const table = "cron_cron_job_log";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
@@ -604,8 +697,23 @@ export async function findById(
 export async function exist(
   search?: CronJobLogSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
+  const table = "cron_cron_job_log";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
@@ -618,16 +726,19 @@ export async function exist(
 export async function existById(
   id?: CronJobLogId | null,
   options?: {
+    debug?: boolean;
   },
 ) {
   const table = "cron_cron_job_log";
   const method = "existById";
   
-  let msg = `${ table }.${ method }: `;
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  log(msg);
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -727,6 +838,7 @@ export async function validate(
 export async function create(
   input: CronJobLogInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
@@ -734,14 +846,18 @@ export async function create(
   const table = "cron_cron_job_log";
   const method = "create";
   
-  let msg = `${ table }.${ method }: `;
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -797,7 +913,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -805,26 +921,26 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.cron_job_id !== undefined) {
+  if (input.cron_job_id != null) {
     sql += `,cron_job_id`;
   }
-  if (input.exec_state !== undefined) {
+  if (input.exec_state != null) {
     sql += `,exec_state`;
   }
-  if (input.exec_result !== undefined) {
+  if (input.exec_result != null) {
     sql += `,exec_result`;
   }
-  if (input.begin_time !== undefined) {
+  if (input.begin_time != null) {
     sql += `,begin_time`;
   }
-  if (input.end_time !== undefined) {
+  if (input.end_time != null) {
     sql += `,end_time`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -841,7 +957,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -849,26 +965,26 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.cron_job_id !== undefined) {
+  if (input.cron_job_id != null) {
     sql += `,${ args.push(input.cron_job_id) }`;
   }
-  if (input.exec_state !== undefined) {
+  if (input.exec_state != null) {
     sql += `,${ args.push(input.exec_state) }`;
   }
-  if (input.exec_result !== undefined) {
+  if (input.exec_result != null) {
     sql += `,${ args.push(input.exec_result) }`;
   }
-  if (input.begin_time !== undefined) {
+  if (input.begin_time != null) {
     sql += `,${ args.push(input.begin_time) }`;
   }
-  if (input.end_time !== undefined) {
+  if (input.end_time != null) {
     sql += `,${ args.push(input.end_time) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
@@ -895,22 +1011,25 @@ export async function updateTenantById(
   id: CronJobLogId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
   const method = "updateTenantById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (tenant_id) {
-    msg += `tenant_id:${ tenant_id } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -948,23 +1067,27 @@ export async function updateById(
   id: CronJobLogId,
   input: CronJobLogInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<CronJobLogId> {
   const table = "cron_cron_job_log";
   const method = "updateById";
   
-  let msg = `${ table }.${ method }: `;
-  if (id) {
-    msg += `id:${ id } `;
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (input) {
-    msg += `input:${ JSON.stringify(input) } `;
-  }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1007,37 +1130,37 @@ export async function updateById(
     update cron_cron_job_log set
   `;
   let updateFldNum = 0;
-  if (input.cron_job_id !== undefined) {
+  if (input.cron_job_id != null) {
     if (input.cron_job_id != oldModel.cron_job_id) {
       sql += `cron_job_id = ${ args.push(input.cron_job_id) },`;
       updateFldNum++;
     }
   }
-  if (input.exec_state !== undefined) {
+  if (input.exec_state != null) {
     if (input.exec_state != oldModel.exec_state) {
       sql += `exec_state = ${ args.push(input.exec_state) },`;
       updateFldNum++;
     }
   }
-  if (input.exec_result !== undefined) {
+  if (input.exec_result != null) {
     if (input.exec_result != oldModel.exec_result) {
       sql += `exec_result = ${ args.push(input.exec_result) },`;
       updateFldNum++;
     }
   }
-  if (input.begin_time !== undefined) {
+  if (input.begin_time != null) {
     if (input.begin_time != oldModel.begin_time) {
       sql += `begin_time = ${ args.push(input.begin_time) },`;
       updateFldNum++;
     }
   }
-  if (input.end_time !== undefined) {
+  if (input.end_time != null) {
     if (input.end_time != oldModel.end_time) {
       sql += `end_time = ${ args.push(input.end_time) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
@@ -1049,7 +1172,7 @@ export async function updateById(
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -1077,19 +1200,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: CronJobLogId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
   const method = "deleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1128,19 +1254,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: CronJobLogId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
   const method = "revertByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
@@ -1190,19 +1319,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CronJobLogId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "cron_cron_job_log";
   const method = "forceDeleteByIds";
   
-  let msg = `${ table }.${ method }: `;
-  if (ids) {
-    msg += `ids:${ JSON.stringify(ids) } `;
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
   }
-  if (options && Object.keys(options).length > 0){
-    msg += `options:${ JSON.stringify(options) } `;
-  }
-  log(msg);
   
   if (!ids || !ids.length) {
     return 0;
