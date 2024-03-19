@@ -148,6 +148,18 @@ pub struct LoginLogFieldComment {
   pub create_time: String,
   /// 创建时间
   pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]
@@ -176,6 +188,15 @@ pub struct LoginLogSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<Vec<UsrId>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 impl std::fmt::Debug for LoginLogSearch {
@@ -223,6 +244,17 @@ impl std::fmt::Debug for LoginLogSearch {
     // 创建时间
     if let Some(ref create_time) = self.create_time {
       item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
     }
     item.finish()
   }
@@ -319,6 +351,10 @@ impl From<LoginLogInput> for LoginLogSearch {
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| vec![x, x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

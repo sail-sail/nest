@@ -348,14 +348,18 @@ pub struct <#=tableUP#>Model {<#
   if (hasCreateUsrId) {
   #>
   /// 创建人<#
-  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "create_usr_id").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
   #>
   pub create_usr_id: UsrId,
   /// 创建人<#
-  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "create_usr_id").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
@@ -366,14 +370,18 @@ pub struct <#=tableUP#>Model {<#
   if (hasCreateTime) {
   #>
   /// 创建时间<#
-  if (!columns.some((column) => column.COLUMN_NAME === "create_time")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "create_time")
+    || columns.find((column) => column.COLUMN_NAME === "create_time").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
   #>
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间<#
-  if (!columns.some((column) => column.COLUMN_NAME === "create_time")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "create_time")
+    || columns.find((column) => column.COLUMN_NAME === "create_time").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
@@ -384,14 +392,18 @@ pub struct <#=tableUP#>Model {<#
   if (hasUpdateUsrId) {
   #>
   /// 更新人<#
-  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "update_usr_id").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
   #>
   pub update_usr_id: UsrId,
   /// 更新人<#
-  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "update_usr_id").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
@@ -402,14 +414,18 @@ pub struct <#=tableUP#>Model {<#
   if (hasUpdateTime) {
   #>
   /// 更新时间<#
-  if (!columns.some((column) => column.COLUMN_NAME === "update_time")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "update_time")
+    || columns.find((column) => column.COLUMN_NAME === "update_time").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
   #>
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间<#
-  if (!columns.some((column) => column.COLUMN_NAME === "update_time")) {
+  if (!columns.some((column) => column.COLUMN_NAME === "update_time")
+    || columns.find((column) => column.COLUMN_NAME === "update_time").onlyCodegenDeno
+  ) {
   #>
   #[graphql(skip)]<#
   }
@@ -893,13 +909,13 @@ pub struct <#=tableUP#>FieldComment {<#
       || data_type === "date" || data_type === "datetime"
     ) {
   #>
-  /// <#=column_comment#>
-  pub <#=column_name_rust#>: String,<#
+  /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
   }
   #>
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>

@@ -217,13 +217,62 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
+  {
+    let update_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.update_usr_id.clone(),
+      None => None,
+    };
+    if let Some(update_usr_id) = update_usr_id {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += " and update_usr_id_lbl.id is null";
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+    }
+  }
   Ok(where_query)
 }
 
 async fn get_from_query() -> Result<String> {
   let from_query = r#"base_login_log t
     left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id"#.to_owned();
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -304,6 +353,7 @@ pub async fn find_all(
     select
       t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -456,6 +506,10 @@ pub async fn get_field_comments(
     "创建人".into(),
     "创建时间".into(),
     "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
   ];
   
   let map = n_route.n_batch(
@@ -480,6 +534,10 @@ pub async fn get_field_comments(
     create_usr_id_lbl: vec[6].to_owned(),
     create_time: vec[7].to_owned(),
     create_time_lbl: vec[8].to_owned(),
+    update_usr_id: vec[9].to_owned(),
+    update_usr_id_lbl: vec[10].to_owned(),
+    update_time: vec[11].to_owned(),
+    update_time_lbl: vec[12].to_owned(),
   };
   Ok(field_comments)
 }
@@ -967,6 +1025,18 @@ pub async fn create(
     sql_fields += ",ip";
     sql_values += ",?";
     args.push(ip.into());
+  }
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
+    sql_values += ",?";
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   
   let sql = format!(
