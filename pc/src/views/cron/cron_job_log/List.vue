@@ -53,8 +53,7 @@
           prop="exec_state"
         >
           <DictSelect
-            :model-value="exec_state_search"
-            @update:model-value="exec_state_search = $event"
+            v-model="exec_state_search"
             code="cron_job_log_exec_state"
             :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
             multiple
@@ -69,14 +68,10 @@
           prop="begin_time"
         >
           <CustomDatePicker
-            :set="search.begin_time = search.begin_time || [ ]"
             type="daterange"
-            :model-value="(search.begin_time as any)"
+            v-model="begin_time_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            @update:model-value="search.begin_time = $event"
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -734,6 +729,23 @@ const exec_state_search = $computed({
       search.exec_state = undefined;
     } else {
       search.exec_state = val;
+    }
+  },
+});
+
+// 开始时间
+const begin_time_search = $computed({
+  get() {
+    return search.begin_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.begin_time = undefined;
+    } else {
+      search.begin_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
     }
   },
 });
