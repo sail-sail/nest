@@ -133,11 +133,11 @@ async fn get_where_query(
     }
   }
   {
-    let state: Vec<BackgroundTaskState> = match &search {
-      Some(item) => item.state.clone().unwrap_or_default(),
-      None => Default::default(),
+    let state: Option<Vec<BackgroundTaskState>> = match &search {
+      Some(item) => item.state.clone(),
+      None => None,
     };
-    if !state.is_empty() {
+    if let Some(state) = state {
       let arg = {
         let mut items = Vec::with_capacity(state.len());
         for item in state {
@@ -150,11 +150,11 @@ async fn get_where_query(
     }
   }
   {
-    let r#type: Vec<BackgroundTaskType> = match &search {
-      Some(item) => item.r#type.clone().unwrap_or_default(),
-      None => Default::default(),
+    let r#type: Option<Vec<BackgroundTaskType>> = match &search {
+      Some(item) => item.r#type.clone(),
+      None => None,
     };
-    if !r#type.is_empty() {
+    if let Some(r#type) = r#type {
       let arg = {
         let mut items = Vec::with_capacity(r#type.len());
         for item in r#type {
@@ -272,11 +272,11 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let create_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.create_usr_id.clone(),
+      None => None,
     };
-    if !create_usr_id.is_empty() {
+    if let Some(create_usr_id) = create_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(create_usr_id.len());
         for item in create_usr_id {
@@ -319,11 +319,11 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let update_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.update_usr_id.clone(),
+      None => None,
     };
-    if !update_usr_id.is_empty() {
+    if let Some(update_usr_id) = update_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(update_usr_id.len());
         for item in update_usr_id {

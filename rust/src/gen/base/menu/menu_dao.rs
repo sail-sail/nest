@@ -91,11 +91,11 @@ async fn get_where_query(
     }
   }
   {
-    let parent_id: Vec<MenuId> = match &search {
-      Some(item) => item.parent_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let parent_id: Option<Vec<MenuId>> = match &search {
+      Some(item) => item.parent_id.clone(),
+      None => None,
     };
-    if !parent_id.is_empty() {
+    if let Some(parent_id) = parent_id {
       let arg = {
         let mut items = Vec::with_capacity(parent_id.len());
         for item in parent_id {
@@ -180,11 +180,11 @@ async fn get_where_query(
     }
   }
   {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
-      None => Default::default(),
+    let is_locked: Option<Vec<u8>> = match &search {
+      Some(item) => item.is_locked.clone(),
+      None => None,
     };
-    if !is_locked.is_empty() {
+    if let Some(is_locked) = is_locked {
       let arg = {
         let mut items = Vec::with_capacity(is_locked.len());
         for item in is_locked {
@@ -197,11 +197,11 @@ async fn get_where_query(
     }
   }
   {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
+    let is_enabled: Option<Vec<u8>> = match &search {
+      Some(item) => item.is_enabled.clone(),
+      None => None,
     };
-    if !is_enabled.is_empty() {
+    if let Some(is_enabled) = is_enabled {
       let arg = {
         let mut items = Vec::with_capacity(is_enabled.len());
         for item in is_enabled {
@@ -256,11 +256,11 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let create_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.create_usr_id.clone(),
+      None => None,
     };
-    if !create_usr_id.is_empty() {
+    if let Some(create_usr_id) = create_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(create_usr_id.len());
         for item in create_usr_id {
@@ -303,11 +303,11 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let update_usr_id: Option<Vec<UsrId>> = match &search {
+      Some(item) => item.update_usr_id.clone(),
+      None => None,
     };
-    if !update_usr_id.is_empty() {
+    if let Some(update_usr_id) = update_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(update_usr_id.len());
         for item in update_usr_id {

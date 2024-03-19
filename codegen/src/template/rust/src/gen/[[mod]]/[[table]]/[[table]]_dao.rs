@@ -561,11 +561,11 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type !== "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {
@@ -589,11 +589,11 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {
@@ -633,11 +633,11 @@ async fn get_where_query(
       }
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=enumColumnName#>> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {

@@ -30,12 +30,13 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   }
   
   let sql = format!(
-    r#"select
+    r#"select distinct
       t.id,
       t.parent_id,
       t.lbl,
       t.route_path,
-      t.route_query
+      t.route_query,
+      t.order_by
     from {table} t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
@@ -53,8 +54,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     where
       t.is_deleted = 0
       and t.is_enabled = 1
-      {where_query}
-    order by t.order_by asc"#,
+      {where_query}"#,
   );
   
   let args = args.into();
@@ -67,11 +67,13 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let options = options.into();
   
-  let res: Vec<GetMenus> = query(
+  let mut res: Vec<GetMenus> = query(
     sql,
     args,
     options,
   ).await?;
+  
+  res.sort_by(|a, b| a.order_by.cmp(&b.order_by));
   
   Ok(res)
 }
