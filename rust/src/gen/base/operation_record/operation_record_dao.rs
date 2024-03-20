@@ -45,19 +45,19 @@ use crate::gen::base::usr::usr_model::UsrId;
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<OperationRecordSearch>,
-  options: Option<Options>,
+  search: Option<&OperationRecordSearch>,
+  options: Option<&Options>,
 ) -> Result<String> {
-  let is_deleted = search.as_ref()
+  let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
-  let mut where_query = String::new();
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   where_query += " t.is_deleted = ?";
   args.push(is_deleted.into());
   {
-    let id = match &search {
-      Some(item) => &item.id,
-      None => &None,
+    let id = match search {
+      Some(item) => item.id.as_ref(),
+      None => None,
     };
     let id = match id {
       None => None,
@@ -72,11 +72,11 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<OperationRecordId> = match &search {
-      Some(item) => item.ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let ids: Option<Vec<OperationRecordId>> = match search {
+      Some(item) => item.ids.clone(),
+      None => None,
     };
-    if !ids.is_empty() {
+    if let Some(ids) = ids {
       let arg = {
         let mut items = Vec::with_capacity(ids.len());
         for id in ids {
@@ -90,7 +90,7 @@ async fn get_where_query(
   }
   {
     let tenant_id = {
-      let tenant_id = match &search {
+      let tenant_id = match search {
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
@@ -109,14 +109,14 @@ async fn get_where_query(
     }
   }
   {
-    let module = match &search {
+    let module = match search {
       Some(item) => item.module.clone(),
       None => None,
     };
     if let Some(module) = module {
       where_query += &format!(" and t.module = {}", args.push(module.into()));
     }
-    let module_like = match &search {
+    let module_like = match search {
       Some(item) => item.module_like.clone(),
       None => None,
     };
@@ -130,14 +130,14 @@ async fn get_where_query(
     }
   }
   {
-    let module_lbl = match &search {
+    let module_lbl = match search {
       Some(item) => item.module_lbl.clone(),
       None => None,
     };
     if let Some(module_lbl) = module_lbl {
       where_query += &format!(" and t.module_lbl = {}", args.push(module_lbl.into()));
     }
-    let module_lbl_like = match &search {
+    let module_lbl_like = match search {
       Some(item) => item.module_lbl_like.clone(),
       None => None,
     };
@@ -151,14 +151,14 @@ async fn get_where_query(
     }
   }
   {
-    let method = match &search {
+    let method = match search {
       Some(item) => item.method.clone(),
       None => None,
     };
     if let Some(method) = method {
       where_query += &format!(" and t.method = {}", args.push(method.into()));
     }
-    let method_like = match &search {
+    let method_like = match search {
       Some(item) => item.method_like.clone(),
       None => None,
     };
@@ -172,14 +172,14 @@ async fn get_where_query(
     }
   }
   {
-    let method_lbl = match &search {
+    let method_lbl = match search {
       Some(item) => item.method_lbl.clone(),
       None => None,
     };
     if let Some(method_lbl) = method_lbl {
       where_query += &format!(" and t.method_lbl = {}", args.push(method_lbl.into()));
     }
-    let method_lbl_like = match &search {
+    let method_lbl_like = match search {
       Some(item) => item.method_lbl_like.clone(),
       None => None,
     };
@@ -193,14 +193,14 @@ async fn get_where_query(
     }
   }
   {
-    let lbl = match &search {
+    let lbl = match search {
       Some(item) => item.lbl.clone(),
       None => None,
     };
     if let Some(lbl) = lbl {
       where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
     }
-    let lbl_like = match &search {
+    let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
@@ -214,7 +214,7 @@ async fn get_where_query(
     }
   }
   {
-    let time: Vec<u32> = match &search {
+    let time: Vec<u32> = match search {
       Some(item) => item.time.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -235,14 +235,14 @@ async fn get_where_query(
     }
   }
   {
-    let old_data = match &search {
+    let old_data = match search {
       Some(item) => item.old_data.clone(),
       None => None,
     };
     if let Some(old_data) = old_data {
       where_query += &format!(" and t.old_data = {}", args.push(old_data.into()));
     }
-    let old_data_like = match &search {
+    let old_data_like = match search {
       Some(item) => item.old_data_like.clone(),
       None => None,
     };
@@ -256,14 +256,14 @@ async fn get_where_query(
     }
   }
   {
-    let new_data = match &search {
+    let new_data = match search {
       Some(item) => item.new_data.clone(),
       None => None,
     };
     if let Some(new_data) = new_data {
       where_query += &format!(" and t.new_data = {}", args.push(new_data.into()));
     }
-    let new_data_like = match &search {
+    let new_data_like = match search {
       Some(item) => item.new_data_like.clone(),
       None => None,
     };
@@ -277,7 +277,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Option<Vec<UsrId>> = match &search {
+    let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
       None => None,
     };
@@ -294,7 +294,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_is_null: bool = match &search {
+    let create_usr_id_is_null: bool = match search {
       Some(item) => item.create_usr_id_is_null.unwrap_or(false),
       None => false,
     };
@@ -303,7 +303,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+    let create_time: Vec<chrono::NaiveDateTime> = match search {
       Some(item) => item.create_time.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -324,7 +324,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Option<Vec<UsrId>> = match &search {
+    let update_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.update_usr_id.clone(),
       None => None,
     };
@@ -341,7 +341,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_is_null: bool = match &search {
+    let update_usr_id_is_null: bool = match search {
       Some(item) => item.update_usr_id_is_null.unwrap_or(false),
       None => false,
     };
@@ -350,7 +350,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+    let update_time: Vec<chrono::NaiveDateTime> = match search {
       Some(item) => item.update_time.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -373,7 +373,12 @@ async fn get_where_query(
   Ok(where_query)
 }
 
-async fn get_from_query() -> Result<String> {
+#[allow(unused_variables)]
+async fn get_from_query(
+  args: &mut QueryArgs,
+  search: Option<&OperationRecordSearch>,
+  options: Option<&Options>,
+) -> Result<String> {
   let from_query = r#"base_operation_record t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
@@ -434,8 +439,8 @@ pub async fn find_all(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search, options.clone()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "create_time") {
@@ -527,8 +532,8 @@ pub async fn find_count(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search, options.clone()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"
     select
