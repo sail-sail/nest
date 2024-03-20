@@ -303,7 +303,7 @@ impl Ctx {
         } else {
           // 双引号开始并且双引号结束的用 info! 宏打印
           let msg = format!("{:#?}", err);
-          if msg.starts_with("\"") && msg.ends_with("\"") {
+          if msg.starts_with('"') && msg.ends_with('"') {
             info!(
               "{} {}",
               self.req_id,
@@ -354,7 +354,7 @@ impl Ctx {
       } else {
         // 双引号开始并且双引号结束的用 info! 宏打印
         let msg = format!("{:#?}", err);
-        if msg.starts_with("\"") && msg.ends_with("\"") {
+        if msg.starts_with('"') && msg.ends_with('"') {
           info!(
             "{} {}",
             self.req_id,

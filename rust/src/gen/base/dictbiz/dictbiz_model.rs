@@ -422,13 +422,13 @@ impl From<DictbizModel> for DictbizInput {
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
       // 创建时间
-      create_time: model.create_time.into(),
+      create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
-      update_time: model.update_time.into(),
+      update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
       // 业务字典明细
       dictbiz_detail_models: model.dictbiz_detail_models
