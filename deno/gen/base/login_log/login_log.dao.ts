@@ -173,7 +173,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_login_log t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id

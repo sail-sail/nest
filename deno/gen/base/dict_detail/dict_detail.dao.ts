@@ -187,7 +187,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_dict_detail t
     left join base_dict dict_id_lbl
       on dict_id_lbl.id = t.dict_id
