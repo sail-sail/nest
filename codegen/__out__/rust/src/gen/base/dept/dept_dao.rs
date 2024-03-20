@@ -56,15 +56,14 @@ use crate::gen::base::usr::usr_model::UsrId;
 async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<DeptSearch>,
+  options: Option<Options>,
 ) -> Result<String> {
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);
   let mut where_query = String::new();
-  {
-    let is_deleted = search.as_ref()
-      .and_then(|item| item.is_deleted)
-      .unwrap_or(0);
-    where_query += " t.is_deleted = ?";
-    args.push(is_deleted.into());
-  }
+  where_query += " t.is_deleted = ?";
+  args.push(is_deleted.into());
   {
     let id = match &search {
       Some(item) => &item.id,
@@ -471,7 +470,7 @@ pub async fn find_all(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let where_query = get_where_query(&mut args, search, options.clone()).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "order_by") {
@@ -598,7 +597,7 @@ pub async fn find_count(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let where_query = get_where_query(&mut args, search, options.clone()).await?;
   
   let sql = format!(r#"
     select
