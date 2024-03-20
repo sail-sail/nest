@@ -209,7 +209,7 @@ async function getFromQuery(
 export async function findCount(
   search?: MenuSearch,
   options?: {
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_menu";

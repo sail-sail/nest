@@ -225,7 +225,10 @@
                   <span>{{ ns('关闭其它') }}</span>
                 </el-dropdown-item>
                 
-                <el-dropdown-item @click="clearCacheEfc">
+                <el-dropdown-item
+                  v-if="usrStore.username === 'admin'"
+                  @click="clearCacheEfc"
+                >
                   <ElIcon>
                     <ElIconDelete />
                   </ElIcon>
