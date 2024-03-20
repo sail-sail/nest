@@ -227,7 +227,7 @@
                 
                 <el-dropdown-item
                   v-if="usrStore.username === 'admin'"
-                  @click="clearCacheEfc"
+                  @click="onClearCache"
                 >
                   <ElIcon>
                     <ElIconDelete />
@@ -507,16 +507,25 @@ function closeOtherTabs() {
 }
 
 // 清空缓存
-async function clearCacheEfc() {
+async function onClearCache() {
+  try {
+    await ElMessageBox.confirm(await nsAsync("确定清空缓存?"), await nsAsync("提示"), {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
+      type: "warning",
+    });
+  } catch (err) {
+    return;
+  }
   await clearCache();
-  ElMessage.success("清空缓存成功!");
+  window.location.reload();
 }
 
 async function logoutClk() {
   try {
-    await ElMessageBox.confirm("确定退出登录?", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(await nsAsync("确定退出登录?"), await nsAsync("提示"), {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
       type: "warning",
     });
   } catch (err) {
