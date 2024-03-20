@@ -31,20 +31,15 @@ pub struct SortInput {
   pub order: String,
 }
 
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Enum, Default, Copy, Clone, Eq, PartialEq, Debug)]
 pub enum UniqueType {
   #[graphql(name = "throw")]
+  #[default]
   Throw,
   #[graphql(name = "update")]
   Update,
   #[graphql(name = "ignore")]
   Ignore,
-}
-
-impl Default for UniqueType {
-  fn default() -> Self {
-    UniqueType::Throw
-  }
 }
 
 #[derive(Clone, Debug)]

@@ -1623,7 +1623,7 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       if (hasCreateTime) {
       #>
       // 创建时间
-      create_time: model.create_time.into(),
+      create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),<#
       }
       #><#
@@ -1637,7 +1637,7 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       if (hasUpdateTime) {
       #>
       // 更新时间
-      update_time: model.update_time.into(),
+      update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),<#
       }
       #><#
