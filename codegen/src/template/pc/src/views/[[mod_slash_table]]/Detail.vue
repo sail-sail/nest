@@ -236,6 +236,7 @@ const old_table = table;
           const readonlyPlaceholder = column.readonlyPlaceholder;
           const modelLabel = column.modelLabel;
           if (column.inlineMany2manyTab) continue;
+          const isPassword = column.isPassword;
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -662,7 +663,13 @@ const old_table = table;
             ></CustomInputNumber><#
             } else {
             #>
-            <CustomInput
+            <CustomInput<#
+              if (isPassword) {
+              #>
+              type="password"
+              show-password<#
+              }
+              #>
               v-model="dialogModel.<#=column_name#>"<#
               if (column.isTextarea) {
               #>
@@ -803,6 +810,7 @@ const old_table = table;
                 const width = (column.width || 180) + 38;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
+                const isPassword = column.isPassword;
               #>
               
               <el-table-column
@@ -1104,7 +1112,13 @@ const old_table = table;
                     ></CustomInputNumber><#
                     } else {
                     #>
-                    <CustomInput
+                    <CustomInput<#
+                      if (isPassword) {
+                      #>
+                      type="password"
+                      show-password<#
+                      }
+                      #>
                       v-model="row.<#=column_name#>"
                       placeholder=" "<#
                       if (column.readonly) {
@@ -1292,6 +1306,7 @@ const old_table = table;
                 if (many2many.column1 === column_name) {
                   continue;
                 }
+                const isPassword = column.isPassword;
               #><#
                 if (many2many.column2 !== column_name) {
               #>
@@ -1595,7 +1610,13 @@ const old_table = table;
                     ></CustomInputNumber><#
                     } else {
                     #>
-                    <CustomInput
+                    <CustomInput<#
+                      if (isPassword) {
+                      #>
+                      type="password"
+                      show-password<#
+                      }
+                      #>
                       v-model="row.<#=column_name#>"
                       placeholder=" "<#
                       if (column.readonly) {
