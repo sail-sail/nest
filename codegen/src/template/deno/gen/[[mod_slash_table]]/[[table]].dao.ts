@@ -2582,7 +2582,7 @@ export async function findSummary(
       }
       #>
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
     where
       ${ await getWhereQuery(args, search, options) }
   `;
