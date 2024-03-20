@@ -121,6 +121,8 @@
             prop="password"
           >
             <CustomInput
+              type="password"
+              show-password
               v-model="dialogModel.password"
               :placeholder="`${ ns('请输入') } ${ n('密码') }`"
               :readonly="isLocked || isReadonly"
