@@ -33,6 +33,7 @@ use super::gql::model::{SortInput, PageInput};
 pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
 
+use crate::common::exceptions::service_exception::ServiceException;
 use crate::gen::base::usr::usr_model::UsrId;
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::org::org_model::OrgId;
@@ -292,12 +293,31 @@ impl Ctx {
         .fetch_one("select connection_id()").await?
         .try_get(0)?;
       if let Err(err) = res {
-        error!(
-          "{req_id} {err_msg}",
-          req_id = self.req_id,
-          err_msg = err.to_string(),
-        );
-        let rollback = match err.downcast_ref::<crate::common::exceptions::service_exception::ServiceException>() {
+        let exception = err.downcast_ref::<ServiceException>();
+        if exception.is_some() {
+          info!(
+            "{} {}",
+            self.req_id,
+            err,
+          );
+        } else {
+          // 双引号开始并且双引号结束的用 info! 宏打印
+          let msg = format!("{:#?}", err);
+          if msg.starts_with("\"") && msg.ends_with("\"") {
+            info!(
+              "{} {}",
+              self.req_id,
+              err,
+            );
+          } else {
+            error!(
+              "{} {:#?}",
+              self.req_id,
+              err,
+            );
+          }
+        }
+        let rollback = match exception {
           Some(err) => err.rollback,
           None => true,
         };
@@ -324,11 +344,30 @@ impl Ctx {
       return res;
     }
     if let Err(err) = res {
-      error!(
-        "{req_id} {err_msg}",
-        req_id = self.req_id,
-        err_msg = err.to_string(),
-      );
+      let exception = err.downcast_ref::<ServiceException>();
+      if exception.is_some() {
+        info!(
+          "{} {}",
+          self.req_id,
+          err,
+        );
+      } else {
+        // 双引号开始并且双引号结束的用 info! 宏打印
+        let msg = format!("{:#?}", err);
+        if msg.starts_with("\"") && msg.ends_with("\"") {
+          info!(
+            "{} {}",
+            self.req_id,
+            err,
+          );
+        } else {
+          error!(
+            "{} {:#?}",
+            self.req_id,
+            err,
+          );
+        }
+      }
       return Err(err);
     }
     res
@@ -434,12 +473,7 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        tran.execute(query).await
-          .map_err(|e| {
-            let err_msg = format!("{} {}", self.req_id, e);
-            error!("{}", err_msg);
-            anyhow::anyhow!(err_msg)
-          })?
+        tran.execute(query).await?
       };
       let rows_affected = res.rows_affected();
       if rows_affected > 0 {
@@ -652,12 +686,7 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        query.fetch_all((*tran).as_mut()).await
-          .map_err(|e| {
-            let err_msg = format!("{} {}", self.req_id, e);
-            error!("{}", err_msg);
-            anyhow::anyhow!(err_msg)
-          })?
+        query.fetch_all((*tran).as_mut()).await?
       };
       
       if let Some(options) = &options {
@@ -858,12 +887,7 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        query.fetch_optional((*tran).as_mut()).await
-          .map_err(|e| {
-            let err_msg = format!("{} {}", self.req_id, e);
-            error!("{}", err_msg);
-            anyhow::anyhow!(err_msg)
-          })?
+        query.fetch_optional((*tran).as_mut()).await?
       };
       if let Some(res) = &res {
         if let Some(options) = &options {
