@@ -949,7 +949,7 @@ async function getFromQuery(
     #>
   },
 ) {<#
-  if (hasIsDeleted) {
+  if (hasIsDeleted && hasMany2many) {
   #>
   const is_deleted = search?.is_deleted ?? 0;<#
   }

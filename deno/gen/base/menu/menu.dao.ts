@@ -190,7 +190,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
