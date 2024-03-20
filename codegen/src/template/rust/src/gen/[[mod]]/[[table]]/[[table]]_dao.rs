@@ -320,12 +320,12 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<<#=tableUP#>Search>,
-  options: Option<Options>,
+  search: Option<&<#=tableUP#>Search>,
+  options: Option<&Options>,
 ) -> Result<String> {<#
   if (hasIsDeleted) {
   #>
-  let is_deleted = search.as_ref()
+  let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);<#
   }
@@ -353,7 +353,7 @@ async fn get_where_query(
     .is_some();<#
   }
   #>
-  let mut where_query = String::new();<#
+  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
   if (hasIsDeleted) {
   #>
   where_query += " t.is_deleted = ?";
@@ -361,9 +361,9 @@ async fn get_where_query(
   }
   #>
   {
-    let id = match &search {
-      Some(item) => &item.id,
-      None => &None,
+    let id = match search {
+      Some(item) => item.id.as_ref(),
+      None => None,
     };
     let id = match id {
       None => None,
@@ -378,11 +378,11 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<<#=Table_Up#>Id> = match &search {
-      Some(item) => item.ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let ids: Option<Vec<<#=Table_Up#>Id>> = match search {
+      Some(item) => item.ids.clone(),
+      None => None,
     };
-    if !ids.is_empty() {
+    if let Some(ids) = ids {
       let arg = {
         let mut items = Vec::with_capacity(ids.len());
         for id in ids {
@@ -431,7 +431,7 @@ async fn get_where_query(
   #>
   {
     let tenant_id = {
-      let tenant_id = match &search {
+      let tenant_id = match search {
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
@@ -455,7 +455,7 @@ async fn get_where_query(
   #>
   {
     let org_id = {
-      let org_id = match &search {
+      let org_id = match search {
         Some(item) => item.org_id.clone(),
         None => None,
       };
@@ -546,7 +546,7 @@ async fn get_where_query(
     ].includes(column_name)) {
   #>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => Default::default(),
     };
@@ -565,7 +565,7 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type !== "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -582,7 +582,7 @@ async fn get_where_query(
     }
   }
   {
-    let <#=column_name#>_is_null: bool = match &search {
+    let <#=column_name#>_is_null: bool = match search {
       Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
       None => false,
     };
@@ -593,7 +593,7 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -610,7 +610,7 @@ async fn get_where_query(
     }
   }
   {
-    let <#=column_name#>_is_null: bool = match &search {
+    let <#=column_name#>_is_null: bool = match search {
       Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
       None => false,
     };
@@ -637,7 +637,7 @@ async fn get_where_query(
       }
   #>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -656,7 +656,7 @@ async fn get_where_query(
     } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -667,7 +667,7 @@ async fn get_where_query(
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -698,14 +698,14 @@ async fn get_where_query(
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
-    let <#=column_name#>_like = match &search {
+    let <#=column_name#>_like = match search {
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
@@ -721,7 +721,7 @@ async fn get_where_query(
     } else {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -736,11 +736,24 @@ async fn get_where_query(
   Ok(where_query)
 }
 
-async fn get_from_query() -> Result<String> {<#
+#[allow(unused_variables)]
+async fn get_from_query(
+  args: &mut QueryArgs,
+  search: Option<&<#=tableUP#>Search>,
+  options: Option<&Options>,
+) -> Result<String> {<#
+  if (hasIsDeleted && hasMany2many) {
+  #>
+  let is_deleted = search
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
     get_route_path(),
+    options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
     .any(|item| item.type === "create_usr")
@@ -764,6 +777,7 @@ async fn get_from_query() -> Result<String> {<#
   #> mut<#
   }
   #> from_query = r#"<#=mod#>_<#=table#> t<#
+    let fromQueryIsDeletedNum = 0;
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -779,11 +793,21 @@ async fn get_from_query() -> Result<String> {<#
       if (foreignKey && foreignKey.type === "many2many") {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id<#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
+      }
+      #>
     left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = ?<#
+      }
+      #>
     left join (
       select
         json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
@@ -796,11 +820,15 @@ async fn get_from_query() -> Result<String> {<#
       from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
         on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-        and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
         on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
-      where
-        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+      where<#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
+      }
+      #>
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
@@ -812,6 +840,13 @@ async fn get_from_query() -> Result<String> {<#
     #><#
     }
     #>"#.to_owned();<#
+  if (hasIsDeleted && hasMany2many) {
+    for (let i = 0; i < fromQueryIsDeletedNum; i++) {
+  #>
+  args.push(is_deleted.into());<#
+    }
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && has_dept_permit {
@@ -887,8 +922,8 @@ pub async fn find_all(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search, options.clone()).await?;<#
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
   if (hasCreateTime || opts?.defaultSort) {
   #>
   
@@ -1271,8 +1306,8 @@ pub async fn find_count(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search, options.clone()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"
     select

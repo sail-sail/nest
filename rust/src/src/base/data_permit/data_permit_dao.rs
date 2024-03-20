@@ -24,7 +24,7 @@ use crate::gen::base::usr::usr_dao::{
 #[allow(dead_code)]
 pub async fn get_data_permits(
   route_path: String,
-  options: Option<Options>,
+  options: Option<&Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
   let has_data_permits = options
