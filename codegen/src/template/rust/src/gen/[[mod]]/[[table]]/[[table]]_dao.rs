@@ -321,11 +321,20 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
 ) -> Result<String> {<#
+  if (hasIsDeleted) {
+  #>
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
     get_route_path(),
+    options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
     .any(|item| item.type === "create_usr")
@@ -347,13 +356,8 @@ async fn get_where_query(
   let mut where_query = String::new();<#
   if (hasIsDeleted) {
   #>
-  {
-    let is_deleted = search.as_ref()
-      .and_then(|item| item.is_deleted)
-      .unwrap_or(0);
-    where_query += " t.is_deleted = ?";
-    args.push(is_deleted.into());
-  }<#
+  where_query += " t.is_deleted = ?";
+  args.push(is_deleted.into());<#
   }
   #>
   {
@@ -884,7 +888,7 @@ pub async fn find_all(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;<#
+  let where_query = get_where_query(&mut args, search, options.clone()).await?;<#
   if (hasCreateTime || opts?.defaultSort) {
   #>
   
@@ -1268,7 +1272,7 @@ pub async fn find_count(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let where_query = get_where_query(&mut args, search, options.clone()).await?;
   
   let sql = format!(r#"
     select
