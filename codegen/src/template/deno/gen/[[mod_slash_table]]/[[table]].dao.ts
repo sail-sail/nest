@@ -949,7 +949,7 @@ async function getFromQuery(
     #>
   },
 ) {<#
-  if (hasIsDeleted) {
+  if (hasIsDeleted && hasMany2many) {
   #>
   const is_deleted = search?.is_deleted ?? 0;<#
   }
@@ -2582,7 +2582,7 @@ export async function findSummary(
       }
       #>
     from
-      ${ await getFromQuery(options) }
+      ${ await getFromQuery(args, search, options) }
     where
       ${ await getWhereQuery(args, search, options) }
   `;
