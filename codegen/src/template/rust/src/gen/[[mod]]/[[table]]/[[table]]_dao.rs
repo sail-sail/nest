@@ -6,7 +6,26 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
-const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
+const hasMany2manyNotInline = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
+    return true;
+  }
+  return false;
+});
+const hasMany2many = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many") {
+    return true;
+  }
+  return false;
+});
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
@@ -87,8 +106,9 @@ if (hasIsMonth) {
 use chrono::Datelike;<#
 }
 #>
+#[allow(unused_imports)]
 use crate::common::util::string::*;<#
-if (hasMany2many) {
+if (hasMany2manyNotInline) {
 #>
 
 use crate::common::util::dao::{
@@ -106,6 +126,7 @@ use crate::common::util::dao::encrypt;<#
 if (hasDataPermit()) {
 #>
 
+#[allow(unused_imports)]
 use crate::gen::base::data_permit::data_permit_model::{
   DataPermitType,
   DataPermitScope,
@@ -520,6 +541,9 @@ async fn get_where_query(
     let column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
       continue;
     }
     let selectList = [ ];
@@ -2093,8 +2117,7 @@ pub async fn set_id_by_lbl(
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }<#
   dictBizNumMap[column_name] = dictBizNum.toString();
@@ -2683,6 +2706,7 @@ pub async fn create(
     const many2many = column.many2many;
   #><#
   if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
   #>
   
   // <#=column_comment#>
@@ -3291,10 +3315,6 @@ pub async fn update_by_id(
   }<#
   }
   #><#
-  if (hasMany2many) {
-  #>
-  
-  let mut field_num = 0;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3316,6 +3336,7 @@ pub async fn update_by_id(
     const many2many = column.many2many;
   #><#
   if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
   #>
   
   // <#=column_comment#>
@@ -3354,8 +3375,6 @@ pub async fn update_by_id(
       ).await?;
     }
   }<#
-  }
-  #><#
     if (mod === "base" && table === "i18n") {
   #>
   
@@ -3966,8 +3985,12 @@ pub async fn force_delete_by_ids(
     
     let model = find_all(
       <#=tableUP#>Search {
-        id: id.clone().into(),
-        is_deleted: 1.into(),
+        id: id.clone().into(),<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 1.into(),<#
+        }
+        #>
         ..Default::default()
       }.into(),
       None,

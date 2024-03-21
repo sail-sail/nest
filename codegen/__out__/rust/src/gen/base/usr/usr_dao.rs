@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use tracing::{info, error};
 use crate::common::auth::auth_dao::get_password;
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -1956,8 +1957,6 @@ pub async fn update_by_id(
     ).await?;
     
   }
-  
-  let mut field_num = 0;
   
   // 所属组织
   if let Some(org_ids) = input.org_ids {

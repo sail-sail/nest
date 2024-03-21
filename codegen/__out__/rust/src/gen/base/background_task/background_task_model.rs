@@ -589,9 +589,10 @@ impl<'r> sqlx::Decode<'r, MySql> for BackgroundTaskId {
 }
 
 /// 后台任务状态
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum BackgroundTaskState {
   /// 运行中
+  #[default]
   #[graphql(name="running")]
   Running,
   /// 成功
@@ -644,12 +645,6 @@ impl From<BackgroundTaskState> for ArgType {
   }
 }
 
-impl Default for BackgroundTaskState {
-  fn default() -> Self {
-    Self::Running
-  }
-}
-
 impl FromStr for BackgroundTaskState {
   type Err = anyhow::Error;
   
@@ -697,9 +692,10 @@ impl TryFrom<String> for BackgroundTaskState {
 }
 
 /// 后台任务类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum BackgroundTaskType {
   /// 文本
+  #[default]
   #[graphql(name="text")]
   Text,
   /// 下载
@@ -749,12 +745,6 @@ impl From<BackgroundTaskType> for String {
 impl From<BackgroundTaskType> for ArgType {
   fn from(value: BackgroundTaskType) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for BackgroundTaskType {
-  fn default() -> Self {
-    Self::Text
   }
 }
 
