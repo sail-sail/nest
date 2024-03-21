@@ -2146,7 +2146,7 @@ impl <#=enumColumnName#> {
 impl TryFrom<String> for <#=enumColumnName#> {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {<#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;

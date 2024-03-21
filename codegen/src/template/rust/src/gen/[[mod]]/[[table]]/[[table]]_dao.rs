@@ -19,24 +19,50 @@ const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasDict = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
+  if (column.ignoreCodegen) return false;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
+  if (column_name === "id") return false;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) return false;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
   }
-  return column.dict;
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (!column.dict) return false;
+  return true;
 });
 const hasDictbiz = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
+  if (column.ignoreCodegen) return false;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
+  if (column_name === "id") return false;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) return false;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
   }
-  return column.dictbiz;
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (!column.dictbiz) return false;
+  return true;
 });
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
@@ -80,12 +106,17 @@ use crate::common::util::dao::encrypt;<#
 if (hasDataPermit()) {
 #>
 
-use crate::src::data_permit::data_permit_dao::get_data_permits;
-use crate::src::dept::dept_dao::{
+use crate::gen::base::data_permit::data_permit_model::{
+  DataPermitType,
+  DataPermitScope,
+};
+use crate::src::base::data_permit::data_permit_dao::get_data_permits;
+#[allow(unused_imports)]
+use crate::src::base::dept::dept_dao::{
   get_auth_dept_ids,
   get_auth_and_parents_dept_ids,
 };
-use crate::src::role::role_dao::get_auth_role_ids;<#
+use crate::src::base::role::role_dao::get_auth_role_ids;<#
 }
 #>
 
@@ -337,20 +368,15 @@ async fn get_where_query(
     options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
-    .any(|item| item.type === "create_usr")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
-    .any(|item| item.type === "role")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Role);
   let has_dept_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Dept);
   let has_dept_parent_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept_parent")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::DeptParent);
   let has_tenant_permit = data_permit_models.iter()
-    .any(|item| item.type === "tenant")
-    .is_some();<#
+    .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
   let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
@@ -397,14 +423,15 @@ async fn get_where_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_usr_permit {
+    let usr_id = get_auth_id().unwrap_or_default();
     where_query += " and t.create_usr_id = ?";
-    args.push(get_auth_id().into());
+    args.push(usr_id.into());
   } else if (!has_tenant_permit && has_dept_parent_permit)
     || (!has_tenant_permit && has_dept_permit)
   {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
     let arg = {
-      let mut dept_ids2 = Vec::with_capacity(dept_ids.len());
+      let mut items = Vec::with_capacity(dept_ids.len());
       for dept_id in dept_ids {
         args.push(dept_id.into());
         items.push("?");
@@ -756,20 +783,15 @@ async fn get_from_query(
     options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
-    .any(|item| item.type === "create_usr")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
-    .any(|item| item.type === "role")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Role);
   let has_dept_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Dept);
   let has_dept_parent_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept_parent")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::DeptParent);
   let has_tenant_permit = data_permit_models.iter()
-    .any(|item| item.type === "tenant")
-    .is_some();<#
+    .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
   let<#
@@ -1083,7 +1105,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictNum#>] = dict_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;<#
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
     if (hasDictbiz) {
@@ -1142,13 +1164,13 @@ pub async fn find_all(
       }
       if (!column.dictbiz) continue;
     #>
-    <#=column_name#>_dictbiz,<#
+    <#=column_name#>_dict,<#
     dictBizNum++;
     }
     #>
   ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dictbiz_vec.len() != 3"))?;<#
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -2062,7 +2084,7 @@ pub async fn set_id_by_lbl(
   
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
-    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum.toString()#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
       input.<#=column_name_rust#> = <#=column_name#>_dictbiz
         .iter()

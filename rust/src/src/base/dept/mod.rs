@@ -1,1 +1,1 @@
-mod dept_dao;
+pub mod dept_dao;

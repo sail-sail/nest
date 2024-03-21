@@ -678,7 +678,7 @@ impl BackgroundTaskState {
 impl TryFrom<String> for BackgroundTaskState {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "running" => Ok(Self::Running),
       "success" => Ok(Self::Success),
@@ -786,7 +786,7 @@ impl BackgroundTaskType {
 impl TryFrom<String> for BackgroundTaskType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "text" => Ok(Self::Text),
       "download" => Ok(Self::Download),

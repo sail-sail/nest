@@ -39,6 +39,7 @@
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
+    "rust-analyzer.showUnlinkedFileNotification": false
   }
 }
