@@ -224,7 +224,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `cron_cron_job t
     left join cron_job job_id_lbl
       on job_id_lbl.id = t.job_id
