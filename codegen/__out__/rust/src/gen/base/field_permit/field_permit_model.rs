@@ -501,9 +501,10 @@ impl<'r> sqlx::Decode<'r, MySql> for FieldPermitId {
 }
 
 /// 字段权限类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum FieldPermitType {
   /// 可改
+  #[default]
   #[graphql(name="editable")]
   Editable,
   /// 隐藏
@@ -547,12 +548,6 @@ impl From<FieldPermitType> for String {
 impl From<FieldPermitType> for ArgType {
   fn from(value: FieldPermitType) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for FieldPermitType {
-  fn default() -> Self {
-    Self::Editable
   }
 }
 

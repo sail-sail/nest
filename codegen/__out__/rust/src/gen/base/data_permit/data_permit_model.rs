@@ -481,7 +481,7 @@ impl<'r> sqlx::Decode<'r, MySql> for DataPermitId {
 }
 
 /// 数据权限范围
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitScope {
   /// 创建人
   #[graphql(name="create")]
@@ -496,6 +496,7 @@ pub enum DataPermitScope {
   #[graphql(name="role")]
   Role,
   /// 本租户
+  #[default]
   #[graphql(name="tenant")]
   Tenant,
 }
@@ -539,12 +540,6 @@ impl From<DataPermitScope> for String {
 impl From<DataPermitScope> for ArgType {
   fn from(value: DataPermitScope) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for DataPermitScope {
-  fn default() -> Self {
-    Self::Tenant
   }
 }
 
@@ -598,12 +593,13 @@ impl TryFrom<String> for DataPermitScope {
 }
 
 /// 数据权限类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitType {
   /// 只读
   #[graphql(name="readonly")]
   Readonly,
   /// 可改
+  #[default]
   #[graphql(name="editable")]
   Editable,
 }
@@ -638,12 +634,6 @@ impl From<DataPermitType> for String {
 impl From<DataPermitType> for ArgType {
   fn from(value: DataPermitType) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for DataPermitType {
-  fn default() -> Self {
-    Self::Editable
   }
 }
 

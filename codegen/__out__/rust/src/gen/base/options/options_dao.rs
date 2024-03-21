@@ -5,6 +5,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use tracing::{info, error};
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -1438,6 +1439,20 @@ pub async fn update_by_id(
       options,
     ).await?;
     
+  }
+  
+  if field_num > 0 {
+    let options = Options::from(None);
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
+      del_caches(
+        del_cache_key1s
+          .iter()
+          .map(|item| item.as_str())
+          .collect::<Vec<&str>>()
+          .as_slice()
+      ).await?;
+    }
   }
   
   Ok(id)

@@ -577,9 +577,10 @@ impl<'r> sqlx::Decode<'r, MySql> for DictbizId {
 }
 
 /// 业务字典数据类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DictbizType {
   /// 字符串
+  #[default]
   #[graphql(name="string")]
   String,
   /// 数值
@@ -641,12 +642,6 @@ impl From<DictbizType> for String {
 impl From<DictbizType> for ArgType {
   fn from(value: DictbizType) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for DictbizType {
-  fn default() -> Self {
-    Self::String
   }
 }
 

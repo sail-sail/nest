@@ -1725,6 +1725,8 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         if (column_name === "id") {
           continue;
         }
+        const isEncrypt = column.isEncrypt;
+        if (isEncrypt) continue;
       #><#
       if (foreignKey && foreignKey.multiple) {
       #>
@@ -1997,28 +1999,32 @@ for (let i = 0; i < columns.length; i++) {
     }),
   ];
   if (columnDictModels.length === 0) continue;
-  const columnDictDefault = column_default && columnDictModels.find(function(item) {
+  let columnDictDefault = column_default && columnDictModels.find(function(item) {
     return item.val === column_default;
   });
-  const require = column.require;
-  if (require && !columnDictDefault) {
-    throw `表: ${ mod }_${ table } 的字段: ${ column_name } 的默认值: ${ column_default } 在字典中不存在`;
-    process.exit(1);
+  if (!columnDictDefault) {
+    columnDictDefault = columnDictModels[0];
   }
+  const require = column.require;
 #>
 
 /// <#=table_comment#><#=column_comment#>
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum <#=enumColumnName#> {<#
   for (const columnDictModel of columnDictModels) {
     const val = columnDictModel.val;
     const lbl = columnDictModel.lbl;
     let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
     valUp = valUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
+      return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
     }).join("");
   #>
-  /// <#=lbl#>
+  /// <#=lbl#><#
+  if (columnDictDefault.val === val) {
+  #>
+  #[default]<#
+  }
+  #>
   #[graphql(name="<#=val#>")]
   <#=valUp#>,<#
   }
@@ -2033,7 +2039,7 @@ impl fmt::Display for <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       Self::<#=valUp#> => write!(f, "<#=val#>"),<#
@@ -2051,7 +2057,7 @@ impl From<<#=enumColumnName#>> for SmolStr {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
@@ -2069,7 +2075,7 @@ impl From<<#=enumColumnName#>> for String {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
@@ -2083,26 +2089,7 @@ impl From<<#=enumColumnName#>> for ArgType {
   fn from(value: <#=enumColumnName#>) -> Self {
     ArgType::SmolStr(value.into())
   }
-}<#
-if (columnDictDefault) {
-#>
-
-impl Default for <#=enumColumnName#> {
-  fn default() -> Self {<#
-    if (columnDictDefault) {
-      const val = columnDictDefault.val;
-      let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
-      valUp = valUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-    #>
-    Self::<#=valUp#><#
-    }
-    #>
-  }
-}<#
 }
-#>
 
 impl FromStr for <#=enumColumnName#> {
   type Err = anyhow::Error;
@@ -2114,7 +2101,7 @@ impl FromStr for <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       "<#=val#>" => Ok(Self::<#=valUp#>),<#
@@ -2133,7 +2120,7 @@ impl <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       Self::<#=valUp#> => "<#=val#>",<#
@@ -2153,7 +2140,7 @@ impl TryFrom<String> for <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       "<#=val#>" => Ok(Self::<#=valUp#>),<#

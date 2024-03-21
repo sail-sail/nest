@@ -5,6 +5,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use tracing::{info, error};
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -1760,8 +1761,6 @@ pub async fn update_by_id(
       input.menu_ids.unwrap(),
     ).await?.into();
   }
-  
-  let mut field_num = 0;
   
   // 菜单权限
   if let Some(menu_ids) = input.menu_ids {

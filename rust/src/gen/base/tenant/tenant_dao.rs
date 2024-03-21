@@ -5,6 +5,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use tracing::{info, error};
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -1554,8 +1555,6 @@ pub async fn update_by_id(
     ).await?;
     
   }
-  
-  let mut field_num = 0;
   
   // 所属域名
   if let Some(domain_ids) = input.domain_ids {

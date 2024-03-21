@@ -558,9 +558,10 @@ impl<'r> sqlx::Decode<'r, MySql> for DictId {
 }
 
 /// 系统字典数据类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DictType {
   /// 字符串
+  #[default]
   #[graphql(name="string")]
   String,
   /// 数值
@@ -622,12 +623,6 @@ impl From<DictType> for String {
 impl From<DictType> for ArgType {
   fn from(value: DictType) -> Self {
     ArgType::SmolStr(value.into())
-  }
-}
-
-impl Default for DictType {
-  fn default() -> Self {
-    Self::String
   }
 }
 

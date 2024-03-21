@@ -5,6 +5,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use tracing::{info, error};
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -1690,8 +1691,6 @@ pub async fn update_by_id(
     ).await?;
     
   }
-  
-  let mut field_num = 0;
   
   // 部门负责人
   if let Some(usr_ids) = input.usr_ids {
