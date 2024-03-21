@@ -174,7 +174,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_field_permit t
     left join base_menu menu_id_lbl
       on menu_id_lbl.id = t.menu_id
