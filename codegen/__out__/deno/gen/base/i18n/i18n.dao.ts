@@ -178,7 +178,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_i18n t
     left join base_lang lang_id_lbl
       on lang_id_lbl.id = t.lang_id
