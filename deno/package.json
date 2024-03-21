@@ -26,6 +26,6 @@
     "graphql": "16.8.1",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.4.2"
+    "typescript": "5.4.3"
   }
 }

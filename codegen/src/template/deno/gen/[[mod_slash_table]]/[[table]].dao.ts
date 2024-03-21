@@ -54,12 +54,22 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
-const hasMany2many = columns.some((column) => {
+const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
+    return true;
+  }
+  return false;
+});
+const hasMany2many = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many") {
     return true;
   }
   return false;
@@ -223,7 +233,7 @@ if (hasOrgId) {
 import * as orgDao from "/gen/base/org/org.dao.ts";<#
 }
 #><#
-if (hasMany2many) {
+if (hasMany2manyNotInline) {
 #>
 
 import {
