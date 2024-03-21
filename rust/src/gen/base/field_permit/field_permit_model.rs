@@ -582,7 +582,7 @@ impl FieldPermitType {
 impl TryFrom<String> for FieldPermitType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "editable" => Ok(Self::Editable),
       "hidden" => Ok(Self::Hidden),

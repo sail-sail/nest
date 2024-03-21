@@ -384,7 +384,7 @@ pub async fn find_all(
     is_succ_dict,
   ]: [Vec<_>; 1] = dict_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
   
   #[allow(unused_variables)]
   for model in &mut res {

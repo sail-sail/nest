@@ -663,7 +663,7 @@ impl DictType {
 impl TryFrom<String> for DictType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "string" => Ok(Self::String),
       "number" => Ok(Self::Number),

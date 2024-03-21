@@ -578,7 +578,7 @@ impl DataPermitScope {
 impl TryFrom<String> for DataPermitScope {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "create" => Ok(Self::Create),
       "dept" => Ok(Self::Dept),
@@ -671,7 +671,7 @@ impl DataPermitType {
 impl TryFrom<String> for DataPermitType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "readonly" => Ok(Self::Readonly),
       "editable" => Ok(Self::Editable),

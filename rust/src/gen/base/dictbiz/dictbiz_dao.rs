@@ -480,7 +480,7 @@ pub async fn find_all(
     is_enabled_dict,
   ]: [Vec<_>; 3] = dict_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
   
   // 业务字典明细
   let dictbiz_detail_models = find_all_dictbiz_detail(
