@@ -20,9 +20,9 @@ enum DataPermitScope {
 }
 "数据权限类型"
 enum DataPermitType {
-  "只读"
+  "可见不可改且不可删"
   readonly
-  "可改"
+  "可见可改且可删"
   editable
 }
 
