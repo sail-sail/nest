@@ -195,7 +195,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `wxwork_wxw_app_token t
     left join wxwork_wxw_app wxw_app_id_lbl
       on wxw_app_id_lbl.id = t.wxw_app_id

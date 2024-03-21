@@ -220,7 +220,6 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `wxwork_wxw_app t
     left join base_domain domain_id_lbl
       on domain_id_lbl.id = t.domain_id
