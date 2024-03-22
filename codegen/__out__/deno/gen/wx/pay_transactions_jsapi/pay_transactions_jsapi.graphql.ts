@@ -228,7 +228,7 @@ input PayTransactionsJsapiSearch {
   trade_state_desc: String
   trade_state_desc_like: String
   "支付完成时间"
-  success_time: [NaiveDateTime!]
+  success_time: [NaiveDateTime]
   "交易限制时间"
   time_expire: String
   time_expire_like: String
@@ -244,7 +244,7 @@ input PayTransactionsJsapiSearch {
   "是否支持发票"
   support_fapiao: [Int!]
   "订单金额(分)"
-  total_fee: [Int!]
+  total_fee: [Int]
   "货币类型"
   currency: [String!]
   "用户标识"
@@ -257,12 +257,12 @@ input PayTransactionsJsapiSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找微信JSAPI下单总数"
