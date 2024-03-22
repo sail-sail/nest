@@ -1388,8 +1388,7 @@ impl Options {
         format!("dao.sql.{}", table)
       )
       .collect::<Vec<String>>()
-      .into()
-      ;
+      .into();
     self_
   }
   

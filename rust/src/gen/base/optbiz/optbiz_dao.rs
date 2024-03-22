@@ -1235,7 +1235,7 @@ pub async fn create(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let options = options.into();
   
@@ -1522,7 +1522,7 @@ pub async fn update_by_id(
     
     let options = Options::from(options);
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1536,7 +1536,7 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     let options = Options::from(None);
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
       del_caches(
         del_cache_key1s
@@ -1549,6 +1549,15 @@ pub async fn update_by_id(
   }
   
   Ok(id)
+}
+
+/// 获取需要清空缓存的表名
+#[allow(dead_code)]
+fn get_cache_tables() -> Vec<&'static str> {
+  let table = "base_optbiz";
+  vec![
+    table,
+  ]
 }
 
 /// 获取外键关联表, 第一个是主表
@@ -1564,7 +1573,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache() -> Result<()> {
-  let cache_key1s = get_foreign_tables();
+  let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
   ).await?;
@@ -1613,7 +1622,7 @@ pub async fn delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1675,7 +1684,7 @@ pub async fn enable_by_ids(
   let options = Options::from(options)
     .set_is_debug(false);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let mut num = 0;
   for id in ids {
@@ -1755,7 +1764,7 @@ pub async fn lock_by_ids(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let mut num = 0;
   for id in ids {
@@ -1828,7 +1837,7 @@ pub async fn revert_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1948,7 +1957,7 @@ pub async fn force_delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
