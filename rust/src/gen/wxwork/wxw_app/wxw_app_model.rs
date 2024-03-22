@@ -29,6 +29,7 @@ use crate::common::util::dao::decrypt;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::domain::domain_model::DomainId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -66,6 +67,30 @@ pub struct WxwAppModel {
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: UsrId,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: UsrId,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxwAppModel {
@@ -100,6 +125,26 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 创建人
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -120,6 +165,14 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
       is_enabled_lbl,
       order_by,
       rem,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -157,9 +210,33 @@ pub struct WxwAppFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppSearch {
   /// ID
@@ -185,14 +262,6 @@ pub struct WxwAppSearch {
   pub domain_id: Option<Vec<DomainId>>,
   /// 可信域名
   pub domain_id_is_null: Option<bool>,
-  /// 应用密钥
-  pub corpsecret: Option<String>,
-  /// 应用密钥
-  pub corpsecret_like: Option<String>,
-  /// 通讯录密钥
-  pub contactsecret: Option<String>,
-  /// 通讯录密钥
-  pub contactsecret_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -203,6 +272,114 @@ pub struct WxwAppSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<Vec<UsrId>>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<Vec<UsrId>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+}
+
+impl std::fmt::Debug for WxwAppSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwAppSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 名称
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref lbl_like) = self.lbl_like {
+      item = item.field("lbl_like", lbl_like);
+    }
+    // 企业ID
+    if let Some(ref corpid) = self.corpid {
+      item = item.field("corpid", corpid);
+    }
+    if let Some(ref corpid_like) = self.corpid_like {
+      item = item.field("corpid_like", corpid_like);
+    }
+    // 应用ID
+    if let Some(ref agentid) = self.agentid {
+      item = item.field("agentid", agentid);
+    }
+    if let Some(ref agentid_like) = self.agentid_like {
+      item = item.field("agentid_like", agentid_like);
+    }
+    // 可信域名
+    if let Some(ref domain_id) = self.domain_id {
+      item = item.field("domain_id", domain_id);
+    }
+    if let Some(ref domain_id_is_null) = self.domain_id_is_null {
+      item = item.field("domain_id_is_null", domain_id_is_null);
+    }
+    // 锁定
+    if let Some(ref is_locked) = self.is_locked {
+      item = item.field("is_locked", is_locked);
+    }
+    // 启用
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    // 排序
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    // 备注
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref rem_like) = self.rem_like {
+      item = item.field("rem_like", rem_like);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 创建时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -241,6 +418,30 @@ pub struct WxwAppInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<UsrId>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<UsrId>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<WxwAppModel> for WxwAppInput {
@@ -272,6 +473,18 @@ impl From<WxwAppModel> for WxwAppInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
     }
   }
 }
@@ -292,10 +505,6 @@ impl From<WxwAppInput> for WxwAppSearch {
       agentid: input.agentid,
       // 可信域名
       domain_id: input.domain_id.map(|x| vec![x]),
-      // 应用密钥
-      corpsecret: input.corpsecret,
-      // 通讯录密钥
-      contactsecret: input.contactsecret,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
@@ -304,6 +513,14 @@ impl From<WxwAppInput> for WxwAppSearch {
       order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x, x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

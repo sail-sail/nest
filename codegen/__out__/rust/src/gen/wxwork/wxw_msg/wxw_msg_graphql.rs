@@ -120,6 +120,16 @@ pub struct WxwMsgGenMutation;
 #[Object(rename_args = "snake_case")]
 impl WxwMsgGenMutation {
   
+  /// 占位方法, 用于实现 WxwMsgInput
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    input: WxwMsgInput,
+  ) -> Result<WxwMsgId> {
+    Err(anyhow::anyhow!(""))
+  }
+  
   /// 企微消息根据id修改租户id
   async fn update_tenant_by_id_wxw_msg(
     &self,
