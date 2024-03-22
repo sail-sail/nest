@@ -983,7 +983,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 280,
+      width: 320,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
