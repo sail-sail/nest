@@ -130,6 +130,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.ip_like)) {
     whereQuery += ` and t.ip like ${ args.push("%" + sqlLike(search?.ip_like) + "%") }`;
   }
+  if (search?.create_time != null) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
   if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
@@ -138,14 +146,6 @@ async function getWhereQuery(
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
-  }
-  if (search?.create_time != null) {
-    if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
-    }
-    if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
-    }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
@@ -349,7 +349,7 @@ export async function findAll(
     }
     model.is_succ_lbl = is_succ_lbl;
     
-    // 创建时间
+    // 登录时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
       if (isNaN(create_time.toDate().getTime())) {
@@ -396,10 +396,8 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
     is_succ: await n("登录成功"),
     is_succ_lbl: await n("登录成功"),
     ip: await n("IP"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    create_time: await n("登录时间"),
+    create_time_lbl: await n("登录时间"),
   };
   return fieldComments;
 }
@@ -691,13 +689,6 @@ export async function validate(
     fieldComments.ip,
   );
   
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
 }
 
 /**
@@ -849,10 +840,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -1019,8 +1009,7 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   const newModel = await findById(id);

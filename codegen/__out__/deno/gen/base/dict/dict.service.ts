@@ -1,12 +1,12 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
 import type {
   UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
 
 import type {
   DictInput,
