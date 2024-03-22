@@ -223,7 +223,7 @@ pub struct MenuSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<u32>>,
+  pub order_by: Option<Vec<Option<u32>>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -233,13 +233,13 @@ pub struct MenuSearch {
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 更新人
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
 }
 
 impl std::fmt::Debug for MenuSearch {
@@ -443,17 +443,17 @@ impl From<MenuInput> for MenuSearch {
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x, x]),
+      order_by: input.order_by.map(|x| vec![Some(x), Some(x)]),
       // 备注
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x, x]),
+      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
+      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
       ..Default::default()
     }
   }

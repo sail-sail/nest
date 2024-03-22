@@ -222,7 +222,7 @@ pub struct OperationRecordSearch {
   /// 操作
   pub lbl_like: Option<String>,
   /// 耗时(毫秒)
-  pub time: Option<Vec<u32>>,
+  pub time: Option<Vec<Option<u32>>>,
   /// 操作前数据
   pub old_data: Option<String>,
   /// 操作前数据
@@ -236,7 +236,7 @@ pub struct OperationRecordSearch {
   /// 操作人
   pub create_usr_id_is_null: Option<bool>,
   /// 操作时间
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -245,7 +245,7 @@ pub struct OperationRecordSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
 }
 
 impl std::fmt::Debug for OperationRecordSearch {
@@ -453,7 +453,7 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       // 操作
       lbl: input.lbl,
       // 耗时(毫秒)
-      time: input.time.map(|x| vec![x, x]),
+      time: input.time.map(|x| vec![Some(x), Some(x)]),
       // 操作前数据
       old_data: input.old_data,
       // 操作后数据
@@ -461,11 +461,11 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       // 操作人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 操作时间
-      create_time: input.create_time.map(|x| vec![x, x]),
+      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
+      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
       ..Default::default()
     }
   }
