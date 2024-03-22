@@ -1,5 +1,3 @@
-
-
 import type {
   WxwAppTokenInput as WxwAppTokenInputType,
   WxwAppTokenModel as WxwAppTokenModelType,

@@ -122,7 +122,7 @@ input WxwAppSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String

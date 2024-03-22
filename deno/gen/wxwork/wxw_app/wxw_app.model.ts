@@ -1,5 +1,3 @@
-
-
 import type {
   WxwAppInput as WxwAppInputType,
   WxwAppModel as WxwAppModelType,
