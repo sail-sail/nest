@@ -596,6 +596,7 @@ async fn get_where_query(
       "is_sys",
     ].includes(column_name)) {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -615,6 +616,7 @@ async fn get_where_query(
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many") {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -643,6 +645,7 @@ async fn get_where_query(
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -687,6 +690,7 @@ async fn get_where_query(
         enumColumnName = Table_Up + Column_Up;
       }
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -706,6 +710,7 @@ async fn get_where_query(
   }<#
     } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -717,20 +722,16 @@ async fn get_where_query(
   }<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
+  // <#=column_comment#>
   {
-    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match search {
+    let mut <#=column_name_rust#>: Vec<Option<<#=_data_type#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
-      0 => None,
-      _ => <#=column_name#>[0].into(),
-    };
-    let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
-      0 => None,
-      1 => None,
-      _ => <#=column_name_rust#>[1].into(),
-    };
+    let <#=column_name#>_gt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(0)
+      .and_then(|item| item.take());
+    let <#=column_name#>_lt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));
     }
@@ -740,6 +741,7 @@ async fn get_where_query(
   }<#
     } else if (data_type === "tinyint") {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#> = search.<#=column_name_rust#>;
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
@@ -748,6 +750,7 @@ async fn get_where_query(
   }<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
@@ -771,6 +774,7 @@ async fn get_where_query(
   }<#
     } else {
   #>
+  // <#=column_comment#>
   {
     let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),

@@ -90,6 +90,7 @@ async fn get_where_query(
       where_query += &format!(" and t.id in ({arg})");
     }
   }
+  // 父菜单
   {
     let parent_id: Option<Vec<MenuId>> = match search {
       Some(item) => item.parent_id.clone(),
@@ -116,6 +117,7 @@ async fn get_where_query(
       where_query += " and parent_id_lbl.id is null";
     }
   }
+  // 名称
   {
     let lbl = match search {
       Some(item) => item.lbl.clone(),
@@ -137,6 +139,7 @@ async fn get_where_query(
       );
     }
   }
+  // 路由
   {
     let route_path = match search {
       Some(item) => item.route_path.clone(),
@@ -158,6 +161,7 @@ async fn get_where_query(
       );
     }
   }
+  // 参数
   {
     let route_query = match search {
       Some(item) => item.route_query.clone(),
@@ -179,6 +183,7 @@ async fn get_where_query(
       );
     }
   }
+  // 锁定
   {
     let is_locked: Option<Vec<u8>> = match search {
       Some(item) => item.is_locked.clone(),
@@ -196,6 +201,7 @@ async fn get_where_query(
       where_query += &format!(" and t.is_locked in ({})", arg);
     }
   }
+  // 启用
   {
     let is_enabled: Option<Vec<u8>> = match search {
       Some(item) => item.is_enabled.clone(),
@@ -213,20 +219,16 @@ async fn get_where_query(
       where_query += &format!(" and t.is_enabled in ({})", arg);
     }
   }
+  // 排序
   {
-    let order_by: Vec<u32> = match search {
+    let mut order_by: Vec<Option<u32>> = match search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let order_by_gt: Option<u32> = match &order_by.len() {
-      0 => None,
-      _ => order_by[0].into(),
-    };
-    let order_by_lt: Option<u32> = match &order_by.len() {
-      0 => None,
-      1 => None,
-      _ => order_by[1].into(),
-    };
+    let order_by_gt: Option<u32> = order_by.get_mut(0)
+      .and_then(|item| item.take());
+    let order_by_lt: Option<u32> = order_by.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(order_by_gt) = order_by_gt {
       where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
     }
@@ -234,6 +236,7 @@ async fn get_where_query(
       where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
+  // 备注
   {
     let rem = match search {
       Some(item) => item.rem.clone(),
@@ -255,6 +258,7 @@ async fn get_where_query(
       );
     }
   }
+  // 创建人
   {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
@@ -281,20 +285,16 @@ async fn get_where_query(
       where_query += " and create_usr_id_lbl.id is null";
     }
   }
+  // 创建时间
   {
-    let create_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.create_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      _ => create_time[0].into(),
-    };
-    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      1 => None,
-      _ => create_time[1].into(),
-    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
+      .and_then(|item| item.take());
+    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(create_time_gt) = create_time_gt {
       where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
     }
@@ -302,6 +302,7 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
+  // 更新人
   {
     let update_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.update_usr_id.clone(),
@@ -328,20 +329,16 @@ async fn get_where_query(
       where_query += " and update_usr_id_lbl.id is null";
     }
   }
+  // 更新时间
   {
-    let update_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.update_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      _ => update_time[0].into(),
-    };
-    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      1 => None,
-      _ => update_time[1].into(),
-    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
+      .and_then(|item| item.take());
+    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(update_time_gt) = update_time_gt {
       where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
     }
