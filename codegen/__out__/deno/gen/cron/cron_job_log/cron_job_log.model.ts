@@ -1,5 +1,3 @@
-
-
 import type {
   CronJobLogInput as CronJobLogInputType,
   CronJobLogModel as CronJobLogModelType,

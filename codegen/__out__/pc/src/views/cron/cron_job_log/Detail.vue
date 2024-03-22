@@ -51,7 +51,7 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
