@@ -107,7 +107,7 @@ input OperationRecordSearch {
   lbl: String
   lbl_like: String
   "耗时(毫秒)"
-  time: [Int!]
+  time: [Int]
   "操作前数据"
   old_data: String
   old_data_like: String
@@ -118,7 +118,7 @@ input OperationRecordSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "操作时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找操作记录总数"

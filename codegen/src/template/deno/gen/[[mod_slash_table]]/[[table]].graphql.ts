@@ -667,13 +667,13 @@ input <#=searchName#> {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = '[NaiveDate!]';
+      data_type = '[NaiveDate]';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = '[NaiveDateTime!]';
+      data_type = '[NaiveDateTime]';
     }
     else if (column.DATA_TYPE === 'int') {
-      data_type = '[Int!]';
+      data_type = '[Int]';
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'String';
@@ -685,7 +685,7 @@ input <#=searchName#> {<#
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = '[Decimal!]';
+      data_type = '[Decimal]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
