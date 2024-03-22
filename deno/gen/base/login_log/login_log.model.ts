@@ -1,5 +1,3 @@
-
-
 import type {
   LoginLogInput as LoginLogInputType,
   LoginLogModel as LoginLogModelType,
@@ -19,6 +17,9 @@ declare const loginLogId: unique symbol;
 export type LoginLogId = Distinct<string, typeof loginLogId>;
 
 export interface LoginLogSearch extends LoginLogSearchType {
+  /** 创建人 */
+  create_usr_id?: UsrId[];
+  create_usr_id_is_null?: boolean;
   /** 更新人 */
   update_usr_id?: UsrId[];
   update_usr_id_is_null?: boolean;

@@ -1,5 +1,3 @@
-
-
 import type {
   OperationRecordInput as OperationRecordInputType,
   OperationRecordModel as OperationRecordModelType,
