@@ -22,7 +22,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
-        width: 280,
+        width: 320,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -69,7 +69,7 @@ export default defineConfig({
             column: "cron_job_id",
           },
         ],
-        width: 280,
+        width: 320,
       },
       {
         COLUMN_NAME: "job_id",
@@ -121,7 +121,6 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "cron_job_id",
-        width: 140,
         foreignKey: {
           showType: "dialog",
         },

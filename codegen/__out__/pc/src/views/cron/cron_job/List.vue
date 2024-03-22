@@ -1040,7 +1040,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 280,
+      width: 320,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1050,7 +1050,7 @@ function getTableColumns(): ColumnType[] {
       label: "任务",
       prop: "job_id_lbl",
       sortBy: "job_id",
-      width: 280,
+      width: 320,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
