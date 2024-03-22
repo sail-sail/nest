@@ -1,5 +1,3 @@
-
-
 import type {
   DictbizInput as DictbizInputType,
   DictbizModel as DictbizModelType,

@@ -1,5 +1,3 @@
-
-
 import type {
   DeptInput as DeptInputType,
   DeptModel as DeptModelType,

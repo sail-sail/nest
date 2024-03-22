@@ -1,5 +1,3 @@
-
-
 import type {
   TenantInput as TenantInputType,
   TenantModel as TenantModelType,

@@ -1,5 +1,3 @@
-
-
 import type {
   DomainInput as DomainInputType,
   DomainModel as DomainModelType,

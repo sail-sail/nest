@@ -1,5 +1,3 @@
-
-
 import type {
   OptionsInput as OptionsInputType,
   OptionsModel as OptionsModelType,
