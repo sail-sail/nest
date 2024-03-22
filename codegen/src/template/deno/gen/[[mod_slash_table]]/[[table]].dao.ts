@@ -3563,45 +3563,7 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [<#
-  const foreignTablesCache = [ ];
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    const foreignKey = column.foreignKey;
-    let data_type = column.DATA_TYPE;
-    if (!foreignKey) continue;
-    const foreignTable = foreignKey.table;
-    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    if (foreignTablesCache.includes(foreignTable)) {
-      continue;
-    }
-    foreignTablesCache.push(foreignTable);
-  #><#
-    if (foreignKey && foreignKey.type === "many2many") {
-  #>
-    "<#=many2many.mod#>_<#=many2many.table#>",
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    } else if (foreignKey && !foreignKey.multiple) {
-  #>
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    }
-  #><#
-  }
-  #>
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);
 }<#
 }
 #><#

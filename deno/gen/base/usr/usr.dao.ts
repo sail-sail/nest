@@ -1383,24 +1383,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "base_usr";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_usr_org",
-    "base_org",
-    "base_usr_dept",
-    "base_dept",
-    "base_usr_role",
-    "base_role",
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.base_usr`);
 }
 
 /**
