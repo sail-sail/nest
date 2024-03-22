@@ -1,5 +1,3 @@
-
-
 import type {
   JobInput as JobInputType,
   JobModel as JobModelType,
