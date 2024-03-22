@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找角色总数
  */
 export async function findCountRole(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountRole(
  * 根据搜索条件和分页查找角色列表
  */
 export async function findAllRole(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<RoleModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
  * 根据条件查找第一个角色
  */
 export async function findOneRole(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   sort?: SortInput[],
 ): Promise<RoleModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createRole(
   input: RoleInput,
   unique_type?: UniqueType,
 ): Promise<RoleId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdRole(
   id: RoleId,
   input: RoleInput,
 ): Promise<RoleId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsRole(
   
   await usePermit(
     "/base/role",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsRole(
   
   await usePermit(
     "/base/role",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

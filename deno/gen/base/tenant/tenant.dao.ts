@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -16,6 +20,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -86,61 +94,52 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.domain_ids && !Array.isArray(search?.domain_ids)) {
+  if (search?.domain_ids != null && !Array.isArray(search?.domain_ids)) {
     search.domain_ids = [ search.domain_ids ];
   }
-  if (search?.domain_ids && search?.domain_ids.length > 0) {
+  if (search?.domain_ids != null) {
     whereQuery += ` and base_domain.id in ${ args.push(search.domain_ids) }`;
-  }
-  if (search?.domain_ids === null) {
-    whereQuery += ` and base_domain.id is null`;
   }
   if (search?.domain_ids_is_null) {
     whereQuery += ` and base_domain.id is null`;
   }
-  if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
+  if (search?.menu_ids != null && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
-  if (search?.menu_ids && search?.menu_ids.length > 0) {
+  if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
-  }
-  if (search?.menu_ids === null) {
-    whereQuery += ` and base_menu.id is null`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
+  if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+  if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
-  if (search?.order_by && search?.order_by?.length > 0) {
+  if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
     }
@@ -148,28 +147,22 @@ async function getWhereQuery(
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -177,19 +170,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -197,28 +187,23 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    base_tenant t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: TenantSearch,
+  options?: {
+  },
+) {
+  const is_deleted = search?.is_deleted ?? 0;
+  let fromQuery = `base_tenant t
     left join base_tenant_domain
       on base_tenant_domain.tenant_id = t.id
-      and base_tenant_domain.is_deleted = 0
+      and base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
     left join base_domain
       on base_tenant_domain.domain_id = base_domain.id
-      and base_domain.is_deleted = 0
+      and base_domain.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
@@ -227,20 +212,19 @@ async function getFromQuery() {
       from base_tenant_domain
       inner join base_domain
         on base_domain.id = base_tenant_domain.domain_id
-        and base_domain.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_domain.tenant_id
       where
-        base_tenant_domain.is_deleted = 0
+        base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
       group by tenant_id
     ) _domain
       on _domain.tenant_id = t.id
     left join base_tenant_menu
       on base_tenant_menu.tenant_id = t.id
-      and base_tenant_menu.is_deleted = 0
+      and base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
     left join base_menu
       on base_tenant_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = 0
+      and base_menu.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
@@ -249,19 +233,17 @@ async function getFromQuery() {
       from base_tenant_menu
       inner join base_menu
         on base_menu.id = base_tenant_menu.menu_id
-        and base_menu.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_menu.tenant_id
       where
-        base_tenant_menu.is_deleted = 0
+        base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -273,10 +255,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: TenantSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -287,19 +281,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -323,10 +310,35 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel[]> {
   const table = "base_tenant";
   const method = "findAll";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -338,18 +350,13 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -390,12 +397,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<TenantModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   for (const item of result) {
@@ -454,7 +464,7 @@ export async function findAll(
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked !== undefined && model.is_locked !== null) {
+    if (model.is_locked != null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
@@ -464,7 +474,7 @@ export async function findAll(
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+    if (model.is_enabled != null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
@@ -522,19 +532,20 @@ export async function setIdByLbl(
     if (input.domain_ids_lbl.length === 0) {
       input.domain_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_domain t
         where
-          t.lbl in ${ args.push(input.domain_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.domain_ids_lbl) }`;
       interface Result {
         id: DomainId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.domain_ids = models.map((item: { id: DomainId }) => item.id);
     }
   }
@@ -548,35 +559,36 @@ export async function setIdByLbl(
     if (input.menu_ids_lbl.length === 0) {
       input.menu_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           base_menu t
         where
-          t.lbl in ${ args.push(input.menu_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.menu_ids_lbl) }`;
       interface Result {
         id: MenuId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.menu_ids = models.map((item: { id: MenuId }) => item.id);
     }
   }
   
   // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_locked = Number(val);
     }
   }
   
   // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled == null) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_enabled = Number(val);
     }
   }
@@ -619,12 +631,28 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
 export async function findByUnique(
   search0: TenantInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel[]> {
+  
+  const table = "base_tenant";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -638,7 +666,7 @@ export async function findByUnique(
     const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
-    });
+    }, undefined, undefined, options);
     models.push(...modelTmps);
   }
   return models;
@@ -712,13 +740,39 @@ export async function findOne(
   search?: TenantSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel | undefined> {
+  const table = "base_tenant";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -730,12 +784,27 @@ export async function findOne(
 export async function findById(
   id?: TenantId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<TenantModel | undefined> {
+  const table = "base_tenant";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -746,9 +815,24 @@ export async function findById(
 export async function exist(
   search?: TenantSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "base_tenant";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -759,9 +843,20 @@ export async function exist(
  */
 export async function existById(
   id?: TenantId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "base_tenant";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -873,11 +968,26 @@ export async function validate(
 export async function create(
   input: TenantInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<TenantId> {
   const table = "base_tenant";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -924,7 +1034,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -932,26 +1042,26 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,is_locked`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,is_enabled`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,order_by`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,is_sys`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -959,7 +1069,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -967,33 +1077,37 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,${ args.push(input.is_locked) }`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,${ args.push(input.order_by) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   // 所属域名
   await many2manyUpdate(
@@ -1028,22 +1142,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "base_tenant";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_tenant_domain",
-    "base_domain",
-    "base_tenant_menu",
-    "base_menu",
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.base_tenant`);
 }
 
 /**
@@ -1062,11 +1161,27 @@ export async function updateById(
   id: TenantId,
   input: TenantInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<TenantId> {
   const table = "base_tenant";
   const method = "updateById";
+  
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1104,58 +1219,41 @@ export async function updateById(
     update base_tenant set
   `;
   let updateFldNum = 0;
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
-  if (input.is_sys !== undefined) {
+  if (input.is_sys != null) {
     if (input.is_sys != oldModel.is_sys) {
       sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
-  }
-  if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
-      }
-    }
-    sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
-    
-    await delCache();
-    
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
   }
   
   updateFldNum++;
@@ -1193,6 +1291,23 @@ export async function updateById(
   );
   
   if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await getAuthModel();
+      if (authModel?.id != null) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }
+    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
+    await execute(sql, args);
+  }
+  
+  if (updateFldNum > 0) {
     await delCache();
   }
   
@@ -1213,10 +1328,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1228,9 +1355,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: TenantId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1282,10 +1409,25 @@ export async function enableByIds(
   ids: TenantId[],
   is_enabled: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "enableByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_enabled != null) {
+      msg += ` is_enabled:${ is_enabled }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1305,7 +1447,7 @@ export async function enableByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1352,10 +1494,25 @@ export async function lockByIds(
   ids: TenantId[],
   is_locked: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "lockByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_locked != null) {
+      msg += ` is_locked:${ is_locked }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1375,7 +1532,7 @@ export async function lockByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1400,10 +1557,22 @@ export async function lockByIds(
 export async function revertByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1459,10 +1628,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: TenantId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1512,28 +1693,32 @@ export async function forceDeleteByIds(
  */
 export async function findLastOrderBy(
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_tenant";
   const method = "findLastOrderBy";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   let sql = `
     select
       t.order_by order_by
     from
-      base_tenant t
-  `;
+      base_tenant t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += `
-    order by
-      t.order_by desc
-    limit 1
-  `;
+  sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;

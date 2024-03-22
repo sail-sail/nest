@@ -36,9 +36,20 @@ function onopen(socket: WebSocket, clientId: string) {
   socketMap.set(clientId, socket);
 }
 
+const PWD = "0YSCBr1QQSOpOfi6GgH34A";
+
 router.get("upgrade", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
+  const pwd = request.url.searchParams.get("pwd");
+  if (pwd !== PWD) {
+    response.status = 401;
+    response.body = {
+      code: 401,
+      data: "Unauthorized",
+    };
+    return;
+  }
   const clientId = request.url.searchParams.get("clientId");
   if (!clientId) {
     const errMsg = "clientId is required!";

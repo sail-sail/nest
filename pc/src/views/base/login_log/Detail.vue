@@ -51,7 +51,7 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
@@ -108,6 +108,17 @@
             ></CustomInput>
           </el-form-item>
         </template>
+        
+        <el-form-item
+          :label="n('登录时间')"
+          prop="login_time"
+        >
+          <CustomInput
+            v-model="dialogModel.create_time_lbl"
+            :placeholder="`${ ns('请输入') } ${ n('登录时间') }`"
+            :readonly="isLocked || isReadonly"
+          ></CustomInput>
+        </el-form-item>
         
       </el-form>
     </div>
@@ -189,8 +200,12 @@ import type {
 } from "@/typings/ids";
 
 import type {
-  LoginLogInput,
+  LoginLogInput as LoginLogInput0,
 } from "#/types";
+
+type LoginLogInput = LoginLogInput0 & {
+  create_time_lbl?: string | null;
+};
 
 const emit = defineEmits<{
   nextId: [
@@ -451,13 +466,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -473,7 +493,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("登录日志")));
   }
 }
 
@@ -594,8 +614,7 @@ async function onInitI18ns() {
     "用户名",
     "登录成功",
     "IP",
-    "创建人",
-    "创建时间",
+    "登录时间",
   ];
   await Promise.all([
     initDetailI18ns(),

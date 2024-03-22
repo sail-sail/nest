@@ -1,7 +1,4 @@
-use std::pin::Pin;
-
-use anyhow::{Result, Error};
-use futures_util::Future;
+use anyhow::Result;
 use crate::common::context::get_auth_model;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
@@ -43,6 +40,7 @@ pub async fn get_auth_dept_ids() -> Result<Vec<DeptId>> {
 }
 
 #[allow(dead_code)]
+#[async_recursion::async_recursion]
 async fn get_parents_by_id(
   ids: Vec<DeptId>,
   parent_ids: &mut Vec<DeptId>,
@@ -70,14 +68,10 @@ async fn get_parents_by_id(
   
   parent_ids.extend(ids2.clone());
   
-  let future: Pin<Box<dyn Future<Output = Result<(), Error>>>> = Box::pin(
-    get_parents_by_id(
-      ids2,
-      parent_ids,
-    )
-  );
-  
-  future.await?;
+  get_parents_by_id(
+    ids2,
+    parent_ids,
+  ).await?;
   
   Ok(())
 }

@@ -40,8 +40,6 @@ pub struct DataPermitModel {
   pub menu_id: MenuId,
   /// 菜单
   pub menu_id_lbl: String,
-  /// 名称
-  pub lbl: String,
   /// 范围
   pub scope: DataPermitScope,
   /// 范围
@@ -52,6 +50,8 @@ pub struct DataPermitModel {
   pub type_lbl: String,
   /// 备注
   pub rem: String,
+  /// 是否已删除
+  pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -68,8 +68,6 @@ pub struct DataPermitModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 是否已删除
-  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for DataPermitModel {
@@ -82,8 +80,6 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
     let menu_id: MenuId = row.try_get("menu_id")?;
     let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
     let menu_id_lbl = menu_id_lbl.unwrap_or_default();
-    // 名称
-    let lbl: String = row.try_get("lbl")?;
     // 范围
     let scope_lbl: String = row.try_get("scope")?;
     let scope: DataPermitScope = scope_lbl.clone().try_into()?;
@@ -121,7 +117,6 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
       id,
       menu_id,
       menu_id_lbl,
-      lbl,
       scope,
       scope_lbl,
       r#type,
@@ -150,8 +145,6 @@ pub struct DataPermitFieldComment {
   pub menu_id: String,
   /// 菜单
   pub menu_id_lbl: String,
-  /// 名称
-  pub lbl: String,
   /// 范围
   pub scope: String,
   /// 范围
@@ -180,7 +173,7 @@ pub struct DataPermitFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DataPermitSearch {
   /// ID
@@ -192,10 +185,6 @@ pub struct DataPermitSearch {
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
   pub menu_id_is_null: Option<bool>,
-  /// 名称
-  pub lbl: Option<String>,
-  /// 名称
-  pub lbl_like: Option<String>,
   /// 范围
   pub scope: Option<Vec<DataPermitScope>>,
   /// 类型
@@ -218,6 +207,68 @@ pub struct DataPermitSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
+impl std::fmt::Debug for DataPermitSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("DataPermitSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 菜单
+    if let Some(ref menu_id) = self.menu_id {
+      item = item.field("menu_id", menu_id);
+    }
+    if let Some(ref menu_id_is_null) = self.menu_id_is_null {
+      item = item.field("menu_id_is_null", menu_id_is_null);
+    }
+    // 范围
+    if let Some(ref scope) = self.scope {
+      item = item.field("scope", scope);
+    }
+    // 类型
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
+    }
+    // 备注
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref rem_like) = self.rem_like {
+      item = item.field("rem_like", rem_like);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 创建时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
+}
+
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DataPermitInput {
@@ -232,8 +283,6 @@ pub struct DataPermitInput {
   pub menu_id: Option<MenuId>,
   /// 菜单
   pub menu_id_lbl: Option<String>,
-  /// 名称
-  pub lbl: Option<String>,
   /// 范围
   pub scope: Option<DataPermitScope>,
   /// 范围
@@ -245,20 +294,28 @@ pub struct DataPermitInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time_lbl: Option<String>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time_lbl: Option<String>,
 }
 
@@ -271,8 +328,6 @@ impl From<DataPermitModel> for DataPermitInput {
       // 菜单
       menu_id: model.menu_id.into(),
       menu_id_lbl: model.menu_id_lbl.into(),
-      // 名称
-      lbl: model.lbl.into(),
       // 范围
       scope: model.scope.into(),
       scope_lbl: model.scope_lbl.into(),
@@ -305,8 +360,6 @@ impl From<DataPermitInput> for DataPermitSearch {
       is_deleted: None,
       // 菜单
       menu_id: input.menu_id.map(|x| vec![x]),
-      // 名称
-      lbl: input.lbl,
       // 范围
       scope: input.scope.map(|x| vec![x]),
       // 类型
@@ -428,7 +481,7 @@ impl<'r> sqlx::Decode<'r, MySql> for DataPermitId {
 }
 
 /// 数据权限范围
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitScope {
   /// 创建人
   #[graphql(name="create")]
@@ -436,10 +489,14 @@ pub enum DataPermitScope {
   /// 本部门
   #[graphql(name="dept")]
   Dept,
+  /// 本部门极其父部门
+  #[graphql(name="dept_parent")]
+  DeptParent,
   /// 本角色
   #[graphql(name="role")]
   Role,
   /// 本租户
+  #[default]
   #[graphql(name="tenant")]
   Tenant,
 }
@@ -449,6 +506,7 @@ impl fmt::Display for DataPermitScope {
     match self {
       Self::Create => write!(f, "create"),
       Self::Dept => write!(f, "dept"),
+      Self::DeptParent => write!(f, "dept_parent"),
       Self::Role => write!(f, "role"),
       Self::Tenant => write!(f, "tenant"),
     }
@@ -460,6 +518,7 @@ impl From<DataPermitScope> for SmolStr {
     match value {
       DataPermitScope::Create => "create".into(),
       DataPermitScope::Dept => "dept".into(),
+      DataPermitScope::DeptParent => "dept_parent".into(),
       DataPermitScope::Role => "role".into(),
       DataPermitScope::Tenant => "tenant".into(),
     }
@@ -471,6 +530,7 @@ impl From<DataPermitScope> for String {
     match value {
       DataPermitScope::Create => "create".into(),
       DataPermitScope::Dept => "dept".into(),
+      DataPermitScope::DeptParent => "dept_parent".into(),
       DataPermitScope::Role => "role".into(),
       DataPermitScope::Tenant => "tenant".into(),
     }
@@ -483,12 +543,6 @@ impl From<DataPermitScope> for ArgType {
   }
 }
 
-impl Default for DataPermitScope {
-  fn default() -> Self {
-    Self::Tenant
-  }
-}
-
 impl FromStr for DataPermitScope {
   type Err = anyhow::Error;
   
@@ -496,6 +550,7 @@ impl FromStr for DataPermitScope {
     match s {
       "create" => Ok(Self::Create),
       "dept" => Ok(Self::Dept),
+      "dept_parent" => Ok(Self::DeptParent),
       "role" => Ok(Self::Role),
       "tenant" => Ok(Self::Tenant),
       _ => Err(anyhow::anyhow!("DataPermitScope can't convert from {s}")),
@@ -508,6 +563,7 @@ impl DataPermitScope {
     match self {
       Self::Create => "create",
       Self::Dept => "dept",
+      Self::DeptParent => "dept_parent",
       Self::Role => "role",
       Self::Tenant => "tenant",
     }
@@ -517,10 +573,11 @@ impl DataPermitScope {
 impl TryFrom<String> for DataPermitScope {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "create" => Ok(Self::Create),
       "dept" => Ok(Self::Dept),
+      "dept_parent" => Ok(Self::DeptParent),
       "role" => Ok(Self::Role),
       "tenant" => Ok(Self::Tenant),
       _ => Err(sqlx::Error::Decode(
@@ -536,12 +593,13 @@ impl TryFrom<String> for DataPermitScope {
 }
 
 /// 数据权限类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitType {
-  /// 只读
+  /// 可见不可改且不可删
   #[graphql(name="readonly")]
   Readonly,
-  /// 可改
+  /// 可见可改且可删
+  #[default]
   #[graphql(name="editable")]
   Editable,
 }
@@ -579,12 +637,6 @@ impl From<DataPermitType> for ArgType {
   }
 }
 
-impl Default for DataPermitType {
-  fn default() -> Self {
-    Self::Editable
-  }
-}
-
 impl FromStr for DataPermitType {
   type Err = anyhow::Error;
   
@@ -609,7 +661,7 @@ impl DataPermitType {
 impl TryFrom<String> for DataPermitType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "readonly" => Ok(Self::Readonly),
       "editable" => Ok(Self::Editable),

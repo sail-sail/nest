@@ -122,7 +122,7 @@ impl PermitGenMutation {
   async fn create_permit(
     &self,
     ctx: &Context<'_>,
-    model: PermitInput,
+    input: PermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<PermitId> {
     let mut options = Options::new();
@@ -135,7 +135,7 @@ impl PermitGenMutation {
       .build()
       .scope({
         permit_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -146,7 +146,7 @@ impl PermitGenMutation {
     &self,
     ctx: &Context<'_>,
     id: PermitId,
-    model: PermitInput,
+    input: PermitInput,
   ) -> Result<PermitId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -155,7 +155,7 @@ impl PermitGenMutation {
       .scope({
         permit_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

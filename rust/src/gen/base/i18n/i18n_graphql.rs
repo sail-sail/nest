@@ -128,7 +128,7 @@ impl I18nGenMutation {
   async fn create_i18n(
     &self,
     ctx: &Context<'_>,
-    model: I18nInput,
+    input: I18nInput,
     unique_type: Option<UniqueType>,
   ) -> Result<I18nId> {
     let mut options = Options::new();
@@ -141,7 +141,7 @@ impl I18nGenMutation {
       .build()
       .scope({
         i18n_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -153,7 +153,7 @@ impl I18nGenMutation {
     &self,
     ctx: &Context<'_>,
     id: I18nId,
-    model: I18nInput,
+    input: I18nInput,
   ) -> Result<I18nId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -162,7 +162,7 @@ impl I18nGenMutation {
       .scope({
         i18n_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

@@ -174,7 +174,7 @@ impl OptionsGenMutation {
   async fn create_options(
     &self,
     ctx: &Context<'_>,
-    model: OptionsInput,
+    input: OptionsInput,
     unique_type: Option<UniqueType>,
   ) -> Result<OptionsId> {
     let mut options = Options::new();
@@ -187,7 +187,7 @@ impl OptionsGenMutation {
       .build()
       .scope({
         options_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -198,7 +198,7 @@ impl OptionsGenMutation {
     &self,
     ctx: &Context<'_>,
     id: OptionsId,
-    model: OptionsInput,
+    input: OptionsInput,
   ) -> Result<OptionsId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -207,7 +207,7 @@ impl OptionsGenMutation {
       .scope({
         options_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

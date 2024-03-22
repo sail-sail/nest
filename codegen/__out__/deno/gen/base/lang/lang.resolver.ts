@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找语言总数
  */
 export async function findCountLang(
-  search?: LangSearch & { $extra?: SearchExtra[] },
+  search?: LangSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountLang(
  * 根据搜索条件和分页查找语言列表
  */
 export async function findAllLang(
-  search?: LangSearch & { $extra?: SearchExtra[] },
+  search?: LangSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<LangModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsLang(): Promise<LangFieldComment> {
  * 根据条件查找第一个语言
  */
 export async function findOneLang(
-  search?: LangSearch & { $extra?: SearchExtra[] },
+  search?: LangSearch,
   sort?: SortInput[],
 ): Promise<LangModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createLang(
   input: LangInput,
   unique_type?: UniqueType,
 ): Promise<LangId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdLang(
   id: LangId,
   input: LangInput,
 ): Promise<LangId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsLang(
   
   await usePermit(
     "/base/lang",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;

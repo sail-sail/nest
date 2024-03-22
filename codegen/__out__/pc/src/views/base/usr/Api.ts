@@ -39,6 +39,32 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: UsrInput = {
+    id: model?.id,
+    img: model?.img,
+    lbl: model?.lbl,
+    username: model?.username,
+    org_ids: model?.org_ids,
+    org_ids_lbl: model?.org_ids_lbl,
+    default_org_id: model?.default_org_id,
+    default_org_id_lbl: model?.default_org_id_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    dept_ids: model?.dept_ids,
+    dept_ids_lbl: model?.dept_ids_lbl,
+    role_ids: model?.role_ids,
+    role_ids_lbl: model?.role_ids_lbl,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找用户列表
  * @param {UsrSearch} search?
@@ -186,25 +212,26 @@ export async function findCount(
 
 /**
  * 创建用户
- * @param {UsrInput} model
+ * @param {UsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: UsrInput,
+  input: UsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<UsrId> {
+  input = intoInput(input);
   const data: {
     createUsr: Mutation["createUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: UsrInput!, $unique_type: UniqueType) {
-        createUsr(model: $model, unique_type: $unique_type)
+      mutation($input: UsrInput!, $unique_type: UniqueType) {
+        createUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -215,25 +242,26 @@ export async function create(
 /**
  * 根据 id 修改用户
  * @param {UsrId} id
- * @param {UsrInput} model
+ * @param {UsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: UsrId,
-  model: UsrInput,
+  input: UsrInput,
   opt?: GqlOpt,
 ): Promise<UsrId> {
+  input = intoInput(input);
   const data: {
     updateByIdUsr: Mutation["updateByIdUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: UsrId!, $model: UsrInput!) {
-        updateByIdUsr(id: $id, model: $model)
+      mutation($id: UsrId!, $input: UsrInput!) {
+        updateByIdUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: UsrId = data.updateByIdUsr;

@@ -106,7 +106,7 @@ type DictbizFieldComment {
   update_time_lbl: String!
 }
 input DictbizInput {
-  ""
+  "ID"
   id: DictbizId
   "编码"
   code: String
@@ -128,22 +128,6 @@ input DictbizInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
   "业务字典明细"
   dictbiz_detail_models: [DictbizDetailInput!]
 }
@@ -167,7 +151,7 @@ input DictbizSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -175,12 +159,12 @@ input DictbizSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找业务字典总数"
@@ -198,9 +182,9 @@ type Query {
 }
 type Mutation {
   "创建业务字典"
-  createDictbiz(model: DictbizInput!, unique_type: UniqueType): DictbizId!
+  createDictbiz(input: DictbizInput!, unique_type: UniqueType): DictbizId!
   "根据 id 修改业务字典"
-  updateByIdDictbiz(id: DictbizId!, model: DictbizInput!): DictbizId!
+  updateByIdDictbiz(id: DictbizId!, input: DictbizInput!): DictbizId!
   "根据 ids 删除业务字典"
   deleteByIdsDictbiz(ids: [DictbizId!]!): Int!
   "根据 ids 启用或者禁用业务字典"

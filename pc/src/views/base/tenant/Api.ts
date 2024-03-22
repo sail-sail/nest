@@ -35,6 +35,26 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: TenantInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    domain_ids: model?.domain_ids,
+    domain_ids_lbl: model?.domain_ids_lbl,
+    menu_ids: model?.menu_ids,
+    menu_ids_lbl: model?.menu_ids_lbl,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找租户列表
  * @param {TenantSearch} search?
@@ -170,25 +190,26 @@ export async function findCount(
 
 /**
  * 创建租户
- * @param {TenantInput} model
+ * @param {TenantInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: TenantInput,
+  input: TenantInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<TenantId> {
+  input = intoInput(input);
   const data: {
     createTenant: Mutation["createTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: TenantInput!, $unique_type: UniqueType) {
-        createTenant(model: $model, unique_type: $unique_type)
+      mutation($input: TenantInput!, $unique_type: UniqueType) {
+        createTenant(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -199,25 +220,26 @@ export async function create(
 /**
  * 根据 id 修改租户
  * @param {TenantId} id
- * @param {TenantInput} model
+ * @param {TenantInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: TenantId,
-  model: TenantInput,
+  input: TenantInput,
   opt?: GqlOpt,
 ): Promise<TenantId> {
+  input = intoInput(input);
   const data: {
     updateByIdTenant: Mutation["updateByIdTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: TenantId!, $model: TenantInput!) {
-        updateByIdTenant(id: $id, model: $model)
+      mutation($id: TenantId!, $input: TenantInput!) {
+        updateByIdTenant(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: TenantId = data.updateByIdTenant;

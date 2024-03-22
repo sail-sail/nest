@@ -34,11 +34,19 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
+          "DateTime": {
+            "input": "string",
+            "output": "string"
+          },
           "JSON": {
             "input": "string",
             "output": "string"
           },
           "Uuid": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveTime": {
             "input": "string",
             "output": "string"
           },
@@ -74,11 +82,19 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
+          "DateTime": {
+            "input": "string",
+            "output": "string"
+          },
           "JSON": {
             "input": "string",
             "output": "string"
           },
           "Uuid": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveTime": {
             "input": "string",
             "output": "string"
           },
@@ -114,11 +130,19 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
+          "DateTime": {
+            "input": "string",
+            "output": "string"
+          },
           "JSON": {
             "input": "string",
             "output": "string"
           },
           "Uuid": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveTime": {
             "input": "string",
             "output": "string"
           },

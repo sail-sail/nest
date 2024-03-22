@@ -187,7 +187,11 @@ pub struct <#=tableUP#>Model {<#
       column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_hidden" ||
+      column_name === "create_usr_id" ||
+      column_name === "create_time" ||
+      column_name === "update_usr_id" ||
+      column_name === "update_time"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
@@ -341,6 +345,94 @@ pub struct <#=tableUP#>Model {<#
   pub is_deleted: u8,<#
   }
   #><#
+  if (hasCreateUsrId) {
+  #>
+  /// 创建人<#
+  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "create_usr_id").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub create_usr_id: UsrId,
+  /// 创建人<#
+  if (!columns.some((column) => column.COLUMN_NAME === "create_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "create_usr_id").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub create_usr_id_lbl: String,<#
+  }
+  #><#
+  if (hasCreateTime) {
+  #>
+  /// 创建时间<#
+  if (!columns.some((column) => column.COLUMN_NAME === "create_time")
+    || columns.find((column) => column.COLUMN_NAME === "create_time").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间<#
+  if (!columns.some((column) => column.COLUMN_NAME === "create_time")
+    || columns.find((column) => column.COLUMN_NAME === "create_time").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub create_time_lbl: String,<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  /// 更新人<#
+  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "update_usr_id").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub update_usr_id: UsrId,
+  /// 更新人<#
+  if (!columns.some((column) => column.COLUMN_NAME === "update_usr_id")
+    || columns.find((column) => column.COLUMN_NAME === "update_usr_id").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub update_usr_id_lbl: String,<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  /// 更新时间<#
+  if (!columns.some((column) => column.COLUMN_NAME === "update_time")
+    || columns.find((column) => column.COLUMN_NAME === "update_time").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间<#
+  if (!columns.some((column) => column.COLUMN_NAME === "update_time")
+    || columns.find((column) => column.COLUMN_NAME === "update_time").onlyCodegenDeno
+  ) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub update_time_lbl: String,<#
+  }
+  #><#
   if (hasVersion) {
   #>
   /// 版本号
@@ -408,7 +500,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_hidden" ||
+      column_name === "create_usr_id" ||
+      column_name === "create_time" ||
+      column_name === "update_usr_id" ||
+      column_name === "update_time"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
@@ -605,6 +701,42 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #><#
     }
     #><#
+    if (hasCreateUsrId) {
+    #>
+    // 创建人
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();<#
+    }
+    #><#
+    if (hasCreateTime) {
+    #>
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };<#
+    }
+    #><#
+    if (hasUpdateUsrId) {
+    #>
+    // 更新人
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();<#
+    }
+    #><#
+    if (hasUpdateTime) {
+    #>
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };<#
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     // 是否已删除
@@ -652,7 +784,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_hidden" ||
+        column_name === "create_usr_id" ||
+        column_name === "create_time" ||
+        column_name === "update_usr_id" ||
+        column_name === "update_time"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
@@ -687,6 +823,30 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #><#
       }
       #><#
+      if (hasCreateUsrId) {
+      #>
+      create_usr_id,
+      create_usr_id_lbl,<#
+      }
+      #><#
+      if (hasCreateTime) {
+      #>
+      create_time,
+      create_time_lbl,<#
+      }
+      #><#
+      if (hasUpdateUsrId) {
+      #>
+      update_usr_id,
+      update_usr_id_lbl,<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      update_time,
+      update_time_lbl,<#
+      }
+      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
         if (!inlineForeignSchema) {
@@ -700,8 +860,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
       #>
-      <#=table#>_models: vec![],
-      <#
+      <#=table#>_models: vec![],<#
       }
       #>
     };
@@ -750,13 +909,13 @@ pub struct <#=tableUP#>FieldComment {<#
       || data_type === "date" || data_type === "datetime"
     ) {
   #>
-  /// <#=column_comment#>
-  pub <#=column_name_rust#>: String,<#
+  /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
   }
   #>
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
@@ -779,7 +938,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case"<#
 if (table === "i18n") {
 #>, name = "<#=tableUP#>Search"<#
@@ -829,15 +988,7 @@ pub struct <#=tableUP#>Search {
     ) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -845,6 +996,8 @@ pub struct <#=tableUP#>Search {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const isPassword = column.isPassword;
+    const isEncrypt = column.isEncrypt;
+    if (isEncrypt) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
@@ -909,7 +1062,7 @@ pub struct <#=tableUP#>Search {
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -992,6 +1145,111 @@ pub struct <#=tableUP#>Search {
   #>
 }
 
+impl std::fmt::Debug for <#=tableUP#>Search {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("<#=tableUP#>Search");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }<#
+    if (hasTenantId) {
+    #>
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }<#
+    }
+    #><#
+    if (hasOrgId) {
+    #>
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }<#
+    }
+    #><#
+    if (hasIsHidden) {
+    #>
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }<#
+    }
+    #><#
+    if (hasIsDeleted) {
+    #>
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === 'id') continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "org_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const isPassword = column.isPassword;
+      const isEncrypt = column.isEncrypt;
+      if (isEncrypt) continue;
+      let is_nullable = column.IS_NULLABLE === "YES";
+    #><#
+      if (foreignKey) {
+    #>
+    // <#=column_comment#>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }
+    if let Some(ref <#=column_name_rust#>_is_null) = self.<#=column_name_rust#>_is_null {
+      item = item.field("<#=column_name_rust#>_is_null", <#=column_name_rust#>_is_null);
+    }<#
+      } else if (foreignKey && foreignKey.type === "many2many") {
+    #>
+    // <#=column_comment#>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+      } else if (!column.dict && !column.dictbiz && (data_type === "varchar" || data_type === "text")) {
+    #>
+    // <#=column_comment#>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }
+    if let Some(ref <#=column_name_rust#>_like) = self.<#=column_name_rust#>_like {
+      item = item.field("<#=column_name_rust#>_like", <#=column_name_rust#>_like);
+    }<#
+      } else {
+    #>
+    // <#=column_comment#>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+      }
+    #><#
+    }
+    #>
+    item.finish()
+  }
+}
+
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case"<#
 if (table === "i18n") {
@@ -1045,7 +1303,11 @@ pub struct <#=tableUP#>Input {
       column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_hidden" ||
+      column_name === "create_usr_id" ||
+      column_name === "create_time" ||
+      column_name === "update_usr_id" ||
+      column_name === "update_time"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
@@ -1191,6 +1453,46 @@ pub struct <#=tableUP#>Input {
   #><#
   }
   #><#
+  if (hasCreateUsrId) {
+  #>
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<UsrId>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<String>,<#
+  }
+  #><#
+  if (hasCreateTime) {
+  #>
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: Option<String>,<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<UsrId>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<String>,<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: Option<String>,<#
+  }
+  #><#
   if (hasVersion) {
   #>
   /// 版本号
@@ -1260,7 +1562,11 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
           column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
-          column_name === "is_hidden"
+          column_name === "is_hidden" ||
+          column_name === "create_usr_id" ||
+          column_name === "create_time" ||
+          column_name === "update_usr_id" ||
+          column_name === "update_time"
         ) continue;
         const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
         if (column_name === 'id') continue;
@@ -1305,6 +1611,34 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #>,<#
         }
       #><#
+      }
+      #><#
+      if (hasCreateUsrId) {
+      #>
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),<#
+      }
+      #><#
+      if (hasCreateTime) {
+      #>
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),<#
+      }
+      #><#
+      if (hasUpdateUsrId) {
+      #>
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),<#
       }
       #><#
       for (const inlineForeignTab of inlineForeignTabs) {
@@ -1391,6 +1725,8 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         if (column_name === "id") {
           continue;
         }
+        const isEncrypt = column.isEncrypt;
+        if (isEncrypt) continue;
       #><#
       if (foreignKey && foreignKey.multiple) {
       #>
@@ -1663,28 +1999,32 @@ for (let i = 0; i < columns.length; i++) {
     }),
   ];
   if (columnDictModels.length === 0) continue;
-  const columnDictDefault = column_default && columnDictModels.find(function(item) {
+  let columnDictDefault = column_default && columnDictModels.find(function(item) {
     return item.val === column_default;
   });
-  const require = column.require;
-  if (require && !columnDictDefault) {
-    throw `表: ${ mod }_${ table } 的字段: ${ column_name } 的默认值: ${ column_default } 在字典中不存在`;
-    process.exit(1);
+  if (!columnDictDefault) {
+    columnDictDefault = columnDictModels[0];
   }
+  const require = column.require;
 #>
 
 /// <#=table_comment#><#=column_comment#>
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum <#=enumColumnName#> {<#
   for (const columnDictModel of columnDictModels) {
     const val = columnDictModel.val;
     const lbl = columnDictModel.lbl;
     let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
     valUp = valUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
+      return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
     }).join("");
   #>
-  /// <#=lbl#>
+  /// <#=lbl#><#
+  if (columnDictDefault.val === val) {
+  #>
+  #[default]<#
+  }
+  #>
   #[graphql(name="<#=val#>")]
   <#=valUp#>,<#
   }
@@ -1699,7 +2039,7 @@ impl fmt::Display for <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       Self::<#=valUp#> => write!(f, "<#=val#>"),<#
@@ -1717,7 +2057,7 @@ impl From<<#=enumColumnName#>> for SmolStr {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
@@ -1735,7 +2075,7 @@ impl From<<#=enumColumnName#>> for String {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
@@ -1749,26 +2089,7 @@ impl From<<#=enumColumnName#>> for ArgType {
   fn from(value: <#=enumColumnName#>) -> Self {
     ArgType::SmolStr(value.into())
   }
-}<#
-if (columnDictDefault) {
-#>
-
-impl Default for <#=enumColumnName#> {
-  fn default() -> Self {<#
-    if (columnDictDefault) {
-      const val = columnDictDefault.val;
-      let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
-      valUp = valUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-    #>
-    Self::<#=valUp#><#
-    }
-    #>
-  }
-}<#
 }
-#>
 
 impl FromStr for <#=enumColumnName#> {
   type Err = anyhow::Error;
@@ -1780,7 +2101,7 @@ impl FromStr for <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       "<#=val#>" => Ok(Self::<#=valUp#>),<#
@@ -1799,7 +2120,7 @@ impl <#=enumColumnName#> {
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       Self::<#=valUp#> => "<#=val#>",<#
@@ -1812,14 +2133,14 @@ impl <#=enumColumnName#> {
 impl TryFrom<String> for <#=enumColumnName#> {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {<#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
         let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
         valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
+          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
         }).join("");
       #>
       "<#=val#>" => Ok(Self::<#=valUp#>),<#

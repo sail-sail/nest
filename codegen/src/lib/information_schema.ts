@@ -95,6 +95,8 @@ async function getSchema0(
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
   const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
@@ -148,6 +150,46 @@ async function getSchema0(
       onlyCodegenDeno: true,
     });
   }
+  // 创建人
+  if (hasCreateUsrId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "create_usr_id")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "create_usr_id",
+      COLUMN_TYPE: "varchar(22)",
+      DATA_TYPE: "varchar",
+      COLUMN_COMMENT: "创建人",
+      onlyCodegenDeno: true,
+    });
+  }
+  // 创建时间
+  if (hasCreateTime && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "create_time")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "create_time",
+      COLUMN_TYPE: "datetime",
+      DATA_TYPE: "datetime",
+      COLUMN_COMMENT: "创建时间",
+      onlyCodegenDeno: true,
+    });
+  }
+  // 更新人
+  if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "update_usr_id")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "update_usr_id",
+      COLUMN_TYPE: "varchar(22)",
+      DATA_TYPE: "varchar",
+      COLUMN_COMMENT: "更新人",
+      onlyCodegenDeno: true,
+    });
+  }
+  // 更新时间
+  if (hasUpdateTime && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "update_time")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "update_time",
+      COLUMN_TYPE: "datetime",
+      DATA_TYPE: "datetime",
+      COLUMN_COMMENT: "更新时间",
+      onlyCodegenDeno: true,
+    });
+  }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
@@ -167,6 +209,7 @@ async function getSchema0(
     }
     if ([ "create_usr_id", "update_usr_id" ].includes(column_name)) {
       item.foreignKey = item.foreignKey || { };
+      item.foreignKey.mod = "base";
       item.foreignKey.table = "usr";
       item.foreignKey.column = "id";
       item.foreignKey.lbl = item.foreignKey.lbl || "lbl";
@@ -455,6 +498,14 @@ async function getSchema0(
   if (hasCreateUsrId && tables[table_name]?.opts?.hasCreateUsrId == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateUsrId = true;
+  }
+  if (hasUpdateTime && tables[table_name]?.opts?.hasUpdateTime == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasUpdateTime = true;
+  }
+  if (hasUpdateUsrId && tables[table_name]?.opts?.hasUpdateUsrId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasUpdateUsrId = true;
   }
   if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
     tables[table_name].opts = tables[table_name].opts || { };

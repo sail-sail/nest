@@ -50,6 +50,8 @@ pub struct FieldPermitModel {
   pub type_lbl: String,
   /// 备注
   pub rem: String,
+  /// 是否已删除
+  pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -66,8 +68,6 @@ pub struct FieldPermitModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 是否已删除
-  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for FieldPermitModel {
@@ -174,7 +174,7 @@ pub struct FieldPermitFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitSearch {
   /// ID
@@ -214,6 +214,78 @@ pub struct FieldPermitSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
+impl std::fmt::Debug for FieldPermitSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("FieldPermitSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 菜单
+    if let Some(ref menu_id) = self.menu_id {
+      item = item.field("menu_id", menu_id);
+    }
+    if let Some(ref menu_id_is_null) = self.menu_id_is_null {
+      item = item.field("menu_id_is_null", menu_id_is_null);
+    }
+    // 编码
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref code_like) = self.code_like {
+      item = item.field("code_like", code_like);
+    }
+    // 名称
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref lbl_like) = self.lbl_like {
+      item = item.field("lbl_like", lbl_like);
+    }
+    // 类型
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
+    }
+    // 备注
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref rem_like) = self.rem_like {
+      item = item.field("rem_like", rem_like);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 创建时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
+}
+
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct FieldPermitInput {
@@ -239,20 +311,28 @@ pub struct FieldPermitInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time_lbl: Option<String>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time_lbl: Option<String>,
 }
 
@@ -421,9 +501,10 @@ impl<'r> sqlx::Decode<'r, MySql> for FieldPermitId {
 }
 
 /// 字段权限类型
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum FieldPermitType {
   /// 可改
+  #[default]
   #[graphql(name="editable")]
   Editable,
   /// 隐藏
@@ -470,12 +551,6 @@ impl From<FieldPermitType> for ArgType {
   }
 }
 
-impl Default for FieldPermitType {
-  fn default() -> Self {
-    Self::Editable
-  }
-}
-
 impl FromStr for FieldPermitType {
   type Err = anyhow::Error;
   
@@ -502,7 +577,7 @@ impl FieldPermitType {
 impl TryFrom<String> for FieldPermitType {
   type Error = sqlx::Error;
   
-  fn try_from(s: String) -> Result<Self, Self::Error> {
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "editable" => Ok(Self::Editable),
       "hidden" => Ok(Self::Hidden),

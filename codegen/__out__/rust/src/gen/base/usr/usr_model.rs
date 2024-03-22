@@ -78,6 +78,8 @@ pub struct UsrModel {
   pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
+  /// 是否已删除
+  pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
@@ -94,8 +96,6 @@ pub struct UsrModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 是否已删除
-  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for UsrModel {
@@ -350,7 +350,7 @@ pub struct UsrFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrSearch {
   /// ID
@@ -418,6 +418,127 @@ pub struct UsrSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
+impl std::fmt::Debug for UsrSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("UsrSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 头像
+    if let Some(ref img) = self.img {
+      item = item.field("img", img);
+    }
+    if let Some(ref img_like) = self.img_like {
+      item = item.field("img_like", img_like);
+    }
+    // 名称
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref lbl_like) = self.lbl_like {
+      item = item.field("lbl_like", lbl_like);
+    }
+    // 用户名
+    if let Some(ref username) = self.username {
+      item = item.field("username", username);
+    }
+    if let Some(ref username_like) = self.username_like {
+      item = item.field("username_like", username_like);
+    }
+    // 密码
+    if let Some(ref password) = self.password {
+      item = item.field("password", password);
+    }
+    if let Some(ref password_like) = self.password_like {
+      item = item.field("password_like", password_like);
+    }
+    // 所属组织
+    if let Some(ref org_ids) = self.org_ids {
+      item = item.field("org_ids", org_ids);
+    }
+    if let Some(ref org_ids_is_null) = self.org_ids_is_null {
+      item = item.field("org_ids_is_null", org_ids_is_null);
+    }
+    // 默认组织
+    if let Some(ref default_org_id) = self.default_org_id {
+      item = item.field("default_org_id", default_org_id);
+    }
+    if let Some(ref default_org_id_is_null) = self.default_org_id_is_null {
+      item = item.field("default_org_id_is_null", default_org_id_is_null);
+    }
+    // 锁定
+    if let Some(ref is_locked) = self.is_locked {
+      item = item.field("is_locked", is_locked);
+    }
+    // 启用
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    // 排序
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    // 所属部门
+    if let Some(ref dept_ids) = self.dept_ids {
+      item = item.field("dept_ids", dept_ids);
+    }
+    if let Some(ref dept_ids_is_null) = self.dept_ids_is_null {
+      item = item.field("dept_ids_is_null", dept_ids_is_null);
+    }
+    // 拥有角色
+    if let Some(ref role_ids) = self.role_ids {
+      item = item.field("role_ids", role_ids);
+    }
+    if let Some(ref role_ids_is_null) = self.role_ids_is_null {
+      item = item.field("role_ids_is_null", role_ids_is_null);
+    }
+    // 备注
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref rem_like) = self.rem_like {
+      item = item.field("rem_like", rem_like);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 创建时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
+}
+
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
@@ -468,20 +589,28 @@ pub struct UsrInput {
   /// 备注
   pub rem: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time_lbl: Option<String>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time_lbl: Option<String>,
 }
 

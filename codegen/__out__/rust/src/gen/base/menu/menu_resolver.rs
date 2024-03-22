@@ -79,6 +79,10 @@ pub async fn create(
   options: Option<Options>,
 ) -> Result<MenuId> {
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = menu_service::set_id_by_lbl(
     input,
   ).await?;
@@ -103,6 +107,10 @@ pub async fn update_by_id(
   input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuId> {
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = menu_service::set_id_by_lbl(
     input,
@@ -168,7 +176,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/base/menu".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = menu_service::enable_by_ids(
@@ -207,7 +215,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/base/menu".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = menu_service::lock_by_ids(

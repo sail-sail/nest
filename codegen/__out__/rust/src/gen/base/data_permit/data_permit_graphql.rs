@@ -122,7 +122,7 @@ impl DataPermitGenMutation {
   async fn create_data_permit(
     &self,
     ctx: &Context<'_>,
-    model: DataPermitInput,
+    input: DataPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<DataPermitId> {
     let mut options = Options::new();
@@ -135,7 +135,7 @@ impl DataPermitGenMutation {
       .build()
       .scope({
         data_permit_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -146,7 +146,7 @@ impl DataPermitGenMutation {
     &self,
     ctx: &Context<'_>,
     id: DataPermitId,
-    model: DataPermitInput,
+    input: DataPermitInput,
   ) -> Result<DataPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -155,7 +155,7 @@ impl DataPermitGenMutation {
       .scope({
         data_permit_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

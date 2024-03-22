@@ -267,6 +267,20 @@ pub struct <#=tableUP#>GenMutation;
 
 #[Object(rename_args = "snake_case")]
 impl <#=tableUP#>GenMutation {<#
+    if (opts.noAdd === true && opts.noEdit === true) {
+  #>
+  
+  /// 占位方法, 用于实现 <#=tableUP#>Input
+  #[allow(unused_variables)]
+  async fn no_add_no_edit_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    input: <#=tableUP#>Input,
+  ) -> Result<<#=Table_Up#>Id> {
+    Err(anyhow::anyhow!(""))
+  }<#
+    }
+  #><#
     if (opts.noAdd !== true) {
   #>
   
@@ -279,7 +293,7 @@ impl <#=tableUP#>GenMutation {<#
   async fn create_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    model: <#=tableUP#>Input,
+    input: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
   ) -> Result<<#=Table_Up#>Id> {
     let mut options = Options::new();
@@ -292,7 +306,7 @@ impl <#=tableUP#>GenMutation {<#
       .build()
       .scope({
         <#=table#>_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -370,7 +384,7 @@ impl <#=tableUP#>GenMutation {<#
     &self,
     ctx: &Context<'_>,
     id: <#=Table_Up#>Id,
-    model: <#=tableUP#>Input,
+    input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -379,7 +393,7 @@ impl <#=tableUP#>GenMutation {<#
       .scope({
         <#=table#>_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

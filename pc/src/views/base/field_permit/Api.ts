@@ -35,6 +35,22 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: FieldPermitInput = {
+    id: model?.id,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    code: model?.code,
+    lbl: model?.lbl,
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找字段权限列表
  * @param {FieldPermitSearch} search?
@@ -162,25 +178,26 @@ export async function findCount(
 
 /**
  * 创建字段权限
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
+  input = intoInput(input);
   const data: {
     createFieldPermit: Mutation["createFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: FieldPermitInput!, $unique_type: UniqueType) {
-        createFieldPermit(model: $model, unique_type: $unique_type)
+      mutation($input: FieldPermitInput!, $unique_type: UniqueType) {
+        createFieldPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -191,25 +208,26 @@ export async function create(
 /**
  * 根据 id 修改字段权限
  * @param {FieldPermitId} id
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: FieldPermitId,
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
+  input = intoInput(input);
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: FieldPermitId!, $model: FieldPermitInput!) {
-        updateByIdFieldPermit(id: $id, model: $model)
+      mutation($id: FieldPermitId!, $input: FieldPermitInput!) {
+        updateByIdFieldPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: FieldPermitId = data.updateByIdFieldPermit;

@@ -6,7 +6,26 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
-const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
+const hasMany2manyNotInline = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
+    return true;
+  }
+  return false;
+});
+const hasMany2many = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many") {
+    return true;
+  }
+  return false;
+});
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
@@ -19,24 +38,50 @@ const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasDict = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
+  if (column.ignoreCodegen) return false;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
+  if (column_name === "id") return false;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) return false;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
   }
-  return column.dict;
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (!column.dict) return false;
+  return true;
 });
 const hasDictbiz = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
+  if (column.ignoreCodegen) return false;
   const column_name = column.COLUMN_NAME;
-  if (column_name === "id") {
-    return false;
+  if (column_name === "id") return false;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "org_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) return false;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
   }
-  return column.dictbiz;
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (!column.dictbiz) return false;
+  return true;
 });
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
@@ -61,8 +106,9 @@ if (hasIsMonth) {
 use chrono::Datelike;<#
 }
 #>
+#[allow(unused_imports)]
 use crate::common::util::string::*;<#
-if (hasMany2many) {
+if (hasMany2manyNotInline) {
 #>
 
 use crate::common::util::dao::{
@@ -80,12 +126,18 @@ use crate::common::util::dao::encrypt;<#
 if (hasDataPermit()) {
 #>
 
-use crate::src::data_permit::data_permit_dao::get_data_permits;
-use crate::src::dept::dept_dao::{
+#[allow(unused_imports)]
+use crate::gen::base::data_permit::data_permit_model::{
+  DataPermitType,
+  DataPermitScope,
+};
+use crate::src::base::data_permit::data_permit_dao::get_data_permits;
+#[allow(unused_imports)]
+use crate::src::base::dept::dept_dao::{
   get_auth_dept_ids,
   get_auth_and_parents_dept_ids,
 };
-use crate::src::role::role_dao::get_auth_role_ids;<#
+use crate::src::base::role::role_dao::get_auth_role_ids;<#
 }
 #>
 
@@ -114,6 +166,7 @@ use crate::common::context::{
   get_order_by_query,
   get_page_query,
   del_caches,
+  IS_DEBUG,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -319,46 +372,45 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<<#=tableUP#>Search>,
+  search: Option<&<#=tableUP#>Search>,
+  options: Option<&Options>,
 ) -> Result<String> {<#
+  if (hasIsDeleted) {
+  #>
+  let is_deleted = search
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
     get_route_path(),
+    options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
-    .any(|item| item.type === "create_usr")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
-    .any(|item| item.type === "role")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Role);
   let has_dept_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Dept);
   let has_dept_parent_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept_parent")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::DeptParent);
   let has_tenant_permit = data_permit_models.iter()
-    .any(|item| item.type === "tenant")
-    .is_some();<#
+    .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
-  let mut where_query = String::with_capacity(80 * 15 * 2);<#
+  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
   if (hasIsDeleted) {
   #>
-  {
-    let is_deleted = search.as_ref()
-      .and_then(|item| item.is_deleted)
-      .unwrap_or(0);
-    where_query += " t.is_deleted = ?";
-    args.push(is_deleted.into());
-  }<#
+  where_query += " t.is_deleted = ?";
+  args.push(is_deleted.into());<#
   }
   #>
   {
-    let id = match &search {
-      Some(item) => &item.id,
-      None => &None,
+    let id = match search {
+      Some(item) => item.id.as_ref(),
+      None => None,
     };
     let id = match id {
       None => None,
@@ -373,11 +425,11 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<<#=Table_Up#>Id> = match &search {
-      Some(item) => item.ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let ids: Option<Vec<<#=Table_Up#>Id>> = match search {
+      Some(item) => item.ids.clone(),
+      None => None,
     };
-    if !ids.is_empty() {
+    if let Some(ids) = ids {
       let arg = {
         let mut items = Vec::with_capacity(ids.len());
         for id in ids {
@@ -392,14 +444,15 @@ async fn get_where_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_usr_permit {
+    let usr_id = get_auth_id().unwrap_or_default();
     where_query += " and t.create_usr_id = ?";
-    args.push(get_auth_id().into());
+    args.push(usr_id.into());
   } else if (!has_tenant_permit && has_dept_parent_permit)
     || (!has_tenant_permit && has_dept_permit)
   {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
     let arg = {
-      let mut dept_ids2 = Vec::with_capacity(dept_ids.len());
+      let mut items = Vec::with_capacity(dept_ids.len());
       for dept_id in dept_ids {
         args.push(dept_id.into());
         items.push("?");
@@ -426,7 +479,7 @@ async fn get_where_query(
   #>
   {
     let tenant_id = {
-      let tenant_id = match &search {
+      let tenant_id = match search {
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
@@ -450,7 +503,7 @@ async fn get_where_query(
   #>
   {
     let org_id = {
-      let org_id = match &search {
+      let org_id = match search {
         Some(item) => item.org_id.clone(),
         None => None,
       };
@@ -488,6 +541,9 @@ async fn get_where_query(
     let column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
       continue;
     }
     let selectList = [ ];
@@ -541,7 +597,7 @@ async fn get_where_query(
     ].includes(column_name)) {
   #>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match &search {
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => Default::default(),
     };
@@ -560,11 +616,11 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type !== "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {
@@ -577,7 +633,7 @@ async fn get_where_query(
     }
   }
   {
-    let <#=column_name#>_is_null: bool = match &search {
+    let <#=column_name#>_is_null: bool = match search {
       Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
       None => false,
     };
@@ -588,11 +644,11 @@ async fn get_where_query(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {
@@ -605,7 +661,7 @@ async fn get_where_query(
     }
   }
   {
-    let <#=column_name#>_is_null: bool = match &search {
+    let <#=column_name#>_is_null: bool = match search {
       Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
       None => false,
     };
@@ -632,11 +688,11 @@ async fn get_where_query(
       }
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=enumColumnName#>> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
-      None => Default::default(),
+    let <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>> = match search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
     };
-    if !<#=column_name_rust#>.is_empty() {
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
         for item in <#=column_name_rust#> {
@@ -651,7 +707,7 @@ async fn get_where_query(
     } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -662,7 +718,7 @@ async fn get_where_query(
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   {
-    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match search {
       Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -693,14 +749,14 @@ async fn get_where_query(
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
-    let <#=column_name#>_like = match &search {
+    let <#=column_name#>_like = match search {
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
@@ -716,7 +772,7 @@ async fn get_where_query(
     } else {
   #>
   {
-    let <#=column_name_rust#> = match &search {
+    let <#=column_name_rust#> = match search {
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
@@ -731,27 +787,35 @@ async fn get_where_query(
   Ok(where_query)
 }
 
-async fn get_from_query() -> Result<String> {<#
+#[allow(unused_variables)]
+async fn get_from_query(
+  args: &mut QueryArgs,
+  search: Option<&<#=tableUP#>Search>,
+  options: Option<&Options>,
+) -> Result<String> {<#
+  if (hasIsDeleted && hasMany2many) {
+  #>
+  let is_deleted = search
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
     get_route_path(),
+    options,
   ).await?;
   let has_usr_permit = data_permit_models.iter()
-    .any(|item| item.type === "create_usr")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
-    .any(|item| item.type === "role")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Role);
   let has_dept_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::Dept);
   let has_dept_parent_permit = data_permit_models.iter()
-    .any(|item| item.type === "dept_parent")
-    .is_some();
+    .any(|item| item.scope == DataPermitScope::DeptParent);
   let has_tenant_permit = data_permit_models.iter()
-    .any(|item| item.type === "tenant")
-    .is_some();<#
+    .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
   let<#
@@ -759,6 +823,7 @@ async fn get_from_query() -> Result<String> {<#
   #> mut<#
   }
   #> from_query = r#"<#=mod#>_<#=table#> t<#
+    let fromQueryIsDeletedNum = 0;
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -774,11 +839,21 @@ async fn get_from_query() -> Result<String> {<#
       if (foreignKey && foreignKey.type === "many2many") {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id<#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
+      }
+      #>
     left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = ?<#
+      }
+      #>
     left join (
       select
         json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
@@ -791,11 +866,15 @@ async fn get_from_query() -> Result<String> {<#
       from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
         on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-        and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
         on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
-      where
-        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+      where<#
+      if (hasIsDeleted) {
+        fromQueryIsDeletedNum++;
+      #>
+        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
+      }
+      #>
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
@@ -807,6 +886,13 @@ async fn get_from_query() -> Result<String> {<#
     #><#
     }
     #>"#.to_owned();<#
+  if (hasIsDeleted && hasMany2many) {
+    for (let i = 0; i < fromQueryIsDeletedNum; i++) {
+  #>
+  args.push(is_deleted.into());<#
+    }
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && has_dept_permit {
@@ -827,7 +913,6 @@ async fn get_from_query() -> Result<String> {<#
 }
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
-#[allow(unused_variables)]
 pub async fn find_all(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
@@ -835,12 +920,47 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
-  #[allow(unused_variables)]
   let table = "<#=mod#>_<#=table#>";
-  let _method = "find_all";<#
+  let method = "find_all";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(page) = &page {
+      msg += &format!(" page: {:?}", &page);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);<#
   if (hasIsDeleted) {
   #>
   
+  #[allow(unused_variables)]
   let is_deleted = search.as_ref()
     .and_then(|item| item.is_deleted);<#
   }
@@ -848,8 +968,8 @@ pub async fn find_all(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;<#
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
   if (hasCreateTime || opts?.defaultSort) {
   #>
   
@@ -1009,7 +1129,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictNum#>] = dict_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;<#
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
     if (hasDictbiz) {
@@ -1068,13 +1188,13 @@ pub async fn find_all(
       }
       if (!column.dictbiz) continue;
     #>
-    <#=column_name#>_dictbiz,<#
+    <#=column_name#>_dict,<#
     dictBizNum++;
     }
     #>
   ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dictbiz_vec.len() != 3"))?;<#
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -1109,6 +1229,7 @@ pub async fn find_all(
   }
   #>
   
+  #[allow(unused_variables)]
   for model in &mut res {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -1197,14 +1318,42 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  #[allow(unused_variables)]
   let table = "<#=mod#>_<#=table#>";
-  let _method = "find_count";
+  let method = "find_count";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"
     select
@@ -1384,6 +1533,42 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_one";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(None);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let page = PageInput {
     pg_offset: 0.into(),
     pg_size: 1.into(),
@@ -1407,6 +1592,31 @@ pub async fn find_by_id(
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if id.is_empty() {
+    return Ok(None);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let search = <#=tableUP#>Search {
     id: Some(id),
     ..Default::default()
@@ -1427,6 +1637,29 @@ pub async fn exists(
   options: Option<Options>,
 ) -> Result<bool> {
   
+  let table = "<#=mod#>_<#=table#>";
+  let method = "exists";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let total = find_count(
     search,
     options,
@@ -1440,6 +1673,27 @@ pub async fn exists_by_id(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "exists_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let search = <#=tableUP#>Search {
     id: Some(id),
@@ -1461,6 +1715,30 @@ pub async fn find_by_unique(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" search: {:?}", &search);
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -1566,8 +1844,31 @@ fn equals_by_unique(
 pub async fn check_by_unique(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
-  unique_type: UniqueType,
+  options: Option<Options>,
 ) -> Result<Option<<#=Table_Up#>Id>> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "check_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" model: {:?}", &model);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -1575,6 +1876,12 @@ pub async fn check_by_unique(
   if !is_equals {
     return Ok(None);
   }
+  
+  let unique_type = options
+    .as_ref()
+    .and_then(|item| item.get_unique_type())
+    .unwrap_or_default();
+  
   if unique_type == UniqueType::Ignore {
     return Ok(None);
   }
@@ -1801,7 +2108,7 @@ pub async fn set_id_by_lbl(
   
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
-    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum.toString()#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
       input.<#=column_name_rust#> = <#=column_name#>_dictbiz
         .iter()
@@ -1810,8 +2117,7 @@ pub async fn set_id_by_lbl(
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }<#
   dictBizNumMap[column_name] = dictBizNum.toString();
@@ -1889,7 +2195,7 @@ pub async fn set_id_by_lbl(
       input.<#=column_name_rust#> = model.id.into();
     }
   }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl && !foreignKey.notSetIdByLbl) {
   #>
   
   // <#=column_comment#>
@@ -1910,7 +2216,7 @@ pub async fn set_id_by_lbl(
     for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
       let model = <#=daoStr#>find_one(
         crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-          lbl: lbl.into(),
+          <#=foreignKey.lbl#>: lbl.into(),
           ..Default::default()
         }.into(),
         None,
@@ -2052,9 +2358,19 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+pub fn get_is_debug(
+  options: Option<&Options>,
+) -> bool {
+  let mut is_debug: bool = *IS_DEBUG;
+  if let Some(options) = &options {
+    is_debug = options.get_is_debug();
+  }
+  is_debug
+}
+
 /// 创建<#=table_comment#>
-#[allow(unused_mut)]
 pub async fn create(
+  #[allow(unused_mut)]
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {<#
@@ -2068,7 +2384,25 @@ pub async fn create(
   #>
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "create";
+  let method = "create";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if input.id.is_some() {
     return Err(SrvErr::msg(
@@ -2131,19 +2465,23 @@ pub async fn create(
   if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
-      .map(|item|
-        item.get_unique_type().unwrap_or(UniqueType::Throw)
+      .and_then(|item|
+        item.get_unique_type()
       )
-      .unwrap_or(UniqueType::Throw);
+      .unwrap_or_default();
     
     let mut id: Option<<#=Table_Up#>Id> = None;
     
     for old_model in old_models {
       
+      let options = Options::from(options.clone())
+        .set_unique_type(unique_type);
+      let options = Some(options);
+      
       id = check_by_unique(
         input.clone(),
         old_model,
-        unique_type,
+        options,
       ).await?;
       
       if id.is_some() {
@@ -2368,6 +2706,7 @@ pub async fn create(
     const many2many = column.many2many;
   #><#
   if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
   #>
   
   // <#=column_comment#>
@@ -2425,7 +2764,26 @@ pub async fn update_tenant_by_id(
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
-  let _method = "update_tenant_by_id";
+  let method = "update_tenant_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = options.into();
   
   let mut args = QueryArgs::new();
   
@@ -2469,7 +2827,26 @@ pub async fn update_org_by_id(
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
-  let _method = "update_org_by_id";
+  let method = "update_org_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" org_id: {:?}", &org_id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = options.into();
   
   let mut args = QueryArgs::new();
   
@@ -2646,7 +3023,26 @@ pub async fn update_by_id(
   }
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "update_by_id";
+  let method = "update_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let now = get_now();
   
@@ -2919,10 +3315,6 @@ pub async fn update_by_id(
   }<#
   }
   #><#
-  if (hasMany2many) {
-  #>
-  
-  let mut field_num = 0;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2944,6 +3336,7 @@ pub async fn update_by_id(
     const many2many = column.many2many;
   #><#
   if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
   #>
   
   // <#=column_comment#>
@@ -2982,8 +3375,6 @@ pub async fn update_by_id(
       ).await?;
     }
   }<#
-  }
-  #><#
     if (mod === "base" && table === "i18n") {
   #>
   
@@ -3080,9 +3471,24 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "delete_by_ids";
+  let method = "delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -3166,9 +3572,24 @@ pub async fn default_by_id(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "default_by_id";
+  let method = "default_by_id";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
   
@@ -3249,9 +3670,25 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "enable_by_ids";
+  let method = "enable_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_enabled: {:?}", &is_enabled);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
   
@@ -3314,7 +3751,26 @@ pub async fn lock_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "lock_by_ids";
+  let method = "lock_by_ids";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_locked: {:?}", &is_locked);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
   
   let options = Options::from(options);
   
@@ -3355,9 +3811,28 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "revert_by_ids";
+  let method = "revert_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -3482,17 +3957,40 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "force_delete_by_ids";
+  let method = "force_delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
     
     let model = find_all(
       <#=tableUP#>Search {
-        id: id.clone().into(),
-        is_deleted: 1.into(),
+        id: id.clone().into(),<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 1.into(),<#
+        }
+        #>
         ..Default::default()
       }.into(),
       None,
@@ -3573,7 +4071,21 @@ pub async fn find_last_order_by(
 ) -> Result<u32> {
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "find_last_order_by";
+  let method = "find_last_order_by";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();

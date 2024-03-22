@@ -174,7 +174,7 @@ impl TenantGenMutation {
   async fn create_tenant(
     &self,
     ctx: &Context<'_>,
-    model: TenantInput,
+    input: TenantInput,
     unique_type: Option<UniqueType>,
   ) -> Result<TenantId> {
     let mut options = Options::new();
@@ -187,7 +187,7 @@ impl TenantGenMutation {
       .build()
       .scope({
         tenant_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -198,7 +198,7 @@ impl TenantGenMutation {
     &self,
     ctx: &Context<'_>,
     id: TenantId,
-    model: TenantInput,
+    input: TenantInput,
   ) -> Result<TenantId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -207,7 +207,7 @@ impl TenantGenMutation {
       .scope({
         tenant_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

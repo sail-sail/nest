@@ -19,6 +19,19 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: LoginLogInput = {
+    id: model?.id,
+    username: model?.username,
+    is_succ: model?.is_succ,
+    is_succ_lbl: model?.is_succ_lbl,
+    ip: model?.ip,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找登录日志列表
  * @param {LoginLogSearch} search?
@@ -43,8 +56,6 @@ export async function findAll(
           is_succ
           is_succ_lbl
           ip
-          create_usr_id
-          create_usr_id_lbl
           create_time
           create_time_lbl
           is_deleted
@@ -87,8 +98,6 @@ export async function findOne(
           is_succ
           is_succ_lbl
           ip
-          create_usr_id
-          create_usr_id_lbl
           create_time
           create_time_lbl
           is_deleted
@@ -150,8 +159,6 @@ export async function findById(
           is_succ
           is_succ_lbl
           ip
-          create_usr_id
-          create_usr_id_lbl
           create_time
           create_time_lbl
           is_deleted
@@ -331,8 +338,6 @@ export function useExportExcel(routePath: string) {
               is_succ
               is_succ_lbl
               ip
-              create_usr_id
-              create_usr_id_lbl
               create_time
               create_time_lbl
             }

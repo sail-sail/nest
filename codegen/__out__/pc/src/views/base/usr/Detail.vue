@@ -56,7 +56,7 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
@@ -121,6 +121,8 @@
             prop="password"
           >
             <CustomInput
+              type="password"
+              show-password
               v-model="dialogModel.password"
               :placeholder="`${ ns('请输入') } ${ n('密码') }`"
               :readonly="isLocked || isReadonly"
@@ -621,8 +623,11 @@ async function showDialog(
 }
 
 watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
+  () => [ inited, isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (!inited) {
+      return;
+    }
     if (oldDialogNotice != null) {
       return;
     }
@@ -632,9 +637,9 @@ watch(
     }
     if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
+      return;
     }
+    dialogNotice = "";
   },
 );
 
@@ -689,13 +694,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -713,7 +723,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("用户")));
   }
 }
 

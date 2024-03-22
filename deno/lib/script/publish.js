@@ -4,7 +4,18 @@ const { randomUUID } = require("node:crypto");
 const ecosystem = require(`${ __dirname }/../../ecosystem.config.js`);
 const publish_cnf = require(`${ __dirname }/publish_cnf.js`);
 
-const projectName = ecosystem.apps[0].name;
+const { Command } = require("commander");
+
+const envArgs = process.argv;
+const program = new Command();
+program
+  .option('--env [value]', '执行环境dev, test, prod')
+  .parse(envArgs);
+
+const options = program.opts();
+const env = options.env || "prod";
+
+const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 const publishBase = publish_cnf[projectName].publishBase;
 
 const sshConfig = {
