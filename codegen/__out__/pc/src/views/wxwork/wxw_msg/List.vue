@@ -18,8 +18,8 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -32,8 +32,7 @@
           prop="wxw_app_id"
         >
           <CustomSelect
-            :set="search.wxw_app_id = search.wxw_app_id || [ ]"
-            v-model="search.wxw_app_id"
+            v-model="wxw_app_id_search"
             :method="getWxwAppList"
             :options-map="((item: WxwAppModel) => {
               return {
@@ -54,9 +53,7 @@
           prop="errcode"
         >
           <DictSelect
-            :set="search.errcode = search.errcode || [ ]"
-            :model-value="search.errcode"
-            @update:model-value="search.errcode = $event"
+            v-model="errcode_search"
             code="wxw_msg_errcode"
             :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
             multiple
@@ -71,14 +68,10 @@
           prop="create_time"
         >
           <CustomDatePicker
-            :set="search.create_time = search.create_time || [ ]"
             type="daterange"
-            :model-value="(search.create_time as any)"
+            v-model="create_time_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -101,8 +94,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -130,8 +123,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -168,6 +161,7 @@
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         >
           
@@ -407,7 +401,7 @@
     >
       <el-table
         ref="tableRef"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
+        v-header-order-drag="() => ({ tableColumns, storeColumns })"
         :data="tableData"
         :row-class-name="rowClassName"
         border
@@ -627,18 +621,147 @@ const emit = defineEmits<{
   rowDblclick: [ WxwMsgModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  isListSelectDialog?: string;
+  ids?: string[]; //ids
+  selectedIds?: WxwMsgId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: WxwMsgId; // ID
+  wxw_app_id?: string|string[]; // 企微应用
+  wxw_app_id_lbl?: string; // 企微应用
+  errcode?: string|string[]; // 发送状态
+  touser?: string; // 成员ID
+  touser_like?: string; // 成员ID
+  title?: string; // 标题
+  title_like?: string; // 标题
+  description?: string; // 描述
+  description_like?: string; // 描述
+  btntxt?: string; // 按钮文字
+  btntxt_like?: string; // 按钮文字
+  errmsg?: string; // 错误信息
+  errmsg_like?: string; // 错误信息
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  isListSelectDialog: "0|1",
+  ids: "string[]",
+  wxw_app_id: "string[]",
+  wxw_app_id_lbl: "string[]",
+  errcode: "string[]",
+  errcode_lbl: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+  "isListSelectDialog",
+];
+
+/** 内置查询条件 */
+const builtInSearch: WxwMsgSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: WxwMsgModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
-    wxw_app_id: [ ],
   } as WxwMsgSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
+
+// 企微应用
+const wxw_app_id_search = $computed({
+  get() {
+    return search.wxw_app_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.wxw_app_id = undefined;
+    } else {
+      search.wxw_app_id = val;
+    }
+  },
+});
+
+// 发送状态
+const errcode_search = $computed({
+  get() {
+    return search.errcode || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.errcode = undefined;
+    } else {
+      search.errcode = val;
+    }
+  },
+});
+
+// 发送时间
+const create_time_search = $computed({
+  get() {
+    return search.create_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.create_time = undefined;
+    } else {
+      search.create_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -696,78 +819,6 @@ async function onIdsChecked() {
   await dataGrid(true);
 }
 
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: WxwMsgId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: WxwMsgId; // ID
-  wxw_app_id?: string|string[]; // 企微应用
-  wxw_app_id_lbl?: string; // 企微应用
-  errcode?: string|string[]; // 发送状态
-  touser?: string; // 成员ID
-  touser_like?: string; // 成员ID
-  title?: string; // 标题
-  title_like?: string; // 标题
-  description?: string; // 描述
-  description_like?: string; // 描述
-  btntxt?: string; // 按钮文字
-  btntxt_like?: string; // 按钮文字
-  errmsg?: string; // 错误信息
-  errmsg_like?: string; // 错误信息
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-  wxw_app_id: "string[]",
-  wxw_app_id_lbl: "string[]",
-  errcode: "string[]",
-  errcode_lbl: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: WxwMsgSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: WxwMsgModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
-
 /** 分页功能 */
 let {
   page,
@@ -800,6 +851,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1107,7 +1159,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxwMsgModel,
+  column: TableColumnCtx<WxwMsgModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -1300,7 +1359,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {

@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找企微用户总数
  */
 export async function findCountWxwUsr(
-  search?: WxwUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxwUsrSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxwUsr(
  * 根据搜索条件和分页查找企微用户列表
  */
 export async function findAllWxwUsr(
-  search?: WxwUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxwUsrSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxwUsrModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
  * 根据条件查找第一个企微用户
  */
 export async function findOneWxwUsr(
-  search?: WxwUsrSearch & { $extra?: SearchExtra[] },
+  search?: WxwUsrSearch,
   sort?: SortInput[],
 ): Promise<WxwUsrModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createWxwUsr(
   input: WxwUsrInput,
   unique_type?: UniqueType,
 ): Promise<WxwUsrId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdWxwUsr(
   id: WxwUsrId,
   input: WxwUsrInput,
 ): Promise<WxwUsrId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,

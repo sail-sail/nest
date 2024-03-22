@@ -61,7 +61,7 @@ type WxwMsgFieldComment {
   errmsg: String!
 }
 input WxwMsgInput {
-  ""
+  "ID"
   id: WxwMsgId
   "企微应用"
   wxw_app_id: WxwAppId
@@ -79,10 +79,6 @@ input WxwMsgInput {
   description: String
   "按钮文字"
   btntxt: String
-  "发送时间"
-  create_time: NaiveDateTime
-  "发送时间"
-  create_time_lbl: String
   "错误信息"
   errmsg: String
 }
@@ -111,7 +107,7 @@ input WxwMsgSearch {
   btntxt: String
   btntxt_like: String
   "发送时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "错误信息"
   errmsg: String
   errmsg_like: String
