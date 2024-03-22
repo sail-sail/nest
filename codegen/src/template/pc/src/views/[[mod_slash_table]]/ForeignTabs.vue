@@ -5,6 +5,7 @@ const Table_Up = table.split("_").map(function(item) {
 const tableUp = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
 const column = columns.find((item) => item.foreignTabs?.length > 0);
 const foreignTabs = column?.foreignTabs || [ ];
+const foreignTabsDialogType = column?.foreignTabsDialogType || "medium";
 #><template>
 <CustomDialog
   ref="customDialogRef"
@@ -173,7 +174,7 @@ async function showDialog(
   inited = false;
   const title = arg?.title || "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "large",
+    type: "<#=foreignTabsDialogType#>",
     title,
   });
   onCloseResolve = dialogRes.onCloseResolve;

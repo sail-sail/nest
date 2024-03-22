@@ -35,8 +35,8 @@ EoBCe8WvTiuiM/1D60LFrg,w5P7uguASN2gSTY5HQKIKg,,本部门,dept,2,1,1
 vnPFqzHmTGSsT1P6BCL8kg,w5P7uguASN2gSTY5HQKIKg,,本部门极其父部门,dept_parent,3,1,1
 2NlgW7XhQ+O73Xa4+mDvcg,w5P7uguASN2gSTY5HQKIKg,,本角色,role,4,1,1
 KRyE05APQZ+nLxPsNsu+9w,w5P7uguASN2gSTY5HQKIKg,,本租户,tenant,5,1,1
-Z1tE9EpPQ+6PU9vDfMb1Tg,MQOcbGreQUqQG1EFWMbkVQ,数据权限-类型,可见不可改,readonly,1,1,1
-L/kRr5ZiTcWmWCEQrdoDiQ,MQOcbGreQUqQG1EFWMbkVQ,,可见且可改,editable,2,1,1
+Z1tE9EpPQ+6PU9vDfMb1Tg,MQOcbGreQUqQG1EFWMbkVQ,数据权限-类型,可见不可改且不可删,readonly,1,1,1
+L/kRr5ZiTcWmWCEQrdoDiQ,MQOcbGreQUqQG1EFWMbkVQ,,可见可改且可删,editable,2,1,1
 ,,,,,,,
 762R07U3S9uBBbwgqvZwCA,T0lgQA4dQuCqw2DhMBjo/Q,字段权限-类型,可改,editable,1,1,1
 9J6oA8lKRlyCZP+TsNAboQ,T0lgQA4dQuCqw2DhMBjo/Q,,隐藏,hidden,2,1,1

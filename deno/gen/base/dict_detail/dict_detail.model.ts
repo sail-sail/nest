@@ -1,5 +1,3 @@
-
-
 import type {
   DictDetailInput as DictDetailInputType,
   DictDetailModel as DictDetailModelType,

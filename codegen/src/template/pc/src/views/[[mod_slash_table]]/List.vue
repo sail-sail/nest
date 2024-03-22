@@ -1019,7 +1019,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
                   {{ row[column.property] }}
                 </el-link>
@@ -1133,7 +1137,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
                   {{ row[column.property] }}
                 </el-link>
@@ -1183,7 +1191,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
                   {{ row[column.property] }}
                 </el-link>

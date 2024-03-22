@@ -1,5 +1,3 @@
-
-
 import type {
   PermitInput as PermitInputType,
   PermitModel as PermitModelType,

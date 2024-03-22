@@ -278,6 +278,9 @@ export interface TableCloumn {
     
   },
   
+  /** foreignTabs 弹出框的大小, 默认为 medium */
+  foreignTabsDialogType?: "auto" | "medium" | "large" | "default",
+  
   foreignTabs?: {
     /**
      * 外键关联的按钮类型, 默认为: link

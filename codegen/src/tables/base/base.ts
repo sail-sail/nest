@@ -327,16 +327,17 @@ export default defineConfig({
       {
         COLUMN_NAME: "is_succ",
         width: 100,
+        search: true,
       },
       {
         COLUMN_NAME: "ip",
         width: 140,
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
+        search: true,
       },
       {
         COLUMN_NAME: "create_time",
+        COLUMN_COMMENT: "登录时间",
+        search: true,
       },
     ],
   },

@@ -39,6 +39,50 @@
         </el-form-item>
       </template>
       
+      <template v-if="showBuildIn || builtInSearch?.is_succ == null">
+        <el-form-item
+          :label="n('登录成功')"
+          prop="is_succ"
+        >
+          <DictSelect
+            :model-value="is_succ_search[0]"
+            @update:model-value="$event != null ? is_succ_search = [ $event ] : is_succ_search = [ ]"
+            code="yes_no"
+            :placeholder="`${ ns('请选择') } ${ n('登录成功') }`"
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="builtInSearch?.ip == null && (showBuildIn || builtInSearch?.ip_like == null)">
+        <el-form-item
+          :label="n('IP')"
+          prop="ip_like"
+        >
+          <CustomInput
+            v-model="search.ip_like"
+            :placeholder="`${ ns('请输入') } ${ n('IP') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.create_time == null">
+        <el-form-item
+          :label="n('登录时间')"
+          prop="create_time"
+        >
+          <CustomDatePicker
+            type="daterange"
+            v-model="create_time_search"
+            :start-placeholder="ns('开始')"
+            :end-placeholder="ns('结束')"
+            @clear="onSearchClear"
+            @change="onSearch"
+          ></CustomDatePicker>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -345,16 +389,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 创建时间 -->
+          <!-- 登录时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -494,8 +529,6 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   is_succ: "number[]",
   is_succ_lbl: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -553,6 +586,37 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 登录成功
+const is_succ_search = $computed({
+  get() {
+    return search.is_succ || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.is_succ = undefined;
+    } else {
+      search.is_succ = val;
+    }
+  },
+});
+
+// 登录时间
+const create_time_search = $computed({
+  get() {
+    return search.create_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.create_time = undefined;
+    } else {
+      search.create_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -723,16 +787,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建人",
-      prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "创建时间",
+      label: "登录时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
       width: 150,
@@ -1062,8 +1117,7 @@ async function initI18nsEfc() {
     "用户名",
     "登录成功",
     "IP",
-    "创建人",
-    "创建时间",
+    "登录时间",
   ];
   await Promise.all([
     initListI18ns(),
