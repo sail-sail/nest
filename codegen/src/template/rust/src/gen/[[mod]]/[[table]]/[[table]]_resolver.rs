@@ -301,6 +301,10 @@ pub async fn create(
   }
   #>
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = <#=table#>_service::set_id_by_lbl(
     input,
   ).await?;
@@ -409,6 +413,10 @@ pub async fn update_by_id(
   let begin_time = Instant::now();<#
   }
   #>
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = <#=table#>_service::set_id_by_lbl(
     input,
@@ -562,7 +570,7 @@ pub async fn default_by_id(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "default".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>
@@ -646,7 +654,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>
@@ -745,7 +753,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;<#
   if (log) {
   #>

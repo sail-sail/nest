@@ -86,6 +86,9 @@
   </div>
   <el-menu
     class="AppMenu"
+    :class="{
+      AppMenuNotInited: !inited,
+    }"
     un-w="full"
     :default-active="defaultActive"
     :collapse="menuStore.isCollapse"
@@ -127,6 +130,8 @@ const {
   initI18ns,
   initSysI18ns,
 } = useI18n();
+
+let inited = $ref(false);
 
 let menuSearchForcused = $ref(false);
 let menuSearchInputRef = $ref<HTMLInputElement>();
@@ -207,9 +212,11 @@ async function menuSelect(id: MenuId) {
 }
 
 async function getMenusEfc() {
+  inited = false;
   const result = await getMenus();
   menuStore.setMenus(result);
   setDefaultActiveByRouter(route.path, route.query);
+  inited = true;
 }
 
 async function initFrame() {
@@ -251,8 +258,13 @@ initFrame();
   }
   border: 0;
 }
-.top_menu_item {
-  // align-items: center;
-  // justify-content: center;
+//.top_menu_item {
+//  align-items: center;
+//  justify-content: center;
+//}
+.AppMenuNotInited {
+  :deep(.el-menu), :deep(.el-icon) {
+    transition: none;
+  }
 }
 </style>

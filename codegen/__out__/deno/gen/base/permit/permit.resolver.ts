@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找按钮权限总数
  */
 export async function findCountPermit(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountPermit(
  * 根据搜索条件和分页查找按钮权限列表
  */
 export async function findAllPermit(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<PermitModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
  * 根据条件查找第一个按钮权限
  */
 export async function findOnePermit(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   sort?: SortInput[],
 ): Promise<PermitModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createPermit(
   input: PermitInput,
   unique_type?: UniqueType,
 ): Promise<PermitId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdPermit(
   id: PermitId,
   input: PermitInput,
 ): Promise<PermitId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,

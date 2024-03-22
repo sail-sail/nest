@@ -12,7 +12,7 @@ pub struct Query(
 
 #[derive(MergedObject, Default)]
 pub struct Mutation(
-  super::super::cache::cache_resolver::CacheMutation,
+  super::super::cache::cache_graphql::CacheMutation,
   crate::gen::GenMutation,
   crate::src::SrcMutation,
 );

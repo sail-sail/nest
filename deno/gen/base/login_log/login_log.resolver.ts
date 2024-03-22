@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找登录日志总数
  */
 export async function findCountLoginLog(
-  search?: LoginLogSearch & { $extra?: SearchExtra[] },
+  search?: LoginLogSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountLoginLog(
  * 根据搜索条件和分页查找登录日志列表
  */
 export async function findAllLoginLog(
-  search?: LoginLogSearch & { $extra?: SearchExtra[] },
+  search?: LoginLogSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<LoginLogModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> 
  * 根据条件查找第一个登录日志
  */
 export async function findOneLoginLog(
-  search?: LoginLogSearch & { $extra?: SearchExtra[] },
+  search?: LoginLogSearch,
   sort?: SortInput[],
 ): Promise<LoginLogModel | undefined> {
   

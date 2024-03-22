@@ -27,6 +27,25 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictDetailInput = {
+    id: model?.id,
+    dict_id: model?.dict_id,
+    dict_id_lbl: model?.dict_id_lbl,
+    lbl: model?.lbl,
+    val: model?.val,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找系统字典明细列表
  * @param {DictDetailSearch} search?
@@ -160,25 +179,26 @@ export async function findCount(
 
 /**
  * 创建系统字典明细
- * @param {DictDetailInput} model
+ * @param {DictDetailInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictDetailInput,
+  input: DictDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictDetailId> {
+  input = intoInput(input);
   const data: {
     createDictDetail: Mutation["createDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictDetailInput!, $unique_type: UniqueType) {
-        createDictDetail(model: $model, unique_type: $unique_type)
+      mutation($input: DictDetailInput!, $unique_type: UniqueType) {
+        createDictDetail(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -189,25 +209,26 @@ export async function create(
 /**
  * 根据 id 修改系统字典明细
  * @param {DictDetailId} id
- * @param {DictDetailInput} model
+ * @param {DictDetailInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictDetailId,
-  model: DictDetailInput,
+  input: DictDetailInput,
   opt?: GqlOpt,
 ): Promise<DictDetailId> {
+  input = intoInput(input);
   const data: {
     updateByIdDictDetail: Mutation["updateByIdDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictDetailId!, $model: DictDetailInput!) {
-        updateByIdDictDetail(id: $id, model: $model)
+      mutation($id: DictDetailId!, $input: DictDetailInput!) {
+        updateByIdDictDetail(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictDetailId = data.updateByIdDictDetail;

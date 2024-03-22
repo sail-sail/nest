@@ -25,13 +25,13 @@ type OperationRecordModel {
   old_data: String
   "操作后数据"
   new_data: String
-  "创建人"
+  "操作人"
   create_usr_id: UsrId!
-  "创建人"
+  "操作人"
   create_usr_id_lbl: String
-  "创建时间"
+  "操作时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "操作时间"
   create_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
@@ -55,17 +55,17 @@ type OperationRecordFieldComment {
   old_data: String!
   "操作后数据"
   new_data: String!
-  "创建人"
+  "操作人"
   create_usr_id: String!
-  "创建人"
+  "操作人"
   create_usr_id_lbl: String!
-  "创建时间"
+  "操作时间"
   create_time: String!
-  "创建时间"
+  "操作时间"
   create_time_lbl: String!
 }
 input OperationRecordInput {
-  ""
+  "ID"
   id: OperationRecordId
   "模块"
   module: String
@@ -83,14 +83,6 @@ input OperationRecordInput {
   old_data: String
   "操作后数据"
   new_data: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
 }
 input OperationRecordSearch {
   "是否已删除"
@@ -115,18 +107,18 @@ input OperationRecordSearch {
   lbl: String
   lbl_like: String
   "耗时(毫秒)"
-  time: [Int!]
+  time: [Int]
   "操作前数据"
   old_data: String
   old_data_like: String
   "操作后数据"
   new_data: String
   new_data_like: String
-  "创建人"
+  "操作人"
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime!]
+  "操作时间"
+  create_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找操作记录总数"

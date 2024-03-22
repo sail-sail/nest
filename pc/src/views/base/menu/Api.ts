@@ -27,6 +27,26 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: MenuInput = {
+    id: model?.id,
+    parent_id: model?.parent_id,
+    parent_id_lbl: model?.parent_id_lbl,
+    lbl: model?.lbl,
+    route_path: model?.route_path,
+    route_query: model?.route_query,
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    order_by: model?.order_by,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找菜单列表
  * @param {MenuSearch} search?
@@ -187,25 +207,26 @@ export async function findCount(
 
 /**
  * 创建菜单
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: MenuInput,
+  input: MenuInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<MenuId> {
+  input = intoInput(input);
   const data: {
     createMenu: Mutation["createMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: MenuInput!, $unique_type: UniqueType) {
-        createMenu(model: $model, unique_type: $unique_type)
+      mutation($input: MenuInput!, $unique_type: UniqueType) {
+        createMenu(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -216,25 +237,26 @@ export async function create(
 /**
  * 根据 id 修改菜单
  * @param {MenuId} id
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: MenuId,
-  model: MenuInput,
+  input: MenuInput,
   opt?: GqlOpt,
 ): Promise<MenuId> {
+  input = intoInput(input);
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: MenuId!, $model: MenuInput!) {
-        updateByIdMenu(id: $id, model: $model)
+      mutation($id: MenuId!, $input: MenuInput!) {
+        updateByIdMenu(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: MenuId = data.updateByIdMenu;
@@ -478,6 +500,18 @@ export async function getMenuTree() {
     },
   );
   return data;
+}
+
+export const menuDataPermit = {
+} as const;
+
+export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
+  const route_path = model.route_path;
+  if (!route_path) {
+    return false;
+  }
+  const isPermit = (menuDataPermit as any)[route_path];
+  return isPermit;
 }
 
 /**

@@ -177,6 +177,16 @@ export default defineStore("tabs", function() {
   }
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
+    let hash = location.hash;
+    if (hash.startsWith("#")) {
+      hash = hash.substring(1);
+    }
+    if (hash.startsWith("/")) {
+      hash = hash.substring(1);
+    }
+    if (hash) {
+      return;
+    }
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);

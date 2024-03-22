@@ -4,9 +4,10 @@ import {
 
 const isSSL = location.protocol === 'https:';
 
-let clientId = uuid();
+const clientId = uuid();
+const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 
-const url = isSSL ? 'wss://' : 'ws://' + location.host + '/api/websocket/upgrade?clientId=' + encodeURIComponent(clientId);
+const url = isSSL ? 'wss://' : 'ws://' + location.host + '/api/websocket/upgrade?pwd='+ PWD + '&clientId=' + encodeURIComponent(clientId);
 
 let socket: WebSocket | undefined = undefined;
 const topicCallbackMap = new Map<string, ((data: any) => void)[]>();

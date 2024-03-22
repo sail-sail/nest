@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找系统字典总数
  */
 export async function findCountDict(
-  search?: DictSearch & { $extra?: SearchExtra[] },
+  search?: DictSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDict(
  * 根据搜索条件和分页查找系统字典列表
  */
 export async function findAllDict(
-  search?: DictSearch & { $extra?: SearchExtra[] },
+  search?: DictSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DictModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDict(): Promise<DictFieldComment> {
  * 根据条件查找第一个系统字典
  */
 export async function findOneDict(
-  search?: DictSearch & { $extra?: SearchExtra[] },
+  search?: DictSearch,
   sort?: SortInput[],
 ): Promise<DictModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createDict(
   input: DictInput,
   unique_type?: UniqueType,
 ): Promise<DictId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdDict(
   id: DictId,
   input: DictInput,
 ): Promise<DictId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsDict(
   
   await usePermit(
     "/base/dict",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsDict(
   
   await usePermit(
     "/base/dict",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

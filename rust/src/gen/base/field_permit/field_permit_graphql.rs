@@ -122,7 +122,7 @@ impl FieldPermitGenMutation {
   async fn create_field_permit(
     &self,
     ctx: &Context<'_>,
-    model: FieldPermitInput,
+    input: FieldPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<FieldPermitId> {
     let mut options = Options::new();
@@ -135,7 +135,7 @@ impl FieldPermitGenMutation {
       .build()
       .scope({
         field_permit_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -146,7 +146,7 @@ impl FieldPermitGenMutation {
     &self,
     ctx: &Context<'_>,
     id: FieldPermitId,
-    model: FieldPermitInput,
+    input: FieldPermitInput,
   ) -> Result<FieldPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -155,7 +155,7 @@ impl FieldPermitGenMutation {
       .scope({
         field_permit_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

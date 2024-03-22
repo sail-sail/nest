@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找后台任务总数
  */
 export async function findCountBackgroundTask(
-  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountBackgroundTask(
  * 根据搜索条件和分页查找后台任务列表
  */
 export async function findAllBackgroundTask(
-  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<BackgroundTaskModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFi
  * 根据条件查找第一个后台任务
  */
 export async function findOneBackgroundTask(
-  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch,
   sort?: SortInput[],
 ): Promise<BackgroundTaskModel | undefined> {
   

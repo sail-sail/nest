@@ -1,5 +1,8 @@
 // deno-lint-ignore-file ban-unused-ignore
 import Decimal from "decimal.js";
+import {
+  log,
+} from "/lib/context.ts";
 
 type SupportTypeElement =
   | string
@@ -13,14 +16,24 @@ type SupportTypeElement =
 // Array
 type SupportType = SupportTypeElement | SupportTypeElement[];
 
+const reg = /('[^'\\]*(?:\\.[^'\\]*)*')|("[^"\\]*(?:\\.[^"\\]*)*")|(\?\?)|(\?)/g;
+
 export function replaceParams(
   sql: string,
-  params?: null | SupportType[]
+  params?: null | SupportType[],
+  opt?: {
+    debug?: boolean;
+  },
 ): string {
-  if (!params) return sql;
+  if (!params || params.length === 0) {
+    if (opt?.debug === true) {
+      log(sql.trim());
+    }
+    return sql;
+  }
   let paramIndex = 0;
   sql = sql.replace(
-    /('[^'\\]*(?:\\.[^'\\]*)*')|("[^"\\]*(?:\\.[^"\\]*)*")|(\?\?)|(\?)/g,
+    reg,
     (str) => {
       if (paramIndex >= params.length) return str;
       // ignore
@@ -59,6 +72,9 @@ export function replaceParams(
         case 'object':
           if (val instanceof Date) return `"${formatDate(val)}"`;
           if (val instanceof Array) {
+            if (val.length === 0) {
+              return "('')";
+            }
             return `(${val
               .map((item) => replaceParams('?', [item]))
               .join(',')})`;
@@ -83,6 +99,9 @@ export function replaceParams(
       }
     }
   );
+  if (opt?.debug === true) {
+    log(sql.trim());
+  }
   return sql;
 }
 

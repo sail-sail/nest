@@ -56,14 +56,14 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -83,20 +83,15 @@
               :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               :readonly="isLocked || isReadonly"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+                disabled: function(item: MenuModel) {
+                  return !item.route_path;
+                },
+              }"
+              :filter-node-method="useMenuTreeFilter"
             ></CustomTreeSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
-          <el-form-item
-            :label="n('名称')"
-            prop="lbl"
-          >
-            <CustomInput
-              v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -134,7 +129,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
+            un-grid="col-span-1"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -270,7 +265,12 @@ import type {
 
 import {
   getMenuTree,
+  useMenuTreeFilter,
 } from "@/views/base/menu/Api";
+
+import type {
+  MenuModel,
+} from "#/types";
 
 const emit = defineEmits<{
   nextId: [
@@ -329,18 +329,6 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("菜单") }`,
-      },
-    ],
-    // 名称
-    lbl: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
-      },
-      {
-        type: "string",
-        max: 100,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
     // 范围
@@ -552,18 +540,22 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
     };
-    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
 }
 
@@ -575,7 +567,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("数据权限")));
   }
 }
 
@@ -837,7 +829,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "菜单",
-    "名称",
     "范围",
     "类型",
     "备注",

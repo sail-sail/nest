@@ -9,7 +9,7 @@
   }"
 >
   <el-tooltip
-    :disabled="(selectRef?.dropdownMenuVisible || props.multiple)
+    :disabled="true || (selectRef?.dropdownMenuVisible || props.multiple)
       || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
   >
     <template
@@ -47,8 +47,6 @@
       collapse-tags-tooltip
       default-first-option
       :height="props.height"
-      :remote="props.pinyinFilterable"
-      :remote-method="filterMethod"
       @visible-change="handleVisibleChange"
       @clear="onClear"
       un-w="full"
@@ -247,8 +245,6 @@
 </template>
 
 <script lang="ts" setup>
-import { pinyin } from "pinyin-pro";
-
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -279,11 +275,10 @@ const props = withDefaults(
   defineProps<{
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
-    pinyinFilterable?: boolean;
     height?: number;
     modelValue?: string | string[] | null;
     modelLabel?: string | null;
-    options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
+    options4SelectV2?: OptionType[];
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
@@ -304,7 +299,6 @@ const props = withDefaults(
         value: item2.id,
       };
     },
-    pinyinFilterable: false,
     height: 400,
     options4SelectV2: () => [ ],
     modelValue: undefined,
@@ -319,7 +313,7 @@ const props = withDefaults(
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     readonlyCollapseTags: true,
-    readonlyMaxCollapseTags: 10,
+    readonlyMaxCollapseTags: 1,
   },
 );
 
@@ -329,7 +323,6 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
-    modelLabel = props.modelLabel;
   },
 );
 
@@ -351,6 +344,9 @@ watch(
   },
 );
 
+let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+let selectDivRef = $ref<HTMLDivElement>();
+
 let isSelectAll = $computed({
   get() {
     if (!modelValue) {
@@ -362,6 +358,11 @@ let isSelectAll = $computed({
     if (modelValue.length === 0) {
       return false;
     }
+    if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+      if (modelValue.length === selectRef.filteredOptions.length) {
+        return true;
+      }
+    }
     if (modelValue.length === options4SelectV2.length) {
       return true;
     }
@@ -369,7 +370,11 @@ let isSelectAll = $computed({
   },
   set(val: boolean) {
     if (val) {
-      modelValue = options4SelectV2.map((item) => item.value);
+      if (selectRef?.filteredOptions) {
+        modelValue = selectRef.filteredOptions.map((item: OptionType) => item.value);
+      } else {
+        modelValue = options4SelectV2.map((item) => item.value);
+      }
     } else {
       modelValue = [ ];
     }
@@ -387,6 +392,11 @@ const isIndeterminate = $computed(() => {
   }
   if (modelValue.length === 0) {
     return false;
+  }
+  if (selectRef?.filteredOptions && selectRef.filteredOptions.length > 0) {
+    if (modelValue.length === selectRef.filteredOptions.length) {
+      return false;
+    }
   }
   if (modelValue.length === options4SelectV2.length) {
     return false;
@@ -428,11 +438,68 @@ const modelValueComputed = $computed(() => {
 });
 
 const isShowModelLabel = $computed(() => {
-  if (modelLabel == null) {
+  if (!modelLabel) {
     return false;
   }
-  return modelValueComputed === modelLabel;
+  if (!props.multiple) {
+    if (modelValue == null || modelValue === "") {
+      return false;
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
+    if (!item || item.label !== modelLabel) {
+      console.log(modelValue);
+      return true;
+    }
+    return false;
+  } else {
+    if (modelValue == null || modelValue.length === 0) {
+      return false;
+    }
+    const labels: string[] = modelLabel.split(",")
+      .filter((item: string) => item)
+      .map((item) => item.trim());
+    if (labels.length !== modelValue.length) {
+      return true;
+    }
+    for (let i = 0; i < modelValue.length; i++) {
+      const item = modelValue[i];
+      if (item !== labels[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
 });
+
+// 通过id获取modelLabel
+function getModelLabelById() {
+  if (!props.multiple) {
+    const id = modelValue;
+    if (!id) {
+      return "";
+    }
+    const item = options4SelectV2.find((item: OptionType) => item.value === id);
+    if (!item) {
+      return "";
+    }
+    return item.label;
+  }
+  let labels: string[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const item = options4SelectV2.find((item: OptionType) => item.value === value);
+    if (!item) {
+      continue;
+    }
+    labels.push(item.label);
+  }
+  return labels.join(",");
+}
+
+function refreshModelLabel() {
+  modelLabel = getModelLabelById();
+  emit("update:modelLabel", modelLabel);
+}
 
 let shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
@@ -497,7 +564,7 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $shallowRef<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
+let options4SelectV2 = $shallowRef<OptionType[]>(props.options4SelectV2);
 
 // watch(
 //   () => options4SelectV2,
@@ -548,31 +615,22 @@ async function refreshDropdownWidth() {
   }
 }
 
-function filterMethod(value: string) {
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    options4SelectV2 = data.map((item) => {
-      const item2 = props.optionsMap(item);
-      item2.__pinyin_label = (item as any).__pinyin_label;
-      return item2;
-    });
-  }
-  if (isEmpty(value)) {
-    return;
-  }
-  options4SelectV2 = options4SelectV2.filter((item) => {
-    return item.label.includes(value)
-    || (item.__pinyin_label && item.__pinyin_label.includes(value));
-  });
-}
+watch(
+  () => [ selectRef?.filteredOptions.length, inited ],
+  async () => {
+    if (!inited) {
+      return;
+    }
+    if (!selectRef || selectRef.filteredOptions.length === 0) {
+      return;
+    }
+    await refreshDropdownWidth();
+  },
+);
 
 function handleVisibleChange(visible: boolean) {
   if (visible) {
     refreshDropdownWidth();
-  }
-  if (props.pinyinFilterable) {
-    if (visible) {
-      filterMethod("");
-    }
   }
 }
 
@@ -594,14 +652,6 @@ async function refreshEfc() {
   await nextTick();
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
-  if (props.pinyinFilterable) {
-    for (let i = 0; i < options4SelectV2.length; i++) {
-      const item = options4SelectV2[i];
-      if (item.label) {
-        (data as any)[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
-      }
-    }
-  }
   inited = true;
 }
 
@@ -624,9 +674,6 @@ function onValueChange() {
   }
   emit("change", models);
 }
-
-let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
-let selectDivRef = $ref<HTMLDivElement>();
 
 async function refreshWrapperHeight() {
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -690,14 +737,27 @@ function blur() {
 
 defineExpose({
   refresh: refreshEfc,
+  refreshModelLabel,
   focus,
   blur,
 });
 </script>
 
 <style scoped lang="scss">
-.custom_select_div {
-  height: 32px;
+.custom_select_div,.custom_select_readonly {
+  :deep(.el-tag) {
+    height: auto;
+    line-height: normal;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    box-sizing: border-box;
+    .el-tag__content {
+      white-space: normal;
+      .el-select__tags-text {
+        white-space: normal;
+      }
+    }
+  }
 }
 .custom_select_placeholder {
   @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];

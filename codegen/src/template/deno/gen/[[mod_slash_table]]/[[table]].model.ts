@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -32,10 +33,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
 const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
 #>import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
@@ -165,7 +162,8 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
     if (foreignKey) {
   #>
   /** <#=column_comment#> */
-  <#=column_name#>?: <#=data_type#>;<#
+  <#=column_name#>?: <#=data_type#>;
+  <#=column_name#>_is_null?: boolean;<#
     } else if (column.dict || column.dictbiz) {
   #>
   /** <#=column_comment#> */
@@ -212,7 +210,6 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
   is_hidden?: (0|1)[];<#
   }
   #>
-  $extra?: SearchExtra[];
 }
 
 export interface <#=modelName#> extends <#=modelName#>Type {<#
@@ -294,11 +291,31 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
     }
   #><#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   create_usr_id: UsrId;
+  create_usr_id_lbl: string;<#
+  }
+  #><#
+  if (hasCreateTime) {
+  #>
   create_time?: string | null;
+  create_time_lbl: string;<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
   update_usr_id: UsrId;
-  update_time?: string | null;<#
+  update_usr_id_lbl: string;<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  update_time?: string | null;
+  update_time_lbl: string;<#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   tenant_id: TenantId;<#
@@ -403,12 +420,36 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
     }
   #><#
   }
+  #><#
+  if (hasCreateUsrId) {
   #>
   create_usr_id?: UsrId | null;
+  create_usr_id_lbl?: string | null;<#
+  }
+  #><#
+  if (hasCreateTime) {
+  #>
   create_time?: string | null;
+  create_time_lbl?: string | null;<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
   update_usr_id?: UsrId | null;
+  update_usr_id_lbl?: string | null;<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
   update_time?: string | null;
+  update_time_lbl?: string | null;<#
+  }
+  #><#
+  if (hasIsDeleted) {
+  #>
   is_deleted?: number | null;<#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   tenant_id?: TenantId | null;<#

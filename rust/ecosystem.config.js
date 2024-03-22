@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
-    name: "rust4xh4hrm",
-    script: "./rust4xh4hrm",
+    name: "rust4wxwork{env}",
+    script: "./rust4wxwork",
     instances: 1,
     autorestart: true,
     watch: false,

@@ -176,7 +176,7 @@ impl OrgGenMutation {
   async fn create_org(
     &self,
     ctx: &Context<'_>,
-    model: OrgInput,
+    input: OrgInput,
     unique_type: Option<UniqueType>,
   ) -> Result<OrgId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl OrgGenMutation {
       .build()
       .scope({
         org_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl OrgGenMutation {
     &self,
     ctx: &Context<'_>,
     id: OrgId,
-    model: OrgInput,
+    input: OrgInput,
   ) -> Result<OrgId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl OrgGenMutation {
       .scope({
         org_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

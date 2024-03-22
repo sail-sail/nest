@@ -35,6 +35,22 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: I18nInput = {
+    id: model?.id,
+    lang_id: model?.lang_id,
+    lang_id_lbl: model?.lang_id_lbl,
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    code: model?.code,
+    lbl: model?.lbl,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找国际化列表
  * @param {I18nSearch} search?
@@ -162,25 +178,26 @@ export async function findCount(
 
 /**
  * 创建国际化
- * @param {I18nInput} model
+ * @param {I18nInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: I18nInput,
+  input: I18nInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<I18nId> {
+  input = intoInput(input);
   const data: {
     createI18n: Mutation["createI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: I18nInput!, $unique_type: UniqueType) {
-        createI18n(model: $model, unique_type: $unique_type)
+      mutation($input: I18nInput!, $unique_type: UniqueType) {
+        createI18n(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -191,25 +208,26 @@ export async function create(
 /**
  * 根据 id 修改国际化
  * @param {I18nId} id
- * @param {I18nInput} model
+ * @param {I18nInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: I18nId,
-  model: I18nInput,
+  input: I18nInput,
   opt?: GqlOpt,
 ): Promise<I18nId> {
+  input = intoInput(input);
   const data: {
     updateByIdI18n: Mutation["updateByIdI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: I18nId!, $model: I18nInput!) {
-        updateByIdI18n(id: $id, model: $model)
+      mutation($id: I18nId!, $input: I18nInput!) {
+        updateByIdI18n(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: I18nId = data.updateByIdI18n;

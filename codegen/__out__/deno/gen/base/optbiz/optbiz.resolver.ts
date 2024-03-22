@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找业务选项总数
  */
 export async function findCountOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountOptbiz(
  * 根据搜索条件和分页查找业务选项列表
  */
 export async function findAllOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OptbizModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
  * 根据条件查找第一个业务选项
  */
 export async function findOneOptbiz(
-  search?: OptbizSearch & { $extra?: SearchExtra[] },
+  search?: OptbizSearch,
   sort?: SortInput[],
 ): Promise<OptbizModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createOptbiz(
   input: OptbizInput,
   unique_type?: UniqueType,
 ): Promise<OptbizId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdOptbiz(
   id: OptbizId,
   input: OptbizInput,
 ): Promise<OptbizId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsOptbiz(
   
   await usePermit(
     "/base/optbiz",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsOptbiz(
   
   await usePermit(
     "/base/optbiz",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

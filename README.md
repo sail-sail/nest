@@ -16,6 +16,10 @@ ALTER USER 'nest'@'%' IDENTIFIED BY 'umbdflXHI0osat2v' PASSWORD EXPIRE NEVER;
 grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on nest.* to 'nest'@'%';
 -- 刷新权限
 flush privileges;
+
+SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
+
+SET GLOBAL innodb_buffer_pool_size = 1073741824;
 ```
 
 2. linux检查端口是否被占用

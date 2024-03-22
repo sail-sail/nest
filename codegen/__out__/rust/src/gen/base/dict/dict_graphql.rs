@@ -174,7 +174,7 @@ impl DictGenMutation {
   async fn create_dict(
     &self,
     ctx: &Context<'_>,
-    model: DictInput,
+    input: DictInput,
     unique_type: Option<UniqueType>,
   ) -> Result<DictId> {
     let mut options = Options::new();
@@ -187,7 +187,7 @@ impl DictGenMutation {
       .build()
       .scope({
         dict_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -198,7 +198,7 @@ impl DictGenMutation {
     &self,
     ctx: &Context<'_>,
     id: DictId,
-    model: DictInput,
+    input: DictInput,
   ) -> Result<DictId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -207,7 +207,7 @@ impl DictGenMutation {
       .scope({
         dict_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

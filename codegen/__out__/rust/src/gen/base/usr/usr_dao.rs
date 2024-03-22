@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use tracing::{info, error};
 use crate::common::auth::auth_dao::get_password;
+#[allow(unused_imports)]
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -34,6 +35,7 @@ use crate::common::context::{
   get_order_by_query,
   get_page_query,
   del_caches,
+  IS_DEBUG,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -55,20 +57,19 @@ use crate::gen::base::role::role_model::RoleId;
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<UsrSearch>,
+  search: Option<&UsrSearch>,
+  options: Option<&Options>,
 ) -> Result<String> {
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let is_deleted = search
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);
+  let mut where_query = String::with_capacity(80 * 20 * 2);
+  where_query += " t.is_deleted = ?";
+  args.push(is_deleted.into());
   {
-    let is_deleted = search.as_ref()
-      .and_then(|item| item.is_deleted)
-      .unwrap_or(0);
-    where_query += " t.is_deleted = ?";
-    args.push(is_deleted.into());
-  }
-  {
-    let id = match &search {
-      Some(item) => &item.id,
-      None => &None,
+    let id = match search {
+      Some(item) => item.id.as_ref(),
+      None => None,
     };
     let id = match id {
       None => None,
@@ -83,11 +84,11 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Vec<UsrId> = match &search {
-      Some(item) => item.ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let ids: Option<Vec<UsrId>> = match search {
+      Some(item) => item.ids.clone(),
+      None => None,
     };
-    if !ids.is_empty() {
+    if let Some(ids) = ids {
       let arg = {
         let mut items = Vec::with_capacity(ids.len());
         for id in ids {
@@ -101,7 +102,7 @@ async fn get_where_query(
   }
   {
     let tenant_id = {
-      let tenant_id = match &search {
+      let tenant_id = match search {
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
@@ -120,14 +121,14 @@ async fn get_where_query(
     }
   }
   {
-    let img = match &search {
+    let img = match search {
       Some(item) => item.img.clone(),
       None => None,
     };
     if let Some(img) = img {
       where_query += &format!(" and t.img = {}", args.push(img.into()));
     }
-    let img_like = match &search {
+    let img_like = match search {
       Some(item) => item.img_like.clone(),
       None => None,
     };
@@ -141,14 +142,14 @@ async fn get_where_query(
     }
   }
   {
-    let lbl = match &search {
+    let lbl = match search {
       Some(item) => item.lbl.clone(),
       None => None,
     };
     if let Some(lbl) = lbl {
       where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
     }
-    let lbl_like = match &search {
+    let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
@@ -162,14 +163,14 @@ async fn get_where_query(
     }
   }
   {
-    let username = match &search {
+    let username = match search {
       Some(item) => item.username.clone(),
       None => None,
     };
     if let Some(username) = username {
       where_query += &format!(" and t.username = {}", args.push(username.into()));
     }
-    let username_like = match &search {
+    let username_like = match search {
       Some(item) => item.username_like.clone(),
       None => None,
     };
@@ -183,11 +184,11 @@ async fn get_where_query(
     }
   }
   {
-    let org_ids: Vec<OrgId> = match &search {
-      Some(item) => item.org_ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let org_ids: Option<Vec<OrgId>> = match search {
+      Some(item) => item.org_ids.clone(),
+      None => None,
     };
-    if !org_ids.is_empty() {
+    if let Some(org_ids) = org_ids {
       let arg = {
         let mut items = Vec::with_capacity(org_ids.len());
         for item in org_ids {
@@ -200,7 +201,7 @@ async fn get_where_query(
     }
   }
   {
-    let org_ids_is_null: bool = match &search {
+    let org_ids_is_null: bool = match search {
       Some(item) => item.org_ids_is_null.unwrap_or(false),
       None => false,
     };
@@ -209,11 +210,11 @@ async fn get_where_query(
     }
   }
   {
-    let default_org_id: Vec<OrgId> = match &search {
-      Some(item) => item.default_org_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let default_org_id: Option<Vec<OrgId>> = match search {
+      Some(item) => item.default_org_id.clone(),
+      None => None,
     };
-    if !default_org_id.is_empty() {
+    if let Some(default_org_id) = default_org_id {
       let arg = {
         let mut items = Vec::with_capacity(default_org_id.len());
         for item in default_org_id {
@@ -226,7 +227,7 @@ async fn get_where_query(
     }
   }
   {
-    let default_org_id_is_null: bool = match &search {
+    let default_org_id_is_null: bool = match search {
       Some(item) => item.default_org_id_is_null.unwrap_or(false),
       None => false,
     };
@@ -235,11 +236,11 @@ async fn get_where_query(
     }
   }
   {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
-      None => Default::default(),
+    let is_locked: Option<Vec<u8>> = match search {
+      Some(item) => item.is_locked.clone(),
+      None => None,
     };
-    if !is_locked.is_empty() {
+    if let Some(is_locked) = is_locked {
       let arg = {
         let mut items = Vec::with_capacity(is_locked.len());
         for item in is_locked {
@@ -252,11 +253,11 @@ async fn get_where_query(
     }
   }
   {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
+    let is_enabled: Option<Vec<u8>> = match search {
+      Some(item) => item.is_enabled.clone(),
+      None => None,
     };
-    if !is_enabled.is_empty() {
+    if let Some(is_enabled) = is_enabled {
       let arg = {
         let mut items = Vec::with_capacity(is_enabled.len());
         for item in is_enabled {
@@ -269,7 +270,7 @@ async fn get_where_query(
     }
   }
   {
-    let order_by: Vec<u32> = match &search {
+    let order_by: Vec<u32> = match search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -290,11 +291,11 @@ async fn get_where_query(
     }
   }
   {
-    let dept_ids: Vec<DeptId> = match &search {
-      Some(item) => item.dept_ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let dept_ids: Option<Vec<DeptId>> = match search {
+      Some(item) => item.dept_ids.clone(),
+      None => None,
     };
-    if !dept_ids.is_empty() {
+    if let Some(dept_ids) = dept_ids {
       let arg = {
         let mut items = Vec::with_capacity(dept_ids.len());
         for item in dept_ids {
@@ -307,7 +308,7 @@ async fn get_where_query(
     }
   }
   {
-    let dept_ids_is_null: bool = match &search {
+    let dept_ids_is_null: bool = match search {
       Some(item) => item.dept_ids_is_null.unwrap_or(false),
       None => false,
     };
@@ -316,11 +317,11 @@ async fn get_where_query(
     }
   }
   {
-    let role_ids: Vec<RoleId> = match &search {
-      Some(item) => item.role_ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let role_ids: Option<Vec<RoleId>> = match search {
+      Some(item) => item.role_ids.clone(),
+      None => None,
     };
-    if !role_ids.is_empty() {
+    if let Some(role_ids) = role_ids {
       let arg = {
         let mut items = Vec::with_capacity(role_ids.len());
         for item in role_ids {
@@ -333,7 +334,7 @@ async fn get_where_query(
     }
   }
   {
-    let role_ids_is_null: bool = match &search {
+    let role_ids_is_null: bool = match search {
       Some(item) => item.role_ids_is_null.unwrap_or(false),
       None => false,
     };
@@ -342,14 +343,14 @@ async fn get_where_query(
     }
   }
   {
-    let rem = match &search {
+    let rem = match search {
       Some(item) => item.rem.clone(),
       None => None,
     };
     if let Some(rem) = rem {
       where_query += &format!(" and t.rem = {}", args.push(rem.into()));
     }
-    let rem_like = match &search {
+    let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
@@ -363,11 +364,11 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let create_usr_id: Option<Vec<UsrId>> = match search {
+      Some(item) => item.create_usr_id.clone(),
+      None => None,
     };
-    if !create_usr_id.is_empty() {
+    if let Some(create_usr_id) = create_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(create_usr_id.len());
         for item in create_usr_id {
@@ -380,7 +381,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_is_null: bool = match &search {
+    let create_usr_id_is_null: bool = match search {
       Some(item) => item.create_usr_id_is_null.unwrap_or(false),
       None => false,
     };
@@ -389,7 +390,7 @@ async fn get_where_query(
     }
   }
   {
-    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+    let create_time: Vec<chrono::NaiveDateTime> = match search {
       Some(item) => item.create_time.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -410,11 +411,11 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id: Vec<UsrId> = match &search {
-      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
+    let update_usr_id: Option<Vec<UsrId>> = match search {
+      Some(item) => item.update_usr_id.clone(),
+      None => None,
     };
-    if !update_usr_id.is_empty() {
+    if let Some(update_usr_id) = update_usr_id {
       let arg = {
         let mut items = Vec::with_capacity(update_usr_id.len());
         for item in update_usr_id {
@@ -427,7 +428,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_is_null: bool = match &search {
+    let update_usr_id_is_null: bool = match search {
       Some(item) => item.update_usr_id_is_null.unwrap_or(false),
       None => false,
     };
@@ -436,7 +437,7 @@ async fn get_where_query(
     }
   }
   {
-    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+    let update_time: Vec<chrono::NaiveDateTime> = match search {
       Some(item) => item.update_time.clone().unwrap_or_default(),
       None => vec![],
     };
@@ -457,7 +458,7 @@ async fn get_where_query(
     }
   }
   {
-    let is_hidden: Option<Vec<u8>> = match &search {
+    let is_hidden: Option<Vec<u8>> = match search {
       Some(item) => item.is_hidden.clone(),
       None => Default::default(),
     };
@@ -476,14 +477,22 @@ async fn get_where_query(
   Ok(where_query)
 }
 
-async fn get_from_query() -> Result<String> {
+#[allow(unused_variables)]
+async fn get_from_query(
+  args: &mut QueryArgs,
+  search: Option<&UsrSearch>,
+  options: Option<&Options>,
+) -> Result<String> {
+  let is_deleted = search
+    .and_then(|item| item.is_deleted)
+    .unwrap_or(0);
   let from_query = r#"base_usr t
     left join base_usr_org
       on base_usr_org.usr_id = t.id
-      and base_usr_org.is_deleted = 0
+      and base_usr_org.is_deleted = ?
     left join base_org
       on base_usr_org.org_id = base_org.id
-      and base_org.is_deleted = 0
+      and base_org.is_deleted = ?
     left join (
       select
         json_objectagg(base_usr_org.order_by, base_org.id) org_ids,
@@ -492,11 +501,10 @@ async fn get_from_query() -> Result<String> {
       from base_usr_org
       inner join base_org
         on base_org.id = base_usr_org.org_id
-        and base_org.is_deleted = 0
       inner join base_usr
         on base_usr.id = base_usr_org.usr_id
       where
-        base_usr_org.is_deleted = 0
+        base_usr_org.is_deleted = ?
       group by usr_id
     ) _org
       on _org.usr_id = t.id
@@ -504,10 +512,10 @@ async fn get_from_query() -> Result<String> {
       on default_org_id_lbl.id = t.default_org_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
-      and base_usr_dept.is_deleted = 0
+      and base_usr_dept.is_deleted = ?
     left join base_dept
       on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = 0
+      and base_dept.is_deleted = ?
     left join (
       select
         json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
@@ -516,20 +524,19 @@ async fn get_from_query() -> Result<String> {
       from base_usr_dept
       inner join base_dept
         on base_dept.id = base_usr_dept.dept_id
-        and base_dept.is_deleted = 0
       inner join base_usr
         on base_usr.id = base_usr_dept.usr_id
       where
-        base_usr_dept.is_deleted = 0
+        base_usr_dept.is_deleted = ?
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
-      and base_usr_role.is_deleted = 0
+      and base_usr_role.is_deleted = ?
     left join base_role
       on base_usr_role.role_id = base_role.id
-      and base_role.is_deleted = 0
+      and base_role.is_deleted = ?
     left join (
       select
         json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
@@ -538,11 +545,10 @@ async fn get_from_query() -> Result<String> {
       from base_usr_role
       inner join base_role
         on base_role.id = base_usr_role.role_id
-        and base_role.is_deleted = 0
       inner join base_usr
         on base_usr.id = base_usr_role.usr_id
       where
-        base_usr_role.is_deleted = 0
+        base_usr_role.is_deleted = ?
       group by usr_id
     ) _role
       on _role.usr_id = t.id
@@ -550,11 +556,19 @@ async fn get_from_query() -> Result<String> {
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
       on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
+  args.push(is_deleted.into());
   Ok(from_query)
 }
 
 /// 根据搜索条件和分页查找用户列表
-#[allow(unused_variables)]
 pub async fn find_all(
   search: Option<UsrSearch>,
   page: Option<PageInput>,
@@ -562,17 +576,52 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   
-  #[allow(unused_variables)]
   let table = "base_usr";
-  let _method = "find_all";
+  let method = "find_all";
   
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(page) = &page {
+      msg += &format!(" page: {:?}", &page);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  #[allow(unused_variables)]
   let is_deleted = search.as_ref()
     .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
   if !sort.iter().any(|item| item.prop == "order_by") {
@@ -634,8 +683,9 @@ pub async fn find_all(
     is_enabled_dict,
   ]: [Vec<_>; 2] = dict_vec
     .try_into()
-    .map_err(|_| anyhow::anyhow!("dict_vec.len() != 3"))?;
+    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
   
+  #[allow(unused_variables)]
   for model in &mut res {
     
     // 锁定
@@ -667,14 +717,42 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  #[allow(unused_variables)]
   let table = "base_usr";
-  let _method = "find_count";
+  let method = "find_count";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(0);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query().await?;
-  let where_query = get_where_query(&mut args, search).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"
     select
@@ -812,6 +890,42 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
   
+  let table = "base_usr";
+  let method = "find_one";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(None);
+    }
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let page = PageInput {
     pg_offset: 0.into(),
     pg_size: 1.into(),
@@ -835,6 +949,31 @@ pub async fn find_by_id(
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
   
+  let table = "base_usr";
+  let method = "find_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if id.is_empty() {
+    return Ok(None);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let search = UsrSearch {
     id: Some(id),
     ..Default::default()
@@ -855,6 +994,29 @@ pub async fn exists(
   options: Option<Options>,
 ) -> Result<bool> {
   
+  let table = "base_usr";
+  let method = "exists";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let total = find_count(
     search,
     options,
@@ -868,6 +1030,27 @@ pub async fn exists_by_id(
   id: UsrId,
   options: Option<Options>,
 ) -> Result<bool> {
+  
+  let table = "base_usr";
+  let method = "exists_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let search = UsrSearch {
     id: Some(id),
@@ -889,6 +1072,30 @@ pub async fn find_by_unique(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
+  
+  let table = "base_usr";
+  let method = "find_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" search: {:?}", &search);
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -974,8 +1181,31 @@ fn equals_by_unique(
 pub async fn check_by_unique(
   input: UsrInput,
   model: UsrModel,
-  unique_type: UniqueType,
+  options: Option<Options>,
 ) -> Result<Option<UsrId>> {
+  
+  let table = "base_usr";
+  let method = "check_by_unique";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" model: {:?}", &model);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -983,6 +1213,12 @@ pub async fn check_by_unique(
   if !is_equals {
     return Ok(None);
   }
+  
+  let unique_type = options
+    .as_ref()
+    .and_then(|item| item.get_unique_type())
+    .unwrap_or_default();
+  
   if unique_type == UniqueType::Ignore {
     return Ok(None);
   }
@@ -1182,15 +1418,43 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+pub fn get_is_debug(
+  options: Option<&Options>,
+) -> bool {
+  let mut is_debug: bool = *IS_DEBUG;
+  if let Some(options) = &options {
+    is_debug = options.get_is_debug();
+  }
+  is_debug
+}
+
 /// 创建用户
-#[allow(unused_mut)]
 pub async fn create(
+  #[allow(unused_mut)]
   mut input: UsrInput,
   options: Option<Options>,
 ) -> Result<UsrId> {
   
   let table = "base_usr";
-  let _method = "create";
+  let method = "create";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   if input.id.is_some() {
     return Err(SrvErr::msg(
@@ -1209,19 +1473,23 @@ pub async fn create(
   if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
-      .map(|item|
-        item.get_unique_type().unwrap_or(UniqueType::Throw)
+      .and_then(|item|
+        item.get_unique_type()
       )
-      .unwrap_or(UniqueType::Throw);
+      .unwrap_or_default();
     
     let mut id: Option<UsrId> = None;
     
     for old_model in old_models {
       
+      let options = Options::from(options.clone())
+        .set_unique_type(unique_type);
+      let options = Some(options);
+      
       id = check_by_unique(
         input.clone(),
         old_model,
-        unique_type,
+        options,
       ).await?;
       
       if id.is_some() {
@@ -1433,7 +1701,26 @@ pub async fn update_tenant_by_id(
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_usr";
-  let _method = "update_tenant_by_id";
+  let method = "update_tenant_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = options.into();
   
   let mut args = QueryArgs::new();
   
@@ -1539,7 +1826,26 @@ pub async fn update_by_id(
   }
   
   let table = "base_usr";
-  let _method = "update_by_id";
+  let method = "update_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   let now = get_now();
   
@@ -1652,8 +1958,6 @@ pub async fn update_by_id(
     
   }
   
-  let mut field_num = 0;
-  
   // 所属组织
   if let Some(org_ids) = input.org_ids {
     many2many_update(
@@ -1761,9 +2065,24 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "delete_by_ids";
+  let method = "delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -1823,9 +2142,25 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "enable_by_ids";
+  let method = "enable_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_enabled: {:?}", &is_enabled);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let options = options.set_del_cache_key1s(get_foreign_tables());
   
@@ -1884,7 +2219,26 @@ pub async fn lock_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "lock_by_ids";
+  let method = "lock_by_ids";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_locked: {:?}", &is_locked);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
   
   let options = Options::from(options);
   
@@ -1923,9 +2277,28 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "revert_by_ids";
+  let method = "revert_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -2007,9 +2380,28 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   let table = "base_usr";
-  let _method = "force_delete_by_ids";
+  let method = "force_delete_by_ids";
   
-  let options = Options::from(options);
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -2063,7 +2455,21 @@ pub async fn find_last_order_by(
 ) -> Result<u32> {
   
   let table = "base_usr";
-  let _method = "find_last_order_by";
+  let method = "find_last_order_by";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();

@@ -19,6 +19,7 @@
     "vadimcn.vscode-lldb",
     "ms-vscode.cpptools",
     "caponetto.vscode-diff-viewer",
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "ms-vscode.vscode-speech"
   ]
 }

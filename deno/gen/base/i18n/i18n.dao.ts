@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -16,6 +20,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -82,79 +90,61 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lang_id && !Array.isArray(search?.lang_id)) {
+  if (search?.lang_id != null && !Array.isArray(search?.lang_id)) {
     search.lang_id = [ search.lang_id ];
   }
-  if (search?.lang_id && search?.lang_id.length > 0) {
+  if (search?.lang_id != null) {
     whereQuery += ` and lang_id_lbl.id in ${ args.push(search.lang_id) }`;
-  }
-  if (search?.lang_id === null) {
-    whereQuery += ` and lang_id_lbl.id is null`;
   }
   if (search?.lang_id_is_null) {
     whereQuery += ` and lang_id_lbl.id is null`;
   }
-  if (search?.menu_id && !Array.isArray(search?.menu_id)) {
+  if (search?.menu_id != null && !Array.isArray(search?.menu_id)) {
     search.menu_id = [ search.menu_id ];
   }
-  if (search?.menu_id && search?.menu_id.length > 0) {
+  if (search?.menu_id != null) {
     whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
-  }
-  if (search?.menu_id === null) {
-    whereQuery += ` and menu_id_lbl.id is null`;
   }
   if (search?.menu_id_is_null) {
     whereQuery += ` and menu_id_lbl.id is null`;
   }
-  if (search?.code !== undefined) {
+  if (search?.code != null) {
     whereQuery += ` and t.code = ${ args.push(search.code) }`;
-  }
-  if (search?.code === null) {
-    whereQuery += ` and t.code is null`;
   }
   if (isNotEmpty(search?.code_like)) {
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -162,19 +152,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -182,22 +169,16 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    base_i18n t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: I18nSearch,
+  options?: {
+  },
+) {
+  let fromQuery = `base_i18n t
     left join base_lang lang_id_lbl
       on lang_id_lbl.id = t.lang_id
     left join base_menu menu_id_lbl
@@ -205,8 +186,7 @@ async function getFromQuery() {
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -218,10 +198,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: I18nSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_i18n";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -232,19 +224,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -268,10 +253,35 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<I18nModel[]> {
   const table = "base_i18n";
   const method = "findAll";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -281,18 +291,13 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -333,12 +338,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<I18nModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   
@@ -379,7 +387,7 @@ export async function setIdByLbl(
 ) {
   
   // 语言
-  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id == null) {
     input.lang_id_lbl = String(input.lang_id_lbl).trim();
     const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
     if (langModel) {
@@ -388,7 +396,7 @@ export async function setIdByLbl(
   }
   
   // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id == null) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
@@ -430,12 +438,28 @@ export async function getFieldComments(): Promise<I18nFieldComment> {
 export async function findByUnique(
   search0: I18nInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<I18nModel[]> {
+  
+  const table = "base_i18n";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -469,7 +493,7 @@ export async function findByUnique(
       lang_id,
       menu_id,
       code,
-    });
+    }, undefined, undefined, options);
     models.push(...modelTmps);
   }
   return models;
@@ -545,13 +569,39 @@ export async function findOne(
   search?: I18nSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<I18nModel | undefined> {
+  const table = "base_i18n";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -563,12 +613,27 @@ export async function findOne(
 export async function findById(
   id?: I18nId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<I18nModel | undefined> {
+  const table = "base_i18n";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -579,9 +644,24 @@ export async function findById(
 export async function exist(
   search?: I18nSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "base_i18n";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -592,9 +672,20 @@ export async function exist(
  */
 export async function existById(
   id?: I18nId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "base_i18n";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -718,11 +809,26 @@ export async function validate(
 export async function create(
   input: I18nInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<I18nId> {
   const table = "base_i18n";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -769,7 +875,7 @@ export async function create(
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
@@ -777,23 +883,23 @@ export async function create(
     sql += `,update_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id`;
     }
   }
-  if (input.lang_id !== undefined) {
+  if (input.lang_id != null) {
     sql += `,lang_id`;
   }
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     sql += `,menu_id`;
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     sql += `,code`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
@@ -801,7 +907,7 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -809,30 +915,34 @@ export async function create(
     sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.lang_id !== undefined) {
+  if (input.lang_id != null) {
     sql += `,${ args.push(input.lang_id) }`;
   }
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     sql += `,${ args.push(input.menu_id) }`;
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     sql += `,${ args.push(input.code) }`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   await delCache();
   
@@ -843,20 +953,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "base_i18n";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_lang",
-    "base_menu",
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.base_i18n`);
 }
 
 /**
@@ -875,11 +972,27 @@ export async function updateById(
   id: I18nId,
   input: I18nInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<I18nId> {
   const table = "base_i18n";
   const method = "updateById";
+  
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -917,42 +1030,43 @@ export async function updateById(
     update base_i18n set
   `;
   let updateFldNum = 0;
-  if (input.lang_id !== undefined) {
+  if (input.lang_id != null) {
     if (input.lang_id != oldModel.lang_id) {
       sql += `lang_id = ${ args.push(input.lang_id) },`;
       updateFldNum++;
     }
   }
-  if (input.menu_id !== undefined) {
+  if (input.menu_id != null) {
     if (input.menu_id != oldModel.menu_id) {
       sql += `menu_id = ${ args.push(input.menu_id) },`;
       updateFldNum++;
     }
   }
-  if (input.code !== undefined) {
+  if (input.code != null) {
     if (input.code != oldModel.code) {
       sql += `code = ${ args.push(input.code) },`;
       updateFldNum++;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
@@ -961,8 +1075,7 @@ export async function updateById(
     
     await delCache();
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   if (updateFldNum > 0) {
@@ -986,10 +1099,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: I18nId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_i18n";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1001,9 +1126,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: I18nId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1034,10 +1159,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: I18nId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_i18n";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1093,10 +1230,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: I18nId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_i18n";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;

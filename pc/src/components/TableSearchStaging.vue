@@ -1,6 +1,5 @@
 <template>
 <div
-  un-h="5.5"
   un-overflow-hidden
 >
   <el-dropdown
@@ -82,7 +81,7 @@ const props = defineProps<{
   filename: string;
 }>();
 
-export type SearchStagingType = {
+type SearchStagingType = {
   name: string;
   value: T;
 };

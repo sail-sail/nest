@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找操作记录总数
  */
 export async function findCountOperationRecord(
-  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountOperationRecord(
  * 根据搜索条件和分页查找操作记录列表
  */
 export async function findAllOperationRecord(
-  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OperationRecordModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsOperationRecord(): Promise<OperationRecord
  * 根据条件查找第一个操作记录
  */
 export async function findOneOperationRecord(
-  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch,
   sort?: SortInput[],
 ): Promise<OperationRecordModel | undefined> {
   

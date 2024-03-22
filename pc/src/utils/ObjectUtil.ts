@@ -1,6 +1,6 @@
 
 
-export function deepCompare(a: any, b: any, strict = false): boolean {
+export function deepCompare(a: any, b: any, strict = false, excludeKeys: string[] = [ ]): boolean {
   if (!strict) {
     if ((a || "") == (b || "")) {
       return true;

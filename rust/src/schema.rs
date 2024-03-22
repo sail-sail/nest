@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![recursion_limit="512"]
 
 #[macro_use]
 extern crate derive_new;
