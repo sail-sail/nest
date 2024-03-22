@@ -81,6 +81,10 @@ pub async fn create(
   options: Option<Options>,
 ) -> Result<WxwAppId> {
   
+  let mut input = input;
+  input.id = None;
+  let input = input;
+  
   let input = wxw_app_service::set_id_by_lbl(
     input,
   ).await?;
@@ -122,6 +126,10 @@ pub async fn update_by_id(
   input: WxwAppInput,
   options: Option<Options>,
 ) -> Result<WxwAppId> {
+  
+  let mut input = input;
+  input.id = None;
+  let input = input;
   
   let input = wxw_app_service::set_id_by_lbl(
     input,
@@ -187,7 +195,7 @@ pub async fn enable_by_ids(
   
   use_permit(
     "/wxwork/wxw_app".to_owned(),
-    "enable".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = wxw_app_service::enable_by_ids(
@@ -226,7 +234,7 @@ pub async fn lock_by_ids(
   
   use_permit(
     "/wxwork/wxw_app".to_owned(),
-    "lock".to_owned(),
+    "edit".to_owned(),
   ).await?;
   
   let num = wxw_app_service::lock_by_ids(

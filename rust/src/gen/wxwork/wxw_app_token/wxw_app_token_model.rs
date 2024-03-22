@@ -28,6 +28,7 @@ use crate::common::context::ArgType;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -53,6 +54,30 @@ pub struct WxwAppTokenModel {
   pub expires_in: u32,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: UsrId,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: UsrId,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
@@ -77,6 +102,26 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     };
     // 令牌超时时间
     let expires_in: u32 = row.try_get("expires_in")?;
+    // 创建人
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -91,6 +136,14 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
       token_time,
       token_time_lbl,
       expires_in,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -116,9 +169,33 @@ pub struct WxwAppTokenFieldComment {
   pub token_time_lbl: String,
   /// 令牌超时时间
   pub expires_in: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: String,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenSearch {
   /// ID
@@ -144,6 +221,96 @@ pub struct WxwAppTokenSearch {
   pub token_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 令牌超时时间
   pub expires_in: Option<Vec<u32>>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<Vec<UsrId>>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<Vec<UsrId>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+}
+
+impl std::fmt::Debug for WxwAppTokenSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwAppTokenSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 企微应用
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref wxw_app_id_is_null) = self.wxw_app_id_is_null {
+      item = item.field("wxw_app_id_is_null", wxw_app_id_is_null);
+    }
+    // 类型corp和contact
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
+    }
+    if let Some(ref r#type_like) = self.r#type_like {
+      item = item.field("r#type_like", r#type_like);
+    }
+    // 令牌
+    if let Some(ref access_token) = self.access_token {
+      item = item.field("access_token", access_token);
+    }
+    if let Some(ref access_token_like) = self.access_token_like {
+      item = item.field("access_token_like", access_token_like);
+    }
+    // 令牌创建时间
+    if let Some(ref token_time) = self.token_time {
+      item = item.field("token_time", token_time);
+    }
+    // 令牌超时时间
+    if let Some(ref expires_in) = self.expires_in {
+      item = item.field("expires_in", expires_in);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 创建时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -170,6 +337,30 @@ pub struct WxwAppTokenInput {
   pub token_time_lbl: Option<String>,
   /// 令牌超时时间
   pub expires_in: Option<u32>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<UsrId>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<UsrId>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<WxwAppTokenModel> for WxwAppTokenInput {
@@ -190,6 +381,18 @@ impl From<WxwAppTokenModel> for WxwAppTokenInput {
       token_time_lbl: model.token_time_lbl.into(),
       // 令牌超时时间
       expires_in: model.expires_in.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
     }
   }
 }
@@ -212,6 +415,14 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       token_time: input.token_time.map(|x| vec![x, x]),
       // 令牌超时时间
       expires_in: input.expires_in.map(|x| vec![x, x]),
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x, x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

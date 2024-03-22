@@ -124,7 +124,7 @@ impl WxwAppTokenGenMutation {
   async fn create_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    model: WxwAppTokenInput,
+    input: WxwAppTokenInput,
     unique_type: Option<UniqueType>,
   ) -> Result<WxwAppTokenId> {
     let mut options = Options::new();
@@ -137,7 +137,7 @@ impl WxwAppTokenGenMutation {
       .build()
       .scope({
         wxw_app_token_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -168,7 +168,7 @@ impl WxwAppTokenGenMutation {
     &self,
     ctx: &Context<'_>,
     id: WxwAppTokenId,
-    model: WxwAppTokenInput,
+    input: WxwAppTokenInput,
   ) -> Result<WxwAppTokenId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -177,7 +177,7 @@ impl WxwAppTokenGenMutation {
       .scope({
         wxw_app_token_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

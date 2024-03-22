@@ -176,7 +176,7 @@ impl WxwAppGenMutation {
   async fn create_wxw_app(
     &self,
     ctx: &Context<'_>,
-    model: WxwAppInput,
+    input: WxwAppInput,
     unique_type: Option<UniqueType>,
   ) -> Result<WxwAppId> {
     let mut options = Options::new();
@@ -189,7 +189,7 @@ impl WxwAppGenMutation {
       .build()
       .scope({
         wxw_app_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -220,7 +220,7 @@ impl WxwAppGenMutation {
     &self,
     ctx: &Context<'_>,
     id: WxwAppId,
-    model: WxwAppInput,
+    input: WxwAppInput,
   ) -> Result<WxwAppId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -229,7 +229,7 @@ impl WxwAppGenMutation {
       .scope({
         wxw_app_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await

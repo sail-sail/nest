@@ -28,6 +28,7 @@ use crate::common::context::ArgType;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -55,16 +56,34 @@ pub struct WxwMsgModel {
   pub url: String,
   /// 按钮文字
   pub btntxt: String,
-  /// 发送时间
-  pub create_time: Option<chrono::NaiveDateTime>,
-  /// 发送时间
-  pub create_time_lbl: String,
   /// 错误信息
   pub errmsg: String,
   /// 消息ID
   pub msgid: String,
   /// 是否已删除
   pub is_deleted: u8,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: UsrId,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: UsrId,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxwMsgModel {
@@ -90,16 +109,30 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     let url: String = row.try_get("url")?;
     // 按钮文字
     let btntxt: String = row.try_get("btntxt")?;
-    // 发送时间
+    // 错误信息
+    let errmsg: String = row.try_get("errmsg")?;
+    // 消息ID
+    let msgid: String = row.try_get("msgid")?;
+    // 创建人
+    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 错误信息
-    let errmsg: String = row.try_get("errmsg")?;
-    // 消息ID
-    let msgid: String = row.try_get("msgid")?;
+    // 更新人
+    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -116,10 +149,16 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
       description,
       url,
       btntxt,
-      create_time,
-      create_time_lbl,
       errmsg,
       msgid,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -159,9 +198,27 @@ pub struct WxwMsgFieldComment {
   /// 消息ID
   #[graphql(skip)]
   pub msgid: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: String,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: String,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: String,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Default, Debug)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgSearch {
   /// ID
@@ -211,6 +268,124 @@ pub struct WxwMsgSearch {
   /// 消息ID
   #[graphql(skip)]
   pub msgid_like: Option<String>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<Vec<UsrId>>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<Vec<UsrId>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+}
+
+impl std::fmt::Debug for WxwMsgSearch {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwMsgSearch");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref ids) = self.ids {
+      item = item.field("ids", ids);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    // 企微应用
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref wxw_app_id_is_null) = self.wxw_app_id_is_null {
+      item = item.field("wxw_app_id_is_null", wxw_app_id_is_null);
+    }
+    // 发送状态
+    if let Some(ref errcode) = self.errcode {
+      item = item.field("errcode", errcode);
+    }
+    // 成员ID
+    if let Some(ref touser) = self.touser {
+      item = item.field("touser", touser);
+    }
+    if let Some(ref touser_like) = self.touser_like {
+      item = item.field("touser_like", touser_like);
+    }
+    // 标题
+    if let Some(ref title) = self.title {
+      item = item.field("title", title);
+    }
+    if let Some(ref title_like) = self.title_like {
+      item = item.field("title_like", title_like);
+    }
+    // 描述
+    if let Some(ref description) = self.description {
+      item = item.field("description", description);
+    }
+    if let Some(ref description_like) = self.description_like {
+      item = item.field("description_like", description_like);
+    }
+    // 链接
+    if let Some(ref url) = self.url {
+      item = item.field("url", url);
+    }
+    if let Some(ref url_like) = self.url_like {
+      item = item.field("url_like", url_like);
+    }
+    // 按钮文字
+    if let Some(ref btntxt) = self.btntxt {
+      item = item.field("btntxt", btntxt);
+    }
+    if let Some(ref btntxt_like) = self.btntxt_like {
+      item = item.field("btntxt_like", btntxt_like);
+    }
+    // 发送时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    // 错误信息
+    if let Some(ref errmsg) = self.errmsg {
+      item = item.field("errmsg", errmsg);
+    }
+    if let Some(ref errmsg_like) = self.errmsg_like {
+      item = item.field("errmsg_like", errmsg_like);
+    }
+    // 消息ID
+    if let Some(ref msgid) = self.msgid {
+      item = item.field("msgid", msgid);
+    }
+    if let Some(ref msgid_like) = self.msgid_like {
+      item = item.field("msgid_like", msgid_like);
+    }
+    // 创建人
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
+      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
+    }
+    // 更新人
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
+      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
+    }
+    // 更新时间
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
@@ -242,15 +417,35 @@ pub struct WxwMsgInput {
   pub url: Option<String>,
   /// 按钮文字
   pub btntxt: Option<String>,
-  /// 发送时间
-  pub create_time: Option<chrono::NaiveDateTime>,
-  /// 发送时间
-  pub create_time_lbl: Option<String>,
   /// 错误信息
   pub errmsg: Option<String>,
   /// 消息ID
   #[graphql(skip)]
   pub msgid: Option<String>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id: Option<UsrId>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id: Option<UsrId>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<WxwMsgModel> for WxwMsgInput {
@@ -275,13 +470,22 @@ impl From<WxwMsgModel> for WxwMsgInput {
       url: model.url.into(),
       // 按钮文字
       btntxt: model.btntxt.into(),
-      // 发送时间
-      create_time: model.create_time,
-      create_time_lbl: model.create_time_lbl.into(),
       // 错误信息
       errmsg: model.errmsg.into(),
       // 消息ID
       msgid: model.msgid.into(),
+      // 创建人
+      create_usr_id: model.create_usr_id.into(),
+      create_usr_id_lbl: model.create_usr_id_lbl.into(),
+      // 创建时间
+      create_time: model.create_time,
+      create_time_lbl: model.create_time_lbl.into(),
+      // 更新人
+      update_usr_id: model.update_usr_id.into(),
+      update_usr_id_lbl: model.update_usr_id_lbl.into(),
+      // 更新时间
+      update_time: model.update_time,
+      update_time_lbl: model.update_time_lbl.into(),
     }
   }
 }
@@ -314,6 +518,12 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       errmsg: input.errmsg,
       // 消息ID
       msgid: input.msgid,
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

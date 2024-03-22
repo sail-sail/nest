@@ -124,7 +124,7 @@ impl WxwUsrGenMutation {
   async fn create_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    model: WxwUsrInput,
+    input: WxwUsrInput,
     unique_type: Option<UniqueType>,
   ) -> Result<WxwUsrId> {
     let mut options = Options::new();
@@ -137,7 +137,7 @@ impl WxwUsrGenMutation {
       .build()
       .scope({
         wxw_usr_resolver::create(
-          model,
+          input,
           options.into(),
         )
       }).await
@@ -168,7 +168,7 @@ impl WxwUsrGenMutation {
     &self,
     ctx: &Context<'_>,
     id: WxwUsrId,
-    model: WxwUsrInput,
+    input: WxwUsrInput,
   ) -> Result<WxwUsrId> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -177,7 +177,7 @@ impl WxwUsrGenMutation {
       .scope({
         wxw_usr_resolver::update_by_id(
           id,
-          model,
+          input,
           None,
         )
       }).await
