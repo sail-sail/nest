@@ -23,6 +23,18 @@ async function setLblById(
   }
 }
 
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxwUsrInput = {
+    id: model?.id,
+    lbl: model?.lbl,
+    userid: model?.userid,
+    rem: model?.rem,
+  };
+  return input;
+}
+
 /**
  * 根据搜索条件查找企微用户列表
  * @param {WxwUsrSearch} search?
@@ -126,25 +138,26 @@ export async function findCount(
 
 /**
  * 创建企微用户
- * @param {WxwUsrInput} model
+ * @param {WxwUsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxwUsrInput,
+  input: WxwUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxwUsrId> {
+  input = intoInput(input);
   const data: {
     createWxwUsr: Mutation["createWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxwUsrInput!, $unique_type: UniqueType) {
-        createWxwUsr(model: $model, unique_type: $unique_type)
+      mutation($input: WxwUsrInput!, $unique_type: UniqueType) {
+        createWxwUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -155,25 +168,26 @@ export async function create(
 /**
  * 根据 id 修改企微用户
  * @param {WxwUsrId} id
- * @param {WxwUsrInput} model
+ * @param {WxwUsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxwUsrId,
-  model: WxwUsrInput,
+  input: WxwUsrInput,
   opt?: GqlOpt,
 ): Promise<WxwUsrId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxwUsr: Mutation["updateByIdWxwUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxwUsrId!, $model: WxwUsrInput!) {
-        updateByIdWxwUsr(id: $id, model: $model)
+      mutation($id: WxwUsrId!, $input: WxwUsrInput!) {
+        updateByIdWxwUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxwUsrId = data.updateByIdWxwUsr;

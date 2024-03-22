@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
-    name: "rust4wxwork{env}",
-    script: "./rust4wxwork{env}",
+    name: "deno4wxwork{env}",
+    script: "./deno4wxwork{env}",
     instances: 1,
     autorestart: true,
     watch: false,
