@@ -202,13 +202,14 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (
     [
-      "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
       "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
       "tenant_id", "tenant_id_lbl",
       "org_id", "org_id_lbl",
     ].includes(column_name)
-    || (column.noAdd && column.noEdit)
+    || (column.noAdd && column.noEdit && !column.search)
   ) continue;
+  if (column_name === "create_usr_id" && !column.search) continue;
+  if (column_name === "update_usr_id" && !column.search) continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
@@ -1621,13 +1622,14 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "id") continue;
   if (
     [
-      "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
       "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
       "tenant_id", "tenant_id_lbl",
       "org_id", "org_id_lbl",
     ].includes(column_name)
-    || (column.noAdd && column.noEdit)
+    || (column.noAdd && column.noEdit && !column.search)
   ) continue;
+  if (column_name === "create_usr_id" && !column.search) continue;
+  if (column_name === "update_usr_id" && !column.search) continue;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;

@@ -54,12 +54,22 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
-const hasMany2many = columns.some((column) => {
+const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
+    return true;
+  }
+  return false;
+});
+const hasMany2many = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many") {
     return true;
   }
   return false;
@@ -223,7 +233,7 @@ if (hasOrgId) {
 import * as orgDao from "/gen/base/org/org.dao.ts";<#
 }
 #><#
-if (hasMany2many) {
+if (hasMany2manyNotInline) {
 #>
 
 import {
@@ -3423,10 +3433,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
-  });
-  log(JSON.stringify(res));<#
+  });<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3553,45 +3562,7 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [<#
-  const foreignTablesCache = [ ];
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    const foreignKey = column.foreignKey;
-    let data_type = column.DATA_TYPE;
-    if (!foreignKey) continue;
-    const foreignTable = foreignKey.table;
-    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    if (foreignTablesCache.includes(foreignTable)) {
-      continue;
-    }
-    foreignTablesCache.push(foreignTable);
-  #><#
-    if (foreignKey && foreignKey.type === "many2many") {
-  #>
-    "<#=many2many.mod#>_<#=many2many.table#>",
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    } else if (foreignKey && !foreignKey.multiple) {
-  #>
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    }
-  #><#
-  }
-  #>
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);
 }<#
 }
 #><#
@@ -4345,8 +4316,7 @@ export async function updateById(
     }
     #>
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }<#
   if (cache) {
   #>
