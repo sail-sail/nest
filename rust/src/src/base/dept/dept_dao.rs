@@ -40,7 +40,6 @@ pub async fn get_auth_dept_ids() -> Result<Vec<DeptId>> {
 }
 
 #[allow(dead_code)]
-#[async_recursion::async_recursion]
 async fn get_parents_by_id(
   ids: Vec<DeptId>,
   parent_ids: &mut Vec<DeptId>,
@@ -68,10 +67,10 @@ async fn get_parents_by_id(
   
   parent_ids.extend(ids2.clone());
   
-  get_parents_by_id(
+  Box::pin(get_parents_by_id(
     ids2,
     parent_ids,
-  ).await?;
+  )).await?;
   
   Ok(())
 }
