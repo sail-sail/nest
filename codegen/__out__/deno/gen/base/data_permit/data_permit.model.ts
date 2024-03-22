@@ -1,5 +1,3 @@
-
-
 import type {
   DataPermitInput as DataPermitInputType,
   DataPermitModel as DataPermitModelType,
