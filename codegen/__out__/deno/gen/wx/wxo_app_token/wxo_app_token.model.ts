@@ -1,5 +1,3 @@
-
-
 import type {
   WxoAppTokenInput as WxoAppTokenInputType,
   WxoAppTokenModel as WxoAppTokenModelType,

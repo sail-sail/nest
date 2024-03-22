@@ -1,5 +1,3 @@
-
-
 import type {
   WxPayInput as WxPayInputType,
   WxPayModel as WxPayModelType,

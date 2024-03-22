@@ -1,5 +1,3 @@
-
-
 import type {
   PayTransactionsJsapiInput as PayTransactionsJsapiInputType,
   PayTransactionsJsapiModel as PayTransactionsJsapiModelType,

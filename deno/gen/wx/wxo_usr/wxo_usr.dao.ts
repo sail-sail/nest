@@ -964,10 +964,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   await delCache();
   
@@ -978,18 +977,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "wx_wxo_usr";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.wx_wxo_usr`);
 }
 
 /**
@@ -1217,8 +1205,7 @@ export async function updateById(
     
     await delCache();
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   if (updateFldNum > 0) {

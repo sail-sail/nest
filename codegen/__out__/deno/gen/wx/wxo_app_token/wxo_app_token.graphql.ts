@@ -70,9 +70,9 @@ input WxoAppTokenSearch {
   access_token: String
   access_token_like: String
   "令牌创建时间"
-  token_time: [NaiveDateTime!]
+  token_time: [NaiveDateTime]
   "令牌超时时间"
-  expires_in: [Int!]
+  expires_in: [Int]
 }
 type Query {
   "根据条件查找小程序接口凭据总数"
