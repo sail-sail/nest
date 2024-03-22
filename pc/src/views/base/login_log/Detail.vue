@@ -109,6 +109,17 @@
           </el-form-item>
         </template>
         
+        <el-form-item
+          :label="n('登录时间')"
+          prop="login_time"
+        >
+          <CustomInput
+            v-model="dialogModel.create_time_lbl"
+            :placeholder="`${ ns('请输入') } ${ n('登录时间') }`"
+            :readonly="isLocked || isReadonly"
+          ></CustomInput>
+        </el-form-item>
+        
       </el-form>
     </div>
     <div
@@ -189,8 +200,12 @@ import type {
 } from "@/typings/ids";
 
 import type {
-  LoginLogInput,
+  LoginLogInput as LoginLogInput0,
 } from "#/types";
+
+type LoginLogInput = LoginLogInput0 & {
+  create_time_lbl?: string | null;
+};
 
 const emit = defineEmits<{
   nextId: [
@@ -599,8 +614,7 @@ async function onInitI18ns() {
     "用户名",
     "登录成功",
     "IP",
-    "创建人",
-    "创建时间",
+    "登录时间",
   ];
   await Promise.all([
     initDetailI18ns(),

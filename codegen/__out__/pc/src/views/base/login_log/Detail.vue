@@ -599,8 +599,7 @@ async function onInitI18ns() {
     "用户名",
     "登录成功",
     "IP",
-    "创建人",
-    "创建时间",
+    "登录时间",
   ];
   await Promise.all([
     initDetailI18ns(),

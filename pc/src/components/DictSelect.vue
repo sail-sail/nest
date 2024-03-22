@@ -112,6 +112,7 @@
       'custom_select_placeholder': shouldShowPlaceholder,
       custom_select_isShowModelLabel: isShowModelLabel,
     }"
+    v-bind="$attrs"
   >
     <template
       v-if="modelLabels.length === 0"
@@ -209,6 +210,7 @@
       'dict_select_placeholder': shouldShowPlaceholder,
       dict_select_isShowModelLabel: isShowModelLabel,
     }"
+    v-bind="$attrs"
   >
     <template
       v-if="!modelLabels[0]"
