@@ -849,10 +849,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   return input.id;
 }
@@ -1019,8 +1018,7 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   const newModel = await findById(id);

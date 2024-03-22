@@ -1012,10 +1012,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   await delCache();
   
@@ -1166,8 +1165,7 @@ export async function updateById(
     
     await delCache();
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   if (updateFldNum > 0) {

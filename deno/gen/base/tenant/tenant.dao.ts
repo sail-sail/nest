@@ -1105,10 +1105,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   // 所属域名
   await many2manyUpdate(
@@ -1305,8 +1304,7 @@ export async function updateById(
     
     await delCache();
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   if (updateFldNum > 0) {

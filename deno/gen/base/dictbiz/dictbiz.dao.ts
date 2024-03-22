@@ -1066,10 +1066,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
   });
-  log(JSON.stringify(res));
   
   // 业务字典明细
   if (input.dictbiz_detail_models && input.dictbiz_detail_models.length > 0) {
@@ -1317,8 +1316,7 @@ export async function updateById(
     
     await delCache();
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   if (updateFldNum > 0) {

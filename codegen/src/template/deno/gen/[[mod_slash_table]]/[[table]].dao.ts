@@ -3433,10 +3433,9 @@ export async function create(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const res = await execute(sql, args, {
+  await execute(sql, args, {
     debug,
-  });
-  log(JSON.stringify(res));<#
+  });<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -4317,8 +4316,7 @@ export async function updateById(
     }
     #>
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }<#
   if (cache) {
   #>
