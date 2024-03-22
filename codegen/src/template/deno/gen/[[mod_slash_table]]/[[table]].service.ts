@@ -27,25 +27,27 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#><#
+#>import type {
+  UniqueType,
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";<#
 if (hasLocked || hasIsSys) {
-#>import {
+#>
+
+import {
   ns,
 } from "/src/base/i18n/i18n.ts";<#
 }
 #><#
 if (opts.filterDataByCreateUsr) {
-#>import {
+#>
+
+import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";<#
 }
 #>
-
-import type {
-  UniqueType,
-  PageInput,
-  SortInput,
-} from "/gen/types.ts";
 
 import type {
   <#=inputName#>,

@@ -1,5 +1,3 @@
-
-
 import type {
   BackgroundTaskInput as BackgroundTaskInputType,
   BackgroundTaskModel as BackgroundTaskModelType,

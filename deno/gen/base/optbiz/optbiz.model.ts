@@ -1,5 +1,3 @@
-
-
 import type {
   OptbizInput as OptbizInputType,
   OptbizModel as OptbizModelType,
