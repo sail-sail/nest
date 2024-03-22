@@ -4613,12 +4613,15 @@ watch(
       dialogModel.<#=column_name#>_<#=table#>_models = [ ];
       return;
     }
+    let updateNum = 0;
+    let createNum = 0;
     const inputs: <#=Table_Up#>Input[] = [ ];
     for (let i = 0; i < dialogModel.<#=column_name#>.length; i++) {
       const <#=many2many.column2#> = dialogModel.<#=column_name#>[i];
       const model = dialogModel.<#=column_name#>_<#=table#>_models?.find((item) => item.<#=many2many.column2#> === <#=many2many.column2#>);
       if (model) {
         inputs.push(model);
+        updateNum++;
         continue;
       }
       const input = <#=column_name#>_<#=foreign_table#>_models.find((item) => item.id === <#=many2many.column2#>)!;
@@ -4630,8 +4633,23 @@ watch(
         <#=many2many.column1#>: dialogModel.id,
         <#=many2many.column1#>_lbl: dialogModel.lbl,
       });
+      createNum++;
     }
+    const removeNum = dialogModel.<#=column_name#>_<#=table#>_models.length - updateNum;
     dialogModel.<#=column_name#>_<#=table#>_models = inputs;
+    let msg = "";
+    if (removeNum > 0) {
+      msg += await nsAsync("删除 {0} 项", removeNum);
+    }
+    if (createNum > 0) {
+      if (msg) {
+        msg += ", ";
+      }
+      msg += await nsAsync("新增 {0} 项", createNum);
+    }
+    if (msg) {
+      ElMessage.success(msg);
+    }
     await nextTick();
     rights_ids_rights_pack_rightsRef?.setScrollTop(Number.MAX_VALUE);
   },
