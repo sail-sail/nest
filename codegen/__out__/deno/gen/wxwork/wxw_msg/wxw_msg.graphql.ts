@@ -107,7 +107,7 @@ input WxwMsgSearch {
   btntxt: String
   btntxt_like: String
   "发送时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "错误信息"
   errmsg: String
   errmsg_like: String
