@@ -171,6 +171,27 @@ async fn get_where_query(
     }
   }
   {
+    let create_time: Vec<chrono::NaiveDateTime> = match search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
       None => None,
@@ -194,27 +215,6 @@ async fn get_where_query(
     };
     if create_usr_id_is_null {
       where_query += " and create_usr_id_lbl.id is null";
-    }
-  }
-  {
-    let create_time: Vec<chrono::NaiveDateTime> = match search {
-      Some(item) => item.create_time.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      _ => create_time[0].into(),
-    };
-    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      1 => None,
-      _ => create_time[1].into(),
-    };
-    if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
-    }
-    if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
   {
@@ -507,10 +507,10 @@ pub async fn get_field_comments(
     "登录成功".into(),
     "登录成功".into(),
     "IP".into(),
+    "登录时间".into(),
+    "登录时间".into(),
     "创建人".into(),
     "创建人".into(),
-    "创建时间".into(),
-    "创建时间".into(),
     "更新人".into(),
     "更新人".into(),
     "更新时间".into(),
@@ -535,10 +535,10 @@ pub async fn get_field_comments(
     is_succ: vec[2].to_owned(),
     is_succ_lbl: vec[3].to_owned(),
     ip: vec[4].to_owned(),
-    create_usr_id: vec[5].to_owned(),
-    create_usr_id_lbl: vec[6].to_owned(),
-    create_time: vec[7].to_owned(),
-    create_time_lbl: vec[8].to_owned(),
+    create_time: vec[5].to_owned(),
+    create_time_lbl: vec[6].to_owned(),
+    create_usr_id: vec[7].to_owned(),
+    create_usr_id_lbl: vec[8].to_owned(),
     update_usr_id: vec[9].to_owned(),
     update_usr_id_lbl: vec[10].to_owned(),
     update_time: vec[11].to_owned(),

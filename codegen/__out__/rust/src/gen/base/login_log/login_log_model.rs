@@ -48,8 +48,10 @@ pub struct LoginLogModel {
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: UsrId,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
@@ -140,14 +142,16 @@ pub struct LoginLogFieldComment {
   pub is_succ_lbl: String,
   /// IP
   pub ip: String,
+  /// 登录时间
+  pub create_time: String,
+  /// 登录时间
+  pub create_time_lbl: String,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: String,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_lbl: String,
-  /// 创建时间
-  pub create_time: String,
-  /// 创建时间
-  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: String,
@@ -182,12 +186,14 @@ pub struct LoginLogSearch {
   pub ip: Option<String>,
   /// IP
   pub ip_like: Option<String>,
+  /// 登录时间
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
-  /// 创建时间
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -234,16 +240,16 @@ impl std::fmt::Debug for LoginLogSearch {
     if let Some(ref ip_like) = self.ip_like {
       item = item.field("ip_like", ip_like);
     }
+    // 登录时间
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
-    }
-    // 创建时间
-    if let Some(ref create_time) = self.create_time {
-      item = item.field("create_time", create_time);
     }
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
@@ -347,10 +353,10 @@ impl From<LoginLogInput> for LoginLogSearch {
       is_succ: input.is_succ.map(|x| vec![x]),
       // IP
       ip: input.ip,
+      // 登录时间
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
-      // 创建时间
-      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间

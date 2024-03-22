@@ -595,10 +595,10 @@ impl TryFrom<String> for DataPermitScope {
 /// 数据权限类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitType {
-  /// 只读
+  /// 可见不可改且不可删
   #[graphql(name="readonly")]
   Readonly,
-  /// 可改
+  /// 可见可改且可删
   #[default]
   #[graphql(name="editable")]
   Editable,
