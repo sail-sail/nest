@@ -32,9 +32,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
 const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
-#>
-
-import type {
+#>import type {
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,

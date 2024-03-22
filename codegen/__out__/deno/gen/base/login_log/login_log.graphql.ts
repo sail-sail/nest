@@ -68,7 +68,7 @@ input LoginLogSearch {
   ip: String
   ip_like: String
   "登录时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找登录日志总数"

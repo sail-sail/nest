@@ -1,5 +1,3 @@
-
-
 import type {
   MenuInput as MenuInputType,
   MenuModel as MenuModelType,

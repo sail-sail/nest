@@ -104,7 +104,7 @@ input LangSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -112,12 +112,12 @@ input LangSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找语言总数"
