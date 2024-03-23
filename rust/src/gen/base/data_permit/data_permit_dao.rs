@@ -323,6 +323,36 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 菜单
+  if let Some(search) = &search {
+    if search.menu_id.is_some() && search.menu_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 范围
+  if let Some(search) = &search {
+    if search.scope.is_some() && search.scope.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() && search.r#type.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -604,10 +634,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -1352,17 +1378,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = "base_data_permit";
   vec![
     table,
-  ]
-}
-
-/// 获取外键关联表, 第一个是主表
-#[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_data_permit";
-  vec![
-    table,
-    "base_menu",
-    "base_usr",
   ]
 }
 

@@ -1318,7 +1318,7 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone, Debug)]
+#[derive(Default, new, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句
@@ -1350,6 +1350,43 @@ pub struct Options {
   #[allow(dead_code)]
   has_data_permit: Option<bool>,
   
+}
+
+impl Debug for Options {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("Options");
+    if self.is_debug {
+      item = item.field("is_debug", &self.is_debug);
+    }
+    if let Some(is_tran) = self.is_tran {
+      if is_tran {
+        item = item.field("is_tran", &is_tran);
+      }
+    }
+    if let Some(cache_key1) = &self.cache_key1 {
+      item = item.field("cache_key1", cache_key1);
+    }
+    if let Some(cache_key2) = &self.cache_key2 {
+      item = item.field("cache_key2", cache_key2);
+    }
+    if let Some(del_cache_key1s) = &self.del_cache_key1s {
+      item = item.field("del_cache_key1s", del_cache_key1s);
+    }
+    if let Some(unique_type) = &self.unique_type {
+      item = item.field("unique_type", unique_type);
+    }
+    if let Some(is_encrypt) = self.is_encrypt {
+      if is_encrypt {
+        item = item.field("is_encrypt", &is_encrypt);
+      }
+    }
+    if let Some(has_data_permit) = self.has_data_permit {
+      if has_data_permit {
+        item = item.field("has_data_permit", &has_data_permit);
+      }
+    }
+    item.finish()
+  }
 }
 
 impl Options {

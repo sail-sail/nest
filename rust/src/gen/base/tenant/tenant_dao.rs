@@ -445,6 +445,42 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 所属域名
+  if let Some(search) = &search {
+    if search.domain_ids.is_some() && search.domain_ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 菜单权限
+  if let Some(search) = &search {
+    if search.menu_ids.is_some() && search.menu_ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() && search.is_locked.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() && search.is_enabled.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -737,10 +773,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -1613,20 +1645,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = "base_tenant";
   vec![
     table,
-  ]
-}
-
-/// 获取外键关联表, 第一个是主表
-#[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_tenant";
-  vec![
-    table,
-    "base_tenant_domain",
-    "base_domain",
-    "base_tenant_menu",
-    "base_menu",
-    "base_usr",
   ]
 }
 
