@@ -388,7 +388,7 @@ async fn get_where_query(
     get_route_path(),
     options,
   ).await?;
-  let has_usr_permit = data_permit_models.iter()
+  let has_create_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Role);
@@ -443,13 +443,11 @@ async fn get_where_query(
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
-  if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_usr_permit {
+  if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_create_permit {
     let usr_id = get_auth_id().unwrap_or_default();
     where_query += " and t.create_usr_id = ?";
     args.push(usr_id.into());
-  } else if (!has_tenant_permit && has_dept_parent_permit)
-    || (!has_tenant_permit && has_dept_permit)
-  {
+  } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
     let arg = {
       let mut items = Vec::with_capacity(dept_ids.len());
@@ -810,14 +808,12 @@ async fn get_from_query(
     get_route_path(),
     options,
   ).await?;
-  let has_usr_permit = data_permit_models.iter()
+  let has_create_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Create);
   let has_role_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Role);
   let has_dept_permit = data_permit_models.iter()
-    .any(|item| item.scope == DataPermitScope::Dept);
-  let has_dept_parent_permit = data_permit_models.iter()
-    .any(|item| item.scope == DataPermitScope::DeptParent);
+    .any(|item| item.scope == DataPermitScope::Dept || item.scope == DataPermitScope::DeptParent);
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
@@ -900,16 +896,10 @@ async fn get_from_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && has_dept_permit {
-    from_query += r#"
-      left join base_usr_dept _permit_usr_dept_
-        on _permit_usr_dept_.usr_id  = t.create_usr_id
-    "#;
+    from_query += r#" left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id  = t.create_usr_id"#;
   }
   if !has_tenant_permit && has_role_permit {
-    from_query += r#"
-      left join base_usr_role _permit_usr_role_
-        on _permit_usr_role_.usr_id  = t.create_usr_id
-    "#;
+    from_query += r#" left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id  = t.create_usr_id"#;
   }<#
   }
   #>
@@ -956,7 +946,56 @@ pub async fn find_all(
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(vec![]);
     }
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search {
+    if search.<#=column_name_rust#>.is_some() && search.<#=column_name_rust#>.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }<#
+    }
+  #><#
   }
+  #>
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -1564,10 +1603,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -3411,59 +3446,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = "<#=mod#>_<#=table#>";
   vec![
     table,
-  ]
-}
-
-/// 获取外键关联表, 第一个是主表
-#[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "<#=mod#>_<#=table#>";
-  vec![
-    table,<#
-    let foreign_tableArr = [ ];
-    const foreignTablesCache = [ ];
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.isVirtual) continue;
-      const column_name = column.COLUMN_NAME;
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      if (!foreignKey) continue;
-      const foreignTable = foreignKey.table;
-      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const many2many = column.many2many;
-      if (foreignTablesCache.includes(foreignTable)) {
-        continue;
-      }
-      foreignTablesCache.push(foreignTable);
-    #><#
-      if (foreignKey && foreignKey.type === "many2many") {
-        if (foreign_tableArr.includes(many2many.table)) {
-          continue;
-        } else {
-          foreign_tableArr.push(many2many.table);
-        }
-        if (foreign_tableArr.includes(foreignTable)) {
-          continue;
-        } else {
-          foreign_tableArr.push(foreignTable);
-        }
-    #>
-    "<#=many2many.mod#>_<#=many2many.table#>",
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    } else if (foreignKey && !foreignKey.multiple) {
-      if (foreign_tableArr.includes(foreignTable)) {
-        continue;
-      } else {
-        foreign_tableArr.push(foreignTable);
-      }
-    #>
-    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
-    }
-    #><#
-    }
-    #>
   ]
 }
 

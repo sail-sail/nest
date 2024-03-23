@@ -319,6 +319,24 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 登录成功
+  if let Some(search) = &search {
+    if search.is_succ.is_some() && search.is_succ.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -578,10 +596,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -1304,16 +1318,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = "base_login_log";
   vec![
     table,
-  ]
-}
-
-/// 获取外键关联表, 第一个是主表
-#[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_login_log";
-  vec![
-    table,
-    "base_usr",
   ]
 }
 
