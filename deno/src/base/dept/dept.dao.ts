@@ -32,6 +32,7 @@ export async function getAuthDeptIds() {
   return dept_ids;
 }
 
+// 获取指定用户的部门ID列表
 export async function getDeptIds(
   usr_id?: UsrId,
 ) {
