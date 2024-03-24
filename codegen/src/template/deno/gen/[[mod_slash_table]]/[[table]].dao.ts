@@ -1155,7 +1155,54 @@ export async function findAll(
   }
   if (search?.ids?.length === 0) {
     return [ ];
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if (search && search.<#=column_name#> != null && search.<#=column_name#>.length === 0) {
+    return [ ];
+  }<#
+    }
+  #><#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = `
