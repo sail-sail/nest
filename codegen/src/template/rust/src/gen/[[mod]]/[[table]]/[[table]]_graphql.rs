@@ -161,6 +161,27 @@ impl <#=tableUP#>GenQuery {
         )
       }).await
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  /// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+  async fn get_editable_data_permits_by_ids_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<<#=Table_Up#>Id>,
+  ) -> Result<Vec<u8>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::get_editable_data_permits_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }<#
+  }
+  #><#
   if (hasEnabled) {
   #>
   

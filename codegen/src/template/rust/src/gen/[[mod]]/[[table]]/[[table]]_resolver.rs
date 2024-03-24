@@ -286,7 +286,25 @@ pub async fn find_by_id(
   #>
   
   Ok(model)
+}<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+pub async fn get_editable_data_permits_by_ids(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<u8>> {
+  
+  let res = <#=table#>_service::get_editable_data_permits_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(res)
+}<#
 }
+#>
 
 /// 创建<#=table_comment#>
 #[allow(dead_code)]

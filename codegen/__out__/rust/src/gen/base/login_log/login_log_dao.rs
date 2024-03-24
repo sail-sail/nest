@@ -479,10 +479,6 @@ pub async fn find_count(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
   let res: Option<CountModel> = query_one(
     sql,
     args,
@@ -491,8 +487,7 @@ pub async fn find_count(
   
   let total = res
     .map(|item| item.total)
-    .unwrap_or_default()
-    ;
+    .unwrap_or_default();
   
   Ok(total)
 }
@@ -1354,11 +1349,24 @@ pub async fn delete_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
+    
+    let old_model = find_by_id(
+      id.clone(),
+      None,
+    ).await?;
+    if old_model.is_none() {
+      continue;
+    }
+    
     let mut args = QueryArgs::new();
     
     let sql = format!(

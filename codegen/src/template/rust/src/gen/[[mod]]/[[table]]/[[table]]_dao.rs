@@ -134,10 +134,15 @@ use crate::gen::base::data_permit::data_permit_model::{
 use crate::src::base::data_permit::data_permit_dao::get_data_permits;
 #[allow(unused_imports)]
 use crate::src::base::dept::dept_dao::{
+  get_dept_ids,
   get_auth_dept_ids,
+  get_parents_dept_ids,
   get_auth_and_parents_dept_ids,
 };
-use crate::src::base::role::role_dao::get_auth_role_ids;<#
+use crate::src::base::role::role_dao::{
+  get_role_ids,
+  get_auth_role_ids,
+};<#
 }
 #>
 
@@ -384,6 +389,7 @@ async fn get_where_query(
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
+  
   let data_permit_models = get_data_permits(
     get_route_path(),
     options,
@@ -1413,17 +1419,17 @@ pub async fn find_count(
       ) t
   "#);
   
-  let args = args.into();
-  
-  let options = Options::from(options);<#
+  let args = args.into();<#
   if (cache) {
   #>
   
-  let options = options.set_cache_key(table, &sql, &args);<#
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();<#
   }
   #>
-  
-  let options = options.into();
   
   let res: Option<CountModel> = query_one(
     sql,
@@ -1433,8 +1439,7 @@ pub async fn find_count(
   
   let total = res
     .map(|item| item.total)
-    .unwrap_or_default()
-    ;
+    .unwrap_or_default();
   
   Ok(total)
 }
@@ -2935,6 +2940,126 @@ pub async fn get_version_by_id(
   Ok(0.into())
 }<#
 }
+#><#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/// 根据 ids 获取<#=table_comment#>是否可编辑数据权限 getEditableDataPermitsByIds
+pub async fn get_editable_data_permits_by_ids(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<u8>> {
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  
+  let options = Some(options);
+  
+  let data_permit_models = get_data_permits(
+    get_route_path(),
+    options.as_ref(),
+  ).await?;
+  
+  let has_create_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Create && item.r#type == DataPermitType::Editable);
+  let has_role_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Role && item.r#type == DataPermitType::Editable);
+  let has_dept_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Dept && item.r#type == DataPermitType::Editable);
+  let has_dept_parent_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::DeptParent && item.r#type == DataPermitType::Editable);
+  let has_tenant_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
+  
+  let mut editable_data_permits = vec![];
+  
+  let models = find_all(
+    <#=Table_Up#>Search {
+      ids: ids.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  for id in ids {
+    let model = models.iter()
+      .find(|item| item.id == id);
+    if model.is_none() {
+      editable_data_permits.push(0);
+      continue;
+    }
+    let model = model.unwrap();
+    
+    if model.create_usr_id.is_empty() {
+      editable_data_permits.push(1);
+      continue;
+    }
+    
+    if !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
+      let usr_id = get_auth_id();
+      if usr_id.is_none() {
+        editable_data_permits.push(0);
+        continue;
+      }
+      let usr_id = usr_id.unwrap();
+      if usr_id == model.create_usr_id {
+        editable_data_permits.push(1);
+      } else {
+        editable_data_permits.push(0);
+      }
+    } else if !has_tenant_permit && has_dept_parent_permit {
+      let dept_ids = get_auth_dept_ids().await?;
+      let model_dept_ids = get_parents_dept_ids(
+        model.create_usr_id.clone().into(),
+      ).await?;
+      if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
+        editable_data_permits.push(1);
+      } else {
+        editable_data_permits.push(0);
+      }
+    } else if !has_tenant_permit && has_dept_permit {
+      let dept_ids = get_auth_dept_ids().await?;
+      let model_dept_ids = get_parents_dept_ids(
+        model.create_usr_id.clone().into(),
+      ).await?;
+      if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
+        editable_data_permits.push(1);
+      } else {
+        editable_data_permits.push(0);
+      }
+    } else if !has_tenant_permit && has_dept_permit {
+      let dept_ids = get_auth_dept_ids().await?;
+      let model_dept_ids = get_dept_ids(
+        model.create_usr_id.clone().into(),
+      ).await?;
+      if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
+        editable_data_permits.push(1);
+      } else {
+        editable_data_permits.push(0);
+      }
+    }
+    
+    if !has_tenant_permit && has_role_permit {
+      let role_ids = get_auth_role_ids().await?;
+      let model_role_ids = get_role_ids(
+        model.create_usr_id.clone().into(),
+      ).await?;
+      if model_role_ids.iter().any(|item| role_ids.contains(item)) {
+        editable_data_permits.push(1);
+      } else {
+        editable_data_permits.push(0);
+      }
+    }
+  }
+  
+  Ok(editable_data_permits)
+}<#
+}
 #>
 
 /// 根据 id 修改<#=table_comment#>
@@ -3008,6 +3133,72 @@ pub async fn update_by_id(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  let old_model = old_model.unwrap();
+  
+  let data_permit_models = get_data_permits(
+    get_route_path(),
+    options.as_ref(),
+  ).await?;
+  
+  let has_create_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Create && item.r#type == DataPermitType::Editable);
+  let has_role_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Role && item.r#type == DataPermitType::Editable);
+  let has_dept_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Dept && item.r#type == DataPermitType::Editable);
+  let has_dept_parent_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::DeptParent && item.r#type == DataPermitType::Editable);
+  let has_tenant_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
+  
+  async fn get_not_permit_err_fn() -> Result<SrvErr> {
+    let table_comment = i18n_dao::ns(
+      "会员卡".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "没有权限编辑此 {0}".to_owned(),
+      map.into(),
+    ).await?;
+    Ok(SrvErr::msg(err_msg))
+  }
+  
+  if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
+    return Err(get_not_permit_err_fn().await?.into());
+  } else if !has_tenant_permit && has_dept_parent_permit {
+    let dept_ids = get_auth_dept_ids().await?;
+    let model_dept_ids = get_parents_dept_ids(
+      old_model.create_usr_id.clone().into(),
+    ).await?;
+    if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
+      return Err(get_not_permit_err_fn().await?.into());
+    }
+  } else if !has_tenant_permit && has_dept_permit {
+    let dept_ids = get_auth_dept_ids().await?;
+    let model_dept_ids = get_dept_ids(
+      old_model.create_usr_id.clone().into(),
+    ).await?;
+    if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
+      return Err(get_not_permit_err_fn().await?.into());
+    }
+  }
+  
+  if !has_tenant_permit && has_role_permit {
+    let role_ids = get_auth_role_ids().await?;
+    let model_role_ids = get_role_ids(
+      old_model.create_usr_id.clone().into(),
+    ).await?;
+    if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
+      return Err(get_not_permit_err_fn().await?.into());
+    }
+  }<#
+  }
+  #><#
   if (false) {
   #>
   
@@ -3482,11 +3673,97 @@ pub async fn delete_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let data_permit_models = get_data_permits(
+    get_route_path(),
+    options.as_ref(),
+  ).await?;
+  
+  let has_create_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Create && item.r#type == DataPermitType::Editable);
+  let has_role_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Role && item.r#type == DataPermitType::Editable);
+  let has_dept_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Dept && item.r#type == DataPermitType::Editable);
+  let has_dept_parent_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::DeptParent && item.r#type == DataPermitType::Editable);
+  let has_tenant_permit = data_permit_models.iter()
+    .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
+  
+  async fn get_not_permit_err_fn() -> Result<SrvErr> {
+    let table_comment = i18n_dao::ns(
+      "会员卡".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "没有权限删除此 {0}".to_owned(),
+      map.into(),
+    ).await?;
+    Ok(SrvErr::msg(err_msg))
+  }
+  
+  if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
+    return Err(get_not_permit_err_fn().await?.into());
+  }<#
+  }
+  #>
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
+    
+    let old_model = find_by_id(
+      id.clone(),
+      None,
+    ).await?;
+    if old_model.is_none() {
+      continue;
+    }<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    
+    let old_model = old_model.unwrap();
+    
+    if !has_tenant_permit && has_dept_parent_permit {
+      let dept_ids = get_auth_dept_ids().await?;
+      let model_dept_ids = get_parents_dept_ids(
+        old_model.create_usr_id.clone().into(),
+      ).await?;
+      if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
+        return Err(get_not_permit_err_fn().await?.into());
+      }
+    } else if !has_tenant_permit && has_dept_permit {
+      let dept_ids = get_auth_dept_ids().await?;
+      let model_dept_ids = get_dept_ids(
+        old_model.create_usr_id.clone().into(),
+      ).await?;
+      if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
+        return Err(get_not_permit_err_fn().await?.into());
+      }
+    }
+    
+    if !has_tenant_permit && has_role_permit {
+      let role_ids = get_auth_role_ids().await?;
+      let model_role_ids = get_role_ids(
+        old_model.create_usr_id.clone().into(),
+      ).await?;
+      if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
+        return Err(get_not_permit_err_fn().await?.into());
+      }
+    }<#
+    }
+    #>
+    
     let mut args = QueryArgs::new();
     
     let sql = format!(
