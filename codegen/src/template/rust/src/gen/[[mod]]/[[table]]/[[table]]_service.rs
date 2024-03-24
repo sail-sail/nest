@@ -160,7 +160,29 @@ pub async fn find_by_id(
   ).await?;
   
   Ok(model)
+}<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+pub async fn get_editable_data_permits_by_ids(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<u8>> {
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();
+  
+  let res = <#=table#>_dao::get_editable_data_permits_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(res)
+}<#
 }
+#>
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 pub async fn set_id_by_lbl(

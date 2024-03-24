@@ -7,6 +7,7 @@ use crate::gen::base::dept::dept_dao::find_all as find_all_dept;
 use crate::gen::base::dept::dept_model::{DeptSearch, DeptId};
 
 use crate::common::auth::auth_model::AuthModel;
+use crate::gen::base::usr::usr_model::UsrId;
 
 /// 获取当前登录用户的部门id列表
 #[allow(dead_code)]
@@ -19,6 +20,31 @@ pub async fn get_auth_dept_ids() -> Result<Vec<DeptId>> {
   let aut_model = aut_model.unwrap();
   
   let usr_id = aut_model.id;
+  
+  let usr_model = find_by_id_usr(
+    usr_id,
+    None,
+  ).await?;
+  
+  if usr_model.is_none() {
+    return Ok(vec![]);
+  }
+  let usr_model = usr_model.unwrap();
+  
+  if usr_model.is_enabled == 0 {
+    return Ok(vec![]);
+  }
+  
+  let dept_ids = usr_model.dept_ids;
+  
+  Ok(dept_ids)
+}
+
+/// 获取指定用户的部门ID列表
+#[allow(dead_code)]
+pub async fn get_dept_ids(
+  usr_id: UsrId,
+) -> Result<Vec<DeptId>> {
   
   let usr_model = find_by_id_usr(
     usr_id,
@@ -84,6 +110,31 @@ pub async fn get_auth_and_parents_dept_ids() -> Result<Vec<DeptId>> {
   let mut parent_ids: Vec<DeptId> = vec![];
   
   parent_ids.extend(dept_ids.clone());
+  
+  get_parents_by_id(
+    dept_ids,
+    &mut parent_ids,
+  ).await?;
+  
+  Ok(parent_ids)
+}
+
+/// 获取指定用户及其所有父部门的id
+#[allow(dead_code)]
+pub async fn get_parents_dept_ids(
+  usr_id: Option<UsrId>,
+) -> Result<Vec<DeptId>> {
+  
+  if usr_id.is_none() {
+    return Ok(vec![]);
+  }
+  let usr_id = usr_id.unwrap();
+  
+  let dept_ids = get_dept_ids(
+    usr_id,
+  ).await?;
+  
+  let mut parent_ids: Vec<DeptId> = vec![];
   
   get_parents_by_id(
     dept_ids,
