@@ -1583,10 +1583,11 @@ export async function findAll(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });<#
@@ -1747,11 +1748,22 @@ export async function findAll(
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
       const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
     
     // <#=inlineForeignTab.label#>
-    model.<#=inline_column_name#> = <#=inline_column_name#>
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
       .filter((item) => item.<#=inlineForeignTab.column#> === model.id);<#
+      } else if (inline_foreign_type === "one2one") {
+      #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)[0];<#
+      }
+      #><#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -3540,16 +3552,28 @@ export async function create(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=inline_column_name#> && input.<#=inline_column_name#>.length > 0) {
-    for (let i = 0; i < input.<#=inline_column_name#>.length; i++) {
-      const model = input.<#=inline_column_name#>[i];
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
       model.<#=inlineForeignTab.column#> = input.id;
       await create<#=Table_Up#>(model);
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
+    await create<#=Table_Up#>(input.<#=inline_column_name#>);
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4159,36 +4183,68 @@ export async function updateById(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=inline_column_name#>) {
-    const <#=inline_column_name#> = await findAll<#=Table_Up#>({
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
       <#=inlineForeignTab.column#>: [ id ],
     });
-    if (<#=inline_column_name#>.length > 0 && input.<#=inline_column_name#>.length > 0) {
+    if (<#=inline_column_name#>_models.length > 0 && <#=inline_column_name#>_input.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < <#=inline_column_name#>.length; i++) {
-      const model = <#=inline_column_name#>[i];
-      if (input.<#=inline_column_name#>.some((item) => item.id === model.id)) {
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (<#=inline_column_name#>_input.some((item) => item.id === model.id)) {
         continue;
       }
       await deleteByIds<#=Table_Up#>([ model.id ]);
     }
-    for (let i = 0; i < input.<#=inline_column_name#>.length; i++) {
-      const model = input.<#=inline_column_name#>[i];
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
       if (!model.id) {
         model.<#=inlineForeignTab.column#> = id;
         await create<#=Table_Up#>(model);
         continue;
       }
-      if (<#=inline_column_name#>.some((item) => item.id === model.id)) {
+      if (<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
         await revertByIds<#=Table_Up#>([ model.id ]);
       }
       await updateById<#=Table_Up#>(model.id, { ...model, id: undefined });
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+      <#=inlineForeignTab.column#>: [ id ],
+    });
+    if (<#=inline_column_name#>_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (input.<#=inline_column_name#>.id === model.id) {
+        continue;
+      }
+      await deleteByIds<#=Table_Up#>([ model.id ]);
+    }
+    if (!input.<#=inline_column_name#>.id) {
+      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = id;
+      await create<#=Table_Up#>(input.<#=inline_column_name#>);
+    } else {
+      if (<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>!.id)) {
+        await revertByIds<#=Table_Up#>([ input.<#=inline_column_name#>.id ]);
+      }
+      await updateById<#=Table_Up#>(input.<#=inline_column_name#>.id, { ...input.<#=inline_column_name#>, id: undefined });
+    }
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4958,14 +5014,28 @@ export async function revertByIds(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await revertByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.slice(0, 1).map((item) => item.id));<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -5105,11 +5175,11 @@ export async function forceDeleteByIds(
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
+  await forceDeleteByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {

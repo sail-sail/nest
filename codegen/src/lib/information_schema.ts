@@ -521,6 +521,9 @@ async function getSchema0(
       if (!item.column_name) {
         item.column_name = item.table;
       }
+      if (!item.foreign_type) {
+        item.foreign_type = "one2many";
+      }
     }
   }
   return records2;

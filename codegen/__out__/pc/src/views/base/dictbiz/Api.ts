@@ -35,17 +35,26 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DictbizInput = {
+    // ID
     id: model?.id,
+    // 编码
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 数据类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
+    // 业务字典明细
     dictbiz_detail: (model?.dictbiz_detail ?? [ ]).map(intoInputDictbizDetail),
   };
   return input;

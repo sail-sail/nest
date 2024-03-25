@@ -273,9 +273,18 @@ type <#=modelName#> {<#
       searchName = Table_Up + "Search";
     }
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   "<#=inlineForeignTab.label#>"
   <#=inline_column_name#>: [<#=modelName#>!]<#
+    } else {
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=inline_column_name#>: <#=modelName#><#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -560,9 +569,18 @@ input <#=inputName#> {<#
       searchName = Table_Up + "Search";
     }
     const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   "<#=inlineForeignTab.label#>"
   <#=inline_column_name#>: [<#=inputName#>!]<#
+    } else {
+  #>
+  "<#=inlineForeignTab.label#>"
+  <#=inline_column_name#>: <#=inputName#><#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {

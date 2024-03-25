@@ -407,7 +407,7 @@ export async function findAll(
   ]);
   
   // 业务字典明细
-  const dictbiz_detail = await findAllDictbizDetail({
+  const dictbiz_detail_models = await findAllDictbizDetail({
     dictbiz_id: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });
@@ -470,7 +470,7 @@ export async function findAll(
     }
     
     // 业务字典明细
-    model.dictbiz_detail = dictbiz_detail
+    model.dictbiz_detail = dictbiz_detail_models
       .filter((item) => item.dictbiz_id === model.id);
   }
   
@@ -1091,9 +1091,10 @@ export async function create(
   });
   
   // 业务字典明细
-  if (input.dictbiz_detail && input.dictbiz_detail.length > 0) {
-    for (let i = 0; i < input.dictbiz_detail.length; i++) {
-      const model = input.dictbiz_detail[i];
+  const dictbiz_detail_input = input.dictbiz_detail;
+  if (dictbiz_detail_input && dictbiz_detail_input.length > 0) {
+    for (let i = 0; i < dictbiz_detail_input.length; i++) {
+      const model = dictbiz_detail_input[i];
       model.dictbiz_id = input.id;
       await createDictbizDetail(model);
     }
@@ -1294,28 +1295,29 @@ export async function updateById(
   }
   
   // 业务字典明细
-  if (input.dictbiz_detail) {
-    const dictbiz_detail = await findAllDictbizDetail({
+  const dictbiz_detail_input = input.dictbiz_detail;
+  if (dictbiz_detail_input) {
+    const dictbiz_detail_models = await findAllDictbizDetail({
       dictbiz_id: [ id ],
     });
-    if (dictbiz_detail.length > 0 && input.dictbiz_detail.length > 0) {
+    if (dictbiz_detail_models.length > 0 && dictbiz_detail_input.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < dictbiz_detail.length; i++) {
-      const model = dictbiz_detail[i];
-      if (input.dictbiz_detail.some((item) => item.id === model.id)) {
+    for (let i = 0; i < dictbiz_detail_models.length; i++) {
+      const model = dictbiz_detail_models[i];
+      if (dictbiz_detail_input.some((item) => item.id === model.id)) {
         continue;
       }
       await deleteByIdsDictbizDetail([ model.id ]);
     }
-    for (let i = 0; i < input.dictbiz_detail.length; i++) {
-      const model = input.dictbiz_detail[i];
+    for (let i = 0; i < dictbiz_detail_input.length; i++) {
+      const model = dictbiz_detail_input[i];
       if (!model.id) {
         model.dictbiz_id = id;
         await createDictbizDetail(model);
         continue;
       }
-      if (dictbiz_detail.some((item) => item.id === model.id)) {
+      if (dictbiz_detail_models.some((item) => item.id === model.id)) {
         await revertByIdsDictbizDetail([ model.id ]);
       }
       await updateByIdDictbizDetail(model.id, { ...model, id: undefined });
@@ -1654,11 +1656,11 @@ export async function revertByIds(
   }
   
   // 业务字典明细
-  const dictbiz_detail = await findAllDictbizDetail({
+  const dictbiz_detail_models = await findAllDictbizDetail({
     dictbiz_id: ids,
     is_deleted: 1,
   });
-  await revertByIdsDictbizDetail(dictbiz_detail.map((item) => item.id));
+  await revertByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
   
   await delCache();
   
@@ -1728,11 +1730,11 @@ export async function forceDeleteByIds(
   }
   
   // 业务字典明细
-  const dictbiz_detail = await findAllDictbizDetail({
+  const dictbiz_detail_models = await findAllDictbizDetail({
     dictbiz_id: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIdsDictbizDetail(dictbiz_detail.map((item) => item.id));
+  await forceDeleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
   
   await delCache();
   

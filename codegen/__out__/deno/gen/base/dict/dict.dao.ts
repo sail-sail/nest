@@ -385,7 +385,7 @@ export async function findAll(
   ]);
   
   // 系统字典明细
-  const dict_detail = await findAllDictDetail({
+  const dict_detail_models = await findAllDictDetail({
     dict_id: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });
@@ -448,7 +448,7 @@ export async function findAll(
     }
     
     // 系统字典明细
-    model.dict_detail = dict_detail
+    model.dict_detail = dict_detail_models
       .filter((item) => item.dict_id === model.id);
   }
   
@@ -1051,9 +1051,10 @@ export async function create(
   });
   
   // 系统字典明细
-  if (input.dict_detail && input.dict_detail.length > 0) {
-    for (let i = 0; i < input.dict_detail.length; i++) {
-      const model = input.dict_detail[i];
+  const dict_detail_input = input.dict_detail;
+  if (dict_detail_input && dict_detail_input.length > 0) {
+    for (let i = 0; i < dict_detail_input.length; i++) {
+      const model = dict_detail_input[i];
       model.dict_id = input.id;
       await createDictDetail(model);
     }
@@ -1195,28 +1196,29 @@ export async function updateById(
   }
   
   // 系统字典明细
-  if (input.dict_detail) {
-    const dict_detail = await findAllDictDetail({
+  const dict_detail_input = input.dict_detail;
+  if (dict_detail_input) {
+    const dict_detail_models = await findAllDictDetail({
       dict_id: [ id ],
     });
-    if (dict_detail.length > 0 && input.dict_detail.length > 0) {
+    if (dict_detail_models.length > 0 && dict_detail_input.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < dict_detail.length; i++) {
-      const model = dict_detail[i];
-      if (input.dict_detail.some((item) => item.id === model.id)) {
+    for (let i = 0; i < dict_detail_models.length; i++) {
+      const model = dict_detail_models[i];
+      if (dict_detail_input.some((item) => item.id === model.id)) {
         continue;
       }
       await deleteByIdsDictDetail([ model.id ]);
     }
-    for (let i = 0; i < input.dict_detail.length; i++) {
-      const model = input.dict_detail[i];
+    for (let i = 0; i < dict_detail_input.length; i++) {
+      const model = dict_detail_input[i];
       if (!model.id) {
         model.dict_id = id;
         await createDictDetail(model);
         continue;
       }
-      if (dict_detail.some((item) => item.id === model.id)) {
+      if (dict_detail_models.some((item) => item.id === model.id)) {
         await revertByIdsDictDetail([ model.id ]);
       }
       await updateByIdDictDetail(model.id, { ...model, id: undefined });
@@ -1555,11 +1557,11 @@ export async function revertByIds(
   }
   
   // 系统字典明细
-  const dict_detail = await findAllDictDetail({
+  const dict_detail_models = await findAllDictDetail({
     dict_id: ids,
     is_deleted: 1,
   });
-  await revertByIdsDictDetail(dict_detail.map((item) => item.id));
+  await revertByIdsDictDetail(dict_detail_models.map((item) => item.id));
   
   await delCache();
   
@@ -1629,11 +1631,11 @@ export async function forceDeleteByIds(
   }
   
   // 系统字典明细
-  const dict_detail = await findAllDictDetail({
+  const dict_detail_models = await findAllDictDetail({
     dict_id: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIdsDictDetail(dict_detail.map((item) => item.id));
+  await forceDeleteByIdsDictDetail(dict_detail_models.map((item) => item.id));
   
   await delCache();
   

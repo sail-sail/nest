@@ -531,10 +531,12 @@ export function intoInput(
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
+    // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,
     <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
       } else {
     #>
+    // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,<#
       }
     #><#
@@ -577,8 +579,18 @@ export function intoInput(
         searchName = Table_Up + "Search";
       }
       const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
+    // <#=inlineForeignTab.label#>
     <#=inline_column_name#>: (model?.<#=inline_column_name#> ?? [ ]).map(intoInput<#=Table_Up#>),<#
+      } else if (inline_foreign_type === "one2one") {
+    #>
+    // <#=inlineForeignTab.label#>
+    <#=inline_column_name#>: intoInput<#=Table_Up#>(model?.<#=inline_column_name#>),<#
+      }
+    #><#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {

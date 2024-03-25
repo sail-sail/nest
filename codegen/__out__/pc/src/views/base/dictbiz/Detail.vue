@@ -970,6 +970,7 @@ async function onSaveAndCopy() {
     is_locked: undefined,
     is_locked_lbl: undefined,
     order_by: order_by + 1,
+    // 业务字典明细
     dictbiz_detail: data.dictbiz_detail?.map((item) => ({
       ...item,
       id: undefined,
