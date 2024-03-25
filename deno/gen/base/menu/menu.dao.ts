@@ -1046,6 +1046,7 @@ export async function create(
  */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_menu`);
+  await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 
 /**
