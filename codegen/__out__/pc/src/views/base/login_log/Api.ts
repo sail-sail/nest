@@ -23,10 +23,14 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: LoginLogInput = {
+    // ID
     id: model?.id,
+    // 用户名
     username: model?.username,
+    // 登录成功
     is_succ: model?.is_succ,
     is_succ_lbl: model?.is_succ_lbl,
+    // IP
     ip: model?.ip,
   };
   return input;

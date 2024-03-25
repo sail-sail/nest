@@ -40,13 +40,18 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DataPermitInput = {
+    // ID
     id: model?.id,
+    // 菜单
     menu_id: model?.menu_id,
     menu_id_lbl: model?.menu_id_lbl,
+    // 范围
     scope: model?.scope,
     scope_lbl: model?.scope_lbl,
+    // 类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 备注
     rem: model?.rem,
   };
   return input;
