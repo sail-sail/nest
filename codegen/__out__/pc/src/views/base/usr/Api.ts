@@ -43,23 +43,35 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: UsrInput = {
+    // ID
     id: model?.id,
+    // 头像
     img: model?.img,
+    // 名称
     lbl: model?.lbl,
+    // 用户名
     username: model?.username,
+    // 所属组织
     org_ids: model?.org_ids,
     org_ids_lbl: model?.org_ids_lbl,
+    // 默认组织
     default_org_id: model?.default_org_id,
     default_org_id_lbl: model?.default_org_id_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 所属部门
     dept_ids: model?.dept_ids,
     dept_ids_lbl: model?.dept_ids_lbl,
+    // 拥有角色
     role_ids: model?.role_ids,
     role_ids_lbl: model?.role_ids_lbl,
+    // 备注
     rem: model?.rem,
   };
   return input;

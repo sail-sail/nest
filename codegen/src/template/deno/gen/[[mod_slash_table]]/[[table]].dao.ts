@@ -1155,7 +1155,54 @@ export async function findAll(
   }
   if (search?.ids?.length === 0) {
     return [ ];
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if (search && search.<#=column_name#> != null && search.<#=column_name#>.length === 0) {
+    return [ ];
+  }<#
+    }
+  #><#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = `
@@ -1535,10 +1582,12 @@ export async function findAll(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });<#
@@ -1698,11 +1747,23 @@ export async function findAll(
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
     
     // <#=inlineForeignTab.label#>
-    model.<#=table#>_models = <#=table#>_models
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
       .filter((item) => item.<#=inlineForeignTab.column#> === model.id);<#
+      } else if (inline_foreign_type === "one2one") {
+      #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)[0];<#
+      }
+      #><#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -3490,16 +3551,29 @@ export async function create(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models && input.<#=table#>_models.length > 0) {
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
-      await create<#=Table_Up#>(<#=table#>_model);
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
+      model.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(model);
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
+    await create<#=Table_Up#>(input.<#=inline_column_name#>);
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3562,7 +3636,17 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);
+  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
+  if (
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  await delCacheCtx(`dao.sql.base_menu._getMenus`);<#
+  }
+  #>
 }<#
 }
 #><#
@@ -4108,36 +4192,69 @@ export async function updateById(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
       <#=inlineForeignTab.column#>: [ id ],
     });
-    if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
+    if (<#=inline_column_name#>_models.length > 0 && <#=inline_column_name#>_input.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < <#=table#>_models.length; i++) {
-      const <#=table#>_model = <#=table#>_models[i];
-      if (input.<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (<#=inline_column_name#>_input.some((item) => item.id === model.id)) {
         continue;
       }
-      await deleteByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      await deleteByIds<#=Table_Up#>([ model.id ]);
     }
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      if (!<#=table#>_model.id) {
-        <#=table#>_model.<#=inlineForeignTab.column#> = id;
-        await create<#=Table_Up#>(<#=table#>_model);
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
+      if (!model.id) {
+        model.<#=inlineForeignTab.column#> = id;
+        await create<#=Table_Up#>(model);
         continue;
       }
-      if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
-        await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      if (<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
+        await revertByIds<#=Table_Up#>([ model.id ]);
       }
-      await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
+      await updateById<#=Table_Up#>(model.id, { ...model, id: undefined });
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+      <#=inlineForeignTab.column#>: [ id ],
+    });
+    if (<#=inline_column_name#>_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (input.<#=inline_column_name#>.id === model.id) {
+        continue;
+      }
+      await deleteByIds<#=Table_Up#>([ model.id ]);
+    }
+    if (!input.<#=inline_column_name#>.id) {
+      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = id;
+      await create<#=Table_Up#>(input.<#=inline_column_name#>);
+    } else {
+      if (<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>!.id)) {
+        await revertByIds<#=Table_Up#>([ input.<#=inline_column_name#>.id ]);
+      }
+      await updateById<#=Table_Up#>(input.<#=inline_column_name#>.id, { ...input.<#=inline_column_name#>, id: undefined });
+    }
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4485,13 +4602,14 @@ export async function deleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
   });
-  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await deleteByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4905,14 +5023,29 @@ export async function revertByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.slice(0, 1).map((item) => item.id));<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -5048,14 +5181,15 @@ export async function forceDeleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await forceDeleteByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {

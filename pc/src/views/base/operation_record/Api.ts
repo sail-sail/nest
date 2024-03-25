@@ -23,14 +23,23 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: OperationRecordInput = {
+    // ID
     id: model?.id,
+    // 模块
     module: model?.module,
+    // 模块名称
     module_lbl: model?.module_lbl,
+    // 方法
     method: model?.method,
+    // 方法名称
     method_lbl: model?.method_lbl,
+    // 操作
     lbl: model?.lbl,
+    // 耗时(毫秒)
     time: model?.time,
+    // 操作前数据
     old_data: model?.old_data,
+    // 操作后数据
     new_data: model?.new_data,
   };
   return input;
