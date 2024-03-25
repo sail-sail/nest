@@ -31,16 +31,24 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DictDetailInput = {
+    // ID
     id: model?.id,
+    // 系统字典
     dict_id: model?.dict_id,
     dict_id_lbl: model?.dict_id_lbl,
+    // 名称
     lbl: model?.lbl,
+    // 值
     val: model?.val,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;

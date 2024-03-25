@@ -724,6 +724,10 @@ export interface TablesConfigItem {
       table: string;
       label: string;
       column: string;
+      /** 字段名称, 默认值为 <#=table#> */
+      column_name?: string;
+      /** 一对一还是一对多, 默认为 one2many 一对多*/
+      foreign_type?: "one2one" | "one2many";
     }[],
     
     /**

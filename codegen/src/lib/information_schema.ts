@@ -515,6 +515,17 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.isRealData = true;
   }
+  if (tables[table_name]?.opts?.inlineForeignTabs?.length > 0) {
+    for (let i = 0; i < tables[table_name].opts.inlineForeignTabs.length; i++) {
+      const item = tables[table_name].opts.inlineForeignTabs[i];
+      if (!item.column_name) {
+        item.column_name = item.table;
+      }
+      if (!item.foreign_type) {
+        item.foreign_type = "one2many";
+      }
+    }
+  }
   return records2;
 }
 
