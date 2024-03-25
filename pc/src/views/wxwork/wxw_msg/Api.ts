@@ -27,15 +27,23 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxwMsgInput = {
+    // ID
     id: model?.id,
+    // 企微应用
     wxw_app_id: model?.wxw_app_id,
     wxw_app_id_lbl: model?.wxw_app_id_lbl,
+    // 发送状态
     errcode: model?.errcode,
     errcode_lbl: model?.errcode_lbl,
+    // 成员ID
     touser: model?.touser,
+    // 标题
     title: model?.title,
+    // 描述
     description: model?.description,
+    // 按钮文字
     btntxt: model?.btntxt,
+    // 错误信息
     errmsg: model?.errmsg,
   };
   return input;

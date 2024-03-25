@@ -27,9 +27,13 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxwUsrInput = {
+    // ID
     id: model?.id,
+    // 姓名
     lbl: model?.lbl,
+    // 用户ID
     userid: model?.userid,
+    // 备注
     rem: model?.rem,
   };
   return input;

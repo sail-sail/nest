@@ -31,19 +31,30 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxwAppInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 企业ID
     corpid: model?.corpid,
+    // 应用ID
     agentid: model?.agentid,
+    // 可信域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
+    // 应用密钥
     corpsecret: model?.corpsecret,
+    // 通讯录密钥
     contactsecret: model?.contactsecret,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
