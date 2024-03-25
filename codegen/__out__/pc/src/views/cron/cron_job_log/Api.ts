@@ -31,16 +31,23 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: CronJobLogInput = {
+    // ID
     id: model?.id,
+    // 定时任务
     cron_job_id: model?.cron_job_id,
     cron_job_id_lbl: model?.cron_job_id_lbl,
+    // 执行状态
     exec_state: model?.exec_state,
     exec_state_lbl: model?.exec_state_lbl,
+    // 执行结果
     exec_result: model?.exec_result,
+    // 开始时间
     begin_time: model?.begin_time,
     begin_time_lbl: model?.begin_time_lbl,
+    // 结束时间
     end_time: model?.end_time,
     end_time_lbl: model?.end_time_lbl,
+    // 备注
     rem: model?.rem,
   };
   return input;
