@@ -424,6 +424,42 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 所属组织
+  if (search && search.org_ids != null && search.org_ids.length === 0) {
+    return [ ];
+  }
+  // 默认组织
+  if (search && search.default_org_id != null && search.default_org_id.length === 0) {
+    return [ ];
+  }
+  // 锁定
+  if (search && search.is_locked != null && search.is_locked.length === 0) {
+    return [ ];
+  }
+  // 启用
+  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
+    return [ ];
+  }
+  // 所属部门
+  if (search && search.dept_ids != null && search.dept_ids.length === 0) {
+    return [ ];
+  }
+  // 拥有角色
+  if (search && search.role_ids != null && search.role_ids.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
+  // 隐藏记录
+  if (search && search.is_hidden != null && search.is_hidden.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `

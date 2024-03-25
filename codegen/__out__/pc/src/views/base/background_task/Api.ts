@@ -28,18 +28,27 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: BackgroundTaskInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 状态
     state: model?.state,
     state_lbl: model?.state_lbl,
+    // 类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 执行结果
     result: model?.result,
+    // 错误信息
     err_msg: model?.err_msg,
+    // 开始时间
     begin_time: model?.begin_time,
     begin_time_lbl: model?.begin_time_lbl,
+    // 结束时间
     end_time: model?.end_time,
     end_time_lbl: model?.end_time_lbl,
+    // 备注
     rem: model?.rem,
   };
   return input;
