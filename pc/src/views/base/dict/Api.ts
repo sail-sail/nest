@@ -46,7 +46,7 @@ export function intoInput(
     is_enabled_lbl: model?.is_enabled_lbl,
     order_by: model?.order_by,
     rem: model?.rem,
-    dict_detail_models: (model?.dict_detail_models ?? [ ]).map(intoInputDictDetail),
+    dict_detail: (model?.dict_detail ?? [ ]).map(intoInputDictDetail),
   };
   return input;
 }
@@ -90,7 +90,7 @@ export async function findAll(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -163,7 +163,7 @@ export async function findOne(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -313,7 +313,7 @@ export async function findById(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val

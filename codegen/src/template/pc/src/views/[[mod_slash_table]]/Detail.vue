@@ -741,6 +741,7 @@ const old_table = table;
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
           
           <el-tab-pane
@@ -750,11 +751,11 @@ const old_table = table;
             un-overflow-hidden
           >
             <el-table
-              ref="<#=table#>Ref"
+              ref="<#=inline_column_name#>Ref"
               un-m="t-2"
               size="small"
               height="100%"
-              :data="<#=table#>Data"
+              :data="<#=inline_column_name#>Data"
               class="tr_border_none"
             >
               
@@ -1158,7 +1159,7 @@ const old_table = table;
                     size="small"
                     plain
                     type="primary"
-                    @click="<#=table#>Add"
+                    @click="<#=inline_column_name#>Add"
                   >
                     {{ ns('新增') }}
                   </el-button>
@@ -1168,7 +1169,7 @@ const old_table = table;
                     size="small"
                     plain
                     type="danger"
-                    @click="<#=table#>Remove(row)"
+                    @click="<#=inline_column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
                   </el-button>
@@ -3412,8 +3413,9 @@ async function showDialog(
           const Table_Up = tableUp.split("_").map(function(item) {
             return item.substring(0, 1).toUpperCase() + item.substring(1);
           }).join("");
+          const inline_column_name = inlineForeignTab.column_name;
         #>
-        <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+        <#=inline_column_name#>: data.<#=inline_column_name#>?.map((item) => ({
           ...item,
           id: undefined,
         })) || [ ],<#
@@ -4120,9 +4122,10 @@ async function save() {
           throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
           process.exit(1);
         }
+        const inline_column_name = inlineForeignTab.column_name;
       #>
-      <#=table#>_models: [
-        ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
+      <#=inline_column_name#>: [
+        ...(dialogModel.<#=inline_column_name#> || [ ]).map((item) => ({
           ...item,<#
           if (hasOrderBy) {
           #>
@@ -4178,9 +4181,10 @@ async function save() {
           throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
           process.exit(1);
         }
+        const inline_column_name = inlineForeignTab.column_name;
       #>
-      <#=table#>_models: [
-        ...(dialogModel.<#=table#>_models || [ ]).map((item) => ({
+      <#=inline_column_name#>: [
+        ...(dialogModel.<#=inline_column_name#> || [ ]).map((item) => ({
           ...item,<#
           if (hasOrderBy) {
           #>
@@ -4307,8 +4311,9 @@ async function onSaveAndCopy() {
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
     #>
-    <#=table#>_models: data.<#=table#>_models?.map((item) => ({
+    <#=inline_column_name#>: data.<#=inline_column_name#>?.map((item) => ({
       ...item,
       id: undefined,
     })) || [ ],<#
@@ -4386,53 +4391,54 @@ for (const inlineForeignTab of inlineForeignTabs) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const inline_column_name = inlineForeignTab.column_name;
 #>
 
 // <#=inlineForeignTab.label#>
-let <#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
+let <#=inline_column_name#>Ref = $ref<InstanceType<typeof ElTable>>();
 
-let <#=table#>Data = $computed(() => {
+let <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
-      ...dialogModel.<#=table#>_models ?? [ ],
+      ...dialogModel.<#=inline_column_name#> ?? [ ],
       {
         _type: 'add',
       },
     ];
   }
-  return dialogModel.<#=table#>_models ?? [ ];
+  return dialogModel.<#=inline_column_name#> ?? [ ];
 });
 
-async function <#=table#>Add() {
-  if (!dialogModel.<#=table#>_models) {
-    dialogModel.<#=table#>_models = [ ];
+async function <#=inline_column_name#>Add() {
+  if (!dialogModel.<#=inline_column_name#>) {
+    dialogModel.<#=inline_column_name#> = [ ];
   }
   const defaultModel = await getDefaultInput<#=Table_Up#>();
-  dialogModel.<#=table#>_models.push(defaultModel);
-  <#=table#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  dialogModel.<#=inline_column_name#>.push(defaultModel);
+  <#=inline_column_name#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 
-function <#=table#>Remove(row: <#=Table_Up#>Model) {
-  if (!dialogModel.<#=table#>_models) {
+function <#=inline_column_name#>Remove(row: <#=Table_Up#>Model) {
+  if (!dialogModel.<#=inline_column_name#>) {
     return;
   }
-  const idx = dialogModel.<#=table#>_models.indexOf(row);
+  const idx = dialogModel.<#=inline_column_name#>.indexOf(row);
   if (idx >= 0) {
-    dialogModel.<#=table#>_models.splice(idx, 1);
+    dialogModel.<#=inline_column_name#>.splice(idx, 1);
   }
 }
 
 watch(
   () => [
-    dialogModel.<#=table#>_models,
-    dialogModel.<#=table#>_models?.length,
+    dialogModel.<#=inline_column_name#>,
+    dialogModel.<#=inline_column_name#>?.length,
   ],
   () => {
-    if (!dialogModel.<#=table#>_models) {
+    if (!dialogModel.<#=inline_column_name#>) {
       return;
     }
-    for (let i = 0; i < dialogModel.<#=table#>_models.length; i++) {
-      const item = dialogModel.<#=table#>_models[i];
+    for (let i = 0; i < dialogModel.<#=inline_column_name#>.length; i++) {
+      const item = dialogModel.<#=inline_column_name#>[i];
       (item as any)._seq = i + 1;
     }
   },

@@ -623,7 +623,7 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
-        dict_detail_models: data.dict_detail_models?.map((item) => ({
+        dict_detail: data.dict_detail?.map((item) => ({
           ...item,
           id: undefined,
         })) || [ ],
@@ -891,8 +891,8 @@ async function save() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
       ...dialogModel,
-      dict_detail_models: [
-        ...(dialogModel.dict_detail_models || [ ]).map((item) => ({
+      dict_detail: [
+        ...(dialogModel.dict_detail || [ ]).map((item) => ({
           ...item,
           order_by: (item as any)._seq,
           _seq: undefined,
@@ -913,8 +913,8 @@ async function save() {
     }
     const dialogModel2 = {
       ...dialogModel,
-      dict_detail_models: [
-        ...(dialogModel.dict_detail_models || [ ]).map((item) => ({
+      dict_detail: [
+        ...(dialogModel.dict_detail || [ ]).map((item) => ({
           ...item,
           order_by: (item as any)._seq,
           _seq: undefined,
@@ -970,7 +970,7 @@ async function onSaveAndCopy() {
     is_locked: undefined,
     is_locked_lbl: undefined,
     order_by: order_by + 1,
-    dict_detail_models: data.dict_detail_models?.map((item) => ({
+    dict_detail: data.dict_detail?.map((item) => ({
       ...item,
       id: undefined,
     })) || [ ],
@@ -1002,45 +1002,45 @@ let dict_detailRef = $ref<InstanceType<typeof ElTable>>();
 let dict_detailData = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
-      ...dialogModel.dict_detail_models ?? [ ],
+      ...dialogModel.dict_detail ?? [ ],
       {
         _type: 'add',
       },
     ];
   }
-  return dialogModel.dict_detail_models ?? [ ];
+  return dialogModel.dict_detail ?? [ ];
 });
 
 async function dict_detailAdd() {
-  if (!dialogModel.dict_detail_models) {
-    dialogModel.dict_detail_models = [ ];
+  if (!dialogModel.dict_detail) {
+    dialogModel.dict_detail = [ ];
   }
   const defaultModel = await getDefaultInputDictDetail();
-  dialogModel.dict_detail_models.push(defaultModel);
+  dialogModel.dict_detail.push(defaultModel);
   dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 function dict_detailRemove(row: DictDetailModel) {
-  if (!dialogModel.dict_detail_models) {
+  if (!dialogModel.dict_detail) {
     return;
   }
-  const idx = dialogModel.dict_detail_models.indexOf(row);
+  const idx = dialogModel.dict_detail.indexOf(row);
   if (idx >= 0) {
-    dialogModel.dict_detail_models.splice(idx, 1);
+    dialogModel.dict_detail.splice(idx, 1);
   }
 }
 
 watch(
   () => [
-    dialogModel.dict_detail_models,
-    dialogModel.dict_detail_models?.length,
+    dialogModel.dict_detail,
+    dialogModel.dict_detail?.length,
   ],
   () => {
-    if (!dialogModel.dict_detail_models) {
+    if (!dialogModel.dict_detail) {
       return;
     }
-    for (let i = 0; i < dialogModel.dict_detail_models.length; i++) {
-      const item = dialogModel.dict_detail_models[i];
+    for (let i = 0; i < dialogModel.dict_detail.length; i++) {
+      const item = dialogModel.dict_detail[i];
       (item as any)._seq = i + 1;
     }
   },

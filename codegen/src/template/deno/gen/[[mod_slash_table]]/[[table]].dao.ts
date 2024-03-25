@@ -1582,10 +1582,11 @@ export async function findAll(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });<#
@@ -1745,10 +1746,11 @@ export async function findAll(
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
     #>
     
     // <#=inlineForeignTab.label#>
-    model.<#=table#>_models = <#=table#>_models
+    model.<#=inline_column_name#> = <#=inline_column_name#>
       .filter((item) => item.<#=inlineForeignTab.column#> === model.id);<#
     }
     #><#
@@ -3537,14 +3539,15 @@ export async function create(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models && input.<#=table#>_models.length > 0) {
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
-      await create<#=Table_Up#>(<#=table#>_model);
+  if (input.<#=inline_column_name#> && input.<#=inline_column_name#>.length > 0) {
+    for (let i = 0; i < input.<#=inline_column_name#>.length; i++) {
+      const model = input.<#=inline_column_name#>[i];
+      model.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(model);
     }
   }<#
   }
@@ -4155,34 +4158,35 @@ export async function updateById(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
+  if (input.<#=inline_column_name#>) {
+    const <#=inline_column_name#> = await findAll<#=Table_Up#>({
       <#=inlineForeignTab.column#>: [ id ],
     });
-    if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
+    if (<#=inline_column_name#>.length > 0 && input.<#=inline_column_name#>.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < <#=table#>_models.length; i++) {
-      const <#=table#>_model = <#=table#>_models[i];
-      if (input.<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+    for (let i = 0; i < <#=inline_column_name#>.length; i++) {
+      const model = <#=inline_column_name#>[i];
+      if (input.<#=inline_column_name#>.some((item) => item.id === model.id)) {
         continue;
       }
-      await deleteByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      await deleteByIds<#=Table_Up#>([ model.id ]);
     }
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      if (!<#=table#>_model.id) {
-        <#=table#>_model.<#=inlineForeignTab.column#> = id;
-        await create<#=Table_Up#>(<#=table#>_model);
+    for (let i = 0; i < input.<#=inline_column_name#>.length; i++) {
+      const model = input.<#=inline_column_name#>[i];
+      if (!model.id) {
+        model.<#=inlineForeignTab.column#> = id;
+        await create<#=Table_Up#>(model);
         continue;
       }
-      if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
-        await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      if (<#=inline_column_name#>.some((item) => item.id === model.id)) {
+        await revertByIds<#=Table_Up#>([ model.id ]);
       }
-      await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
+      await updateById<#=Table_Up#>(model.id, { ...model, id: undefined });
     }
   }<#
   }
@@ -4532,13 +4536,14 @@ export async function deleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
   });
-  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await deleteByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4952,14 +4957,15 @@ export async function revertByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -5095,14 +5101,15 @@ export async function forceDeleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await forceDeleteByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {

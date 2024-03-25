@@ -576,8 +576,9 @@ export function intoInput(
         inputName = Table_Up + "Input";
         searchName = Table_Up + "Search";
       }
+      const inline_column_name = inlineForeignTab.column_name;
     #>
-    <#=table#>_models: (model?.<#=table#>_models ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    <#=inline_column_name#>: (model?.<#=inline_column_name#> ?? [ ]).map(intoInput<#=Table_Up#>),<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -713,8 +714,9 @@ export async function findAll(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -926,8 +928,9 @@ export async function findOne(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -1322,8 +1325,9 @@ export async function findById(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;

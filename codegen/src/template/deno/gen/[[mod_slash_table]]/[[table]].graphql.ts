@@ -272,9 +272,10 @@ type <#=modelName#> {<#
       inputName = Table_Up + "Input";
       searchName = Table_Up + "Search";
     }
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   "<#=inlineForeignTab.label#>"
-  <#=table#>_models: [<#=modelName#>!]<#
+  <#=inline_column_name#>: [<#=modelName#>!]<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -558,9 +559,10 @@ input <#=inputName#> {<#
       inputName = Table_Up + "Input";
       searchName = Table_Up + "Search";
     }
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   "<#=inlineForeignTab.label#>"
-  <#=table#>_models: [<#=inputName#>!]<#
+  <#=inline_column_name#>: [<#=inputName#>!]<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
