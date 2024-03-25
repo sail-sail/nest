@@ -3636,7 +3636,17 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);
+  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
+  if (
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  await delCacheCtx(`dao.sql.base_menu._getMenus`);<#
+  }
+  #>
 }<#
 }
 #><#
