@@ -466,10 +466,6 @@ html:is(.dark) {
   cursor: move;
 }
 
-.el-select__popper .el-select-dropdown {
-  width: unset !important;
-}
-
 .el-select-dropdown .el-select-dropdown__item.is-selected::after {
   content: "";
   position: absolute;

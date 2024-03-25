@@ -27,16 +27,24 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DomainInput = {
+    // ID
     id: model?.id,
+    // 协议
     protocol: model?.protocol,
+    // 名称
     lbl: model?.lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 默认
     is_default: model?.is_default,
     is_default_lbl: model?.is_default_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
