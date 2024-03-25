@@ -266,6 +266,18 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 启用
+  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `

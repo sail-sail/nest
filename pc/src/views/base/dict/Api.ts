@@ -35,18 +35,27 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DictInput = {
+    // ID
     id: model?.id,
+    // 编码
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 数据类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
-    dict_detail_models: (model?.dict_detail_models ?? [ ]).map(intoInputDictDetail),
+    // 系统字典明细
+    dict_detail: (model?.dict_detail ?? [ ]).map(intoInputDictDetail),
   };
   return input;
 }
@@ -90,7 +99,7 @@ export async function findAll(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -163,7 +172,7 @@ export async function findOne(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -313,7 +322,7 @@ export async function findById(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
