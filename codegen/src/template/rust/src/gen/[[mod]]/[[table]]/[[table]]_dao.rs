@@ -2722,13 +2722,41 @@ pub async fn create(
   }
   #>
   
-  let options = options.into();
+  let options = options.into();<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #>
   
   execute(
     sql,
     args,
     options,
   ).await?;<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3526,13 +3554,41 @@ pub async fn update_by_id(
     }
     #>
     
-    let options = options.into();
+    let options = options.into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
   }<#
   if (mod === "base" && table === "role") {
@@ -3784,13 +3840,41 @@ pub async fn delete_by_ids(
     }
     #>
     
-    let options = options.into();
+    let options = options.into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -3877,13 +3961,41 @@ pub async fn default_by_id(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone().into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
   }
   
   let mut num = 0;
@@ -3978,13 +4090,41 @@ pub async fn enable_by_ids(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone().into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
   }
   
   Ok(num)
@@ -4062,13 +4202,41 @@ pub async fn lock_by_ids(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone().into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
   }
   
   Ok(num)
@@ -4127,13 +4295,41 @@ pub async fn revert_by_ids(
     }
     #>
     
-    let options = options.into();
+    let options = options.into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     // 检查数据的唯一索引
     {
@@ -4294,13 +4490,41 @@ pub async fn force_delete_by_ids(
     }
     #>
     
-    let options = options.into();
+    let options = options.into();<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;
+    ).await?;<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;

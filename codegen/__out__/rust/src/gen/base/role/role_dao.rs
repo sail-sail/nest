@@ -1493,10 +1493,18 @@ pub async fn create(
   
   let options = options.into();
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   execute(
     sql,
     args,
     options,
+  ).await?;
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;
   
   // 菜单权限
@@ -1783,10 +1791,18 @@ pub async fn update_by_id(
     
     let options = options.into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
     
   }
@@ -1949,10 +1965,18 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     num += execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
   }
   
@@ -2025,10 +2049,18 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     num += execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
   }
   
@@ -2105,10 +2137,18 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     num += execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
   }
   
@@ -2164,10 +2204,18 @@ pub async fn revert_by_ids(
     
     let options = options.into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     num += execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
     
     // 检查数据的唯一索引
@@ -2284,10 +2332,18 @@ pub async fn force_delete_by_ids(
     
     let options = options.into();
     
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+    
     num += execute(
       sql,
       args,
       options,
+    ).await?;
+    
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
     ).await?;
   }
   
