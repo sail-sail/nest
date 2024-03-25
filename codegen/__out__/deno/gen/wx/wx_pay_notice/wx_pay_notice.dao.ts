@@ -386,6 +386,30 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 交易类型
+  if (search && search.trade_type != null && search.trade_type.length === 0) {
+    return [ ];
+  }
+  // 交易状态
+  if (search && search.trade_state != null && search.trade_state.length === 0) {
+    return [ ];
+  }
+  // 货币类型
+  if (search && search.currency != null && search.currency.length === 0) {
+    return [ ];
+  }
+  // 用户支付币种
+  if (search && search.payer_currency != null && search.payer_currency.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `

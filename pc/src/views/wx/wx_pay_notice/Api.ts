@@ -29,29 +29,48 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxPayNoticeInput = {
+    // ID
     id: model?.id,
+    // 开发者ID
     appid: model?.appid,
+    // 商户号
     mchid: model?.mchid,
+    // 用户标识
     openid: model?.openid,
+    // 商户订单号
     out_trade_no: model?.out_trade_no,
+    // 微信支付订单号
     transaction_id: model?.transaction_id,
+    // 交易类型
     trade_type: model?.trade_type,
     trade_type_lbl: model?.trade_type_lbl,
+    // 交易状态
     trade_state: model?.trade_state,
     trade_state_lbl: model?.trade_state_lbl,
+    // 交易状态描述
     trade_state_desc: model?.trade_state_desc,
+    // 付款银行
     bank_type: model?.bank_type,
+    // 附加数据
     attach: model?.attach,
+    // 支付完成时间
     success_time: model?.success_time,
     success_time_lbl: model?.success_time_lbl,
+    // 总金额
     total: model?.total,
+    // 用户支付金额
     payer_total: model?.payer_total,
+    // 货币类型
     currency: model?.currency,
     currency_lbl: model?.currency_lbl,
+    // 用户支付币种
     payer_currency: model?.payer_currency,
     payer_currency_lbl: model?.payer_currency_lbl,
+    // 商户端设备号
     device_id: model?.device_id,
+    // 备注
     rem: model?.rem,
+    // 原始数据
     raw: model?.raw,
   };
   return input;

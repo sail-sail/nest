@@ -27,20 +27,33 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxPayInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 开发者ID
     appid: model?.appid,
+    // 商户号
     mchid: model?.mchid,
+    // 公钥
     public_key: model?.public_key,
+    // 私钥
     private_key: model?.private_key,
+    // APIv3密钥
     v3_key: model?.v3_key,
+    // 支付终端IP
     payer_client_ip: model?.payer_client_ip,
+    // 通知地址
     notify_url: model?.notify_url,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
