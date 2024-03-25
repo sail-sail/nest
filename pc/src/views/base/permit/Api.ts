@@ -35,11 +35,16 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: PermitInput = {
+    // ID
     id: model?.id,
+    // 菜单
     menu_id: model?.menu_id,
     menu_id_lbl: model?.menu_id_lbl,
+    // 编码
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 备注
     rem: model?.rem,
   };
   return input;

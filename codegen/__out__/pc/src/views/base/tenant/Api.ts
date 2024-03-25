@@ -39,17 +39,25 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: TenantInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 所属域名
     domain_ids: model?.domain_ids,
     domain_ids_lbl: model?.domain_ids_lbl,
+    // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;

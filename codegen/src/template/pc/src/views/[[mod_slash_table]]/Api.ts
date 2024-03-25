@@ -531,10 +531,12 @@ export function intoInput(
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
+    // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,
     <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
       } else {
     #>
+    // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,<#
       }
     #><#
@@ -576,8 +578,19 @@ export function intoInput(
         inputName = Table_Up + "Input";
         searchName = Table_Up + "Search";
       }
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
-    <#=table#>_models: (model?.<#=table#>_models ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    // <#=inlineForeignTab.label#>
+    <#=inline_column_name#>: (model?.<#=inline_column_name#> ?? [ ]).map(intoInput<#=Table_Up#>),<#
+      } else if (inline_foreign_type === "one2one") {
+    #>
+    // <#=inlineForeignTab.label#>
+    <#=inline_column_name#>: intoInput<#=Table_Up#>(model?.<#=inline_column_name#>),<#
+      }
+    #><#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -713,8 +726,9 @@ export async function findAll(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -926,8 +940,9 @@ export async function findOne(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -1322,8 +1337,9 @@ export async function findById(
               inputName = Table_Up + "Input";
               searchName = Table_Up + "Search";
             }
+            const inline_column_name = inlineForeignTab.column_name;
           #>
-          <#=table#>_models {<#
+          <#=inline_column_name#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
