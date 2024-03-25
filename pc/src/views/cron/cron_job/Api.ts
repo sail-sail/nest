@@ -31,18 +31,27 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: CronJobInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 任务
     job_id: model?.job_id,
     job_id_lbl: model?.job_id_lbl,
+    // Cron表达式
     cron: model?.cron,
+    // 时区
     timezone: model?.timezone,
     timezone_lbl: model?.timezone_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;

@@ -300,6 +300,22 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 定时任务
+  if (search && search.cron_job_id != null && search.cron_job_id.length === 0) {
+    return [ ];
+  }
+  // 执行状态
+  if (search && search.exec_state != null && search.exec_state.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `
