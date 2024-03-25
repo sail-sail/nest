@@ -31,20 +31,32 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxoAppInput = {
+    // ID
     id: model?.id,
+    // 原始ID
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 开发者ID
     appid: model?.appid,
+    // 开发者密码
     appsecret: model?.appsecret,
+    // 令牌
     token: model?.token,
+    // 消息加解密密钥
     encoding_aes_key: model?.encoding_aes_key,
+    // 网页授权域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;

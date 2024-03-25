@@ -376,6 +376,26 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 交易状态
+  if (search && search.trade_state != null && search.trade_state.length === 0) {
+    return [ ];
+  }
+  // 是否支持发票
+  if (search && search.support_fapiao != null && search.support_fapiao.length === 0) {
+    return [ ];
+  }
+  // 货币类型
+  if (search && search.currency != null && search.currency.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `

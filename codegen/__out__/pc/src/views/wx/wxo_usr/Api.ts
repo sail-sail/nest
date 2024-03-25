@@ -31,12 +31,18 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxoUsrInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 用户
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
+    // 公众号用户唯一标识
     openid: model?.openid,
+    // 公众号用户统一标识
     unionid: model?.unionid,
+    // 备注
     rem: model?.rem,
   };
   return input;

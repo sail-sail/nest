@@ -31,21 +31,35 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxUsrInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 用户
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
+    // 昵称
     nick_name: model?.nick_name,
+    // 头像
     avatar_url: model?.avatar_url,
+    // 手机
     mobile: model?.mobile,
+    // 小程序用户唯一标识
     openid: model?.openid,
+    // 小程序用户统一标识
     unionid: model?.unionid,
+    // 性别
     gender: model?.gender,
     gender_lbl: model?.gender_lbl,
+    // 城市
     city: model?.city,
+    // 省份
     province: model?.province,
+    // 国家
     country: model?.country,
+    // 语言
     language: model?.language,
+    // 备注
     rem: model?.rem,
   };
   return input;
