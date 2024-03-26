@@ -12,6 +12,8 @@ CREATE DATABASE IF NOT EXISTS nest CHARSET utf8mb4;
 create user 'nest'@'%' identified by 'umbdflXHI0osat2v';
 -- 设置用户密码不过期
 ALTER USER 'nest'@'%' IDENTIFIED BY 'umbdflXHI0osat2v' PASSWORD EXPIRE NEVER;
+-- 修改密码策略
+ALTER USER 'nest'@'%' IDENTIFIED WITH mysql_native_password BY 'umbdflXHI0osat2v';
 -- 给用户授权
 grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on nest.* to 'nest'@'%';
 -- 刷新权限
