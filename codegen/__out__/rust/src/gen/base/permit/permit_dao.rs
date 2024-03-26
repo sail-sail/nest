@@ -78,12 +78,16 @@ async fn get_where_query(
     };
     if let Some(ids) = ids {
       let arg = {
-        let mut items = Vec::with_capacity(ids.len());
-        for id in ids {
-          args.push(id.into());
-          items.push("?");
+        if ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(ids.len());
+          for id in ids {
+            args.push(id.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.id in ({arg})");
     }
@@ -96,12 +100,16 @@ async fn get_where_query(
     };
     if let Some(menu_id) = menu_id {
       let arg = {
-        let mut items = Vec::with_capacity(menu_id.len());
-        for item in menu_id {
-          args.push(item.into());
-          items.push("?");
+        if menu_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(menu_id.len());
+          for item in menu_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and menu_id_lbl.id in ({})", arg);
     }
@@ -189,12 +197,16 @@ async fn get_where_query(
     };
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(create_usr_id.len());
-        for item in create_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if create_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(create_usr_id.len());
+          for item in create_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -233,12 +245,16 @@ async fn get_where_query(
     };
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if update_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(update_usr_id.len());
+          for item in update_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
     }

@@ -93,12 +93,16 @@ async fn get_where_query(
     };
     if let Some(ids) = ids {
       let arg = {
-        let mut items = Vec::with_capacity(ids.len());
-        for id in ids {
-          args.push(id.into());
-          items.push("?");
+        if ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(ids.len());
+          for id in ids {
+            args.push(id.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.id in ({arg})");
     }
@@ -155,12 +159,16 @@ async fn get_where_query(
     };
     if let Some(r#type) = r#type {
       let arg = {
-        let mut items = Vec::with_capacity(r#type.len());
-        for item in r#type {
-          args.push(item.into());
-          items.push("?");
+        if r#type.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(r#type.len());
+          for item in r#type {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.type in ({})", arg);
     }
@@ -173,12 +181,16 @@ async fn get_where_query(
     };
     if let Some(is_locked) = is_locked {
       let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
-          args.push(item.into());
-          items.push("?");
+        if is_locked.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_locked.len());
+          for item in is_locked {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.is_locked in ({})", arg);
     }
@@ -191,12 +203,16 @@ async fn get_where_query(
     };
     if let Some(is_enabled) = is_enabled {
       let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
+        if is_enabled.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_enabled.len());
+          for item in is_enabled {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
     }
@@ -248,12 +264,16 @@ async fn get_where_query(
     };
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(create_usr_id.len());
-        for item in create_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if create_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(create_usr_id.len());
+          for item in create_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -292,12 +312,16 @@ async fn get_where_query(
     };
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if update_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(update_usr_id.len());
+          for item in update_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
     }
