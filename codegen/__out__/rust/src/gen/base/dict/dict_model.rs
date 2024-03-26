@@ -79,8 +79,7 @@ pub struct DictModel {
   /// 更新时间
   pub update_time_lbl: String,
   /// 系统字典明细
-  pub dict_detail_models: Vec<DictDetailModel>,
-  
+  pub dict_detail: Vec<DictDetailModel>,
 }
 
 impl FromRow<'_, MySqlRow> for DictModel {
@@ -151,7 +150,8 @@ impl FromRow<'_, MySqlRow> for DictModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      dict_detail_models: vec![],
+      // 系统字典明细
+      dict_detail: vec![],
     };
     
     Ok(model)
@@ -375,7 +375,7 @@ pub struct DictInput {
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
   /// 系统字典明细
-  pub dict_detail_models: Option<Vec<DictDetailInput>>,
+  pub dict_detail: Option<Vec<DictDetailInput>>,
 }
 
 impl From<DictModel> for DictInput {
@@ -414,7 +414,7 @@ impl From<DictModel> for DictInput {
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
       // 系统字典明细
-      dict_detail_models: model.dict_detail_models
+      dict_detail: model.dict_detail
         .into_iter()
         .map(|x| x.into())
         .collect::<Vec<DictDetailInput>>()

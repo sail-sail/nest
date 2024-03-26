@@ -556,7 +556,7 @@ pub async fn find_all(
     };
     
     // 业务字典明细
-    model.dictbiz_detail_models = dictbiz_detail_models
+    model.dictbiz_detail = dictbiz_detail_models
       .clone()
       .into_iter()
       .filter(|item|
@@ -1358,11 +1358,11 @@ pub async fn create(
   ).await?;
   
   // 业务字典明细
-  if let Some(dictbiz_detail_models) = input.dictbiz_detail_models {
-    for mut dictbiz_detail_model in dictbiz_detail_models {
-      dictbiz_detail_model.dictbiz_id = id.clone().into();
+  if let Some(dictbiz_detail) = input.dictbiz_detail {
+    for mut model in dictbiz_detail {
+      model.dictbiz_id = id.clone().into();
       create_dictbiz_detail(
-        dictbiz_detail_model,
+        model,
         None,
       ).await?;
     }
@@ -1588,7 +1588,7 @@ pub async fn update_by_id(
   }
   
   // 业务字典明细
-  if let Some(input_dictbiz_detail_models) = input.dictbiz_detail_models {
+  if let Some(dictbiz_detail_input) = input.dictbiz_detail {
     let dictbiz_detail_models = find_all_dictbiz_detail(
       DictbizDetailSearch {
         dictbiz_id: vec![id.clone()].into(),
@@ -1599,33 +1599,32 @@ pub async fn update_by_id(
       None,
       None,
     ).await?;
-    if !dictbiz_detail_models.is_empty() && !input_dictbiz_detail_models.is_empty() {
+    if !dictbiz_detail_models.is_empty() && !dictbiz_detail_input.is_empty() {
       field_num += 1;
     }
-    for dictbiz_detail_model in dictbiz_detail_models.clone() {
-      if input_dictbiz_detail_models
+    for model in dictbiz_detail_models.clone() {
+      if dictbiz_detail_input
         .iter()
         .filter(|item| item.id.is_some())
-        .any(|item| item.id == Some(dictbiz_detail_model.id.clone()))
+        .any(|item| item.id == Some(model.id.clone()))
       {
         continue;
       }
       delete_by_ids_dictbiz_detail(
-        vec![dictbiz_detail_model.id],
+        vec![model.id],
         None,
       ).await?;
     }
-    for dictbiz_detail_model in input_dictbiz_detail_models {
-      if dictbiz_detail_model.id.is_none() {
-        let mut dictbiz_detail_model = dictbiz_detail_model;
-        dictbiz_detail_model.dictbiz_id = id.clone().into();
+    for mut input in dictbiz_detail_input {
+      if input.id.is_none() {
+        input.dictbiz_id = id.clone().into();
         create_dictbiz_detail(
-          dictbiz_detail_model,
+          input,
           None,
         ).await?;
         continue;
       }
-      let id = dictbiz_detail_model.id.clone().unwrap();
+      let id = input.id.clone().unwrap();
       if !dictbiz_detail_models
         .iter()
         .any(|item| item.id == id)
@@ -1635,9 +1634,10 @@ pub async fn update_by_id(
           None,
         ).await?;
       }
+      input.id = None;
       update_by_id_dictbiz_detail(
         id.clone(),
-        dictbiz_detail_model,
+        input,
         None,
       ).await?;
     }
@@ -2071,6 +2071,26 @@ pub async fn revert_by_ids(
   
   revert_by_ids_dictbiz_detail(
     dictbiz_detail_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DictbizDetailId>>(),
+    None,
+  ).await?;
+  
+  // 业务字典明细
+  let dictbiz_detail_models = find_all_dictbiz_detail(
+    DictbizDetailSearch {
+      dictbiz_id: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_dictbiz_detail(
+    dictbiz_detail_models.into_iter()
+      .take(1)
       .map(|item| item.id)
       .collect::<Vec<DictbizDetailId>>(),
     None,
