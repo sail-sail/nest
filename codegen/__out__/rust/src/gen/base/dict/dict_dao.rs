@@ -534,7 +534,7 @@ pub async fn find_all(
     };
     
     // 系统字典明细
-    model.dict_detail_models = dict_detail_models
+    model.dict_detail = dict_detail_models
       .clone()
       .into_iter()
       .filter(|item|
@@ -1326,11 +1326,11 @@ pub async fn create(
   ).await?;
   
   // 系统字典明细
-  if let Some(dict_detail_models) = input.dict_detail_models {
-    for mut dict_detail_model in dict_detail_models {
-      dict_detail_model.dict_id = id.clone().into();
+  if let Some(dict_detail) = input.dict_detail {
+    for mut model in dict_detail {
+      model.dict_id = id.clone().into();
       create_dict_detail(
-        dict_detail_model,
+        model,
         None,
       ).await?;
     }
@@ -1491,7 +1491,7 @@ pub async fn update_by_id(
   }
   
   // 系统字典明细
-  if let Some(input_dict_detail_models) = input.dict_detail_models {
+  if let Some(dict_detail_input) = input.dict_detail {
     let dict_detail_models = find_all_dict_detail(
       DictDetailSearch {
         dict_id: vec![id.clone()].into(),
@@ -1502,33 +1502,32 @@ pub async fn update_by_id(
       None,
       None,
     ).await?;
-    if !dict_detail_models.is_empty() && !input_dict_detail_models.is_empty() {
+    if !dict_detail_models.is_empty() && !dict_detail_input.is_empty() {
       field_num += 1;
     }
-    for dict_detail_model in dict_detail_models.clone() {
-      if input_dict_detail_models
+    for model in dict_detail_models.clone() {
+      if dict_detail_input
         .iter()
         .filter(|item| item.id.is_some())
-        .any(|item| item.id == Some(dict_detail_model.id.clone()))
+        .any(|item| item.id == Some(model.id.clone()))
       {
         continue;
       }
       delete_by_ids_dict_detail(
-        vec![dict_detail_model.id],
+        vec![model.id],
         None,
       ).await?;
     }
-    for dict_detail_model in input_dict_detail_models {
-      if dict_detail_model.id.is_none() {
-        let mut dict_detail_model = dict_detail_model;
-        dict_detail_model.dict_id = id.clone().into();
+    for mut input in dict_detail_input {
+      if input.id.is_none() {
+        input.dict_id = id.clone().into();
         create_dict_detail(
-          dict_detail_model,
+          input,
           None,
         ).await?;
         continue;
       }
-      let id = dict_detail_model.id.clone().unwrap();
+      let id = input.id.clone().unwrap();
       if !dict_detail_models
         .iter()
         .any(|item| item.id == id)
@@ -1538,9 +1537,10 @@ pub async fn update_by_id(
           None,
         ).await?;
       }
+      input.id = None;
       update_by_id_dict_detail(
         id.clone(),
-        dict_detail_model,
+        input,
         None,
       ).await?;
     }
@@ -1974,6 +1974,26 @@ pub async fn revert_by_ids(
   
   revert_by_ids_dict_detail(
     dict_detail_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DictDetailId>>(),
+    None,
+  ).await?;
+  
+  // 系统字典明细
+  let dict_detail_models = find_all_dict_detail(
+    DictDetailSearch {
+      dict_id: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_dict_detail(
+    dict_detail_models.into_iter()
+      .take(1)
       .map(|item| item.id)
       .collect::<Vec<DictDetailId>>(),
     None,

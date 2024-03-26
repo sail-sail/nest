@@ -451,10 +451,19 @@ pub struct <#=tableUP#>Model {<#
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   /// <#=inlineForeignTab.label#>
-  pub <#=table#>_models: Vec<<#=Table_Up#>Model>,
-  <#
+  pub <#=inline_column_name#>: Vec<<#=Table_Up#>Model>,<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=inline_column_name#>: Option<<#=Table_Up#>Model>,<#
+    }
+  #><#
   }
   #>
 }
@@ -859,8 +868,19 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         const Table_Up = tableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      #><#
+        if (inline_foreign_type === "one2many") {
       #>
-      <#=table#>_models: vec![],<#
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: vec![],<#
+        } else if (inline_foreign_type === "one2one") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: None,<#
+        }
+      #><#
       }
       #>
     };
@@ -1511,9 +1531,19 @@ pub struct <#=tableUP#>Input {
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   /// <#=inlineForeignTab.label#>
-  pub <#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
+  pub <#=inline_column_name#>: Option<Vec<<#=Table_Up#>Input>>,<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=inline_column_name#>: Option<<#=Table_Up#>Input>,<#
+    }
+  #><#
   }
   #>
 }
@@ -1653,13 +1683,23 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         const Table_Up = tableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      #><#
+        if (inline_foreign_type === "one2many") {
       #>
       // <#=inlineForeignTab.label#>
-      <#=table#>_models: model.<#=table#>_models
+      <#=inline_column_name#>: model.<#=inline_column_name#>
         .into_iter()
         .map(|x| x.into())
         .collect::<Vec<<#=Table_Up#>Input>>()
         .into(),<#
+        } else if (inline_foreign_type === "one2one") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: model.<#=inline_column_name#>.map(|x| x.into()),<#
+        }
+      #><#
       }
       #>
     }

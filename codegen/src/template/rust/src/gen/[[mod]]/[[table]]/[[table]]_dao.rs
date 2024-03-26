@@ -1254,10 +1254,12 @@ pub async fn find_all(
     const inlineForeignTable_Up = inlineForeignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
   // <#=inlineForeignTab.label#>
-  let <#=inlineForeignTable#>_models = find_all_<#=inlineForeignTable#>(
+  let <#=inline_column_name#>_models = find_all_<#=inlineForeignTable#>(
     <#=inlineForeignTable_Up#>Search {
       <#=inlineForeignTab.column#>: res
         .iter()
@@ -1343,16 +1345,35 @@ pub async fn find_all(
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
     
     // <#=inlineForeignTab.label#>
-    model.<#=table#>_models = <#=table#>_models
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
       .clone()
       .into_iter()
       .filter(|item|
         item.<#=inlineForeignTab.column#> == model.id
       )
       .collect();<#
+    } else if (inline_foreign_type === "one2one") {
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=inlineForeignTab.column#> == model.id
+      )
+      .take(1)
+      .collect::<Vec<_>>()
+      .pop();<#
+      }
+    #><#
     }
     #>
     
@@ -2809,18 +2830,35 @@ pub async fn create(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
-  if let Some(<#=table#>_models) = input.<#=table#>_models {
-    for mut <#=table#>_model in <#=table#>_models {
-      <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+  if let Some(<#=inline_column_name#>) = input.<#=inline_column_name#> {
+    for mut model in <#=inline_column_name#> {
+      model.<#=inlineForeignTab.column#> = id.clone().into();
       create_<#=table#>(
-        <#=table#>_model,
+        model,
         None,
       ).await?;
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(mut <#=inline_column_name#>) = input.<#=inline_column_name#> {
+    <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
+    create_<#=table#>(
+      <#=inline_column_name#>,
+      None,
+    ).await?;
+  }<#
+    }
+  #><#
   }
   #>
   
@@ -3183,7 +3221,7 @@ pub async fn update_by_id(
   
   async fn get_not_permit_err_fn() -> Result<SrvErr> {
     let table_comment = i18n_dao::ns(
-      "会员卡".to_owned(),
+      "<#=table_comment#>".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
@@ -3435,11 +3473,15 @@ pub async fn update_by_id(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
-  if let Some(input_<#=table#>_models) = input.<#=table#>_models {
-    let <#=table#>_models = find_all_<#=table#>(
+  if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
+    let <#=inline_column_name#>_models = find_all_<#=table#>(
       <#=Table_Up#>Search {
         <#=inlineForeignTab.column#>: vec![id.clone()].into(),<#
         if (hasIsDeleted) {
@@ -3453,34 +3495,33 @@ pub async fn update_by_id(
       None,
       None,
     ).await?;
-    if !<#=table#>_models.is_empty() && !input_<#=table#>_models.is_empty() {
+    if !<#=inline_column_name#>_models.is_empty() && !<#=inline_column_name#>_input.is_empty() {
       field_num += 1;
     }
-    for <#=table#>_model in <#=table#>_models.clone() {
-      if input_<#=table#>_models
+    for model in <#=inline_column_name#>_models.clone() {
+      if <#=inline_column_name#>_input
         .iter()
         .filter(|item| item.id.is_some())
-        .any(|item| item.id == Some(<#=table#>_model.id.clone()))
+        .any(|item| item.id == Some(model.id.clone()))
       {
         continue;
       }
       delete_by_ids_<#=table#>(
-        vec![<#=table#>_model.id],
+        vec![model.id],
         None,
       ).await?;
     }
-    for <#=table#>_model in input_<#=table#>_models {
-      if <#=table#>_model.id.is_none() {
-        let mut <#=table#>_model = <#=table#>_model;
-        <#=table#>_model.<#=inlineForeignTab.column#> = id.clone().into();
+    for mut input in <#=inline_column_name#>_input {
+      if input.id.is_none() {
+        input.<#=inlineForeignTab.column#> = id.clone().into();
         create_<#=table#>(
-          <#=table#>_model,
+          input,
           None,
         ).await?;
         continue;
       }
-      let id = <#=table#>_model.id.clone().unwrap();
-      if !<#=table#>_models
+      let id = input.id.clone().unwrap();
+      if !<#=inline_column_name#>_models
         .iter()
         .any(|item| item.id == id)
       {
@@ -3489,13 +3530,71 @@ pub async fn update_by_id(
           None,
         ).await?;
       }
+      input.id = None;
       update_by_id_<#=table#>(
         id.clone(),
-        <#=table#>_model,
+        input,
         None,
       ).await?;
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
+    field_num += 1;
+    let <#=inline_column_name#>_models = find_all_<#=table#>(
+      <#=Table_Up#>Search {
+        <#=inlineForeignTab.column#>: vec![id.clone()].into(),<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 0.into(),<#
+        }
+        #>
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    for model in <#=inline_column_name#>_models.clone() {
+      if <#=inline_column_name#>_input.id == model.id.clone().into() {
+        continue;
+      }
+      delete_by_ids_<#=table#>(
+        vec![model.id],
+        None,
+      ).await?;
+    }
+    if let Some(id) = <#=inline_column_name#>_input.id.clone() {
+      if !<#=inline_column_name#>_models
+        .iter()
+        .any(|item| item.id == id)
+      {
+        revert_by_ids_<#=table#>(
+          vec![id.clone()],
+          None,
+        ).await?;
+      }
+      let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
+      <#=inline_column_name#>_input.id = None;
+      update_by_id_<#=table#>(
+        id.clone(),
+        <#=inline_column_name#>_input,
+        None,
+      ).await?;
+    } else {
+      let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = id.clone().into();
+      create_<#=table#>(
+        <#=inline_column_name#>_input,
+        None,
+      ).await?;
+    }
+  }<#
+    }
+  #><#
   }
   #>
   
@@ -3753,7 +3852,7 @@ pub async fn delete_by_ids(
   
   async fn get_not_permit_err_fn() -> Result<SrvErr> {
     let table_comment = i18n_dao::ns(
-      "会员卡".to_owned(),
+      "<#=table_comment#>".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
@@ -3883,6 +3982,7 @@ pub async fn delete_by_ids(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
@@ -4382,6 +4482,10 @@ pub async fn revert_by_ids(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
@@ -4402,6 +4506,34 @@ pub async fn revert_by_ids(
   
   revert_by_ids_<#=table#>(
     <#=table#>_models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
+    } else if (inline_foreign_type === "one2one") {
+  #><#
+    }
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=inlineForeignTab.column#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_<#=table#>(
+    <#=table#>_models.into_iter()
+      .take(1)
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
     None,
@@ -4533,6 +4665,7 @@ pub async fn force_delete_by_ids(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
