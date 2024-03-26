@@ -54,7 +54,10 @@ import dayjs from "dayjs";
         if (val instanceof Date) {
           (row as any)[headerKey] = val;
         } else if (typeof val === "number") {
-          (row as any)[headerKey] = num2Date(val);
+          // (row as any)[headerKey] = num2Date(val);
+          const msg = `请使用字符串格式或日期格式, 而不是数字格式, 错误的值: ${ val }`;
+          ElMessage.error(msg);
+          throw msg;
         } else {
           const dateDay = dayjs(val);
           if (dateDay.isValid()) {
