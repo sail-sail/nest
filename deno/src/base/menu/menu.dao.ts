@@ -59,7 +59,7 @@ async function _getMenus(
   
   const table = "base_menu";
   
-  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey1 = `dao.sql.${ table }._getMenus`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
   type Result = {

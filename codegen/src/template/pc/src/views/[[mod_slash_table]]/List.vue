@@ -1454,14 +1454,6 @@ const hasAtt = columns.some((item) => item.isAtt);
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";<#
-if (hasIsMonth) {
-#>
-
-import {
-  monthrangeSearch,
-} from "@/compositions/List";<#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
