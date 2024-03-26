@@ -437,12 +437,16 @@ async fn get_where_query(
     };
     if let Some(ids) = ids {
       let arg = {
-        let mut items = Vec::with_capacity(ids.len());
-        for id in ids {
-          args.push(id.into());
-          items.push("?");
+        if ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(ids.len());
+          for id in ids {
+            args.push(id.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.id in ({arg})");
     }
@@ -456,24 +460,32 @@ async fn get_where_query(
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
     let arg = {
-      let mut items = Vec::with_capacity(dept_ids.len());
-      for dept_id in dept_ids {
-        args.push(dept_id.into());
-        items.push("?");
+      if dept_ids.is_empty() {
+        "null".to_string()
+      } else {
+        let mut items = Vec::with_capacity(dept_ids.len());
+        for dept_id in dept_ids {
+          args.push(dept_id.into());
+          items.push("?");
+        }
+        items.join(",")
       }
-      items.join(",")
     };
     where_query += &format!(" and _permit_usr_dept_.dept_id in ({})", arg);
   }
   if !has_tenant_permit && has_dept_parent_permit {
     let role_ids = get_auth_role_ids().await?;
     let arg = {
-      let mut items = Vec::with_capacity(role_ids.len());
-      for role_id in role_ids {
-        args.push(role_id.into());
-        items.push("?");
+      if role_ids.is_empty() {
+        "null".to_string()
+      } else {
+        let mut items = Vec::with_capacity(role_ids.len());
+        for role_id in role_ids {
+          args.push(role_id.into());
+          items.push("?");
+        }
+        items.join(",")
       }
-      items.join(",")
     };
     where_query += &format!(" and _permit_usr_role_.role_id in {}", arg);
   }<#
@@ -608,12 +620,16 @@ async fn get_where_query(
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
-        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
-        for item in <#=column_name_rust#> {
-          args.push(item.into());
-          items.push("?");
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.<#=column_name#> in ({arg})");
     }
@@ -628,12 +644,16 @@ async fn get_where_query(
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
-        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
-        for item in <#=column_name_rust#> {
-          args.push(item.into());
-          items.push("?");
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and <#=column_name#>_lbl.id in ({})", arg);
     }
@@ -657,12 +677,16 @@ async fn get_where_query(
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
-        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
-        for item in <#=column_name_rust#> {
-          args.push(item.into());
-          items.push("?");
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ({})", arg);
     }
@@ -702,12 +726,16 @@ async fn get_where_query(
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
-        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
-        for item in <#=column_name_rust#> {
-          args.push(item.into());
-          items.push("?");
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.<#=column_name#> in ({})", arg);
     }
