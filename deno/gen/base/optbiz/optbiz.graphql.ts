@@ -108,7 +108,7 @@ input OptbizInput {
   "备注"
   rem: String
   "版本号"
-  version: Int!
+  version: Int
 }
 input OptbizSearch {
   "是否已删除"
