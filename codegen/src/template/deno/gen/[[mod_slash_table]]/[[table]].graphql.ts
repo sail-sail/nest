@@ -535,7 +535,7 @@ input <#=inputName#> {<#
   if (hasVersion) {
   #>
   "版本号"
-  version: Int!<#
+  version: Int<#
   }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
