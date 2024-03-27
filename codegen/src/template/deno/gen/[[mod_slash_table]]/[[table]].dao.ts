@@ -1206,6 +1206,7 @@ export async function findAll(
   
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -1282,12 +1283,14 @@ export async function findAll(
   });<#
   }
   #><#
-  if (hasCreateTime) {
+  if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });<#
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }<#
   }
   #>
   for (let i = 0; i < sort.length; i++) {
@@ -1320,6 +1323,7 @@ export async function findAll(
   }<#
   }
   #>
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
