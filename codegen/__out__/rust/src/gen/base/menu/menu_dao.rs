@@ -475,26 +475,29 @@ pub async fn find_all(
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
+  
   if !sort.iter().any(|item| item.prop == "order_by") {
     sort.push(SortInput {
       prop: "order_by".into(),
       order: "asc".into(),
     });
   }
+  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "asc".into(),
     });
   }
+  
   let sort = sort.into();
   
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"
-    select
-      t.*
+    select f.* from (
+    select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -502,7 +505,7 @@ pub async fn find_all(
       {from_query}
     where
       {where_query}
-    group by t.id{order_by_query}{page_query}
+    group by t.id{order_by_query}) f {page_query}
   "#);
   
   let args = args.into();

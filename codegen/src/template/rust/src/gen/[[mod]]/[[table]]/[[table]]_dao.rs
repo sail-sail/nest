@@ -1046,48 +1046,47 @@ pub async fn find_all(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
-  if (hasCreateTime || opts?.defaultSort) {
-  #>
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();<#
-    if (opts?.defaultSort) {
-      const prop = opts?.defaultSort.prop;
-      let order = "asc";
-      if (opts?.defaultSort.order === "ascending") {
-        order = "asc";
-      } else if (opts?.defaultSort.order === "descending") {
-        order = "desc";
-      }
+  if (opts?.defaultSort) {
+    const prop = opts?.defaultSort.prop;
+    let order = "asc";
+    if (opts?.defaultSort.order === "ascending") {
+      order = "asc";
+    } else if (opts?.defaultSort.order === "descending") {
+      order = "desc";
+    }
   #>
+  
   if !sort.iter().any(|item| item.prop == "<#=prop#>") {
     sort.push(SortInput {
       prop: "<#=prop#>".into(),
       order: "<#=order#>".into(),
     });
   }<#
-    }
+  }
   #><#
-    if (hasCreateTime) {
+  if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
+  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "asc".into(),
     });
   }<#
-    }
-  #>
-  let sort = sort.into();
-  <#
   }
   #>
+  
+  let sort = sort.into();
+  
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"
-    select
-      t.*<#
+    select f.* from (
+    select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -1124,7 +1123,7 @@ pub async fn find_all(
       {from_query}
     where
       {where_query}
-    group by t.id{order_by_query}{page_query}
+    group by t.id{order_by_query}) f {page_query}
   "#);
   
   let args = args.into();
