@@ -324,6 +324,7 @@ export async function findAll(
   
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -352,10 +353,12 @@ export async function findAll(
     prop: "order_by",
     order: SortOrderEnum.Asc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -365,6 +368,7 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
