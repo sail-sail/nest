@@ -24,6 +24,16 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template #extra_header>
+    <div
+      :title="ns('刷新')"
+    >
+      <ElIconRefresh
+        class="select_refresh_icon"
+        @click="onRefresh"
+      ></ElIconRefresh>
+    </div>
+  </template>
   <div
     un-overflow-hidden
     un-flex="~ [1_0_0] row basis-[inherit]"
@@ -44,6 +54,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     #>
     <TreeList
       v-bind="$attrs"
+      ref="listRef"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
@@ -124,12 +135,17 @@ let inited = $ref(false);
 
 let dialogAction = $ref("select");
 
-type OnCloseResolveType = {
+export type OnCloseResolveType = {
   type: "ok" | "cancel";
   selectedIds: <#=Table_Up#>Id[];
 };
+export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
+export type OnBeforeChangeFnType = (value: any) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
+
+let onBeforeClose: OnBeforeCloseFnType | undefined = undefined;
+let onBeforeChange: OnBeforeChangeFnType | undefined = undefined;
 
 let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
@@ -151,6 +167,8 @@ async function showDialog(
       ids?: <#=Table_Up#>Id[];
     };
     action?: typeof dialogAction;
+    onBeforeClose?: OnBeforeCloseFnType;
+    onBeforeChange?: OnBeforeChangeFnType;
   },
 ) {
   inited = false;
@@ -160,6 +178,8 @@ async function showDialog(
     title,
   });
   onCloseResolve = dialogRes.onCloseResolve;
+  onBeforeClose = arg?.onBeforeClose;
+  onBeforeChange = arg?.onBeforeChange;
   const model = arg?.model;
   const action = arg?.action;
   if (readonlyWatchStop) {
@@ -208,18 +228,49 @@ async function onRowDblclick(row: { id: any }) {
   await onSave();
 }
 
+let listRef = $ref<InstanceType<typeof List>>();
+
+/** 刷新 */
+async function onRefresh() {
+  await listRef?.refresh();
+}
+
 /** 确定 */
 async function onSave() {
+  if (onBeforeClose) {
+    const isClose = await onBeforeClose({
+      type: "ok",
+      selectedIds,
+    });
+    if (isClose === false) {
+      return;
+    }
+  }
+  const models = await getModelsByIds(selectedIds);
+  if (onBeforeChange) {
+    const isCloseChange = await onBeforeChange(models);
+    if (isCloseChange === false) {
+      return;
+    }
+  }
+  emit("change", models);
   onCloseResolve({
     type: "ok",
     selectedIds,
   });
-  const models = await getModelsByIds(selectedIds);
-  emit("change", models);
 }
 
 /** 点击取消关闭按钮 */
 async function onClose() {
+  if (onBeforeClose) {
+    const isClose = await onBeforeClose({
+      type: "cancel",
+      selectedIds,
+    });
+    if (isClose === false) {
+      return;
+    }
+  }
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
@@ -243,5 +294,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
 defineExpose({
   showDialog,
   getModelsByIds,
+  refresh: onRefresh,
 });
 </script>
