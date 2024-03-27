@@ -108,7 +108,7 @@ input OptionsInput {
   "备注"
   rem: String
   "版本号"
-  version: Int!
+  version: Int
 }
 input OptionsSearch {
   "是否已删除"
