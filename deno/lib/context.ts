@@ -182,6 +182,9 @@ export class Context {
   /** 当前请求的语言 */
   lang = "zh-cn";
   
+  /** token */
+  authorization: string | null | undefined;
+  
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
@@ -501,6 +504,9 @@ export function getAuthorization() {
   if (!context) {
     return;
   }
+  if (context.authorization) {
+    return context.authorization;
+  }
   const request = context.oakCtx?.request;
   const headers = request?.headers;
   let authorization: string|null|undefined = headers?.get(AUTHORIZATION);
@@ -511,6 +517,7 @@ export function getAuthorization() {
   if (authorization && authorization.startsWith("Bearer ")) {
     authorization = authorization.substring(7);
   }
+  context.authorization = authorization;
   return authorization;
 }
 
