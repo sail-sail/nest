@@ -62,7 +62,6 @@
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>

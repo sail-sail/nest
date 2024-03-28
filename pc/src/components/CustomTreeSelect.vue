@@ -18,7 +18,7 @@
   :check-strictly="true"
   :default-expand-all="true"
   :show-checkbox="true"
-  :check-on-click-node="false"
+  :check-on-click-node="true"
   un-w="full"
   v-bind="$attrs"
   :loading="!inited"

@@ -1352,7 +1352,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;

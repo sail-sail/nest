@@ -169,7 +169,6 @@ const hasAtt = columns.some((item) => item.isAtt);
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>
