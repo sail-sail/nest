@@ -70,7 +70,7 @@ export async function runJob(
     );
   } catch (err) {
     const end_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    const exec_result = err.toString();
+    const exec_result = err.message || err.toString();
     await updateByIdCronJobLog(
       id,
       {
