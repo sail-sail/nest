@@ -45,6 +45,7 @@ export async function runJob(
   const id = await createCronJobLog({
     cron_job_id,
     begin_time,
+    exec_result: "",
     tenant_id,
   });
   let exec_result: string | undefined | void;
