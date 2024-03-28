@@ -26,50 +26,27 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.cron_job_id == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
-          label="定时任务"
-          prop="cron_job_id"
+          :label="n('日志明细')"
+          prop="lbl_like"
         >
-          <CustomSelect
-            v-model="cron_job_id_search"
-            :method="getCronJobList"
-            :options-map="((item: CronJobModel) => {
-              return {
-                label: item.lbl,
-                value: item.id,
-              };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('定时任务') }`"
-            multiple
-            @change="onSearch"
-          ></CustomSelect>
+          <CustomInput
+            v-model="search.lbl_like"
+            :placeholder="`${ ns('请输入') } ${ n('日志明细') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.exec_state == null">
+      <template v-if="showBuildIn || builtInSearch?.create_time == null">
         <el-form-item
-          :label="n('执行状态')"
-          prop="exec_state"
-        >
-          <DictSelect
-            v-model="exec_state_search"
-            code="cron_job_log_exec_state"
-            :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
-            multiple
-            @change="onSearch"
-          ></DictSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.begin_time == null">
-        <el-form-item
-          :label="n('开始时间')"
-          prop="begin_time"
+          :label="n('创建时间')"
+          prop="create_time"
         >
           <CustomDatePicker
             type="daterange"
-            v-model="begin_time_search"
+            v-model="create_time_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             @clear="onSearchClear"
@@ -441,8 +418,8 @@
           :key="col.prop"
         >
           
-          <!-- 定时任务 -->
-          <template v-if="'cron_job_id_lbl' === col.prop && (showBuildIn || builtInSearch?.cron_job_id == null)">
+          <!-- 任务执行日志 -->
+          <template v-if="'cron_job_log_id_lbl' === col.prop && (showBuildIn || builtInSearch?.cron_job_log_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -450,52 +427,8 @@
             </el-table-column>
           </template>
           
-          <!-- 执行状态 -->
-          <template v-else-if="'exec_state_lbl' === col.prop && (showBuildIn || builtInSearch?.exec_state == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <el-link
-                  type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
-                >
-                  {{ row[column.property] }}
-                </el-link>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 执行结果 -->
-          <template v-else-if="'exec_result' === col.prop && (showBuildIn || builtInSearch?.exec_result == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 开始时间 -->
-          <template v-else-if="'begin_time_lbl' === col.prop && (showBuildIn || builtInSearch?.begin_time == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 结束时间 -->
-          <template v-else-if="'end_time_lbl' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <!-- 日志明细 -->
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,10 +485,6 @@
     ref="detailRef"
   ></Detail>
   
-  <ForeignTabs
-    ref="foreignTabsRef"
-  ></ForeignTabs>
-  
 </div>
 </template>
 
@@ -563,7 +492,7 @@
 import Detail from "./Detail.vue";
 
 import type {
-  CronJobLogId,
+  CronJobLogDetailId,
 } from "@/typings/ids";
 
 import {
@@ -576,22 +505,15 @@ import {
 } from "./Api";
 
 import type {
-  CronJobLogModel,
-  CronJobLogSearch,
-  CronJobModel,
+  CronJobLogDetailModel,
+  CronJobLogDetailSearch,
 } from "#/types";
 
-import {
-  getCronJobList, // 定时任务
-} from "./Api";
-
-import ForeignTabs from "./ForeignTabs.vue";
-
 defineOptions({
-  name: "任务执行日志",
+  name: "任务执行日志明细",
 });
 
-const pagePath = "/cron/cron_job_log";
+const pagePath = "/cron/cron_job_log_detail";
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -615,15 +537,15 @@ const permit = permitStore.getPermit(pagePath);
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [ CronJobLogId[] ],
-  add: [ CronJobLogId[] ],
-  edit: [ CronJobLogId[] ],
+  selectedIdsChg: [ CronJobLogDetailId[] ],
+  add: [ CronJobLogDetailId[] ],
+  edit: [ CronJobLogDetailId[] ],
   remove: [ number ],
   revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
   rowEnter: [ KeyboardEvent? ],
-  rowDblclick: [ CronJobLogModel ],
+  rowDblclick: [ CronJobLogDetailModel ],
 }>();
 
 const props = defineProps<{
@@ -635,18 +557,13 @@ const props = defineProps<{
   propsNotReset?: string[];
   isListSelectDialog?: string;
   ids?: string[]; //ids
-  selectedIds?: CronJobLogId[]; //已选择行的id列表
+  selectedIds?: CronJobLogDetailId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
-  id?: CronJobLogId; // ID
-  cron_job_id?: string|string[]; // 定时任务
-  cron_job_id_lbl?: string; // 定时任务
-  exec_state?: string|string[]; // 执行状态
-  exec_result?: string; // 执行结果
-  exec_result_like?: string; // 执行结果
-  begin_time?: string; // 开始时间
-  end_time?: string; // 结束时间
-  rem?: string; // 备注
-  rem_like?: string; // 备注
+  id?: CronJobLogDetailId; // ID
+  cron_job_log_id?: string|string[]; // 任务执行日志
+  cron_job_log_id_lbl?: string; // 任务执行日志
+  lbl?: string; // 日志明细
+  lbl_like?: string; // 日志明细
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -657,10 +574,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  cron_job_id: "string[]",
-  cron_job_id_lbl: "string[]",
-  exec_state: "string[]",
-  exec_state_lbl: "string[]",
+  cron_job_log_id: "string[]",
+  cron_job_log_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -675,14 +590,14 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置查询条件 */
-const builtInSearch: CronJobLogSearch = $(initBuiltInSearch(
+const builtInSearch: CronJobLogDetailSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
   propsNotInSearch,
 ));
 
 /** 内置变量 */
-const builtInModel: CronJobLogModel = $(initBuiltInModel(
+const builtInModel: CronJobLogDetailModel = $(initBuiltInModel(
   props,
   builtInSearchType,
   propsNotInSearch,
@@ -707,7 +622,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-  } as CronJobLogSearch;
+  } as CronJobLogDetailSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
       const key = props.propsNotReset[i];
@@ -719,44 +634,16 @@ function initSearch() {
 
 let search = $ref(initSearch());
 
-// 定时任务
-const cron_job_id_search = $computed({
+// 创建时间
+const create_time_search = $computed({
   get() {
-    return search.cron_job_id || [ ];
+    return search.create_time || [ ];
   },
   set(val) {
     if (!val || val.length === 0) {
-      search.cron_job_id = undefined;
+      search.create_time = undefined;
     } else {
-      search.cron_job_id = val;
-    }
-  },
-});
-
-// 执行状态
-const exec_state_search = $computed({
-  get() {
-    return search.exec_state || [ ];
-  },
-  set(val) {
-    if (!val || val.length === 0) {
-      search.exec_state = undefined;
-    } else {
-      search.exec_state = val;
-    }
-  },
-});
-
-// 开始时间
-const begin_time_search = $computed({
-  get() {
-    return search.begin_time || [ ];
-  },
-  set(val) {
-    if (!val || val.length === 0) {
-      search.begin_time = undefined;
-    } else {
-      search.begin_time = [
+      search.create_time = [
         dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
         dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
       ];
@@ -778,7 +665,7 @@ async function onSearch() {
 }
 
 /** 暂存查询 */
-async function onSearchStaging(searchStaging?: CronJobLogSearch) {
+async function onSearchStaging(searchStaging?: CronJobLogDetailSearch) {
   if (!searchStaging) {
     return;
   }
@@ -828,7 +715,7 @@ let {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<CronJobLogModel>(
+} = $(usePage<CronJobLogDetailModel>(
   dataGrid,
   {
     isPagination,
@@ -848,7 +735,7 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<CronJobLogModel, CronJobLogId>(
+} = $(useSelect<CronJobLogDetailModel, CronJobLogDetailId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -903,61 +790,26 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<CronJobLogModel[]>([ ]);
+let tableData = $ref<CronJobLogDetailModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "定时任务",
-      prop: "cron_job_id_lbl",
-      sortBy: "cron_job_id",
-      width: 320,
+      label: "任务执行日志",
+      prop: "cron_job_log_id_lbl",
+      sortBy: "cron_job_log_id",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "日志明细",
+      prop: "lbl",
+      minWidth: 420,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-    },
-    {
-      label: "执行状态",
-      prop: "exec_state_lbl",
-      sortBy: "exec_state",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "执行结果",
-      prop: "exec_result",
-      width: 280,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "开始时间",
-      prop: "begin_time_lbl",
-      sortBy: "begin_time",
-      width: 160,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "结束时间",
-      prop: "end_time_lbl",
-      sortBy: "end_time",
-      width: 160,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "备注",
-      prop: "rem",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "创建时间",
@@ -992,7 +844,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<CronJobLogModel>(
+} = $(useTableColumns<CronJobLogDetailModel>(
   $$(tableColumns),
   {
     persistKey: __filename,
@@ -1101,7 +953,7 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<CronJobLogModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<CronJobLogDetailModel> } & Sort,
 ) {
   if (!order) {
     sort = {
@@ -1153,8 +1005,8 @@ async function onRowEnter(e: KeyboardEvent) {
 
 /** 双击行 */
 async function onRowDblclick(
-  row: CronJobLogModel,
-  column: TableColumnCtx<CronJobLogModel>,
+  row: CronJobLogDetailModel,
+  column: TableColumnCtx<CronJobLogDetailModel>,
 ) {
   if (isListSelectDialog) {
     return;
@@ -1176,7 +1028,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("任务执行日志明细")));
     return;
   }
   const search = getDataSearch();
@@ -1184,7 +1036,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("任务执行日志"),
+    title: await nsAsync("查看") + await nsAsync("任务执行日志明细"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1214,11 +1066,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("任务执行日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1231,7 +1083,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("任务执行日志明细")));
     emit("remove", num);
   }
 }
@@ -1247,11 +1099,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("任务执行日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1262,7 +1114,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("任务执行日志明细")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1279,11 +1131,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("任务执行日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1296,36 +1148,16 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("任务执行日志明细")));
     emit("revert", num);
   }
-}
-
-let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
-
-async function openForeignTabs(id: CronJobLogId, title: string) {
-  if (!foreignTabsRef) {
-    return;
-  }
-  await foreignTabsRef.showDialog({
-    title,
-    model: {
-      id,
-      is_deleted: search.is_deleted,
-    },
-  });
-  tableFocus();
 }
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "定时任务",
-    "执行状态",
-    "执行结果",
-    "开始时间",
-    "结束时间",
-    "备注",
+    "任务执行日志",
+    "日志明细",
     "创建时间",
   ];
   await Promise.all([

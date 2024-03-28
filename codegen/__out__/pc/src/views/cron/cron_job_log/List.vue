@@ -456,6 +456,14 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, row[column.property])"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -544,6 +552,10 @@
     ref="detailRef"
   ></Detail>
   
+  <ForeignTabs
+    ref="foreignTabsRef"
+  ></ForeignTabs>
+  
 </div>
 </template>
 
@@ -572,6 +584,8 @@ import type {
 import {
   getCronJobList, // 定时任务
 } from "./Api";
+
+import ForeignTabs from "./ForeignTabs.vue";
 
 defineOptions({
   name: "任务执行日志",
@@ -1285,6 +1299,22 @@ async function onRevertByIds() {
     ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("任务执行日志")));
     emit("revert", num);
   }
+}
+
+let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
+
+async function openForeignTabs(id: CronJobLogId, title: string) {
+  if (!foreignTabsRef) {
+    return;
+  }
+  await foreignTabsRef.showDialog({
+    title,
+    model: {
+      id,
+      is_deleted: search.is_deleted,
+    },
+  });
+  tableFocus();
 }
 
 /** 初始化ts中的国际化信息 */

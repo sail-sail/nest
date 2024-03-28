@@ -140,6 +140,12 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").CronJobLogId`,
     },
     
+    // 任务执行日志明细
+    "CronJobLogDetailId": {
+      "input": `import("@/typings/ids.ts").CronJobLogDetailId`,
+      "output": `import("@/typings/ids.ts").CronJobLogDetailId`,
+    },
+    
     // 任务
     "JobId": {
       "input": `import("@/typings/ids.ts").JobId`,

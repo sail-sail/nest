@@ -43,10 +43,6 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import {
-  getDict,
-} from "/src/base/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -69,7 +65,6 @@ import {
 import type {
   PageInput,
   SortInput,
-  CronJobLogExecState,
 } from "/gen/types.ts";
 
 import type {
@@ -77,20 +72,20 @@ import type {
 } from "/gen/base/tenant/tenant.model.ts";
 
 import type {
-  CronJobLogInput,
-  CronJobLogModel,
-  CronJobLogSearch,
-  CronJobLogFieldComment,
-  CronJobLogId,
-} from "./cron_job_log.model.ts";
+  CronJobLogDetailInput,
+  CronJobLogDetailModel,
+  CronJobLogDetailSearch,
+  CronJobLogDetailFieldComment,
+  CronJobLogDetailId,
+} from "./cron_job_log_detail.model.ts";
 
-import * as cron_jobDao from "/gen/cron/cron_job/cron_job.dao.ts";
+import * as cron_job_logDao from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
-const route_path = "/cron/cron_job_log";
+const route_path = "/cron/cron_job_log_detail";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   options?: {
   },
 ): Promise<string> {
@@ -115,48 +110,20 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.cron_job_id != null && !Array.isArray(search?.cron_job_id)) {
-    search.cron_job_id = [ search.cron_job_id ];
+  if (search?.cron_job_log_id != null && !Array.isArray(search?.cron_job_log_id)) {
+    search.cron_job_log_id = [ search.cron_job_log_id ];
   }
-  if (search?.cron_job_id != null) {
-    whereQuery += ` and cron_job_id_lbl.id in ${ args.push(search.cron_job_id) }`;
+  if (search?.cron_job_log_id != null) {
+    whereQuery += ` and cron_job_log_id_lbl.id in ${ args.push(search.cron_job_log_id) }`;
   }
-  if (search?.cron_job_id_is_null) {
-    whereQuery += ` and cron_job_id_lbl.id is null`;
+  if (search?.cron_job_log_id_is_null) {
+    whereQuery += ` and cron_job_log_id_lbl.id is null`;
   }
-  if (search?.exec_state != null && !Array.isArray(search?.exec_state)) {
-    search.exec_state = [ search.exec_state ];
+  if (search?.lbl != null) {
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
-  if (search?.exec_state != null) {
-    whereQuery += ` and t.exec_state in ${ args.push(search.exec_state) }`;
-  }
-  if (search?.exec_result != null) {
-    whereQuery += ` and t.exec_result = ${ args.push(search.exec_result) }`;
-  }
-  if (isNotEmpty(search?.exec_result_like)) {
-    whereQuery += ` and t.exec_result like ${ args.push("%" + sqlLike(search?.exec_result_like) + "%") }`;
-  }
-  if (search?.begin_time != null) {
-    if (search.begin_time[0] != null) {
-      whereQuery += ` and t.begin_time >= ${ args.push(search.begin_time[0]) }`;
-    }
-    if (search.begin_time[1] != null) {
-      whereQuery += ` and t.begin_time <= ${ args.push(search.begin_time[1]) }`;
-    }
-  }
-  if (search?.end_time != null) {
-    if (search.end_time[0] != null) {
-      whereQuery += ` and t.end_time >= ${ args.push(search.end_time[0]) }`;
-    }
-    if (search.end_time[1] != null) {
-      whereQuery += ` and t.end_time <= ${ args.push(search.end_time[1]) }`;
-    }
-  }
-  if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -197,13 +164,13 @@ async function getWhereQuery(
 
 async function getFromQuery(
   args: QueryArgs,
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   options?: {
   },
 ) {
-  let fromQuery = `cron_cron_job_log t
-    left join cron_cron_job cron_job_id_lbl
-      on cron_job_id_lbl.id = t.cron_job_id
+  let fromQuery = `cron_cron_job_log_detail t
+    left join cron_cron_job_log cron_job_log_id_lbl
+      on cron_job_log_id_lbl.id = t.cron_job_log_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -212,17 +179,17 @@ async function getFromQuery(
 }
 
 /**
- * 根据条件查找任务执行日志总数
- * @param { CronJobLogSearch } search?
+ * 根据条件查找任务执行日志明细总数
+ * @param { CronJobLogDetailSearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   options?: {
     debug?: boolean;
   },
 ): Promise<number> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "findCount";
   
   if (options?.debug !== false) {
@@ -262,19 +229,19 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找任务执行日志列表
- * @param {CronJobLogSearch} search? 搜索条件
+ * 根据搜索条件和分页查找任务执行日志明细列表
+ * @param {CronJobLogDetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
   },
-): Promise<CronJobLogModel[]> {
-  const table = "cron_cron_job_log";
+): Promise<CronJobLogDetailModel[]> {
+  const table = "cron_cron_job_log_detail";
   const method = "findAll";
   
   if (options?.debug !== false) {
@@ -300,12 +267,8 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
-  // 定时任务
-  if (search && search.cron_job_id != null && search.cron_job_id.length === 0) {
-    return [ ];
-  }
-  // 执行状态
-  if (search && search.exec_state != null && search.exec_state.length === 0) {
+  // 任务执行日志
+  if (search && search.cron_job_log_id != null && search.cron_job_log_id.length === 0) {
     return [ ];
   }
   // 创建人
@@ -321,7 +284,6 @@ export async function findAll(
   let sql = `
     select f.* from (
     select t.*
-      ,cron_job_id_lbl.lbl cron_job_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -367,7 +329,7 @@ export async function findAll(
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
-  const result = await query<CronJobLogModel>(
+  const result = await query<CronJobLogDetailModel>(
     sql,
     args,
     {
@@ -375,48 +337,8 @@ export async function findAll(
     },
   );
   
-  const [
-    exec_stateDict, // 执行状态
-  ] = await getDict([
-    "cron_job_log_exec_state",
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 执行状态
-    let exec_state_lbl = model.exec_state as string;
-    if (!isEmpty(model.exec_state)) {
-      const dictItem = exec_stateDict.find((dictItem) => dictItem.val === model.exec_state);
-      if (dictItem) {
-        exec_state_lbl = dictItem.lbl;
-      }
-    }
-    model.exec_state_lbl = exec_state_lbl;
-    
-    // 开始时间
-    if (model.begin_time) {
-      const begin_time = dayjs(model.begin_time);
-      if (isNaN(begin_time.toDate().getTime())) {
-        model.begin_time_lbl = (model.begin_time || "").toString();
-      } else {
-        model.begin_time_lbl = begin_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.begin_time_lbl = "";
-    }
-    
-    // 结束时间
-    if (model.end_time) {
-      const end_time = dayjs(model.end_time);
-      if (isNaN(end_time.toDate().getTime())) {
-        model.end_time_lbl = (model.end_time || "").toString();
-      } else {
-        model.end_time_lbl = end_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.end_time_lbl = "";
-    }
     
     // 创建时间
     if (model.create_time) {
@@ -436,98 +358,20 @@ export async function findAll(
 
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
-  input: CronJobLogInput,
+  input: CronJobLogDetailInput,
 ) {
-  // 开始时间
-  if (!input.begin_time && input.begin_time_lbl) {
-    const begin_time_lbl = dayjs(input.begin_time_lbl);
-    if (begin_time_lbl.isValid()) {
-      input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.begin_time) {
-    const begin_time = dayjs(input.begin_time);
-    if (!begin_time.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
-    }
-    input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
-  }
-  // 结束时间
-  if (!input.end_time && input.end_time_lbl) {
-    const end_time_lbl = dayjs(input.end_time_lbl);
-    if (end_time_lbl.isValid()) {
-      input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.end_time) {
-    const end_time = dayjs(input.end_time);
-    if (!end_time.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
-    }
-    input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
-  }
-  
-  const [
-    exec_stateDict, // 执行状态
-  ] = await getDict([
-    "cron_job_log_exec_state",
-  ]);
-  
-  // 定时任务
-  if (isNotEmpty(input.cron_job_id_lbl) && input.cron_job_id == null) {
-    input.cron_job_id_lbl = String(input.cron_job_id_lbl).trim();
-    const cron_jobModel = await cron_jobDao.findOne({ lbl: input.cron_job_id_lbl });
-    if (cron_jobModel) {
-      input.cron_job_id = cron_jobModel.id;
-    }
-  }
-  
-  // 执行状态
-  if (isNotEmpty(input.exec_state_lbl) && input.exec_state == null) {
-    const val = exec_stateDict.find((itemTmp) => itemTmp.lbl === input.exec_state_lbl)?.val;
-    if (val != null) {
-      input.exec_state = val as CronJobLogExecState;
-    }
-  }
-  
-  // 开始时间
-  if (isNotEmpty(input.begin_time_lbl) && input.begin_time == null) {
-    input.begin_time_lbl = String(input.begin_time_lbl).trim();
-    input.begin_time = input.begin_time_lbl;
-  }
-  
-  // 结束时间
-  if (isNotEmpty(input.end_time_lbl) && input.end_time == null) {
-    input.end_time_lbl = String(input.end_time_lbl).trim();
-    input.end_time = input.end_time_lbl;
-  }
 }
 
 /**
- * 获取任务执行日志字段注释
+ * 获取任务执行日志明细字段注释
  */
-export async function getFieldComments(): Promise<CronJobLogFieldComment> {
+export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> {
   const n = initN(route_path);
-  const fieldComments: CronJobLogFieldComment = {
+  const fieldComments: CronJobLogDetailFieldComment = {
     id: await n("ID"),
-    cron_job_id: await n("定时任务"),
-    cron_job_id_lbl: await n("定时任务"),
-    exec_state: await n("执行状态"),
-    exec_state_lbl: await n("执行状态"),
-    exec_result: await n("执行结果"),
-    begin_time: await n("开始时间"),
-    begin_time_lbl: await n("开始时间"),
-    end_time: await n("结束时间"),
-    end_time_lbl: await n("结束时间"),
-    rem: await n("备注"),
+    cron_job_log_id: await n("任务执行日志"),
+    cron_job_log_id_lbl: await n("任务执行日志"),
+    lbl: await n("日志明细"),
     create_time: await n("创建时间"),
     create_time_lbl: await n("创建时间"),
   };
@@ -535,17 +379,17 @@ export async function getFieldComments(): Promise<CronJobLogFieldComment> {
 }
 
 /**
- * 通过唯一约束获得任务执行日志列表
- * @param {CronJobLogInput} search0
+ * 通过唯一约束获得任务执行日志明细列表
+ * @param {CronJobLogDetailInput} search0
  */
 export async function findByUnique(
-  search0: CronJobLogInput,
+  search0: CronJobLogDetailInput,
   options?: {
     debug?: boolean;
   },
-): Promise<CronJobLogModel[]> {
+): Promise<CronJobLogDetailModel[]> {
   
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "findByUnique";
   
   if (options?.debug !== false) {
@@ -568,19 +412,19 @@ export async function findByUnique(
     }
     return [ model ];
   }
-  const models: CronJobLogModel[] = [ ];
+  const models: CronJobLogDetailModel[] = [ ];
   return models;
 }
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {CronJobLogModel} oldModel
- * @param {CronJobLogInput} input
+ * @param {CronJobLogDetailModel} oldModel
+ * @param {CronJobLogDetailInput} input
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: CronJobLogModel,
-  input: CronJobLogInput,
+  oldModel: CronJobLogDetailModel,
+  input: CronJobLogDetailInput,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -589,26 +433,26 @@ export function equalsByUnique(
 }
 
 /**
- * 通过唯一约束检查任务执行日志是否已经存在
- * @param {CronJobLogInput} input
- * @param {CronJobLogModel} oldModel
+ * 通过唯一约束检查任务执行日志明细是否已经存在
+ * @param {CronJobLogDetailInput} input
+ * @param {CronJobLogDetailModel} oldModel
  * @param {UniqueType} uniqueType
- * @return {Promise<CronJobLogId | undefined>}
+ * @return {Promise<CronJobLogDetailId | undefined>}
  */
 export async function checkByUnique(
-  input: CronJobLogInput,
-  oldModel: CronJobLogModel,
+  input: CronJobLogDetailInput,
+  oldModel: CronJobLogDetailModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
-): Promise<CronJobLogId | undefined> {
+): Promise<CronJobLogDetailId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("任务执行日志")));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("任务执行日志明细")));
     }
     if (uniqueType === UniqueType.Update) {
-      const id: CronJobLogId = await updateById(
+      const id: CronJobLogDetailId = await updateById(
         oldModel.id,
         {
           ...input,
@@ -628,17 +472,17 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一个任务执行日志
- * @param {CronJobLogSearch} search?
+ * 根据条件查找第一个任务执行日志明细
+ * @param {CronJobLogDetailSearch} search?
  */
 export async function findOne(
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
   },
-): Promise<CronJobLogModel | undefined> {
-  const table = "cron_cron_job_log";
+): Promise<CronJobLogDetailModel | undefined> {
+  const table = "cron_cron_job_log_detail";
   const method = "findOne";
   
   if (options?.debug !== false) {
@@ -673,16 +517,16 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找任务执行日志
- * @param {CronJobLogId} id
+ * 根据 id 查找任务执行日志明细
+ * @param {CronJobLogDetailId} id
  */
 export async function findById(
-  id?: CronJobLogId | null,
+  id?: CronJobLogDetailId | null,
   options?: {
     debug?: boolean;
   },
-): Promise<CronJobLogModel | undefined> {
-  const table = "cron_cron_job_log";
+): Promise<CronJobLogDetailModel | undefined> {
+  const table = "cron_cron_job_log_detail";
   const method = "findById";
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -704,16 +548,16 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件判断任务执行日志是否存在
- * @param {CronJobLogSearch} search?
+ * 根据搜索条件判断任务执行日志明细是否存在
+ * @param {CronJobLogDetailSearch} search?
  */
 export async function exist(
-  search?: CronJobLogSearch,
+  search?: CronJobLogDetailSearch,
   options?: {
     debug?: boolean;
   },
 ): Promise<boolean> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "exist";
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -733,16 +577,16 @@ export async function exist(
 }
 
 /**
- * 根据id判断任务执行日志是否存在
- * @param {CronJobLogId} id
+ * 根据id判断任务执行日志明细是否存在
+ * @param {CronJobLogDetailId} id
  */
 export async function existById(
-  id?: CronJobLogId | null,
+  id?: CronJobLogDetailId | null,
   options?: {
     debug?: boolean;
   },
 ) {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "existById";
   
   if (options?.debug !== false) {
@@ -762,7 +606,7 @@ export async function existById(
     select
       1 e
     from
-      cron_cron_job_log t
+      cron_cron_job_log_detail t
     where
       t.id = ${ args.push(id) }
       and t.is_deleted = 0
@@ -781,22 +625,22 @@ export async function existById(
   return result;
 }
 
-/** 校验任务执行日志是否存在 */
+/** 校验任务执行日志明细是否存在 */
 export async function validateOption(
-  model?: CronJobLogModel,
+  model?: CronJobLogDetailModel,
 ) {
   if (!model) {
-    throw `${ await ns("任务执行日志") } ${ await ns("不存在") }`;
+    throw `${ await ns("任务执行日志明细") } ${ await ns("不存在") }`;
   }
   return model;
 }
 
 /**
- * 任务执行日志增加和修改时校验输入
+ * 任务执行日志明细增加和修改时校验输入
  * @param input 
  */
 export async function validate(
-  input: CronJobLogInput,
+  input: CronJobLogDetailInput,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -807,49 +651,35 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 定时任务
+  // 任务执行日志
   await validators.chars_max_length(
-    input.cron_job_id,
+    input.cron_job_log_id,
     22,
-    fieldComments.cron_job_id,
-  );
-  
-  // 执行状态
-  await validators.chars_max_length(
-    input.exec_state,
-    10,
-    fieldComments.exec_state,
-  );
-  
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
+    fieldComments.cron_job_log_id,
   );
   
 }
 
 /**
- * 创建任务执行日志
- * @param {CronJobLogInput} input
+ * 创建任务执行日志明细
+ * @param {CronJobLogDetailInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<CronJobLogId>} 
+ * @return {Promise<CronJobLogDetailId>} 
  */
 export async function create(
-  input: CronJobLogInput,
+  input: CronJobLogDetailInput,
   options?: {
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
   },
-): Promise<CronJobLogId> {
-  const table = "cron_cron_job_log";
+): Promise<CronJobLogDetailId> {
+  const table = "cron_cron_job_log_detail";
   const method = "create";
   
   if (options?.debug !== false) {
@@ -873,7 +703,7 @@ export async function create(
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
-    let id: CronJobLogId | undefined = undefined;
+    let id: CronJobLogDetailId | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
         input,
@@ -891,7 +721,7 @@ export async function create(
   }
   
   while (true) {
-    input.id = shortUuidV4<CronJobLogId>();
+    input.id = shortUuidV4<CronJobLogDetailId>();
     const isExist = await existById(input.id);
     if (!isExist) {
       break;
@@ -901,7 +731,7 @@ export async function create(
   
   const args = new QueryArgs();
   let sql = `
-    insert into cron_cron_job_log(
+    insert into cron_cron_job_log_detail(
       id
       ,create_time
       ,update_time
@@ -931,23 +761,11 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
-  if (input.cron_job_id != null) {
-    sql += `,cron_job_id`;
+  if (input.cron_job_log_id != null) {
+    sql += `,cron_job_log_id`;
   }
-  if (input.exec_state != null) {
-    sql += `,exec_state`;
-  }
-  if (input.exec_result != null) {
-    sql += `,exec_result`;
-  }
-  if (input.begin_time != null) {
-    sql += `,begin_time`;
-  }
-  if (input.end_time != null) {
-    sql += `,end_time`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
+  if (input.lbl != null) {
+    sql += `,lbl`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
@@ -975,23 +793,11 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.cron_job_id != null) {
-    sql += `,${ args.push(input.cron_job_id) }`;
+  if (input.cron_job_log_id != null) {
+    sql += `,${ args.push(input.cron_job_log_id) }`;
   }
-  if (input.exec_state != null) {
-    sql += `,${ args.push(input.exec_state) }`;
-  }
-  if (input.exec_result != null) {
-    sql += `,${ args.push(input.exec_result) }`;
-  }
-  if (input.begin_time != null) {
-    sql += `,${ args.push(input.begin_time) }`;
-  }
-  if (input.end_time != null) {
-    sql += `,${ args.push(input.end_time) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
+  if (input.lbl != null) {
+    sql += `,${ args.push(input.lbl) }`;
   }
   sql += `)`;
   
@@ -1005,21 +811,21 @@ export async function create(
 }
 
 /**
- * 任务执行日志根据id修改租户id
- * @param {CronJobLogId} id
+ * 任务执行日志明细根据id修改租户id
+ * @param {CronJobLogDetailId} id
  * @param {TenantId} tenant_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  id: CronJobLogId,
+  id: CronJobLogDetailId,
   tenant_id: TenantId,
   options?: {
     debug?: boolean;
   },
 ): Promise<number> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "updateTenantById";
   
   if (options?.debug !== false) {
@@ -1044,7 +850,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = `
     update
-      cron_cron_job_log
+      cron_cron_job_log_detail
     set
       update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -1057,26 +863,26 @@ export async function updateTenantById(
 }
 
 /**
- * 根据 id 修改任务执行日志
- * @param {CronJobLogId} id
- * @param {CronJobLogInput} input
+ * 根据 id 修改任务执行日志明细
+ * @param {CronJobLogDetailId} id
+ * @param {CronJobLogDetailInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
- * @return {Promise<CronJobLogId>}
+ * @return {Promise<CronJobLogDetailId>}
  */
 export async function updateById(
-  id: CronJobLogId,
-  input: CronJobLogInput,
+  id: CronJobLogDetailId,
+  input: CronJobLogDetailInput,
   options?: {
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
-): Promise<CronJobLogId> {
-  const table = "cron_cron_job_log";
+): Promise<CronJobLogDetailId> {
+  const table = "cron_cron_job_log_detail";
   const method = "updateById";
   
   
@@ -1117,7 +923,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("任务执行日志"));
+        throw await ns("此 {0} 已经存在", await ns("任务执行日志明细"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1127,47 +933,23 @@ export async function updateById(
   const oldModel = await findById(id);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("任务执行日志"));
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("任务执行日志明细"));
   }
   
   const args = new QueryArgs();
   let sql = `
-    update cron_cron_job_log set
+    update cron_cron_job_log_detail set
   `;
   let updateFldNum = 0;
-  if (input.cron_job_id != null) {
-    if (input.cron_job_id != oldModel.cron_job_id) {
-      sql += `cron_job_id = ${ args.push(input.cron_job_id) },`;
+  if (input.cron_job_log_id != null) {
+    if (input.cron_job_log_id != oldModel.cron_job_log_id) {
+      sql += `cron_job_log_id = ${ args.push(input.cron_job_log_id) },`;
       updateFldNum++;
     }
   }
-  if (input.exec_state != null) {
-    if (input.exec_state != oldModel.exec_state) {
-      sql += `exec_state = ${ args.push(input.exec_state) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.exec_result != null) {
-    if (input.exec_result != oldModel.exec_result) {
-      sql += `exec_result = ${ args.push(input.exec_result) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.begin_time != null) {
-    if (input.begin_time != oldModel.begin_time) {
-      sql += `begin_time = ${ args.push(input.begin_time) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.end_time != null) {
-    if (input.end_time != oldModel.end_time) {
-      sql += `end_time = ${ args.push(input.end_time) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.rem != null) {
-    if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+  if (input.lbl != null) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1201,17 +983,17 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除任务执行日志
- * @param {CronJobLogId[]} ids
+ * 根据 ids 删除任务执行日志明细
+ * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  ids: CronJobLogId[],
+  ids: CronJobLogDetailId[],
   options?: {
     debug?: boolean;
   },
 ): Promise<number> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "deleteByIds";
   
   if (options?.debug !== false) {
@@ -1239,7 +1021,7 @@ export async function deleteByIds(
     const args = new QueryArgs();
     const sql = `
       update
-        cron_cron_job_log
+        cron_cron_job_log_detail
       set
         is_deleted = 1,
         delete_time = ${ args.push(reqDate()) }
@@ -1255,17 +1037,17 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原任务执行日志
- * @param {CronJobLogId[]} ids
+ * 根据 ids 还原任务执行日志明细
+ * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  ids: CronJobLogId[],
+  ids: CronJobLogDetailId[],
   options?: {
     debug?: boolean;
   },
 ): Promise<number> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "revertByIds";
   
   if (options?.debug !== false) {
@@ -1285,11 +1067,11 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: CronJobLogId = ids[i];
+    const id: CronJobLogDetailId = ids[i];
     const args = new QueryArgs();
     const sql = `
       update
-        cron_cron_job_log
+        cron_cron_job_log_detail
       set
         is_deleted = 0
       where
@@ -1311,7 +1093,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("此 {0} 已经存在", await ns("任务执行日志"));
+        throw await ns("此 {0} 已经存在", await ns("任务执行日志明细"));
       }
     }
   }
@@ -1320,17 +1102,17 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除任务执行日志
- * @param {CronJobLogId[]} ids
+ * 根据 ids 彻底删除任务执行日志明细
+ * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  ids: CronJobLogId[],
+  ids: CronJobLogDetailId[],
   options?: {
     debug?: boolean;
   },
 ): Promise<number> {
-  const table = "cron_cron_job_log";
+  const table = "cron_cron_job_log_detail";
   const method = "forceDeleteByIds";
   
   if (options?.debug !== false) {
@@ -1357,7 +1139,7 @@ export async function forceDeleteByIds(
         select
           *
         from
-          cron_cron_job_log
+          cron_cron_job_log_detail
         where
           id = ${ args.push(id) }
       `;
@@ -1367,7 +1149,7 @@ export async function forceDeleteByIds(
     const args = new QueryArgs();
     const sql = `
       delete from
-        cron_cron_job_log
+        cron_cron_job_log_detail
       where
         id = ${ args.push(id) }
         and is_deleted = 1

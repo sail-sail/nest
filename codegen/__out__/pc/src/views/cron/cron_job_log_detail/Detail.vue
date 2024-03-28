@@ -58,7 +58,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -68,78 +68,14 @@
         :validate-on-rule-change="false"
       >
         
-        <template v-if="(showBuildIn || builtInModel?.exec_state == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('执行状态')"
-            prop="exec_state"
-          >
-            <DictSelect
-              :set="dialogModel.exec_state = dialogModel.exec_state ?? undefined"
-              v-model="dialogModel.exec_state"
-              code="cron_job_log_exec_state"
-              :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
-              :readonly="isLocked || isReadonly"
-            ></DictSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.exec_result == null)">
-          <el-form-item
-            :label="n('执行结果')"
-            prop="exec_result"
+            :label="n('日志明细')"
+            prop="lbl"
           >
             <CustomInput
-              v-model="dialogModel.exec_result"
-              :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
-          <el-form-item
-            :label="n('开始时间')"
-            prop="begin_time"
-          >
-            <CustomDatePicker
-              v-model="dialogModel.begin_time"
-              type="datetime"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomDatePicker>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.end_time == null)">
-          <el-form-item
-            :label="n('结束时间')"
-            prop="end_time"
-          >
-            <CustomDatePicker
-              v-model="dialogModel.end_time"
-              type="datetime"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomDatePicker>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-grid="col-span-2"
-          >
-            <CustomInput
-              v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              v-model="dialogModel.lbl"
+              :placeholder="`${ ns('请输入') } ${ n('日志明细') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -221,23 +157,23 @@ import {
 } from "./Api";
 
 import type {
-  CronJobLogId,
+  CronJobLogDetailId,
 } from "@/typings/ids";
 
 import type {
-  CronJobLogInput,
+  CronJobLogDetailInput,
 } from "#/types";
 
 const emit = defineEmits<{
   nextId: [
     {
       dialogAction: DialogAction,
-      id: CronJobLogId,
+      id: CronJobLogDetailId,
     },
   ],
 }>();
 
-const pagePath = "/cron/cron_job_log";
+const pagePath = "/cron/cron_job_log_detail";
 
 const {
   n,
@@ -261,12 +197,12 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: CronJobLogInput = $ref({
-} as CronJobLogInput);
+let dialogModel: CronJobLogDetailInput = $ref({
+} as CronJobLogDetailInput);
 
-let ids = $ref<CronJobLogId[]>([ ]);
+let ids = $ref<CronJobLogDetailId[]>([ ]);
 let is_deleted = $ref<number>(0);
-let changedIds = $ref<CronJobLogId[]>([ ]);
+let changedIds = $ref<CronJobLogDetailId[]>([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -280,18 +216,18 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 定时任务
-    cron_job_id: [
+    // 任务执行日志
+    cron_job_log_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("定时任务") }`,
+        message: `${ await nsAsync("请选择") } ${ n("任务执行日志") }`,
       },
     ],
-    // 执行状态
-    exec_state: [
+    // 日志明细
+    lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("执行状态") }`,
+        message: `${ await nsAsync("请输入") } ${ n("日志明细") }`,
       },
     ],
   };
@@ -299,13 +235,13 @@ watchEffect(async () => {
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
-  changedIds: CronJobLogId[];
+  changedIds: CronJobLogDetailId[];
 };
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<CronJobLogInput>();
+let builtInModel = $ref<CronJobLogDetailInput>();
 
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
@@ -327,13 +263,13 @@ async function showDialog(
   arg?: {
     title?: string;
     notice?: string;
-    builtInModel?: CronJobLogInput;
+    builtInModel?: CronJobLogDetailInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: CronJobLogId;
-      ids?: CronJobLogId[];
+      id?: CronJobLogDetailId;
+      ids?: CronJobLogDetailId[];
       is_deleted?: number | null;
     };
     findOne?: typeof findOne;
@@ -498,6 +434,7 @@ async function onRefresh() {
     dialogModel = {
       ...data,
     };
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
 }
 
@@ -509,7 +446,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("任务执行日志明细")));
   }
 }
 
@@ -627,12 +564,8 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "定时任务",
-    "执行状态",
-    "执行结果",
-    "开始时间",
-    "结束时间",
-    "备注",
+    "任务执行日志",
+    "日志明细",
     "创建时间",
   ];
   await Promise.all([
