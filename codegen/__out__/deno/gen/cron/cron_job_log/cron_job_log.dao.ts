@@ -821,13 +821,6 @@ export async function validate(
     fieldComments.exec_state,
   );
   
-  // 执行结果
-  await validators.chars_max_length(
-    input.exec_result,
-    500,
-    fieldComments.exec_result,
-  );
-  
   // 备注
   await validators.chars_max_length(
     input.rem,

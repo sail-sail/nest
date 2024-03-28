@@ -25,17 +25,17 @@
         
         <el-tab-pane
           lazy
-          :label="'任务执行日志' + (cron_job_logTotal != null ? ` (${ cron_job_logTotal })` : '')"
-          name="任务执行日志"
+          :label="'任务执行日志明细' + (cron_job_log_detailTotal != null ? ` (${ cron_job_log_detailTotal })` : '')"
+          name="任务执行日志明细"
         >
-          <Cron_job_logList
-            :cron_job_id="dialogModel.id"
+          <Cron_job_log_detailList
+            :cron_job_log_id="dialogModel.id"
             :is_deleted="dialogModel.is_deleted ? '1' : '0'"
             :is-locked="dialogModel.is_deleted ? '1' : '0'"
             @add="useAllFindDebounce"
             @remove="useAllFindDebounce"
             @revert="useAllFindDebounce"
-          ></Cron_job_logList>
+          ></Cron_job_log_detailList>
         </el-tab-pane>
         
       </el-tabs>
@@ -65,47 +65,47 @@
 
 <script lang="ts" setup>
 
-import Cron_job_logList from "@/views/cron/cron_job_log/List.vue";
+import Cron_job_log_detailList from "@/views/cron/cron_job_log_detail/List.vue";
 
 import {
-  findCount as findCountCron_job_log,
-} from "@/views/cron/cron_job_log/Api";
+  findCount as findCountCron_job_log_detail,
+} from "@/views/cron/cron_job_log_detail/Api";
 
 import type {
-  CronJobId,
+  CronJobLogId,
 } from "@/typings/ids";
 
 const {
   n,
   initI18ns,
-} = useI18n("/cron/cron_job");
+} = useI18n("/cron/cron_job_log");
 
 let inited = $ref(false);
 
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
-  id?: CronJobId,
+  id?: CronJobLogId,
   is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("任务执行日志");
+let tabName = $ref("任务执行日志明细");
 
-let cron_job_logTotal = $ref<number>();
+let cron_job_log_detailTotal = $ref<number>();
 
-async function useFindCountCron_job_log() {
-  const cron_job_id: CronJobId[] = [ dialogModel.id! ];
-  cron_job_logTotal = await findCountCron_job_log(
+async function useFindCountCron_job_log_detail() {
+  const cron_job_log_id: CronJobLogId[] = [ dialogModel.id! ];
+  cron_job_log_detailTotal = await findCountCron_job_log_detail(
     {
       is_deleted: dialogModel.is_deleted,
-      cron_job_id,
+      cron_job_log_id,
     },
   );
 }
 
 async function useAllFindCount() {
   await Promise.all([
-    useFindCountCron_job_log(),
+    useFindCountCron_job_log_detail(),
   ]);
 }
 
@@ -129,7 +129,7 @@ async function showDialog(
   arg?: {
     title?: string;
     model?: {
-      id?: CronJobId;
+      id?: CronJobLogId;
       is_deleted?: number | null;
     };
     action?: typeof dialogAction;

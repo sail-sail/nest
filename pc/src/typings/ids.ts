@@ -91,6 +91,10 @@ declare const cron_job_logId: unique symbol;
 /** 任务执行日志 */
 export type CronJobLogId = Distinct<string, typeof cron_job_logId>;
 
+declare const cron_job_log_detailId: unique symbol;
+/** 任务执行日志明细 */
+export type CronJobLogDetailId = Distinct<string, typeof cron_job_log_detailId>;
+
 declare const jobId: unique symbol;
 /** 任务 */
 export type JobId = Distinct<string, typeof jobId>;

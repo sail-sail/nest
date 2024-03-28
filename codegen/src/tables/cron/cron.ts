@@ -61,6 +61,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
+        width: 320,
         foreignTabs: [
           {
             mod: "cron",
@@ -69,7 +70,7 @@ export default defineConfig({
             column: "cron_job_id",
           },
         ],
-        width: 320,
+        foreignTabsDialogType: "default",
       },
       {
         COLUMN_NAME: "job_id",
@@ -130,6 +131,15 @@ export default defineConfig({
         COLUMN_NAME: "exec_state",
         width: 100,
         search: true,
+        foreignTabs: [
+          {
+            mod: "cron",
+            table: "cron_job_log_detail",
+            label: "任务执行日志明细",
+            column: "cron_job_log_id",
+          },
+        ],
+        foreignTabsDialogType: "default",
       },
       {
         COLUMN_NAME: "exec_result",
@@ -149,6 +159,30 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "create_time",
+      },
+    ],
+  },
+  // 任务执行日志明细
+  cron_cron_job_log_detail: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "cron_job_log_id",
+        foreignKey: {
+          showType: "dialog",
+        },
+      },
+      {
+        COLUMN_NAME: "lbl",
+        minWidth: 420,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "create_time",
+        search: true,
       },
     ],
   },
