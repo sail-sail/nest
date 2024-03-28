@@ -1033,7 +1033,11 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
     await delCache();

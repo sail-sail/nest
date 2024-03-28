@@ -4426,7 +4426,11 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    sql += `update_time = ${ args.push(new Date()) }`;<#
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }<#
     }
     #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
