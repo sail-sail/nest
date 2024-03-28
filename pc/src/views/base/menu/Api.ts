@@ -629,9 +629,6 @@ export function useExportExcel(routePath: string) {
               update_time
               update_time_lbl
             }
-            findAllMenu {
-              lbl
-            }
             getDict(codes: [
               "is_locked",
               "is_enabled",
