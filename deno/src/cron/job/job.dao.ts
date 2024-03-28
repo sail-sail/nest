@@ -65,7 +65,6 @@ export async function runJob(
       },
     );
   } catch (err) {
-    console.log(`cron_job end: ${ job_id }: ${ cron }`);
     const end_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
     const exec_result = err.toString();
     await updateByIdCronJobLog(
@@ -77,6 +76,8 @@ export async function runJob(
       },
     );
     throw err;
+  } finally {
+    console.log(`cron_job end: ${ job_id }: ${ cron }`);
   }
   return exec_result || "";
 }
