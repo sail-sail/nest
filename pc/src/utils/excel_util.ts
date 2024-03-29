@@ -33,6 +33,16 @@ import dayjs from "dayjs";
       const key = keys[k];
       let val = vals[k];
       const headerKey = header && header[key] || key;
+      if (typeof val === "string") {
+        if (val.trim() === "-") {
+          (row as any)[headerKey] = undefined;
+          continue;
+        }
+        if (val.trim() === "--") {
+          (row as any)[headerKey] = "-";
+          continue;
+        }
+      }
       const type = opt?.key_types[headerKey] || "string";
       if (type === "number") {
         (row as any)[headerKey] = Number(val);

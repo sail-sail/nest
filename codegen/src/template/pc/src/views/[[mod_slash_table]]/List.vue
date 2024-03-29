@@ -3333,6 +3333,7 @@ async function onDeleteByIds() {
     });<#
     }
     #>
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
