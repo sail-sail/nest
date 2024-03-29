@@ -4431,6 +4431,11 @@ export async function updateById(
     } else {
       sql += `update_time = ${ args.push(reqDate()) }`;
     }<#
+    } else {
+    #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }<#
     }
     #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
