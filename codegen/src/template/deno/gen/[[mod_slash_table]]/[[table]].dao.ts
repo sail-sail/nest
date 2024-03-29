@@ -4426,7 +4426,16 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    sql += `update_time = ${ args.push(new Date()) }`;<#
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }<#
+    } else {
+    #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }<#
     }
     #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
@@ -4451,7 +4460,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));<#
+    log(JSON.stringify(oldModel));<#
     if (opts?.history_table) {
     #>
     

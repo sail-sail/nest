@@ -2338,7 +2338,7 @@ export function useExportExcel(routePath: string) {
               }
               #>
             }<#
-            const foreignTableArrTmp2 = [];
+            const foreignTableArrTmp2 = [ table ];
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;

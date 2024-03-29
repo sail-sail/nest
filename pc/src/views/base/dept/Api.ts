@@ -669,9 +669,6 @@ export function useExportExcel(routePath: string) {
               update_time
               update_time_lbl
             }
-            findAllDept {
-              lbl
-            }
             findAllUsr {
               lbl
             }
