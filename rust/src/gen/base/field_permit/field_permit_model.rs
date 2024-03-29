@@ -500,6 +500,12 @@ impl<'r> sqlx::Decode<'r, MySql> for FieldPermitId {
   }
 }
 
+impl PartialEq<str> for FieldPermitId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}
+
 /// 字段权限类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum FieldPermitType {

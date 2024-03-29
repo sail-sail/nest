@@ -2546,8 +2546,6 @@ pub async fn create(
   }
   #>
   
-  let now = get_now();
-  
   let old_models = find_by_unique(
     input.clone().into(),
     None,
@@ -2615,12 +2613,44 @@ pub async fn create(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "id,create_time".to_owned();
+  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
+  let mut sql_values = String::with_capacity(2 * <#=columns.length#> + 2);
   
-  let mut sql_values = "?,?".to_owned();
+  sql_fields += "id";
+  sql_values += "?";
+  args.push(id.clone().into());<#
+  if (hasCreateTime) {
+  #>
   
-  args.push(id.clone().into());
-  args.push(now.into());<#
+  if let Some(create_time) = input.create_time {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(create_time.into());
+  } else {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(get_now().into());
+  }<#
+  }
+  #><#
+  if (hasCreateUsrId) {
+  #>
+  
+  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+    let create_usr_id = input.create_usr_id.clone().unwrap();
+    sql_fields += ",create_usr_id";
+    sql_values += ",?";
+    args.push(create_usr_id.into());
+  } else {
+    let usr_id = get_auth_id();
+    if let Some(usr_id) = usr_id {
+      sql_fields += ",create_usr_id";
+      sql_values += ",?";
+      args.push(usr_id.into());
+    }
+  }<#
+  }
+  #><#
   if (hasTenantId) {
   #>
   
@@ -2648,14 +2678,7 @@ pub async fn create(
     args.push(org_id.into());
   }<#
   }
-  #>
-  
-  if let Some(auth_model) = get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(usr_id.into());
-  }<#
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2924,9 +2947,8 @@ pub async fn update_tenant_by_id(
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "tenant_id = ?,update_time = ?";
+  let sql_fields = "tenant_id = ?";
   args.push(tenant_id.into());
-  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -2987,9 +3009,8 @@ pub async fn update_org_by_id(
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "org_id = ?,update_time = ?";
+  let sql_fields = "org_id = ?";
   args.push(org_id.into());
-  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -3367,12 +3388,9 @@ pub async fn update_by_id(
     .set_is_debug(false);
   let options = Some(options);
   
-  let now = get_now();
-  
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "update_time = ?".to_owned();
-  args.push(now.into());
+  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
   
   let mut field_num: usize = 0;<#
   if (hasTenantId) {
@@ -3380,7 +3398,7 @@ pub async fn update_by_id(
   
   if let Some(tenant_id) = input.tenant_id {
     field_num += 1;
-    sql_fields += ",tenant_id = ?";
+    sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
   }<#
   }
@@ -3417,7 +3435,7 @@ pub async fn update_by_id(
   if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
     if !<#=modelLabel#>.is_empty() {
       field_num += 1;
-      sql_fields += ",<#=modelLabel#> = ?";
+      sql_fields += "<#=modelLabel#>=?,";
       args.push(<#=modelLabel#>.into());
     }
   }<#
@@ -3429,7 +3447,7 @@ pub async fn update_by_id(
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     if !<#=column_name_rust#>.is_empty() {
       field_num += 1;
-      sql_fields += ",<#=column_name_mysql#> = ?";
+      sql_fields += "<#=column_name_mysql#>=?,";
       args.push(get_password(<#=column_name_rust#>)?.into());
     }
   }<#
@@ -3438,7 +3456,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name_mysql#> = ?";
+    sql_fields += "<#=column_name_mysql#>=?,";
     args.push(<#=column_name_rust#>.into());
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -3448,7 +3466,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
-    sql_fields += ",<#=column_name_mysql#> = ?";
+    sql_fields += "<#=column_name_mysql#>=?,";
     args.push(<#=column_name_rust#>.into());
   }<#
   }
@@ -3485,7 +3503,7 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
     field_num += 1;
-    sql_fields += ",<#=val_mysql#> = ?";
+    sql_fields += "<#=val_mysql#>=?,";
     args.push(<#=rustKeyEscape(val)#>.into());
   }<#
     }
@@ -3647,20 +3665,46 @@ pub async fn update_by_id(
             return Err(SrvErr::msg(err_msg).into());
           }
         }
-        sql_fields += ",version = ?";
+        sql_fields += "version=?,";
         args.push((version + 1).into());
       }
     }<#
     }
+    #><#
+    if (hasUpdateUsrId) {
     #>
     
-    if let Some(auth_model) = get_auth_model() {
-      let usr_id = auth_model.id;
-      sql_fields += ",update_usr_id = ?";
-      args.push(usr_id.into());
+    if input.update_usr_id.is_some() && input.update_usr_id.as_ref().unwrap() != "-" {
+      let update_usr_id = input.update_usr_id.clone().unwrap();
+      sql_fields += "update_usr_id=?,";
+      args.push(update_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_fields += "update_usr_id=?,";
+        args.push(usr_id.into());
+      }
+    }<#
+    }
+    #><#
+    if (hasUpdateTime) {
+    #>
+    
+    if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
+    } else {
+      sql_fields += "update_time=?,";
+      args.push(get_now().into());
+    }<#
+    }
+    #>
+    
+    if sql_fields.ends_with(',') {
+      sql_fields.pop();
     }
     
-    let sql_where = "id = ?";
+    let sql_where = "id=?";
     args.push(id.clone().into());
     
     let sql = format!(

@@ -1997,6 +1997,12 @@ impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
+}
+
+impl PartialEq<str> for <#=Table_Up#>Id {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
 }<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];

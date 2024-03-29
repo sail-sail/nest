@@ -480,6 +480,12 @@ impl<'r> sqlx::Decode<'r, MySql> for DataPermitId {
   }
 }
 
+impl PartialEq<str> for DataPermitId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}
+
 /// 数据权限范围
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DataPermitScope {

@@ -483,3 +483,9 @@ impl<'r> sqlx::Decode<'r, MySql> for LangId {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
 }
+
+impl PartialEq<str> for LangId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}
