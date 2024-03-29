@@ -1163,7 +1163,11 @@ export async function updateById(
       }
       sql += `version = ${ args.push(version + 1) },`;
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
     await delCache();
@@ -1178,7 +1182,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;

@@ -226,7 +226,7 @@ async function getSchema0(
       }
     }
     if (column_name === "lbl") {
-      if (item.width == null) {
+      if (item.width == null && item.minWidth == null) {
         item.width = 200;
       }
       if (item.require == null) {

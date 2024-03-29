@@ -5538,7 +5538,10 @@ watch(
       });
       createNum++;
     }
-    const removeNum = dialogModel.<#=column_name#>_<#=table#>_models.length - updateNum;
+    let removeNum = (dialogModel.<#=column_name#>_<#=table#>_models?.length || 0) - updateNum;
+    if (removeNum < 0) {
+      removeNum = 0;
+    }
     dialogModel.<#=column_name#>_<#=table#>_models = inputs;
     let msg = "";
     if (removeNum > 0) {
