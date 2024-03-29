@@ -3193,13 +3193,7 @@ export async function create(
     insert into <#=mod#>_<#=table#>(
       id<#
       if (hasCreateTime) {
-      #>
-      ,create_time<#
-      }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      ,update_time<#
+      #>,create_time<#
       }
       #>
   `;<#
@@ -3230,24 +3224,12 @@ export async function create(
   #><#
   if (hasCreateUsrId) {
   #>
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }<#
   }
@@ -3342,13 +3324,9 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },<#
+  sql += `)values(${ args.push(input.id) }<#
   if (hasCreateTime) {
-  #>${ args.push(reqDate()) },<#
-  }
-  #><#
-  if (hasUpdateTime) {
-  #>${ args.push(reqDate()) }<#
+  #>,${ args.push(reqDate()) }<#
   }
   #>`;<#
   if (hasTenant_id) {
@@ -3380,18 +3358,6 @@ export async function create(
   #>
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
