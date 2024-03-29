@@ -1509,12 +1509,8 @@ impl <'a> CtxBuilder<'a> {
   fn new(
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
-    let now = Local::now();
-    let now = NaiveDateTime::from_timestamp_opt(
-      now.timestamp() + now.offset().local_minus_utc() as i64,
-      now.timestamp_subsec_nanos(),
-    ).unwrap();
-    let req_id = now.timestamp_millis().to_string();
+    let now = Local::now().naive_local();
+    let req_id = now.and_utc().timestamp_millis().to_string();
     CtxBuilder {
       gql_ctx,
       is_tran: None,
@@ -1571,7 +1567,7 @@ impl <'a> CtxBuilder<'a> {
     };
     let now = self.now;
     let server_tokentimeout = SERVER_TOKEN_TIMEOUT.to_owned();
-    let now_sec = now.timestamp_millis() / 1000;
+    let now_sec = now.and_utc().timestamp_millis() / 1000;
     if now_sec - server_tokentimeout > auth_model.exp {
       if now_sec - server_tokentimeout * 2 > auth_model.exp {
         return Err(anyhow!("refresh_token_expired"));

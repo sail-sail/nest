@@ -576,6 +576,12 @@ impl<'r> sqlx::Decode<'r, MySql> for DictbizId {
   }
 }
 
+impl PartialEq<str> for DictbizId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}
+
 /// 业务字典数据类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum DictbizType {

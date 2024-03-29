@@ -1271,8 +1271,6 @@ pub async fn create(
     ).into());
   }
   
-  let now = get_now();
-  
   let old_models = find_by_unique(
     input.clone().into(),
     None,
@@ -1330,12 +1328,36 @@ pub async fn create(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "id,create_time".to_owned();
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_values = String::with_capacity(2 * 15 + 2);
   
-  let mut sql_values = "?,?".to_owned();
-  
+  sql_fields += "id";
+  sql_values += "?";
   args.push(id.clone().into());
-  args.push(now.into());
+  
+  if let Some(create_time) = input.create_time {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(create_time.into());
+  } else {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(get_now().into());
+  }
+  
+  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+    let create_usr_id = input.create_usr_id.clone().unwrap();
+    sql_fields += ",create_usr_id";
+    sql_values += ",?";
+    args.push(create_usr_id.into());
+  } else {
+    let usr_id = get_auth_id();
+    if let Some(usr_id) = usr_id {
+      sql_fields += ",create_usr_id";
+      sql_values += ",?";
+      args.push(usr_id.into());
+    }
+  }
   
   if let Some(tenant_id) = input.tenant_id {
     sql_fields += ",tenant_id";
@@ -1355,13 +1377,6 @@ pub async fn create(
     sql_fields += ",org_id";
     sql_values += ",?";
     args.push(org_id.into());
-  }
-  
-  if let Some(auth_model) = get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(usr_id.into());
   }
   // 父部门
   if let Some(parent_id) = input.parent_id {
@@ -1483,9 +1498,8 @@ pub async fn update_tenant_by_id(
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "tenant_id = ?,update_time = ?";
+  let sql_fields = "tenant_id = ?";
   args.push(tenant_id.into());
-  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -1542,9 +1556,8 @@ pub async fn update_org_by_id(
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "org_id = ?,update_time = ?";
+  let sql_fields = "org_id = ?";
   args.push(org_id.into());
-  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -1665,66 +1678,81 @@ pub async fn update_by_id(
     .set_is_debug(false);
   let options = Some(options);
   
-  let now = get_now();
-  
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "update_time = ?".to_owned();
-  args.push(now.into());
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   let mut field_num: usize = 0;
   
   if let Some(tenant_id) = input.tenant_id {
     field_num += 1;
-    sql_fields += ",tenant_id = ?";
+    sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
   }
   // 父部门
   if let Some(parent_id) = input.parent_id {
     field_num += 1;
-    sql_fields += ",parent_id = ?";
+    sql_fields += "parent_id=?,";
     args.push(parent_id.into());
   }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
-    sql_fields += ",lbl = ?";
+    sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
     field_num += 1;
-    sql_fields += ",is_locked = ?";
+    sql_fields += "is_locked=?,";
     args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
-    sql_fields += ",is_enabled = ?";
+    sql_fields += "is_enabled=?,";
     args.push(is_enabled.into());
   }
   // 排序
   if let Some(order_by) = input.order_by {
     field_num += 1;
-    sql_fields += ",order_by = ?";
+    sql_fields += "order_by=?,";
     args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
-    sql_fields += ",rem = ?";
+    sql_fields += "rem=?,";
     args.push(rem.into());
   }
   
   if field_num > 0 {
     
-    if let Some(auth_model) = get_auth_model() {
-      let usr_id = auth_model.id;
-      sql_fields += ",update_usr_id = ?";
-      args.push(usr_id.into());
+    if input.update_usr_id.is_some() && input.update_usr_id.as_ref().unwrap() != "-" {
+      let update_usr_id = input.update_usr_id.clone().unwrap();
+      sql_fields += "update_usr_id=?,";
+      args.push(update_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_fields += "update_usr_id=?,";
+        args.push(usr_id.into());
+      }
     }
     
-    let sql_where = "id = ?";
+    if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
+    } else {
+      sql_fields += "update_time=?,";
+      args.push(get_now().into());
+    }
+    
+    if sql_fields.ends_with(',') {
+      sql_fields.pop();
+    }
+    
+    let sql_where = "id=?";
     args.push(id.clone().into());
     
     let sql = format!(

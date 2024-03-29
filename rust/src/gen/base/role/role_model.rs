@@ -718,3 +718,9 @@ impl<'r> sqlx::Decode<'r, MySql> for RoleId {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
 }
+
+impl PartialEq<str> for RoleId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}

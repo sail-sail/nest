@@ -588,6 +588,12 @@ impl<'r> sqlx::Decode<'r, MySql> for BackgroundTaskId {
   }
 }
 
+impl PartialEq<str> for BackgroundTaskId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
+  }
+}
+
 /// 后台任务状态
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum BackgroundTaskState {
