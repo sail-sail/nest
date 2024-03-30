@@ -5,6 +5,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -533,7 +534,9 @@ impl <#=tableUP#>GenMutation {<#
   }<#
     }
   #><#
-    if (opts.noDelete !== true) {
+  if (opts.noDelete !== true) {
+  #><#
+  if (hasIsDeleted) {
   #>
   
   /// 根据 ids 还原<#=table_comment#><#
@@ -557,7 +560,11 @@ impl <#=tableUP#>GenMutation {<#
           None,
         )
       }).await
+  }<#
   }
+  #><#
+  if (hasIsDeleted) {
+  #>
   
   /// 根据 ids 彻底删除<#=table_comment#><#
   if (table === "i18n") {
@@ -581,7 +588,9 @@ impl <#=tableUP#>GenMutation {<#
         )
       }).await
   }<#
-    }
+  }
+  #><#
+  }
   #>
   
 }
