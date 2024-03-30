@@ -2280,13 +2280,18 @@ pub async fn set_id_by_lbl(
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
+    const data_type = column.DATA_TYPE;
   #><#
     if (column.isMonth) {
   #>
+  
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+      }
       if input.<#=column_name_rust#>.is_none() {
         let field_comments = get_field_comments(
           None,
@@ -2303,6 +2308,54 @@ pub async fn set_id_by_lbl(
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
+  }<#
+    } else if (data_type === "date") {
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+      }
+      if input.<#=column_name_rust#>.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.<#=column_name_rust#>;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+      }
+    }
+  }<#
+    } else if (data_type === "datetime") {
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+      }
+      if input.<#=column_name_rust#>.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.<#=column_name_rust#>;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+      }
+    }
   }<#
     }
   #><#
