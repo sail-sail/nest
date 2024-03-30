@@ -200,6 +200,7 @@ const deleteByIdsTableUps = [ ];
 const revertByIdsTableUps = [ ];
 const updateByIdTableUps = [ ];
 const forceDeleteByIdsUps = [ ];
+const equalsByUniqueTableUps = [ ];
 for (const inlineForeignTab of inlineForeignTabs) {
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
@@ -278,6 +279,115 @@ use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
 };<#
 }
 #><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const table_comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = many2many.table;
+  const mod = many2many.mod;
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    createTableUps.includes(Table_Up) &&
+    deleteByIdsTableUps.includes(Table_Up) &&
+    revertByIdsTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up) &&
+    forceDeleteByIdsUps.includes(Table_Up) &&
+    equalsByUniqueTableUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasCreateTableUps = createTableUps.includes(Table_Up);
+  if (!hasCreateTableUps) {
+    createTableUps.push(Table_Up);
+  }
+  const hasDeleteByIdsTableUps = deleteByIdsTableUps.includes(Table_Up);
+  if (!hasDeleteByIdsTableUps) {
+    deleteByIdsTableUps.push(Table_Up);
+  }
+  const hasRevertByIdsTableUps = revertByIdsTableUps.includes(Table_Up);
+  if (!hasRevertByIdsTableUps) {
+    revertByIdsTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+  const hasForceDeleteByIdsUps = forceDeleteByIdsUps.includes(Table_Up);
+  if (!hasForceDeleteByIdsUps) {
+    forceDeleteByIdsUps.push(Table_Up);
+  }
+  const hasEqualsByUniqueTableUps = equalsByUniqueTableUps.includes(Table_Up);
+  if (!hasEqualsByUniqueTableUps) {
+    equalsByUniqueTableUps.push(Table_Up);
+  }
+#>
+
+// <#=table_comment#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+  if (!hasFindAllTableUps) {
+  #>
+  find_all as find_all_<#=table#>,<#
+  }
+  #><#
+  if (!hasCreateTableUps) {
+  #>
+  create as create_<#=table#>,<#
+  }
+  #><#
+  if (!hasDeleteByIdsTableUps) {
+  #>
+  delete_by_ids as delete_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasRevertByIdsTableUps) {
+  #>
+  revert_by_ids as revert_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  update_by_id as update_by_id_<#=table#>,<#
+  }
+  #><#
+  if (!hasForceDeleteByIdsUps) {
+  #>
+  force_delete_by_ids as force_delete_by_ids_<#=table#>,<#
+  }
+  #><#
+  if (!hasEqualsByUniqueTableUps) {
+  #>
+  equals_by_unique as equals_by_unique_<#=table#>,<#
+  }
+  #>
+};<#
+}
+#><#
 
 // 已经导入的ID列表
 const modelIds = [ ];
@@ -306,6 +416,47 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const table_comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = many2many.table;
+  const mod = many2many.mod;
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const hasModelTableUps = modelTableUps.includes(Table_Up);
+  if (hasModelTableUps) {
+    continue;
+  }
+  modelTableUps.push(Table_Up);
+  const modelId = Table_Up + "ID";
+  modelIds.push(modelId);
+#>
+
+// <#=table_comment#>
 use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
 }
 #><#
@@ -941,6 +1092,7 @@ async fn get_from_query(
 }
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
+#[allow(unused_mut)]
 pub async fn find_all(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
@@ -1305,6 +1457,60 @@ pub async fn find_all(
     None,
   ).await?;<#
   }
+  #><#
+  const oldTable = table;
+  const oldTableUp = tableUp;
+  const oldTable_UP = Table_Up;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const table_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=table_comment#>
+  let <#=column_name#>_<#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: res
+        .iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<<#=oldTable_UP#>Id>>()
+        .into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;<#
+  }
   #>
   
   #[allow(unused_variables)]
@@ -1401,6 +1607,46 @@ pub async fn find_all(
       .pop();<#
       }
     #><#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      const table = many2many.table;
+      const mod = many2many.mod;
+      if (!inlineMany2manySchema) {
+        throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ many2many.mod }_${ many2many.table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_<#=table#>_models = <#=column_name#>_<#=table#>_models.clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=many2many.column1#> == model.id
+      )
+      .collect::<Vec<_>>()
+      .into();<#
     }
     #>
     
@@ -1893,7 +2139,7 @@ pub async fn find_by_unique(
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
-fn equals_by_unique(
+pub fn equals_by_unique(
   input: &<#=tableUP#>Input,
   model: &<#=tableUP#>Model,
 ) -> bool {
@@ -2910,6 +3156,49 @@ pub async fn create(
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  if let Some(<#=column_name#>_<#=table#>_models) = input.<#=column_name#>_<#=table#>_models {
+    for input in <#=column_name#>_<#=table#>_models {
+      let mut input = input;
+      input.<#=many2many.column1#> = id.clone().into();
+      create_<#=table#>(
+        input,
+        None,
+      ).await?;
+    }
+  }<#
+  }
   #>
   
   Ok(id)
@@ -3129,17 +3418,7 @@ pub async fn get_editable_data_permits_by_ids(
     } else if !has_tenant_permit && has_dept_parent_permit {
       let dept_ids = get_auth_dept_ids().await?;
       let model_dept_ids = get_parents_dept_ids(
-        model.create_usr_id.clone().into(),
-      ).await?;
-      if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
-        editable_data_permits.push(1);
-      } else {
-        editable_data_permits.push(0);
-      }
-    } else if !has_tenant_permit && has_dept_permit {
-      let dept_ids = get_auth_dept_ids().await?;
-      let model_dept_ids = get_parents_dept_ids(
-        model.create_usr_id.clone().into(),
+        Some(model.create_usr_id.clone()),
       ).await?;
       if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -3149,7 +3428,7 @@ pub async fn get_editable_data_permits_by_ids(
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
       let model_dept_ids = get_dept_ids(
-        model.create_usr_id.clone().into(),
+        model.create_usr_id.clone(),
       ).await?;
       if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -3161,7 +3440,7 @@ pub async fn get_editable_data_permits_by_ids(
     if !has_tenant_permit && has_role_permit {
       let role_ids = get_auth_role_ids().await?;
       let model_role_ids = get_role_ids(
-        model.create_usr_id.clone().into(),
+        model.create_usr_id.clone(),
       ).await?;
       if model_role_ids.iter().any(|item| role_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -3295,7 +3574,7 @@ pub async fn update_by_id(
   } else if !has_tenant_permit && has_dept_permit {
     let dept_ids = get_auth_dept_ids().await?;
     let model_dept_ids = get_dept_ids(
-      old_model.create_usr_id.clone().into(),
+      old_model.create_usr_id.clone(),
     ).await?;
     if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
       return Err(get_not_permit_err_fn().await?.into());
@@ -3305,7 +3584,7 @@ pub async fn update_by_id(
   if !has_tenant_permit && has_role_permit {
     let role_ids = get_auth_role_ids().await?;
     let model_role_ids = get_role_ids(
-      old_model.create_usr_id.clone().into(),
+      old_model.create_usr_id.clone(),
     ).await?;
     if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
       return Err(get_not_permit_err_fn().await?.into());
@@ -3641,6 +3920,139 @@ pub async fn update_by_id(
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  {
+    let <#=table#>_models = find_all_<#=table#>(
+      <#=Table_Up#>Search {
+        <#=many2many.column1#>: vec![id.clone()].into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    
+    struct UpdateModel {
+      id: <#=Table_Up#>Id,
+      input: <#=Table_Up#>Input,
+    }
+    
+    let mut <#=table#>_create_models = vec![];
+    let mut <#=table#>_update_models = vec![];
+    let mut <#=table#>_delete_ids = vec![];
+    
+    let mut <#=column_name#>_<#=table#>_models = input.<#=column_name#>_<#=table#>_models
+      .clone()
+      .unwrap_or_default();
+    
+    for <#=table#>_model in &<#=table#>_models {
+      let mut has_in = false;
+      for <#=table#>_input in &<#=column_name#>_<#=table#>_models {
+        let is_equals = equals_by_unique_<#=table#>(
+          <#=table#>_input,
+          <#=table#>_model,
+        );
+        if is_equals {
+          has_in = true;
+          break;
+        }
+      }
+      if !has_in {
+        <#=table#>_delete_ids.push(<#=table#>_model.id.clone());
+      }
+    }
+    
+    for (i, input) in <#=column_name#>_<#=table#>_models
+      .into_iter()
+      .enumerate()
+    {
+      let mut input = input;
+      let i: u32 = i.try_into()?;
+      input.order_by = Some(i + 1);
+      let mut old_id: Option<<#=Table_Up#>Id> = None;
+      for model in &<#=table#>_models {
+        let is_equals = equals_by_unique_<#=table#>(
+          &input,
+          model,
+        );
+        if is_equals {
+          old_id = Some(model.id.clone());
+          break;
+        }
+      }
+      if let Some(old_id) = old_id {
+        <#=table#>_update_models.push(UpdateModel {
+          id: old_id.clone(),
+          input,
+        });
+      } else {
+        <#=table#>_create_models.push(input);
+      }
+    }
+    
+    for input in <#=table#>_create_models {
+      let mut input = input;
+      input.<#=many2many.column1#> = id.clone().into();
+      create_<#=table#>(
+        input,
+        None,
+      ).await?;
+    }
+    
+    for UpdateModel { id, input } in <#=table#>_update_models {
+      let mut input = input;
+      input.id = None;
+      update_by_id_<#=table#>(
+        id,
+        input,
+        None,
+      ).await?;
+    }
+    
+    delete_by_ids_<#=table#>(
+      <#=table#>_delete_ids.clone(),
+      None,
+    ).await?;
+    
+    force_delete_by_ids_<#=table#>(
+      <#=table#>_delete_ids,
+      None,
+    ).await?;
+    
+    field_num += 1;
+  }<#
+  }
   #>
   
   if field_num > 0 {<#
@@ -3971,7 +4383,7 @@ pub async fn delete_by_ids(
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
       let model_dept_ids = get_dept_ids(
-        old_model.create_usr_id.clone().into(),
+        old_model.create_usr_id.clone(),
       ).await?;
       if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         return Err(get_not_permit_err_fn().await?.into());
@@ -3981,7 +4393,7 @@ pub async fn delete_by_ids(
     if !has_tenant_permit && has_role_permit {
       let role_ids = get_auth_role_ids().await?;
       let model_role_ids = get_role_ids(
-        old_model.create_usr_id.clone().into(),
+        old_model.create_usr_id.clone(),
       ).await?;
       if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
         return Err(get_not_permit_err_fn().await?.into());
@@ -4076,6 +4488,75 @@ pub async fn delete_by_ids(
     <#=table#>_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  force_delete_by_ids_<#=table#>(
+    <#=table#>_models
+      .into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<_>>(),
+    None,
+  ).await?;
+  
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: ids.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  delete_by_ids_<#=table#>(
+    <#=table#>_models
+      .into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<_>>(),
     None,
   ).await?;<#
   }
@@ -4413,6 +4894,8 @@ pub async fn lock_by_ids(
   Ok(num)
 }<#
 }
+#><#
+if (hasIsDeleted) {
 #>
 
 /// 根据 ids 还原<#=table_comment#>
@@ -4576,14 +5059,13 @@ pub async fn revert_by_ids(
   ).await?;
   
   revert_by_ids_<#=table#>(
-    <#=table#>_models.into_iter()
+    <#=table#>_models
+      .into_iter()
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
     None,
   ).await?;<#
     } else if (inline_foreign_type === "one2one") {
-  #><#
-    }
   #>
   
   // <#=inlineForeignTab.label#>
@@ -4603,10 +5085,64 @@ pub async fn revert_by_ids(
   ).await?;
   
   revert_by_ids_<#=table#>(
-    <#=table#>_models.into_iter()
+    <#=table#>_models
+      .into_iter()
       .take(1)
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
+    None,
+  ).await?;<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  
+  // <#=column_comment#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  revert_by_ids_<#=table#>(
+    <#=table#>_models
+      .into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<_>>(),
     None,
   ).await?;<#
   }
@@ -4619,7 +5155,11 @@ pub async fn revert_by_ids(
   #>
   
   Ok(num)
+}<#
 }
+#><#
+if (hasIsDeleted) {
+#>
 
 /// 根据 ids 彻底删除<#=table_comment#>
 pub async fn force_delete_by_ids(
@@ -4758,10 +5298,81 @@ pub async fn force_delete_by_ids(
     None,
   ).await?;<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  // <#=column_comment#>
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: ids.clone().into(),
+      is_deleted: 0.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  delete_by_ids_<#=table#>(
+    <#=table#>_models
+      .into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<_>>(),
+    None,
+  ).await?;
+  
+  let <#=table#>_models = find_all_<#=table#>(
+    <#=Table_Up#>Search {
+      <#=many2many.column1#>: ids.clone().into(),
+      is_deleted: 1.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  force_delete_by_ids_<#=table#>(
+    <#=table#>_models
+      .into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<_>>(),
+    None,
+  ).await?;<#
+  }
   #>
   
   Ok(num)
 }<#
+}
+#><#
 if (hasOrderBy) {
 #>
 
@@ -4874,9 +5485,8 @@ pub async fn validate_is_enabled(
 #>
 
 /// 校验<#=table_comment#>是否存在
-#[function_name::named]
 #[allow(dead_code)]
-pub async fn validate_option<'a, T>(
+pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
@@ -4889,7 +5499,7 @@ pub async fn validate_option<'a, T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(SrvErr::msg(err_msg).into());
   }
   Ok(model.unwrap())
 }<#

@@ -73,6 +73,45 @@ use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
 };<#
 }
 #><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const table_comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = many2many.table;
+  const mod = many2many.mod;
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr.includes(table)) continue;
+  foreignTableArr.push(table);
+#>
+
+// <#=table_comment#>
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Input,
+};<#
+}
+#><#
 
 // 已经导入的ID列表
 const modelIds = [ ];
@@ -464,6 +503,39 @@ pub struct <#=tableUP#>Model {<#
   pub <#=inline_column_name#>: Option<<#=Table_Up#>Model>,<#
     }
   #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const table_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  // <#=table_comment#>
+  pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Model>>,<#
   }
   #>
 }
@@ -881,6 +953,38 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       <#=inline_column_name#>: None,<#
         }
       #><#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const table_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+        const table = many2many.table;
+        const mod = many2many.mod;
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=column_name#>_<#=table#>_models: None,<#
       }
       #>
     };
@@ -1545,6 +1649,39 @@ pub struct <#=tableUP#>Input {
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const table_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  // <#=table_comment#>
+  pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
+  }
   #>
 }
 
@@ -1700,6 +1837,45 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       <#=inline_column_name#>: model.<#=inline_column_name#>.map(|x| x.into()),<#
         }
       #><#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const table_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+        const table = many2many.table;
+        const mod = many2many.mod;
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      // <#=table_comment#>
+      <#=column_name#>_<#=table#>_models: model.<#=column_name#>_<#=table#>_models
+        .map(|model|
+          model
+          .into_iter()
+          .map(|x| x.into())
+          .collect::<Vec<_>>(),
+        ),<#
       }
       #>
     }

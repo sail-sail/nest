@@ -307,6 +307,7 @@ async fn get_from_query(
 }
 
 /// 根据搜索条件和分页查找数据权限列表
+#[allow(unused_mut)]
 pub async fn find_all(
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
@@ -867,7 +868,7 @@ pub async fn find_by_unique(
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
-fn equals_by_unique(
+pub fn equals_by_unique(
   input: &DataPermitInput,
   model: &DataPermitModel,
 ) -> bool {
@@ -1689,9 +1690,8 @@ pub async fn force_delete_by_ids(
 }
 
 /// 校验数据权限是否存在
-#[function_name::named]
 #[allow(dead_code)]
-pub async fn validate_option<'a, T>(
+pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
@@ -1704,7 +1704,7 @@ pub async fn validate_option<'a, T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(SrvErr::msg(err_msg).into());
   }
   Ok(model.unwrap())
 }
