@@ -164,7 +164,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             continue;
           }
           if (column.onlyCodegenDeno) continue;
-          if (column.isAtt || column.isImg) continue;
+          // if (column.isAtt || column.isImg) continue;
           const isImport = dir.startsWith("/pc/public/import_template/");
           if (
             isImport && 
@@ -300,7 +300,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `<%forRow model in data.findAll${ Table_Up_IN }%>`;
           }
           str += `<% var prop = "`;
-          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+            || (data_type === "date" || data_type === "datetime")
+          ) {
             str += column_name + "_lbl";
           } else {
             str += column_name;
@@ -313,21 +315,32 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `<%_setC_(_col)%>`;
           }
           str += "<%";
-          if (data_type === "varchar") {
-            str += "=";
-          } else if (data_type === "int") {
-            str += "~";
-          } else if (data_type === "decimal") {
-            str += "~";
-          } else if (data_type === "date") {
-            str += "~";
-          } else if (data_type === "datetime") {
-            str += "~";
-          } else {
-            str += "=";
+          if (!column.isImg) {
+            if (data_type === "varchar") {
+              str += "=";
+            } else if (data_type === "int") {
+              str += "~";
+            } else if (data_type === "decimal") {
+              str += "~";
+            }
+            // else if (data_type === "date") {
+            //   str += "~";
+            // } else if (data_type === "datetime") {
+            //   str += "~";
+            // }
+            else {
+              str += "=";
+            }
           }
-          if (data_type === "date" || data_type === "datetime") {
-            str += `model[prop] ? new Date(model[prop]) : ""`;
+          // if (data_type === "date" || data_type === "datetime") {
+          //   str += `model[prop] ? new Date(model[prop]) : ""`;
+          // } else {
+          //   str += "model[prop]";
+          // }
+          if (column.isAtt) {
+            str += `model[prop].split(",").length.toString()`;
+          } else if (column.isImg) {
+            str += `_img_({imgPh:model[prop+"_lbl"]})`;
           } else {
             str += "model[prop]";
           }

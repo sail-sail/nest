@@ -37,6 +37,13 @@ async function setLblById(
   if (!model) {
     return;
   }
+  
+  // 头像
+  if (model.img) {
+    (model as any).img_lbl = location.origin + getImgUrl({
+      id: model.img,
+    });
+  }
 }
 
 export function intoInput(
@@ -765,6 +772,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllUsr) {
+        await setLblById(model);
+      }
       try {
         const sheetName = await nsAsync("用户");
         const buffer = await workerFn(

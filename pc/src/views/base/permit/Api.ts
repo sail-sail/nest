@@ -518,6 +518,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllUsr) {
+        await setLblById(model);
+      }
       try {
         const sheetName = await nsAsync("按钮权限");
         const buffer = await workerFn(

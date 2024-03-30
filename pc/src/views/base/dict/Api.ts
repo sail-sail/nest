@@ -651,6 +651,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllUsr) {
+        await setLblById(model);
+      }
       try {
         const sheetName = await nsAsync("系统字典");
         const buffer = await workerFn(

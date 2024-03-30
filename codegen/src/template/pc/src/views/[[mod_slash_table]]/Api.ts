@@ -486,6 +486,15 @@ async function setLblById(
   if (model.<#=column_name#> != null) {
     model.<#=column_name#> = new Decimal(model.<#=column_name#>);
   }<#
+    } else if (column.isImg) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#>) {
+    (model as any).<#=column_name#>_lbl = location.origin + getImgUrl({
+      id: model.<#=column_name#>,
+    });
+  }<#
     }
   #><#
   }
@@ -2509,6 +2518,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllUsr) {
+        await setLblById(model);
+      }
       try {
         const sheetName = await nsAsync("<#=table_comment#>");
         const buffer = await workerFn(
