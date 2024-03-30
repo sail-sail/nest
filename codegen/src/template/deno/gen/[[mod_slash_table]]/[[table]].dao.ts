@@ -1602,7 +1602,7 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const comment = column.COLUMN_COMMENT;
+    const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1627,10 +1627,14 @@ export async function findAll(
     }).join("");
   #>
   
-  // <#=comment#>
+  // <#=table_comment#>
   const <#=column_name#>_<#=table#>_models = await findAll<#=Table_Up#>({
-    <#=many2many.column1#>: result.map((item) => item.id),
-    is_deleted: search?.is_deleted,
+    <#=many2many.column1#>: result.map((item) => item.id),<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: search?.is_deleted,<#
+    }
+    #>
   });<#
   }
   #>
@@ -5058,14 +5062,12 @@ export async function revertByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=many2many.column1#>: ids,
-      is_deleted: 1,
-    });
-    const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
-    await revertByIds<#=Table_Up#>(<#=table#>_ids);
-  }<#
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+    is_deleted: 1,
+  });
+  const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
+  await revertByIds<#=Table_Up#>(<#=table#>_ids);<#
   }
   #><#
   if (cache) {
@@ -5202,18 +5204,16 @@ export async function forceDeleteByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+  {
     const <#=table#>_models = await findAll<#=Table_Up#>({
       <#=many2many.column1#>: ids,
+      is_deleted: 1,
     });
-    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
-      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    }
+    await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
   }<#
   }
   #><#
