@@ -661,6 +661,8 @@ input <#=searchName#> {<#
     }).join("");
     const isPassword = column.isPassword;
     if (isPassword) continue;
+    const isEncrypt = column.isEncrypt;
+    if (isEncrypt) continue;
     const search = column.search;
     if (column_name === 'org_id') {
       continue;

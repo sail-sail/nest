@@ -89,6 +89,10 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
         if (column_name === "org_id") continue;
+        const isPassword = column.isPassword;
+        if (isPassword) continue;
+        const isEncrypt = column.isEncrypt;
+        if (isEncrypt) continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
         let column_comment = column.COLUMN_COMMENT || "";
@@ -975,12 +979,17 @@ const hasAtt = columns.some((item) => item.isAtt);
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
+            const isEncrypt = column.isEncrypt;
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -997,14 +1006,18 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
             </el-table-column>
           </template><#
-            } else if (column.isEncrypt) {
+            } else if (isEncrypt) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1035,7 +1048,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1068,7 +1085,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1106,7 +1127,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1126,7 +1151,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1180,7 +1209,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1207,7 +1240,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

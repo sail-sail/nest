@@ -76,6 +76,11 @@ export default defineConfig({
           ],
         },
         {
+          "@/locales" : [
+            "getLocale",
+          ],
+        },
+        {
           "element-plus": [
             "ElButton",
             "ElInput",

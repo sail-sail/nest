@@ -34,6 +34,7 @@ import {
 
 async function setLblById(
   model?: FieldPermitModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -551,8 +552,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAllFieldPermit) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("字段权限");

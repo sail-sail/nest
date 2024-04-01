@@ -453,10 +453,21 @@ import {
   }
 #><#
 }
+#><#
+if (hasDecimal) {
+#>
+
+const decimalformatter = new Intl.NumberFormat(getLocale(), {
+  style: "decimal",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});<#
+}
 #>
 
 async function setLblById(
   model?: <#=modelName#> | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -479,19 +490,25 @@ async function setLblById(
       }
     }
     const column_type = column.COLUMN_TYPE;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
   #><#
     if (formatter) {
   #>
   <#=formatter#><#
     }
   #><#
-    if (column_type && column_type.startsWith("decimal")) {
+    if (data_type === "decimal") {
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
-    model.<#=column_name#> = new Decimal(model.<#=column_name#>);
-  }<#
+  if (!isExcelExport) {
+    model.<#=column_name#> = new Decimal(model.<#=column_name#> ?? 0);
+  }
+  model.<#=column_name#>_lbl = decimalformatter.format(new Decimal(model.<#=column_name#> ?? 0).toNumber());<#
     } else if (column.isImg) {
   #>
   
@@ -2524,8 +2541,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAll<#=Table_Up2#>) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("<#=table_comment#>");
