@@ -505,10 +505,16 @@ async function setLblById(
   #>
   
   // <#=column_comment#>
+  model.<#=column_name#>_lbl = new Intl.NumberFormat(getLocale(), {
+    style: "decimal",
+    minimumFractionDigits: <#=precision#>,
+    maximumFractionDigits: <#=precision#>,
+  }).format(new Decimal(model.<#=column_name#> ?? 0).toNumber());
   if (!isExcelExport) {
     model.<#=column_name#> = new Decimal(model.<#=column_name#> ?? 0);
-  }
-  model.<#=column_name#>_lbl = decimalformatter.format(new Decimal(model.<#=column_name#> ?? 0).toNumber());<#
+    model.<#=column_name#>.toString = () => model.<#=column_name#>_lbl;
+    model.<#=column_name#>.toJSON = model.<#=column_name#>.toString;
+  }<#
     } else if (column.isImg) {
   #>
   

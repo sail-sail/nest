@@ -1658,6 +1658,11 @@ export async function findAll(
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       const isVirtual = column.isVirtual;
+      let precision = 0;
+      if (data_type === "decimal") {
+        const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+        precision = Number(arr[1]);
+      }
     #><#
       if (column_type && column_type.startsWith("decimal") && isVirtual && !isEncrypt) {
     #>
@@ -1673,7 +1678,8 @@ export async function findAll(
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
     #>
     // <#=column_comment#>
-    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);<#
+    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
+    model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
     #>
     // <#=column_comment#>
@@ -4024,6 +4030,11 @@ export async function updateById(
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
     const isEncrypt = column.isEncrypt;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
   #><#
     if (modelLabel) {
   #>
@@ -4053,6 +4064,7 @@ export async function updateById(
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
       #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
@@ -4076,6 +4088,7 @@ export async function updateById(
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
       #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
@@ -4097,6 +4110,7 @@ export async function updateById(
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
       #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
