@@ -264,7 +264,7 @@ import type {
 
 import type {
   FieldPermitInput,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,

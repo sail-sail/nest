@@ -390,7 +390,7 @@ import type {
 
 import type {
   DictInput,
-} from "#/types";
+} from "./Model";
 
 import type {
   // 系统字典明细

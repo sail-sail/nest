@@ -269,8 +269,11 @@ import type {
 
 import type {
   DictbizDetailInput,
+} from "./Model";
+
+import type {
   DictbizModel,
-} from "#/types";
+} from "@/views/base/dictbiz/Model";
 
 import {
   getDictbizList,

@@ -262,7 +262,7 @@ import type {
 
 import type {
   OptionsInput,
-} from "#/types";
+} from "./Model";
 
 import {
   subscribe,

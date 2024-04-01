@@ -1602,7 +1602,7 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const comment = column.COLUMN_COMMENT;
+    const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1627,10 +1627,14 @@ export async function findAll(
     }).join("");
   #>
   
-  // <#=comment#>
+  // <#=table_comment#>
   const <#=column_name#>_<#=table#>_models = await findAll<#=Table_Up#>({
-    <#=many2many.column1#>: result.map((item) => item.id),
-    is_deleted: search?.is_deleted,
+    <#=many2many.column1#>: result.map((item) => item.id),<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: search?.is_deleted,<#
+    }
+    #>
   });<#
   }
   #>
@@ -3193,13 +3197,7 @@ export async function create(
     insert into <#=mod#>_<#=table#>(
       id<#
       if (hasCreateTime) {
-      #>
-      ,create_time<#
-      }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      ,update_time<#
+      #>,create_time<#
       }
       #>
   `;<#
@@ -3230,24 +3228,12 @@ export async function create(
   #><#
   if (hasCreateUsrId) {
   #>
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }<#
   }
@@ -3342,13 +3328,9 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },<#
+  sql += `)values(${ args.push(input.id) }<#
   if (hasCreateTime) {
-  #>${ args.push(reqDate()) },<#
-  }
-  #><#
-  if (hasUpdateTime) {
-  #>${ args.push(reqDate()) }<#
+  #>,${ args.push(reqDate()) }<#
   }
   #>`;<#
   if (hasTenant_id) {
@@ -3380,18 +3362,6 @@ export async function create(
   #>
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
@@ -4431,6 +4401,11 @@ export async function updateById(
     } else {
       sql += `update_time = ${ args.push(reqDate()) }`;
     }<#
+    } else {
+    #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }<#
     }
     #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
@@ -5087,14 +5062,12 @@ export async function revertByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=many2many.column1#>: ids,
-      is_deleted: 1,
-    });
-    const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
-    await revertByIds<#=Table_Up#>(<#=table#>_ids);
-  }<#
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+    is_deleted: 1,
+  });
+  const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
+  await revertByIds<#=Table_Up#>(<#=table#>_ids);<#
   }
   #><#
   if (cache) {
@@ -5231,18 +5204,16 @@ export async function forceDeleteByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+  {
     const <#=table#>_models = await findAll<#=Table_Up#>({
       <#=many2many.column1#>: ids,
+      is_deleted: 1,
     });
-    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
-      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    }
+    await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
   }<#
   }
   #><#

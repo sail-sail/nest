@@ -267,7 +267,7 @@ import type {
 
 import type {
   BackgroundTaskInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

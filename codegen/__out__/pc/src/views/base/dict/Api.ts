@@ -14,10 +14,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DictSearch,
   DictInput,
   DictModel,
-} from "#/types";
+} from "./Model";
 
 import {
   intoInput as intoInputDictDetail,
@@ -74,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -147,7 +150,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDict: Query["findOneDict"];
+    findOneDict?: DictModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $sort: [SortInput!]) {
@@ -297,7 +300,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDict: Query["findByIdDict"];
+    findByIdDict?: DictModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictId!) {
@@ -491,7 +494,7 @@ export async function findAllDict(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -651,6 +654,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllUsr) {
+        await setLblById(model);
+      }
       try {
         const sheetName = await nsAsync("系统字典");
         const buffer = await workerFn(
