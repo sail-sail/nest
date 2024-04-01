@@ -957,11 +957,10 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let options = Options::new();
     let id = update_by_id(
       model.id.clone(),
       input,
-      Some(options),
+      options,
     ).await?;
     return Ok(id.into());
   }

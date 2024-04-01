@@ -117,12 +117,6 @@ use crate::common::util::dao::{
 };<#
 }
 #><#
-if (hasEncrypt) {
-#>
-
-use crate::common::util::dao::encrypt;<#
-}
-#><#
 if (hasDataPermit()) {
 #>
 
@@ -2224,16 +2218,10 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let options = Options::new();<#
-    if (hasEncrypt) {
-    #>
-    let options = options.set_is_encrypt(false);<#
-    }
-    #>
     let id = update_by_id(
       model.id.clone(),
       input,
-      Some(options),
+      options,
     ).await?;
     return Ok(id.into());
   }
@@ -2799,51 +2787,7 @@ pub async fn create(
     return Err(SrvErr::msg(
       format!("Can not set id when create in dao: {table}")
     ).into());
-  }<#
-  if (hasEncrypt) {
-  #>
-  
-  let is_encrypt = options.as_ref()
-    .map(|item|
-      item.get_is_encrypt().unwrap_or(true)
-    )
-    .unwrap_or(true);
-  if is_encrypt {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if input.<#=column_name#>.is_some() {
-      input.<#=column_name#> = input.<#=column_name#>.as_ref().map(|item| {
-        encrypt(item)
-      });
-    }<#
-    }
-    #>
-  };<#
   }
-  #>
   
   let old_models = find_by_unique(
     input.clone().into(),
@@ -3514,51 +3458,7 @@ pub async fn update_by_id(
   id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
-  if (hasEncrypt) {
-  #>
-  
-  let is_encrypt = options.as_ref()
-    .map(|item|
-      item.get_is_encrypt().unwrap_or(true)
-    )
-    .unwrap_or(true);
-  if is_encrypt {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if input.<#=column_name#>.is_some() {
-      input.<#=column_name#> = input.<#=column_name#>.as_ref().map(|item| {
-        encrypt(item)
-      });
-    }<#
-    }
-    #>
-  };<#
-  }
-  #>
+) -> Result<<#=Table_Up#>Id> {
   
   let old_model = find_by_id(
     id.clone(),
