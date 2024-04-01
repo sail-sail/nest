@@ -575,8 +575,12 @@ import {
 import type {
   WxwMsgModel,
   WxwMsgSearch,
+} from "./Model";
+
+// 企微应用
+import type {
   WxwAppModel,
-} from "#/types";
+} from "@/views/wxwork/wxw_app/Model";
 
 import {
   getWxwAppList, // 企微应用
@@ -1233,6 +1237,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
