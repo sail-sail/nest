@@ -747,9 +747,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -1176,6 +1174,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<TenantId> {
+  
   const table = "base_tenant";
   const method = "updateById";
   

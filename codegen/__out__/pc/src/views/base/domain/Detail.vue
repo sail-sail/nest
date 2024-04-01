@@ -249,7 +249,7 @@ import type {
 
 import type {
   DomainInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

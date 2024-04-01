@@ -261,7 +261,7 @@ import type {
 
 import type {
   DataPermitInput,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,

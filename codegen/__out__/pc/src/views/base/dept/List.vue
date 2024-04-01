@@ -690,7 +690,7 @@ import type {
   DeptModel,
   DeptInput,
   DeptSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "部门List",
