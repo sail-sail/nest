@@ -637,7 +637,6 @@ export async function checkByUnique(
   oldModel: WxwAppModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<WxwAppId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -652,10 +651,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-          isEncrypt: false,
-        },
+        options,
       );
       return id;
     }
@@ -926,7 +922,6 @@ export async function create(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    isEncrypt?: boolean;
   },
 ): Promise<WxwAppId> {
   const table = "wxwork_wxw_app";
@@ -947,16 +942,6 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
-  }
-  if (options?.isEncrypt !== false) {
-    // 应用密钥
-    if (input.corpsecret != null) {
-      input.corpsecret = await encrypt(input.corpsecret);
-    }
-    // 通讯录密钥
-    if (input.contactsecret != null) {
-      input.contactsecret = await encrypt(input.contactsecret);
-    }
   }
   
   await setIdByLbl(input);
@@ -1072,10 +1057,10 @@ export async function create(
     sql += `,${ args.push(input.domain_id) }`;
   }
   if (input.corpsecret != null) {
-    sql += `,${ args.push(input.corpsecret) }`;
+    sql += `,${ args.push(await encrypt(input.corpsecret)) }`;
   }
   if (input.contactsecret != null) {
-    sql += `,${ args.push(input.contactsecret) }`;
+    sql += `,${ args.push(await encrypt(input.contactsecret)) }`;
   }
   if (input.is_locked != null) {
     sql += `,${ args.push(input.is_locked) }`;
@@ -1183,9 +1168,9 @@ export async function updateById(
   options?: {
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<WxwAppId> {
+  
   const table = "wxwork_wxw_app";
   const method = "updateById";
   
@@ -1209,16 +1194,6 @@ export async function updateById(
   }
   if (!input) {
     throw new Error("updateById: input cannot be null");
-  }
-  if (options?.isEncrypt !== false) {
-    // 应用密钥
-    if (input.corpsecret != null) {
-      input.corpsecret = await encrypt(input.corpsecret);
-    }
-    // 通讯录密钥
-    if (input.contactsecret != null) {
-      input.contactsecret = await encrypt(input.contactsecret);
-    }
   }
   
   // 修改租户id
@@ -1281,13 +1256,13 @@ export async function updateById(
   }
   if (input.corpsecret != null) {
     if (input.corpsecret != oldModel.corpsecret) {
-      sql += `corpsecret = ${ args.push(input.corpsecret) },`;
+      sql += `corpsecret = ${ args.push(await encrypt(input.corpsecret)) },`;
       updateFldNum++;
     }
   }
   if (input.contactsecret != null) {
     if (input.contactsecret != oldModel.contactsecret) {
-      sql += `contactsecret = ${ args.push(input.contactsecret) },`;
+      sql += `contactsecret = ${ args.push(await encrypt(input.contactsecret)) },`;
       updateFldNum++;
     }
   }

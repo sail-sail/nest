@@ -533,9 +533,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -1029,6 +1027,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxwUsrId> {
+  
   const table = "wxwork_wxw_usr";
   const method = "updateById";
   
