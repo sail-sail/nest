@@ -980,6 +980,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
             const isEncrypt = column.isEncrypt;
+            const prefix = column.prefix || "";
           #><#
           if (column.isImg) {
           #>
@@ -1014,7 +1015,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
             } else if (isEncrypt) {
@@ -1037,8 +1045,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1119,6 +1132,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                   )"
                 ></CustomInputNumber>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
               #>
             </el-table-column>
@@ -1140,7 +1158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 <div
                   un-whitespace-pre
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </div>
               </template>
             </el-table-column>
@@ -1171,7 +1189,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
@@ -1201,6 +1219,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
               #>
             </el-table-column>
@@ -1229,8 +1252,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1250,7 +1278,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-bind="col"
             ><#
               if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType) && !column.inlineMany2manyTab) {
-            #>
+              #>
               <template #default="{ row, column }">
                 <LinkList
                   v-model="row[column.property]"<#
@@ -1262,7 +1290,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 ></LinkList>
               </template><#
               } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1273,7 +1301,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1289,7 +1317,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1298,8 +1326,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
-            #>
+              #>
             </el-table-column>
           </template><#
             }
