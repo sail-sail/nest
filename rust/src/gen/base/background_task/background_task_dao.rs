@@ -1024,6 +1024,50 @@ pub async fn set_id_by_lbl(
   #[allow(unused_mut)]
   let mut input = input;
   
+  // 开始时间
+  if input.begin_time.is_none() {
+    if let Some(begin_time_lbl) = input.begin_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.begin_time = chrono::NaiveDateTime::parse_from_str(begin_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.begin_time.is_none() {
+        input.begin_time = chrono::NaiveDateTime::parse_from_str(begin_time_lbl, "%Y-%m-%d").ok();
+      }
+      if input.begin_time.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.begin_time;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+      }
+    }
+  }
+  
+  // 结束时间
+  if input.end_time.is_none() {
+    if let Some(end_time_lbl) = input.end_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.end_time = chrono::NaiveDateTime::parse_from_str(end_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.end_time.is_none() {
+        input.end_time = chrono::NaiveDateTime::parse_from_str(end_time_lbl, "%Y-%m-%d").ok();
+      }
+      if input.end_time.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.end_time;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+      }
+    }
+  }
+  
   let dict_vec = get_dict(&[
     "background_task_state",
     "background_task_type",
