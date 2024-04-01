@@ -249,7 +249,7 @@ import type {
 
 import type {
   LangInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

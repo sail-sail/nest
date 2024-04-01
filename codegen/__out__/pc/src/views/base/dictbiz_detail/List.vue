@@ -719,8 +719,12 @@ import type {
   DictbizDetailModel,
   DictbizDetailInput,
   DictbizDetailSearch,
+} from "./Model";
+
+// 业务字典
+import type {
   DictbizModel,
-} from "#/types";
+} from "@/views/base/dictbiz/Model";
 
 import {
   getDictbizList, // 业务字典
@@ -1633,6 +1637,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

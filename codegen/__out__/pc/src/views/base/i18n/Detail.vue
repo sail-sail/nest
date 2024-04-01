@@ -269,8 +269,11 @@ import type {
 
 import type {
   I18nInput,
+} from "./Model";
+
+import type {
   LangModel,
-} from "#/types";
+} from "@/views/base/lang/Model";
 
 import {
   getLangList,
