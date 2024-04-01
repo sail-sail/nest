@@ -42,6 +42,7 @@ import {
 
 async function setLblById(
   model?: UsrModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -782,7 +783,7 @@ export function useExportExcel(routePath: string) {
         },
       }, opt);
       for (const model of data.findAllUsr) {
-        await setLblById(model);
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("用户");

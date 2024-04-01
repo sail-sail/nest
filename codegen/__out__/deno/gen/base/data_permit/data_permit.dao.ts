@@ -591,9 +591,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -994,6 +992,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<DataPermitId> {
+  
   const table = "base_data_permit";
   const method = "updateById";
   

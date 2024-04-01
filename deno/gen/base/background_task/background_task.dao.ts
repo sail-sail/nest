@@ -658,9 +658,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -1149,6 +1147,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<BackgroundTaskId> {
+  
   const table = "base_background_task";
   const method = "updateById";
   

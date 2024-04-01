@@ -617,9 +617,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -1055,6 +1053,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<MenuId> {
+  
   const table = "base_menu";
   const method = "updateById";
   
