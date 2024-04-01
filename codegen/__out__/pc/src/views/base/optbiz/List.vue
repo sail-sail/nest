@@ -699,7 +699,7 @@ import type {
   OptbizModel,
   OptbizInput,
   OptbizSearch,
-} from "#/types";
+} from "./Model";
 
 import {
   publish,

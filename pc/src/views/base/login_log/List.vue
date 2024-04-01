@@ -434,7 +434,7 @@ import {
 import type {
   LoginLogModel,
   LoginLogSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "登录日志",

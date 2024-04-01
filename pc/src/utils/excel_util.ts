@@ -65,7 +65,7 @@ import dayjs from "dayjs";
           (row as any)[headerKey] = val;
         } else if (typeof val === "number") {
           // (row as any)[headerKey] = num2Date(val);
-          const msg = `请使用字符串格式或日期格式, 而不是数字格式, 错误的值: ${ val }`;
+          const msg = `请使用字符串格式的日期, 例如: ${ dayjs().format("YYYY-MM-DD HH:mm:ss") }`;
           ElMessage.error(msg);
           throw msg;
         } else {

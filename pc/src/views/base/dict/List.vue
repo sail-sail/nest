@@ -710,7 +710,7 @@ import type {
   DictModel,
   DictInput,
   DictSearch,
-} from "#/types";
+} from "./Model";
 
 import ForeignTabs from "./ForeignTabs.vue";
 

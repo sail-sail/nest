@@ -578,7 +578,7 @@ import {
 import type {
   OperationRecordModel,
   OperationRecordSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "操作记录",

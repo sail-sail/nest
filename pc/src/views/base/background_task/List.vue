@@ -533,7 +533,7 @@ import {
 import type {
   BackgroundTaskModel,
   BackgroundTaskSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "后台任务",

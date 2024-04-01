@@ -656,7 +656,7 @@ import type {
   LangModel,
   LangInput,
   LangSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "语言",

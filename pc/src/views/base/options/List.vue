@@ -699,7 +699,7 @@ import type {
   OptionsModel,
   OptionsInput,
   OptionsSearch,
-} from "#/types";
+} from "./Model";
 
 import {
   publish,
