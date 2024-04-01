@@ -28,6 +28,7 @@ import {
 
 async function setLblById(
   model?: DictModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -654,8 +655,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAllDict) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("系统字典");

@@ -30,6 +30,7 @@ import {
 
 async function setLblById(
   model?: PermitModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -523,8 +524,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAllPermit) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("按钮权限");

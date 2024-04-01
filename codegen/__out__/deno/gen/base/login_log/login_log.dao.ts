@@ -492,9 +492,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -911,6 +909,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<LoginLogId> {
+  
   const table = "base_login_log";
   const method = "updateById";
   

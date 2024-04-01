@@ -635,9 +635,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -1137,6 +1135,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<DictbizDetailId> {
+  
   const table = "base_dictbiz_detail";
   const method = "updateById";
   

@@ -48,6 +48,7 @@ const homeUrlMap = getHomeUrlMap();
 
 async function setLblById(
   model?: RoleModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -758,8 +759,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAllRole) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("角色");

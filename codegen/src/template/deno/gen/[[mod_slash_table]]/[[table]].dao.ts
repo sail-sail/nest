@@ -106,22 +106,15 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "version") continue;
   const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  if (!column_type) {
+  const data_type = column.DATA_TYPE;
+  if (data_type !== "decimal") {
     continue;
   }
-  if (!column_type.startsWith("decimal")) {
-    continue;
-  }
-  const isVirtual = column.isVirtual;
-  if (!isVirtual) continue;
   hasDecimal = true;
 }
 #><#
@@ -855,6 +848,10 @@ async function getWhereQuery(
     if (column_name === "is_sys") continue;
     const isPassword = column.isPassword;
     if (isPassword) {
+      continue;
+    }
+    const isEncrypt = column.isEncrypt;
+    if (isEncrypt) {
       continue;
     }
     let selectList = [ ];
@@ -1669,10 +1666,18 @@ export async function findAll(
     model.<#=column_name#> = new Decimal(<#=column_default || 0#>);<#
       }
     #><#
-      if (isEncrypt) {
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = Number(await decrypt(model.<#=column_name#>.toString()) || 0);<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
@@ -2565,12 +2570,7 @@ export async function checkByUnique(
   input: <#=inputName#>,
   oldModel: <#=modelName#>,
   uniqueType: UniqueType = UniqueType.Throw,
-  options?: {<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+  options?: {
   },
 ): Promise<<#=Table_Up#>Id | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -2585,14 +2585,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,<#
-          if (hasEncrypt) {
-          #>
-          isEncrypt: false,<#
-          }
-          #>
-        },
+        options,
       );
       return id;
     }
@@ -3086,12 +3079,7 @@ export async function create(
   options?: {
     debug?: boolean;
     uniqueType?: UniqueType;
-    hasDataPermit?: boolean;<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+    hasDataPermit?: boolean;
   },
 ): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
@@ -3112,43 +3100,7 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
-  }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
   }
-  #>
   
   await setIdByLbl(input);
   
@@ -3390,10 +3342,11 @@ export async function create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
-  if (isNotEmpty(input.<#=modelLabel#>)) {
+  if (input.<#=modelLabel#> != null) {
     sql += `,${ args.push(input.<#=modelLabel#>) }`;
   }<#
     }
@@ -3405,20 +3358,59 @@ export async function create(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     }
   #><#
@@ -3878,14 +3870,10 @@ export async function updateById(
     #>
     hasDataPermit?: boolean,<#
     }
-    #><#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
     #>
   },
 ): Promise<<#=Table_Up#>Id> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
@@ -3910,42 +3898,6 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   
@@ -4071,6 +4023,7 @@ export async function updateById(
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
@@ -4094,8 +4047,21 @@ export async function updateById(
     if (isEmpty(input.<#=column_name#>)) {
       input.<#=column_name#> = null;
     }
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4104,16 +4070,42 @@ export async function updateById(
     } else if (!foreignKey) {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
     } else {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#

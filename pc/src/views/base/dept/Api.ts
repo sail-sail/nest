@@ -30,6 +30,7 @@ import {
 
 async function setLblById(
   model?: DeptModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -691,8 +692,8 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
-      for (const model of data.findAllUsr) {
-        await setLblById(model);
+      for (const model of data.findAllDept) {
+        await setLblById(model, true);
       }
       try {
         const sheetName = await nsAsync("部门");

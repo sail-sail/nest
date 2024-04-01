@@ -341,6 +341,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `model[prop].split(",").length.toString()`;
           } else if (column.isImg) {
             str += `_img_({imgPh:model[prop+"_lbl"]})`;
+          } else if (column.DATA_TYPE === "decimal") {
+            str += `model[prop+"_lbl"]`;
           } else {
             str += "model[prop]";
           }
