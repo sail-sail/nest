@@ -185,14 +185,17 @@ import Decimal from "decimal.js-light";<#
 import type {
   Query,
   Mutation,
-  PageInput,<#
+  PageInput,
+} from "#/types";
+
+import type {<#
   const findAllSearchArgs = [ ];
   findAllSearchArgs.push(searchName);
   #>
   <#=searchName#>,
   <#=inputName#>,
   <#=modelName#>,
-} from "#/types";<#
+} from "./Model";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
 for (let i = 0; i < columns.length; i++) {
@@ -227,11 +230,14 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
 #>
 
+// <#=foreignSchema.opts.table_comment#>
 import type {
   <#=Foreign_Table_Up#>Search,
-} from "#/types";<#
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -653,7 +659,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Table_Up2#>: Query["findAll<#=Table_Up2#>"];
+    findAll<#=Table_Up2#>: <#=modelName#>[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
@@ -868,7 +874,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOne<#=Table_Up2#>: Query["findOne<#=Table_Up2#>"];
+    findOne<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
@@ -1265,7 +1271,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findById<#=Table_Up2#>: Query["findById<#=Table_Up2#>"];
+    findById<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
     query: /* GraphQL */ `
       query($id: <#=Table_Up#>Id!) {
@@ -1677,7 +1683,7 @@ export async function findAll<#=Foreign_Table_Up#>(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
@@ -1859,7 +1865,7 @@ export async function findAll<#=Foreign_Table_Up#>(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {

@@ -14,10 +14,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DictbizSearch,
   DictbizInput,
   DictbizModel,
-} from "#/types";
+} from "./Model";
 
 import {
   intoInput as intoInputDictbizDetail,
@@ -74,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbiz: Query["findAllDictbiz"];
+    findAllDictbiz: DictbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -147,7 +150,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDictbiz: Query["findOneDictbiz"];
+    findOneDictbiz?: DictbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $sort: [SortInput!]) {
@@ -297,7 +300,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDictbiz: Query["findByIdDictbiz"];
+    findByIdDictbiz?: DictbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictbizId!) {
@@ -491,7 +494,7 @@ export async function findAllDictbiz(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbiz: Query["findAllDictbiz"];
+    findAllDictbiz: DictbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {

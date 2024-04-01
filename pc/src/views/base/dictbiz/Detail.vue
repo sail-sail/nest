@@ -390,7 +390,7 @@ import type {
 
 import type {
   DictbizInput,
-} from "#/types";
+} from "./Model";
 
 import type {
   // 业务字典明细

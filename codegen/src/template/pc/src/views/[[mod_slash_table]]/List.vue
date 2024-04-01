@@ -1573,8 +1573,8 @@ import type {
   <#=inputName#>,<#
   }
   #>
-  <#=searchName#>,<#
-{
+  <#=searchName#>,
+} from "./Model";<#
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1596,13 +1596,15 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   foreignTableUpArr.push(Foreign_Table_Up);
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
 #>
-  <#=Foreign_Table_Up#>Model,<#
+
+// <#=foreignSchema.opts.table_comment#>
+import type {
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
 #><#
-}
-#>
-} from "#/types";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];

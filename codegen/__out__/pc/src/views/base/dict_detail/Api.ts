@@ -10,14 +10,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DictDetailSearch,
-  DictDetailInput,
-  DictDetailModel,
 } from "#/types";
 
 import type {
+  DictDetailSearch,
+  DictDetailInput,
+  DictDetailModel,
+} from "./Model";
+
+// 系统字典
+import type {
   DictSearch,
-} from "#/types";
+  DictModel,
+} from "@/views/base/dict/Model";
 
 async function setLblById(
   model?: DictDetailModel | null,
@@ -68,7 +73,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictDetail: Query["findAllDictDetail"];
+    findAllDictDetail: DictDetailModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -122,7 +127,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDictDetail: Query["findOneDictDetail"];
+    findOneDictDetail?: DictDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
@@ -253,7 +258,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDictDetail: Query["findByIdDictDetail"];
+    findByIdDictDetail?: DictDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictDetailId!) {
@@ -428,7 +433,7 @@ export async function findAllDict(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {

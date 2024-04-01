@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OptbizSearch,
   OptbizInput,
   OptbizModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OptbizModel | null,
@@ -64,7 +67,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOptbiz: Query["findAllOptbiz"];
+    findAllOptbiz: OptbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -118,7 +121,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOptbiz: Query["findOneOptbiz"];
+    findOneOptbiz?: OptbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OptbizSearch, $sort: [SortInput!]) {
@@ -249,7 +252,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOptbiz: Query["findByIdOptbiz"];
+    findByIdOptbiz?: OptbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OptbizId!) {

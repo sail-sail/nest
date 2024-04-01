@@ -715,7 +715,7 @@ import type {
   MenuModel,
   MenuInput,
   MenuSearch,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,

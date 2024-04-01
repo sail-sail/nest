@@ -10,18 +10,25 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   I18nSearch,
   I18nInput,
   I18nModel,
-} from "#/types";
+} from "./Model";
 
+// 语言
 import type {
   LangSearch,
-} from "#/types";
+  LangModel,
+} from "@/views/base/lang/Model";
 
+// 菜单
 import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -71,7 +78,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllI18n: Query["findAllI18n"];
+    findAllI18n: I18nModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -122,7 +129,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneI18n: Query["findOneI18n"];
+    findOneI18n?: I18nModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $sort: [SortInput!]) {
@@ -250,7 +257,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdI18n: Query["findByIdI18n"];
+    findByIdI18n?: I18nModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: I18nId!) {
@@ -366,7 +373,7 @@ export async function findAllLang(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLang: Query["findAllLang"];
+    findAllLang: LangModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -412,7 +419,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {

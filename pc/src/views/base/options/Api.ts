@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OptionsSearch,
   OptionsInput,
   OptionsModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OptionsModel | null,
@@ -64,7 +67,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOptions: Query["findAllOptions"];
+    findAllOptions: OptionsModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -118,7 +121,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOptions: Query["findOneOptions"];
+    findOneOptions?: OptionsModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $sort: [SortInput!]) {
@@ -249,7 +252,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOptions: Query["findByIdOptions"];
+    findByIdOptions?: OptionsModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OptionsId!) {

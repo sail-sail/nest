@@ -619,8 +619,12 @@ import type {
   DataPermitModel,
   DataPermitInput,
   DataPermitSearch,
+} from "./Model";
+
+// 菜单
+import type {
   MenuModel,
-} from "#/types";
+} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,

@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   LangSearch,
   LangInput,
   LangModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: LangModel | null,
@@ -58,7 +61,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLang: Query["findAllLang"];
+    findAllLang: LangModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -108,7 +111,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneLang: Query["findOneLang"];
+    findOneLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput!]) {
@@ -235,7 +238,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdLang: Query["findByIdLang"];
+    findByIdLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: LangId!) {

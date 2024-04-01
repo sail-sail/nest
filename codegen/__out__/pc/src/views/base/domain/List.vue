@@ -694,7 +694,7 @@ import type {
   DomainModel,
   DomainInput,
   DomainSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "域名",

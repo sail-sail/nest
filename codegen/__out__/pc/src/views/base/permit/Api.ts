@@ -10,14 +10,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  PermitSearch,
-  PermitInput,
-  PermitModel,
 } from "#/types";
 
 import type {
+  PermitSearch,
+  PermitInput,
+  PermitModel,
+} from "./Model";
+
+// 菜单
+import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -64,7 +69,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPermit: Query["findAllPermit"];
+    findAllPermit: PermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -113,7 +118,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOnePermit: Query["findOnePermit"];
+    findOnePermit?: PermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: PermitSearch, $sort: [SortInput!]) {
@@ -239,7 +244,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdPermit: Query["findByIdPermit"];
+    findByIdPermit?: PermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: PermitId!) {
@@ -353,7 +358,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {

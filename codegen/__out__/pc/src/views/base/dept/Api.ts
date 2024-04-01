@@ -10,14 +10,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DeptSearch,
-  DeptInput,
-  DeptModel,
 } from "#/types";
 
 import type {
+  DeptSearch,
+  DeptInput,
+  DeptModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 import {
   findTree as findDeptTree,
@@ -73,7 +78,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllDept: DeptModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -128,7 +133,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDept: Query["findOneDept"];
+    findOneDept?: DeptModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $sort: [SortInput!]) {
@@ -285,7 +290,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDept: Query["findByIdDept"];
+    findByIdDept?: DeptModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DeptId!) {
@@ -461,7 +466,7 @@ export async function findAllDept(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllDept: DeptModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -505,7 +510,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {

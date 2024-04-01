@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DomainSearch,
   DomainInput,
   DomainModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: DomainModel | null,
@@ -64,7 +67,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -118,7 +121,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDomain: Query["findOneDomain"];
+    findOneDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $sort: [SortInput!]) {
@@ -249,7 +252,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDomain: Query["findByIdDomain"];
+    findByIdDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DomainId!) {

@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OrgSearch,
   OrgInput,
   OrgModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OrgModel | null,
@@ -59,7 +62,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOrg: Query["findAllOrg"];
+    findAllOrg: OrgModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -110,7 +113,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOrg: Query["findOneOrg"];
+    findOneOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $sort: [SortInput!]) {
@@ -238,7 +241,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOrg: Query["findByIdOrg"];
+    findByIdOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OrgId!) {

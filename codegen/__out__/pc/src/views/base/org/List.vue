@@ -667,7 +667,7 @@ import type {
   OrgModel,
   OrgInput,
   OrgSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "组织",

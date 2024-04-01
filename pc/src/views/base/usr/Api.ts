@@ -10,22 +10,31 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   UsrSearch,
   UsrInput,
   UsrModel,
-} from "#/types";
+} from "./Model";
 
+// 组织
 import type {
   OrgSearch,
-} from "#/types";
+  OrgModel,
+} from "@/views/base/org/Model";
 
+// 部门
 import type {
   DeptSearch,
-} from "#/types";
+  DeptModel,
+} from "@/views/base/dept/Model";
 
+// 角色
 import type {
   RoleSearch,
-} from "#/types";
+  RoleModel,
+} from "@/views/base/role/Model";
 
 import {
   findTree as findDeptTree,
@@ -98,7 +107,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -159,7 +168,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneUsr: Query["findOneUsr"];
+    findOneUsr?: UsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput!]) {
@@ -297,7 +306,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdUsr: Query["findByIdUsr"];
+    findByIdUsr?: UsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: UsrId!) {
@@ -479,7 +488,7 @@ export async function findAllOrg(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOrg: Query["findAllOrg"];
+    findAllOrg: OrgModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -525,7 +534,7 @@ export async function findAllDept(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllDept: DeptModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -571,7 +580,7 @@ export async function findAllRole(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllRole: Query["findAllRole"];
+    findAllRole: RoleModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
