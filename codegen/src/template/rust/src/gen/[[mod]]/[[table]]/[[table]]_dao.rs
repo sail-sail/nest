@@ -117,6 +117,12 @@ use crate::common::util::dao::{
 };<#
 }
 #><#
+if (hasEncrypt) {
+#>
+
+use crate::common::util::dao::encrypt;<#
+}
+#><#
 if (hasDataPermit()) {
 #>
 
@@ -2943,6 +2949,7 @@ pub async fn create(
     const many2many = column.many2many;
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
@@ -2970,6 +2977,30 @@ pub async fn create(
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
+    } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    sql_fields += ",<#=column_name_mysql#>";
+    sql_values += ",?";
+    args.push(encrypt(&<#=column_name_rust#>).into());
+  }<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    sql_fields += ",<#=column_name_mysql#>";
+    sql_values += ",?";
+    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+  }<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    sql_fields += ",<#=column_name_mysql#>";
+    sql_values += ",?";
+    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+  }<#
     } else {
   #>
   // <#=column_comment#>
@@ -3660,6 +3691,7 @@ pub async fn update_by_id(
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
@@ -3693,6 +3725,30 @@ pub async fn update_by_id(
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
+    } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += "<#=column_name_mysql#>=?,";
+    args.push(encrypt(&<#=column_name_rust#>).into());
+  }<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += "<#=column_name_mysql#>=?,";
+    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+  }<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += "<#=column_name_mysql#>=?,";
+    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+  }<#
     } else {
   #>
   // <#=column_comment#>

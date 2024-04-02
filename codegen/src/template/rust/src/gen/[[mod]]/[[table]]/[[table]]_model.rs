@@ -18,6 +18,22 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  const data_type = column.DATA_TYPE;
+  if (data_type !== "decimal") {
+    continue;
+  }
+  hasDecimal = true;
+  break;
+}
 #>
 use std::fmt;
 use std::ops::Deref;
@@ -29,7 +45,12 @@ use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
-use smol_str::SmolStr;
+use smol_str::SmolStr;<#
+if (hasDecimal) {
+#>
+use rust_decimal::Decimal;<#
+}
+#>
 
 use sqlx::{
   FromRow,
@@ -279,7 +300,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (is_nullable) {
       _data_type = "Option<"+_data_type+">";
@@ -634,11 +655,35 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (is_nullable) {
       _data_type = "Option<"+_data_type+">";
     }
+    const isVirtual = column.isVirtual;
+    const isEncrypt = column.isEncrypt;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
+    #><#
+      if (data_type === "decimal" && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>)?;<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = "<#=column_default || ""#>".to_owned();<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = <#=column_default || 0#>.to_owned();<#
+        continue;
+      }
     #><#
       if (column_name === "id") {
     #>
@@ -770,12 +815,31 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       }
     #><#
       } else {
+    #><#
+        if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str());<#
+        } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
+      .parse::<Decimal>()
+      .unwrap_or_default()
+      .round_dp(<#=precision#>);<#
+        } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
+      .try_into()
+      .unwrap_or_default();<#
+        } else {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
-        if (column.isEncrypt) { 
-    #>
-    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str());<#
         }
     #><#
       }
@@ -1150,7 +1214,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
@@ -1477,7 +1541,7 @@ pub struct <#=tableUP#>Input {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (column_name === "id") {
       _data_type = "String";
