@@ -974,7 +974,6 @@ export async function updateById(
   const table = "base_i18n";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
