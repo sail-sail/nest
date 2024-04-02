@@ -1378,7 +1378,6 @@ export async function updateById(
   const table = "wx_pay_transactions_jsapi";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
