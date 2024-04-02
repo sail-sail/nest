@@ -10,17 +10,48 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OptionsSearch,
   OptionsInput,
   OptionsModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OptionsModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OptionsInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 键
+    ky: model?.ky,
+    // 值
+    val: model?.val,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+    version: model?.version,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +68,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOptions: Query["findAllOptions"];
+    findAllOptions: OptionsModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -91,7 +122,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOptions: Query["findOneOptions"];
+    findOneOptions?: OptionsModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $sort: [SortInput!]) {
@@ -156,25 +187,26 @@ export async function findCount(
 
 /**
  * 创建系统选项
- * @param {OptionsInput} model
+ * @param {OptionsInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OptionsInput,
+  input: OptionsInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
+  input = intoInput(input);
   const data: {
     createOptions: Mutation["createOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OptionsInput!, $unique_type: UniqueType) {
-        createOptions(model: $model, unique_type: $unique_type)
+      mutation($input: OptionsInput!, $unique_type: UniqueType) {
+        createOptions(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +217,26 @@ export async function create(
 /**
  * 根据 id 修改系统选项
  * @param {OptionsId} id
- * @param {OptionsInput} model
+ * @param {OptionsInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OptionsId,
-  model: OptionsInput,
+  input: OptionsInput,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
+  input = intoInput(input);
   const data: {
     updateByIdOptions: Mutation["updateByIdOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OptionsId!, $model: OptionsInput!) {
-        updateByIdOptions(id: $id, model: $model)
+      mutation($id: OptionsId!, $input: OptionsInput!) {
+        updateByIdOptions(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OptionsId = data.updateByIdOptions;
@@ -220,7 +253,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOptions: Query["findByIdOptions"];
+    findByIdOptions?: OptionsModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OptionsId!) {
@@ -501,6 +534,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllOptions) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("系统选项");
         const buffer = await workerFn(

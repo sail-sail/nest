@@ -17,13 +17,9 @@ type LoginLogModel {
   is_succ_lbl: String!
   "IP"
   ip: String!
-  "创建人"
-  create_usr_id: UsrId!
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
+  "登录时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "登录时间"
   create_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
@@ -39,17 +35,13 @@ type LoginLogFieldComment {
   is_succ_lbl: String!
   "IP"
   ip: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
+  "登录时间"
   create_time: String!
-  "创建时间"
+  "登录时间"
   create_time_lbl: String!
 }
 input LoginLogInput {
-  ""
+  "ID"
   id: LoginLogId
   "用户名"
   username: String
@@ -59,14 +51,6 @@ input LoginLogInput {
   is_succ_lbl: String
   "IP"
   ip: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
 }
 input LoginLogSearch {
   "是否已删除"
@@ -83,11 +67,8 @@ input LoginLogSearch {
   "IP"
   ip: String
   ip_like: String
-  "创建人"
-  create_usr_id: [UsrId!]
-  create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime!]
+  "登录时间"
+  create_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找登录日志总数"

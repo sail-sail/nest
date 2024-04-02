@@ -15,14 +15,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DataPermitSearch,
-  DataPermitInput,
-  DataPermitModel,
 } from "#/types";
 
 import type {
+  DataPermitSearch,
+  DataPermitInput,
+  DataPermitModel,
+} from "./Model";
+
+// 菜单
+import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -30,10 +35,32 @@ import {
 
 async function setLblById(
   model?: DataPermitModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DataPermitInput = {
+    // ID
+    id: model?.id,
+    // 菜单
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    // 范围
+    scope: model?.scope,
+    scope_lbl: model?.scope_lbl,
+    // 类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -50,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDataPermit: Query["findAllDataPermit"];
+    findAllDataPermit: DataPermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -58,7 +85,6 @@ export async function findAll(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -102,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDataPermit: Query["findOneDataPermit"];
+    findOneDataPermit?: DataPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $sort: [SortInput!]) {
@@ -110,7 +136,6 @@ export async function findOne(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -165,25 +190,26 @@ export async function findCount(
 
 /**
  * 创建数据权限
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DataPermitInput,
+  input: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
+  input = intoInput(input);
   const data: {
     createDataPermit: Mutation["createDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DataPermitInput!, $unique_type: UniqueType) {
-        createDataPermit(model: $model, unique_type: $unique_type)
+      mutation($input: DataPermitInput!, $unique_type: UniqueType) {
+        createDataPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -194,25 +220,26 @@ export async function create(
 /**
  * 根据 id 修改数据权限
  * @param {DataPermitId} id
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DataPermitId,
-  model: DataPermitInput,
+  input: DataPermitInput,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
+  input = intoInput(input);
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DataPermitId!, $model: DataPermitInput!) {
-        updateByIdDataPermit(id: $id, model: $model)
+      mutation($id: DataPermitId!, $input: DataPermitInput!) {
+        updateByIdDataPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DataPermitId = data.updateByIdDataPermit;
@@ -229,7 +256,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDataPermit: Query["findByIdDataPermit"];
+    findByIdDataPermit?: DataPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DataPermitId!) {
@@ -237,7 +264,6 @@ export async function findById(
           id
           menu_id
           menu_id_lbl
-          lbl
           scope
           scope_lbl
           type
@@ -346,7 +372,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -421,7 +447,6 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsDataPermit {
             menu_id_lbl
-            lbl
             scope_lbl
             type_lbl
             rem
@@ -497,7 +522,6 @@ export function useExportExcel(routePath: string) {
               id
               menu_id
               menu_id_lbl
-              lbl
               scope
               scope_lbl
               type
@@ -529,6 +553,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDataPermit) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("数据权限");
         const buffer = await workerFn(

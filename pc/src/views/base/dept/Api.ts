@@ -10,14 +10,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DeptSearch,
-  DeptInput,
-  DeptModel,
 } from "#/types";
 
 import type {
+  DeptSearch,
+  DeptInput,
+  DeptModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 import {
   findTree as findDeptTree,
@@ -25,10 +30,39 @@ import {
 
 async function setLblById(
   model?: DeptModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DeptInput = {
+    // ID
+    id: model?.id,
+    // 父部门
+    parent_id: model?.parent_id,
+    parent_id_lbl: model?.parent_id_lbl,
+    // 名称
+    lbl: model?.lbl,
+    // 部门负责人
+    usr_ids: model?.usr_ids,
+    usr_ids_lbl: model?.usr_ids_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -45,7 +79,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllDept: DeptModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -100,7 +134,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDept: Query["findOneDept"];
+    findOneDept?: DeptModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $sort: [SortInput!]) {
@@ -191,25 +225,26 @@ export async function findCount(
 
 /**
  * 创建部门
- * @param {DeptInput} model
+ * @param {DeptInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DeptInput,
+  input: DeptInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DeptId> {
+  input = intoInput(input);
   const data: {
     createDept: Mutation["createDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DeptInput!, $unique_type: UniqueType) {
-        createDept(model: $model, unique_type: $unique_type)
+      mutation($input: DeptInput!, $unique_type: UniqueType) {
+        createDept(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -220,25 +255,26 @@ export async function create(
 /**
  * 根据 id 修改部门
  * @param {DeptId} id
- * @param {DeptInput} model
+ * @param {DeptInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DeptId,
-  model: DeptInput,
+  input: DeptInput,
   opt?: GqlOpt,
 ): Promise<DeptId> {
+  input = intoInput(input);
   const data: {
     updateByIdDept: Mutation["updateByIdDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DeptId!, $model: DeptInput!) {
-        updateByIdDept(id: $id, model: $model)
+      mutation($id: DeptId!, $input: DeptInput!) {
+        updateByIdDept(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DeptId = data.updateByIdDept;
@@ -255,7 +291,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDept: Query["findByIdDept"];
+    findByIdDept?: DeptModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DeptId!) {
@@ -431,7 +467,7 @@ export async function findAllDept(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllDept: DeptModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -475,7 +511,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -639,9 +675,6 @@ export function useExportExcel(routePath: string) {
               update_time
               update_time_lbl
             }
-            findAllDept {
-              lbl
-            }
             findAllUsr {
               lbl
             }
@@ -659,6 +692,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDept) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("部门");
         const buffer = await workerFn(

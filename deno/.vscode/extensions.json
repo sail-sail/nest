@@ -17,7 +17,6 @@
     "antfu.unocss",
     "jock.svg",
     "vue.volar",
-    "vue.vscode-typescript-vue-plugin",
     "vscode-icons-team.vscode-icons",
     "redhat.vscode-xml",
     "mattpocock.ts-error-translator",
@@ -26,7 +25,7 @@
     "denoland.vscode-deno",
     "antfu.browse-lite",
     "antfu.where-am-i",
-    "zixuanchen.vitest-explorer",
+    "vitest.explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
     "britesnow.vscode-toggle-quotes",
@@ -35,6 +34,7 @@
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
-    "tmui-helper.tmui-helper"
+    "tmui-helper.tmui-helper",
+    "ms-vscode.vscode-speech"
   ]
 }

@@ -4,7 +4,12 @@
   :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
-  :class="'custom_dialog ListSelectDialog'"
+  class="custom_dialog ListSelectDialog"
+  :class="{
+    auto_dialog: dialogType === 'auto',
+    medium_dialog: dialogType === 'medium',
+    large_dialog: dialogType === 'large',
+  }"
   top="0"
   :before-close="beforeClose"
   ref="dialogRef"
@@ -38,12 +43,13 @@
     >
       <slot
         v-bind="$attrs"
-        :selected-ids="selectedIds"
+        :selected-ids="oldSelectedIds"
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
         @row-dblclick="onRowDblclick"
         :is-locked="isLocked ? '1' : '0'"
+        is-list-select-dialog="1"
       ></slot>
     </div>
     <div
@@ -66,7 +72,7 @@
         @click="onRevert"
       >
         <template #icon>
-          <ElIconRefresh />
+          <ElIconRefreshLeft />
         </template>
         <span>{{ ns("还原") }}</span>
       </el-button>
@@ -103,12 +109,15 @@ let inited = $ref(false);
 
 let dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
+export type CustomDialogType = "auto" | "medium" | "large" | "default";
+
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref<"select" | "close" | "cancel">("select");
+let dialogType = $ref<CustomDialogType>("default");
 
 let selectedIds = $ref<string[] | undefined>([ ]);
-let oldSelectedIds: string[] = [ ];
+let oldSelectedIds = $ref<string[] | undefined>([ ]);
 
 let isLocked = $computed(() => {
   return argIsLocked || props.isLocked || false;
@@ -126,6 +135,7 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 // 打开对话框
 async function showDialog(
   arg?: {
+    type?: typeof dialogType;
     title?: string;
     action?: "select";
     selectedIds: any[];
@@ -139,6 +149,7 @@ async function showDialog(
   })
   const title = arg?.title;
   const action = arg?.action;
+  dialogType = arg?.type ?? "medium";
   dialogAction = action || "select";
   if (title) {
     dialogTitle = title;
@@ -218,6 +229,7 @@ async function onSave() {
 
 function onRevert() {
   selectedIds = oldSelectedIds && [ ...oldSelectedIds ];
+  oldSelectedIds = selectedIds;
 }
 
 function cancelClk() {
@@ -238,12 +250,3 @@ async function beforeClose(done: (cancel: boolean) => void) {
 
 defineExpose({ showDialog });
 </script>
-
-<style>
-.el-dialog.ListSelectDialog {
-  width: calc(100% - 30px);
-  height: calc(100% - 20px);
-  display: flex;
-  flex-direction: column;
-}
-</style>

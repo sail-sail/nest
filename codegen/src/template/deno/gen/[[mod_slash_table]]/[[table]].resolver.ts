@@ -59,10 +59,6 @@ import Decimal from "decimal.js";<#
 }
 #>
 
-import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
 import type {<#
   if (opts.noAdd !== true) {
   #>
@@ -107,7 +103,7 @@ import "./cron_job.service.ts";<#
  * 根据条件查找<#=table_comment#>总数
  */
 export async function findCount<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
 ): Promise<number> {
   
   const {
@@ -129,7 +125,7 @@ export async function findCount<#=Table_Up2#>(
  * 根据搜索条件和分页查找<#=table_comment#>列表
  */
 export async function findAll<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
@@ -195,7 +191,7 @@ if (hasSummary) {
  * 根据搜索条件查找<#=table_comment#>合计
  */
 export async function findSummary<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
   const { findSummary } = await import("./<#=table#>.service.ts");
   const res = await findSummary(search);
@@ -208,7 +204,7 @@ export async function findSummary<#=Table_Up2#>(
  * 根据条件查找第一个<#=table_comment#>
  */
 export async function findOne<#=Table_Up2#>(
-  search?: <#=searchName#> & { $extra?: SearchExtra[] },
+  search?: <#=searchName#>,
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   
@@ -300,7 +296,9 @@ if (opts.noAdd !== true) {
 export async function create<#=Table_Up2#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
-): Promise<<#=Table_Up#>Id> {<#
+): Promise<<#=Table_Up#>Id> {
+  
+  input.id = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -394,7 +392,9 @@ if (opts.noEdit !== true) {
 export async function updateById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<<#=Table_Up#>Id> {<#
+): Promise<<#=Table_Up#>Id> {
+  
+  input.id = undefined;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -550,7 +550,7 @@ export async function defaultById<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "default",
+    "edit",
   );<#
   if (log) {
   #>
@@ -604,7 +604,7 @@ export async function enableByIds<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "enable",
+    "edit",
   );<#
   if (log) {
   #>
@@ -665,7 +665,7 @@ export async function lockByIds<#=Table_Up2#>(
   
   await usePermit(
     "/<#=mod#>/<#=table#>",
-    "lock",
+    "edit",
   );<#
   if (log) {
   #>
@@ -795,6 +795,22 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   }
   #>
   return res;
+}<#
+}
+#><#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+export async function getEditableDataPermitsByIds<#=Table_Up2#>(
+  ids: <#=Table_Up#>Id[],
+) {
+  const {
+    getEditableDataPermitsByIds,
+  } = await import("./<#=table#>.service.ts");
+  
+  const data = await getEditableDataPermitsByIds(ids);
+  return data;
 }<#
 }
 #><#

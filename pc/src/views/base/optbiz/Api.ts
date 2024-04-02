@@ -10,17 +10,48 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OptbizSearch,
   OptbizInput,
   OptbizModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OptbizModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OptbizInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 键
+    ky: model?.ky,
+    // 值
+    val: model?.val,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+    version: model?.version,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +68,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOptbiz: Query["findAllOptbiz"];
+    findAllOptbiz: OptbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -91,7 +122,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOptbiz: Query["findOneOptbiz"];
+    findOneOptbiz?: OptbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OptbizSearch, $sort: [SortInput!]) {
@@ -156,25 +187,26 @@ export async function findCount(
 
 /**
  * 创建业务选项
- * @param {OptbizInput} model
+ * @param {OptbizInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OptbizInput,
+  input: OptbizInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
+  input = intoInput(input);
   const data: {
     createOptbiz: Mutation["createOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OptbizInput!, $unique_type: UniqueType) {
-        createOptbiz(model: $model, unique_type: $unique_type)
+      mutation($input: OptbizInput!, $unique_type: UniqueType) {
+        createOptbiz(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +217,26 @@ export async function create(
 /**
  * 根据 id 修改业务选项
  * @param {OptbizId} id
- * @param {OptbizInput} model
+ * @param {OptbizInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OptbizId,
-  model: OptbizInput,
+  input: OptbizInput,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
+  input = intoInput(input);
   const data: {
     updateByIdOptbiz: Mutation["updateByIdOptbiz"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OptbizId!, $model: OptbizInput!) {
-        updateByIdOptbiz(id: $id, model: $model)
+      mutation($id: OptbizId!, $input: OptbizInput!) {
+        updateByIdOptbiz(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OptbizId = data.updateByIdOptbiz;
@@ -220,7 +253,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOptbiz: Query["findByIdOptbiz"];
+    findByIdOptbiz?: OptbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OptbizId!) {
@@ -501,6 +534,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllOptbiz) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("业务选项");
         const buffer = await workerFn(

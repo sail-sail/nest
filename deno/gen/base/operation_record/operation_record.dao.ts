@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -16,6 +20,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -81,70 +89,56 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.module !== undefined) {
+  if (search?.module != null) {
     whereQuery += ` and t.module = ${ args.push(search.module) }`;
-  }
-  if (search?.module === null) {
-    whereQuery += ` and t.module is null`;
   }
   if (isNotEmpty(search?.module_like)) {
     whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
-  if (search?.module_lbl !== undefined) {
+  if (search?.module_lbl != null) {
     whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
-  }
-  if (search?.module_lbl === null) {
-    whereQuery += ` and t.module_lbl is null`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
     whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
-  if (search?.method !== undefined) {
+  if (search?.method != null) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
-  }
-  if (search?.method === null) {
-    whereQuery += ` and t.method is null`;
   }
   if (isNotEmpty(search?.method_like)) {
     whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
-  if (search?.method_lbl !== undefined) {
+  if (search?.method_lbl != null) {
     whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
-  }
-  if (search?.method_lbl === null) {
-    whereQuery += ` and t.method_lbl is null`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.time && search?.time?.length > 0) {
+  if (search?.time != null) {
     if (search.time[0] != null) {
       whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
     }
@@ -152,37 +146,28 @@ async function getWhereQuery(
       whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
     }
   }
-  if (search?.old_data !== undefined) {
+  if (search?.old_data != null) {
     whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
-  }
-  if (search?.old_data === null) {
-    whereQuery += ` and t.old_data is null`;
   }
   if (isNotEmpty(search?.old_data_like)) {
     whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
-  if (search?.new_data !== undefined) {
+  if (search?.new_data != null) {
     whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
-  }
-  if (search?.new_data === null) {
-    whereQuery += ` and t.new_data is null`;
   }
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -190,25 +175,37 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id != null) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time != null) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    base_operation_record t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: OperationRecordSearch,
+  options?: {
+  },
+) {
+  let fromQuery = `base_operation_record t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
-  `;
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -220,10 +217,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: OperationRecordSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -234,19 +243,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   interface Result {
     total: number,
@@ -267,28 +269,58 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel[]> {
   const table = "base_operation_record";
   const method = "findAll";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  // 操作人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -306,10 +338,6 @@ export async function findAll(
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -319,21 +347,27 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<OperationRecordModel>(
     sql,
     args,
+    {
+      debug,
+    },
   );
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 创建时间
+    // 操作时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
       if (isNaN(create_time.toDate().getTime())) {
@@ -370,10 +404,10 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     time: await n("耗时(毫秒)"),
     old_data: await n("操作前数据"),
     new_data: await n("操作后数据"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    create_usr_id: await n("操作人"),
+    create_usr_id_lbl: await n("操作人"),
+    create_time: await n("操作时间"),
+    create_time_lbl: await n("操作时间"),
   };
   return fieldComments;
 }
@@ -385,12 +419,28 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
 export async function findByUnique(
   search0: OperationRecordInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel[]> {
+  
+  const table = "base_operation_record";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -433,7 +483,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("操作记录")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: OperationRecordId = await updateById(
@@ -442,9 +492,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -463,13 +511,39 @@ export async function findOne(
   search?: OperationRecordSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel | undefined> {
+  const table = "base_operation_record";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -481,12 +555,27 @@ export async function findOne(
 export async function findById(
   id?: OperationRecordId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<OperationRecordModel | undefined> {
+  const table = "base_operation_record";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -497,9 +586,24 @@ export async function findById(
 export async function exist(
   search?: OperationRecordSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "base_operation_record";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -510,9 +614,20 @@ export async function exist(
  */
 export async function existById(
   id?: OperationRecordId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "base_operation_record";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -603,21 +718,7 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 操作前数据
-  await validators.chars_max_length(
-    input.old_data,
-    5000,
-    fieldComments.old_data,
-  );
-  
-  // 操作后数据
-  await validators.chars_max_length(
-    input.new_data,
-    5000,
-    fieldComments.new_data,
-  );
-  
-  // 创建人
+  // 操作人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
@@ -640,11 +741,26 @@ export async function validate(
 export async function create(
   input: OperationRecordInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<OperationRecordId> {
   const table = "base_operation_record";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -683,9 +799,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into base_operation_record(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -696,47 +810,39 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id`;
-    }
-  }
-  if (input.module !== undefined) {
+  if (input.module != null) {
     sql += `,module`;
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     sql += `,module_lbl`;
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     sql += `,method`;
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     sql += `,method_lbl`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     sql += `,time`;
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     sql += `,old_data`;
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     sql += `,new_data`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -750,45 +856,41 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.module !== undefined) {
+  if (input.module != null) {
     sql += `,${ args.push(input.module) }`;
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     sql += `,${ args.push(input.module_lbl) }`;
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     sql += `,${ args.push(input.method) }`;
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     sql += `,${ args.push(input.method_lbl) }`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     sql += `,${ args.push(input.time) }`;
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     sql += `,${ args.push(input.old_data) }`;
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     sql += `,${ args.push(input.new_data) }`;
   }
   sql += `)`;
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   return input.id;
 }
@@ -805,10 +907,25 @@ export async function updateTenantById(
   id: OperationRecordId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "updateTenantById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -846,11 +963,27 @@ export async function updateById(
   id: OperationRecordId,
   input: OperationRecordInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<OperationRecordId> {
+  
   const table = "base_operation_record";
   const method = "updateById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -893,74 +1026,78 @@ export async function updateById(
     update base_operation_record set
   `;
   let updateFldNum = 0;
-  if (input.module !== undefined) {
+  if (input.module != null) {
     if (input.module != oldModel.module) {
       sql += `module = ${ args.push(input.module) },`;
       updateFldNum++;
     }
   }
-  if (input.module_lbl !== undefined) {
+  if (input.module_lbl != null) {
     if (input.module_lbl != oldModel.module_lbl) {
       sql += `module_lbl = ${ args.push(input.module_lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.method !== undefined) {
+  if (input.method != null) {
     if (input.method != oldModel.method) {
       sql += `method = ${ args.push(input.method) },`;
       updateFldNum++;
     }
   }
-  if (input.method_lbl !== undefined) {
+  if (input.method_lbl != null) {
     if (input.method_lbl != oldModel.method_lbl) {
       sql += `method_lbl = ${ args.push(input.method_lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.time !== undefined) {
+  if (input.time != null) {
     if (input.time != oldModel.time) {
       sql += `time = ${ args.push(input.time) },`;
       updateFldNum++;
     }
   }
-  if (input.old_data !== undefined) {
+  if (input.old_data != null) {
     if (input.old_data != oldModel.old_data) {
       sql += `old_data = ${ args.push(input.old_data) },`;
       updateFldNum++;
     }
   }
-  if (input.new_data !== undefined) {
+  if (input.new_data != null) {
     if (input.new_data != oldModel.new_data) {
       sql += `new_data = ${ args.push(input.new_data) },`;
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -974,10 +1111,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -985,9 +1134,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: OperationRecordId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1016,10 +1165,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1053,7 +1214,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("操作记录"));
       }
     }
   }
@@ -1069,10 +1230,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OperationRecordId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "base_operation_record";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;

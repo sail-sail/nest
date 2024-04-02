@@ -1,4 +1,4 @@
-import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile } from "fs-extra";
+import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile, type Stats } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
 import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
@@ -98,6 +98,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     hasTenant_id,
     hasCreateUsrId,
     hasCreateTime,
+    hasUpdateUsrId,
+    hasUpdateTime,
     hasVersion,
     cache,
     log,
@@ -162,7 +164,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             continue;
           }
           if (column.onlyCodegenDeno) continue;
-          if (column.isAtt || column.isImg) continue;
+          // if (column.isAtt || column.isImg) continue;
           const isImport = dir.startsWith("/pc/public/import_template/");
           if (
             isImport && 
@@ -184,6 +186,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
               "org_id", "org_id_lbl",
             ].includes(column_name)
             || column.noList
+            || column.noExport
           ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
@@ -253,6 +256,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
               lbl += ` })%>`;
             }
           } else {
+            if (foreignKey && foreignKey.notSetIdByLbl) {
+              continue;
+            }
             if (lbls.length === 0) {
               lbl += `<%initJs: const data = _data_.data; const sheetName = _data_.sheetName; const selectList = { }; const comment = data.getFieldComments${ Table_Up_IN };%>`;
               lbl += `<%_setSheetName_(sheetName)%>`;
@@ -294,7 +300,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `<%forRow model in data.findAll${ Table_Up_IN }%>`;
           }
           str += `<% var prop = "`;
-          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+            || (data_type === "date" || data_type === "datetime")
+          ) {
             str += column_name + "_lbl";
           } else {
             str += column_name;
@@ -307,21 +315,34 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `<%_setC_(_col)%>`;
           }
           str += "<%";
-          if (data_type === "varchar") {
-            str += "=";
-          } else if (data_type === "int") {
-            str += "~";
-          } else if (data_type === "decimal") {
-            str += "~";
-          } else if (data_type === "date") {
-            str += "~";
-          } else if (data_type === "datetime") {
-            str += "~";
-          } else {
-            str += "=";
+          if (!column.isImg) {
+            if (data_type === "varchar") {
+              str += "=";
+            } else if (data_type === "int") {
+              str += "~";
+            } else if (data_type === "decimal") {
+              str += "~";
+            }
+            // else if (data_type === "date") {
+            //   str += "~";
+            // } else if (data_type === "datetime") {
+            //   str += "~";
+            // }
+            else {
+              str += "=";
+            }
           }
-          if (data_type === "date" || data_type === "datetime") {
-            str += `model[prop] ? new Date(model[prop]) : ""`;
+          // if (data_type === "date" || data_type === "datetime") {
+          //   str += `model[prop] ? new Date(model[prop]) : ""`;
+          // } else {
+          //   str += "model[prop]";
+          // }
+          if (column.isAtt) {
+            str += `model[prop].split(",").length.toString()`;
+          } else if (column.isImg) {
+            str += `_img_({imgPh:model[prop+"_lbl"]})`;
+          } else if (column.DATA_TYPE === "decimal") {
+            str += `model[prop+"_lbl"]`;
           } else {
             str += "model[prop]";
           }
@@ -329,15 +350,26 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           fields.push(str);
         }
         const buffer2 = await ejsexcel.renderExcel(buffer, { lbls, fields });
-        let buffer0: Buffer;
+        let stats: Stats | undefined;
         try {
-          buffer0 = await readFile(`${out}/${dir2}`);
-        } catch (errTmp) {
-        }
-        if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
+          stats = await stat(`${out}/${dir2}`);
+        } catch (errTmp) { }
+        // 如果文件大小不一样，或者md5不一样，就写入文件
+        if (!stats || stats.size !== buffer2.length) {
           writeFnArr.push(async function() {
             await writeFile(`${out}/${dir2}`, buffer2);
           });
+        } else {
+          let buffer0: Buffer;
+          try {
+            buffer0 = await readFile(`${out}/${dir2}`);
+          } catch (errTmp) {
+          }
+          if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
+            writeFnArr.push(async function() {
+              await writeFile(`${out}/${dir2}`, buffer2);
+            });
+          }
         }
         return;
       }
@@ -386,12 +418,24 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       );
       try {
         let str2 = await eval(`(async function() { ${ htmlStr }; return _out_; })`,)();
-        let str0: string;
+        
+        let mustWrite = false;
+        let stats: Stats | undefined;
         try {
-          str0 = await readFile(`${out}/${dir2}`, "utf8");
-        } catch (err) {
+          stats = await stat(`${out}/${dir2}`);
+        } catch (errTmp) { }
+        if (!stats || stats.size !== Buffer.from(str2).length) {
+          mustWrite = true;
+        } else {
+          let str0: string;
+          try {
+            str0 = await readFile(`${out}/${dir2}`, "utf8");
+          } catch (errTmp) { }
+          if (!str0 || str0 !== str2) {
+            mustWrite = true;
+          }
         }
-        if (!str0 || str0 !== str2) {
+        if (mustWrite) {
           if (dir2.endsWith(".graphql.ts")) {
             graphqlHasChanged = true;
           }

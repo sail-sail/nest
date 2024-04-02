@@ -10,17 +10,48 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DomainSearch,
   DomainInput,
   DomainModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: DomainModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DomainInput = {
+    // ID
+    id: model?.id,
+    // 协议
+    protocol: model?.protocol,
+    // 名称
+    lbl: model?.lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 默认
+    is_default: model?.is_default,
+    is_default_lbl: model?.is_default_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +68,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -91,7 +122,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDomain: Query["findOneDomain"];
+    findOneDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $sort: [SortInput!]) {
@@ -156,25 +187,26 @@ export async function findCount(
 
 /**
  * 创建域名
- * @param {DomainInput} model
+ * @param {DomainInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DomainInput,
+  input: DomainInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     createDomain: Mutation["createDomain"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DomainInput!, $unique_type: UniqueType) {
-        createDomain(model: $model, unique_type: $unique_type)
+      mutation($input: DomainInput!, $unique_type: UniqueType) {
+        createDomain(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +217,26 @@ export async function create(
 /**
  * 根据 id 修改域名
  * @param {DomainId} id
- * @param {DomainInput} model
+ * @param {DomainInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DomainId,
-  model: DomainInput,
+  input: DomainInput,
   opt?: GqlOpt,
 ): Promise<DomainId> {
+  input = intoInput(input);
   const data: {
     updateByIdDomain: Mutation["updateByIdDomain"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DomainId!, $model: DomainInput!) {
-        updateByIdDomain(id: $id, model: $model)
+      mutation($id: DomainId!, $input: DomainInput!) {
+        updateByIdDomain(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DomainId = data.updateByIdDomain;
@@ -220,7 +253,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDomain: Query["findByIdDomain"];
+    findByIdDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DomainId!) {
@@ -527,6 +560,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDomain) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("域名");
         const buffer = await workerFn(

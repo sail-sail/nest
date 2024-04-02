@@ -6,7 +6,8 @@ import { logInit } from "/lib/util/log.ts";
 
 import "/lib/graphql.ts";
 
-if (window.process.env.NODE_ENV === "production") {
+// deno-lint-ignore no-explicit-any
+if ((globalThis as any).process.env.NODE_ENV === "production") {
   logInit({
     path: await getEnv("log_path"),
   });

@@ -10,17 +10,43 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OrgSearch,
   OrgInput,
   OrgModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OrgModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: OrgInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +63,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOrg: Query["findAllOrg"];
+    findAllOrg: OrgModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -88,7 +114,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOrg: Query["findOneOrg"];
+    findOneOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $sort: [SortInput!]) {
@@ -150,25 +176,26 @@ export async function findCount(
 
 /**
  * 创建组织
- * @param {OrgInput} model
+ * @param {OrgInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OrgInput,
+  input: OrgInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrgId> {
+  input = intoInput(input);
   const data: {
     createOrg: Mutation["createOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: OrgInput!, $unique_type: UniqueType) {
-        createOrg(model: $model, unique_type: $unique_type)
+      mutation($input: OrgInput!, $unique_type: UniqueType) {
+        createOrg(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -179,25 +206,26 @@ export async function create(
 /**
  * 根据 id 修改组织
  * @param {OrgId} id
- * @param {OrgInput} model
+ * @param {OrgInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OrgId,
-  model: OrgInput,
+  input: OrgInput,
   opt?: GqlOpt,
 ): Promise<OrgId> {
+  input = intoInput(input);
   const data: {
     updateByIdOrg: Mutation["updateByIdOrg"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: OrgId!, $model: OrgInput!) {
-        updateByIdOrg(id: $id, model: $model)
+      mutation($id: OrgId!, $input: OrgInput!) {
+        updateByIdOrg(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: OrgId = data.updateByIdOrg;
@@ -214,7 +242,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOrg: Query["findByIdOrg"];
+    findByIdOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OrgId!) {
@@ -488,6 +516,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllOrg) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("组织");
         const buffer = await workerFn(

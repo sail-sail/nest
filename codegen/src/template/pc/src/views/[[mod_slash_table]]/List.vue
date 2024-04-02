@@ -70,8 +70,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -89,6 +89,10 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
         if (column_name === "org_id") continue;
+        const isPassword = column.isPassword;
+        if (isPassword) continue;
+        const isEncrypt = column.isEncrypt;
+        if (isEncrypt) continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
         let column_comment = column.COLUMN_COMMENT || "";
@@ -134,8 +138,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>Tree"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -161,8 +164,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>Tree"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -171,7 +173,6 @@ const hasAtt = columns.some((item) => item.isAtt);
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>
@@ -185,8 +186,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           prop="<#=column_name#>"
         >
           <CustomSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            v-model="search.<#=column_name#>"
+            v-model="<#=column_name#>_search"
             :method="get<#=Foreign_Table_Up#>List"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
@@ -210,9 +210,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
+            v-model="<#=column_name#>_search"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -221,9 +219,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           } else {
           #>
           <DictSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>[0]"
-            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            :model-value="<#=column_name#>_search[0]"
+            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             @change="onSearch"
@@ -242,10 +239,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           if (column.searchMultiple !== false) {
           #>
           <DictbizSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            un-w="full"
-            :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
+            v-model="<#=column_name#>_search"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
@@ -254,12 +248,10 @@ const hasAtt = columns.some((item) => item.isAtt);
           } else {
           #>
           <DictbizSelect
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            :model-value="search.<#=column_name#>[0]"
-            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            :model-value="<#=column_name#>_search[0]"
+            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            multiple
             @change="onSearch"
           ></DictbizSelect><#
           }
@@ -273,8 +265,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <CustomDatePicker
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"<#
+          <CustomDatePicker<#
             if (column.isMonth) {
             #>
             type="monthrange"<#
@@ -283,19 +274,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             type="daterange"<#
             }
             #>
-            :model-value="(search.<#=column_name#> as any)"
+            v-model="<#=column_name#>_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
-            if (column.isMonth) {
-            #>
-            @update:model-value="monthrangeSearch(search, '<#=column_name#>', $event)"<#
-            } else {
-            #>
-            @update:model-value="search.<#=column_name#> = $event"<#
-            }
-            #>
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -311,8 +292,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           <el-checkbox
             un-w="full"
             v-model="search.<#=column_name#>"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
           >{{ n('<#=column_comment#>') }}</el-checkbox>
         </el-form-item>
       </template><#
@@ -394,8 +375,8 @@ const hasAtt = columns.some((item) => item.isAtt);
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -425,8 +406,8 @@ const hasAtt = columns.some((item) => item.isAtt);
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -465,6 +446,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         ><#
           if (hasSearchExpand) {
@@ -907,7 +889,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     >
       <el-table
         ref="tableRef"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
+        v-header-order-drag="() => ({ tableColumns, storeColumns })"
         :data="tableData"
         :row-class-name="rowClassName"
         border
@@ -997,12 +979,18 @@ const hasAtt = columns.some((item) => item.isAtt);
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
+            const isEncrypt = column.isEncrypt;
+            const prefix = column.prefix || "";
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1019,14 +1007,25 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
-            } else if (column.isEncrypt) {
+            } else if (isEncrypt) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1040,10 +1039,19 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1053,7 +1061,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1086,11 +1098,17 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (opts.noEdit !== true && !column.readonly) {
+            #>
               <template #default="{ row }">
                 <CustomInputNumber
                   v-if="permit('edit')<#
@@ -1113,14 +1131,25 @@ const hasAtt = columns.some((item) => item.isAtt);
                     { notLoading: true },
                   )"
                 ></CustomInputNumber>
-              </template>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
             } else if (column.whitespacePre) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1129,7 +1158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 <div
                   un-whitespace-pre
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </div>
               </template>
             </el-table-column>
@@ -1140,7 +1169,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1150,9 +1183,13 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
@@ -1182,6 +1219,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
               #>
             </el-table-column>
@@ -1190,7 +1232,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1200,10 +1246,19 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property])"
+                  @click="openForeignTabs(row.id, row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1213,13 +1268,17 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType)) {
-            #>
+              if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType) && !column.inlineMany2manyTab) {
+              #>
               <template #default="{ row, column }">
                 <LinkList
                   v-model="row[column.property]"<#
@@ -1231,7 +1290,18 @@ const hasAtt = columns.some((item) => item.isAtt);
                 ></LinkList>
               </template><#
               } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
-            #>
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  un-min="w-7.5"
+                  @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
+                >
+                  {{ row[column.property]?.length || 0 }}
+                </el-link>
+              </template><#
+              } else if (column.inlineMany2manyTab) {
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1247,7 +1317,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1256,8 +1326,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
-            #>
+              #>
             </el-table-column>
           </template><#
             }
@@ -1369,7 +1444,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       if (hasEnabled) {
       #>
-      is_enabled="1"<#
+      is_enabled="1"
+      :props-not-reset="[ 'is_enabled' ]"<#
       }
       #>
       v-bind="listSelectProps"
@@ -1395,7 +1471,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       if (hasEnabled) {
       #>
-      is_enabled="1"<#
+      is_enabled="1"
+      :props-not-reset="[ 'is_enabled' ]"<#
       }
       #>
       v-bind="listSelectProps"
@@ -1446,14 +1523,6 @@ const hasAtt = columns.some((item) => item.isAtt);
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";<#
-if (hasIsMonth) {
-#>
-
-import {
-  monthrangeSearch,
-} from "@/compositions/List";<#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1574,8 +1643,8 @@ import type {
   <#=inputName#>,<#
   }
   #>
-  <#=searchName#>,<#
-{
+  <#=searchName#>,
+} from "./Model";<#
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1597,13 +1666,15 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   foreignTableUpArr.push(Foreign_Table_Up);
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
 #>
-  <#=Foreign_Table_Up#>Model,<#
+
+// <#=foreignSchema.opts.table_comment#>
+import type {
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
 #><#
-}
-#>
-} from "#/types";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -1775,156 +1846,6 @@ const emit = defineEmits<{
   rowDblclick: [ <#=modelName#> ],
 }>();
 
-/** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();<#
-if (opts?.isRealData) {
-#>
-
-useSubscribeList<<#=Table_Up#>Id>(
-  pagePath,
-  async function(data) {
-    const action = data.action;
-    if (action === "add") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "edit") {
-      const id = data.id;
-      if (tableData.some((model) => model.id === id)) {
-        await dataGrid();
-      }
-      return;
-    }
-    if (action === "delete") {
-      const ids = data.ids;
-      selectedIds = selectedIds.filter((id) => !ids.includes(id));
-      await dataGrid(true);
-      return;
-    }
-    if (action === "import") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "revert") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "forceDelete") {
-      if (search.is_deleted === 1) {
-        await dataGrid(true);
-      }
-      return;
-    }
-  },
-);<#
-}
-#>
-
-/** 查询 */
-function initSearch() {
-  return {<#
-    if (hasIsDeleted) {
-    #>
-    is_deleted: 0,<#
-    }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const require = column.require;
-      const search = column.search;
-      if (!search) continue;
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    #><#
-      if (foreignKey) {
-    #>
-    <#=column_name#>: [ ],<#
-      }
-    #><#
-    }
-    #>
-  } as <#=searchName#>;
-}
-
-let search = $ref(initSearch());<#
-if (hasSearchExpand) {
-#>
-let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
-}
-#>
-
-/** 回收站 */
-async function recycleChg() {
-  tableFocus();
-  selectedIds = [ ];
-  await dataGrid(true);
-}
-
-/** 查询 */
-async function onSearch() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 暂存查询 */
-async function onSearchStaging(searchStaging?: <#=searchName#>) {
-  if (!searchStaging) {
-    return;
-  }
-  search = searchStaging;
-  await onSearch();
-}
-
-/** 刷新 */
-async function onRefresh() {
-  tableFocus();
-  emit("refresh");
-  await dataGrid(true);
-}
-
-let isSearchReset = $ref(false);
-
-/** 重置查询 */
-async function onSearchReset() {
-  tableFocus();
-  isSearchReset = true;
-  search = initSearch();
-  idsChecked = 0;
-  resetSelectedIds();
-  emit("beforeSearchReset");
-  await nextTick();
-  await dataGrid(true);
-  isSearchReset = false;
-}
-
-/** 清空查询框事件 */
-async function onSearchClear() {
-  tableFocus();
-  await dataGrid(true);
-}
-
-/** 点击已选择 */
-async function onIdsChecked() {
-  tableFocus();
-  await dataGrid(true);
-}
-
 const props = defineProps<{<#
   if (hasIsDeleted) {
   #>
@@ -1935,6 +1856,8 @@ const props = defineProps<{<#
   isPagination?: string;
   isLocked?: string;
   isFocus?: string;
+  propsNotReset?: string[];
+  isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: <#=Table_Up#>Id[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -2062,6 +1985,7 @@ const builtInSearchType: { [key: string]: string } = {<#
   isPagination: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
+  isListSelectDialog: "0|1",
   ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -2120,6 +2044,8 @@ const propsNotInSearch: string[] = [
   "isPagination",
   "isLocked",
   "isFocus",
+  "propsNotReset",
+  "isListSelectDialog",
 ];
 
 /** 内置查询条件 */
@@ -2146,6 +2072,188 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
+/** 表格 */
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+if (opts?.isRealData) {
+#>
+
+useSubscribeList<<#=Table_Up#>Id>(
+  pagePath,
+  async function(data) {
+    const action = data.action;
+    if (action === "add") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "edit") {
+      const id = data.id;
+      if (tableData.some((model) => model.id === id)) {
+        await dataGrid();
+      }
+      return;
+    }
+    if (action === "delete") {
+      const ids = data.ids;
+      selectedIds = selectedIds.filter((id) => !ids.includes(id));
+      await dataGrid(true);
+      return;
+    }
+    if (action === "import") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "revert") {
+      await dataGrid(true);
+      return;
+    }
+    if (action === "forceDelete") {
+      if (search.is_deleted === 1) {
+        await dataGrid(true);
+      }
+      return;
+    }
+  },
+);<#
+}
+#>
+
+/** 查询 */
+function initSearch() {
+  const search = {<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: 0,<#
+    }
+    #>
+  } as <#=searchName#>;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
+}
+
+let search = $ref(initSearch());<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
+  const require = column.require;
+  const search = column.search;
+  if (!search) continue;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+#><#
+  if (foreignKey || column.dict || column.dictbiz) {
+#>
+
+// <#=column_comment#>
+const <#=column_name#>_search = $computed({
+  get() {
+    return search.<#=column_name#> || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.<#=column_name#> = undefined;
+    } else {
+      search.<#=column_name#> = val;
+    }
+  },
+});<#
+  } else if (data_type === "datetime" || data_type === "date") {
+#>
+
+// <#=column_comment#>
+const <#=column_name#>_search = $computed({
+  get() {
+    return search.<#=column_name#> || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.<#=column_name#> = undefined;
+    } else {
+      search.<#=column_name#> = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});<#
+  }
+#><#
+}
+#><#
+if (hasSearchExpand) {
+#>
+let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
+}
+#>
+
+/** 回收站 */
+async function recycleChg() {
+  tableFocus();
+  selectedIds = [ ];
+  await dataGrid(true);
+}
+
+/** 查询 */
+async function onSearch() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 暂存查询 */
+async function onSearchStaging(searchStaging?: <#=searchName#>) {
+  if (!searchStaging) {
+    return;
+  }
+  search = searchStaging;
+  await onSearch();
+}
+
+/** 刷新 */
+async function onRefresh() {
+  tableFocus();
+  emit("refresh");
+  await dataGrid(true);
+}
+
+let isSearchReset = $ref(false);
+
+/** 重置查询 */
+async function onSearchReset() {
+  tableFocus();
+  isSearchReset = true;
+  search = initSearch();
+  idsChecked = 0;
+  resetSelectedIds();
+  emit("beforeSearchReset");
+  await nextTick();
+  await dataGrid(true);
+  isSearchReset = false;
+}
+
+/** 清空查询框事件 */
+async function onSearchClear() {
+  tableFocus();
+  await dataGrid(true);
+}
+
+/** 点击已选择 */
+async function onIdsChecked() {
+  tableFocus();
+  await dataGrid(true);
+}
 
 /** 分页功能 */
 let {
@@ -2188,7 +2296,8 @@ let {
 } = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
-    multiple: $$(multiple),<#
+    multiple: $$(multiple),
+    isListSelectDialog,<#
     if (opts?.tableSelectable) {
     #>
     tableSelectable,<#
@@ -3201,7 +3310,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: <#=modelName#>,
+  column: TableColumnCtx<<#=modelName#>>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -3289,6 +3405,7 @@ async function onDeleteByIds() {
     });<#
     }
     #>
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
@@ -3612,7 +3729,7 @@ watch(
     search.is_deleted = builtInSearch.is_deleted;<#
     }
     #>
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {
@@ -3708,6 +3825,16 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   await updateById(row.id, { <#=column_name#>: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
+}<#
+  }
+#><#
+  if (column.inlineMany2manyTab) {
+#>
+
+// <#=column_comment#>
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
+  selectedIds = [ row.id ];
+  await openView();
 }<#
   }
 #><#

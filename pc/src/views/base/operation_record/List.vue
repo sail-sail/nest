@@ -18,8 +18,8 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -67,18 +67,14 @@
       
       <template v-if="showBuildIn || builtInSearch?.create_time == null">
         <el-form-item
-          :label="n('创建时间')"
+          :label="n('操作时间')"
           prop="create_time"
         >
           <CustomDatePicker
-            :set="search.create_time = search.create_time || [ ]"
             type="daterange"
-            :model-value="(search.create_time as any)"
+            v-model="create_time_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
-            format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
             @change="onSearch"
           ></CustomDatePicker>
@@ -101,8 +97,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -130,8 +126,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -168,6 +164,7 @@
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         >
           
@@ -222,7 +219,7 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <!-- <el-dropdown
+      <el-dropdown
         trigger="click"
         un-m="x-3"
       >
@@ -275,7 +272,7 @@
             
           </el-dropdown-menu>
         </template>
-      </el-dropdown> -->
+      </el-dropdown>
       
     </template>
     
@@ -407,7 +404,7 @@
     >
       <el-table
         ref="tableRef"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
+        v-header-order-drag="() => ({ tableColumns, storeColumns })"
         :data="tableData"
         :row-class-name="rowClassName"
         border
@@ -519,7 +516,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
+          <!-- 操作人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -528,7 +525,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建时间 -->
+          <!-- 操作时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -605,7 +602,7 @@ import {
 import type {
   OperationRecordModel,
   OperationRecordSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "操作记录",
@@ -646,17 +643,120 @@ const emit = defineEmits<{
   rowDblclick: [ OperationRecordModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  isListSelectDialog?: string;
+  ids?: string[]; //ids
+  selectedIds?: OperationRecordId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: OperationRecordId; // ID
+  module?: string; // 模块
+  module_like?: string; // 模块
+  module_lbl?: string; // 模块名称
+  module_lbl_like?: string; // 模块名称
+  method?: string; // 方法
+  method_like?: string; // 方法
+  method_lbl?: string; // 方法名称
+  method_lbl_like?: string; // 方法名称
+  lbl?: string; // 操作
+  lbl_like?: string; // 操作
+  time?: string; // 耗时(毫秒)
+  old_data?: string; // 操作前数据
+  old_data_like?: string; // 操作前数据
+  new_data?: string; // 操作后数据
+  new_data_like?: string; // 操作后数据
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  isListSelectDialog: "0|1",
+  ids: "string[]",
+  time: "number",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+  "isListSelectDialog",
+];
+
+/** 内置查询条件 */
+const builtInSearch: OperationRecordSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: OperationRecordModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
   } as OperationRecordSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
+
+// 操作时间
+const create_time_search = $computed({
+  get() {
+    return search.create_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.create_time = undefined;
+    } else {
+      search.create_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -714,79 +814,6 @@ async function onIdsChecked() {
   await dataGrid(true);
 }
 
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: OperationRecordId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: OperationRecordId; // ID
-  module?: string; // 模块
-  module_like?: string; // 模块
-  module_lbl?: string; // 模块名称
-  module_lbl_like?: string; // 模块名称
-  method?: string; // 方法
-  method_like?: string; // 方法
-  method_lbl?: string; // 方法名称
-  method_lbl_like?: string; // 方法名称
-  lbl?: string; // 操作
-  lbl_like?: string; // 操作
-  time?: string; // 耗时(毫秒)
-  old_data?: string; // 操作前数据
-  old_data_like?: string; // 操作前数据
-  new_data?: string; // 操作后数据
-  new_data_like?: string; // 操作后数据
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-  time: "number",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: OperationRecordSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: OperationRecordModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
-
 /** 分页功能 */
 let {
   page,
@@ -819,6 +846,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -920,7 +948,7 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
     },
     {
-      label: "创建人",
+      label: "操作人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
@@ -929,7 +957,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建时间",
+      label: "操作时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
       width: 150,
@@ -1123,7 +1151,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: OperationRecordModel,
+  column: TableColumnCtx<OperationRecordModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -1190,6 +1225,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
@@ -1288,16 +1324,18 @@ async function openDataDialog(
   } else if (type === "new_data") {
     title += lbl + " - " + await nsAsync("操作后数据");
   }
-  moduleComponent.value = (await getDetailByModule(module))?.default;
+  moduleComponent.value = (await getDetailByModule(module))?.["default"];
   if (!moduleComponent.value) {
     ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
     return;
   }
   let dataObj: any = undefined;
-  try {
-    dataObj = JSON.parse(model[type]);
-  } catch (err) {
-    console.error(err);
+  if (model[type]) {
+    try {
+      dataObj = JSON.parse(model[type] as string);
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (!dataObj) {
     return;
@@ -1305,7 +1343,7 @@ async function openDataDialog(
   await nextTick();
   const method = model.method;
   if ((moduleComponentRef.value as any).showDialog) {
-    if ([ "create", "updateById", ].includes(method)) {
+    if ([ "create", "updateById" ].includes(method)) {
       if (!dataObj.id) {
         return;
       }
@@ -1320,7 +1358,7 @@ async function openDataDialog(
         findOne: () => dataObj,
       });
       tableFocus();
-    } else if ([ "deleteByIds" ].includes(method)) {
+    } else if ([ "deleteByIds", "forceDeleteByIds" ].includes(method)) {
       if (!Array.isArray(dataObj) || dataObj.length === 0) {
         ElMessage.warning(await nsAsync("未找到数据"));
         return;
@@ -1372,8 +1410,8 @@ async function initI18nsEfc() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initListI18ns(),
@@ -1416,7 +1454,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {

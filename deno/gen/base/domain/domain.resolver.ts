@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找域名总数
  */
 export async function findCountDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountDomain(
  * 根据搜索条件和分页查找域名列表
  */
 export async function findAllDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<DomainModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
  * 根据条件查找第一个域名
  */
 export async function findOneDomain(
-  search?: DomainSearch & { $extra?: SearchExtra[] },
+  search?: DomainSearch,
   sort?: SortInput[],
 ): Promise<DomainModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createDomain(
   input: DomainInput,
   unique_type?: UniqueType,
 ): Promise<DomainId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdDomain(
   id: DomainId,
   input: DomainInput,
 ): Promise<DomainId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -190,7 +190,7 @@ export async function defaultByIdDomain(
   
   await usePermit(
     "/base/domain",
-    "default",
+    "edit",
   );
   const res = await defaultById(id);
   return res;
@@ -217,7 +217,7 @@ export async function enableByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -244,7 +244,7 @@ export async function lockByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

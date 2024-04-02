@@ -1,12 +1,12 @@
-import {
-  getAuthModel,
-} from "/lib/auth/auth.dao.ts";
-
 import type {
   UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
 
 import type {
   BackgroundTaskInput,

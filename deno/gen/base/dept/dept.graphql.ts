@@ -93,7 +93,7 @@ type DeptFieldComment {
   update_time_lbl: String!
 }
 input DeptInput {
-  ""
+  "ID"
   id: DeptId
   "父部门"
   parent_id: DeptId
@@ -117,22 +117,6 @@ input DeptInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input DeptSearch {
   "是否已删除"
@@ -155,7 +139,7 @@ input DeptSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -163,12 +147,12 @@ input DeptSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找部门总数"
@@ -186,9 +170,9 @@ type Query {
 }
 type Mutation {
   "创建部门"
-  createDept(model: DeptInput!, unique_type: UniqueType): DeptId!
+  createDept(input: DeptInput!, unique_type: UniqueType): DeptId!
   "根据 id 修改部门"
-  updateByIdDept(id: DeptId!, model: DeptInput!): DeptId!
+  updateByIdDept(id: DeptId!, input: DeptInput!): DeptId!
   "根据 ids 删除部门"
   deleteByIdsDept(ids: [DeptId!]!): Int!
   "根据 ids 启用或者禁用部门"

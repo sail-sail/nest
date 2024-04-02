@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找组织总数
  */
 export async function findCountOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountOrg(
  * 根据搜索条件和分页查找组织列表
  */
 export async function findAllOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OrgModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
  * 根据条件查找第一个组织
  */
 export async function findOneOrg(
-  search?: OrgSearch & { $extra?: SearchExtra[] },
+  search?: OrgSearch,
   sort?: SortInput[],
 ): Promise<OrgModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createOrg(
   input: OrgInput,
   unique_type?: UniqueType,
 ): Promise<OrgId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdOrg(
   id: OrgId,
   input: OrgInput,
 ): Promise<OrgId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsOrg(
   
   await usePermit(
     "/base/org",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsOrg(
   
   await usePermit(
     "/base/org",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

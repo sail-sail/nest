@@ -14,17 +14,54 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DictSearch,
   DictInput,
   DictModel,
-} from "#/types";
+} from "./Model";
+
+import {
+  intoInput as intoInputDictDetail,
+} from "@/views/base/dict_detail/Api";
 
 async function setLblById(
   model?: DictModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictInput = {
+    // ID
+    id: model?.id,
+    // 编码
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 数据类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+    // 系统字典明细
+    dict_detail: (model?.dict_detail ?? [ ]).map(intoInputDictDetail),
+  };
+  return input;
 }
 
 /**
@@ -41,7 +78,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -66,7 +103,7 @@ export async function findAll(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -114,7 +151,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDict: Query["findOneDict"];
+    findOneDict?: DictModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $sort: [SortInput!]) {
@@ -139,7 +176,7 @@ export async function findOne(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -198,25 +235,26 @@ export async function findCount(
 
 /**
  * 创建系统字典
- * @param {DictInput} model
+ * @param {DictInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictInput,
+  input: DictInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictId> {
+  input = intoInput(input);
   const data: {
     createDict: Mutation["createDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictInput!, $unique_type: UniqueType) {
-        createDict(model: $model, unique_type: $unique_type)
+      mutation($input: DictInput!, $unique_type: UniqueType) {
+        createDict(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -227,25 +265,26 @@ export async function create(
 /**
  * 根据 id 修改系统字典
  * @param {DictId} id
- * @param {DictInput} model
+ * @param {DictInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictId,
-  model: DictInput,
+  input: DictInput,
   opt?: GqlOpt,
 ): Promise<DictId> {
+  input = intoInput(input);
   const data: {
     updateByIdDict: Mutation["updateByIdDict"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictId!, $model: DictInput!) {
-        updateByIdDict(id: $id, model: $model)
+      mutation($id: DictId!, $input: DictInput!) {
+        updateByIdDict(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictId = data.updateByIdDict;
@@ -262,7 +301,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDict: Query["findByIdDict"];
+    findByIdDict?: DictModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictId!) {
@@ -287,7 +326,7 @@ export async function findById(
           update_time
           update_time_lbl
           is_deleted
-          dict_detail_models {
+          dict_detail {
             id
             lbl
             val
@@ -456,7 +495,7 @@ export async function findAllDict(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -616,6 +655,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDict) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("系统字典");
         const buffer = await workerFn(

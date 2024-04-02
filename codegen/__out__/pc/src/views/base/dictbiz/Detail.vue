@@ -56,7 +56,7 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
@@ -390,7 +390,7 @@ import type {
 
 import type {
   DictbizInput,
-} from "#/types";
+} from "./Model";
 
 import type {
   // 业务字典明细
@@ -623,7 +623,7 @@ async function showDialog(
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
-        dictbiz_detail_models: data.dictbiz_detail_models?.map((item) => ({
+        dictbiz_detail: data.dictbiz_detail?.map((item) => ({
           ...item,
           id: undefined,
         })) || [ ],
@@ -655,8 +655,11 @@ async function showDialog(
 }
 
 watch(
-  () => [ isLocked, is_deleted, dialogNotice ],
+  () => [ inited, isLocked, is_deleted, dialogNotice ],
   async () => {
+    if (!inited) {
+      return;
+    }
     if (oldDialogNotice != null) {
       return;
     }
@@ -666,9 +669,9 @@ watch(
     }
     if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else {
-      dialogNotice = "";
+      return;
     }
+    dialogNotice = "";
   },
 );
 
@@ -723,13 +726,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -746,7 +754,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("业务字典")));
   }
 }
 
@@ -883,8 +891,8 @@ async function save() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
       ...dialogModel,
-      dictbiz_detail_models: [
-        ...(dialogModel.dictbiz_detail_models || [ ]).map((item) => ({
+      dictbiz_detail: [
+        ...(dialogModel.dictbiz_detail || [ ]).map((item) => ({
           ...item,
           order_by: (item as any)._seq,
           _seq: undefined,
@@ -905,8 +913,8 @@ async function save() {
     }
     const dialogModel2 = {
       ...dialogModel,
-      dictbiz_detail_models: [
-        ...(dialogModel.dictbiz_detail_models || [ ]).map((item) => ({
+      dictbiz_detail: [
+        ...(dialogModel.dictbiz_detail || [ ]).map((item) => ({
           ...item,
           order_by: (item as any)._seq,
           _seq: undefined,
@@ -962,7 +970,8 @@ async function onSaveAndCopy() {
     is_locked: undefined,
     is_locked_lbl: undefined,
     order_by: order_by + 1,
-    dictbiz_detail_models: data.dictbiz_detail_models?.map((item) => ({
+    // 业务字典明细
+    dictbiz_detail: data.dictbiz_detail?.map((item) => ({
       ...item,
       id: undefined,
     })) || [ ],
@@ -994,45 +1003,45 @@ let dictbiz_detailRef = $ref<InstanceType<typeof ElTable>>();
 let dictbiz_detailData = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
-      ...dialogModel.dictbiz_detail_models ?? [ ],
+      ...dialogModel.dictbiz_detail ?? [ ],
       {
         _type: 'add',
       },
     ];
   }
-  return dialogModel.dictbiz_detail_models ?? [ ];
+  return dialogModel.dictbiz_detail ?? [ ];
 });
 
 async function dictbiz_detailAdd() {
-  if (!dialogModel.dictbiz_detail_models) {
-    dialogModel.dictbiz_detail_models = [ ];
+  if (!dialogModel.dictbiz_detail) {
+    dialogModel.dictbiz_detail = [ ];
   }
   const defaultModel = await getDefaultInputDictbizDetail();
-  dialogModel.dictbiz_detail_models.push(defaultModel);
+  dialogModel.dictbiz_detail.push(defaultModel);
   dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 function dictbiz_detailRemove(row: DictbizDetailModel) {
-  if (!dialogModel.dictbiz_detail_models) {
+  if (!dialogModel.dictbiz_detail) {
     return;
   }
-  const idx = dialogModel.dictbiz_detail_models.indexOf(row);
+  const idx = dialogModel.dictbiz_detail.indexOf(row);
   if (idx >= 0) {
-    dialogModel.dictbiz_detail_models.splice(idx, 1);
+    dialogModel.dictbiz_detail.splice(idx, 1);
   }
 }
 
 watch(
   () => [
-    dialogModel.dictbiz_detail_models,
-    dialogModel.dictbiz_detail_models?.length,
+    dialogModel.dictbiz_detail,
+    dialogModel.dictbiz_detail?.length,
   ],
   () => {
-    if (!dialogModel.dictbiz_detail_models) {
+    if (!dialogModel.dictbiz_detail) {
       return;
     }
-    for (let i = 0; i < dialogModel.dictbiz_detail_models.length; i++) {
-      const item = dialogModel.dictbiz_detail_models[i];
+    for (let i = 0; i < dialogModel.dictbiz_detail.length; i++) {
+      const item = dialogModel.dictbiz_detail[i];
       (item as any)._seq = i + 1;
     }
   },
