@@ -715,7 +715,7 @@ import type {
   MenuModel,
   MenuInput,
   MenuSearch,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,
@@ -1642,6 +1642,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

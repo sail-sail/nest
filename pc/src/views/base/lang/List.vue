@@ -656,7 +656,7 @@ import type {
   LangModel,
   LangInput,
   LangSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "语言",
@@ -1501,6 +1501,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

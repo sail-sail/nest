@@ -15,14 +15,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DataPermitSearch,
-  DataPermitInput,
-  DataPermitModel,
 } from "#/types";
 
 import type {
+  DataPermitSearch,
+  DataPermitInput,
+  DataPermitModel,
+} from "./Model";
+
+// 菜单
+import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -30,6 +35,7 @@ import {
 
 async function setLblById(
   model?: DataPermitModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -71,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDataPermit: Query["findAllDataPermit"];
+    findAllDataPermit: DataPermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -122,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDataPermit: Query["findOneDataPermit"];
+    findOneDataPermit?: DataPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $sort: [SortInput!]) {
@@ -250,7 +256,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDataPermit: Query["findByIdDataPermit"];
+    findByIdDataPermit?: DataPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DataPermitId!) {
@@ -366,7 +372,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -547,6 +553,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDataPermit) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("数据权限");
         const buffer = await workerFn(

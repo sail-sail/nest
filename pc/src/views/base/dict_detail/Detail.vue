@@ -269,8 +269,11 @@ import type {
 
 import type {
   DictDetailInput,
+} from "./Model";
+
+import type {
   DictModel,
-} from "#/types";
+} from "@/views/base/dict/Model";
 
 import {
   getDictList,

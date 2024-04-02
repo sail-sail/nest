@@ -185,14 +185,17 @@ import Decimal from "decimal.js-light";<#
 import type {
   Query,
   Mutation,
-  PageInput,<#
+  PageInput,
+} from "#/types";
+
+import type {<#
   const findAllSearchArgs = [ ];
   findAllSearchArgs.push(searchName);
   #>
   <#=searchName#>,
   <#=inputName#>,
   <#=modelName#>,
-} from "#/types";<#
+} from "./Model";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
 for (let i = 0; i < columns.length; i++) {
@@ -227,11 +230,14 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
 #>
 
+// <#=foreignSchema.opts.table_comment#>
 import type {
   <#=Foreign_Table_Up#>Search,
-} from "#/types";<#
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -451,6 +457,7 @@ import {
 
 async function setLblById(
   model?: <#=modelName#> | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -473,18 +480,40 @@ async function setLblById(
       }
     }
     const column_type = column.COLUMN_TYPE;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
   #><#
     if (formatter) {
   #>
   <#=formatter#><#
     }
   #><#
-    if (column_type && column_type.startsWith("decimal")) {
+    if (data_type === "decimal") {
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
-    model.<#=column_name#> = new Decimal(model.<#=column_name#>);
+  if (!isExcelExport) {
+    model.<#=column_name#>_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: <#=precision#>,
+      maximumFractionDigits: <#=precision#>,
+    }).format(new Decimal(model.<#=column_name#> ?? 0).toNumber());
+    model.<#=column_name#> = new Decimal(model.<#=column_name#> ?? 0);
+    model.<#=column_name#>.toString = () => model.<#=column_name#>_lbl;
+  } else {
+    model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> ?? 0).toFixed(<#=precision#>);
+  }<#
+    } else if (column.isImg) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#>) {
+    (model as any).<#=column_name#>_lbl = location.origin + getImgUrl({
+      id: model.<#=column_name#>,
+    });
   }<#
     }
   #><#
@@ -644,7 +673,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Table_Up2#>: Query["findAll<#=Table_Up2#>"];
+    findAll<#=Table_Up2#>: <#=modelName#>[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
@@ -859,7 +888,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOne<#=Table_Up2#>: Query["findOne<#=Table_Up2#>"];
+    findOne<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
@@ -1256,7 +1285,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findById<#=Table_Up2#>: Query["findById<#=Table_Up2#>"];
+    findById<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
     query: /* GraphQL */ `
       query($id: <#=Table_Up#>Id!) {
@@ -1668,7 +1697,7 @@ export async function findAll<#=Foreign_Table_Up#>(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
@@ -1850,7 +1879,7 @@ export async function findAll<#=Foreign_Table_Up#>(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
+    findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
@@ -2509,6 +2538,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAll<#=Table_Up2#>) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("<#=table_comment#>");
         const buffer = await workerFn(

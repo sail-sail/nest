@@ -710,7 +710,7 @@ import type {
   DictModel,
   DictInput,
   DictSearch,
-} from "#/types";
+} from "./Model";
 
 import ForeignTabs from "./ForeignTabs.vue";
 
@@ -1607,6 +1607,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
