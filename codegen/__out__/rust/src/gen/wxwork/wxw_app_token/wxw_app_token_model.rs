@@ -218,9 +218,9 @@ pub struct WxwAppTokenSearch {
   /// 令牌
   pub access_token_like: Option<String>,
   /// 令牌创建时间
-  pub token_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub token_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 令牌超时时间
-  pub expires_in: Option<Vec<u32>>,
+  pub expires_in: Option<Vec<Option<u32>>>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -229,7 +229,7 @@ pub struct WxwAppTokenSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -238,7 +238,7 @@ pub struct WxwAppTokenSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
 }
 
 impl std::fmt::Debug for WxwAppTokenSearch {
@@ -412,17 +412,17 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       // 令牌
       access_token: input.access_token,
       // 令牌创建时间
-      token_time: input.token_time.map(|x| vec![x, x]),
+      token_time: input.token_time.map(|x| vec![Some(x), Some(x)]),
       // 令牌超时时间
-      expires_in: input.expires_in.map(|x| vec![x, x]),
+      expires_in: input.expires_in.map(|x| vec![Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x, x]),
+      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
+      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
       ..Default::default()
     }
   }
@@ -526,5 +526,11 @@ impl<'r> sqlx::Decode<'r, MySql> for WxwAppTokenId {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+impl PartialEq<str> for WxwAppTokenId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
   }
 }

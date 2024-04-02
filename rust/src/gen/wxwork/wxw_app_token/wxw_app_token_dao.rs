@@ -80,12 +80,16 @@ async fn get_where_query(
     };
     if let Some(ids) = ids {
       let arg = {
-        let mut items = Vec::with_capacity(ids.len());
-        for id in ids {
-          args.push(id.into());
-          items.push("?");
+        if ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(ids.len());
+          for id in ids {
+            args.push(id.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.id in ({arg})");
     }
@@ -110,6 +114,7 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
+  // 企微应用
   {
     let wxw_app_id: Option<Vec<WxwAppId>> = match search {
       Some(item) => item.wxw_app_id.clone(),
@@ -117,12 +122,16 @@ async fn get_where_query(
     };
     if let Some(wxw_app_id) = wxw_app_id {
       let arg = {
-        let mut items = Vec::with_capacity(wxw_app_id.len());
-        for item in wxw_app_id {
-          args.push(item.into());
-          items.push("?");
+        if wxw_app_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(wxw_app_id.len());
+          for item in wxw_app_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and wxw_app_id_lbl.id in ({})", arg);
     }
@@ -136,6 +145,7 @@ async fn get_where_query(
       where_query += " and wxw_app_id_lbl.id is null";
     }
   }
+  // 类型corp和contact
   {
     let r#type = match search {
       Some(item) => item.r#type.clone(),
@@ -157,6 +167,7 @@ async fn get_where_query(
       );
     }
   }
+  // 令牌
   {
     let access_token = match search {
       Some(item) => item.access_token.clone(),
@@ -178,20 +189,16 @@ async fn get_where_query(
       );
     }
   }
+  // 令牌创建时间
   {
-    let token_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut token_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.token_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let token_time_gt: Option<chrono::NaiveDateTime> = match &token_time.len() {
-      0 => None,
-      _ => token_time[0].into(),
-    };
-    let token_time_lt: Option<chrono::NaiveDateTime> = match &token_time.len() {
-      0 => None,
-      1 => None,
-      _ => token_time[1].into(),
-    };
+    let token_time_gt: Option<chrono::NaiveDateTime> = token_time.get_mut(0)
+      .and_then(|item| item.take());
+    let token_time_lt: Option<chrono::NaiveDateTime> = token_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(token_time_gt) = token_time_gt {
       where_query += &format!(" and t.token_time >= {}", args.push(token_time_gt.into()));
     }
@@ -199,20 +206,16 @@ async fn get_where_query(
       where_query += &format!(" and t.token_time <= {}", args.push(token_time_lt.into()));
     }
   }
+  // 令牌超时时间
   {
-    let expires_in: Vec<u32> = match search {
+    let mut expires_in: Vec<Option<u32>> = match search {
       Some(item) => item.expires_in.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let expires_in_gt: Option<u32> = match &expires_in.len() {
-      0 => None,
-      _ => expires_in[0].into(),
-    };
-    let expires_in_lt: Option<u32> = match &expires_in.len() {
-      0 => None,
-      1 => None,
-      _ => expires_in[1].into(),
-    };
+    let expires_in_gt: Option<u32> = expires_in.get_mut(0)
+      .and_then(|item| item.take());
+    let expires_in_lt: Option<u32> = expires_in.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(expires_in_gt) = expires_in_gt {
       where_query += &format!(" and t.expires_in >= {}", args.push(expires_in_gt.into()));
     }
@@ -220,6 +223,7 @@ async fn get_where_query(
       where_query += &format!(" and t.expires_in <= {}", args.push(expires_in_lt.into()));
     }
   }
+  // 创建人
   {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
@@ -227,12 +231,16 @@ async fn get_where_query(
     };
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(create_usr_id.len());
-        for item in create_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if create_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(create_usr_id.len());
+          for item in create_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -246,20 +254,16 @@ async fn get_where_query(
       where_query += " and create_usr_id_lbl.id is null";
     }
   }
+  // 创建时间
   {
-    let create_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.create_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      _ => create_time[0].into(),
-    };
-    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      1 => None,
-      _ => create_time[1].into(),
-    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
+      .and_then(|item| item.take());
+    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(create_time_gt) = create_time_gt {
       where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
     }
@@ -267,6 +271,7 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
+  // 更新人
   {
     let update_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.update_usr_id.clone(),
@@ -274,12 +279,16 @@ async fn get_where_query(
     };
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if update_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(update_usr_id.len());
+          for item in update_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
     }
@@ -293,20 +302,16 @@ async fn get_where_query(
       where_query += " and update_usr_id_lbl.id is null";
     }
   }
+  // 更新时间
   {
-    let update_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.update_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      _ => update_time[0].into(),
-    };
-    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      1 => None,
-      _ => update_time[1].into(),
-    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
+      .and_then(|item| item.take());
+    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(update_time_gt) = update_time_gt {
       where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
     }
@@ -334,6 +339,7 @@ async fn get_from_query(
 }
 
 /// 根据搜索条件和分页查找企微应用接口凭据列表
+#[allow(unused_mut)]
 pub async fn find_all(
   search: Option<WxwAppTokenSearch>,
   page: Option<PageInput>,
@@ -374,6 +380,24 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 企微应用
+  if let Some(search) = &search {
+    if search.wxw_app_id.is_some() && search.wxw_app_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -389,26 +413,22 @@ pub async fn find_all(
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
+  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "desc".into(),
     });
   }
-  if !sort.iter().any(|item| item.prop == "create_time") {
-    sort.push(SortInput {
-      prop: "create_time".into(),
-      order: "asc".into(),
-    });
-  }
+  
   let sort = sort.into();
   
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"
-    select
-      t.*
+    select f.* from (
+    select t.*
       ,wxw_app_id_lbl.lbl wxw_app_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -416,7 +436,7 @@ pub async fn find_all(
       {from_query}
     where
       {where_query}
-    group by t.id{order_by_query}{page_query}
+    group by t.id{order_by_query}) f {page_query}
   "#);
   
   let args = args.into();
@@ -515,8 +535,7 @@ pub async fn find_count(
   
   let total = res
     .map(|item| item.total)
-    .unwrap_or_default()
-    ;
+    .unwrap_or_default();
   
   Ok(total)
 }
@@ -626,10 +645,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -865,7 +880,7 @@ pub async fn find_by_unique(
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
-fn equals_by_unique(
+pub fn equals_by_unique(
   input: &WxwAppTokenInput,
   model: &WxwAppTokenModel,
 ) -> bool {
@@ -935,11 +950,10 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let options = Options::new();
     let id = update_by_id(
       model.id.clone(),
       input,
-      Some(options),
+      options,
     ).await?;
     return Ok(id.into());
   }
@@ -968,6 +982,28 @@ pub async fn set_id_by_lbl(
   
   #[allow(unused_mut)]
   let mut input = input;
+  
+  // 令牌创建时间
+  if input.token_time.is_none() {
+    if let Some(token_time_lbl) = input.token_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.token_time = chrono::NaiveDateTime::parse_from_str(token_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.token_time.is_none() {
+        input.token_time = chrono::NaiveDateTime::parse_from_str(token_time_lbl, "%Y-%m-%d").ok();
+      }
+      if input.token_time.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.token_time;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+      }
+    }
+  }
   
   // 企微应用
   if input.wxw_app_id_lbl.is_some()
@@ -1037,8 +1073,6 @@ pub async fn create(
     ).into());
   }
   
-  let now = get_now();
-  
   let old_models = find_by_unique(
     input.clone().into(),
     None,
@@ -1096,12 +1130,36 @@ pub async fn create(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "id,create_time".to_owned();
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_values = String::with_capacity(2 * 12 + 2);
   
-  let mut sql_values = "?,?".to_owned();
-  
+  sql_fields += "id";
+  sql_values += "?";
   args.push(id.clone().into());
-  args.push(now.into());
+  
+  if let Some(create_time) = input.create_time {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(create_time.into());
+  } else {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(get_now().into());
+  }
+  
+  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+    let create_usr_id = input.create_usr_id.clone().unwrap();
+    sql_fields += ",create_usr_id";
+    sql_values += ",?";
+    args.push(create_usr_id.into());
+  } else {
+    let usr_id = get_auth_id();
+    if let Some(usr_id) = usr_id {
+      sql_fields += ",create_usr_id";
+      sql_values += ",?";
+      args.push(usr_id.into());
+    }
+  }
   
   if let Some(tenant_id) = input.tenant_id {
     sql_fields += ",tenant_id";
@@ -1111,13 +1169,6 @@ pub async fn create(
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());
-  }
-  
-  if let Some(auth_model) = get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(usr_id.into());
   }
   // 企微应用
   if let Some(wxw_app_id) = input.wxw_app_id {
@@ -1173,7 +1224,7 @@ pub async fn create(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let options = options.into();
   
@@ -1216,9 +1267,8 @@ pub async fn update_tenant_by_id(
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "tenant_id = ?,update_time = ?";
+  let sql_fields = "tenant_id = ?";
   args.push(tenant_id.into());
-  args.push(get_now().into());
   
   let sql_where = "id = ?";
   args.push(id.into());
@@ -1339,60 +1389,75 @@ pub async fn update_by_id(
     .set_is_debug(false);
   let options = Some(options);
   
-  let now = get_now();
-  
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "update_time = ?".to_owned();
-  args.push(now.into());
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
   
   if let Some(tenant_id) = input.tenant_id {
     field_num += 1;
-    sql_fields += ",tenant_id = ?";
+    sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
   }
   // 企微应用
   if let Some(wxw_app_id) = input.wxw_app_id {
     field_num += 1;
-    sql_fields += ",wxw_app_id = ?";
+    sql_fields += "wxw_app_id=?,";
     args.push(wxw_app_id.into());
   }
   // 类型corp和contact
   if let Some(r#type) = input.r#type {
     field_num += 1;
-    sql_fields += ",type = ?";
+    sql_fields += "type=?,";
     args.push(r#type.into());
   }
   // 令牌
   if let Some(access_token) = input.access_token {
     field_num += 1;
-    sql_fields += ",access_token = ?";
+    sql_fields += "access_token=?,";
     args.push(access_token.into());
   }
   // 令牌创建时间
   if let Some(token_time) = input.token_time {
     field_num += 1;
-    sql_fields += ",token_time = ?";
+    sql_fields += "token_time=?,";
     args.push(token_time.into());
   }
   // 令牌超时时间
   if let Some(expires_in) = input.expires_in {
     field_num += 1;
-    sql_fields += ",expires_in = ?";
+    sql_fields += "expires_in=?,";
     args.push(expires_in.into());
   }
   
   if field_num > 0 {
     
-    if let Some(auth_model) = get_auth_model() {
-      let usr_id = auth_model.id;
-      sql_fields += ",update_usr_id = ?";
-      args.push(usr_id.into());
+    if input.update_usr_id.is_some() && input.update_usr_id.as_ref().unwrap() != "-" {
+      let update_usr_id = input.update_usr_id.clone().unwrap();
+      sql_fields += "update_usr_id=?,";
+      args.push(update_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_fields += "update_usr_id=?,";
+        args.push(usr_id.into());
+      }
     }
     
-    let sql_where = "id = ?";
+    if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
+    } else {
+      sql_fields += "update_time=?,";
+      args.push(get_now().into());
+    }
+    
+    if sql_fields.ends_with(',') {
+      sql_fields.pop();
+    }
+    
+    let sql_where = "id=?";
     args.push(id.clone().into());
     
     let sql = format!(
@@ -1406,7 +1471,7 @@ pub async fn update_by_id(
     
     let options = Options::from(options);
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1420,7 +1485,7 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     let options = Options::from(None);
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
       del_caches(
         del_cache_key1s
@@ -1435,21 +1500,19 @@ pub async fn update_by_id(
   Ok(id)
 }
 
-/// 获取外键关联表, 第一个是主表
+/// 获取需要清空缓存的表名
 #[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
+fn get_cache_tables() -> Vec<&'static str> {
   let table = "wxwork_wxw_app_token";
   vec![
     table,
-    "wxwork_wxw_app",
-    "base_usr",
   ]
 }
 
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache() -> Result<()> {
-  let cache_key1s = get_foreign_tables();
+  let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
   ).await?;
@@ -1479,11 +1542,24 @@ pub async fn delete_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
+    
+    let old_model = find_by_id(
+      id.clone(),
+      None,
+    ).await?;
+    if old_model.is_none() {
+      continue;
+    }
+    
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1498,7 +1574,7 @@ pub async fn delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1557,7 +1633,7 @@ pub async fn revert_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1677,7 +1753,7 @@ pub async fn force_delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1692,9 +1768,8 @@ pub async fn force_delete_by_ids(
 }
 
 /// 校验企微应用接口凭据是否存在
-#[function_name::named]
 #[allow(dead_code)]
-pub async fn validate_option<'a, T>(
+pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
@@ -1707,7 +1782,7 @@ pub async fn validate_option<'a, T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(SrvErr::msg(err_msg).into());
   }
   Ok(model.unwrap())
 }
