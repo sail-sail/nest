@@ -159,7 +159,7 @@ type OrderFieldComment {
   update_time_lbl: String!
 }
 input OrderInput {
-  ""
+  "ID"
   id: OrderId
   "订单号"
   lbl: String
@@ -205,22 +205,6 @@ input OrderInput {
   is_enabled_lbl: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input OrderSearch {
   "是否已删除"
@@ -247,19 +231,19 @@ input OrderSearch {
   card_id: [CardId!]
   card_id_is_null: Boolean
   "订单金额"
-  price: [Decimal!]
+  price: [Decimal]
   "订单类别"
   type: [String!]
   "消费充值金额"
-  amt: [Decimal!]
+  amt: [Decimal]
   "消费赠送金额"
-  give_amt: [Decimal!]
+  give_amt: [Decimal]
   "获得积分"
-  integral: [Int!]
+  integral: [Int]
   "消费后充值余额"
-  balance: [Decimal!]
+  balance: [Decimal]
   "消费后赠送余额"
-  give_balance: [Decimal!]
+  give_balance: [Decimal]
   "锁定"
   is_locked: [Int!]
   "启用"
@@ -271,12 +255,12 @@ input OrderSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找订单总数"
@@ -292,9 +276,9 @@ type Query {
 }
 type Mutation {
   "创建订单"
-  createOrder(model: OrderInput!, unique_type: UniqueType): OrderId!
+  createOrder(input: OrderInput!, unique_type: UniqueType): OrderId!
   "根据 id 修改订单"
-  updateByIdOrder(id: OrderId!, model: OrderInput!): OrderId!
+  updateByIdOrder(id: OrderId!, input: OrderInput!): OrderId!
   "根据 ids 删除订单"
   deleteByIdsOrder(ids: [OrderId!]!): Int!
   "根据 ids 启用或者禁用订单"

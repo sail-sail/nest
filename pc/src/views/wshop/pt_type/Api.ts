@@ -10,17 +10,58 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   PtTypeSearch,
   PtTypeInput,
   PtTypeModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: PtTypeModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+  
+  // 图标
+  if (model.img) {
+    (model as any).img_lbl = location.origin + getImgUrl({
+      id: model.img,
+    });
+  }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: PtTypeInput = {
+    // ID
+    id: model?.id,
+    // 图标
+    img: model?.img,
+    // 名称
+    lbl: model?.lbl,
+    // 首页显示
+    is_home: model?.is_home,
+    is_home_lbl: model?.is_home_lbl,
+    // 推荐
+    is_recommend: model?.is_recommend,
+    is_recommend_lbl: model?.is_recommend_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +78,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPtType: Query["findAllPtType"];
+    findAllPtType: PtTypeModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -93,7 +134,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOnePtType: Query["findOnePtType"];
+    findOnePtType?: PtTypeModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: PtTypeSearch, $sort: [SortInput!]) {
@@ -160,25 +201,26 @@ export async function findCount(
 
 /**
  * 创建产品类别
- * @param {PtTypeInput} model
+ * @param {PtTypeInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: PtTypeInput,
+  input: PtTypeInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PtTypeId> {
+  input = intoInput(input);
   const data: {
     createPtType: Mutation["createPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: PtTypeInput!, $unique_type: UniqueType) {
-        createPtType(model: $model, unique_type: $unique_type)
+      mutation($input: PtTypeInput!, $unique_type: UniqueType) {
+        createPtType(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -189,25 +231,26 @@ export async function create(
 /**
  * 根据 id 修改产品类别
  * @param {PtTypeId} id
- * @param {PtTypeInput} model
+ * @param {PtTypeInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: PtTypeId,
-  model: PtTypeInput,
+  input: PtTypeInput,
   opt?: GqlOpt,
 ): Promise<PtTypeId> {
+  input = intoInput(input);
   const data: {
     updateByIdPtType: Mutation["updateByIdPtType"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: PtTypeId!, $model: PtTypeInput!) {
-        updateByIdPtType(id: $id, model: $model)
+      mutation($id: PtTypeId!, $input: PtTypeInput!) {
+        updateByIdPtType(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: PtTypeId = data.updateByIdPtType;
@@ -224,7 +267,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdPtType: Query["findByIdPtType"];
+    findByIdPtType?: PtTypeModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: PtTypeId!) {
@@ -520,6 +563,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllPtType) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("产品类别");
         const buffer = await workerFn(

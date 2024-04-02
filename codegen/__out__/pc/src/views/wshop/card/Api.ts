@@ -16,36 +16,107 @@ import type {
   Query,
   Mutation,
   PageInput,
-  CardSearch,
-  CardInput,
-  CardModel,
 } from "#/types";
 
 import type {
+  CardSearch,
+  CardInput,
+  CardModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: CardModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
   
   // 充值余额
-  if (model.balance != null) {
-    model.balance = new Decimal(model.balance);
+  if (!isExcelExport) {
+    model.balance_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.balance ?? 0).toNumber());
+    model.balance = new Decimal(model.balance ?? 0);
+    model.balance.toString = () => model.balance_lbl;
+  } else {
+    model.balance_lbl = new Decimal(model.balance ?? 0).toFixed(2);
   }
   
   // 赠送余额
-  if (model.give_balance != null) {
-    model.give_balance = new Decimal(model.give_balance);
+  if (!isExcelExport) {
+    model.give_balance_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.give_balance ?? 0).toNumber());
+    model.give_balance = new Decimal(model.give_balance ?? 0);
+    model.give_balance.toString = () => model.give_balance_lbl;
+  } else {
+    model.give_balance_lbl = new Decimal(model.give_balance ?? 0).toFixed(2);
   }
   
   // 累计消费
-  if (model.growth_amt != null) {
-    model.growth_amt = new Decimal(model.growth_amt);
+  if (!isExcelExport) {
+    model.growth_amt_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.growth_amt ?? 0).toNumber());
+    model.growth_amt = new Decimal(model.growth_amt ?? 0);
+    model.growth_amt.toString = () => model.growth_amt_lbl;
+  } else {
+    model.growth_amt_lbl = new Decimal(model.growth_amt ?? 0).toFixed(2);
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: CardInput = {
+    // ID
+    id: model?.id,
+    // 卡号
+    lbl: model?.lbl,
+    // 绑定用户
+    usr_id: model?.usr_id,
+    usr_id_lbl: model?.usr_id_lbl,
+    // 会员等级
+    grade: model?.grade,
+    grade_lbl: model?.grade_lbl,
+    // 姓名
+    name: model?.name,
+    // 电话
+    mobile: model?.mobile,
+    // 充值余额
+    balance: model?.balance,
+    // 赠送余额
+    give_balance: model?.give_balance,
+    // 积分
+    integral: model?.integral,
+    // 累计消费
+    growth_amt: model?.growth_amt,
+    // 默认
+    is_default_card: model?.is_default_card,
+    is_default_card_lbl: model?.is_default_card_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -62,7 +133,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCard: Query["findAllCard"];
+    findAllCard: CardModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CardSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -124,7 +195,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneCard: Query["findOneCard"];
+    findOneCard?: CardModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: CardSearch, $sort: [SortInput!]) {
@@ -197,25 +268,26 @@ export async function findCount(
 
 /**
  * 创建会员卡
- * @param {CardInput} model
+ * @param {CardInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: CardInput,
+  input: CardInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CardId> {
+  input = intoInput(input);
   const data: {
     createCard: Mutation["createCard"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: CardInput!, $unique_type: UniqueType) {
-        createCard(model: $model, unique_type: $unique_type)
+      mutation($input: CardInput!, $unique_type: UniqueType) {
+        createCard(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -226,25 +298,26 @@ export async function create(
 /**
  * 根据 id 修改会员卡
  * @param {CardId} id
- * @param {CardInput} model
+ * @param {CardInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: CardId,
-  model: CardInput,
+  input: CardInput,
   opt?: GqlOpt,
 ): Promise<CardId> {
+  input = intoInput(input);
   const data: {
     updateByIdCard: Mutation["updateByIdCard"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: CardId!, $model: CardInput!) {
-        updateByIdCard(id: $id, model: $model)
+      mutation($id: CardId!, $input: CardInput!) {
+        updateByIdCard(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: CardId = data.updateByIdCard;
@@ -261,7 +334,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdCard: Query["findByIdCard"];
+    findByIdCard?: CardModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: CardId!) {
@@ -444,7 +517,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -635,6 +708,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllCard) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("会员卡");
         const buffer = await workerFn(

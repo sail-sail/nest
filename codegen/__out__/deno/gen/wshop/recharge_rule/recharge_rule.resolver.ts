@@ -5,10 +5,6 @@ import {
 import Decimal from "decimal.js";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -30,7 +26,7 @@ import {
  * 根据条件查找充值赠送规则总数
  */
 export async function findCountRechargeRule(
-  search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
+  search?: RechargeRuleSearch,
 ): Promise<number> {
   
   const {
@@ -45,7 +41,7 @@ export async function findCountRechargeRule(
  * 根据搜索条件和分页查找充值赠送规则列表
  */
 export async function findAllRechargeRule(
-  search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
+  search?: RechargeRuleSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<RechargeRuleModel[]> {
@@ -71,7 +67,7 @@ export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldC
  * 根据条件查找第一个充值赠送规则
  */
 export async function findOneRechargeRule(
-  search?: RechargeRuleSearch & { $extra?: SearchExtra[] },
+  search?: RechargeRuleSearch,
   sort?: SortInput[],
 ): Promise<RechargeRuleModel | undefined> {
   
@@ -101,6 +97,8 @@ export async function createRechargeRule(
   input: RechargeRuleInput,
   unique_type?: UniqueType,
 ): Promise<RechargeRuleId> {
+  
+  input.id = undefined;
   
   // 充值金额
   if (input.amt != null) {
@@ -142,6 +140,8 @@ export async function updateByIdRechargeRule(
   id: RechargeRuleId,
   input: RechargeRuleInput,
 ): Promise<RechargeRuleId> {
+  
+  input.id = undefined;
   
   // 充值金额
   if (input.amt != null) {
@@ -216,7 +216,7 @@ export async function enableByIdsRechargeRule(
   
   await usePermit(
     "/wshop/recharge_rule",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -243,7 +243,7 @@ export async function lockByIdsRechargeRule(
   
   await usePermit(
     "/wshop/recharge_rule",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

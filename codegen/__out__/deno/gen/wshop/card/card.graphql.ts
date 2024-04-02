@@ -132,7 +132,7 @@ type CardFieldComment {
   update_time_lbl: String!
 }
 input CardInput {
-  ""
+  "ID"
   id: CardId
   "卡号"
   lbl: String
@@ -170,22 +170,6 @@ input CardInput {
   is_enabled_lbl: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input CardSearch {
   "是否已删除"
@@ -209,13 +193,13 @@ input CardSearch {
   mobile: String
   mobile_like: String
   "充值余额"
-  balance: [Decimal!]
+  balance: [Decimal]
   "赠送余额"
-  give_balance: [Decimal!]
+  give_balance: [Decimal]
   "积分"
-  integral: [Int!]
+  integral: [Int]
   "累计消费"
-  growth_amt: [Decimal!]
+  growth_amt: [Decimal]
   "默认"
   is_default_card: [Int!]
   "锁定"
@@ -229,12 +213,12 @@ input CardSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找会员卡总数"
@@ -250,9 +234,9 @@ type Query {
 }
 type Mutation {
   "创建会员卡"
-  createCard(model: CardInput!, unique_type: UniqueType): CardId!
+  createCard(input: CardInput!, unique_type: UniqueType): CardId!
   "根据 id 修改会员卡"
-  updateByIdCard(id: CardId!, model: CardInput!): CardId!
+  updateByIdCard(id: CardId!, input: CardInput!): CardId!
   "根据 ids 删除会员卡"
   deleteByIdsCard(ids: [CardId!]!): Int!
   "根据 ids 启用或者禁用会员卡"

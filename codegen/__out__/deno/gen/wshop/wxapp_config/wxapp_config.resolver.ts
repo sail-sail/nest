@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找小程序配置总数
  */
 export async function findCountWxappConfig(
-  search?: WxappConfigSearch & { $extra?: SearchExtra[] },
+  search?: WxappConfigSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxappConfig(
  * 根据搜索条件和分页查找小程序配置列表
  */
 export async function findAllWxappConfig(
-  search?: WxappConfigSearch & { $extra?: SearchExtra[] },
+  search?: WxappConfigSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxappConfigModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxappConfig(): Promise<WxappConfigFieldCom
  * 根据条件查找第一个小程序配置
  */
 export async function findOneWxappConfig(
-  search?: WxappConfigSearch & { $extra?: SearchExtra[] },
+  search?: WxappConfigSearch,
   sort?: SortInput[],
 ): Promise<WxappConfigModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createWxappConfig(
   input: WxappConfigInput,
   unique_type?: UniqueType,
 ): Promise<WxappConfigId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdWxappConfig(
   id: WxappConfigId,
   input: WxappConfigInput,
 ): Promise<WxappConfigId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsWxappConfig(
   
   await usePermit(
     "/wshop/wxapp_config",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsWxappConfig(
   
   await usePermit(
     "/wshop/wxapp_config",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

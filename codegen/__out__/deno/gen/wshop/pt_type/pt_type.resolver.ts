@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找产品类别总数
  */
 export async function findCountPtType(
-  search?: PtTypeSearch & { $extra?: SearchExtra[] },
+  search?: PtTypeSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountPtType(
  * 根据搜索条件和分页查找产品类别列表
  */
 export async function findAllPtType(
-  search?: PtTypeSearch & { $extra?: SearchExtra[] },
+  search?: PtTypeSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<PtTypeModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
  * 根据条件查找第一个产品类别
  */
 export async function findOnePtType(
-  search?: PtTypeSearch & { $extra?: SearchExtra[] },
+  search?: PtTypeSearch,
   sort?: SortInput[],
 ): Promise<PtTypeModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createPtType(
   input: PtTypeInput,
   unique_type?: UniqueType,
 ): Promise<PtTypeId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdPtType(
   id: PtTypeId,
   input: PtTypeInput,
 ): Promise<PtTypeId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsPtType(
   
   await usePermit(
     "/wshop/pt_type",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsPtType(
   
   await usePermit(
     "/wshop/pt_type",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

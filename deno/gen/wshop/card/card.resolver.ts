@@ -5,10 +5,6 @@ import {
 import Decimal from "decimal.js";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -30,7 +26,7 @@ import {
  * 根据条件查找会员卡总数
  */
 export async function findCountCard(
-  search?: CardSearch & { $extra?: SearchExtra[] },
+  search?: CardSearch,
 ): Promise<number> {
   
   const {
@@ -45,7 +41,7 @@ export async function findCountCard(
  * 根据搜索条件和分页查找会员卡列表
  */
 export async function findAllCard(
-  search?: CardSearch & { $extra?: SearchExtra[] },
+  search?: CardSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<CardModel[]> {
@@ -71,7 +67,7 @@ export async function getFieldCommentsCard(): Promise<CardFieldComment> {
  * 根据条件查找第一个会员卡
  */
 export async function findOneCard(
-  search?: CardSearch & { $extra?: SearchExtra[] },
+  search?: CardSearch,
   sort?: SortInput[],
 ): Promise<CardModel | undefined> {
   
@@ -101,6 +97,8 @@ export async function createCard(
   input: CardInput,
   unique_type?: UniqueType,
 ): Promise<CardId> {
+  
+  input.id = undefined;
   
   // 充值余额
   if (input.balance != null) {
@@ -147,6 +145,8 @@ export async function updateByIdCard(
   id: CardId,
   input: CardInput,
 ): Promise<CardId> {
+  
+  input.id = undefined;
   
   // 充值余额
   if (input.balance != null) {
@@ -226,7 +226,7 @@ export async function enableByIdsCard(
   
   await usePermit(
     "/wshop/card",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -253,7 +253,7 @@ export async function lockByIdsCard(
   
   await usePermit(
     "/wshop/card",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

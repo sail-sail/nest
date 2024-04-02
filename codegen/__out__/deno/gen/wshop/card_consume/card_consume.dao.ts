@@ -5,6 +5,10 @@ import {
 
 import dayjs from "dayjs";
 
+import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
 import Decimal from "decimal.js";
 
 import {
@@ -18,6 +22,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -93,67 +101,60 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
+  
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
       whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
     }
-  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+  } else if (search?.org_id != null && search?.org_id !== "-") {
     whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.transaction_id !== undefined) {
+  if (search?.transaction_id != null) {
     whereQuery += ` and t.transaction_id = ${ args.push(search.transaction_id) }`;
-  }
-  if (search?.transaction_id === null) {
-    whereQuery += ` and t.transaction_id is null`;
   }
   if (isNotEmpty(search?.transaction_id_like)) {
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
-  if (search?.card_id && !Array.isArray(search?.card_id)) {
+  if (search?.card_id != null && !Array.isArray(search?.card_id)) {
     search.card_id = [ search.card_id ];
   }
-  if (search?.card_id && search?.card_id.length > 0) {
+  if (search?.card_id != null) {
     whereQuery += ` and card_id_lbl.id in ${ args.push(search.card_id) }`;
-  }
-  if (search?.card_id === null) {
-    whereQuery += ` and card_id_lbl.id is null`;
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and card_id_lbl.id is null`;
   }
-  if (search?.usr_id && !Array.isArray(search?.usr_id)) {
+  if (search?.usr_id != null && !Array.isArray(search?.usr_id)) {
     search.usr_id = [ search.usr_id ];
   }
-  if (search?.usr_id && search?.usr_id.length > 0) {
+  if (search?.usr_id != null) {
     whereQuery += ` and usr_id_lbl.id in ${ args.push(search.usr_id) }`;
-  }
-  if (search?.usr_id === null) {
-    whereQuery += ` and usr_id_lbl.id is null`;
   }
   if (search?.usr_id_is_null) {
     whereQuery += ` and usr_id_lbl.id is null`;
   }
-  if (search?.amt && search?.amt?.length > 0) {
+  if (search?.amt != null) {
     if (search.amt[0] != null) {
       whereQuery += ` and t.amt >= ${ args.push(search.amt[0]) }`;
     }
@@ -161,7 +162,7 @@ async function getWhereQuery(
       whereQuery += ` and t.amt <= ${ args.push(search.amt[1]) }`;
     }
   }
-  if (search?.give_amt && search?.give_amt?.length > 0) {
+  if (search?.give_amt != null) {
     if (search.give_amt[0] != null) {
       whereQuery += ` and t.give_amt >= ${ args.push(search.give_amt[0]) }`;
     }
@@ -169,7 +170,7 @@ async function getWhereQuery(
       whereQuery += ` and t.give_amt <= ${ args.push(search.give_amt[1]) }`;
     }
   }
-  if (search?.integral && search?.integral?.length > 0) {
+  if (search?.integral != null) {
     if (search.integral[0] != null) {
       whereQuery += ` and t.integral >= ${ args.push(search.integral[0]) }`;
     }
@@ -177,7 +178,7 @@ async function getWhereQuery(
       whereQuery += ` and t.integral <= ${ args.push(search.integral[1]) }`;
     }
   }
-  if (search?.balance && search?.balance?.length > 0) {
+  if (search?.balance != null) {
     if (search.balance[0] != null) {
       whereQuery += ` and t.balance >= ${ args.push(search.balance[0]) }`;
     }
@@ -185,7 +186,7 @@ async function getWhereQuery(
       whereQuery += ` and t.balance <= ${ args.push(search.balance[1]) }`;
     }
   }
-  if (search?.give_balance && search?.give_balance?.length > 0) {
+  if (search?.give_balance != null) {
     if (search.give_balance[0] != null) {
       whereQuery += ` and t.give_balance >= ${ args.push(search.give_balance[0]) }`;
     }
@@ -193,28 +194,22 @@ async function getWhereQuery(
       whereQuery += ` and t.give_balance <= ${ args.push(search.give_balance[1]) }`;
     }
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -222,19 +217,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -242,22 +234,16 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    wshop_card_consume t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: CardConsumeSearch,
+  options?: {
+  },
+) {
+  let fromQuery = `wshop_card_consume t
     left join wshop_card card_id_lbl
       on card_id_lbl.id = t.card_id
     left join base_usr usr_id_lbl
@@ -265,8 +251,7 @@ async function getFromQuery() {
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -278,10 +263,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: CardConsumeSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_card_consume";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -292,19 +289,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   interface Result {
     total: number,
@@ -325,31 +315,68 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<CardConsumeModel[]> {
   const table = "wshop_card_consume";
   const method = "findAll";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  // 卡号
+  if (search && search.card_id != null && search.card_id.length === 0) {
+    return [ ];
+  }
+  // 用户
+  if (search && search.usr_id != null && search.usr_id.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,card_id_lbl.lbl card_id_lbl
       ,usr_id_lbl.lbl usr_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -367,10 +394,6 @@ export async function findAll(
     prop: "create_time",
     order: SortOrderEnum.Desc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -380,39 +403,25 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<CardConsumeModel>(
     sql,
     args,
+    {
+      debug,
+    },
   );
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 消费充值金额
-    if (model.amt != null) {
-      model.amt = new Decimal(model.amt);
-    }
-    
-    // 消费赠送金额
-    if (model.give_amt != null) {
-      model.give_amt = new Decimal(model.give_amt);
-    }
-    
-    // 消费后余额
-    if (model.balance != null) {
-      model.balance = new Decimal(model.balance);
-    }
-    
-    // 消费后赠送余额
-    if (model.give_balance != null) {
-      model.give_balance = new Decimal(model.give_balance);
-    }
     
     // 创建时间
     if (model.create_time) {
@@ -448,7 +457,7 @@ export async function setIdByLbl(
 ) {
   
   // 卡号
-  if (isNotEmpty(input.card_id_lbl) && input.card_id === undefined) {
+  if (isNotEmpty(input.card_id_lbl) && input.card_id == null) {
     input.card_id_lbl = String(input.card_id_lbl).trim();
     const cardModel = await cardDao.findOne({ lbl: input.card_id_lbl });
     if (cardModel) {
@@ -457,7 +466,7 @@ export async function setIdByLbl(
   }
   
   // 用户
-  if (isNotEmpty(input.usr_id_lbl) && input.usr_id === undefined) {
+  if (isNotEmpty(input.usr_id_lbl) && input.usr_id == null) {
     input.usr_id_lbl = String(input.usr_id_lbl).trim();
     const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
     if (usrModel) {
@@ -502,12 +511,28 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
 export async function findByUnique(
   search0: CardConsumeInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<CardConsumeModel[]> {
+  
+  const table = "wshop_card_consume";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -550,7 +575,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("会员卡消费记录")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: CardConsumeId = await updateById(
@@ -559,9 +584,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -580,13 +603,39 @@ export async function findOne(
   search?: CardConsumeSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<CardConsumeModel | undefined> {
+  const table = "wshop_card_consume";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -598,12 +647,27 @@ export async function findOne(
 export async function findById(
   id?: CardConsumeId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<CardConsumeModel | undefined> {
+  const table = "wshop_card_consume";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -614,9 +678,24 @@ export async function findById(
 export async function exist(
   search?: CardConsumeSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "wshop_card_consume";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -627,9 +706,20 @@ export async function exist(
  */
 export async function existById(
   id?: CardConsumeId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "wshop_card_consume";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -736,11 +826,26 @@ export async function validate(
 export async function create(
   input: CardConsumeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<CardConsumeId> {
   const table = "wshop_card_consume";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -779,9 +884,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into wshop_card_consume(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -800,50 +903,42 @@ export async function create(
       sql += `,org_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id`;
-    }
-  }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,transaction_id`;
   }
-  if (input.card_id !== undefined) {
+  if (input.card_id != null) {
     sql += `,card_id`;
   }
-  if (input.usr_id !== undefined) {
+  if (input.usr_id != null) {
     sql += `,usr_id`;
   }
-  if (input.amt !== undefined) {
+  if (input.amt != null) {
     sql += `,amt`;
   }
-  if (input.give_amt !== undefined) {
+  if (input.give_amt != null) {
     sql += `,give_amt`;
   }
-  if (input.integral !== undefined) {
+  if (input.integral != null) {
     sql += `,integral`;
   }
-  if (input.balance !== undefined) {
+  if (input.balance != null) {
     sql += `,balance`;
   }
-  if (input.give_balance !== undefined) {
+  if (input.give_balance != null) {
     sql += `,give_balance`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -865,48 +960,44 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,${ args.push(input.transaction_id) }`;
   }
-  if (input.card_id !== undefined) {
+  if (input.card_id != null) {
     sql += `,${ args.push(input.card_id) }`;
   }
-  if (input.usr_id !== undefined) {
+  if (input.usr_id != null) {
     sql += `,${ args.push(input.usr_id) }`;
   }
-  if (input.amt !== undefined) {
+  if (input.amt != null) {
     sql += `,${ args.push(input.amt) }`;
   }
-  if (input.give_amt !== undefined) {
+  if (input.give_amt != null) {
     sql += `,${ args.push(input.give_amt) }`;
   }
-  if (input.integral !== undefined) {
+  if (input.integral != null) {
     sql += `,${ args.push(input.integral) }`;
   }
-  if (input.balance !== undefined) {
+  if (input.balance != null) {
     sql += `,${ args.push(input.balance) }`;
   }
-  if (input.give_balance !== undefined) {
+  if (input.give_balance != null) {
     sql += `,${ args.push(input.give_balance) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   return input.id;
 }
@@ -923,10 +1014,25 @@ export async function updateTenantById(
   id: CardConsumeId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_card_consume";
   const method = "updateTenantById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -1002,11 +1108,27 @@ export async function updateById(
   id: CardConsumeId,
   input: CardConsumeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<CardConsumeId> {
+  
   const table = "wshop_card_consume";
   const method = "updateById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1054,80 +1176,84 @@ export async function updateById(
     update wshop_card_consume set
   `;
   let updateFldNum = 0;
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     if (input.transaction_id != oldModel.transaction_id) {
       sql += `transaction_id = ${ args.push(input.transaction_id) },`;
       updateFldNum++;
     }
   }
-  if (input.card_id !== undefined) {
+  if (input.card_id != null) {
     if (input.card_id != oldModel.card_id) {
       sql += `card_id = ${ args.push(input.card_id) },`;
       updateFldNum++;
     }
   }
-  if (input.usr_id !== undefined) {
+  if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {
       sql += `usr_id = ${ args.push(input.usr_id) },`;
       updateFldNum++;
     }
   }
-  if (input.amt !== undefined) {
+  if (input.amt != null) {
     if (input.amt != oldModel.amt) {
       sql += `amt = ${ args.push(input.amt) },`;
       updateFldNum++;
     }
   }
-  if (input.give_amt !== undefined) {
+  if (input.give_amt != null) {
     if (input.give_amt != oldModel.give_amt) {
       sql += `give_amt = ${ args.push(input.give_amt) },`;
       updateFldNum++;
     }
   }
-  if (input.integral !== undefined) {
+  if (input.integral != null) {
     if (input.integral != oldModel.integral) {
       sql += `integral = ${ args.push(input.integral) },`;
       updateFldNum++;
     }
   }
-  if (input.balance !== undefined) {
+  if (input.balance != null) {
     if (input.balance != oldModel.balance) {
       sql += `balance = ${ args.push(input.balance) },`;
       updateFldNum++;
     }
   }
-  if (input.give_balance !== undefined) {
+  if (input.give_balance != null) {
     if (input.give_balance != oldModel.give_balance) {
       sql += `give_balance = ${ args.push(input.give_balance) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -1141,10 +1267,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: CardConsumeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_card_consume";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1152,9 +1290,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: CardConsumeId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1183,10 +1321,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: CardConsumeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_card_consume";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1220,7 +1370,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("会员卡消费记录"));
       }
     }
   }
@@ -1236,10 +1386,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CardConsumeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_card_consume";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;

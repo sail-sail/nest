@@ -97,7 +97,7 @@ type PtTypeFieldComment {
   update_time_lbl: String!
 }
 input PtTypeInput {
-  ""
+  "ID"
   id: PtTypeId
   "图标"
   img: String
@@ -123,22 +123,6 @@ input PtTypeInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input PtTypeSearch {
   "是否已删除"
@@ -162,7 +146,7 @@ input PtTypeSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -170,12 +154,12 @@ input PtTypeSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找产品类别总数"
@@ -193,9 +177,9 @@ type Query {
 }
 type Mutation {
   "创建产品类别"
-  createPtType(model: PtTypeInput!, unique_type: UniqueType): PtTypeId!
+  createPtType(input: PtTypeInput!, unique_type: UniqueType): PtTypeId!
   "根据 id 修改产品类别"
-  updateByIdPtType(id: PtTypeId!, model: PtTypeInput!): PtTypeId!
+  updateByIdPtType(id: PtTypeId!, input: PtTypeInput!): PtTypeId!
   "根据 ids 删除产品类别"
   deleteByIdsPtType(ids: [PtTypeId!]!): Int!
   "根据 ids 启用或者禁用产品类别"

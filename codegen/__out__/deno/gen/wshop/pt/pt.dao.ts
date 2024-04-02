@@ -5,6 +5,10 @@ import {
 
 import dayjs from "dayjs";
 
+import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
 import Decimal from "decimal.js";
 
 import {
@@ -18,6 +22,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -102,64 +110,57 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
+  
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
       whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
     }
-  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+  } else if (search?.org_id != null && search?.org_id !== "-") {
     whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.img !== undefined) {
+  if (search?.img != null) {
     whereQuery += ` and t.img = ${ args.push(search.img) }`;
-  }
-  if (search?.img === null) {
-    whereQuery += ` and t.img is null`;
   }
   if (isNotEmpty(search?.img_like)) {
     whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
-  if (search?.lbl !== undefined) {
+  if (search?.lbl != null) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
-  }
-  if (search?.lbl === null) {
-    whereQuery += ` and t.lbl is null`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.pt_type_ids && !Array.isArray(search?.pt_type_ids)) {
+  if (search?.pt_type_ids != null && !Array.isArray(search?.pt_type_ids)) {
     search.pt_type_ids = [ search.pt_type_ids ];
   }
-  if (search?.pt_type_ids && search?.pt_type_ids.length > 0) {
+  if (search?.pt_type_ids != null) {
     whereQuery += ` and wshop_pt_type.id in ${ args.push(search.pt_type_ids) }`;
-  }
-  if (search?.pt_type_ids === null) {
-    whereQuery += ` and wshop_pt_type.id is null`;
   }
   if (search?.pt_type_ids_is_null) {
     whereQuery += ` and wshop_pt_type.id is null`;
   }
-  if (search?.price && search?.price?.length > 0) {
+  if (search?.price != null) {
     if (search.price[0] != null) {
       whereQuery += ` and t.price >= ${ args.push(search.price[0]) }`;
     }
@@ -167,7 +168,7 @@ async function getWhereQuery(
       whereQuery += ` and t.price <= ${ args.push(search.price[1]) }`;
     }
   }
-  if (search?.original_price && search?.original_price?.length > 0) {
+  if (search?.original_price != null) {
     if (search.original_price[0] != null) {
       whereQuery += ` and t.original_price >= ${ args.push(search.original_price[0]) }`;
     }
@@ -175,43 +176,37 @@ async function getWhereQuery(
       whereQuery += ` and t.original_price <= ${ args.push(search.original_price[1]) }`;
     }
   }
-  if (search?.unit !== undefined) {
+  if (search?.unit != null) {
     whereQuery += ` and t.unit = ${ args.push(search.unit) }`;
-  }
-  if (search?.unit === null) {
-    whereQuery += ` and t.unit is null`;
   }
   if (isNotEmpty(search?.unit_like)) {
     whereQuery += ` and t.unit like ${ args.push("%" + sqlLike(search?.unit_like) + "%") }`;
   }
-  if (search?.is_new && !Array.isArray(search?.is_new)) {
+  if (search?.is_new != null && !Array.isArray(search?.is_new)) {
     search.is_new = [ search.is_new ];
   }
-  if (search?.is_new && search?.is_new?.length > 0) {
+  if (search?.is_new != null) {
     whereQuery += ` and t.is_new in ${ args.push(search.is_new) }`;
   }
-  if (search?.introduct !== undefined) {
+  if (search?.introduct != null) {
     whereQuery += ` and t.introduct = ${ args.push(search.introduct) }`;
-  }
-  if (search?.introduct === null) {
-    whereQuery += ` and t.introduct is null`;
   }
   if (isNotEmpty(search?.introduct_like)) {
     whereQuery += ` and t.introduct like ${ args.push("%" + sqlLike(search?.introduct_like) + "%") }`;
   }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
+  if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+  if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
-  if (search?.order_by && search?.order_by?.length > 0) {
+  if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
     }
@@ -219,55 +214,40 @@ async function getWhereQuery(
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
-  if (search?.detail !== undefined) {
+  if (search?.detail != null) {
     whereQuery += ` and t.detail = ${ args.push(search.detail) }`;
-  }
-  if (search?.detail === null) {
-    whereQuery += ` and t.detail is null`;
   }
   if (isNotEmpty(search?.detail_like)) {
     whereQuery += ` and t.detail like ${ args.push("%" + sqlLike(search?.detail_like) + "%") }`;
   }
-  if (search?.detail_top_img !== undefined) {
+  if (search?.detail_top_img != null) {
     whereQuery += ` and t.detail_top_img = ${ args.push(search.detail_top_img) }`;
-  }
-  if (search?.detail_top_img === null) {
-    whereQuery += ` and t.detail_top_img is null`;
   }
   if (isNotEmpty(search?.detail_top_img_like)) {
     whereQuery += ` and t.detail_top_img like ${ args.push("%" + sqlLike(search?.detail_top_img_like) + "%") }`;
   }
-  if (search?.detail_bottom_img !== undefined) {
+  if (search?.detail_bottom_img != null) {
     whereQuery += ` and t.detail_bottom_img = ${ args.push(search.detail_bottom_img) }`;
-  }
-  if (search?.detail_bottom_img === null) {
-    whereQuery += ` and t.detail_bottom_img is null`;
   }
   if (isNotEmpty(search?.detail_bottom_img_like)) {
     whereQuery += ` and t.detail_bottom_img like ${ args.push("%" + sqlLike(search?.detail_bottom_img_like) + "%") }`;
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -275,19 +255,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -295,28 +272,23 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    wshop_pt t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: PtSearch,
+  options?: {
+  },
+) {
+  const is_deleted = search?.is_deleted ?? 0;
+  let fromQuery = `wshop_pt t
     left join wshop_pt_pt_type
       on wshop_pt_pt_type.pt_id = t.id
-      and wshop_pt_pt_type.is_deleted = 0
+      and wshop_pt_pt_type.is_deleted = ${ args.push(is_deleted) }
     left join wshop_pt_type
       on wshop_pt_pt_type.pt_type_id = wshop_pt_type.id
-      and wshop_pt_type.is_deleted = 0
+      and wshop_pt_type.is_deleted = ${ args.push(is_deleted) }
     left join (
       select
         json_objectagg(wshop_pt_pt_type.order_by, wshop_pt_type.id) pt_type_ids,
@@ -325,19 +297,17 @@ async function getFromQuery() {
       from wshop_pt_pt_type
       inner join wshop_pt_type
         on wshop_pt_type.id = wshop_pt_pt_type.pt_type_id
-        and wshop_pt_type.is_deleted = 0
       inner join wshop_pt
         on wshop_pt.id = wshop_pt_pt_type.pt_id
       where
-        wshop_pt_pt_type.is_deleted = 0
+        wshop_pt_pt_type.is_deleted = ${ args.push(is_deleted) }
       group by pt_id
     ) _pt_type
       on _pt_type.pt_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -349,10 +319,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: PtSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -363,19 +345,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -399,31 +374,76 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<PtModel[]> {
   const table = "wshop_pt";
   const method = "findAll";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  // 产品类别
+  if (search && search.pt_type_ids != null && search.pt_type_ids.length === 0) {
+    return [ ];
+  }
+  // 新品
+  if (search && search.is_new != null && search.is_new.length === 0) {
+    return [ ];
+  }
+  // 锁定
+  if (search && search.is_locked != null && search.is_locked.length === 0) {
+    return [ ];
+  }
+  // 启用
+  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,max(pt_type_ids) pt_type_ids
       ,max(pt_type_ids_lbl) pt_type_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -441,10 +461,12 @@ export async function findAll(
     prop: "order_by",
     order: SortOrderEnum.Asc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -454,6 +476,7 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
@@ -464,12 +487,15 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<PtModel>(
     sql,
     args,
     {
       cacheKey1,
       cacheKey2,
+      debug,
     },
   );
   for (const item of result) {
@@ -508,19 +534,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 价格
-    if (model.price != null) {
-      model.price = new Decimal(model.price);
-    }
-    
-    // 原价
-    if (model.original_price != null) {
-      model.original_price = new Decimal(model.original_price);
-    }
-    
     // 新品
     let is_new_lbl = model.is_new?.toString() || "";
-    if (model.is_new !== undefined && model.is_new !== null) {
+    if (model.is_new != null) {
       const dictItem = is_newDict.find((dictItem) => dictItem.val === model.is_new.toString());
       if (dictItem) {
         is_new_lbl = dictItem.lbl;
@@ -530,7 +546,7 @@ export async function findAll(
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked !== undefined && model.is_locked !== null) {
+    if (model.is_locked != null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
@@ -540,7 +556,7 @@ export async function findAll(
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+    if (model.is_enabled != null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
@@ -600,43 +616,44 @@ export async function setIdByLbl(
     if (input.pt_type_ids_lbl.length === 0) {
       input.pt_type_ids = [ ];
     } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `
-        select
+      const sql = `select
           t.id
         from
           wshop_pt_type t
         where
-          t.lbl in ${ args.push(input.pt_type_ids_lbl) }
-      `;
+          t.lbl in ${ args.push(input.pt_type_ids_lbl) }`;
       interface Result {
         id: PtTypeId;
       }
-      const models = await query<Result>(sql, args);
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
       input.pt_type_ids = models.map((item: { id: PtTypeId }) => item.id);
     }
   }
   
   // 新品
-  if (isNotEmpty(input.is_new_lbl) && input.is_new === undefined) {
+  if (isNotEmpty(input.is_new_lbl) && input.is_new == null) {
     const val = is_newDict.find((itemTmp) => itemTmp.lbl === input.is_new_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_new = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_locked = Number(val);
     }
   }
   
   // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled == null) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.is_enabled = Number(val);
     }
   }
@@ -687,12 +704,28 @@ export async function getFieldComments(): Promise<PtFieldComment> {
 export async function findByUnique(
   search0: PtInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<PtModel[]> {
+  
+  const table = "wshop_pt";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -706,7 +739,7 @@ export async function findByUnique(
     const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
-    });
+    }, undefined, undefined, options);
     models.push(...modelTmps);
   }
   return models;
@@ -750,7 +783,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("产品")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: PtId = await updateById(
@@ -759,9 +792,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -780,13 +811,39 @@ export async function findOne(
   search?: PtSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<PtModel | undefined> {
+  const table = "wshop_pt";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -798,12 +855,27 @@ export async function findOne(
 export async function findById(
   id?: PtId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<PtModel | undefined> {
+  const table = "wshop_pt";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -814,9 +886,24 @@ export async function findById(
 export async function exist(
   search?: PtSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "wshop_pt";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -827,9 +914,20 @@ export async function exist(
  */
 export async function existById(
   id?: PtId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "wshop_pt";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -983,11 +1081,26 @@ export async function validate(
 export async function create(
   input: PtInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<PtId> {
   const table = "wshop_pt";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -1026,9 +1139,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into wshop_pt(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -1047,65 +1158,57 @@ export async function create(
       sql += `,org_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id`;
-    }
-  }
-  if (input.img !== undefined) {
+  if (input.img != null) {
     sql += `,img`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,lbl`;
   }
-  if (input.price !== undefined) {
+  if (input.price != null) {
     sql += `,price`;
   }
-  if (input.original_price !== undefined) {
+  if (input.original_price != null) {
     sql += `,original_price`;
   }
-  if (input.unit !== undefined) {
+  if (input.unit != null) {
     sql += `,unit`;
   }
-  if (input.is_new !== undefined) {
+  if (input.is_new != null) {
     sql += `,is_new`;
   }
-  if (input.introduct !== undefined) {
+  if (input.introduct != null) {
     sql += `,introduct`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,is_locked`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,is_enabled`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,order_by`;
   }
-  if (input.detail !== undefined) {
+  if (input.detail != null) {
     sql += `,detail`;
   }
-  if (input.detail_top_img !== undefined) {
+  if (input.detail_top_img != null) {
     sql += `,detail_top_img`;
   }
-  if (input.detail_bottom_img !== undefined) {
+  if (input.detail_bottom_img != null) {
     sql += `,detail_bottom_img`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -1127,65 +1230,61 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.img !== undefined) {
+  if (input.img != null) {
     sql += `,${ args.push(input.img) }`;
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.price !== undefined) {
+  if (input.price != null) {
     sql += `,${ args.push(input.price) }`;
   }
-  if (input.original_price !== undefined) {
+  if (input.original_price != null) {
     sql += `,${ args.push(input.original_price) }`;
   }
-  if (input.unit !== undefined) {
+  if (input.unit != null) {
     sql += `,${ args.push(input.unit) }`;
   }
-  if (input.is_new !== undefined) {
+  if (input.is_new != null) {
     sql += `,${ args.push(input.is_new) }`;
   }
-  if (input.introduct !== undefined) {
+  if (input.introduct != null) {
     sql += `,${ args.push(input.introduct) }`;
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     sql += `,${ args.push(input.is_locked) }`;
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     sql += `,${ args.push(input.order_by) }`;
   }
-  if (input.detail !== undefined) {
+  if (input.detail != null) {
     sql += `,${ args.push(input.detail) }`;
   }
-  if (input.detail_top_img !== undefined) {
+  if (input.detail_top_img != null) {
     sql += `,${ args.push(input.detail_top_img) }`;
   }
-  if (input.detail_bottom_img !== undefined) {
+  if (input.detail_bottom_img != null) {
     sql += `,${ args.push(input.detail_bottom_img) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
   sql += `)`;
   
   await delCache();
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   // 产品类别
   await many2manyUpdate(
@@ -1208,20 +1307,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "wshop_pt";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "wshop_pt_pt_type",
-    "wshop_pt_type",
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
+  await delCacheCtx(`dao.sql.wshop_pt`);
 }
 
 /**
@@ -1236,10 +1322,25 @@ export async function updateTenantById(
   id: PtId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "updateTenantById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -1321,11 +1422,27 @@ export async function updateById(
   id: PtId,
   input: PtInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<PtId> {
+  
   const table = "wshop_pt";
   const method = "updateById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1373,106 +1490,89 @@ export async function updateById(
     update wshop_pt set
   `;
   let updateFldNum = 0;
-  if (input.img !== undefined) {
+  if (input.img != null) {
     if (input.img != oldModel.img) {
       sql += `img = ${ args.push(input.img) },`;
       updateFldNum++;
     }
   }
-  if (input.lbl !== undefined) {
+  if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (input.price !== undefined) {
+  if (input.price != null) {
     if (input.price != oldModel.price) {
       sql += `price = ${ args.push(input.price) },`;
       updateFldNum++;
     }
   }
-  if (input.original_price !== undefined) {
+  if (input.original_price != null) {
     if (input.original_price != oldModel.original_price) {
       sql += `original_price = ${ args.push(input.original_price) },`;
       updateFldNum++;
     }
   }
-  if (input.unit !== undefined) {
+  if (input.unit != null) {
     if (input.unit != oldModel.unit) {
       sql += `unit = ${ args.push(input.unit) },`;
       updateFldNum++;
     }
   }
-  if (input.is_new !== undefined) {
+  if (input.is_new != null) {
     if (input.is_new != oldModel.is_new) {
       sql += `is_new = ${ args.push(input.is_new) },`;
       updateFldNum++;
     }
   }
-  if (input.introduct !== undefined) {
+  if (input.introduct != null) {
     if (input.introduct != oldModel.introduct) {
       sql += `introduct = ${ args.push(input.introduct) },`;
       updateFldNum++;
     }
   }
-  if (input.is_locked !== undefined) {
+  if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
-  if (input.is_enabled !== undefined) {
+  if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
-  if (input.order_by !== undefined) {
+  if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
-  if (input.detail !== undefined) {
+  if (input.detail != null) {
     if (input.detail != oldModel.detail) {
       sql += `detail = ${ args.push(input.detail) },`;
       updateFldNum++;
     }
   }
-  if (input.detail_top_img !== undefined) {
+  if (input.detail_top_img != null) {
     if (input.detail_top_img != oldModel.detail_top_img) {
       sql += `detail_top_img = ${ args.push(input.detail_top_img) },`;
       updateFldNum++;
     }
   }
-  if (input.detail_bottom_img !== undefined) {
+  if (input.detail_bottom_img != null) {
     if (input.detail_bottom_img != oldModel.detail_bottom_img) {
       sql += `detail_bottom_img = ${ args.push(input.detail_bottom_img) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
-  }
-  if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
-      }
-    }
-    sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
-    
-    await delCache();
-    
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
   }
   
   updateFldNum++;
@@ -1493,13 +1593,34 @@ export async function updateById(
   );
   
   if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await getAuthModel();
+      if (authModel?.id != null) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
+    sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
+    await execute(sql, args);
+  }
+  
+  if (updateFldNum > 0) {
     await delCache();
   }
   
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -1513,10 +1634,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: PtId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1528,9 +1661,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: PtId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1582,10 +1715,25 @@ export async function enableByIds(
   ids: PtId[],
   is_enabled: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "enableByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_enabled != null) {
+      msg += ` is_enabled:${ is_enabled }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1605,7 +1753,7 @@ export async function enableByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1652,10 +1800,25 @@ export async function lockByIds(
   ids: PtId[],
   is_locked: 0 | 1,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "lockByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (is_locked != null) {
+      msg += ` is_locked:${ is_locked }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1675,7 +1838,7 @@ export async function lockByIds(
   `;
   {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
@@ -1700,10 +1863,22 @@ export async function lockByIds(
 export async function revertByIds(
   ids: PtId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1741,7 +1916,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("产品"));
       }
     }
   }
@@ -1759,10 +1934,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: PtId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1812,17 +1999,25 @@ export async function forceDeleteByIds(
  */
 export async function findLastOrderBy(
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wshop_pt";
   const method = "findLastOrderBy";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   let sql = `
     select
       t.order_by order_by
     from
-      wshop_pt t
-  `;
+      wshop_pt t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
   whereQuery.push(`t.is_deleted = 0`);
@@ -1841,11 +2036,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += `
-    order by
-      t.order_by desc
-    limit 1
-  `;
+  sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;

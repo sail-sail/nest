@@ -89,7 +89,7 @@ type CardConsumeFieldComment {
   update_time_lbl: String!
 }
 input CardConsumeInput {
-  ""
+  "ID"
   id: CardConsumeId
   "卡号"
   card_id: CardId
@@ -111,22 +111,6 @@ input CardConsumeInput {
   give_balance: Decimal
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input CardConsumeSearch {
   "是否已删除"
@@ -142,15 +126,15 @@ input CardConsumeSearch {
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
   "消费充值金额"
-  amt: [Decimal!]
+  amt: [Decimal]
   "消费赠送金额"
-  give_amt: [Decimal!]
+  give_amt: [Decimal]
   "获得积分"
-  integral: [Int!]
+  integral: [Int]
   "消费后余额"
-  balance: [Decimal!]
+  balance: [Decimal]
   "消费后赠送余额"
-  give_balance: [Decimal!]
+  give_balance: [Decimal]
   "备注"
   rem: String
   rem_like: String
@@ -158,12 +142,12 @@ input CardConsumeSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找会员卡消费记录总数"
