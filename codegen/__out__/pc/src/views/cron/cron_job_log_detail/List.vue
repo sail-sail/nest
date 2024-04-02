@@ -507,7 +507,7 @@ import {
 import type {
   CronJobLogDetailModel,
   CronJobLogDetailSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "任务执行日志明细",
@@ -1080,6 +1080,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

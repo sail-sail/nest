@@ -6,17 +6,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  CronJobLogDetailSearch,
-  CronJobLogDetailInput,
-  CronJobLogDetailModel,
 } from "#/types";
 
 import type {
+  CronJobLogDetailSearch,
+  CronJobLogDetailInput,
+  CronJobLogDetailModel,
+} from "./Model";
+
+// 任务执行日志
+import type {
   CronJobLogSearch,
-} from "#/types";
+  CronJobLogModel,
+} from "@/views/cron/cron_job_log/Model";
 
 async function setLblById(
   model?: CronJobLogDetailModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -52,7 +58,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCronJobLogDetail: Query["findAllCronJobLogDetail"];
+    findAllCronJobLogDetail: CronJobLogDetailModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobLogDetailSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -93,7 +99,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneCronJobLogDetail: Query["findOneCronJobLogDetail"];
+    findOneCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
@@ -153,7 +159,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdCronJobLogDetail: Query["findByIdCronJobLogDetail"];
+    findByIdCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: CronJobLogDetailId!) {
@@ -259,7 +265,7 @@ export async function findAllCronJobLog(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCronJobLog: Query["findAllCronJobLog"];
+    findAllCronJobLog: CronJobLogModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobLogSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -391,6 +397,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllCronJobLogDetail) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("任务执行日志明细");
         const buffer = await workerFn(

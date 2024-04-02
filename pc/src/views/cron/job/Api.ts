@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   JobSearch,
   JobInput,
   JobModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: JobModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -61,7 +65,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllJob: Query["findAllJob"];
+    findAllJob: JobModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: JobSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -113,7 +117,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneJob: Query["findOneJob"];
+    findOneJob?: JobModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: JobSearch, $sort: [SortInput!]) {
@@ -242,7 +246,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdJob: Query["findByIdJob"];
+    findByIdJob?: JobModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: JobId!) {
@@ -519,6 +523,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllJob) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("任务");
         const buffer = await workerFn(

@@ -727,8 +727,12 @@ import type {
   CronJobModel,
   CronJobInput,
   CronJobSearch,
+} from "./Model";
+
+// 任务
+import type {
   JobModel,
-} from "#/types";
+} from "@/views/cron/job/Model";
 
 import {
   getJobList, // 任务
@@ -1657,6 +1661,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
