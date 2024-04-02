@@ -5,6 +5,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -161,6 +162,27 @@ impl <#=tableUP#>GenQuery {
         )
       }).await
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  /// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+  async fn get_editable_data_permits_by_ids_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<<#=Table_Up#>Id>,
+  ) -> Result<Vec<u8>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::get_editable_data_permits_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }<#
+  }
+  #><#
   if (hasEnabled) {
   #>
   
@@ -512,7 +534,9 @@ impl <#=tableUP#>GenMutation {<#
   }<#
     }
   #><#
-    if (opts.noDelete !== true) {
+  if (opts.noDelete !== true) {
+  #><#
+  if (hasIsDeleted) {
   #>
   
   /// 根据 ids 还原<#=table_comment#><#
@@ -536,7 +560,11 @@ impl <#=tableUP#>GenMutation {<#
           None,
         )
       }).await
+  }<#
   }
+  #><#
+  if (hasIsDeleted) {
+  #>
   
   /// 根据 ids 彻底删除<#=table_comment#><#
   if (table === "i18n") {
@@ -560,7 +588,9 @@ impl <#=tableUP#>GenMutation {<#
         )
       }).await
   }<#
-    }
+  }
+  #><#
+  }
   #>
   
 }

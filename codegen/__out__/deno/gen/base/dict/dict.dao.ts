@@ -288,9 +288,30 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 数据类型
+  if (search && search.type != null && search.type.length === 0) {
+    return [ ];
+  }
+  // 锁定
+  if (search && search.is_locked != null && search.is_locked.length === 0) {
+    return [ ];
+  }
+  // 启用
+  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -319,10 +340,12 @@ export async function findAll(
     prop: "order_by",
     order: SortOrderEnum.Asc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -332,6 +355,7 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
@@ -428,7 +452,7 @@ export async function findAll(
     }
     
     // 系统字典明细
-    model.dict_detail_models = dict_detail_models
+    model.dict_detail = dict_detail_models
       .filter((item) => item.dict_id === model.id);
   }
   
@@ -614,9 +638,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -935,24 +957,14 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into base_dict(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }
   if (input.code != null) {
@@ -979,17 +991,9 @@ export async function create(
   if (input.is_sys != null) {
     sql += `,is_sys`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
@@ -1031,11 +1035,12 @@ export async function create(
   });
   
   // 系统字典明细
-  if (input.dict_detail_models && input.dict_detail_models.length > 0) {
-    for (let i = 0; i < input.dict_detail_models.length; i++) {
-      const dict_detail_model = input.dict_detail_models[i];
-      dict_detail_model.dict_id = input.id;
-      await createDictDetail(dict_detail_model);
+  const dict_detail_input = input.dict_detail;
+  if (dict_detail_input && dict_detail_input.length > 0) {
+    for (let i = 0; i < dict_detail_input.length; i++) {
+      const model = dict_detail_input[i];
+      model.dict_id = input.id;
+      await createDictDetail(model);
     }
   }
   
@@ -1071,6 +1076,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<DictId> {
+  
   const table = "base_dict";
   const method = "updateById";
   
@@ -1175,31 +1181,32 @@ export async function updateById(
   }
   
   // 系统字典明细
-  if (input.dict_detail_models) {
+  const dict_detail_input = input.dict_detail;
+  if (dict_detail_input) {
     const dict_detail_models = await findAllDictDetail({
       dict_id: [ id ],
     });
-    if (dict_detail_models.length > 0 && input.dict_detail_models.length > 0) {
+    if (dict_detail_models.length > 0 && dict_detail_input.length > 0) {
       updateFldNum++;
     }
     for (let i = 0; i < dict_detail_models.length; i++) {
-      const dict_detail_model = dict_detail_models[i];
-      if (input.dict_detail_models.some((item) => item.id === dict_detail_model.id)) {
+      const model = dict_detail_models[i];
+      if (dict_detail_input.some((item) => item.id === model.id)) {
         continue;
       }
-      await deleteByIdsDictDetail([ dict_detail_model.id ]);
+      await deleteByIdsDictDetail([ model.id ]);
     }
-    for (let i = 0; i < input.dict_detail_models.length; i++) {
-      const dict_detail_model = input.dict_detail_models[i];
-      if (!dict_detail_model.id) {
-        dict_detail_model.dict_id = id;
-        await createDictDetail(dict_detail_model);
+    for (let i = 0; i < dict_detail_input.length; i++) {
+      const model = dict_detail_input[i];
+      if (!model.id) {
+        model.dict_id = id;
+        await createDictDetail(model);
         continue;
       }
-      if (dict_detail_models.some((item) => item.id === dict_detail_model.id)) {
-        await revertByIdsDictDetail([ dict_detail_model.id ]);
+      if (dict_detail_models.some((item) => item.id === model.id)) {
+        await revertByIdsDictDetail([ model.id ]);
       }
-      await updateByIdDictDetail(dict_detail_model.id, dict_detail_model);
+      await updateByIdDictDetail(model.id, { ...model, id: undefined });
     }
   }
   
@@ -1212,7 +1219,11 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
     await delCache();
@@ -1227,7 +1238,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -1289,10 +1300,10 @@ export async function deleteByIds(
   }
   
   // 系统字典明细
-  const dict_detail_models = await findAllDictDetail({
+  const dict_detail = await findAllDictDetail({
     dict_id: ids,
   });
-  await deleteByIdsDictDetail(dict_detail_models.map((item) => item.id));
+  await deleteByIdsDictDetail(dict_detail.map((item) => item.id));
   
   await delCache();
   

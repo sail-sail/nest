@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OrgSearch,
   OrgInput,
   OrgModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OrgModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -27,13 +31,19 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: OrgInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
@@ -53,7 +63,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOrg: Query["findAllOrg"];
+    findAllOrg: OrgModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -104,7 +114,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOrg: Query["findOneOrg"];
+    findOneOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OrgSearch, $sort: [SortInput!]) {
@@ -232,7 +242,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOrg: Query["findByIdOrg"];
+    findByIdOrg?: OrgModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OrgId!) {
@@ -506,6 +516,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllOrg) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("组织");
         const buffer = await workerFn(

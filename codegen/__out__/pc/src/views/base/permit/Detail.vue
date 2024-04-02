@@ -249,7 +249,7 @@ import type {
 
 import type {
   PermitInput,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,

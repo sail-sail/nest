@@ -18,6 +18,22 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  const data_type = column.DATA_TYPE;
+  if (data_type !== "decimal") {
+    continue;
+  }
+  hasDecimal = true;
+  break;
+}
 #>
 use std::fmt;
 use std::ops::Deref;
@@ -29,7 +45,12 @@ use serde::{Serialize, Deserialize};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
-use smol_str::SmolStr;
+use smol_str::SmolStr;<#
+if (hasDecimal) {
+#>
+use rust_decimal::Decimal;<#
+}
+#>
 
 use sqlx::{
   FromRow,
@@ -67,6 +88,45 @@ for (const inlineForeignTab of inlineForeignTabs) {
   foreignTableArr.push(table);
 #>
 
+use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Input,
+};<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const table_comment = column.COLUMN_COMMENT;
+  let is_nullable = column.IS_NULLABLE === "YES";
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let data_type = column.DATA_TYPE;
+  const many2many = column.many2many;
+  if (!many2many || !foreignKey) continue;
+  if (!column.inlineMany2manyTab) continue;
+  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  const table = many2many.table;
+  const mod = many2many.mod;
+  if (!inlineMany2manySchema) {
+    throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr.includes(table)) continue;
+  foreignTableArr.push(table);
+#>
+
+// <#=table_comment#>
 use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
   <#=Table_Up#>Model,
   <#=Table_Up#>Input,
@@ -240,7 +300,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (is_nullable) {
       _data_type = "Option<"+_data_type+">";
@@ -451,10 +511,52 @@ pub struct <#=tableUP#>Model {<#
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   /// <#=inlineForeignTab.label#>
-  pub <#=table#>_models: Vec<<#=Table_Up#>Model>,
-  <#
+  pub <#=inline_column_name#>: Vec<<#=Table_Up#>Model>,<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=inline_column_name#>: Option<<#=Table_Up#>Model>,<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const table_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  // <#=table_comment#>
+  pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Model>>,<#
   }
   #>
 }
@@ -553,11 +655,35 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (is_nullable) {
       _data_type = "Option<"+_data_type+">";
     }
+    const isVirtual = column.isVirtual;
+    const isEncrypt = column.isEncrypt;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
+    #><#
+      if (data_type === "decimal" && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>)?;<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = "<#=column_default || ""#>".to_owned();<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = <#=column_default || 0#>.to_owned();<#
+        continue;
+      }
     #><#
       if (column_name === "id") {
     #>
@@ -689,12 +815,31 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       }
     #><#
       } else {
+    #><#
+        if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str());<#
+        } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
+      .parse::<Decimal>()
+      .unwrap_or_default()
+      .round_dp(<#=precision#>);<#
+        } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
+      .try_into()
+      .unwrap_or_default();<#
+        } else {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
-        if (column.isEncrypt) { 
-    #>
-    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str());<#
         }
     #><#
       }
@@ -859,8 +1004,51 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         const Table_Up = tableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      #><#
+        if (inline_foreign_type === "one2many") {
       #>
-      <#=table#>_models: vec![],<#
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: vec![],<#
+        } else if (inline_foreign_type === "one2one") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: None,<#
+        }
+      #><#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const table_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+        const table = many2many.table;
+        const mod = many2many.mod;
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      <#=column_name#>_<#=table#>_models: None,<#
       }
       #>
     };
@@ -1026,7 +1214,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
@@ -1104,7 +1292,7 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
+  pub <#=column_name_rust#>: Option<Vec<Option<<#=_data_type#>>>>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
@@ -1353,7 +1541,7 @@ pub struct <#=tableUP#>Input {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = "rust_decimal::Decimal";
+      _data_type = "Decimal";
     }
     if (column_name === "id") {
       _data_type = "String";
@@ -1511,9 +1699,52 @@ pub struct <#=tableUP#>Input {
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   /// <#=inlineForeignTab.label#>
-  pub <#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
+  pub <#=inline_column_name#>: Option<Vec<<#=Table_Up#>Input>>,<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  pub <#=inline_column_name#>: Option<<#=Table_Up#>Input>,<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const table_comment = column.COLUMN_COMMENT;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let data_type = column.DATA_TYPE;
+    const many2many = column.many2many;
+    if (!many2many || !foreignKey) continue;
+    if (!column.inlineMany2manyTab) continue;
+    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+    const table = many2many.table;
+    const mod = many2many.mod;
+    if (!inlineMany2manySchema) {
+      throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #>
+  // <#=table_comment#>
+  pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
   }
   #>
 }
@@ -1653,13 +1884,62 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         const Table_Up = tableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      #><#
+        if (inline_foreign_type === "one2many") {
       #>
       // <#=inlineForeignTab.label#>
-      <#=table#>_models: model.<#=table#>_models
+      <#=inline_column_name#>: model.<#=inline_column_name#>
         .into_iter()
         .map(|x| x.into())
         .collect::<Vec<<#=Table_Up#>Input>>()
         .into(),<#
+        } else if (inline_foreign_type === "one2one") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: model.<#=inline_column_name#>.map(|x| x.into()),<#
+        }
+      #><#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const table_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+        const table = many2many.table;
+        const mod = many2many.mod;
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 的 inlineMany2manyTab 中的 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+      #>
+      // <#=table_comment#>
+      <#=column_name#>_<#=table#>_models: model.<#=column_name#>_<#=table#>_models
+        .map(|model|
+          model
+          .into_iter()
+          .map(|x| x.into())
+          .collect::<Vec<_>>(),
+        ),<#
       }
       #>
     }
@@ -1747,7 +2027,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x, x]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![Some(x), Some(x)]),<#
       } else {
       #>
       // <#=column_comment#>
@@ -1956,6 +2236,12 @@ impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+impl PartialEq<str> for <#=Table_Up#>Id {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
   }
 }<#
 for (let i = 0; i < columns.length; i++) {

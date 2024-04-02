@@ -101,7 +101,7 @@ pub async fn login(
         username: username.clone().into(),
         ip: ip.clone().into(),
         is_succ: vec![0].into(),
-        create_time: vec![begin, end].into(),
+        create_time: vec![begin.into(), end.into()].into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
       }.into(),
@@ -208,7 +208,7 @@ pub async fn login(
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
-  let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
+  let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_id.clone(),

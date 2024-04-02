@@ -187,7 +187,7 @@ pub struct LoginLogSearch {
   /// IP
   pub ip_like: Option<String>,
   /// 登录时间
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -202,7 +202,7 @@ pub struct LoginLogSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
 }
 
 impl std::fmt::Debug for LoginLogSearch {
@@ -354,13 +354,13 @@ impl From<LoginLogInput> for LoginLogSearch {
       // IP
       ip: input.ip,
       // 登录时间
-      create_time: input.create_time.map(|x| vec![x, x]),
+      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
+      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
       ..Default::default()
     }
   }
@@ -464,5 +464,11 @@ impl<'r> sqlx::Decode<'r, MySql> for LoginLogId {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+impl PartialEq<str> for LoginLogId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
   }
 }

@@ -310,9 +310,30 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 数据类型
+  if (search && search.type != null && search.type.length === 0) {
+    return [ ];
+  }
+  // 锁定
+  if (search && search.is_locked != null && search.is_locked.length === 0) {
+    return [ ];
+  }
+  // 启用
+  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
   
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -341,10 +362,12 @@ export async function findAll(
     prop: "order_by",
     order: SortOrderEnum.Asc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -354,6 +377,7 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
@@ -450,7 +474,7 @@ export async function findAll(
     }
     
     // 业务字典明细
-    model.dictbiz_detail_models = dictbiz_detail_models
+    model.dictbiz_detail = dictbiz_detail_models
       .filter((item) => item.dictbiz_id === model.id);
   }
   
@@ -636,9 +660,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -957,9 +979,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into base_dictbiz(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -970,20 +990,12 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }
   if (input.code != null) {
@@ -1010,7 +1022,7 @@ export async function create(
   if (input.is_sys != null) {
     sql += `,is_sys`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -1022,14 +1034,6 @@ export async function create(
   }
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
@@ -1071,11 +1075,12 @@ export async function create(
   });
   
   // 业务字典明细
-  if (input.dictbiz_detail_models && input.dictbiz_detail_models.length > 0) {
-    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
-      const dictbiz_detail_model = input.dictbiz_detail_models[i];
-      dictbiz_detail_model.dictbiz_id = input.id;
-      await createDictbizDetail(dictbiz_detail_model);
+  const dictbiz_detail_input = input.dictbiz_detail;
+  if (dictbiz_detail_input && dictbiz_detail_input.length > 0) {
+    for (let i = 0; i < dictbiz_detail_input.length; i++) {
+      const model = dictbiz_detail_input[i];
+      model.dictbiz_id = input.id;
+      await createDictbizDetail(model);
     }
   }
   
@@ -1165,6 +1170,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<DictbizId> {
+  
   const table = "base_dictbiz";
   const method = "updateById";
   
@@ -1274,31 +1280,32 @@ export async function updateById(
   }
   
   // 业务字典明细
-  if (input.dictbiz_detail_models) {
+  const dictbiz_detail_input = input.dictbiz_detail;
+  if (dictbiz_detail_input) {
     const dictbiz_detail_models = await findAllDictbizDetail({
       dictbiz_id: [ id ],
     });
-    if (dictbiz_detail_models.length > 0 && input.dictbiz_detail_models.length > 0) {
+    if (dictbiz_detail_models.length > 0 && dictbiz_detail_input.length > 0) {
       updateFldNum++;
     }
     for (let i = 0; i < dictbiz_detail_models.length; i++) {
-      const dictbiz_detail_model = dictbiz_detail_models[i];
-      if (input.dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
+      const model = dictbiz_detail_models[i];
+      if (dictbiz_detail_input.some((item) => item.id === model.id)) {
         continue;
       }
-      await deleteByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+      await deleteByIdsDictbizDetail([ model.id ]);
     }
-    for (let i = 0; i < input.dictbiz_detail_models.length; i++) {
-      const dictbiz_detail_model = input.dictbiz_detail_models[i];
-      if (!dictbiz_detail_model.id) {
-        dictbiz_detail_model.dictbiz_id = id;
-        await createDictbizDetail(dictbiz_detail_model);
+    for (let i = 0; i < dictbiz_detail_input.length; i++) {
+      const model = dictbiz_detail_input[i];
+      if (!model.id) {
+        model.dictbiz_id = id;
+        await createDictbizDetail(model);
         continue;
       }
-      if (dictbiz_detail_models.some((item) => item.id === dictbiz_detail_model.id)) {
-        await revertByIdsDictbizDetail([ dictbiz_detail_model.id ]);
+      if (dictbiz_detail_models.some((item) => item.id === model.id)) {
+        await revertByIdsDictbizDetail([ model.id ]);
       }
-      await updateByIdDictbizDetail(dictbiz_detail_model.id, dictbiz_detail_model);
+      await updateByIdDictbizDetail(model.id, { ...model, id: undefined });
     }
   }
   
@@ -1311,7 +1318,11 @@ export async function updateById(
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
     await delCache();
@@ -1326,7 +1337,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -1388,10 +1399,10 @@ export async function deleteByIds(
   }
   
   // 业务字典明细
-  const dictbiz_detail_models = await findAllDictbizDetail({
+  const dictbiz_detail = await findAllDictbizDetail({
     dictbiz_id: ids,
   });
-  await deleteByIdsDictbizDetail(dictbiz_detail_models.map((item) => item.id));
+  await deleteByIdsDictbizDetail(dictbiz_detail.map((item) => item.id));
   
   await delCache();
   

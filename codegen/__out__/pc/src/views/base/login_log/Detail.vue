@@ -190,7 +190,7 @@ import type {
 
 import type {
   LoginLogInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

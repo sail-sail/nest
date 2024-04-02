@@ -226,7 +226,7 @@ async function getSchema0(
       }
     }
     if (column_name === "lbl") {
-      if (item.width == null) {
+      if (item.width == null && item.minWidth == null) {
         item.width = 200;
       }
       if (item.require == null) {
@@ -434,6 +434,16 @@ async function getSchema0(
     ) {
       item.notImportExportList = true;
     }
+    if (record && record.DATA_TYPE === "date") {
+      if (item.width == null) {
+        item.width = 100;
+      }
+    }
+    if (record && record.DATA_TYPE === "datetime") {
+      if (item.width == null) {
+        item.width = 150;
+      }
+    }
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {
@@ -514,6 +524,17 @@ async function getSchema0(
   if (tables[table_name]?.opts?.hasVersion === true && tables[table_name]?.opts?.isRealData == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.isRealData = true;
+  }
+  if (tables[table_name]?.opts?.inlineForeignTabs?.length > 0) {
+    for (let i = 0; i < tables[table_name].opts.inlineForeignTabs.length; i++) {
+      const item = tables[table_name].opts.inlineForeignTabs[i];
+      if (!item.column_name) {
+        item.column_name = item.table;
+      }
+      if (!item.foreign_type) {
+        item.foreign_type = "one2many";
+      }
+    }
   }
   return records2;
 }

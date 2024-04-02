@@ -63,7 +63,7 @@ type DictbizModel {
   "是否已删除"
   is_deleted: Int!
   "业务字典明细"
-  dictbiz_detail_models: [DictbizDetailModel!]
+  dictbiz_detail: [DictbizDetailModel!]
 }
 type DictbizFieldComment {
   "ID"
@@ -129,7 +129,7 @@ input DictbizInput {
   "备注"
   rem: String
   "业务字典明细"
-  dictbiz_detail_models: [DictbizDetailInput!]
+  dictbiz_detail: [DictbizDetailInput!]
 }
 input DictbizSearch {
   "是否已删除"

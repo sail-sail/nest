@@ -1318,7 +1318,7 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone, Debug)]
+#[derive(Default, new, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句
@@ -1350,6 +1350,43 @@ pub struct Options {
   #[allow(dead_code)]
   has_data_permit: Option<bool>,
   
+}
+
+impl Debug for Options {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("Options");
+    if self.is_debug {
+      item = item.field("is_debug", &self.is_debug);
+    }
+    if let Some(is_tran) = self.is_tran {
+      if is_tran {
+        item = item.field("is_tran", &is_tran);
+      }
+    }
+    if let Some(cache_key1) = &self.cache_key1 {
+      item = item.field("cache_key1", cache_key1);
+    }
+    if let Some(cache_key2) = &self.cache_key2 {
+      item = item.field("cache_key2", cache_key2);
+    }
+    if let Some(del_cache_key1s) = &self.del_cache_key1s {
+      item = item.field("del_cache_key1s", del_cache_key1s);
+    }
+    if let Some(unique_type) = &self.unique_type {
+      item = item.field("unique_type", unique_type);
+    }
+    if let Some(is_encrypt) = self.is_encrypt {
+      if is_encrypt {
+        item = item.field("is_encrypt", &is_encrypt);
+      }
+    }
+    if let Some(has_data_permit) = self.has_data_permit {
+      if has_data_permit {
+        item = item.field("has_data_permit", &has_data_permit);
+      }
+    }
+    item.finish()
+  }
 }
 
 impl Options {
@@ -1388,8 +1425,7 @@ impl Options {
         format!("dao.sql.{}", table)
       )
       .collect::<Vec<String>>()
-      .into()
-      ;
+      .into();
     self_
   }
   
@@ -1473,12 +1509,8 @@ impl <'a> CtxBuilder<'a> {
   fn new(
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
-    let now = Local::now();
-    let now = NaiveDateTime::from_timestamp_opt(
-      now.timestamp() + now.offset().local_minus_utc() as i64,
-      now.timestamp_subsec_nanos(),
-    ).unwrap();
-    let req_id = now.timestamp_millis().to_string();
+    let now = Local::now().naive_local();
+    let req_id = now.and_utc().timestamp_millis().to_string();
     CtxBuilder {
       gql_ctx,
       is_tran: None,
@@ -1535,7 +1567,7 @@ impl <'a> CtxBuilder<'a> {
     };
     let now = self.now;
     let server_tokentimeout = SERVER_TOKEN_TIMEOUT.to_owned();
-    let now_sec = now.timestamp_millis() / 1000;
+    let now_sec = now.and_utc().timestamp_millis() / 1000;
     if now_sec - server_tokentimeout > auth_model.exp {
       if now_sec - server_tokentimeout * 2 > auth_model.exp {
         return Err(anyhow!("refresh_token_expired"));

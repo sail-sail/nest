@@ -276,7 +276,7 @@ import type {
 
 import type {
   MenuInput,
-} from "#/types";
+} from "./Model";
 
 import {
   getMenuTree,

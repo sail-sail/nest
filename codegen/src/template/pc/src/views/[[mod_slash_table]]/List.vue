@@ -89,6 +89,10 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
         if (column_name === "org_id") continue;
+        const isPassword = column.isPassword;
+        if (isPassword) continue;
+        const isEncrypt = column.isEncrypt;
+        if (isEncrypt) continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
         let column_comment = column.COLUMN_COMMENT || "";
@@ -169,7 +173,6 @@ const hasAtt = columns.some((item) => item.isAtt);
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>
@@ -976,12 +979,18 @@ const hasAtt = columns.some((item) => item.isAtt);
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
+            const isEncrypt = column.isEncrypt;
+            const prefix = column.prefix || "";
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -998,14 +1007,25 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
-            } else if (column.isEncrypt) {
+            } else if (isEncrypt) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1025,8 +1045,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1036,7 +1061,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1069,7 +1098,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1099,6 +1132,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                   )"
                 ></CustomInputNumber>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
               #>
             </el-table-column>
@@ -1107,7 +1145,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1116,7 +1158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 <div
                   un-whitespace-pre
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </div>
               </template>
             </el-table-column>
@@ -1127,7 +1169,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1143,7 +1189,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
@@ -1173,6 +1219,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
               #>
             </el-table-column>
@@ -1181,7 +1232,11 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1197,8 +1252,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #>)"
                 >
-                  {{ row[column.property] }}
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
+              </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
               </template><#
               }
               #>
@@ -1208,13 +1268,17 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (!isEncrypt) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             ><#
               if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType) && !column.inlineMany2manyTab) {
-            #>
+              #>
               <template #default="{ row, column }">
                 <LinkList
                   v-model="row[column.property]"<#
@@ -1226,7 +1290,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 ></LinkList>
               </template><#
               } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1237,7 +1301,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1253,7 +1317,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
-            #>
+              #>
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -1262,8 +1326,13 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if (prefix) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row[column.property] }}
+              </template><#
               }
-            #>
+              #>
             </el-table-column>
           </template><#
             }
@@ -1454,14 +1523,6 @@ const hasAtt = columns.some((item) => item.isAtt);
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";<#
-if (hasIsMonth) {
-#>
-
-import {
-  monthrangeSearch,
-} from "@/compositions/List";<#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1582,8 +1643,8 @@ import type {
   <#=inputName#>,<#
   }
   #>
-  <#=searchName#>,<#
-{
+  <#=searchName#>,
+} from "./Model";<#
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1605,13 +1666,15 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   foreignTableUpArr.push(Foreign_Table_Up);
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
 #>
-  <#=Foreign_Table_Up#>Model,<#
+
+// <#=foreignSchema.opts.table_comment#>
+import type {
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
 #><#
-}
-#>
-} from "#/types";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -3342,6 +3405,7 @@ async function onDeleteByIds() {
     });<#
     }
     #>
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

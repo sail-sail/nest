@@ -5,6 +5,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -160,7 +161,29 @@ pub async fn find_by_id(
   ).await?;
   
   Ok(model)
+}<#
+if (hasDataPermit() && hasCreateUsrId) {
+#>
+
+/// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+pub async fn get_editable_data_permits_by_ids(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<u8>> {
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();
+  
+  let res = <#=table#>_dao::get_editable_data_permits_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(res)
+}<#
 }
+#>
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 pub async fn set_id_by_lbl(
@@ -600,7 +623,9 @@ pub async fn get_field_comments(
   ).await?;
   
   Ok(comments)
-}
+}<#
+if (hasIsDeleted) {
+#>
 
 /// 根据 ids 还原<#=table_comment#>
 #[allow(dead_code)]
@@ -623,7 +648,11 @@ pub async fn revert_by_ids(
   ).await?;
   
   Ok(num)
+}<#
 }
+#><#
+if (hasIsDeleted) {
+#>
 
 /// 根据 ids 彻底删除<#=table_comment#>
 #[allow(dead_code)]
@@ -647,6 +676,8 @@ pub async fn force_delete_by_ids(
   
   Ok(num)
 }<#
+}
+#><#
 if (hasOrderBy) {
 #>
 
