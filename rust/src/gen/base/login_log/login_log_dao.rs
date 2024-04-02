@@ -55,7 +55,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let mut where_query = String::with_capacity(80 * 10 * 2);
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
     let id = match search {
@@ -70,7 +70,7 @@ async fn get_where_query(
       },
     };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -92,7 +92,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -111,7 +113,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }
@@ -122,19 +124,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(username) = username {
-      where_query += &format!(" and t.username = {}", args.push(username.into()));
+      where_query.push_str(" and t.username = ?");
+      args.push(username.into());
     }
     let username_like = match search {
       Some(item) => item.username_like.clone(),
       None => None,
     };
     if let Some(username_like) = username_like {
-      where_query += &format!(
-        " and t.username like {}",
-        args.push(
-          format!("%{}%", sql_like(&username_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.username like ?");
+      args.push(format!("%{}%", sql_like(&username_like)).into());
     }
   }
   // 登录成功
@@ -156,7 +155,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.is_succ in ({})", arg);
+      where_query.push_str(" and t.is_succ in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   // IP
@@ -166,19 +167,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(ip) = ip {
-      where_query += &format!(" and t.ip = {}", args.push(ip.into()));
+      where_query.push_str(" and t.ip = ?");
+      args.push(ip.into());
     }
     let ip_like = match search {
       Some(item) => item.ip_like.clone(),
       None => None,
     };
     if let Some(ip_like) = ip_like {
-      where_query += &format!(
-        " and t.ip like {}",
-        args.push(
-          format!("%{}%", sql_like(&ip_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.ip like ?");
+      args.push(format!("%{}%", sql_like(&ip_like)).into());
     }
   }
   // 登录时间
@@ -192,10 +190,12 @@ async fn get_where_query(
     let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
       .and_then(|item| item.take());
     if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+      where_query.push_str(" and t.create_time >= ?");
+      args.push(create_time_gt.into());
     }
     if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+      where_query.push_str(" and t.create_time <= ?");
+      args.push(create_time_lt.into());
     }
   }
   // 创建人
@@ -217,7 +217,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and create_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -226,7 +228,7 @@ async fn get_where_query(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += " and create_usr_id_lbl.id is null";
+      where_query.push_str(" and create_usr_id_lbl.id is null");
     }
   }
   // 更新人
@@ -248,7 +250,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and update_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -257,7 +261,7 @@ async fn get_where_query(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
+      where_query.push_str(" and update_usr_id_lbl.id is null");
     }
   }
   // 更新时间
@@ -271,10 +275,12 @@ async fn get_where_query(
     let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
       .and_then(|item| item.take());
     if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+      where_query.push_str(" and t.update_time >= ?");
+      args.push(update_time_gt.into());
     }
     if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+      where_query.push_str(" and t.update_time <= ?");
+      args.push(update_time_lt.into());
     }
   }
   Ok(where_query)
