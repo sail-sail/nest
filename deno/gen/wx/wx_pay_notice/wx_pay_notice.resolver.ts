@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -26,7 +22,7 @@ import {
  * 根据条件查找微信支付通知总数
  */
 export async function findCountWxPayNotice(
-  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+  search?: WxPayNoticeSearch,
 ): Promise<number> {
   
   const {
@@ -41,7 +37,7 @@ export async function findCountWxPayNotice(
  * 根据搜索条件和分页查找微信支付通知列表
  */
 export async function findAllWxPayNotice(
-  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+  search?: WxPayNoticeSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxPayNoticeModel[]> {
@@ -67,7 +63,7 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
  * 根据条件查找第一个微信支付通知
  */
 export async function findOneWxPayNotice(
-  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+  search?: WxPayNoticeSearch,
   sort?: SortInput[],
 ): Promise<WxPayNoticeModel | undefined> {
   

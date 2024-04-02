@@ -10,17 +10,57 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   WxPaySearch,
   WxPayInput,
   WxPayModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: WxPayModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxPayInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 开发者ID
+    appid: model?.appid,
+    // 商户号
+    mchid: model?.mchid,
+    // 公钥
+    public_key: model?.public_key,
+    // 私钥
+    private_key: model?.private_key,
+    // APIv3密钥
+    v3_key: model?.v3_key,
+    // 支付终端IP
+    payer_client_ip: model?.payer_client_ip,
+    // 通知地址
+    notify_url: model?.notify_url,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxPay: Query["findAllWxPay"];
+    findAllWxPay: WxPayModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
@@ -95,7 +135,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxPay: Query["findOneWxPay"];
+    findOneWxPay?: WxPayModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxPaySearch, $sort: [SortInput!]) {
@@ -164,25 +204,26 @@ export async function findCount(
 
 /**
  * 创建微信支付设置
- * @param {WxPayInput} model
+ * @param {WxPayInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxPayInput,
+  input: WxPayInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
+  input = intoInput(input);
   const data: {
     createWxPay: Mutation["createWxPay"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxPayInput!, $unique_type: UniqueType) {
-        createWxPay(model: $model, unique_type: $unique_type)
+      mutation($input: WxPayInput!, $unique_type: UniqueType) {
+        createWxPay(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -193,25 +234,26 @@ export async function create(
 /**
  * 根据 id 修改微信支付设置
  * @param {WxPayId} id
- * @param {WxPayInput} model
+ * @param {WxPayInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxPayId,
-  model: WxPayInput,
+  input: WxPayInput,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxPay: Mutation["updateByIdWxPay"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxPayId!, $model: WxPayInput!) {
-        updateByIdWxPay(id: $id, model: $model)
+      mutation($id: WxPayId!, $input: WxPayInput!) {
+        updateByIdWxPay(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxPayId = data.updateByIdWxPay;
@@ -228,7 +270,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxPay: Query["findByIdWxPay"];
+    findByIdWxPay?: WxPayModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxPayId!) {
@@ -521,6 +563,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxPay) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("微信支付设置");
         const buffer = await workerFn(

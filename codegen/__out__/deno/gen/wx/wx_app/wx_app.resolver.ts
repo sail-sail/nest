@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找小程序设置总数
  */
 export async function findCountWxApp(
-  search?: WxAppSearch & { $extra?: SearchExtra[] },
+  search?: WxAppSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxApp(
  * 根据搜索条件和分页查找小程序设置列表
  */
 export async function findAllWxApp(
-  search?: WxAppSearch & { $extra?: SearchExtra[] },
+  search?: WxAppSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxAppModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
  * 根据条件查找第一个小程序设置
  */
 export async function findOneWxApp(
-  search?: WxAppSearch & { $extra?: SearchExtra[] },
+  search?: WxAppSearch,
   sort?: SortInput[],
 ): Promise<WxAppModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createWxApp(
   input: WxAppInput,
   unique_type?: UniqueType,
 ): Promise<WxAppId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdWxApp(
   id: WxAppId,
   input: WxAppInput,
 ): Promise<WxAppId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsWxApp(
   
   await usePermit(
     "/wx/wx_app",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsWxApp(
   
   await usePermit(
     "/wx/wx_app",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

@@ -10,21 +10,62 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxoAppSearch,
-  WxoAppInput,
-  WxoAppModel,
 } from "#/types";
 
 import type {
+  WxoAppSearch,
+  WxoAppInput,
+  WxoAppModel,
+} from "./Model";
+
+// 域名
+import type {
   DomainSearch,
-} from "#/types";
+  DomainModel,
+} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxoAppModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxoAppInput = {
+    // ID
+    id: model?.id,
+    // 原始ID
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 开发者ID
+    appid: model?.appid,
+    // 开发者密码
+    appsecret: model?.appsecret,
+    // 令牌
+    token: model?.token,
+    // 消息加解密密钥
+    encoding_aes_key: model?.encoding_aes_key,
+    // 网页授权域名
+    domain_id: model?.domain_id,
+    domain_id_lbl: model?.domain_id_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -41,7 +82,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxoApp: Query["findAllWxoApp"];
+    findAllWxoApp: WxoAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -99,7 +140,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxoApp: Query["findOneWxoApp"];
+    findOneWxoApp?: WxoAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoAppSearch, $sort: [SortInput!]) {
@@ -168,25 +209,26 @@ export async function findCount(
 
 /**
  * 创建公众号设置
- * @param {WxoAppInput} model
+ * @param {WxoAppInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxoAppInput,
+  input: WxoAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
+  input = intoInput(input);
   const data: {
     createWxoApp: Mutation["createWxoApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxoAppInput!, $unique_type: UniqueType) {
-        createWxoApp(model: $model, unique_type: $unique_type)
+      mutation($input: WxoAppInput!, $unique_type: UniqueType) {
+        createWxoApp(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -197,25 +239,26 @@ export async function create(
 /**
  * 根据 id 修改公众号设置
  * @param {WxoAppId} id
- * @param {WxoAppInput} model
+ * @param {WxoAppInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoAppId,
-  model: WxoAppInput,
+  input: WxoAppInput,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxoApp: Mutation["updateByIdWxoApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxoAppId!, $model: WxoAppInput!) {
-        updateByIdWxoApp(id: $id, model: $model)
+      mutation($id: WxoAppId!, $input: WxoAppInput!) {
+        updateByIdWxoApp(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxoAppId = data.updateByIdWxoApp;
@@ -232,7 +275,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxoApp: Query["findByIdWxoApp"];
+    findByIdWxoApp?: WxoAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxoAppId!) {
@@ -411,7 +454,7 @@ export async function findAllDomain(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -579,6 +622,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxoApp) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("公众号设置");
         const buffer = await workerFn(

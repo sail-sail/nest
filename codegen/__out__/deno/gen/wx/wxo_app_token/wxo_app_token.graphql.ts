@@ -41,7 +41,7 @@ type WxoAppTokenFieldComment {
   expires_in: String!
 }
 input WxoAppTokenInput {
-  ""
+  "ID"
   id: WxoAppTokenId
   "小程序设置"
   wxo_app_id: WxoAppId
@@ -70,9 +70,9 @@ input WxoAppTokenSearch {
   access_token: String
   access_token_like: String
   "令牌创建时间"
-  token_time: [NaiveDateTime!]
+  token_time: [NaiveDateTime]
   "令牌超时时间"
-  expires_in: [Int!]
+  expires_in: [Int]
 }
 type Query {
   "根据条件查找小程序接口凭据总数"
@@ -88,9 +88,9 @@ type Query {
 }
 type Mutation {
   "创建小程序接口凭据"
-  createWxoAppToken(model: WxoAppTokenInput!, unique_type: UniqueType): WxoAppTokenId!
+  createWxoAppToken(input: WxoAppTokenInput!, unique_type: UniqueType): WxoAppTokenId!
   "根据 id 修改小程序接口凭据"
-  updateByIdWxoAppToken(id: WxoAppTokenId!, model: WxoAppTokenInput!): WxoAppTokenId!
+  updateByIdWxoAppToken(id: WxoAppTokenId!, input: WxoAppTokenInput!): WxoAppTokenId!
   "根据 ids 删除小程序接口凭据"
   deleteByIdsWxoAppToken(ids: [WxoAppTokenId!]!): Int!
   "根据 ids 还原小程序接口凭据"

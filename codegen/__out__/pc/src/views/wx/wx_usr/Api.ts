@@ -10,21 +10,65 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxUsrSearch,
-  WxUsrInput,
-  WxUsrModel,
 } from "#/types";
 
 import type {
+  WxUsrSearch,
+  WxUsrInput,
+  WxUsrModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: WxUsrModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxUsrInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 用户
+    usr_id: model?.usr_id,
+    usr_id_lbl: model?.usr_id_lbl,
+    // 昵称
+    nick_name: model?.nick_name,
+    // 头像
+    avatar_url: model?.avatar_url,
+    // 手机
+    mobile: model?.mobile,
+    // 小程序用户唯一标识
+    openid: model?.openid,
+    // 小程序用户统一标识
+    unionid: model?.unionid,
+    // 性别
+    gender: model?.gender,
+    gender_lbl: model?.gender_lbl,
+    // 城市
+    city: model?.city,
+    // 省份
+    province: model?.province,
+    // 国家
+    country: model?.country,
+    // 语言
+    language: model?.language,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -41,7 +85,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxUsr: Query["findAllWxUsr"];
+    findAllWxUsr: WxUsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxUsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -100,7 +144,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxUsr: Query["findOneWxUsr"];
+    findOneWxUsr?: WxUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxUsrSearch, $sort: [SortInput!]) {
@@ -170,25 +214,26 @@ export async function findCount(
 
 /**
  * 创建小程序用户
- * @param {WxUsrInput} model
+ * @param {WxUsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxUsrInput,
+  input: WxUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxUsrId> {
+  input = intoInput(input);
   const data: {
     createWxUsr: Mutation["createWxUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxUsrInput!, $unique_type: UniqueType) {
-        createWxUsr(model: $model, unique_type: $unique_type)
+      mutation($input: WxUsrInput!, $unique_type: UniqueType) {
+        createWxUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -199,25 +244,26 @@ export async function create(
 /**
  * 根据 id 修改小程序用户
  * @param {WxUsrId} id
- * @param {WxUsrInput} model
+ * @param {WxUsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxUsrId,
-  model: WxUsrInput,
+  input: WxUsrInput,
   opt?: GqlOpt,
 ): Promise<WxUsrId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxUsr: Mutation["updateByIdWxUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxUsrId!, $model: WxUsrInput!) {
-        updateByIdWxUsr(id: $id, model: $model)
+      mutation($id: WxUsrId!, $input: WxUsrInput!) {
+        updateByIdWxUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxUsrId = data.updateByIdWxUsr;
@@ -234,7 +280,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxUsr: Query["findByIdWxUsr"];
+    findByIdWxUsr?: WxUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxUsrId!) {
@@ -358,7 +404,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -536,6 +582,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxUsr) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("小程序用户");
         const buffer = await workerFn(

@@ -1,8 +1,4 @@
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PayTransactionsJsapiInput as PayTransactionsJsapiInputType,
   PayTransactionsJsapiModel as PayTransactionsJsapiModelType,
   PayTransactionsJsapiSearch as PayTransactionsJsapiSearchType,
@@ -27,23 +23,30 @@ export type PayTransactionsJsapiId = Distinct<string, typeof payTransactionsJsap
 export interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
   tenant_id?: string | null;
   org_id?: string | null;
-  $extra?: SearchExtra[];
 }
 
 export interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
   create_usr_id: UsrId;
+  create_usr_id_lbl: string;
   create_time?: string | null;
+  create_time_lbl: string;
   update_usr_id: UsrId;
+  update_usr_id_lbl: string;
   update_time?: string | null;
+  update_time_lbl: string;
   tenant_id: TenantId;
   org_id: OrgId;
 }
 
 export interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
   create_usr_id?: UsrId | null;
+  create_usr_id_lbl?: string | null;
   create_time?: string | null;
+  create_time_lbl?: string | null;
   update_usr_id?: UsrId | null;
+  update_usr_id_lbl?: string | null;
   update_time?: string | null;
+  update_time_lbl?: string | null;
   is_deleted?: number | null;
   tenant_id?: TenantId | null;
   org_id?: OrgId | null;

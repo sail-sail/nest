@@ -18,8 +18,8 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,280px)]"
-      un-gap="x-2 y-2"
+      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
       
@@ -55,8 +55,8 @@
           >
             <el-checkbox
               v-model="idsChecked"
-              :false-label="0"
-              :true-label="1"
+              :false-value="0"
+              :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
@@ -84,8 +84,8 @@
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
+            :false-value="0"
+            :true-value="1"
             @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
@@ -122,6 +122,7 @@
           un-m="l-2"
           un-flex="~"
           un-items-end
+          un-h="full"
           un-gap="x-2"
         >
           
@@ -405,7 +406,7 @@
     >
       <el-table
         ref="tableRef"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
+        v-header-order-drag="() => ({ tableColumns, storeColumns })"
         :data="tableData"
         :row-class-name="rowClassName"
         border
@@ -676,7 +677,7 @@ import type {
   WxUsrModel,
   WxUsrInput,
   WxUsrSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "小程序用户",
@@ -717,14 +718,115 @@ const emit = defineEmits<{
   rowDblclick: [ WxUsrModel ],
 }>();
 
+const props = defineProps<{
+  is_deleted?: string;
+  showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
+  isFocus?: string;
+  propsNotReset?: string[];
+  isListSelectDialog?: string;
+  ids?: string[]; //ids
+  selectedIds?: WxUsrId[]; //已选择行的id列表
+  isMultiple?: Boolean; //是否多选
+  id?: WxUsrId; // ID
+  lbl?: string; // 名称
+  lbl_like?: string; // 名称
+  usr_id?: string|string[]; // 用户
+  usr_id_lbl?: string; // 用户
+  nick_name?: string; // 昵称
+  nick_name_like?: string; // 昵称
+  avatar_url?: string; // 头像
+  avatar_url_like?: string; // 头像
+  mobile?: string; // 手机
+  mobile_like?: string; // 手机
+  openid?: string; // 小程序用户唯一标识
+  openid_like?: string; // 小程序用户唯一标识
+  unionid?: string; // 小程序用户统一标识
+  unionid_like?: string; // 小程序用户统一标识
+  gender?: string|string[]; // 性别
+  city?: string; // 城市
+  city_like?: string; // 城市
+  province?: string; // 省份
+  province_like?: string; // 省份
+  country?: string; // 国家
+  country_like?: string; // 国家
+  language?: string; // 语言
+  language_like?: string; // 语言
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+}>();
+
+const builtInSearchType: { [key: string]: string } = {
+  is_deleted: "0|1",
+  showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
+  isFocus: "0|1",
+  isListSelectDialog: "0|1",
+  ids: "string[]",
+  usr_id: "string[]",
+  usr_id_lbl: "string[]",
+  gender: "number[]",
+  gender_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
+};
+
+const propsNotInSearch: string[] = [
+  "selectedIds",
+  "isMultiple",
+  "showBuildIn",
+  "isPagination",
+  "isLocked",
+  "isFocus",
+  "propsNotReset",
+  "isListSelectDialog",
+];
+
+/** 内置查询条件 */
+const builtInSearch: WxUsrSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 内置变量 */
+const builtInModel: WxUsrModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
+/** 是否 focus, 默认为 true */
+const isFocus = $computed(() => props.isFocus !== "0");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
-  return {
+  const search = {
     is_deleted: 0,
   } as WxUsrSearch;
+  if (props.propsNotReset && props.propsNotReset.length > 0) {
+    for (let i = 0; i < props.propsNotReset.length; i++) {
+      const key = props.propsNotReset[i];
+      (search as any)[key] = (builtInSearch as any)[key];
+    }
+  }
+  return search;
 }
 
 let search = $ref(initSearch());
@@ -785,94 +887,6 @@ async function onIdsChecked() {
   await dataGrid(true);
 }
 
-const props = defineProps<{
-  is_deleted?: string;
-  showBuildIn?: string;
-  isPagination?: string;
-  isLocked?: string;
-  isFocus?: string;
-  ids?: string[]; //ids
-  selectedIds?: WxUsrId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
-  id?: WxUsrId; // ID
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
-  usr_id?: string|string[]; // 用户
-  usr_id_lbl?: string; // 用户
-  nick_name?: string; // 昵称
-  nick_name_like?: string; // 昵称
-  avatar_url?: string; // 头像
-  avatar_url_like?: string; // 头像
-  mobile?: string; // 手机
-  mobile_like?: string; // 手机
-  openid?: string; // 小程序用户唯一标识
-  openid_like?: string; // 小程序用户唯一标识
-  unionid?: string; // 小程序用户统一标识
-  unionid_like?: string; // 小程序用户统一标识
-  gender?: string|string[]; // 性别
-  city?: string; // 城市
-  city_like?: string; // 城市
-  province?: string; // 省份
-  province_like?: string; // 省份
-  country?: string; // 国家
-  country_like?: string; // 国家
-  language?: string; // 语言
-  language_like?: string; // 语言
-  rem?: string; // 备注
-  rem_like?: string; // 备注
-}>();
-
-const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
-  showBuildIn: "0|1",
-  isPagination: "0|1",
-  isLocked: "0|1",
-  isFocus: "0|1",
-  ids: "string[]",
-  usr_id: "string[]",
-  usr_id_lbl: "string[]",
-  gender: "number[]",
-  gender_lbl: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
-};
-
-const propsNotInSearch: string[] = [
-  "selectedIds",
-  "isMultiple",
-  "showBuildIn",
-  "isPagination",
-  "isLocked",
-  "isFocus",
-];
-
-/** 内置查询条件 */
-const builtInSearch: WxUsrSearch = $(initBuiltInSearch(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 内置变量 */
-const builtInModel: WxUsrModel = $(initBuiltInModel(
-  props,
-  builtInSearchType,
-  propsNotInSearch,
-));
-
-/** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
-/** 是否显示内置变量 */
-const showBuildIn = $computed(() => props.showBuildIn === "1");
-/** 是否分页 */
-const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
-/** 是否只读模式 */
-const isLocked = $computed(() => props.isLocked === "1");
-/** 是否 focus, 默认为 true */
-const isFocus = $computed(() => props.isFocus !== "0");
-
 /** 分页功能 */
 let {
   page,
@@ -905,6 +919,7 @@ let {
   $$(tableRef),
   {
     multiple: $$(multiple),
+    isListSelectDialog,
   },
 ));
 
@@ -1508,7 +1523,14 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxUsrModel,
+  column: TableColumnCtx<WxUsrModel>,
 ) {
+  if (isListSelectDialog) {
+    return;
+  }
+  if (column.type === "selection") {
+    return;
+  }
   if (props.selectedIds != null && !isLocked) {
     emit("rowDblclick", row);
     return;
@@ -1575,6 +1597,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
@@ -1710,7 +1733,7 @@ watch(
       return;
     }
     search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search)) {
+    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }
     if (showBuildIn) {
