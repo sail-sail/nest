@@ -958,7 +958,7 @@ function getTableColumns(): ColumnType[] {
       label: "类型",
       prop: "type_lbl",
       sortBy: "type",
-      width: 100,
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
