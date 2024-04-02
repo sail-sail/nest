@@ -283,7 +283,7 @@ pub async fn wxw_login_by_code(
   }
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
-  let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
+  let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_model.id,

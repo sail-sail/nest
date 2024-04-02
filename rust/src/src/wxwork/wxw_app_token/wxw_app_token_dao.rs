@@ -136,7 +136,7 @@ pub async fn get_access_token(
     None,
   ).await?;
   let now = get_now();
-  let now_sec = now.timestamp_millis() / 1000;
+  let now_sec = now.and_utc().timestamp_millis() / 1000;
   if wxw_app_token_model.is_none() {
     let (
       access_token,
@@ -164,7 +164,7 @@ pub async fn get_access_token(
   let expires_in = wxw_app_token_model.expires_in as i64;
   let token_time = wxw_app_token_model.token_time;
   let token_time_sec = token_time
-    .map(|x| x.timestamp_millis() / 1000)
+    .map(|x| x.and_utc().timestamp_millis() / 1000)
     .unwrap_or(0);
   if force
     || expires_in == 0
@@ -239,7 +239,7 @@ pub async fn get_contact_access_token(
     None,
   ).await?;
   let now = get_now();
-  let now_sec = now.timestamp_millis() / 1000;
+  let now_sec = now.and_utc().timestamp_millis() / 1000;
   if wxw_app_token_model.is_none() {
     let (
       access_token,
@@ -267,7 +267,7 @@ pub async fn get_contact_access_token(
   let expires_in = wxw_app_token_model.expires_in as i64;
   let token_time = wxw_app_token_model.token_time;
   let token_time_sec = token_time
-    .map(|x| x.timestamp_millis() / 1000)
+    .map(|x| x.and_utc().timestamp_millis() / 1000)
     .unwrap_or(0);
   if force
     || expires_in == 0
