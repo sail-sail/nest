@@ -10,17 +10,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxwAppSearch,
-  WxwAppInput,
-  WxwAppModel,
 } from "#/types";
 
 import type {
+  WxwAppSearch,
+  WxwAppInput,
+  WxwAppModel,
+} from "./Model";
+
+// 域名
+import type {
   DomainSearch,
-} from "#/types";
+  DomainModel,
+} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxwAppModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -31,19 +37,30 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxwAppInput = {
+    // ID
     id: model?.id,
+    // 名称
     lbl: model?.lbl,
+    // 企业ID
     corpid: model?.corpid,
+    // 应用ID
     agentid: model?.agentid,
+    // 可信域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
+    // 应用密钥
     corpsecret: model?.corpsecret,
+    // 通讯录密钥
     contactsecret: model?.contactsecret,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
@@ -63,7 +80,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxwApp: Query["findAllWxwApp"];
+    findAllWxwApp: WxwAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -112,7 +129,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxwApp: Query["findOneWxwApp"];
+    findOneWxwApp?: WxwAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxwAppSearch, $sort: [SortInput!]) {
@@ -238,7 +255,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxwApp: Query["findByIdWxwApp"];
+    findByIdWxwApp?: WxwAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxwAppId!) {
@@ -408,7 +425,7 @@ export async function findAllDomain(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -566,6 +583,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxwApp) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("企微应用");
         const buffer = await workerFn(
