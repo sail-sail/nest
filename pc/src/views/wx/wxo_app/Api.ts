@@ -10,17 +10,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxoAppSearch,
-  WxoAppInput,
-  WxoAppModel,
 } from "#/types";
 
 import type {
+  WxoAppSearch,
+  WxoAppInput,
+  WxoAppModel,
+} from "./Model";
+
+// 域名
+import type {
   DomainSearch,
-} from "#/types";
+  DomainModel,
+} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxoAppModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -76,7 +82,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxoApp: Query["findAllWxoApp"];
+    findAllWxoApp: WxoAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -134,7 +140,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxoApp: Query["findOneWxoApp"];
+    findOneWxoApp?: WxoAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoAppSearch, $sort: [SortInput!]) {
@@ -269,7 +275,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxoApp: Query["findByIdWxoApp"];
+    findByIdWxoApp?: WxoAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxoAppId!) {
@@ -448,7 +454,7 @@ export async function findAllDomain(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -616,6 +622,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxoApp) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("公众号设置");
         const buffer = await workerFn(

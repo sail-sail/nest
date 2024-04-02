@@ -379,7 +379,7 @@ import type {
 
 import type {
   PayTransactionsJsapiInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

@@ -747,7 +747,7 @@ import type {
   WxoAppModel,
   WxoAppInput,
   WxoAppSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "公众号设置",
@@ -1685,6 +1685,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

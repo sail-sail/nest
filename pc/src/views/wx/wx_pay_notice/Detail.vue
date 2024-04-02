@@ -398,7 +398,7 @@ import type {
 
 import type {
   WxPayNoticeInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

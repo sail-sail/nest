@@ -757,7 +757,7 @@ import type {
   WxPayModel,
   WxPayInput,
   WxPaySearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "微信支付设置",
@@ -1711,6 +1711,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
