@@ -1090,7 +1090,6 @@ export async function updateById(
   const table = "wx_wxo_usr";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
