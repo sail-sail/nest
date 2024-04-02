@@ -1027,7 +1027,6 @@ export async function updateById(
   const table = "wxwork_wxw_app_token";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
