@@ -923,7 +923,6 @@ export async function updateById(
   const table = "base_permit";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
