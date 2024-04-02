@@ -639,8 +639,12 @@ import type {
   FieldPermitModel,
   FieldPermitInput,
   FieldPermitSearch,
+} from "./Model";
+
+// 菜单
+import type {
   MenuModel,
-} from "#/types";
+} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,
@@ -1481,6 +1485,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

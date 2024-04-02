@@ -391,11 +391,14 @@ export interface TableCloumn {
    */
   width?: number,
   
+  /** 前缀 */
+  prefix?: string,
+  
   /**
    * 表格列 headerAlign
    * 
    */
-   headerAlign?: string,
+  headerAlign?: string,
   
   /**
    * 表格列 align

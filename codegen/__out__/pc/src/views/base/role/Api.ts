@@ -10,22 +10,31 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   RoleSearch,
   RoleInput,
   RoleModel,
-} from "#/types";
+} from "./Model";
 
+// 菜单
 import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
+// 按钮权限
 import type {
   PermitSearch,
-} from "#/types";
+  PermitModel,
+} from "@/views/base/permit/Model";
 
+// 数据权限
 import type {
   DataPermitSearch,
-} from "#/types";
+  DataPermitModel,
+} from "@/views/base/data_permit/Model";
 
 import {
   findTree as findMenuTree,
@@ -33,6 +42,7 @@ import {
 
 async function setLblById(
   model?: RoleModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -86,7 +96,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllRole: Query["findAllRole"];
+    findAllRole: RoleModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -144,7 +154,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneRole: Query["findOneRole"];
+    findOneRole?: RoleModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $sort: [SortInput!]) {
@@ -279,7 +289,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdRole: Query["findByIdRole"];
+    findByIdRole?: RoleModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: RoleId!) {
@@ -458,7 +468,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -504,7 +514,7 @@ export async function findAllPermit(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPermit: Query["findAllPermit"];
+    findAllPermit: PermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -548,7 +558,7 @@ export async function findAllDataPermit(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDataPermit: Query["findAllDataPermit"];
+    findAllDataPermit: DataPermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -742,6 +752,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllRole) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("角色");
         const buffer = await workerFn(

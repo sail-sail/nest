@@ -106,23 +106,17 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "version") continue;
   const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  if (!column_type) {
+  const data_type = column.DATA_TYPE;
+  if (data_type !== "decimal") {
     continue;
   }
-  if (!column_type.startsWith("decimal")) {
-    continue;
-  }
-  const isVirtual = column.isVirtual;
-  if (!isVirtual) continue;
   hasDecimal = true;
+  break;
 }
 #><#
 if (hasDecimal) {
@@ -855,6 +849,10 @@ async function getWhereQuery(
     if (column_name === "is_sys") continue;
     const isPassword = column.isPassword;
     if (isPassword) {
+      continue;
+    }
+    const isEncrypt = column.isEncrypt;
+    if (isEncrypt) {
       continue;
     }
     let selectList = [ ];
@@ -1602,7 +1600,7 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const comment = column.COLUMN_COMMENT;
+    const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1627,10 +1625,14 @@ export async function findAll(
     }).join("");
   #>
   
-  // <#=comment#>
+  // <#=table_comment#>
   const <#=column_name#>_<#=table#>_models = await findAll<#=Table_Up#>({
-    <#=many2many.column1#>: result.map((item) => item.id),
-    is_deleted: search?.is_deleted,
+    <#=many2many.column1#>: result.map((item) => item.id),<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: search?.is_deleted,<#
+    }
+    #>
   });<#
   }
   #>
@@ -1646,6 +1648,7 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
+      if (column_name === "tenant_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -1657,18 +1660,45 @@ export async function findAll(
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       const isVirtual = column.isVirtual;
+      let precision = 0;
+      if (data_type === "decimal") {
+        const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+        precision = Number(arr[1]);
+      }
     #><#
-      if (column_type && column_type.startsWith("decimal") && isVirtual && !isEncrypt) {
+      if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
     model.<#=column_name#> = new Decimal(<#=column_default || 0#>);<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = "<#=column_default#>";<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = <#=column_default#>;<#
+        continue;
       }
     #><#
-      if (isEncrypt) {
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
+    model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = Number(await decrypt(model.<#=column_name#>.toString()) || 0);<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
@@ -2561,12 +2591,7 @@ export async function checkByUnique(
   input: <#=inputName#>,
   oldModel: <#=modelName#>,
   uniqueType: UniqueType = UniqueType.Throw,
-  options?: {<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+  options?: {
   },
 ): Promise<<#=Table_Up#>Id | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -2581,14 +2606,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,<#
-          if (hasEncrypt) {
-          #>
-          isEncrypt: false,<#
-          }
-          #>
-        },
+        options,
       );
       return id;
     }
@@ -3082,12 +3100,7 @@ export async function create(
   options?: {
     debug?: boolean;
     uniqueType?: UniqueType;
-    hasDataPermit?: boolean;<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+    hasDataPermit?: boolean;
   },
 ): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
@@ -3108,43 +3121,7 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
-  }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
   }
-  #>
   
   await setIdByLbl(input);
   
@@ -3193,13 +3170,7 @@ export async function create(
     insert into <#=mod#>_<#=table#>(
       id<#
       if (hasCreateTime) {
-      #>
-      ,create_time<#
-      }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      ,update_time<#
+      #>,create_time<#
       }
       #>
   `;<#
@@ -3230,24 +3201,12 @@ export async function create(
   #><#
   if (hasCreateUsrId) {
   #>
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }<#
   }
@@ -3342,13 +3301,9 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },<#
+  sql += `)values(${ args.push(input.id) }<#
   if (hasCreateTime) {
-  #>${ args.push(reqDate()) },<#
-  }
-  #><#
-  if (hasUpdateTime) {
-  #>${ args.push(reqDate()) }<#
+  #>,${ args.push(reqDate()) }<#
   }
   #>`;<#
   if (hasTenant_id) {
@@ -3388,18 +3343,6 @@ export async function create(
   }<#
   }
   #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3420,10 +3363,11 @@ export async function create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
-  if (isNotEmpty(input.<#=modelLabel#>)) {
+  if (input.<#=modelLabel#> != null) {
     sql += `,${ args.push(input.<#=modelLabel#>) }`;
   }<#
     }
@@ -3435,20 +3379,59 @@ export async function create(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     }
   #><#
@@ -3908,14 +3891,10 @@ export async function updateById(
     #>
     hasDataPermit?: boolean,<#
     }
-    #><#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
     #>
   },
 ): Promise<<#=Table_Up#>Id> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
@@ -3940,42 +3919,6 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   
@@ -4101,6 +4044,12 @@ export async function updateById(
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
   #><#
     if (modelLabel) {
   #>
@@ -4124,8 +4073,22 @@ export async function updateById(
     if (isEmpty(input.<#=column_name#>)) {
       input.<#=column_name#> = null;
     }
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4134,16 +4097,44 @@ export async function updateById(
     } else if (!foreignKey) {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
     } else {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4430,6 +4421,11 @@ export async function updateById(
       sql += `update_time = ${ args.push(input.update_time) }`;
     } else {
       sql += `update_time = ${ args.push(reqDate()) }`;
+    }<#
+    } else {
+    #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }<#
     }
     #>
@@ -5087,14 +5083,12 @@ export async function revertByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=many2many.column1#>: ids,
-      is_deleted: 1,
-    });
-    const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
-    await revertByIds<#=Table_Up#>(<#=table#>_ids);
-  }<#
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+    is_deleted: 1,
+  });
+  const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
+  await revertByIds<#=Table_Up#>(<#=table#>_ids);<#
   }
   #><#
   if (cache) {
@@ -5231,18 +5225,16 @@ export async function forceDeleteByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+  {
     const <#=table#>_models = await findAll<#=Table_Up#>({
       <#=many2many.column1#>: ids,
+      is_deleted: 1,
     });
-    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
-      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    }
+    await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
   }<#
   }
   #><#

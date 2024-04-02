@@ -6,13 +6,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   LoginLogSearch,
   LoginLogInput,
   LoginLogModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: LoginLogModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -50,7 +54,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLoginLog: Query["findAllLoginLog"];
+    findAllLoginLog: LoginLogModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LoginLogSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -92,7 +96,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneLoginLog: Query["findOneLoginLog"];
+    findOneLoginLog?: LoginLogModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: LoginLogSearch, $sort: [SortInput!]) {
@@ -153,7 +157,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdLoginLog: Query["findByIdLoginLog"];
+    findByIdLoginLog?: LoginLogModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: LoginLogId!) {
@@ -358,6 +362,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllLoginLog) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("登录日志");
         const buffer = await workerFn(

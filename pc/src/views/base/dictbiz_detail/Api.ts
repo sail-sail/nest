@@ -10,17 +10,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DictbizDetailSearch,
-  DictbizDetailInput,
-  DictbizDetailModel,
 } from "#/types";
 
 import type {
+  DictbizDetailSearch,
+  DictbizDetailInput,
+  DictbizDetailModel,
+} from "./Model";
+
+// 业务字典
+import type {
   DictbizSearch,
-} from "#/types";
+  DictbizModel,
+} from "@/views/base/dictbiz/Model";
 
 async function setLblById(
   model?: DictbizDetailModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -68,7 +74,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbizDetail: Query["findAllDictbizDetail"];
+    findAllDictbizDetail: DictbizDetailModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -122,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDictbizDetail: Query["findOneDictbizDetail"];
+    findOneDictbizDetail?: DictbizDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizDetailSearch, $sort: [SortInput!]) {
@@ -253,7 +259,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDictbizDetail: Query["findByIdDictbizDetail"];
+    findByIdDictbizDetail?: DictbizDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictbizDetailId!) {
@@ -428,7 +434,7 @@ export async function findAllDictbiz(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbiz: Query["findAllDictbiz"];
+    findAllDictbiz: DictbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -588,6 +594,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDictbizDetail) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("业务字典明细");
         const buffer = await workerFn(

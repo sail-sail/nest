@@ -2553,9 +2553,10 @@ import type {
 } from "@/typings/ids";
 
 import type {
-  <#=inputName#>,<#
-  const foreignTableArr = [];
-  for (let i = 0; i < columns.length; i++) {
+  <#=inputName#>,
+} from "./Model";<#
+const foreignTableArr = [];
+for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
@@ -2587,10 +2588,12 @@ import type {
     continue;
   }
 #>
-  <#=Foreign_Table_Up#>Model,<#
+
+import type {
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
 }
-#>
-} from "#/types";<#
+#><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
