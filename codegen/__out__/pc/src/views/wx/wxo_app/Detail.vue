@@ -321,8 +321,11 @@ import type {
 
 import type {
   WxoAppInput,
+} from "./Model";
+
+import type {
   DomainModel,
-} from "#/types";
+} from "@/views/base/domain/Model";
 
 import {
   getDomainList,

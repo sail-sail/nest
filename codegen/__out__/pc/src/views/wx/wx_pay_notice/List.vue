@@ -624,7 +624,7 @@ import {
 import type {
   WxPayNoticeModel,
   WxPayNoticeSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "微信支付通知",
