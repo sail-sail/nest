@@ -200,12 +200,8 @@ import type {
 } from "@/typings/ids";
 
 import type {
-  LoginLogInput as LoginLogInput0,
-} from "#/types";
-
-type LoginLogInput = LoginLogInput0 & {
-  create_time_lbl?: string | null;
-};
+  LoginLogInput,
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

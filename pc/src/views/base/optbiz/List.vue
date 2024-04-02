@@ -699,7 +699,7 @@ import type {
   OptbizModel,
   OptbizInput,
   OptbizSearch,
-} from "#/types";
+} from "./Model";
 
 import {
   publish,
@@ -1647,6 +1647,7 @@ async function onDeleteByIds() {
       }),
       payload: selectedIds,
     });
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

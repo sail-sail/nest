@@ -262,7 +262,7 @@ import type {
 
 import type {
   OptbizInput,
-} from "#/types";
+} from "./Model";
 
 import {
   subscribe,

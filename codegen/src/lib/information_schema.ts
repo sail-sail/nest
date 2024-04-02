@@ -434,6 +434,16 @@ async function getSchema0(
     ) {
       item.notImportExportList = true;
     }
+    if (record && record.DATA_TYPE === "date") {
+      if (item.width == null) {
+        item.width = 100;
+      }
+    }
+    if (record && record.DATA_TYPE === "datetime") {
+      if (item.width == null) {
+        item.width = 150;
+      }
+    }
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {

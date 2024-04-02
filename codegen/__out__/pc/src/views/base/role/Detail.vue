@@ -249,7 +249,7 @@ import type {
 
 import type {
   RoleInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

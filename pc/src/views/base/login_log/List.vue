@@ -434,7 +434,7 @@ import {
 import type {
   LoginLogModel,
   LoginLogSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "登录日志",
@@ -1013,6 +1013,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

@@ -694,7 +694,7 @@ import type {
   DomainModel,
   DomainInput,
   DomainSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "域名",
@@ -1608,6 +1608,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
