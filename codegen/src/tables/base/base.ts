@@ -673,7 +673,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "type",
         require: true,
-        width: 100,
+        width: 140,
         align: "center",
       },
       {
