@@ -667,6 +667,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
       precision = Number(arr[1]);
     }
+    const column_default = column.COLUMN_DEFAULT || "";
     #><#
       if (data_type === "decimal" && isVirtual) {
     #>
