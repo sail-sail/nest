@@ -116,6 +116,7 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   hasDecimal = true;
+  break;
 }
 #><#
 if (hasDecimal) {
@@ -1647,6 +1648,7 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
+      if (column_name === "tenant_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -1664,11 +1666,24 @@ export async function findAll(
         precision = Number(arr[1]);
       }
     #><#
-      if (column_type && column_type.startsWith("decimal") && isVirtual && !isEncrypt) {
+      if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
     model.<#=column_name#> = new Decimal(<#=column_default || 0#>);<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = "<#=column_default#>";<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = <#=column_default#>;<#
+        continue;
       }
     #><#
       if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
