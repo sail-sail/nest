@@ -64,7 +64,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let mut where_query = String::with_capacity(80 * 16 * 2);
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
     let id = match search {
@@ -79,7 +79,7 @@ async fn get_where_query(
       },
     };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -101,7 +101,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -120,7 +122,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }
@@ -131,19 +133,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
+      where_query.push_str(" and t.lbl = ?");
+      args.push(lbl.into());
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(
-        " and t.lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&lbl_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
   // 首页
@@ -153,19 +152,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(home_url) = home_url {
-      where_query += &format!(" and t.home_url = {}", args.push(home_url.into()));
+      where_query.push_str(" and t.home_url = ?");
+      args.push(home_url.into());
     }
     let home_url_like = match search {
       Some(item) => item.home_url_like.clone(),
       None => None,
     };
     if let Some(home_url_like) = home_url_like {
-      where_query += &format!(
-        " and t.home_url like {}",
-        args.push(
-          format!("%{}%", sql_like(&home_url_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.home_url like ?");
+      args.push(format!("%{}%", sql_like(&home_url_like)).into());
     }
   }
   // 菜单权限
@@ -187,7 +183,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and base_menu.id in ({})", arg);
+      where_query.push_str(" and base_menu.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -196,7 +194,7 @@ async fn get_where_query(
       None => false,
     };
     if menu_ids_is_null {
-      where_query += " and menu_ids_lbl.id is null";
+      where_query.push_str(" and menu_ids_lbl.id is null");
     }
   }
   // 按钮权限
@@ -218,7 +216,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and base_permit.id in ({})", arg);
+      where_query.push_str(" and base_permit.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -227,7 +227,7 @@ async fn get_where_query(
       None => false,
     };
     if permit_ids_is_null {
-      where_query += " and permit_ids_lbl.id is null";
+      where_query.push_str(" and permit_ids_lbl.id is null");
     }
   }
   // 数据权限
@@ -249,7 +249,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and base_data_permit.id in ({})", arg);
+      where_query.push_str(" and base_data_permit.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -258,7 +260,7 @@ async fn get_where_query(
       None => false,
     };
     if data_permit_ids_is_null {
-      where_query += " and data_permit_ids_lbl.id is null";
+      where_query.push_str(" and data_permit_ids_lbl.id is null");
     }
   }
   // 锁定
@@ -280,7 +282,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.is_locked in ({})", arg);
+      where_query.push_str(" and t.is_locked in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   // 启用
@@ -302,7 +306,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
+      where_query.push_str(" and t.is_enabled in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   // 排序
@@ -316,10 +322,12 @@ async fn get_where_query(
     let order_by_lt: Option<u32> = order_by.get_mut(1)
       .and_then(|item| item.take());
     if let Some(order_by_gt) = order_by_gt {
-      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
+      where_query.push_str(" and t.order_by >= ?");
+      args.push(order_by_gt.into());
     }
     if let Some(order_by_lt) = order_by_lt {
-      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
+      where_query.push_str(" and t.order_by <= ?");
+      args.push(order_by_lt.into());
     }
   }
   // 备注
@@ -329,19 +337,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+      where_query.push_str(" and t.rem = ?");
+      args.push(rem.into());
     }
     let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(
-        " and t.rem like {}",
-        args.push(
-          format!("%{}%", sql_like(&rem_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.rem like ?");
+      args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
   // 创建人
@@ -363,7 +368,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and create_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -372,7 +379,7 @@ async fn get_where_query(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += " and create_usr_id_lbl.id is null";
+      where_query.push_str(" and create_usr_id_lbl.id is null");
     }
   }
   // 创建时间
@@ -386,10 +393,12 @@ async fn get_where_query(
     let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
       .and_then(|item| item.take());
     if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+      where_query.push_str(" and t.create_time >= ?");
+      args.push(create_time_gt.into());
     }
     if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+      where_query.push_str(" and t.create_time <= ?");
+      args.push(create_time_lt.into());
     }
   }
   // 更新人
@@ -411,7 +420,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and update_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push_str(")");
     }
   }
   {
@@ -420,7 +431,7 @@ async fn get_where_query(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
+      where_query.push_str(" and update_usr_id_lbl.id is null");
     }
   }
   // 更新时间
@@ -434,10 +445,12 @@ async fn get_where_query(
     let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
       .and_then(|item| item.take());
     if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+      where_query.push_str(" and t.update_time >= ?");
+      args.push(update_time_gt.into());
     }
     if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+      where_query.push_str(" and t.update_time <= ?");
+      args.push(update_time_lt.into());
     }
   }
   Ok(where_query)
