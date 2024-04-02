@@ -93,7 +93,7 @@ type TenantFieldComment {
   update_time_lbl: String!
 }
 input TenantInput {
-  ""
+  "ID"
   id: TenantId
   "名称"
   lbl: String
@@ -117,22 +117,6 @@ input TenantInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input TenantSearch {
   "是否已删除"
@@ -155,7 +139,7 @@ input TenantSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -163,12 +147,12 @@ input TenantSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找租户总数"
@@ -186,9 +170,9 @@ type Query {
 }
 type Mutation {
   "创建租户"
-  createTenant(model: TenantInput!, unique_type: UniqueType): TenantId!
+  createTenant(input: TenantInput!, unique_type: UniqueType): TenantId!
   "根据 id 修改租户"
-  updateByIdTenant(id: TenantId!, model: TenantInput!): TenantId!
+  updateByIdTenant(id: TenantId!, input: TenantInput!): TenantId!
   "根据 ids 删除租户"
   deleteByIdsTenant(ids: [TenantId!]!): Int!
   "根据 ids 启用或者禁用租户"

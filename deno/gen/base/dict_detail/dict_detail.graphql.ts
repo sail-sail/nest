@@ -89,7 +89,7 @@ type DictDetailFieldComment {
   update_time_lbl: String!
 }
 input DictDetailInput {
-  ""
+  "ID"
   id: DictDetailId
   "系统字典"
   dict_id: DictId
@@ -111,22 +111,6 @@ input DictDetailInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input DictDetailSearch {
   "是否已删除"
@@ -149,7 +133,7 @@ input DictDetailSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -157,12 +141,12 @@ input DictDetailSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找系统字典明细总数"
@@ -180,9 +164,9 @@ type Query {
 }
 type Mutation {
   "创建系统字典明细"
-  createDictDetail(model: DictDetailInput!, unique_type: UniqueType): DictDetailId!
+  createDictDetail(input: DictDetailInput!, unique_type: UniqueType): DictDetailId!
   "根据 id 修改系统字典明细"
-  updateByIdDictDetail(id: DictDetailId!, model: DictDetailInput!): DictDetailId!
+  updateByIdDictDetail(id: DictDetailId!, input: DictDetailInput!): DictDetailId!
   "根据 ids 删除系统字典明细"
   deleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
   "根据 ids 启用或者禁用系统字典明细"

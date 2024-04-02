@@ -107,9 +107,13 @@ export class Client {
    * @param sql query sql string
    * @param params query params
    */
-  async query(sql: string, params?: any[]): Promise<any> {
+  async query(sql: string, params?: any[],
+    opt?: {
+      debug?: boolean,
+    },
+  ): Promise<any> {
     return await this.useConnection(async (connection) => {
-      return await connection.query(sql, params);
+      return await connection.query(sql, params, opt);
     });
   }
 
@@ -124,13 +128,20 @@ export class Client {
     });
   }
 
-  async useConnection<T>(fn: (conn: Connection) => Promise<T>) {
+  async useConnection<T>(fn: (conn: Connection) => Promise<T>): Promise<T> {
     if (!this._pool) {
       throw new Error("Unconnected");
     }
     const connection = await this._pool.pop();
     try {
       return await fn(connection);
+    } catch(err) {
+      if (err instanceof Deno.errors.ConnectionAborted) {
+        log.error(`Connection aborted: ${ err.message }`);
+        connection.removeFromPool();
+        return await this.useConnection(fn);
+      }
+      throw err;
     } finally {
       if (connection.state == ConnectionState.CLOSED) {
         connection.removeFromPool();

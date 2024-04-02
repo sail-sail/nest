@@ -24,7 +24,7 @@ export async function chars_max_length(
   if (len == null) {
     return;
   }
-  const value_len = value.length;
+  const value_len = value.length || 0;
   if (value_len <= len) {
     return;
   }

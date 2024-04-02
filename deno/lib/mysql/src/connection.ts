@@ -291,8 +291,12 @@ export class Connection {
    * @param sql query sql string
    * @param params query params
    */
-  async query(sql: string, params?: any[]): Promise<ExecuteResult | any[]> {
-    const result = await this.execute(sql, params);
+  async query(sql: string, params?: any[],
+    opt?: {
+      debug?: boolean,
+    },
+  ): Promise<ExecuteResult | any[]> {
+    const result = await this.execute(sql, params, undefined, opt);
     if (result && result.rows) {
       return result.rows;
     } else {
@@ -310,6 +314,9 @@ export class Connection {
     sql: string,
     params?: any[],
     iterator = false,
+    opt?: {
+      debug?: boolean,
+    },
   ): Promise<ExecuteResult> {
     if (this.state != ConnectionState.CONNECTED) {
       if (this.state == ConnectionState.CLOSED) {
@@ -318,7 +325,7 @@ export class Connection {
         throw new ConnnectionError("Must be connected first");
       }
     }
-    const data = buildQuery(sql, params);
+    const data = buildQuery(sql, params, opt);
     try {
       await new SendPacket(data, 0).send(this.conn!);
       let receive = await this.nextPacket();

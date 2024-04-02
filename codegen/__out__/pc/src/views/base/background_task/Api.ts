@@ -11,17 +11,51 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   BackgroundTaskSearch,
   BackgroundTaskInput,
   BackgroundTaskModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: BackgroundTaskModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: BackgroundTaskInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 状态
+    state: model?.state,
+    state_lbl: model?.state_lbl,
+    // 类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    // 执行结果
+    result: model?.result,
+    // 错误信息
+    err_msg: model?.err_msg,
+    // 开始时间
+    begin_time: model?.begin_time,
+    begin_time_lbl: model?.begin_time_lbl,
+    // 结束时间
+    end_time: model?.end_time,
+    end_time_lbl: model?.end_time_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -38,7 +72,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllBackgroundTask: Query["findAllBackgroundTask"];
+    findAllBackgroundTask: BackgroundTaskModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -94,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneBackgroundTask: Query["findOneBackgroundTask"];
+    findOneBackgroundTask?: BackgroundTaskModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
@@ -169,7 +203,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdBackgroundTask: Query["findByIdBackgroundTask"];
+    findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: BackgroundTaskId!) {
@@ -409,6 +443,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllBackgroundTask) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("后台任务");
         const buffer = await workerFn(

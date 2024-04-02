@@ -77,7 +77,7 @@ type I18nFieldComment {
   update_time_lbl: String!
 }
 input I18nInput {
-  ""
+  "ID"
   id: I18nId
   "语言"
   lang_id: LangId
@@ -93,22 +93,6 @@ input I18nInput {
   lbl: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input I18nSearch {
   "是否已删除"
@@ -136,12 +120,12 @@ input I18nSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找国际化总数"
@@ -157,9 +141,9 @@ type Query {
 }
 type Mutation {
   "创建国际化"
-  createI18n(model: I18nInput!, unique_type: UniqueType): I18nId!
+  createI18n(input: I18nInput!, unique_type: UniqueType): I18nId!
   "根据 id 修改国际化"
-  updateByIdI18n(id: I18nId!, model: I18nInput!): I18nId!
+  updateByIdI18n(id: I18nId!, input: I18nInput!): I18nId!
   "根据 ids 删除国际化"
   deleteByIdsI18n(ids: [I18nId!]!): Int!
   "根据 ids 还原国际化"

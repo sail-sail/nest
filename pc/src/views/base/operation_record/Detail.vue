@@ -51,7 +51,7 @@
       un-box-border
       un-gap="4"
       un-justify-start
-      un-items-center
+      un-items-safe-center
     >
       <el-form
         ref="formRef"
@@ -146,32 +146,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.old_data == null)">
-          <el-form-item
-            :label="n('操作前数据')"
-            prop="old_data"
-          >
-            <CustomInput
-              v-model="dialogModel.old_data"
-              :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.new_data == null)">
-          <el-form-item
-            :label="n('操作后数据')"
-            prop="new_data"
-          >
-            <CustomInput
-              v-model="dialogModel.new_data"
-              :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
@@ -253,7 +227,7 @@ import type {
 
 import type {
   OperationRecordInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [
@@ -507,13 +481,18 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  if (!dialogModel.id) {
+  const id = dialogModel.id;
+  if (!id) {
     return;
   }
-  const data = await findOneModel({
-    id: dialogModel.id,
-    is_deleted,
-  });
+  const [
+    data,
+  ] = await Promise.all([
+    await findOneModel({
+      id,
+      is_deleted,
+    }),
+  ]);
   if (data) {
     dialogModel = {
       ...data,
@@ -530,7 +509,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("操作记录")));
   }
 }
 
@@ -654,8 +633,8 @@ async function onInitI18ns() {
     "耗时(毫秒)",
     "操作前数据",
     "操作后数据",
-    "创建人",
-    "创建时间",
+    "操作人",
+    "操作时间",
   ];
   await Promise.all([
     initDetailI18ns(),

@@ -10,17 +10,42 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   LangSearch,
   LangInput,
   LangModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: LangModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: LangInput = {
+    // ID
+    id: model?.id,
+    // 编码
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +62,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLang: Query["findAllLang"];
+    findAllLang: LangModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -87,7 +112,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneLang: Query["findOneLang"];
+    findOneLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput!]) {
@@ -148,25 +173,26 @@ export async function findCount(
 
 /**
  * 创建语言
- * @param {LangInput} model
+ * @param {LangInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: LangInput,
+  input: LangInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<LangId> {
+  input = intoInput(input);
   const data: {
     createLang: Mutation["createLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: LangInput!, $unique_type: UniqueType) {
-        createLang(model: $model, unique_type: $unique_type)
+      mutation($input: LangInput!, $unique_type: UniqueType) {
+        createLang(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -177,25 +203,26 @@ export async function create(
 /**
  * 根据 id 修改语言
  * @param {LangId} id
- * @param {LangInput} model
+ * @param {LangInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: LangId,
-  model: LangInput,
+  input: LangInput,
   opt?: GqlOpt,
 ): Promise<LangId> {
+  input = intoInput(input);
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: LangId!, $model: LangInput!) {
-        updateByIdLang(id: $id, model: $model)
+      mutation($id: LangId!, $input: LangInput!) {
+        updateByIdLang(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: LangId = data.updateByIdLang;
@@ -212,7 +239,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdLang: Query["findByIdLang"];
+    findByIdLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: LangId!) {
@@ -456,6 +483,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllLang) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("语言");
         const buffer = await workerFn(

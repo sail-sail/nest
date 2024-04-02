@@ -40,6 +40,12 @@ export interface TableCloumn {
   noList?: boolean;
   
   /**
+   * 前端不允许导出这个字段
+   * 默认为false
+   */
+  noExport?: boolean;
+  
+  /**
    * List页面表格是否 showOverflowTooltip
    * 默认为true
    */
@@ -267,7 +273,13 @@ export interface TableCloumn {
      */
     isLinkForeignTabs?: boolean;
     
+    /** 不允许通过中文变成id, 也意味着不允许导入, 因为导入只能设置中文 */
+    notSetIdByLbl?: boolean;
+    
   },
+  
+  /** foreignTabs 弹出框的大小, 默认为 medium */
+  foreignTabsDialogType?: "auto" | "medium" | "large" | "default",
   
   foreignTabs?: {
     /**
@@ -309,6 +321,11 @@ export interface TableCloumn {
      */
     column2?: string,
   },
+  
+  /**
+   * 多对多关联时, 如果中间表需要编辑, 则设置为true, 默认为false
+   */
+  inlineMany2manyTab?: boolean;
   
   /**
    * 是否必填
@@ -374,11 +391,14 @@ export interface TableCloumn {
    */
   width?: number,
   
+  /** 前缀 */
+  prefix?: string,
+  
   /**
    * 表格列 headerAlign
    * 
    */
-   headerAlign?: string,
+  headerAlign?: string,
   
   /**
    * 表格列 align
@@ -629,6 +649,12 @@ export interface TablesConfigItem {
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
     
+    /** 是否有 update_usr_id 字段 */
+    hasUpdateUsrId?: boolean;
+    
+    /** 是否有 update_time 字段 */
+    hasUpdateTime?: boolean;
+    
     /** 是否有 version 字段 */
     hasVersion?: boolean;
     
@@ -701,6 +727,10 @@ export interface TablesConfigItem {
       table: string;
       label: string;
       column: string;
+      /** 字段名称, 默认值为 <#=table#> */
+      column_name?: string;
+      /** 一对一还是一对多, 默认为 one2many 一对多*/
+      foreign_type?: "one2one" | "one2many";
     }[],
     
     /**

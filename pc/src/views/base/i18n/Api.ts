@@ -10,18 +10,25 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   I18nSearch,
   I18nInput,
   I18nModel,
-} from "#/types";
+} from "./Model";
 
+// 语言
 import type {
   LangSearch,
-} from "#/types";
+  LangModel,
+} from "@/views/base/lang/Model";
 
+// 菜单
 import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -29,10 +36,33 @@ import {
 
 async function setLblById(
   model?: I18nModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: I18nInput = {
+    // ID
+    id: model?.id,
+    // 语言
+    lang_id: model?.lang_id,
+    lang_id_lbl: model?.lang_id_lbl,
+    // 菜单
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    // 编码
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -49,7 +79,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllI18n: Query["findAllI18n"];
+    findAllI18n: I18nModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -100,7 +130,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneI18n: Query["findOneI18n"];
+    findOneI18n?: I18nModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $sort: [SortInput!]) {
@@ -162,25 +192,26 @@ export async function findCount(
 
 /**
  * 创建国际化
- * @param {I18nInput} model
+ * @param {I18nInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: I18nInput,
+  input: I18nInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<I18nId> {
+  input = intoInput(input);
   const data: {
     createI18n: Mutation["createI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: I18nInput!, $unique_type: UniqueType) {
-        createI18n(model: $model, unique_type: $unique_type)
+      mutation($input: I18nInput!, $unique_type: UniqueType) {
+        createI18n(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -191,25 +222,26 @@ export async function create(
 /**
  * 根据 id 修改国际化
  * @param {I18nId} id
- * @param {I18nInput} model
+ * @param {I18nInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: I18nId,
-  model: I18nInput,
+  input: I18nInput,
   opt?: GqlOpt,
 ): Promise<I18nId> {
+  input = intoInput(input);
   const data: {
     updateByIdI18n: Mutation["updateByIdI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: I18nId!, $model: I18nInput!) {
-        updateByIdI18n(id: $id, model: $model)
+      mutation($id: I18nId!, $input: I18nInput!) {
+        updateByIdI18n(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: I18nId = data.updateByIdI18n;
@@ -226,7 +258,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdI18n: Query["findByIdI18n"];
+    findByIdI18n?: I18nModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: I18nId!) {
@@ -342,7 +374,7 @@ export async function findAllLang(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLang: Query["findAllLang"];
+    findAllLang: LangModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -388,7 +420,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -563,6 +595,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllI18n) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("国际化");
         const buffer = await workerFn(

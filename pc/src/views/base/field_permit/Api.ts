@@ -14,14 +14,19 @@ import type {
   Query,
   Mutation,
   PageInput,
-  FieldPermitSearch,
-  FieldPermitInput,
-  FieldPermitModel,
 } from "#/types";
 
 import type {
+  FieldPermitSearch,
+  FieldPermitInput,
+  FieldPermitModel,
+} from "./Model";
+
+// 菜单
+import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -29,10 +34,33 @@ import {
 
 async function setLblById(
   model?: FieldPermitModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: FieldPermitInput = {
+    // ID
+    id: model?.id,
+    // 菜单
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    // 编码
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -49,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllFieldPermit: Query["findAllFieldPermit"];
+    findAllFieldPermit: FieldPermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: FieldPermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -100,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneFieldPermit: Query["findOneFieldPermit"];
+    findOneFieldPermit?: FieldPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: FieldPermitSearch, $sort: [SortInput!]) {
@@ -162,25 +190,26 @@ export async function findCount(
 
 /**
  * 创建字段权限
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
+  input = intoInput(input);
   const data: {
     createFieldPermit: Mutation["createFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: FieldPermitInput!, $unique_type: UniqueType) {
-        createFieldPermit(model: $model, unique_type: $unique_type)
+      mutation($input: FieldPermitInput!, $unique_type: UniqueType) {
+        createFieldPermit(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -191,25 +220,26 @@ export async function create(
 /**
  * 根据 id 修改字段权限
  * @param {FieldPermitId} id
- * @param {FieldPermitInput} model
+ * @param {FieldPermitInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: FieldPermitId,
-  model: FieldPermitInput,
+  input: FieldPermitInput,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
+  input = intoInput(input);
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: FieldPermitId!, $model: FieldPermitInput!) {
-        updateByIdFieldPermit(id: $id, model: $model)
+      mutation($id: FieldPermitId!, $input: FieldPermitInput!) {
+        updateByIdFieldPermit(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: FieldPermitId = data.updateByIdFieldPermit;
@@ -226,7 +256,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdFieldPermit: Query["findByIdFieldPermit"];
+    findByIdFieldPermit?: FieldPermitModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: FieldPermitId!) {
@@ -342,7 +372,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -522,6 +552,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllFieldPermit) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("字段权限");
         const buffer = await workerFn(

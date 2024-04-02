@@ -69,7 +69,7 @@ type PermitFieldComment {
   update_time_lbl: String!
 }
 input PermitInput {
-  ""
+  "ID"
   id: PermitId
   "菜单"
   menu_id: MenuId
@@ -81,22 +81,6 @@ input PermitInput {
   lbl: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input PermitSearch {
   "是否已删除"
@@ -121,12 +105,12 @@ input PermitSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找按钮权限总数"
@@ -142,9 +126,9 @@ type Query {
 }
 type Mutation {
   "创建按钮权限"
-  createPermit(model: PermitInput!, unique_type: UniqueType): PermitId!
+  createPermit(input: PermitInput!, unique_type: UniqueType): PermitId!
   "根据 id 修改按钮权限"
-  updateByIdPermit(id: PermitId!, model: PermitInput!): PermitId!
+  updateByIdPermit(id: PermitId!, input: PermitInput!): PermitId!
   "根据 ids 删除按钮权限"
   deleteByIdsPermit(ids: [PermitId!]!): Int!
   "根据 ids 还原按钮权限"

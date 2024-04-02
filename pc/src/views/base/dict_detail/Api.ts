@@ -10,21 +10,54 @@ import type {
   Query,
   Mutation,
   PageInput,
-  DictDetailSearch,
-  DictDetailInput,
-  DictDetailModel,
 } from "#/types";
 
 import type {
+  DictDetailSearch,
+  DictDetailInput,
+  DictDetailModel,
+} from "./Model";
+
+// 系统字典
+import type {
   DictSearch,
-} from "#/types";
+  DictModel,
+} from "@/views/base/dict/Model";
 
 async function setLblById(
   model?: DictDetailModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: DictDetailInput = {
+    // ID
+    id: model?.id,
+    // 系统字典
+    dict_id: model?.dict_id,
+    dict_id_lbl: model?.dict_id_lbl,
+    // 名称
+    lbl: model?.lbl,
+    // 值
+    val: model?.val,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -41,7 +74,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictDetail: Query["findAllDictDetail"];
+    findAllDictDetail: DictDetailModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -95,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDictDetail: Query["findOneDictDetail"];
+    findOneDictDetail?: DictDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
@@ -160,25 +193,26 @@ export async function findCount(
 
 /**
  * 创建系统字典明细
- * @param {DictDetailInput} model
+ * @param {DictDetailInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: DictDetailInput,
+  input: DictDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictDetailId> {
+  input = intoInput(input);
   const data: {
     createDictDetail: Mutation["createDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: DictDetailInput!, $unique_type: UniqueType) {
-        createDictDetail(model: $model, unique_type: $unique_type)
+      mutation($input: DictDetailInput!, $unique_type: UniqueType) {
+        createDictDetail(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -189,25 +223,26 @@ export async function create(
 /**
  * 根据 id 修改系统字典明细
  * @param {DictDetailId} id
- * @param {DictDetailInput} model
+ * @param {DictDetailInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictDetailId,
-  model: DictDetailInput,
+  input: DictDetailInput,
   opt?: GqlOpt,
 ): Promise<DictDetailId> {
+  input = intoInput(input);
   const data: {
     updateByIdDictDetail: Mutation["updateByIdDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: DictDetailId!, $model: DictDetailInput!) {
-        updateByIdDictDetail(id: $id, model: $model)
+      mutation($id: DictDetailId!, $input: DictDetailInput!) {
+        updateByIdDictDetail(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: DictDetailId = data.updateByIdDictDetail;
@@ -224,7 +259,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDictDetail: Query["findByIdDictDetail"];
+    findByIdDictDetail?: DictDetailModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictDetailId!) {
@@ -399,7 +434,7 @@ export async function findAllDict(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict: Query["findAllDict"];
+    findAllDict: DictModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -559,6 +594,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDictDetail) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("系统字典明细");
         const buffer = await workerFn(

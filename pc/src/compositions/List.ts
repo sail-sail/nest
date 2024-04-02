@@ -155,6 +155,7 @@ export function useSelect<T = any, Id = string>(
     tableSelectable?: ((row: T, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
+    isListSelectDialog?: boolean,
   },
 ) {
   
@@ -735,7 +736,27 @@ export function useSelect<T = any, Id = string>(
       return;
     }
     const id = (row as any)[rowKey];
-    if (column && column.type === "selection") {
+    if (opts?.isListSelectDialog) {
+      if (column && column.type === "selection") {
+        if (selectedIds.includes(id)) {
+          selectedIds = selectedIds.filter((item) => item !== id);
+        } else {
+          if (multiple) {
+            selectedIds = [
+              ...selectedIds,
+              id,
+            ];
+          } else {
+            selectedIds = [ id ];
+          }
+        }
+      } else if (!selectedIds.includes(id)) {
+        selectedIds = [
+          ...selectedIds,
+          id,
+        ];
+      }
+    } else if (column && column.type === "selection") {
       if (selectedIds.includes(id)) {
         selectedIds = selectedIds.filter((item) => item !== id);
       } else {
@@ -1145,21 +1166,6 @@ export function useTableColumns<T>(
     storeColumns,
     deleteColumns,
   });
-}
-
-/**
- * 列表页中的月份控件搜索条件
- */
-export function monthrangeSearch(search: any, key: string, event?: Date[]) {
-  search[key] = search[key] || [ ];
-  if (!event || event.length === 0) {
-    search[key] = [ ];
-    return;
-  }
-  if (event[0] && event[1]) {
-    search[key][0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
-    search[key][1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
-  }
 }
 
 export async function initListI18ns() {

@@ -8,7 +8,8 @@ const separator = Deno.build.os == "windows" ? ";" : ":";
 const path = Deno.env.get("path") || "";
 const paths = path.split(separator);
 const npmDir = paths.find((path) => path.endsWith("npm")) || "";
-const pnpmCmd = `${ npmDir }/pnpm${ Deno.build.os == "windows" ? ".cmd" : "" }`;
+const cmdPostfix = Deno.build.os == "windows" ? ".cmd" : "";
+const pnpmCmd = `${ npmDir == "" ? "pnpm": npmDir+ '/pnpm' }${cmdPostfix}`;
 
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
@@ -27,14 +28,19 @@ let target = getArg("--target") || "";
 if (target === "linux") {
   target = "x86_64-unknown-linux-gnu";
 }
+const env = getArg("--env") || "prod";
 
 await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
   await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
-  await Deno.copyFile(denoDir+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
-  await Deno.copyFile(denoDir+"/.env.prod", `${ buildDir }/.env.prod`);
+  
+  const ecosystemStr = await Deno.readTextFile(denoDir+"/ecosystem.config.js");
+  const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
+  await Deno.writeTextFile(`${ buildDir }/ecosystem.config.js`, ecosystemStr2);
+  
+  await Deno.copyFile(denoDir+"/.env."+env, `${ buildDir }/.env.`+env);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
   // await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
   await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
@@ -168,7 +174,7 @@ async function compile() {
       cmds = cmds.concat([ "--target", target ]);
     }
     const server_title = await getEnv("server_title") || "start";
-    cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "--", "-e=prod" ]);
+    cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "--", `-e=${ env }` ]);
     console.log("deno " + cmds.join(" "));
     const command = new Deno.Command(Deno.execPath(), {
       cwd: denoDir,
@@ -253,6 +259,7 @@ async function publish() {
     args: [
       "run",
       "publish",
+      `--env=${ env }`,
     ],
     stderr: "inherit",
     stdout: "inherit",

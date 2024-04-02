@@ -182,6 +182,9 @@ export class Context {
   /** 当前请求的语言 */
   lang = "zh-cn";
   
+  /** token */
+  authorization: string | null | undefined;
+  
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
@@ -337,7 +340,8 @@ export function log(...args: any[]) {
     console.log.apply(console, args);
     return;
   }
-  if (window.process.env.NODE_ENV !== "production") {
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV !== "production") {
     args.unshift(`\u001b[90m${ context.req_id }\u001b[39m`);
     // args.unshift("\u001b[34m");
     // args.push("\u001b[39m");
@@ -373,7 +377,8 @@ export function error(...args: any[]) {
     console.error.apply(console, args);
     return;
   }
-  if (window.process.env.NODE_ENV !== "production") {
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV !== "production") {
     args.unshift(`\u001b[90m${ context.req_id }\u001b[39m\u001b[31m`);
     args.push(`\u001b[39m`);
     console.log.apply(console, args);
@@ -499,6 +504,9 @@ export function getAuthorization() {
   if (!context) {
     return;
   }
+  if (context.authorization) {
+    return context.authorization;
+  }
   const request = context.oakCtx?.request;
   const headers = request?.headers;
   let authorization: string|null|undefined = headers?.get(AUTHORIZATION);
@@ -509,6 +517,7 @@ export function getAuthorization() {
   if (authorization && authorization.startsWith("Bearer ")) {
     authorization = authorization.substring(7);
   }
+  context.authorization = authorization;
   return authorization;
 }
 
@@ -773,30 +782,30 @@ export async function query<T = any>(
   if (result != null) {
     return result;
   }
-  let debugSql = "";
+  // let debugSql = "";
   try {
     if (context.is_tran) {
       const conn = await beginTran();
-      if (!opt || opt.debug !== false) {
-        debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
-        log(debugSql);
-      }
+      // if (!opt || opt.debug !== false) {
+      //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
+      //   log(debugSql);
+      // }
       result = (await conn.query(sql, args) as T[]);
     } else {
-      if (!opt || opt.debug !== false) {
-        debugSql = getDebugQuery(sql, args);
-        log(debugSql);
-      }
+      // if (!opt || opt.debug !== false) {
+      //   debugSql = getDebugQuery(sql, args);
+      //   log(debugSql);
+      // }
       const pool = await getClient();
-      result = await pool.query(sql, args);
+      result = await pool.query(sql, args, { debug: opt?.debug });
     }
   } catch (err) {
     if (err.code === "EHOSTUNREACH") {
       err.message = "连接数据库失败!";
     }
-    if (debugSql) {
-      error(debugSql);
-    }
+    // if (debugSql) {
+    //   error(debugSql);
+    // }
     throw err;
   }
   await setCache(opt?.cacheKey1, opt?.cacheKey2, result);

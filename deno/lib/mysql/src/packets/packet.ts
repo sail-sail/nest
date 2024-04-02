@@ -3,6 +3,7 @@ import { BufferReader, BufferWriter } from "../buffer.ts";
 import { WriteError } from "../constant/errors.ts";
 import { debug, log } from "../logger.ts";
 import { PacketType } from "../../src/constant/packet.ts";
+import type { Reader } from "std/io/types.ts";
 
 /** @ignore */
 interface PacketHeader {
@@ -42,7 +43,7 @@ export class ReceivePacket {
   body!: BufferReader;
   type!: PacketType;
 
-  async parse(reader: Deno.Reader): Promise<ReceivePacket | null> {
+  async parse(reader: Reader): Promise<ReceivePacket | null> {
     const header = new BufferReader(new Uint8Array(4));
     let readCount = 0;
     let nread = await this.read(reader, header.buffer);
@@ -89,7 +90,7 @@ export class ReceivePacket {
   }
 
   private async read(
-    reader: Deno.Reader,
+    reader: Reader,
     buffer: Uint8Array,
   ): Promise<number | null> {
     const size = buffer.length;

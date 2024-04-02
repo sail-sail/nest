@@ -10,22 +10,31 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   RoleSearch,
   RoleInput,
   RoleModel,
-} from "#/types";
+} from "./Model";
 
+// 菜单
 import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
+// 按钮权限
 import type {
   PermitSearch,
-} from "#/types";
+  PermitModel,
+} from "@/views/base/permit/Model";
 
+// 数据权限
 import type {
   DataPermitSearch,
-} from "#/types";
+  DataPermitModel,
+} from "@/views/base/data_permit/Model";
 
 import {
   findTree as findMenuTree,
@@ -39,11 +48,45 @@ const homeUrlMap = getHomeUrlMap();
 
 async function setLblById(
   model?: RoleModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
   (model as any).home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: RoleInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 首页
+    home_url: model?.home_url,
+    // 菜单权限
+    menu_ids: model?.menu_ids,
+    menu_ids_lbl: model?.menu_ids_lbl,
+    // 按钮权限
+    permit_ids: model?.permit_ids,
+    permit_ids_lbl: model?.permit_ids_lbl,
+    // 数据权限
+    data_permit_ids: model?.data_permit_ids,
+    data_permit_ids_lbl: model?.data_permit_ids_lbl,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -60,7 +103,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllRole: Query["findAllRole"];
+    findAllRole: RoleModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -118,7 +161,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneRole: Query["findOneRole"];
+    findOneRole?: RoleModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $sort: [SortInput!]) {
@@ -187,26 +230,26 @@ export async function findCount(
 
 /**
  * 创建角色
- * @param {RoleInput} model
+ * @param {RoleInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: RoleInput,
+  input: RoleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  (model as any).home_url_lbl = undefined;
+  input = intoInput(input);
   const data: {
     createRole: Mutation["createRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: RoleInput!, $unique_type: UniqueType) {
-        createRole(model: $model, unique_type: $unique_type)
+      mutation($input: RoleInput!, $unique_type: UniqueType) {
+        createRole(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -217,26 +260,26 @@ export async function create(
 /**
  * 根据 id 修改角色
  * @param {RoleId} id
- * @param {RoleInput} model
+ * @param {RoleInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: RoleId,
-  model: RoleInput,
+  input: RoleInput,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  (model as any).home_url_lbl = undefined;
+  input = intoInput(input);
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: RoleId!, $model: RoleInput!) {
-        updateByIdRole(id: $id, model: $model)
+      mutation($id: RoleId!, $input: RoleInput!) {
+        updateByIdRole(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: RoleId = data.updateByIdRole;
@@ -253,7 +296,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdRole: Query["findByIdRole"];
+    findByIdRole?: RoleModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: RoleId!) {
@@ -432,7 +475,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -478,7 +521,7 @@ export async function findAllPermit(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPermit: Query["findAllPermit"];
+    findAllPermit: PermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -522,7 +565,7 @@ export async function findAllDataPermit(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDataPermit: Query["findAllDataPermit"];
+    findAllDataPermit: DataPermitModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -716,6 +759,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllRole) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("角色");
         const buffer = await workerFn(

@@ -225,7 +225,10 @@
                   <span>{{ ns('关闭其它') }}</span>
                 </el-dropdown-item>
                 
-                <el-dropdown-item @click="clearCacheEfc">
+                <el-dropdown-item
+                  v-if="usrStore.username === 'admin'"
+                  @click="onClearCache"
+                >
                   <ElIcon>
                     <ElIconDelete />
                   </ElIcon>
@@ -353,10 +356,6 @@ let locales = $ref([
   {
     code: "zh-cn",
     lbl: "简体中文",
-  },
-  {
-    code: "en-us",
-    lbl: "English",
   },
 ]);
 
@@ -508,16 +507,25 @@ function closeOtherTabs() {
 }
 
 // 清空缓存
-async function clearCacheEfc() {
+async function onClearCache() {
+  try {
+    await ElMessageBox.confirm(await nsAsync("确定清空缓存?"), await nsAsync("提示"), {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
+      type: "warning",
+    });
+  } catch (err) {
+    return;
+  }
   await clearCache();
-  ElMessage.success("清空缓存成功!");
+  window.location.reload();
 }
 
 async function logoutClk() {
   try {
-    await ElMessageBox.confirm("确定退出登录?", "提示", {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(await nsAsync("确定退出登录?"), await nsAsync("提示"), {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -580,21 +588,33 @@ async function getUsrPermitsEfc() {
 
 async function initFrame() {
   if (usrStore.authorization) {
-    const [
-      loginInfoTmp,
-      _,
-      langModels,
-    ] = await Promise.all([
-      getLoginInfo({ notLoading: true }),
-      getUsrPermitsEfc(),
-      getLoginLangs(),
-    ]);
-    loginInfo = loginInfoTmp;
-    usrStore.loginInfo = loginInfo;
-    locales = langModels.map(item => ({
-      code: item.code,
-      lbl: item.lbl,
-    }));
+    if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
+      const [
+        loginInfoTmp,
+        _,
+        langModels,
+      ] = await Promise.all([
+        getLoginInfo({ notLoading: true }),
+        getUsrPermitsEfc(),
+        getLoginLangs(),
+      ]);
+      loginInfo = loginInfoTmp;
+      usrStore.loginInfo = loginInfo;
+      locales = langModels.map(item => ({
+        code: item.code,
+        lbl: item.lbl,
+      }));
+    } else {
+      const [
+        loginInfoTmp,
+        _,
+      ] = await Promise.all([
+        getLoginInfo({ notLoading: true }),
+        getUsrPermitsEfc(),
+      ]);
+      loginInfo = loginInfoTmp;
+      usrStore.loginInfo = loginInfo;
+    }
   }
   inited = true;
 }

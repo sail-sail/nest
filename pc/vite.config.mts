@@ -76,6 +76,11 @@ export default defineConfig({
           ],
         },
         {
+          "@/locales" : [
+            "getLocale",
+          ],
+        },
+        {
           "element-plus": [
             "ElButton",
             "ElInput",
@@ -121,7 +126,6 @@ export default defineConfig({
             "useSubscribeList",
             "useSelect",
             "useSelectOne",
-            "monthrangeSearch",
             "useTableColumns",
             "initListI18ns",
             "initBuiltInSearch",
