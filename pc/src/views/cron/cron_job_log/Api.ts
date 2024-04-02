@@ -10,17 +10,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  CronJobLogSearch,
-  CronJobLogInput,
-  CronJobLogModel,
 } from "#/types";
 
 import type {
+  CronJobLogSearch,
+  CronJobLogInput,
+  CronJobLogModel,
+} from "./Model";
+
+// 定时任务
+import type {
   CronJobSearch,
-} from "#/types";
+  CronJobModel,
+} from "@/views/cron/cron_job/Model";
 
 async function setLblById(
   model?: CronJobLogModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -67,7 +73,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCronJobLog: Query["findAllCronJobLog"];
+    findAllCronJobLog: CronJobLogModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobLogSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -115,7 +121,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneCronJobLog: Query["findOneCronJobLog"];
+    findOneCronJobLog?: CronJobLogModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobLogSearch, $sort: [SortInput!]) {
@@ -182,7 +188,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdCronJobLog: Query["findByIdCronJobLog"];
+    findByIdCronJobLog?: CronJobLogModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: CronJobLogId!) {
@@ -295,7 +301,7 @@ export async function findAllCronJob(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCronJob: Query["findAllCronJob"];
+    findAllCronJob: CronJobModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -455,6 +461,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllCronJobLog) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("任务执行日志");
         const buffer = await workerFn(

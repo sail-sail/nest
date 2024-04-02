@@ -162,7 +162,7 @@ import type {
 
 import type {
   CronJobLogDetailInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

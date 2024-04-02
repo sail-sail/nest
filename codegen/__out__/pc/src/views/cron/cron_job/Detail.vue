@@ -286,8 +286,11 @@ import type {
 
 import type {
   CronJobInput,
+} from "./Model";
+
+import type {
   JobModel,
-} from "#/types";
+} from "@/views/cron/job/Model";
 
 import {
   getJobList,
