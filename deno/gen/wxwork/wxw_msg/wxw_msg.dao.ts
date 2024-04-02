@@ -1046,7 +1046,6 @@ export async function updateById(
   const table = "wxwork_wxw_msg";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
