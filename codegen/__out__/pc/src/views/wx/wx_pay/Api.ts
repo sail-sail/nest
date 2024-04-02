@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   WxPaySearch,
   WxPayInput,
   WxPayModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: WxPayModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -73,7 +77,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxPay: Query["findAllWxPay"];
+    findAllWxPay: WxPayModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
@@ -131,7 +135,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxPay: Query["findOneWxPay"];
+    findOneWxPay?: WxPayModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxPaySearch, $sort: [SortInput!]) {
@@ -266,7 +270,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxPay: Query["findByIdWxPay"];
+    findByIdWxPay?: WxPayModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxPayId!) {
@@ -559,6 +563,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxPay) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("微信支付设置");
         const buffer = await workerFn(

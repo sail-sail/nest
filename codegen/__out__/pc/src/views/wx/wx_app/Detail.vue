@@ -275,7 +275,7 @@ import type {
 
 import type {
   WxAppInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

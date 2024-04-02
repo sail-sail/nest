@@ -602,7 +602,7 @@ import {
 import type {
   PayTransactionsJsapiModel,
   PayTransactionsJsapiSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "微信JSAPI下单",

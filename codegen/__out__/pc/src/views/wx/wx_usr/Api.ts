@@ -10,17 +10,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxUsrSearch,
-  WxUsrInput,
-  WxUsrModel,
 } from "#/types";
 
 import type {
+  WxUsrSearch,
+  WxUsrInput,
+  WxUsrModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: WxUsrModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -79,7 +85,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxUsr: Query["findAllWxUsr"];
+    findAllWxUsr: WxUsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxUsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -138,7 +144,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxUsr: Query["findOneWxUsr"];
+    findOneWxUsr?: WxUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxUsrSearch, $sort: [SortInput!]) {
@@ -274,7 +280,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxUsr: Query["findByIdWxUsr"];
+    findByIdWxUsr?: WxUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxUsrId!) {
@@ -398,7 +404,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -576,6 +582,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxUsr) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("小程序用户");
         const buffer = await workerFn(

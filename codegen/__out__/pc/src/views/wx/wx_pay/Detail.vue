@@ -301,7 +301,7 @@ import type {
 
 import type {
   WxPayInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

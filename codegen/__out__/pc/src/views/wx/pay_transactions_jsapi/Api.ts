@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   PayTransactionsJsapiSearch,
   PayTransactionsJsapiInput,
   PayTransactionsJsapiModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: PayTransactionsJsapiModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -85,7 +89,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPayTransactionsJsapi: Query["findAllPayTransactionsJsapi"];
+    findAllPayTransactionsJsapi: PayTransactionsJsapiModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PayTransactionsJsapiSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -150,7 +154,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOnePayTransactionsJsapi: Query["findOnePayTransactionsJsapi"];
+    findOnePayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
@@ -234,7 +238,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdPayTransactionsJsapi: Query["findByIdPayTransactionsJsapi"];
+    findByIdPayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: PayTransactionsJsapiId!) {
@@ -428,6 +432,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllPayTransactionsJsapi) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("微信JSAPI下单");
         const buffer = await workerFn(

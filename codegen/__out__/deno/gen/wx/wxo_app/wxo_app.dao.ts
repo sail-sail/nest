@@ -657,7 +657,6 @@ export async function checkByUnique(
   oldModel: WxoAppModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
-    isEncrypt?: boolean;
   },
 ): Promise<WxoAppId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -672,10 +671,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-          isEncrypt: false,
-        },
+        options,
       );
       return id;
     }
@@ -967,7 +963,6 @@ export async function create(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    isEncrypt?: boolean;
   },
 ): Promise<WxoAppId> {
   const table = "wx_wxo_app";
@@ -988,20 +983,6 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
-  }
-  if (options?.isEncrypt !== false) {
-    // 开发者密码
-    if (input.appsecret != null) {
-      input.appsecret = await encrypt(input.appsecret);
-    }
-    // 令牌
-    if (input.token != null) {
-      input.token = await encrypt(input.token);
-    }
-    // 消息加解密密钥
-    if (input.encoding_aes_key != null) {
-      input.encoding_aes_key = await encrypt(input.encoding_aes_key);
-    }
   }
   
   await setIdByLbl(input);
@@ -1037,9 +1018,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into wx_wxo_app(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -1050,20 +1029,12 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }
   if (input.code != null) {
@@ -1099,7 +1070,7 @@ export async function create(
   if (input.rem != null) {
     sql += `,rem`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -1117,14 +1088,6 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
   if (input.code != null) {
     sql += `,${ args.push(input.code) }`;
   }
@@ -1135,13 +1098,13 @@ export async function create(
     sql += `,${ args.push(input.appid) }`;
   }
   if (input.appsecret != null) {
-    sql += `,${ args.push(input.appsecret) }`;
+    sql += `,${ args.push(await encrypt(input.appsecret)) }`;
   }
   if (input.token != null) {
-    sql += `,${ args.push(input.token) }`;
+    sql += `,${ args.push(await encrypt(input.token)) }`;
   }
   if (input.encoding_aes_key != null) {
-    sql += `,${ args.push(input.encoding_aes_key) }`;
+    sql += `,${ args.push(await encrypt(input.encoding_aes_key)) }`;
   }
   if (input.domain_id != null) {
     sql += `,${ args.push(input.domain_id) }`;
@@ -1252,9 +1215,9 @@ export async function updateById(
   options?: {
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-    isEncrypt?: boolean;
   },
 ): Promise<WxoAppId> {
+  
   const table = "wx_wxo_app";
   const method = "updateById";
   
@@ -1278,20 +1241,6 @@ export async function updateById(
   }
   if (!input) {
     throw new Error("updateById: input cannot be null");
-  }
-  if (options?.isEncrypt !== false) {
-    // 开发者密码
-    if (input.appsecret != null) {
-      input.appsecret = await encrypt(input.appsecret);
-    }
-    // 令牌
-    if (input.token != null) {
-      input.token = await encrypt(input.token);
-    }
-    // 消息加解密密钥
-    if (input.encoding_aes_key != null) {
-      input.encoding_aes_key = await encrypt(input.encoding_aes_key);
-    }
   }
   
   // 修改租户id
@@ -1348,19 +1297,19 @@ export async function updateById(
   }
   if (input.appsecret != null) {
     if (input.appsecret != oldModel.appsecret) {
-      sql += `appsecret = ${ args.push(input.appsecret) },`;
+      sql += `appsecret = ${ args.push(await encrypt(input.appsecret)) },`;
       updateFldNum++;
     }
   }
   if (input.token != null) {
     if (input.token != oldModel.token) {
-      sql += `token = ${ args.push(input.token) },`;
+      sql += `token = ${ args.push(await encrypt(input.token)) },`;
       updateFldNum++;
     }
   }
   if (input.encoding_aes_key != null) {
     if (input.encoding_aes_key != oldModel.encoding_aes_key) {
-      sql += `encoding_aes_key = ${ args.push(input.encoding_aes_key) },`;
+      sql += `encoding_aes_key = ${ args.push(await encrypt(input.encoding_aes_key)) },`;
       updateFldNum++;
     }
   }
