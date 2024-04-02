@@ -12,31 +12,118 @@ import type {
   Query,
   Mutation,
   PageInput,
-  PtSearch,
-  PtInput,
-  PtModel,
 } from "#/types";
 
 import type {
+  PtSearch,
+  PtInput,
+  PtModel,
+} from "./Model";
+
+// 产品类别
+import type {
   PtTypeSearch,
-} from "#/types";
+  PtTypeModel,
+} from "@/views/wshop/pt_type/Model";
 
 async function setLblById(
   model?: PtModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
   
+  // 图标
+  if (model.img) {
+    (model as any).img_lbl = location.origin + getImgUrl({
+      id: model.img,
+    });
+  }
+  
   // 价格
-  if (model.price != null) {
-    model.price = new Decimal(model.price);
+  if (!isExcelExport) {
+    model.price_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.price ?? 0).toNumber());
+    model.price = new Decimal(model.price ?? 0);
+    model.price.toString = () => model.price_lbl;
+  } else {
+    model.price_lbl = new Decimal(model.price ?? 0).toFixed(2);
   }
   
   // 原价
-  if (model.original_price != null) {
-    model.original_price = new Decimal(model.original_price);
+  if (!isExcelExport) {
+    model.original_price_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.original_price ?? 0).toNumber());
+    model.original_price = new Decimal(model.original_price ?? 0);
+    model.original_price.toString = () => model.original_price_lbl;
+  } else {
+    model.original_price_lbl = new Decimal(model.original_price ?? 0).toFixed(2);
   }
+  
+  // 详情顶部图片
+  if (model.detail_top_img) {
+    (model as any).detail_top_img_lbl = location.origin + getImgUrl({
+      id: model.detail_top_img,
+    });
+  }
+  
+  // 详情底部图片
+  if (model.detail_bottom_img) {
+    (model as any).detail_bottom_img_lbl = location.origin + getImgUrl({
+      id: model.detail_bottom_img,
+    });
+  }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: PtInput = {
+    // ID
+    id: model?.id,
+    // 图标
+    img: model?.img,
+    // 名称
+    lbl: model?.lbl,
+    // 产品类别
+    pt_type_ids: model?.pt_type_ids,
+    pt_type_ids_lbl: model?.pt_type_ids_lbl,
+    // 价格
+    price: model?.price,
+    // 原价
+    original_price: model?.original_price,
+    // 单位
+    unit: model?.unit,
+    // 新品
+    is_new: model?.is_new,
+    is_new_lbl: model?.is_new_lbl,
+    // 简介
+    introduct: model?.introduct,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 详情
+    detail: model?.detail,
+    // 详情顶部图片
+    detail_top_img: model?.detail_top_img,
+    // 详情底部图片
+    detail_bottom_img: model?.detail_bottom_img,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -53,7 +140,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPt: Query["findAllPt"];
+    findAllPt: PtModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PtSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -116,7 +203,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOnePt: Query["findOnePt"];
+    findOnePt?: PtModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: PtSearch, $sort: [SortInput!]) {
@@ -190,25 +277,26 @@ export async function findCount(
 
 /**
  * 创建产品
- * @param {PtInput} model
+ * @param {PtInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: PtInput,
+  input: PtInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PtId> {
+  input = intoInput(input);
   const data: {
     createPt: Mutation["createPt"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: PtInput!, $unique_type: UniqueType) {
-        createPt(model: $model, unique_type: $unique_type)
+      mutation($input: PtInput!, $unique_type: UniqueType) {
+        createPt(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -219,25 +307,26 @@ export async function create(
 /**
  * 根据 id 修改产品
  * @param {PtId} id
- * @param {PtInput} model
+ * @param {PtInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: PtId,
-  model: PtInput,
+  input: PtInput,
   opt?: GqlOpt,
 ): Promise<PtId> {
+  input = intoInput(input);
   const data: {
     updateByIdPt: Mutation["updateByIdPt"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: PtId!, $model: PtInput!) {
-        updateByIdPt(id: $id, model: $model)
+      mutation($id: PtId!, $input: PtInput!) {
+        updateByIdPt(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: PtId = data.updateByIdPt;
@@ -254,7 +343,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdPt: Query["findByIdPt"];
+    findByIdPt?: PtModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: PtId!) {
@@ -438,7 +527,7 @@ export async function findAllPtType(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPtType: Query["findAllPtType"];
+    findAllPtType: PtTypeModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -622,6 +711,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllPt) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("产品");
         const buffer = await workerFn(

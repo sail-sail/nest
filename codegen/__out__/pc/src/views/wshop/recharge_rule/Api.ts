@@ -12,27 +12,71 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   RechargeRuleSearch,
   RechargeRuleInput,
   RechargeRuleModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: RechargeRuleModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
   
   // 充值金额
-  if (model.amt != null) {
-    model.amt = new Decimal(model.amt);
+  if (!isExcelExport) {
+    model.amt_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.amt ?? 0).toNumber());
+    model.amt = new Decimal(model.amt ?? 0);
+    model.amt.toString = () => model.amt_lbl;
+  } else {
+    model.amt_lbl = new Decimal(model.amt ?? 0).toFixed(2);
   }
   
   // 赠送金额
-  if (model.give_amt != null) {
-    model.give_amt = new Decimal(model.give_amt);
+  if (!isExcelExport) {
+    model.give_amt_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.give_amt ?? 0).toNumber());
+    model.give_amt = new Decimal(model.give_amt ?? 0);
+    model.give_amt.toString = () => model.give_amt_lbl;
+  } else {
+    model.give_amt_lbl = new Decimal(model.give_amt ?? 0).toFixed(2);
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: RechargeRuleInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 充值金额
+    amt: model?.amt,
+    // 赠送金额
+    give_amt: model?.give_amt,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -49,7 +93,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllRechargeRule: Query["findAllRechargeRule"];
+    findAllRechargeRule: RechargeRuleModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: RechargeRuleSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -101,7 +145,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneRechargeRule: Query["findOneRechargeRule"];
+    findOneRechargeRule?: RechargeRuleModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: RechargeRuleSearch, $sort: [SortInput!]) {
@@ -164,25 +208,26 @@ export async function findCount(
 
 /**
  * 创建充值赠送规则
- * @param {RechargeRuleInput} model
+ * @param {RechargeRuleInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: RechargeRuleInput,
+  input: RechargeRuleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId> {
+  input = intoInput(input);
   const data: {
     createRechargeRule: Mutation["createRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: RechargeRuleInput!, $unique_type: UniqueType) {
-        createRechargeRule(model: $model, unique_type: $unique_type)
+      mutation($input: RechargeRuleInput!, $unique_type: UniqueType) {
+        createRechargeRule(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -193,25 +238,26 @@ export async function create(
 /**
  * 根据 id 修改充值赠送规则
  * @param {RechargeRuleId} id
- * @param {RechargeRuleInput} model
+ * @param {RechargeRuleInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: RechargeRuleId,
-  model: RechargeRuleInput,
+  input: RechargeRuleInput,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId> {
+  input = intoInput(input);
   const data: {
     updateByIdRechargeRule: Mutation["updateByIdRechargeRule"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: RechargeRuleId!, $model: RechargeRuleInput!) {
-        updateByIdRechargeRule(id: $id, model: $model)
+      mutation($id: RechargeRuleId!, $input: RechargeRuleInput!) {
+        updateByIdRechargeRule(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: RechargeRuleId = data.updateByIdRechargeRule;
@@ -228,7 +274,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdRechargeRule: Query["findByIdRechargeRule"];
+    findByIdRechargeRule?: RechargeRuleModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: RechargeRuleId!) {
@@ -505,6 +551,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllRechargeRule) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("充值赠送规则");
         const buffer = await workerFn(

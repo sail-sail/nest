@@ -8,45 +8,113 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   CardConsumeSearch,
   CardConsumeInput,
   CardConsumeModel,
-} from "#/types";
+} from "./Model";
 
+// 会员卡
 import type {
   CardSearch,
-} from "#/types";
+  CardModel,
+} from "@/views/wshop/card/Model";
 
+// 用户
 import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: CardConsumeModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
   
   // 消费充值金额
-  if (model.amt != null) {
-    model.amt = new Decimal(model.amt);
+  if (!isExcelExport) {
+    model.amt_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.amt ?? 0).toNumber());
+    model.amt = new Decimal(model.amt ?? 0);
+    model.amt.toString = () => model.amt_lbl;
+  } else {
+    model.amt_lbl = new Decimal(model.amt ?? 0).toFixed(2);
   }
   
   // 消费赠送金额
-  if (model.give_amt != null) {
-    model.give_amt = new Decimal(model.give_amt);
+  if (!isExcelExport) {
+    model.give_amt_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.give_amt ?? 0).toNumber());
+    model.give_amt = new Decimal(model.give_amt ?? 0);
+    model.give_amt.toString = () => model.give_amt_lbl;
+  } else {
+    model.give_amt_lbl = new Decimal(model.give_amt ?? 0).toFixed(2);
   }
   
   // 消费后余额
-  if (model.balance != null) {
-    model.balance = new Decimal(model.balance);
+  if (!isExcelExport) {
+    model.balance_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.balance ?? 0).toNumber());
+    model.balance = new Decimal(model.balance ?? 0);
+    model.balance.toString = () => model.balance_lbl;
+  } else {
+    model.balance_lbl = new Decimal(model.balance ?? 0).toFixed(2);
   }
   
   // 消费后赠送余额
-  if (model.give_balance != null) {
-    model.give_balance = new Decimal(model.give_balance);
+  if (!isExcelExport) {
+    model.give_balance_lbl = new Intl.NumberFormat(getLocale(), {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(new Decimal(model.give_balance ?? 0).toNumber());
+    model.give_balance = new Decimal(model.give_balance ?? 0);
+    model.give_balance.toString = () => model.give_balance_lbl;
+  } else {
+    model.give_balance_lbl = new Decimal(model.give_balance ?? 0).toFixed(2);
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: CardConsumeInput = {
+    // ID
+    id: model?.id,
+    // 卡号
+    card_id: model?.card_id,
+    card_id_lbl: model?.card_id_lbl,
+    // 用户
+    usr_id: model?.usr_id,
+    usr_id_lbl: model?.usr_id_lbl,
+    // 消费充值金额
+    amt: model?.amt,
+    // 消费赠送金额
+    give_amt: model?.give_amt,
+    // 获得积分
+    integral: model?.integral,
+    // 消费后余额
+    balance: model?.balance,
+    // 消费后赠送余额
+    give_balance: model?.give_balance,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -63,7 +131,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCardConsume: Query["findAllCardConsume"];
+    findAllCardConsume: CardConsumeModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CardConsumeSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -117,7 +185,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneCardConsume: Query["findOneCardConsume"];
+    findOneCardConsume?: CardConsumeModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: CardConsumeSearch, $sort: [SortInput!]) {
@@ -190,7 +258,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdCardConsume: Query["findByIdCardConsume"];
+    findByIdCardConsume?: CardConsumeModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: CardConsumeId!) {
@@ -309,7 +377,7 @@ export async function findAllCard(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllCard: Query["findAllCard"];
+    findAllCard: CardModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: CardSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -355,7 +423,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -518,6 +586,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllCardConsume) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("会员卡消费记录");
         const buffer = await workerFn(

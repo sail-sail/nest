@@ -81,7 +81,7 @@ type RechargeRuleFieldComment {
   update_time_lbl: String!
 }
 input RechargeRuleInput {
-  ""
+  "ID"
   id: RechargeRuleId
   "名称"
   lbl: String
@@ -99,22 +99,6 @@ input RechargeRuleInput {
   is_enabled_lbl: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input RechargeRuleSearch {
   "是否已删除"
@@ -127,9 +111,9 @@ input RechargeRuleSearch {
   lbl: String
   lbl_like: String
   "充值金额"
-  amt: [Decimal!]
+  amt: [Decimal]
   "赠送金额"
-  give_amt: [Decimal!]
+  give_amt: [Decimal]
   "锁定"
   is_locked: [Int!]
   "启用"
@@ -141,12 +125,12 @@ input RechargeRuleSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找充值赠送规则总数"
@@ -162,9 +146,9 @@ type Query {
 }
 type Mutation {
   "创建充值赠送规则"
-  createRechargeRule(model: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
+  createRechargeRule(input: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
   "根据 id 修改充值赠送规则"
-  updateByIdRechargeRule(id: RechargeRuleId!, model: RechargeRuleInput!): RechargeRuleId!
+  updateByIdRechargeRule(id: RechargeRuleId!, input: RechargeRuleInput!): RechargeRuleId!
   "根据 ids 删除充值赠送规则"
   deleteByIdsRechargeRule(ids: [RechargeRuleId!]!): Int!
   "根据 ids 启用或者禁用充值赠送规则"

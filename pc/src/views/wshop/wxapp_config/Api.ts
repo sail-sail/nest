@@ -10,17 +10,52 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   WxappConfigSearch,
   WxappConfigInput,
   WxappConfigModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: WxappConfigModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+  
+  // 图片
+  if (model.img) {
+    (model as any).img_lbl = location.origin + getImgUrl({
+      id: model.img,
+    });
+  }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxappConfigInput = {
+    // ID
+    id: model?.id,
+    // 图片
+    img: model?.img,
+    // 名称
+    lbl: model?.lbl,
+    // 值
+    val: model?.val,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +72,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxappConfig: Query["findAllWxappConfig"];
+    findAllWxappConfig: WxappConfigModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxappConfigSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -89,7 +124,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxappConfig: Query["findOneWxappConfig"];
+    findOneWxappConfig?: WxappConfigModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxappConfigSearch, $sort: [SortInput!]) {
@@ -152,25 +187,26 @@ export async function findCount(
 
 /**
  * 创建小程序配置
- * @param {WxappConfigInput} model
+ * @param {WxappConfigInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxappConfigInput,
+  input: WxappConfigInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxappConfigId> {
+  input = intoInput(input);
   const data: {
     createWxappConfig: Mutation["createWxappConfig"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxappConfigInput!, $unique_type: UniqueType) {
-        createWxappConfig(model: $model, unique_type: $unique_type)
+      mutation($input: WxappConfigInput!, $unique_type: UniqueType) {
+        createWxappConfig(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -181,25 +217,26 @@ export async function create(
 /**
  * 根据 id 修改小程序配置
  * @param {WxappConfigId} id
- * @param {WxappConfigInput} model
+ * @param {WxappConfigInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxappConfigId,
-  model: WxappConfigInput,
+  input: WxappConfigInput,
   opt?: GqlOpt,
 ): Promise<WxappConfigId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxappConfig: Mutation["updateByIdWxappConfig"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxappConfigId!, $model: WxappConfigInput!) {
-        updateByIdWxappConfig(id: $id, model: $model)
+      mutation($id: WxappConfigId!, $input: WxappConfigInput!) {
+        updateByIdWxappConfig(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxappConfigId = data.updateByIdWxappConfig;
@@ -216,7 +253,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxappConfig: Query["findByIdWxappConfig"];
+    findByIdWxappConfig?: WxappConfigModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxappConfigId!) {
@@ -493,6 +530,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxappConfig) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("小程序配置");
         const buffer = await workerFn(

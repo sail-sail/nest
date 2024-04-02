@@ -89,7 +89,7 @@ type CardRechargeFieldComment {
   update_time_lbl: String!
 }
 input CardRechargeInput {
-  ""
+  "ID"
   id: CardRechargeId
   "会员卡"
   card_id: CardId
@@ -111,22 +111,6 @@ input CardRechargeInput {
   integral: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input CardRechargeSearch {
   "是否已删除"
@@ -142,15 +126,15 @@ input CardRechargeSearch {
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
   "充值金额"
-  amt: [Decimal!]
+  amt: [Decimal]
   "赠送金额"
-  give_amt: [Decimal!]
+  give_amt: [Decimal]
   "充值后充值余额"
-  balance: [Decimal!]
+  balance: [Decimal]
   "充值后赠送余额"
-  give_balance: [Decimal!]
+  give_balance: [Decimal]
   "充值后积分"
-  integral: [Int!]
+  integral: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -158,12 +142,12 @@ input CardRechargeSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找会员卡充值记录总数"

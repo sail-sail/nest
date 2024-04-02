@@ -5,10 +5,6 @@ import {
 import Decimal from "decimal.js";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -30,7 +26,7 @@ import {
  * 根据条件查找订单总数
  */
 export async function findCountOrder(
-  search?: OrderSearch & { $extra?: SearchExtra[] },
+  search?: OrderSearch,
 ): Promise<number> {
   
   const {
@@ -45,7 +41,7 @@ export async function findCountOrder(
  * 根据搜索条件和分页查找订单列表
  */
 export async function findAllOrder(
-  search?: OrderSearch & { $extra?: SearchExtra[] },
+  search?: OrderSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<OrderModel[]> {
@@ -71,7 +67,7 @@ export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
  * 根据条件查找第一个订单
  */
 export async function findOneOrder(
-  search?: OrderSearch & { $extra?: SearchExtra[] },
+  search?: OrderSearch,
   sort?: SortInput[],
 ): Promise<OrderModel | undefined> {
   
@@ -101,6 +97,8 @@ export async function createOrder(
   input: OrderInput,
   unique_type?: UniqueType,
 ): Promise<OrderId> {
+  
+  input.id = undefined;
   
   // 订单金额
   if (input.price != null) {
@@ -157,6 +155,8 @@ export async function updateByIdOrder(
   id: OrderId,
   input: OrderInput,
 ): Promise<OrderId> {
+  
+  input.id = undefined;
   
   // 订单金额
   if (input.price != null) {
@@ -246,7 +246,7 @@ export async function enableByIdsOrder(
   
   await usePermit(
     "/wshop/order",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -273,7 +273,7 @@ export async function lockByIdsOrder(
   
   await usePermit(
     "/wshop/order",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

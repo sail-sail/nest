@@ -5,10 +5,6 @@ import {
 import Decimal from "decimal.js";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -28,7 +24,7 @@ import {
  * 根据条件查找会员卡充值记录总数
  */
 export async function findCountCardRecharge(
-  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+  search?: CardRechargeSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountCardRecharge(
  * 根据搜索条件和分页查找会员卡充值记录列表
  */
 export async function findAllCardRecharge(
-  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+  search?: CardRechargeSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<CardRechargeModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsCardRecharge(): Promise<CardRechargeFieldC
  * 根据条件查找第一个会员卡充值记录
  */
 export async function findOneCardRecharge(
-  search?: CardRechargeSearch & { $extra?: SearchExtra[] },
+  search?: CardRechargeSearch,
   sort?: SortInput[],
 ): Promise<CardRechargeModel | undefined> {
   

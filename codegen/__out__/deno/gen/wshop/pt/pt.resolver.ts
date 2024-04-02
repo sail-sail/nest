@@ -5,10 +5,6 @@ import {
 import Decimal from "decimal.js";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -30,7 +26,7 @@ import {
  * 根据条件查找产品总数
  */
 export async function findCountPt(
-  search?: PtSearch & { $extra?: SearchExtra[] },
+  search?: PtSearch,
 ): Promise<number> {
   
   const {
@@ -45,7 +41,7 @@ export async function findCountPt(
  * 根据搜索条件和分页查找产品列表
  */
 export async function findAllPt(
-  search?: PtSearch & { $extra?: SearchExtra[] },
+  search?: PtSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<PtModel[]> {
@@ -71,7 +67,7 @@ export async function getFieldCommentsPt(): Promise<PtFieldComment> {
  * 根据条件查找第一个产品
  */
 export async function findOnePt(
-  search?: PtSearch & { $extra?: SearchExtra[] },
+  search?: PtSearch,
   sort?: SortInput[],
 ): Promise<PtModel | undefined> {
   
@@ -101,6 +97,8 @@ export async function createPt(
   input: PtInput,
   unique_type?: UniqueType,
 ): Promise<PtId> {
+  
+  input.id = undefined;
   
   // 价格
   if (input.price != null) {
@@ -142,6 +140,8 @@ export async function updateByIdPt(
   id: PtId,
   input: PtInput,
 ): Promise<PtId> {
+  
+  input.id = undefined;
   
   // 价格
   if (input.price != null) {
@@ -216,7 +216,7 @@ export async function enableByIdsPt(
   
   await usePermit(
     "/wshop/pt",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -243,7 +243,7 @@ export async function lockByIdsPt(
   
   await usePermit(
     "/wshop/pt",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;
