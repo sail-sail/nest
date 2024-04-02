@@ -10,21 +10,48 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxoUsrSearch,
-  WxoUsrInput,
-  WxoUsrModel,
 } from "#/types";
 
 import type {
+  WxoUsrSearch,
+  WxoUsrInput,
+  WxoUsrModel,
+} from "./Model";
+
+// 用户
+import type {
   UsrSearch,
-} from "#/types";
+  UsrModel,
+} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: WxoUsrModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxoUsrInput = {
+    // ID
+    id: model?.id,
+    // 名称
+    lbl: model?.lbl,
+    // 用户
+    usr_id: model?.usr_id,
+    usr_id_lbl: model?.usr_id_lbl,
+    // 公众号用户唯一标识
+    openid: model?.openid,
+    // 公众号用户统一标识
+    unionid: model?.unionid,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -41,7 +68,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxoUsr: Query["findAllWxoUsr"];
+    findAllWxoUsr: WxoUsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoUsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -91,7 +118,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxoUsr: Query["findOneWxoUsr"];
+    findOneWxoUsr?: WxoUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxoUsrSearch, $sort: [SortInput!]) {
@@ -152,25 +179,26 @@ export async function findCount(
 
 /**
  * 创建公众号用户
- * @param {WxoUsrInput} model
+ * @param {WxoUsrInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxoUsrInput,
+  input: WxoUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoUsrId> {
+  input = intoInput(input);
   const data: {
     createWxoUsr: Mutation["createWxoUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxoUsrInput!, $unique_type: UniqueType) {
-        createWxoUsr(model: $model, unique_type: $unique_type)
+      mutation($input: WxoUsrInput!, $unique_type: UniqueType) {
+        createWxoUsr(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -181,25 +209,26 @@ export async function create(
 /**
  * 根据 id 修改公众号用户
  * @param {WxoUsrId} id
- * @param {WxoUsrInput} model
+ * @param {WxoUsrInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoUsrId,
-  model: WxoUsrInput,
+  input: WxoUsrInput,
   opt?: GqlOpt,
 ): Promise<WxoUsrId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxoUsr: Mutation["updateByIdWxoUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxoUsrId!, $model: WxoUsrInput!) {
-        updateByIdWxoUsr(id: $id, model: $model)
+      mutation($id: WxoUsrId!, $input: WxoUsrInput!) {
+        updateByIdWxoUsr(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxoUsrId = data.updateByIdWxoUsr;
@@ -216,7 +245,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxoUsr: Query["findByIdWxoUsr"];
+    findByIdWxoUsr?: WxoUsrModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxoUsrId!) {
@@ -331,7 +360,7 @@ export async function findAllUsr(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllUsr: Query["findAllUsr"];
+    findAllUsr: UsrModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -480,6 +509,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxoUsr) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("公众号用户");
         const buffer = await workerFn(

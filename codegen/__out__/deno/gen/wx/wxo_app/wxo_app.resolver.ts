@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找公众号设置总数
  */
 export async function findCountWxoApp(
-  search?: WxoAppSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxoApp(
  * 根据搜索条件和分页查找公众号设置列表
  */
 export async function findAllWxoApp(
-  search?: WxoAppSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxoAppModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxoApp(): Promise<WxoAppFieldComment> {
  * 根据条件查找第一个公众号设置
  */
 export async function findOneWxoApp(
-  search?: WxoAppSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppSearch,
   sort?: SortInput[],
 ): Promise<WxoAppModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createWxoApp(
   input: WxoAppInput,
   unique_type?: UniqueType,
 ): Promise<WxoAppId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdWxoApp(
   id: WxoAppId,
   input: WxoAppInput,
 ): Promise<WxoAppId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,
@@ -194,7 +194,7 @@ export async function enableByIdsWxoApp(
   
   await usePermit(
     "/wx/wxo_app",
-    "enable",
+    "edit",
   );
   const res = await enableByIds(ids, is_enabled);
   return res;
@@ -221,7 +221,7 @@ export async function lockByIdsWxoApp(
   
   await usePermit(
     "/wx/wxo_app",
-    "lock",
+    "edit",
   );
   const res = await lockByIds(ids, is_locked);
   return res;

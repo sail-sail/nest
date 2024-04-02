@@ -10,17 +10,69 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   PayTransactionsJsapiSearch,
   PayTransactionsJsapiInput,
   PayTransactionsJsapiModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: PayTransactionsJsapiModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: PayTransactionsJsapiInput = {
+    // ID
+    id: model?.id,
+    // 开发者ID
+    appid: model?.appid,
+    // 商户号
+    mchid: model?.mchid,
+    // 商品描述
+    description: model?.description,
+    // 商户订单号
+    out_trade_no: model?.out_trade_no,
+    // 微信支付订单号
+    transaction_id: model?.transaction_id,
+    // 交易状态
+    trade_state: model?.trade_state,
+    trade_state_lbl: model?.trade_state_lbl,
+    // 交易状态描述
+    trade_state_desc: model?.trade_state_desc,
+    // 支付完成时间
+    success_time: model?.success_time,
+    success_time_lbl: model?.success_time_lbl,
+    // 交易限制时间
+    time_expire: model?.time_expire,
+    // 附加数据
+    attach: model?.attach,
+    // 附加数据2
+    attach2: model?.attach2,
+    // 通知地址
+    notify_url: model?.notify_url,
+    // 是否支持发票
+    support_fapiao: model?.support_fapiao,
+    support_fapiao_lbl: model?.support_fapiao_lbl,
+    // 订单金额(分)
+    total_fee: model?.total_fee,
+    // 货币类型
+    currency: model?.currency,
+    currency_lbl: model?.currency_lbl,
+    // 用户标识
+    openid: model?.openid,
+    // 预支付交易会话标识
+    prepay_id: model?.prepay_id,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +89,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllPayTransactionsJsapi: Query["findAllPayTransactionsJsapi"];
+    findAllPayTransactionsJsapi: PayTransactionsJsapiModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: PayTransactionsJsapiSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -102,7 +154,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOnePayTransactionsJsapi: Query["findOnePayTransactionsJsapi"];
+    findOnePayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
@@ -186,7 +238,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdPayTransactionsJsapi: Query["findByIdPayTransactionsJsapi"];
+    findByIdPayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: PayTransactionsJsapiId!) {
@@ -380,6 +432,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllPayTransactionsJsapi) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("微信JSAPI下单");
         const buffer = await workerFn(
@@ -410,7 +465,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PayTransactionsJsapiInput = {
-    trade_state: PayTransactionsJsapiTradeState.NOTPAY,
+    trade_state: PayTransactionsJsapiTradeState.Notpay,
     trade_state_desc: "未支付",
     support_fapiao: 0,
     total_fee: 0,

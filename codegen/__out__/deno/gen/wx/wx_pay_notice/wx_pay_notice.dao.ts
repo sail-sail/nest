@@ -6,6 +6,10 @@ import {
 import dayjs from "dayjs";
 
 import {
+  getDebugSearch,
+} from "/lib/util/dao_util.ts";
+
+import {
   log,
   error,
   escapeDec,
@@ -16,6 +20,10 @@ import {
   execute,
   QueryArgs,
 } from "/lib/context.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
 
 import {
   initN,
@@ -95,118 +103,96 @@ async function getWhereQuery(
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
+  
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
       whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
     }
-  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+  } else if (search?.org_id != null && search?.org_id !== "-") {
     whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
-  if (isNotEmpty(search?.id)) {
+  if (search?.id != null) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
-  if (search?.ids && !Array.isArray(search?.ids)) {
+  if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
   }
-  if (search?.ids && search?.ids.length > 0) {
+  if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.appid !== undefined) {
+  if (search?.appid != null) {
     whereQuery += ` and t.appid = ${ args.push(search.appid) }`;
-  }
-  if (search?.appid === null) {
-    whereQuery += ` and t.appid is null`;
   }
   if (isNotEmpty(search?.appid_like)) {
     whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
   }
-  if (search?.mchid !== undefined) {
+  if (search?.mchid != null) {
     whereQuery += ` and t.mchid = ${ args.push(search.mchid) }`;
-  }
-  if (search?.mchid === null) {
-    whereQuery += ` and t.mchid is null`;
   }
   if (isNotEmpty(search?.mchid_like)) {
     whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
-  if (search?.openid !== undefined) {
+  if (search?.openid != null) {
     whereQuery += ` and t.openid = ${ args.push(search.openid) }`;
-  }
-  if (search?.openid === null) {
-    whereQuery += ` and t.openid is null`;
   }
   if (isNotEmpty(search?.openid_like)) {
     whereQuery += ` and t.openid like ${ args.push("%" + sqlLike(search?.openid_like) + "%") }`;
   }
-  if (search?.out_trade_no !== undefined) {
+  if (search?.out_trade_no != null) {
     whereQuery += ` and t.out_trade_no = ${ args.push(search.out_trade_no) }`;
-  }
-  if (search?.out_trade_no === null) {
-    whereQuery += ` and t.out_trade_no is null`;
   }
   if (isNotEmpty(search?.out_trade_no_like)) {
     whereQuery += ` and t.out_trade_no like ${ args.push("%" + sqlLike(search?.out_trade_no_like) + "%") }`;
   }
-  if (search?.transaction_id !== undefined) {
+  if (search?.transaction_id != null) {
     whereQuery += ` and t.transaction_id = ${ args.push(search.transaction_id) }`;
-  }
-  if (search?.transaction_id === null) {
-    whereQuery += ` and t.transaction_id is null`;
   }
   if (isNotEmpty(search?.transaction_id_like)) {
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
-  if (search?.trade_type && !Array.isArray(search?.trade_type)) {
+  if (search?.trade_type != null && !Array.isArray(search?.trade_type)) {
     search.trade_type = [ search.trade_type ];
   }
-  if (search?.trade_type && search?.trade_type?.length > 0) {
+  if (search?.trade_type != null) {
     whereQuery += ` and t.trade_type in ${ args.push(search.trade_type) }`;
   }
-  if (search?.trade_state && !Array.isArray(search?.trade_state)) {
+  if (search?.trade_state != null && !Array.isArray(search?.trade_state)) {
     search.trade_state = [ search.trade_state ];
   }
-  if (search?.trade_state && search?.trade_state?.length > 0) {
+  if (search?.trade_state != null) {
     whereQuery += ` and t.trade_state in ${ args.push(search.trade_state) }`;
   }
-  if (search?.trade_state_desc !== undefined) {
+  if (search?.trade_state_desc != null) {
     whereQuery += ` and t.trade_state_desc = ${ args.push(search.trade_state_desc) }`;
-  }
-  if (search?.trade_state_desc === null) {
-    whereQuery += ` and t.trade_state_desc is null`;
   }
   if (isNotEmpty(search?.trade_state_desc_like)) {
     whereQuery += ` and t.trade_state_desc like ${ args.push("%" + sqlLike(search?.trade_state_desc_like) + "%") }`;
   }
-  if (search?.bank_type !== undefined) {
+  if (search?.bank_type != null) {
     whereQuery += ` and t.bank_type = ${ args.push(search.bank_type) }`;
-  }
-  if (search?.bank_type === null) {
-    whereQuery += ` and t.bank_type is null`;
   }
   if (isNotEmpty(search?.bank_type_like)) {
     whereQuery += ` and t.bank_type like ${ args.push("%" + sqlLike(search?.bank_type_like) + "%") }`;
   }
-  if (search?.attach !== undefined) {
+  if (search?.attach != null) {
     whereQuery += ` and t.attach = ${ args.push(search.attach) }`;
-  }
-  if (search?.attach === null) {
-    whereQuery += ` and t.attach is null`;
   }
   if (isNotEmpty(search?.attach_like)) {
     whereQuery += ` and t.attach like ${ args.push("%" + sqlLike(search?.attach_like) + "%") }`;
   }
-  if (search?.success_time && search?.success_time?.length > 0) {
+  if (search?.success_time != null) {
     if (search.success_time[0] != null) {
       whereQuery += ` and t.success_time >= ${ args.push(search.success_time[0]) }`;
     }
@@ -214,7 +200,7 @@ async function getWhereQuery(
       whereQuery += ` and t.success_time <= ${ args.push(search.success_time[1]) }`;
     }
   }
-  if (search?.total && search?.total?.length > 0) {
+  if (search?.total != null) {
     if (search.total[0] != null) {
       whereQuery += ` and t.total >= ${ args.push(search.total[0]) }`;
     }
@@ -222,7 +208,7 @@ async function getWhereQuery(
       whereQuery += ` and t.total <= ${ args.push(search.total[1]) }`;
     }
   }
-  if (search?.payer_total && search?.payer_total?.length > 0) {
+  if (search?.payer_total != null) {
     if (search.payer_total[0] != null) {
       whereQuery += ` and t.payer_total >= ${ args.push(search.payer_total[0]) }`;
     }
@@ -230,58 +216,46 @@ async function getWhereQuery(
       whereQuery += ` and t.payer_total <= ${ args.push(search.payer_total[1]) }`;
     }
   }
-  if (search?.currency && !Array.isArray(search?.currency)) {
+  if (search?.currency != null && !Array.isArray(search?.currency)) {
     search.currency = [ search.currency ];
   }
-  if (search?.currency && search?.currency?.length > 0) {
+  if (search?.currency != null) {
     whereQuery += ` and t.currency in ${ args.push(search.currency) }`;
   }
-  if (search?.payer_currency && !Array.isArray(search?.payer_currency)) {
+  if (search?.payer_currency != null && !Array.isArray(search?.payer_currency)) {
     search.payer_currency = [ search.payer_currency ];
   }
-  if (search?.payer_currency && search?.payer_currency?.length > 0) {
+  if (search?.payer_currency != null) {
     whereQuery += ` and t.payer_currency in ${ args.push(search.payer_currency) }`;
   }
-  if (search?.device_id !== undefined) {
+  if (search?.device_id != null) {
     whereQuery += ` and t.device_id = ${ args.push(search.device_id) }`;
-  }
-  if (search?.device_id === null) {
-    whereQuery += ` and t.device_id is null`;
   }
   if (isNotEmpty(search?.device_id_like)) {
     whereQuery += ` and t.device_id like ${ args.push("%" + sqlLike(search?.device_id_like) + "%") }`;
   }
-  if (search?.rem !== undefined) {
+  if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.raw !== undefined) {
+  if (search?.raw != null) {
     whereQuery += ` and t.raw = ${ args.push(search.raw) }`;
-  }
-  if (search?.raw === null) {
-    whereQuery += ` and t.raw is null`;
   }
   if (isNotEmpty(search?.raw_like)) {
     whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
   }
-  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+  if (search?.create_usr_id != null) {
     whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
-  }
-  if (search?.create_usr_id === null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_time && search?.create_time?.length > 0) {
+  if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
     }
@@ -289,19 +263,16 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
-  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+  if (search?.update_usr_id != null) {
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
-  }
-  if (search?.update_usr_id === null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?.update_time && search?.update_time?.length > 0) {
+  if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
     }
@@ -309,27 +280,20 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.$extra) {
-    const extras = search.$extra;
-    for (let i = 0; i < extras.length; i++) {
-      const extra = extras[i];
-      const queryTmp = await extra(args);
-      if (queryTmp) {
-        whereQuery += ` ${ queryTmp }`;
-      }
-    }
-  }
   return whereQuery;
 }
 
-async function getFromQuery() {
-  let fromQuery = `
-    wx_wx_pay_notice t
+async function getFromQuery(
+  args: QueryArgs,
+  search?: WxPayNoticeSearch,
+  options?: {
+  },
+) {
+  let fromQuery = `wx_wx_pay_notice t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id
-  `;
+      on update_usr_id_lbl.id = t.update_usr_id`;
   return fromQuery;
 }
 
@@ -341,10 +305,22 @@ async function getFromQuery() {
 export async function findCount(
   search?: WxPayNoticeSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "findCount";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const args = new QueryArgs();
   let sql = `
@@ -355,19 +331,12 @@ export async function findCount(
         select
           1
         from
-          ${ await getFromQuery() }
-  `;
+          ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-        where
-          ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-        group by t.id
-      ) t
-  `;
+  sql += ` group by t.id) t`;
   
   interface Result {
     total: number,
@@ -388,29 +357,74 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel[]> {
   const table = "wx_wx_pay_notice";
   const method = "findAll";
   
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (page && Object.keys(page).length > 0) {
+      msg += ` page:${ JSON.stringify(page) }`;
+    }
+    if (sort && Object.keys(sort).length > 0) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search?.ids?.length === 0) {
+    return [ ];
+  }
+  // 交易类型
+  if (search && search.trade_type != null && search.trade_type.length === 0) {
+    return [ ];
+  }
+  // 交易状态
+  if (search && search.trade_state != null && search.trade_state.length === 0) {
+    return [ ];
+  }
+  // 货币类型
+  if (search && search.currency != null && search.currency.length === 0) {
+    return [ ];
+  }
+  // 用户支付币种
+  if (search && search.payer_currency != null && search.payer_currency.length === 0) {
+    return [ ];
+  }
+  // 创建人
+  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
+    return [ ];
+  }
+  // 更新人
+  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
+    return [ ];
+  }
+  
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ await getFromQuery() }
+      ${ await getFromQuery(args, search, options) }
   `;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
-    sql += `
-    where
-      ${ whereQuery }
-    `;
+    sql += ` where ${ whereQuery }`;
   }
-  sql += `
-    group by t.id
-  `;
+  sql += ` group by t.id`;
   
   // 排序
   if (!sort) {
@@ -428,10 +442,12 @@ export async function findAll(
     prop: "transaction_id",
     order: SortOrderEnum.Desc,
   });
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -441,15 +457,21 @@ export async function findAll(
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
   const result = await query<WxPayNoticeModel>(
     sql,
     args,
+    {
+      debug,
+    },
   );
   
   const [
@@ -583,39 +605,39 @@ export async function setIdByLbl(
   ]);
   
   // 交易类型
-  if (isNotEmpty(input.trade_type_lbl) && input.trade_type === undefined) {
+  if (isNotEmpty(input.trade_type_lbl) && input.trade_type == null) {
     const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.trade_type = val as WxPayNoticeTradeType;
     }
   }
   
   // 交易状态
-  if (isNotEmpty(input.trade_state_lbl) && input.trade_state === undefined) {
+  if (isNotEmpty(input.trade_state_lbl) && input.trade_state == null) {
     const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.trade_state = val as WxPayNoticeTradeState;
     }
   }
   
   // 支付完成时间
-  if (isNotEmpty(input.success_time_lbl) && input.success_time === undefined) {
+  if (isNotEmpty(input.success_time_lbl) && input.success_time == null) {
     input.success_time_lbl = String(input.success_time_lbl).trim();
     input.success_time = input.success_time_lbl;
   }
   
   // 货币类型
-  if (isNotEmpty(input.currency_lbl) && input.currency === undefined) {
+  if (isNotEmpty(input.currency_lbl) && input.currency == null) {
     const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.currency = val as WxPayNoticeCurrency;
     }
   }
   
   // 用户支付币种
-  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency === undefined) {
+  if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency == null) {
     const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
-    if (val !== undefined) {
+    if (val != null) {
       input.payer_currency = val as WxPayNoticePayerCurrency;
     }
   }
@@ -670,12 +692,28 @@ export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
 export async function findByUnique(
   search0: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel[]> {
+  
+  const table = "wx_wx_pay_notice";
+  const method = "findByUnique";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search0) {
+      msg += ` search0:${ getDebugSearch(search0) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
-    });
+    }, undefined, options);
     if (!model) {
       return [ ];
     }
@@ -718,7 +756,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("数据已经存在"));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("微信支付通知")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxPayNoticeId = await updateById(
@@ -727,9 +765,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -748,13 +784,39 @@ export async function findOne(
   search?: WxPayNoticeSearch,
   sort?: SortInput | SortInput[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel | undefined> {
+  const table = "wx_wx_pay_notice";
+  const method = "findOne";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (search?.id === "") {
+    return;
+  }
+  if (search?.ids?.length === 0) {
+    return;
+  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort, options);
   const model = models[0];
   return model;
 }
@@ -766,12 +828,27 @@ export async function findOne(
 export async function findById(
   id?: WxPayNoticeId | null,
   options?: {
+    debug?: boolean;
   },
 ): Promise<WxPayNoticeModel | undefined> {
+  const table = "wx_wx_pay_notice";
+  const method = "findById";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   if (isEmpty(id as unknown as string)) {
     return;
   }
-  const model = await findOne({ id });
+  const model = await findOne({ id }, undefined, options);
   return model;
 }
 
@@ -782,9 +859,24 @@ export async function findById(
 export async function exist(
   search?: WxPayNoticeSearch,
   options?: {
+    debug?: boolean;
   },
 ): Promise<boolean> {
-  const model = await findOne(search);
+  const table = "wx_wx_pay_notice";
+  const method = "exist";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  const model = await findOne(search, undefined, options);
   const exist = !!model;
   return exist;
 }
@@ -795,9 +887,20 @@ export async function exist(
  */
 export async function existById(
   id?: WxPayNoticeId | null,
+  options?: {
+    debug?: boolean;
+  },
 ) {
   const table = "wx_wx_pay_notice";
   const method = "existById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (isEmpty(id as unknown as string)) {
     return false;
@@ -981,11 +1084,26 @@ export async function validate(
 export async function create(
   input: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
   },
 ): Promise<WxPayNoticeId> {
   const table = "wx_wx_pay_notice";
   const method = "create";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
@@ -1024,9 +1142,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into wx_wx_pay_notice(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -1045,77 +1161,69 @@ export async function create(
       sql += `,org_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,create_usr_id`;
     }
   }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id`;
-    }
-  }
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     sql += `,appid`;
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     sql += `,mchid`;
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     sql += `,openid`;
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     sql += `,out_trade_no`;
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,transaction_id`;
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     sql += `,trade_type`;
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     sql += `,trade_state`;
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     sql += `,trade_state_desc`;
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     sql += `,bank_type`;
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     sql += `,attach`;
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     sql += `,success_time`;
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     sql += `,total`;
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     sql += `,payer_total`;
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     sql += `,currency`;
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     sql += `,payer_currency`;
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     sql += `,device_id`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,rem`;
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     sql += `,raw`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -1137,75 +1245,71 @@ export async function create(
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
+    if (authModel?.id != null) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id !== undefined) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     sql += `,${ args.push(input.appid) }`;
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     sql += `,${ args.push(input.mchid) }`;
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     sql += `,${ args.push(input.openid) }`;
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     sql += `,${ args.push(input.out_trade_no) }`;
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     sql += `,${ args.push(input.transaction_id) }`;
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     sql += `,${ args.push(input.trade_type) }`;
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     sql += `,${ args.push(input.trade_state) }`;
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     sql += `,${ args.push(input.trade_state_desc) }`;
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     sql += `,${ args.push(input.bank_type) }`;
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     sql += `,${ args.push(input.attach) }`;
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     sql += `,${ args.push(input.success_time) }`;
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     sql += `,${ args.push(input.total) }`;
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     sql += `,${ args.push(input.payer_total) }`;
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     sql += `,${ args.push(input.currency) }`;
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     sql += `,${ args.push(input.payer_currency) }`;
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     sql += `,${ args.push(input.device_id) }`;
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     sql += `,${ args.push(input.raw) }`;
   }
   sql += `)`;
-  const res = await execute(sql, args);
-  log(JSON.stringify(res));
+  
+  const debug = getParsedEnv("database_debug_sql") === "true";
+  
+  await execute(sql, args, {
+    debug,
+  });
   
   return input.id;
 }
@@ -1222,10 +1326,25 @@ export async function updateTenantById(
   id: WxPayNoticeId,
   tenant_id: TenantId,
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "updateTenantById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
@@ -1301,11 +1420,27 @@ export async function updateById(
   id: WxPayNoticeId,
   input: WxPayNoticeInput,
   options?: {
+    debug?: boolean;
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxPayNoticeId> {
+  
   const table = "wx_wx_pay_notice";
   const method = "updateById";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!id) {
     throw new Error("updateById: id cannot be empty");
@@ -1353,134 +1488,138 @@ export async function updateById(
     update wx_wx_pay_notice set
   `;
   let updateFldNum = 0;
-  if (input.appid !== undefined) {
+  if (input.appid != null) {
     if (input.appid != oldModel.appid) {
       sql += `appid = ${ args.push(input.appid) },`;
       updateFldNum++;
     }
   }
-  if (input.mchid !== undefined) {
+  if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
       sql += `mchid = ${ args.push(input.mchid) },`;
       updateFldNum++;
     }
   }
-  if (input.openid !== undefined) {
+  if (input.openid != null) {
     if (input.openid != oldModel.openid) {
       sql += `openid = ${ args.push(input.openid) },`;
       updateFldNum++;
     }
   }
-  if (input.out_trade_no !== undefined) {
+  if (input.out_trade_no != null) {
     if (input.out_trade_no != oldModel.out_trade_no) {
       sql += `out_trade_no = ${ args.push(input.out_trade_no) },`;
       updateFldNum++;
     }
   }
-  if (input.transaction_id !== undefined) {
+  if (input.transaction_id != null) {
     if (input.transaction_id != oldModel.transaction_id) {
       sql += `transaction_id = ${ args.push(input.transaction_id) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_type !== undefined) {
+  if (input.trade_type != null) {
     if (input.trade_type != oldModel.trade_type) {
       sql += `trade_type = ${ args.push(input.trade_type) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_state !== undefined) {
+  if (input.trade_state != null) {
     if (input.trade_state != oldModel.trade_state) {
       sql += `trade_state = ${ args.push(input.trade_state) },`;
       updateFldNum++;
     }
   }
-  if (input.trade_state_desc !== undefined) {
+  if (input.trade_state_desc != null) {
     if (input.trade_state_desc != oldModel.trade_state_desc) {
       sql += `trade_state_desc = ${ args.push(input.trade_state_desc) },`;
       updateFldNum++;
     }
   }
-  if (input.bank_type !== undefined) {
+  if (input.bank_type != null) {
     if (input.bank_type != oldModel.bank_type) {
       sql += `bank_type = ${ args.push(input.bank_type) },`;
       updateFldNum++;
     }
   }
-  if (input.attach !== undefined) {
+  if (input.attach != null) {
     if (input.attach != oldModel.attach) {
       sql += `attach = ${ args.push(input.attach) },`;
       updateFldNum++;
     }
   }
-  if (input.success_time !== undefined) {
+  if (input.success_time != null) {
     if (input.success_time != oldModel.success_time) {
       sql += `success_time = ${ args.push(input.success_time) },`;
       updateFldNum++;
     }
   }
-  if (input.total !== undefined) {
+  if (input.total != null) {
     if (input.total != oldModel.total) {
       sql += `total = ${ args.push(input.total) },`;
       updateFldNum++;
     }
   }
-  if (input.payer_total !== undefined) {
+  if (input.payer_total != null) {
     if (input.payer_total != oldModel.payer_total) {
       sql += `payer_total = ${ args.push(input.payer_total) },`;
       updateFldNum++;
     }
   }
-  if (input.currency !== undefined) {
+  if (input.currency != null) {
     if (input.currency != oldModel.currency) {
       sql += `currency = ${ args.push(input.currency) },`;
       updateFldNum++;
     }
   }
-  if (input.payer_currency !== undefined) {
+  if (input.payer_currency != null) {
     if (input.payer_currency != oldModel.payer_currency) {
       sql += `payer_currency = ${ args.push(input.payer_currency) },`;
       updateFldNum++;
     }
   }
-  if (input.device_id !== undefined) {
+  if (input.device_id != null) {
     if (input.device_id != oldModel.device_id) {
       sql += `device_id = ${ args.push(input.device_id) },`;
       updateFldNum++;
     }
   }
-  if (input.rem !== undefined) {
+  if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
-  if (input.raw !== undefined) {
+  if (input.raw != null) {
     if (input.raw != oldModel.raw) {
       sql += `raw = ${ args.push(input.raw) },`;
       updateFldNum++;
     }
   }
+  
   if (updateFldNum > 0) {
     if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await getAuthModel();
-      if (authModel?.id !== undefined) {
+      if (authModel?.id != null) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `update_time = ${ args.push(new Date()) }`;
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    const res = await execute(sql, args);
-    log(JSON.stringify(res));
+    await execute(sql, args);
   }
   
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));
+    log(JSON.stringify(oldModel));
   }
   
   return id;
@@ -1494,10 +1633,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "deleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1505,9 +1656,9 @@ export async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: WxPayNoticeId = ids[i];
-    const isExist = await existById(id);
-    if (!isExist) {
+    const id = ids[i];
+    const oldModel = await findById(id);
+    if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
@@ -1536,10 +1687,22 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "revertByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;
@@ -1573,7 +1736,7 @@ export async function revertByIds(
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
-        throw await ns("数据已经存在");
+        throw await ns("此 {0} 已经存在", await ns("微信支付通知"));
       }
     }
   }
@@ -1589,10 +1752,22 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxPayNoticeId[],
   options?: {
+    debug?: boolean;
   },
 ): Promise<number> {
   const table = "wx_wx_pay_notice";
   const method = "forceDeleteByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ JSON.stringify(ids) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
   
   if (!ids || !ids.length) {
     return 0;

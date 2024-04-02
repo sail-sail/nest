@@ -109,7 +109,7 @@ type WxUsrFieldComment {
   update_time_lbl: String!
 }
 input WxUsrInput {
-  ""
+  "ID"
   id: WxUsrId
   "名称"
   lbl: String
@@ -141,22 +141,6 @@ input WxUsrInput {
   language: String
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input WxUsrSearch {
   "是否已删除"
@@ -207,12 +191,12 @@ input WxUsrSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找小程序用户总数"
@@ -228,9 +212,9 @@ type Query {
 }
 type Mutation {
   "创建小程序用户"
-  createWxUsr(model: WxUsrInput!, unique_type: UniqueType): WxUsrId!
+  createWxUsr(input: WxUsrInput!, unique_type: UniqueType): WxUsrId!
   "根据 id 修改小程序用户"
-  updateByIdWxUsr(id: WxUsrId!, model: WxUsrInput!): WxUsrId!
+  updateByIdWxUsr(id: WxUsrId!, input: WxUsrInput!): WxUsrId!
   "根据 ids 删除小程序用户"
   deleteByIdsWxUsr(ids: [WxUsrId!]!): Int!
   "根据 ids 还原小程序用户"

@@ -3,10 +3,6 @@ import {
 } from "/lib/context.ts";
 
 import type {
-  SearchExtra,
-} from "/lib/util/dao_util.ts";
-
-import type {
   UniqueType,
   PageInput,
   SortInput,
@@ -28,7 +24,7 @@ import {
  * 根据条件查找小程序接口凭据总数
  */
 export async function findCountWxoAppToken(
-  search?: WxoAppTokenSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppTokenSearch,
 ): Promise<number> {
   
   const {
@@ -43,7 +39,7 @@ export async function findCountWxoAppToken(
  * 根据搜索条件和分页查找小程序接口凭据列表
  */
 export async function findAllWxoAppToken(
-  search?: WxoAppTokenSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppTokenSearch,
   page?: PageInput,
   sort?: SortInput[],
 ): Promise<WxoAppTokenModel[]> {
@@ -69,7 +65,7 @@ export async function getFieldCommentsWxoAppToken(): Promise<WxoAppTokenFieldCom
  * 根据条件查找第一个小程序接口凭据
  */
 export async function findOneWxoAppToken(
-  search?: WxoAppTokenSearch & { $extra?: SearchExtra[] },
+  search?: WxoAppTokenSearch,
   sort?: SortInput[],
 ): Promise<WxoAppTokenModel | undefined> {
   
@@ -99,6 +95,8 @@ export async function createWxoAppToken(
   input: WxoAppTokenInput,
   unique_type?: UniqueType,
 ): Promise<WxoAppTokenId> {
+  
+  input.id = undefined;
   
   const {
     validate,
@@ -130,6 +128,8 @@ export async function updateByIdWxoAppToken(
   id: WxoAppTokenId,
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
+  
+  input.id = undefined;
   
   const {
     setIdByLbl,

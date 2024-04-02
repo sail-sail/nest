@@ -105,7 +105,7 @@ type WxoAppFieldComment {
   update_time_lbl: String!
 }
 input WxoAppInput {
-  ""
+  "ID"
   id: WxoAppId
   "原始ID"
   code: String
@@ -135,22 +135,6 @@ input WxoAppInput {
   order_by: Int
   "备注"
   rem: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input WxoAppSearch {
   "是否已删除"
@@ -176,7 +160,7 @@ input WxoAppSearch {
   "启用"
   is_enabled: [Int!]
   "排序"
-  order_by: [Int!]
+  order_by: [Int]
   "备注"
   rem: String
   rem_like: String
@@ -184,12 +168,12 @@ input WxoAppSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找公众号设置总数"
@@ -207,9 +191,9 @@ type Query {
 }
 type Mutation {
   "创建公众号设置"
-  createWxoApp(model: WxoAppInput!, unique_type: UniqueType): WxoAppId!
+  createWxoApp(input: WxoAppInput!, unique_type: UniqueType): WxoAppId!
   "根据 id 修改公众号设置"
-  updateByIdWxoApp(id: WxoAppId!, model: WxoAppInput!): WxoAppId!
+  updateByIdWxoApp(id: WxoAppId!, input: WxoAppInput!): WxoAppId!
   "根据 ids 删除公众号设置"
   deleteByIdsWxoApp(ids: [WxoAppId!]!): Int!
   "根据 ids 启用或者禁用公众号设置"

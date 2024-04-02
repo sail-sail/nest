@@ -179,7 +179,7 @@ type WxPayNoticeFieldComment {
   update_time_lbl: String!
 }
 input WxPayNoticeInput {
-  ""
+  "ID"
   id: WxPayNoticeId
   "开发者ID"
   appid: String
@@ -227,22 +227,6 @@ input WxPayNoticeInput {
   rem: String
   "原始数据"
   raw: String
-  "创建人"
-  create_usr_id: UsrId
-  "创建人"
-  create_usr_id_lbl: String
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String
-  "更新人"
-  update_usr_id: UsrId
-  "更新人"
-  update_usr_id_lbl: String
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String
 }
 input WxPayNoticeSearch {
   "是否已删除"
@@ -280,11 +264,11 @@ input WxPayNoticeSearch {
   attach: String
   attach_like: String
   "支付完成时间"
-  success_time: [NaiveDateTime!]
+  success_time: [NaiveDateTime]
   "总金额"
-  total: [Int!]
+  total: [Int]
   "用户支付金额"
-  payer_total: [Int!]
+  payer_total: [Int]
   "货币类型"
   currency: [String!]
   "用户支付币种"
@@ -302,12 +286,12 @@ input WxPayNoticeSearch {
   create_usr_id: [UsrId!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [NaiveDateTime!]
+  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [NaiveDateTime!]
+  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找微信支付通知总数"

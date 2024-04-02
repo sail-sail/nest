@@ -10,17 +10,49 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   WxAppSearch,
   WxAppInput,
   WxAppModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: WxAppModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
   }
+}
+
+export function intoInput(
+  model?: Record<string, any>,
+) {
+  const input: WxAppInput = {
+    // ID
+    id: model?.id,
+    // 原始ID
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 开发者ID
+    appid: model?.appid,
+    // 开发者密码
+    appsecret: model?.appsecret,
+    // 锁定
+    is_locked: model?.is_locked,
+    is_locked_lbl: model?.is_locked_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
 }
 
 /**
@@ -37,7 +69,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxApp: Query["findAllWxApp"];
+    findAllWxApp: WxAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -91,7 +123,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxApp: Query["findOneWxApp"];
+    findOneWxApp?: WxAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxAppSearch, $sort: [SortInput!]) {
@@ -156,25 +188,26 @@ export async function findCount(
 
 /**
  * 创建小程序设置
- * @param {WxAppInput} model
+ * @param {WxAppInput} input
  * @param {UniqueType} unique_type?
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: WxAppInput,
+  input: WxAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxAppId> {
+  input = intoInput(input);
   const data: {
     createWxApp: Mutation["createWxApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: WxAppInput!, $unique_type: UniqueType) {
-        createWxApp(model: $model, unique_type: $unique_type)
+      mutation($input: WxAppInput!, $unique_type: UniqueType) {
+        createWxApp(input: $input, unique_type: $unique_type)
       }
     `,
     variables: {
-      model,
+      input,
       unique_type,
     },
   }, opt);
@@ -185,25 +218,26 @@ export async function create(
 /**
  * 根据 id 修改小程序设置
  * @param {WxAppId} id
- * @param {WxAppInput} model
+ * @param {WxAppInput} input
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxAppId,
-  model: WxAppInput,
+  input: WxAppInput,
   opt?: GqlOpt,
 ): Promise<WxAppId> {
+  input = intoInput(input);
   const data: {
     updateByIdWxApp: Mutation["updateByIdWxApp"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: WxAppId!, $model: WxAppInput!) {
-        updateByIdWxApp(id: $id, model: $model)
+      mutation($id: WxAppId!, $input: WxAppInput!) {
+        updateByIdWxApp(id: $id, input: $input)
       }
     `,
     variables: {
       id,
-      model,
+      input,
     },
   }, opt);
   const id2: WxAppId = data.updateByIdWxApp;
@@ -220,7 +254,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxApp: Query["findByIdWxApp"];
+    findByIdWxApp?: WxAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxAppId!) {
@@ -503,6 +537,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxApp) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("小程序设置");
         const buffer = await workerFn(
