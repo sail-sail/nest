@@ -374,8 +374,11 @@ import type {
 
 import type {
   WxUsrInput,
+} from "./Model";
+
+import type {
   UsrModel,
-} from "#/types";
+} from "@/views/base/usr/Model";
 
 import {
   getUsrList,

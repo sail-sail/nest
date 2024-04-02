@@ -548,9 +548,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,
-        },
+        options,
       );
       return id;
     }
@@ -867,9 +865,7 @@ export async function create(
   const args = new QueryArgs();
   let sql = `
     insert into wx_wxo_usr(
-      id
-      ,create_time
-      ,update_time
+      id,create_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -888,20 +884,12 @@ export async function create(
       sql += `,org_id`;
     }
   }
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }
   if (input.lbl != null) {
@@ -919,7 +907,7 @@ export async function create(
   if (input.rem != null) {
     sql += `,rem`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -939,14 +927,6 @@ export async function create(
   }
   if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
@@ -1106,6 +1086,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw";
   },
 ): Promise<WxoUsrId> {
+  
   const table = "wx_wxo_usr";
   const method = "updateById";
   

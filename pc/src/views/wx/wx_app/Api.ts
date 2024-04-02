@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   WxAppSearch,
   WxAppInput,
   WxAppModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: WxAppModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -65,7 +69,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxApp: Query["findAllWxApp"];
+    findAllWxApp: WxAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -119,7 +123,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxApp: Query["findOneWxApp"];
+    findOneWxApp?: WxAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxAppSearch, $sort: [SortInput!]) {
@@ -250,7 +254,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxApp: Query["findByIdWxApp"];
+    findByIdWxApp?: WxAppModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxAppId!) {
@@ -533,6 +537,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxApp) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("小程序设置");
         const buffer = await workerFn(
