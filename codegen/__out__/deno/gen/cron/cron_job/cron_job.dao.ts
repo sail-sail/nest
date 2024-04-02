@@ -1193,7 +1193,6 @@ export async function updateById(
   const table = "cron_cron_job";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
