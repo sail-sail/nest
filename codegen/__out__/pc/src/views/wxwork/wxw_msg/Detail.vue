@@ -249,8 +249,11 @@ import type {
 
 import type {
   WxwMsgInput,
+} from "./Model";
+
+import type {
   WxwAppModel,
-} from "#/types";
+} from "@/views/wxwork/wxw_app/Model";
 
 import {
   getWxwAppList,

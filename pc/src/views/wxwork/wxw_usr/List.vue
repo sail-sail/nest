@@ -567,7 +567,7 @@ import type {
   WxwUsrModel,
   WxwUsrInput,
   WxwUsrSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "企微用户",
@@ -1327,6 +1327,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

@@ -6,17 +6,23 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxwMsgSearch,
-  WxwMsgInput,
-  WxwMsgModel,
 } from "#/types";
 
 import type {
+  WxwMsgSearch,
+  WxwMsgInput,
+  WxwMsgModel,
+} from "./Model";
+
+// 企微应用
+import type {
   WxwAppSearch,
-} from "#/types";
+  WxwAppModel,
+} from "@/views/wxwork/wxw_app/Model";
 
 async function setLblById(
   model?: WxwMsgModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -27,15 +33,23 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: WxwMsgInput = {
+    // ID
     id: model?.id,
+    // 企微应用
     wxw_app_id: model?.wxw_app_id,
     wxw_app_id_lbl: model?.wxw_app_id_lbl,
+    // 发送状态
     errcode: model?.errcode,
     errcode_lbl: model?.errcode_lbl,
+    // 成员ID
     touser: model?.touser,
+    // 标题
     title: model?.title,
+    // 描述
     description: model?.description,
+    // 按钮文字
     btntxt: model?.btntxt,
+    // 错误信息
     errmsg: model?.errmsg,
   };
   return input;
@@ -55,7 +69,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxwMsg: Query["findAllWxwMsg"];
+    findAllWxwMsg: WxwMsgModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxwMsgSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -102,7 +116,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneWxwMsg: Query["findOneWxwMsg"];
+    findOneWxwMsg?: WxwMsgModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: WxwMsgSearch, $sort: [SortInput!]) {
@@ -168,7 +182,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxwMsg: Query["findByIdWxwMsg"];
+    findByIdWxwMsg?: WxwMsgModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: WxwMsgId!) {
@@ -280,7 +294,7 @@ export async function findAllWxwApp(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxwApp: Query["findAllWxwApp"];
+    findAllWxwApp: WxwAppModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -440,6 +454,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllWxwMsg) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("企微消息");
         const buffer = await workerFn(

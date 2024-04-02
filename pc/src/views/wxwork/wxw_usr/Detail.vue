@@ -235,7 +235,7 @@ import type {
 
 import type {
   WxwUsrInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

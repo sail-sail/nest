@@ -702,7 +702,7 @@ import type {
   WxwAppModel,
   WxwAppInput,
   WxwAppSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "企微应用",
@@ -1587,6 +1587,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
