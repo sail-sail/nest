@@ -364,9 +364,15 @@ import type {
 
 import type {
   UsrInput,
+} from "./Model";
+
+import type {
   OrgModel,
+} from "@/views/base/org/Model";
+
+import type {
   RoleModel,
-} from "#/types";
+} from "@/views/base/role/Model";
 
 import {
   getOrgList,

@@ -660,9 +660,17 @@ import type {
   I18nModel,
   I18nInput,
   I18nSearch,
+} from "./Model";
+
+// 语言
+import type {
   LangModel,
+} from "@/views/base/lang/Model";
+
+// 菜单
+import type {
   MenuModel,
-} from "#/types";
+} from "@/views/base/menu/Model";
 
 import {
   getLangList, // 语言
@@ -1524,6 +1532,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

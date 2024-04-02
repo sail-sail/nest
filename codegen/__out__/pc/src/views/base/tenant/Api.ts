@@ -10,18 +10,25 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   TenantSearch,
   TenantInput,
   TenantModel,
-} from "#/types";
+} from "./Model";
 
+// 域名
 import type {
   DomainSearch,
-} from "#/types";
+  DomainModel,
+} from "@/views/base/domain/Model";
 
+// 菜单
 import type {
   MenuSearch,
-} from "#/types";
+  MenuModel,
+} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -29,6 +36,7 @@ import {
 
 async function setLblById(
   model?: TenantModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -77,7 +85,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllTenant: Query["findAllTenant"];
+    findAllTenant: TenantModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -132,7 +140,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneTenant: Query["findOneTenant"];
+    findOneTenant?: TenantModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: TenantSearch, $sort: [SortInput!]) {
@@ -264,7 +272,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdTenant: Query["findByIdTenant"];
+    findByIdTenant?: TenantModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: TenantId!) {
@@ -440,7 +448,7 @@ export async function findAllDomain(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -486,7 +494,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -670,6 +678,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllTenant) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("租户");
         const buffer = await workerFn(

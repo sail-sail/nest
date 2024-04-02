@@ -33,6 +33,16 @@ import dayjs from "dayjs";
       const key = keys[k];
       let val = vals[k];
       const headerKey = header && header[key] || key;
+      if (typeof val === "string") {
+        if (val.trim() === "-") {
+          (row as any)[headerKey] = undefined;
+          continue;
+        }
+        if (val.trim() === "--") {
+          (row as any)[headerKey] = "-";
+          continue;
+        }
+      }
       const type = opt?.key_types[headerKey] || "string";
       if (type === "number") {
         (row as any)[headerKey] = Number(val);
@@ -55,7 +65,7 @@ import dayjs from "dayjs";
           (row as any)[headerKey] = val;
         } else if (typeof val === "number") {
           // (row as any)[headerKey] = num2Date(val);
-          const msg = `请使用字符串格式或日期格式, 而不是数字格式, 错误的值: ${ val }`;
+          const msg = `请使用字符串格式的日期, 例如: ${ dayjs().format("YYYY-MM-DD HH:mm:ss") }`;
           ElMessage.error(msg);
           throw msg;
         } else {

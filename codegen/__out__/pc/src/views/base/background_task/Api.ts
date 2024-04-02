@@ -11,13 +11,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   BackgroundTaskSearch,
   BackgroundTaskInput,
   BackgroundTaskModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: BackgroundTaskModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -68,7 +72,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllBackgroundTask: Query["findAllBackgroundTask"];
+    findAllBackgroundTask: BackgroundTaskModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -124,7 +128,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneBackgroundTask: Query["findOneBackgroundTask"];
+    findOneBackgroundTask?: BackgroundTaskModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
@@ -199,7 +203,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdBackgroundTask: Query["findByIdBackgroundTask"];
+    findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: BackgroundTaskId!) {
@@ -439,6 +443,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllBackgroundTask) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("后台任务");
         const buffer = await workerFn(

@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   MenuSearch,
   MenuInput,
   MenuModel,
-} from "#/types";
+} from "./Model";
 
 import {
   findTree as findMenuTree,
@@ -21,6 +24,7 @@ import {
 
 async function setLblById(
   model?: MenuModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -70,7 +74,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -125,7 +129,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneMenu: Query["findOneMenu"];
+    findOneMenu?: MenuModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput!]) {
@@ -282,7 +286,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdMenu: Query["findByIdMenu"];
+    findByIdMenu?: MenuModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: MenuId!) {
@@ -458,7 +462,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -643,6 +647,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllMenu) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("菜单");
         const buffer = await workerFn(

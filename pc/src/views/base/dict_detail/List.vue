@@ -719,8 +719,12 @@ import type {
   DictDetailModel,
   DictDetailInput,
   DictDetailSearch,
+} from "./Model";
+
+// 系统字典
+import type {
   DictModel,
-} from "#/types";
+} from "@/views/base/dict/Model";
 
 import {
   getDictList, // 系统字典
@@ -1634,6 +1638,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
