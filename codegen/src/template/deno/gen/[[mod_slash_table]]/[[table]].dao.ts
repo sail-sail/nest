@@ -3898,7 +3898,6 @@ export async function updateById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
-  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
