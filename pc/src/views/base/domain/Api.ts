@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DomainSearch,
   DomainInput,
   DomainModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: DomainModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -27,16 +31,24 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DomainInput = {
+    // ID
     id: model?.id,
+    // 协议
     protocol: model?.protocol,
+    // 名称
     lbl: model?.lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 默认
     is_default: model?.is_default,
     is_default_lbl: model?.is_default_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
@@ -56,7 +68,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDomain: Query["findAllDomain"];
+    findAllDomain: DomainModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -110,7 +122,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDomain: Query["findOneDomain"];
+    findOneDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DomainSearch, $sort: [SortInput!]) {
@@ -241,7 +253,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDomain: Query["findByIdDomain"];
+    findByIdDomain?: DomainModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DomainId!) {
@@ -548,6 +560,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDomain) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("域名");
         const buffer = await workerFn(

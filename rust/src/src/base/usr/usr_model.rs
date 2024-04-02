@@ -25,22 +25,17 @@ pub struct LoginInput {
   pub org_id: Option<OrgId>,
   /// 语言
   pub lang: String,
-  
 }
 
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "camelCase")]
 pub struct ChangePasswordInput {
-  
   /// 旧密码
   pub old_password: String,
-  
   /// 新密码
   pub password: String,
-  
   /// 确认密码
   pub confirm_password: String,
-  
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
@@ -57,20 +52,16 @@ pub struct LoginModel {
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfo {
-  
   pub lbl: String,
   pub username: String,
   pub lang: String,
   pub org_id: Option<OrgId>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
-  
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
-  
   pub id: OrgId,
   pub lbl: String,
-  
 }

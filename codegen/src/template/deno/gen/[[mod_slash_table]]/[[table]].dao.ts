@@ -106,23 +106,17 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "version") continue;
   const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  if (!column_type) {
+  const data_type = column.DATA_TYPE;
+  if (data_type !== "decimal") {
     continue;
   }
-  if (!column_type.startsWith("decimal")) {
-    continue;
-  }
-  const isVirtual = column.isVirtual;
-  if (!isVirtual) continue;
   hasDecimal = true;
+  break;
 }
 #><#
 if (hasDecimal) {
@@ -857,6 +851,10 @@ async function getWhereQuery(
     if (isPassword) {
       continue;
     }
+    const isEncrypt = column.isEncrypt;
+    if (isEncrypt) {
+      continue;
+    }
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
     if (selectStr) {
@@ -1155,10 +1153,58 @@ export async function findAll(
   }
   if (search?.ids?.length === 0) {
     return [ ];
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "org_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if (search && search.<#=column_name#> != null && search.<#=column_name#>.length === 0) {
+    return [ ];
+  }<#
+    }
+  #><#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = `
+    select f.* from (
     select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -1235,12 +1281,14 @@ export async function findAll(
   });<#
   }
   #><#
-  if (hasCreateTime) {
+  if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
-  sort.push({
-    prop: "create_time",
-    order: SortOrderEnum.Desc,
-  });<#
+  if (!sort.some((item) => item.prop === "create_time")) {
+    sort.push({
+      prop: "create_time",
+      order: SortOrderEnum.Desc,
+    });
+  }<#
   }
   #>
   for (let i = 0; i < sort.length; i++) {
@@ -1273,6 +1321,7 @@ export async function findAll(
   }<#
   }
   #>
+  sql += `) f`;
   
   // 分页
   if (page?.pgSize) {
@@ -1535,10 +1584,12 @@ export async function findAll(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: result.map((item) => item.id),
     is_deleted: search?.is_deleted,
   });<#
@@ -1549,7 +1600,7 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const comment = column.COLUMN_COMMENT;
+    const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1574,10 +1625,14 @@ export async function findAll(
     }).join("");
   #>
   
-  // <#=comment#>
+  // <#=table_comment#>
   const <#=column_name#>_<#=table#>_models = await findAll<#=Table_Up#>({
-    <#=many2many.column1#>: result.map((item) => item.id),
-    is_deleted: search?.is_deleted,
+    <#=many2many.column1#>: result.map((item) => item.id),<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted: search?.is_deleted,<#
+    }
+    #>
   });<#
   }
   #>
@@ -1593,6 +1648,7 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
+      if (column_name === "tenant_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -1604,18 +1660,45 @@ export async function findAll(
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       const isVirtual = column.isVirtual;
+      let precision = 0;
+      if (data_type === "decimal") {
+        const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+        precision = Number(arr[1]);
+      }
     #><#
-      if (column_type && column_type.startsWith("decimal") && isVirtual && !isEncrypt) {
+      if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
     model.<#=column_name#> = new Decimal(<#=column_default || 0#>);<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = "<#=column_default#>";<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = <#=column_default#>;<#
+        continue;
       }
     #><#
-      if (isEncrypt) {
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
+    model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = Number(await decrypt(model.<#=column_name#>.toString()) || 0);<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
@@ -1698,11 +1781,23 @@ export async function findAll(
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
     #>
     
     // <#=inlineForeignTab.label#>
-    model.<#=table#>_models = <#=table#>_models
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
       .filter((item) => item.<#=inlineForeignTab.column#> === model.id);<#
+      } else if (inline_foreign_type === "one2one") {
+      #>
+    
+    // <#=inlineForeignTab.label#>
+    model.<#=inline_column_name#> = <#=inline_column_name#>_models
+      .filter((item) => item.<#=inlineForeignTab.column#> === model.id)[0];<#
+      }
+      #><#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -2496,12 +2591,7 @@ export async function checkByUnique(
   input: <#=inputName#>,
   oldModel: <#=modelName#>,
   uniqueType: UniqueType = UniqueType.Throw,
-  options?: {<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+  options?: {
   },
 ): Promise<<#=Table_Up#>Id | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
@@ -2516,14 +2606,7 @@ export async function checkByUnique(
           ...input,
           id: undefined,
         },
-        {
-          ...options,<#
-          if (hasEncrypt) {
-          #>
-          isEncrypt: false,<#
-          }
-          #>
-        },
+        options,
       );
       return id;
     }
@@ -3017,12 +3100,7 @@ export async function create(
   options?: {
     debug?: boolean;
     uniqueType?: UniqueType;
-    hasDataPermit?: boolean;<#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
-    #>
+    hasDataPermit?: boolean;
   },
 ): Promise<<#=Table_Up#>Id> {
   const table = "<#=mod#>_<#=table#>";
@@ -3043,43 +3121,7 @@ export async function create(
   
   if (input.id) {
     throw new Error(`Can not set id when create in dao: ${ table }`);
-  }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
   }
-  #>
   
   await setIdByLbl(input);
   
@@ -3128,13 +3170,7 @@ export async function create(
     insert into <#=mod#>_<#=table#>(
       id<#
       if (hasCreateTime) {
-      #>
-      ,create_time<#
-      }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      ,update_time<#
+      #>,create_time<#
       }
       #>
   `;<#
@@ -3165,24 +3201,12 @@ export async function create(
   #><#
   if (hasCreateUsrId) {
   #>
-  if (input.create_usr_id != null) {
+  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
     sql += `,create_usr_id`;
   } else {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
       sql += `,create_usr_id`;
-    }
-  }<#
-  }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null) {
-    sql += `,update_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id`;
     }
   }<#
   }
@@ -3277,13 +3301,9 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },<#
+  sql += `)values(${ args.push(input.id) }<#
   if (hasCreateTime) {
-  #>${ args.push(reqDate()) },<#
-  }
-  #><#
-  if (hasUpdateTime) {
-  #>${ args.push(reqDate()) }<#
+  #>,${ args.push(reqDate()) }<#
   }
   #>`;<#
   if (hasTenant_id) {
@@ -3323,18 +3343,6 @@ export async function create(
   }<#
   }
   #><#
-  if (hasUpdateUsrId) {
-  #>
-  if (input.update_usr_id != null && input.update_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3355,10 +3363,11 @@ export async function create(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
   #><#
     if (modelLabel) {
   #>
-  if (isNotEmpty(input.<#=modelLabel#>)) {
+  if (input.<#=modelLabel#> != null) {
     sql += `,${ args.push(input.<#=modelLabel#>) }`;
   }<#
     }
@@ -3370,20 +3379,59 @@ export async function create(
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     } else {
   #>
-  if (input.<#=column_name#> != null) {
-    sql += `,${ args.push(input.<#=column_name#>) }`;
+  if (input.<#=column_name#> != null) {<#
+    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+    } else {
+    #>
+    sql += `,${ args.push(input.<#=column_name#>) }`;<#
+    }
+    #>
   }<#
     }
   #><#
@@ -3490,16 +3538,29 @@ export async function create(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models && input.<#=table#>_models.length > 0) {
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      <#=table#>_model.<#=inlineForeignTab.column#> = input.id;
-      await create<#=Table_Up#>(<#=table#>_model);
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
+      model.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(model);
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
+    await create<#=Table_Up#>(input.<#=inline_column_name#>);
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3562,7 +3623,17 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);
+  await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
+  if (
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  await delCacheCtx(`dao.sql.base_menu._getMenus`);<#
+  }
+  #>
 }<#
 }
 #><#
@@ -3820,14 +3891,10 @@ export async function updateById(
     #>
     hasDataPermit?: boolean,<#
     }
-    #><#
-    if (hasEncrypt) {
-    #>
-    isEncrypt?: boolean;<#
-    }
     #>
   },
 ): Promise<<#=Table_Up#>Id> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
@@ -3852,42 +3919,6 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
-  if (hasEncrypt) {
-  #>
-  if (options?.isEncrypt !== false) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
-    }<#
-    }
-    #>
-  }<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   
@@ -4013,6 +4044,12 @@ export async function updateById(
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
+    const isEncrypt = column.isEncrypt;
+    let precision = 0;
+    if (data_type === "decimal") {
+      const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+      precision = Number(arr[1]);
+    }
   #><#
     if (modelLabel) {
   #>
@@ -4036,8 +4073,22 @@ export async function updateById(
     if (isEmpty(input.<#=column_name#>)) {
       input.<#=column_name#> = null;
     }
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4046,16 +4097,44 @@ export async function updateById(
     } else if (!foreignKey) {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
     } else {
   #>
   if (input.<#=column_name#> != null) {
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
+      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+      #>
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4108,36 +4187,69 @@ export async function updateById(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
   #>
   
-  // <#=inlineForeignTab.label#>
-  if (input.<#=table#>_models) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
+  // <#=inlineForeignTab.label#><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+  if (<#=inline_column_name#>_input) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
       <#=inlineForeignTab.column#>: [ id ],
     });
-    if (<#=table#>_models.length > 0 && input.<#=table#>_models.length > 0) {
+    if (<#=inline_column_name#>_models.length > 0 && <#=inline_column_name#>_input.length > 0) {
       updateFldNum++;
     }
-    for (let i = 0; i < <#=table#>_models.length; i++) {
-      const <#=table#>_model = <#=table#>_models[i];
-      if (input.<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (<#=inline_column_name#>_input.some((item) => item.id === model.id)) {
         continue;
       }
-      await deleteByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      await deleteByIds<#=Table_Up#>([ model.id ]);
     }
-    for (let i = 0; i < input.<#=table#>_models.length; i++) {
-      const <#=table#>_model = input.<#=table#>_models[i];
-      if (!<#=table#>_model.id) {
-        <#=table#>_model.<#=inlineForeignTab.column#> = id;
-        await create<#=Table_Up#>(<#=table#>_model);
+    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+      const model = <#=inline_column_name#>_input[i];
+      if (!model.id) {
+        model.<#=inlineForeignTab.column#> = id;
+        await create<#=Table_Up#>(model);
         continue;
       }
-      if (<#=table#>_models.some((item) => item.id === <#=table#>_model.id)) {
-        await revertByIds<#=Table_Up#>([ <#=table#>_model.id ]);
+      if (<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
+        await revertByIds<#=Table_Up#>([ model.id ]);
       }
-      await updateById<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model);
+      await updateById<#=Table_Up#>(model.id, { ...model, id: undefined });
     }
   }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  if (input.<#=inline_column_name#>) {
+    const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+      <#=inlineForeignTab.column#>: [ id ],
+    });
+    if (<#=inline_column_name#>_models.length > 0) {
+      updateFldNum++;
+    }
+    for (let i = 0; i < <#=inline_column_name#>_models.length; i++) {
+      const model = <#=inline_column_name#>_models[i];
+      if (input.<#=inline_column_name#>.id === model.id) {
+        continue;
+      }
+      await deleteByIds<#=Table_Up#>([ model.id ]);
+    }
+    if (!input.<#=inline_column_name#>.id) {
+      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = id;
+      await create<#=Table_Up#>(input.<#=inline_column_name#>);
+    } else {
+      if (<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>!.id)) {
+        await revertByIds<#=Table_Up#>([ input.<#=inline_column_name#>.id ]);
+      }
+      await updateById<#=Table_Up#>(input.<#=inline_column_name#>.id, { ...input.<#=inline_column_name#>, id: undefined });
+    }
+  }<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4305,7 +4417,16 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    sql += `update_time = ${ args.push(new Date()) }`;<#
+    if (input.update_time) {
+      sql += `update_time = ${ args.push(input.update_time) }`;
+    } else {
+      sql += `update_time = ${ args.push(reqDate()) }`;
+    }<#
+    } else {
+    #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }<#
     }
     #>
     sql += ` where id = ${ args.push(id) } limit 1`;<#
@@ -4330,7 +4451,7 @@ export async function updateById(
   const newModel = await findById(id);
   
   if (!deepCompare(oldModel, newModel)) {
-    console.log(JSON.stringify(oldModel));<#
+    log(JSON.stringify(oldModel));<#
     if (opts?.history_table) {
     #>
     
@@ -4485,13 +4606,14 @@ export async function deleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#> = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
   });
-  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await deleteByIds<#=Table_Up#>(<#=inline_column_name#>.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4905,14 +5027,29 @@ export async function revertByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await revertByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  
+  // <#=inlineForeignTab.label#>
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
+    <#=inlineForeignTab.column#>: ids,
+    is_deleted: 1,
+  });
+  await revertByIds<#=Table_Up#>(<#=inline_column_name#>_models.slice(0, 1).map((item) => item.id));<#
+    }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -4946,14 +5083,12 @@ export async function revertByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
-    const <#=table#>_models = await findAll<#=Table_Up#>({
-      <#=many2many.column1#>: ids,
-      is_deleted: 1,
-    });
-    const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
-    await revertByIds<#=Table_Up#>(<#=table#>_ids);
-  }<#
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+    is_deleted: 1,
+  });
+  const <#=table#>_ids = <#=table#>_models.map((item) => item.id);
+  await revertByIds<#=Table_Up#>(<#=table#>_ids);<#
   }
   #><#
   if (cache) {
@@ -5048,14 +5183,15 @@ export async function forceDeleteByIds(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
   #>
   
   // <#=inlineForeignTab.label#>
-  const <#=table#>_models = await findAll<#=Table_Up#>({
+  const <#=inline_column_name#>_models = await findAll<#=Table_Up#>({
     <#=inlineForeignTab.column#>: ids,
     is_deleted: 1,
   });
-  await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));<#
+  await forceDeleteByIds<#=Table_Up#>(<#=inline_column_name#>_models.map((item) => item.id));<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -5089,18 +5225,16 @@ export async function forceDeleteByIds(
   #>
   
   // <#=column_comment#>
-  if (ids && ids.length > 0) {
+  const <#=table#>_models = await findAll<#=Table_Up#>({
+    <#=many2many.column1#>: ids,
+  });
+  await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
+  {
     const <#=table#>_models = await findAll<#=Table_Up#>({
       <#=many2many.column1#>: ids,
+      is_deleted: 1,
     });
-    await deleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
-      await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
-    }
+    await forceDeleteByIds<#=Table_Up#>(<#=table#>_models.map((item) => item.id));
   }<#
   }
   #><#

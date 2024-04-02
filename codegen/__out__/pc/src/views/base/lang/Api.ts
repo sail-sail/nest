@@ -10,13 +10,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   LangSearch,
   LangInput,
   LangModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: LangModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -27,12 +31,18 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: LangInput = {
+    // ID
     id: model?.id,
+    // 编码
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
@@ -52,7 +62,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllLang: Query["findAllLang"];
+    findAllLang: LangModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -102,7 +112,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneLang: Query["findOneLang"];
+    findOneLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput!]) {
@@ -229,7 +239,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdLang: Query["findByIdLang"];
+    findByIdLang?: LangModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: LangId!) {
@@ -473,6 +483,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllLang) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("语言");
         const buffer = await workerFn(

@@ -80,16 +80,21 @@ async fn get_where_query(
     };
     if let Some(ids) = ids {
       let arg = {
-        let mut items = Vec::with_capacity(ids.len());
-        for id in ids {
-          args.push(id.into());
-          items.push("?");
+        if ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(ids.len());
+          for id in ids {
+            args.push(id.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.id in ({arg})");
     }
   }
+  // 名称
   {
     let lbl = match search {
       Some(item) => item.lbl.clone(),
@@ -111,6 +116,7 @@ async fn get_where_query(
       );
     }
   }
+  // 键
   {
     let ky = match search {
       Some(item) => item.ky.clone(),
@@ -132,6 +138,7 @@ async fn get_where_query(
       );
     }
   }
+  // 值
   {
     let val = match search {
       Some(item) => item.val.clone(),
@@ -153,6 +160,7 @@ async fn get_where_query(
       );
     }
   }
+  // 锁定
   {
     let is_locked: Option<Vec<u8>> = match search {
       Some(item) => item.is_locked.clone(),
@@ -160,16 +168,21 @@ async fn get_where_query(
     };
     if let Some(is_locked) = is_locked {
       let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
-          args.push(item.into());
-          items.push("?");
+        if is_locked.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_locked.len());
+          for item in is_locked {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.is_locked in ({})", arg);
     }
   }
+  // 启用
   {
     let is_enabled: Option<Vec<u8>> = match search {
       Some(item) => item.is_enabled.clone(),
@@ -177,30 +190,30 @@ async fn get_where_query(
     };
     if let Some(is_enabled) = is_enabled {
       let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
+        if is_enabled.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_enabled.len());
+          for item in is_enabled {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
     }
   }
+  // 排序
   {
-    let order_by: Vec<u32> = match search {
+    let mut order_by: Vec<Option<u32>> = match search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let order_by_gt: Option<u32> = match &order_by.len() {
-      0 => None,
-      _ => order_by[0].into(),
-    };
-    let order_by_lt: Option<u32> = match &order_by.len() {
-      0 => None,
-      1 => None,
-      _ => order_by[1].into(),
-    };
+    let order_by_gt: Option<u32> = order_by.get_mut(0)
+      .and_then(|item| item.take());
+    let order_by_lt: Option<u32> = order_by.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(order_by_gt) = order_by_gt {
       where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
     }
@@ -208,6 +221,7 @@ async fn get_where_query(
       where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
+  // 备注
   {
     let rem = match search {
       Some(item) => item.rem.clone(),
@@ -229,6 +243,7 @@ async fn get_where_query(
       );
     }
   }
+  // 创建人
   {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
@@ -236,12 +251,16 @@ async fn get_where_query(
     };
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(create_usr_id.len());
-        for item in create_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if create_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(create_usr_id.len());
+          for item in create_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -255,20 +274,16 @@ async fn get_where_query(
       where_query += " and create_usr_id_lbl.id is null";
     }
   }
+  // 创建时间
   {
-    let create_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.create_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      _ => create_time[0].into(),
-    };
-    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
-      0 => None,
-      1 => None,
-      _ => create_time[1].into(),
-    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
+      .and_then(|item| item.take());
+    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(create_time_gt) = create_time_gt {
       where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
     }
@@ -276,6 +291,7 @@ async fn get_where_query(
       where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
     }
   }
+  // 更新人
   {
     let update_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.update_usr_id.clone(),
@@ -283,12 +299,16 @@ async fn get_where_query(
     };
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
-        let mut items = Vec::with_capacity(update_usr_id.len());
-        for item in update_usr_id {
-          args.push(item.into());
-          items.push("?");
+        if update_usr_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(update_usr_id.len());
+          for item in update_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
         }
-        items.join(",")
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
     }
@@ -302,20 +322,16 @@ async fn get_where_query(
       where_query += " and update_usr_id_lbl.id is null";
     }
   }
+  // 更新时间
   {
-    let update_time: Vec<chrono::NaiveDateTime> = match search {
+    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
       Some(item) => item.update_time.clone().unwrap_or_default(),
-      None => vec![],
+      None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      _ => update_time[0].into(),
-    };
-    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
-      0 => None,
-      1 => None,
-      _ => update_time[1].into(),
-    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
+      .and_then(|item| item.take());
+    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
+      .and_then(|item| item.take());
     if let Some(update_time_gt) = update_time_gt {
       where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
     }
@@ -341,6 +357,7 @@ async fn get_from_query(
 }
 
 /// 根据搜索条件和分页查找系统选项列表
+#[allow(unused_mut)]
 pub async fn find_all(
   search: Option<OptionsSearch>,
   page: Option<PageInput>,
@@ -381,6 +398,30 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() && search.is_locked.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() && search.is_enabled.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -396,33 +437,36 @@ pub async fn find_all(
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
+  
   if !sort.iter().any(|item| item.prop == "order_by") {
     sort.push(SortInput {
       prop: "order_by".into(),
       order: "asc".into(),
     });
   }
+  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
       order: "asc".into(),
     });
   }
+  
   let sort = sort.into();
   
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"
-    select
-      t.*
+    select f.* from (
+    select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
       {where_query}
-    group by t.id{order_by_query}{page_query}
+    group by t.id{order_by_query}) f {page_query}
   "#);
   
   let args = args.into();
@@ -550,8 +594,7 @@ pub async fn find_count(
   
   let total = res
     .map(|item| item.total)
-    .unwrap_or_default()
-    ;
+    .unwrap_or_default();
   
   Ok(total)
 }
@@ -665,10 +708,6 @@ pub async fn find_one(
       return Ok(None);
     }
   }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -883,7 +922,7 @@ pub async fn find_by_unique(
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
-fn equals_by_unique(
+pub fn equals_by_unique(
   input: &OptionsInput,
   model: &OptionsModel,
 ) -> bool {
@@ -947,11 +986,10 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let options = Options::new();
     let id = update_by_id(
       model.id.clone(),
       input,
-      Some(options),
+      options,
     ).await?;
     return Ok(id.into());
   }
@@ -1063,8 +1101,6 @@ pub async fn create(
     ).into());
   }
   
-  let now = get_now();
-  
   let old_models = find_by_unique(
     input.clone().into(),
     None,
@@ -1122,18 +1158,35 @@ pub async fn create(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "id,create_time".to_owned();
+  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_values = String::with_capacity(2 * 14 + 2);
   
-  let mut sql_values = "?,?".to_owned();
-  
+  sql_fields += "id";
+  sql_values += "?";
   args.push(id.clone().into());
-  args.push(now.into());
   
-  if let Some(auth_model) = get_auth_model() {
-    let usr_id = auth_model.id;
+  if let Some(create_time) = input.create_time {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(create_time.into());
+  } else {
+    sql_fields += ",create_time";
+    sql_values += ",?";
+    args.push(get_now().into());
+  }
+  
+  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+    let create_usr_id = input.create_usr_id.clone().unwrap();
     sql_fields += ",create_usr_id";
     sql_values += ",?";
-    args.push(usr_id.into());
+    args.push(create_usr_id.into());
+  } else {
+    let usr_id = get_auth_id();
+    if let Some(usr_id) = usr_id {
+      sql_fields += ",create_usr_id";
+      sql_values += ",?";
+      args.push(usr_id.into());
+    }
   }
   // 名称
   if let Some(lbl) = input.lbl {
@@ -1207,7 +1260,7 @@ pub async fn create(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let options = options.into();
   
@@ -1327,60 +1380,57 @@ pub async fn update_by_id(
     .set_is_debug(false);
   let options = Some(options);
   
-  let now = get_now();
-  
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = "update_time = ?".to_owned();
-  args.push(now.into());
+  let mut sql_fields = String::with_capacity(80 * 14 + 20);
   
   let mut field_num: usize = 0;
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
-    sql_fields += ",lbl = ?";
+    sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 键
   if let Some(ky) = input.ky {
     field_num += 1;
-    sql_fields += ",ky = ?";
+    sql_fields += "ky=?,";
     args.push(ky.into());
   }
   // 值
   if let Some(val) = input.val {
     field_num += 1;
-    sql_fields += ",val = ?";
+    sql_fields += "val=?,";
     args.push(val.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
     field_num += 1;
-    sql_fields += ",is_locked = ?";
+    sql_fields += "is_locked=?,";
     args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
-    sql_fields += ",is_enabled = ?";
+    sql_fields += "is_enabled=?,";
     args.push(is_enabled.into());
   }
   // 排序
   if let Some(order_by) = input.order_by {
     field_num += 1;
-    sql_fields += ",order_by = ?";
+    sql_fields += "order_by=?,";
     args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
-    sql_fields += ",rem = ?";
+    sql_fields += "rem=?,";
     args.push(rem.into());
   }
   // 系统字段
   if let Some(is_sys) = input.is_sys {
     field_num += 1;
-    sql_fields += ",is_sys = ?";
+    sql_fields += "is_sys=?,";
     args.push(is_sys.into());
   }
   
@@ -1404,18 +1454,36 @@ pub async fn update_by_id(
             return Err(SrvErr::msg(err_msg).into());
           }
         }
-        sql_fields += ",version = ?";
+        sql_fields += "version=?,";
         args.push((version + 1).into());
       }
     }
     
-    if let Some(auth_model) = get_auth_model() {
-      let usr_id = auth_model.id;
-      sql_fields += ",update_usr_id = ?";
-      args.push(usr_id.into());
+    if input.update_usr_id.is_some() && input.update_usr_id.as_ref().unwrap() != "-" {
+      let update_usr_id = input.update_usr_id.clone().unwrap();
+      sql_fields += "update_usr_id=?,";
+      args.push(update_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_fields += "update_usr_id=?,";
+        args.push(usr_id.into());
+      }
     }
     
-    let sql_where = "id = ?";
+    if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
+    } else {
+      sql_fields += "update_time=?,";
+      args.push(get_now().into());
+    }
+    
+    if sql_fields.ends_with(',') {
+      sql_fields.pop();
+    }
+    
+    let sql_where = "id=?";
     args.push(id.clone().into());
     
     let sql = format!(
@@ -1429,7 +1497,7 @@ pub async fn update_by_id(
     
     let options = Options::from(options);
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1443,7 +1511,7 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     let options = Options::from(None);
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
       del_caches(
         del_cache_key1s
@@ -1458,20 +1526,19 @@ pub async fn update_by_id(
   Ok(id)
 }
 
-/// 获取外键关联表, 第一个是主表
+/// 获取需要清空缓存的表名
 #[allow(dead_code)]
-fn get_foreign_tables() -> Vec<&'static str> {
+fn get_cache_tables() -> Vec<&'static str> {
   let table = "base_options";
   vec![
     table,
-    "base_usr",
   ]
 }
 
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache() -> Result<()> {
-  let cache_key1s = get_foreign_tables();
+  let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
   ).await?;
@@ -1501,11 +1568,24 @@ pub async fn delete_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
   let mut num = 0;
   for id in ids.clone() {
+    
+    let old_model = find_by_id(
+      id.clone(),
+      None,
+    ).await?;
+    if old_model.is_none() {
+      continue;
+    }
+    
     let mut args = QueryArgs::new();
     
     let sql = format!(
@@ -1520,7 +1600,7 @@ pub async fn delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1582,7 +1662,7 @@ pub async fn enable_by_ids(
   let options = Options::from(options)
     .set_is_debug(false);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let mut num = 0;
   for id in ids {
@@ -1662,7 +1742,7 @@ pub async fn lock_by_ids(
   
   let options = Options::from(options);
   
-  let options = options.set_del_cache_key1s(get_foreign_tables());
+  let options = options.set_del_cache_key1s(get_cache_tables());
   
   let mut num = 0;
   for id in ids {
@@ -1735,7 +1815,7 @@ pub async fn revert_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1855,7 +1935,7 @@ pub async fn force_delete_by_ids(
     
     let options = options.clone();
     
-    let options = options.set_del_cache_key1s(get_foreign_tables());
+    let options = options.set_del_cache_key1s(get_cache_tables());
     
     let options = options.into();
     
@@ -1950,9 +2030,8 @@ pub async fn validate_is_enabled(
 }
 
 /// 校验系统选项是否存在
-#[function_name::named]
 #[allow(dead_code)]
-pub async fn validate_option<'a, T>(
+pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
@@ -1965,7 +2044,7 @@ pub async fn validate_option<'a, T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(SrvErr::msg(err_msg).into());
   }
   Ok(model.unwrap())
 }

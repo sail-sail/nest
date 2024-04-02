@@ -63,7 +63,7 @@ type DictModel {
   "是否已删除"
   is_deleted: Int!
   "系统字典明细"
-  dict_detail_models: [DictDetailModel!]
+  dict_detail: [DictDetailModel!]
 }
 type DictFieldComment {
   "ID"
@@ -129,7 +129,7 @@ input DictInput {
   "备注"
   rem: String
   "系统字典明细"
-  dict_detail_models: [DictDetailInput!]
+  dict_detail: [DictDetailInput!]
 }
 input DictSearch {
   "是否已删除"

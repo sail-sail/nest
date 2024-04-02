@@ -533,7 +533,7 @@ import {
 import type {
   BackgroundTaskModel,
   BackgroundTaskSearch,
-} from "#/types";
+} from "./Model";
 
 defineOptions({
   name: "后台任务",
@@ -1213,6 +1213,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);

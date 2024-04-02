@@ -227,7 +227,7 @@ import type {
 
 import type {
   OperationRecordInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

@@ -14,10 +14,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   DictbizSearch,
   DictbizInput,
   DictbizModel,
-} from "#/types";
+} from "./Model";
 
 import {
   intoInput as intoInputDictbizDetail,
@@ -25,6 +28,7 @@ import {
 
 async function setLblById(
   model?: DictbizModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -35,18 +39,27 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: DictbizInput = {
+    // ID
     id: model?.id,
+    // 编码
     code: model?.code,
+    // 名称
     lbl: model?.lbl,
+    // 数据类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
-    dictbiz_detail_models: (model?.dictbiz_detail_models ?? [ ]).map(intoInputDictbizDetail),
+    // 业务字典明细
+    dictbiz_detail: (model?.dictbiz_detail ?? [ ]).map(intoInputDictbizDetail),
   };
   return input;
 }
@@ -65,7 +78,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbiz: Query["findAllDictbiz"];
+    findAllDictbiz: DictbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -90,7 +103,7 @@ export async function findAll(
           update_time
           update_time_lbl
           is_deleted
-          dictbiz_detail_models {
+          dictbiz_detail {
             id
             lbl
             val
@@ -138,7 +151,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneDictbiz: Query["findOneDictbiz"];
+    findOneDictbiz?: DictbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $sort: [SortInput!]) {
@@ -163,7 +176,7 @@ export async function findOne(
           update_time
           update_time_lbl
           is_deleted
-          dictbiz_detail_models {
+          dictbiz_detail {
             id
             lbl
             val
@@ -288,7 +301,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDictbiz: Query["findByIdDictbiz"];
+    findByIdDictbiz?: DictbizModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: DictbizId!) {
@@ -313,7 +326,7 @@ export async function findById(
           update_time
           update_time_lbl
           is_deleted
-          dictbiz_detail_models {
+          dictbiz_detail {
             id
             lbl
             val
@@ -482,7 +495,7 @@ export async function findAllDictbiz(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDictbiz: Query["findAllDictbiz"];
+    findAllDictbiz: DictbizModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -642,6 +655,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllDictbiz) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("业务字典");
         const buffer = await workerFn(

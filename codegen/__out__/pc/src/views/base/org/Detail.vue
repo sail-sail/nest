@@ -236,7 +236,7 @@ import type {
 
 import type {
   OrgInput,
-} from "#/types";
+} from "./Model";
 
 const emit = defineEmits<{
   nextId: [

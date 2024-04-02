@@ -10,10 +10,13 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   MenuSearch,
   MenuInput,
   MenuModel,
-} from "#/types";
+} from "./Model";
 
 import {
   findTree as findMenuTree,
@@ -21,6 +24,7 @@ import {
 
 async function setLblById(
   model?: MenuModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -31,17 +35,26 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: MenuInput = {
+    // ID
     id: model?.id,
+    // 父菜单
     parent_id: model?.parent_id,
     parent_id_lbl: model?.parent_id_lbl,
+    // 名称
     lbl: model?.lbl,
+    // 路由
     route_path: model?.route_path,
+    // 参数
     route_query: model?.route_query,
+    // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
     order_by: model?.order_by,
+    // 备注
     rem: model?.rem,
   };
   return input;
@@ -61,7 +74,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -116,7 +129,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneMenu: Query["findOneMenu"];
+    findOneMenu?: MenuModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput!]) {
@@ -273,7 +286,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdMenu: Query["findByIdMenu"];
+    findByIdMenu?: MenuModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: MenuId!) {
@@ -449,7 +462,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: Query["findAllMenu"];
+    findAllMenu: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -620,9 +633,6 @@ export function useExportExcel(routePath: string) {
               update_time
               update_time_lbl
             }
-            findAllMenu {
-              lbl
-            }
             getDict(codes: [
               "is_locked",
               "is_enabled",
@@ -637,6 +647,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllMenu) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("菜单");
         const buffer = await workerFn(

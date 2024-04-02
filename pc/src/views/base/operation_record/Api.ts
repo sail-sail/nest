@@ -6,13 +6,17 @@ import type {
   Query,
   Mutation,
   PageInput,
+} from "#/types";
+
+import type {
   OperationRecordSearch,
   OperationRecordInput,
   OperationRecordModel,
-} from "#/types";
+} from "./Model";
 
 async function setLblById(
   model?: OperationRecordModel | null,
+  isExcelExport = false,
 ) {
   if (!model) {
     return;
@@ -23,14 +27,23 @@ export function intoInput(
   model?: Record<string, any>,
 ) {
   const input: OperationRecordInput = {
+    // ID
     id: model?.id,
+    // 模块
     module: model?.module,
+    // 模块名称
     module_lbl: model?.module_lbl,
+    // 方法
     method: model?.method,
+    // 方法名称
     method_lbl: model?.method_lbl,
+    // 操作
     lbl: model?.lbl,
+    // 耗时(毫秒)
     time: model?.time,
+    // 操作前数据
     old_data: model?.old_data,
+    // 操作后数据
     new_data: model?.new_data,
   };
   return input;
@@ -50,7 +63,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOperationRecord: Query["findAllOperationRecord"];
+    findAllOperationRecord: OperationRecordModel[];
   } = await query({
     query: /* GraphQL */ `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -98,7 +111,7 @@ export async function findOne(
   opt?: GqlOpt,
 ) {
   const data: {
-    findOneOperationRecord: Query["findOneOperationRecord"];
+    findOneOperationRecord?: OperationRecordModel;
   } = await query({
     query: /* GraphQL */ `
       query($search: OperationRecordSearch, $sort: [SortInput!]) {
@@ -165,7 +178,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOperationRecord: Query["findByIdOperationRecord"];
+    findByIdOperationRecord?: OperationRecordModel;
   } = await query({
     query: /* GraphQL */ `
       query($id: OperationRecordId!) {
@@ -373,6 +386,9 @@ export function useExportExcel(routePath: string) {
           sort,
         },
       }, opt);
+      for (const model of data.findAllOperationRecord) {
+        await setLblById(model, true);
+      }
       try {
         const sheetName = await nsAsync("操作记录");
         const buffer = await workerFn(

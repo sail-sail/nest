@@ -391,7 +391,7 @@ pub struct UsrSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<u32>>,
+  pub order_by: Option<Vec<Option<u32>>>,
   /// 所属部门
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
@@ -409,13 +409,13 @@ pub struct UsrSearch {
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
-  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
   /// 更新人
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
-  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
 }
 
 impl std::fmt::Debug for UsrSearch {
@@ -694,7 +694,7 @@ impl From<UsrInput> for UsrSearch {
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x, x]),
+      order_by: input.order_by.map(|x| vec![Some(x), Some(x)]),
       // 所属部门
       dept_ids: input.dept_ids,
       // 拥有角色
@@ -704,11 +704,11 @@ impl From<UsrInput> for UsrSearch {
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x, x]),
+      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x, x]),
+      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
       ..Default::default()
     }
   }
@@ -812,5 +812,11 @@ impl<'r> sqlx::Decode<'r, MySql> for UsrId {
     value: <MySql as sqlx::database::HasValueRef>::ValueRef,
   ) -> Result<Self, sqlx::error::BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+  }
+}
+
+impl PartialEq<str> for UsrId {
+  fn eq(&self, other: &str) -> bool {
+    self.0 == other
   }
 }

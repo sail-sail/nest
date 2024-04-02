@@ -41,7 +41,6 @@
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>
@@ -620,8 +619,12 @@ import type {
   DataPermitModel,
   DataPermitInput,
   DataPermitSearch,
+} from "./Model";
+
+// 菜单
+import type {
   MenuModel,
-} from "#/types";
+} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,
@@ -1466,6 +1469,7 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
+    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
