@@ -60,13 +60,6 @@ async fn get_where_query(
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
       where_query.push_str(" and t.id = ?");
       args.push(id.into());
@@ -92,7 +85,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and t.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }
   {
@@ -212,14 +205,12 @@ async fn get_where_query(
   }
   // 耗时(毫秒)
   {
-    let mut time: Vec<Option<u32>> = match search {
-      Some(item) => item.time.clone().unwrap_or_default(),
+    let mut time = match search {
+      Some(item) => item.time.unwrap_or_default(),
       None => Default::default(),
     };
-    let time_gt: Option<u32> = time.get_mut(0)
-      .and_then(|item| item.take());
-    let time_lt: Option<u32> = time.get_mut(1)
-      .and_then(|item| item.take());
+    let time_gt = time[0].take();
+    let time_lt = time[1].take();
     if let Some(time_gt) = time_gt {
       where_query.push_str(" and t.time >= ?");
       args.push(time_gt.into());
@@ -288,7 +279,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and create_usr_id_lbl.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }
   {
@@ -302,14 +293,12 @@ async fn get_where_query(
   }
   // 操作时间
   {
-    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.create_time.clone().unwrap_or_default(),
+    let mut create_time = match search {
+      Some(item) => item.create_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
-      .and_then(|item| item.take());
-    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
-      .and_then(|item| item.take());
+    let create_time_gt = create_time[0].take();
+    let create_time_lt = create_time[1].take();
     if let Some(create_time_gt) = create_time_gt {
       where_query.push_str(" and t.create_time >= ?");
       args.push(create_time_gt.into());
@@ -340,7 +329,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and update_usr_id_lbl.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }
   {
@@ -354,14 +343,12 @@ async fn get_where_query(
   }
   // 更新时间
   {
-    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
+    let mut update_time = match search {
+      Some(item) => item.update_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
-      .and_then(|item| item.take());
-    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
-      .and_then(|item| item.take());
+    let update_time_gt = update_time[0].take();
+    let update_time_lt = update_time[1].take();
     if let Some(update_time_gt) = update_time_gt {
       where_query.push_str(" and t.update_time >= ?");
       args.push(update_time_gt.into());

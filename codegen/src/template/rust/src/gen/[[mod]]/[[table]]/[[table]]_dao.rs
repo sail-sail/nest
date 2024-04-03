@@ -569,13 +569,6 @@ async fn get_where_query(
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
       where_query.push_str(" and t.id = ?");
       args.push(id.into());
@@ -601,7 +594,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and t.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -626,7 +619,7 @@ async fn get_where_query(
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
     where_query.push_str(&arg);
-    where_query.push_str(")");
+    where_query.push(')');
   }
   if !has_tenant_permit && has_dept_parent_permit {
     let role_ids = get_auth_role_ids().await?;
@@ -644,7 +637,7 @@ async fn get_where_query(
     };
     where_query.push_str(" and _permit_usr_role_.role_id in (");
     where_query.push_str(&arg);
-    where_query.push_str(")");
+    where_query.push(')');
   }<#
   }
   #><#
@@ -790,7 +783,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and t.<#=column_name#> in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many") {
@@ -816,7 +809,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and <#=column_name#>_lbl.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }
   {
@@ -851,7 +844,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }
   {
@@ -902,7 +895,7 @@ async fn get_where_query(
       };
       where_query.push_str(" and t.<#=column_name#> in (");
       where_query.push_str(&arg);
-      where_query.push_str(")");
+      where_query.push(')');
     }
   }<#
     } else if (data_type === "int" && column_name.startsWith("is_")) {
@@ -922,14 +915,12 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let mut <#=column_name_rust#>: Vec<Option<<#=_data_type#>>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
+    let mut <#=column_name_rust#> = match search {
+      Some(item) => item.<#=column_name_rust#>.unwrap_or_default(),
       None => Default::default(),
     };
-    let <#=column_name#>_gt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(0)
-      .and_then(|item| item.take());
-    let <#=column_name#>_lt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(1)
-      .and_then(|item| item.take());
+    let <#=column_name#>_gt = <#=column_name_rust#>[0].take();
+    let <#=column_name#>_lt = <#=column_name_rust#>[1].take();
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query.push_str(" and t.<#=column_name#> >= ?");
       args.push(<#=column_name#>_gt.into());
