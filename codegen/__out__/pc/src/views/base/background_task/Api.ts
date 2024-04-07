@@ -78,7 +78,7 @@ export async function findAll(
   const data: {
     findAllBackgroundTask: BackgroundTaskModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllBackgroundTask(search: $search, page: $page, sort: $sort) {
           ${ backgroundTaskFields.join(" ") }
@@ -113,7 +113,7 @@ export async function findOne(
   const data: {
     findOneBackgroundTask?: BackgroundTaskModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
         findOneBackgroundTask(search: $search, sort: $sort) {
           ${ backgroundTaskFields.join(" ") }
@@ -167,7 +167,7 @@ export async function findById(
   const data: {
     findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
           ${ backgroundTaskFields.join(" ") }

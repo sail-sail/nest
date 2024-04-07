@@ -74,7 +74,7 @@ export async function findAll(
   const data: {
     findAllOptions: OptionsModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
           ${ optionsFields.join(" ") }
@@ -109,7 +109,7 @@ export async function findOne(
   const data: {
     findOneOptions?: OptionsModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptionsSearch, $sort: [SortInput!]) {
         findOneOptions(search: $search, sort: $sort) {
           ${ optionsFields.join(" ") }
@@ -221,7 +221,7 @@ export async function findById(
   const data: {
     findByIdOptions?: OptionsModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OptionsId!) {
         findByIdOptions(id: $id) {
           ${ optionsFields.join(" ") }

@@ -69,7 +69,7 @@ export async function findAll(
   const data: {
     findAllOperationRecord: OperationRecordModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOperationRecord(search: $search, page: $page, sort: $sort) {
           ${ operationRecordFields.join(" ") }
@@ -104,7 +104,7 @@ export async function findOne(
   const data: {
     findOneOperationRecord?: OperationRecordModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OperationRecordSearch, $sort: [SortInput!]) {
         findOneOperationRecord(search: $search, sort: $sort) {
           ${ operationRecordFields.join(" ") }
@@ -158,7 +158,7 @@ export async function findById(
   const data: {
     findByIdOperationRecord?: OperationRecordModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
           ${ operationRecordFields.join(" ") }

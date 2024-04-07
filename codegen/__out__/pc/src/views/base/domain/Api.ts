@@ -74,7 +74,7 @@ export async function findAll(
   const data: {
     findAllDomain: DomainModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDomain(search: $search, page: $page, sort: $sort) {
           ${ domainFields.join(" ") }
@@ -109,7 +109,7 @@ export async function findOne(
   const data: {
     findOneDomain?: DomainModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DomainSearch, $sort: [SortInput!]) {
         findOneDomain(search: $search, sort: $sort) {
           ${ domainFields.join(" ") }
@@ -221,7 +221,7 @@ export async function findById(
   const data: {
     findByIdDomain?: DomainModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DomainId!) {
         findByIdDomain(id: $id) {
           ${ domainFields.join(" ") }

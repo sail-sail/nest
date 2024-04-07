@@ -80,7 +80,7 @@ export async function findAll(
   const data: {
     findAllDictDetail: DictDetailModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictDetail(search: $search, page: $page, sort: $sort) {
           ${ dictDetailFields.join(" ") }
@@ -115,7 +115,7 @@ export async function findOne(
   const data: {
     findOneDictDetail?: DictDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
         findOneDictDetail(search: $search, sort: $sort) {
           ${ dictDetailFields.join(" ") }
@@ -227,7 +227,7 @@ export async function findById(
   const data: {
     findByIdDictDetail?: DictDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictDetailId!) {
         findByIdDictDetail(id: $id) {
           ${ dictDetailFields.join(" ") }

@@ -74,7 +74,7 @@ export async function findAll(
   const data: {
     findAllOptbiz: OptbizModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptbiz(search: $search, page: $page, sort: $sort) {
           ${ optbizFields.join(" ") }
@@ -109,7 +109,7 @@ export async function findOne(
   const data: {
     findOneOptbiz?: OptbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptbizSearch, $sort: [SortInput!]) {
         findOneOptbiz(search: $search, sort: $sort) {
           ${ optbizFields.join(" ") }
@@ -221,7 +221,7 @@ export async function findById(
   const data: {
     findByIdOptbiz?: OptbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OptbizId!) {
         findByIdOptbiz(id: $id) {
           ${ optbizFields.join(" ") }

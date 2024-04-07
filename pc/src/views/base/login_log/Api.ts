@@ -60,7 +60,7 @@ export async function findAll(
   const data: {
     findAllLoginLog: LoginLogModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LoginLogSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLoginLog(search: $search, page: $page, sort: $sort) {
           ${ loginLogFields.join(" ") }
@@ -95,7 +95,7 @@ export async function findOne(
   const data: {
     findOneLoginLog?: LoginLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LoginLogSearch, $sort: [SortInput!]) {
         findOneLoginLog(search: $search, sort: $sort) {
           ${ loginLogFields.join(" ") }
@@ -149,7 +149,7 @@ export async function findById(
   const data: {
     findByIdLoginLog?: LoginLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: LoginLogId!) {
         findByIdLoginLog(id: $id) {
           ${ loginLogFields.join(" ") }

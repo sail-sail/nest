@@ -683,7 +683,7 @@ export async function findAll(
   const data: {
     findAll<#=Table_Up2#>: <#=modelName#>[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
           ${ <#=fieldsName#>.join(" ") }
@@ -718,7 +718,7 @@ export async function findOne(
   const data: {
     findOne<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
         findOne<#=Table_Up2#>(search: $search, sort: $sort) {
           ${ <#=fieldsName#>.join(" ") }
@@ -936,7 +936,7 @@ export async function findById(
   const data: {
     findById<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: <#=Table_Up#>Id!) {
         findById<#=Table_Up2#>(id: $id) {
           ${ <#=fieldsName#>.join(" ") }

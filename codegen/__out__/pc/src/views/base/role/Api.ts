@@ -102,7 +102,7 @@ export async function findAll(
   const data: {
     findAllRole: RoleModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
           ${ roleFields.join(" ") }
@@ -137,7 +137,7 @@ export async function findOne(
   const data: {
     findOneRole?: RoleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RoleSearch, $sort: [SortInput!]) {
         findOneRole(search: $search, sort: $sort) {
           ${ roleFields.join(" ") }
@@ -249,7 +249,7 @@ export async function findById(
   const data: {
     findByIdRole?: RoleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: RoleId!) {
         findByIdRole(id: $id) {
           ${ roleFields.join(" ") }

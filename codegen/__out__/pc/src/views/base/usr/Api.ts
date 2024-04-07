@@ -114,7 +114,7 @@ export async function findAll(
   const data: {
     findAllUsr: UsrModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           ${ usrFields.join(" ") }
@@ -149,7 +149,7 @@ export async function findOne(
   const data: {
     findOneUsr?: UsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: UsrSearch, $sort: [SortInput!]) {
         findOneUsr(search: $search, sort: $sort) {
           ${ usrFields.join(" ") }
@@ -261,7 +261,7 @@ export async function findById(
   const data: {
     findByIdUsr?: UsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: UsrId!) {
         findByIdUsr(id: $id) {
           ${ usrFields.join(" ") }

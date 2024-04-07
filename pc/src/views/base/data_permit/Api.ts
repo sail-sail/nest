@@ -83,7 +83,7 @@ export async function findAll(
   const data: {
     findAllDataPermit: DataPermitModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDataPermit(search: $search, page: $page, sort: $sort) {
           ${ dataPermitFields.join(" ") }
@@ -118,7 +118,7 @@ export async function findOne(
   const data: {
     findOneDataPermit?: DataPermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DataPermitSearch, $sort: [SortInput!]) {
         findOneDataPermit(search: $search, sort: $sort) {
           ${ dataPermitFields.join(" ") }
@@ -230,7 +230,7 @@ export async function findById(
   const data: {
     findByIdDataPermit?: DataPermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DataPermitId!) {
         findByIdDataPermit(id: $id) {
           ${ dataPermitFields.join(" ") }

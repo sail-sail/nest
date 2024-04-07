@@ -85,7 +85,7 @@ export async function findAll(
   const data: {
     findAllI18n: I18nModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
           ${ i18nFields.join(" ") }
@@ -120,7 +120,7 @@ export async function findOne(
   const data: {
     findOneI18n?: I18nModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: I18nSearch, $sort: [SortInput!]) {
         findOneI18n(search: $search, sort: $sort) {
           ${ i18nFields.join(" ") }
@@ -232,7 +232,7 @@ export async function findById(
   const data: {
     findByIdI18n?: I18nModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: I18nId!) {
         findByIdI18n(id: $id) {
           ${ i18nFields.join(" ") }

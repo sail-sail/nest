@@ -76,7 +76,7 @@ export async function findAll(
   const data: {
     findAllPermit: PermitModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
           ${ permitFields.join(" ") }
@@ -111,7 +111,7 @@ export async function findOne(
   const data: {
     findOnePermit?: PermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PermitSearch, $sort: [SortInput!]) {
         findOnePermit(search: $search, sort: $sort) {
           ${ permitFields.join(" ") }
@@ -223,7 +223,7 @@ export async function findById(
   const data: {
     findByIdPermit?: PermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: PermitId!) {
         findByIdPermit(id: $id) {
           ${ permitFields.join(" ") }

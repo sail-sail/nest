@@ -69,7 +69,7 @@ export async function findAll(
   const data: {
     findAllOrg: OrgModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOrg(search: $search, page: $page, sort: $sort) {
           ${ orgFields.join(" ") }
@@ -104,7 +104,7 @@ export async function findOne(
   const data: {
     findOneOrg?: OrgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrgSearch, $sort: [SortInput!]) {
         findOneOrg(search: $search, sort: $sort) {
           ${ orgFields.join(" ") }
@@ -216,7 +216,7 @@ export async function findById(
   const data: {
     findByIdOrg?: OrgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OrgId!) {
         findByIdOrg(id: $id) {
           ${ orgFields.join(" ") }

@@ -91,7 +91,7 @@ export async function findAll(
   const data: {
     findAllTenant: TenantModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
           ${ tenantFields.join(" ") }
@@ -126,7 +126,7 @@ export async function findOne(
   const data: {
     findOneTenant?: TenantModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: TenantSearch, $sort: [SortInput!]) {
         findOneTenant(search: $search, sort: $sort) {
           ${ tenantFields.join(" ") }
@@ -238,7 +238,7 @@ export async function findById(
   const data: {
     findByIdTenant?: TenantModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: TenantId!) {
         findByIdTenant(id: $id) {
           ${ tenantFields.join(" ") }

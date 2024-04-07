@@ -68,7 +68,7 @@ export async function findAll(
   const data: {
     findAllLang: LangModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
           ${ langFields.join(" ") }
@@ -103,7 +103,7 @@ export async function findOne(
   const data: {
     findOneLang?: LangModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LangSearch, $sort: [SortInput!]) {
         findOneLang(search: $search, sort: $sort) {
           ${ langFields.join(" ") }
@@ -215,7 +215,7 @@ export async function findById(
   const data: {
     findByIdLang?: LangModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: LangId!) {
         findByIdLang(id: $id) {
           ${ langFields.join(" ") }

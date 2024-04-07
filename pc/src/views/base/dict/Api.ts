@@ -84,7 +84,7 @@ export async function findAll(
   const data: {
     findAllDict: DictModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDict(search: $search, page: $page, sort: $sort) {
           ${ dictFields.join(" ") }
@@ -119,7 +119,7 @@ export async function findOne(
   const data: {
     findOneDict?: DictModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictSearch, $sort: [SortInput!]) {
         findOneDict(search: $search, sort: $sort) {
           ${ dictFields.join(" ") }
@@ -231,7 +231,7 @@ export async function findById(
   const data: {
     findByIdDict?: DictModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictId!) {
         findByIdDict(id: $id) {
           ${ dictFields.join(" ") }

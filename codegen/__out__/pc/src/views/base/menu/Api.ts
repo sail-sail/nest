@@ -80,7 +80,7 @@ export async function findAll(
   const data: {
     findAllMenu: MenuModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           ${ menuFields.join(" ") }
@@ -115,7 +115,7 @@ export async function findOne(
   const data: {
     findOneMenu?: MenuModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: MenuSearch, $sort: [SortInput!]) {
         findOneMenu(search: $search, sort: $sort) {
           ${ menuFields.join(" ") }
@@ -252,7 +252,7 @@ export async function findById(
   const data: {
     findByIdMenu?: MenuModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: MenuId!) {
         findByIdMenu(id: $id) {
           ${ menuFields.join(" ") }

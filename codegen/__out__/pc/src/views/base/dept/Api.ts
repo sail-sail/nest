@@ -85,7 +85,7 @@ export async function findAll(
   const data: {
     findAllDept: DeptModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
           ${ deptFields.join(" ") }
@@ -120,7 +120,7 @@ export async function findOne(
   const data: {
     findOneDept?: DeptModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DeptSearch, $sort: [SortInput!]) {
         findOneDept(search: $search, sort: $sort) {
           ${ deptFields.join(" ") }
@@ -257,7 +257,7 @@ export async function findById(
   const data: {
     findByIdDept?: DeptModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DeptId!) {
         findByIdDept(id: $id) {
           ${ deptFields.join(" ") }
