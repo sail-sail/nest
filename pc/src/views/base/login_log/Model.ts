@@ -33,3 +33,7 @@ export const loginLogFields = [
   "create_time_lbl",
   "is_deleted",
 ];
+
+export const loginLogQueryField = `
+  ${ loginLogFields.join(" ") }
+`;

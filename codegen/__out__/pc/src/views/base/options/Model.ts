@@ -51,3 +51,7 @@ export const optionsFields = [
   "version",
   "is_deleted",
 ];
+
+export const optionsQueryField = `
+  ${ optionsFields.join(" ") }
+`;

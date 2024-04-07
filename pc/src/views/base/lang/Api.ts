@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  langFields,
+  langQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -71,7 +71,7 @@ export async function findAll(
     query: `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
-          ${ langFields.join(" ") }
+          ${ langQueryField }
         }
       }
     `,
@@ -106,7 +106,7 @@ export async function findOne(
     query: `
       query($search: LangSearch, $sort: [SortInput!]) {
         findOneLang(search: $search, sort: $sort) {
-          ${ langFields.join(" ") }
+          ${ langQueryField }
         }
       }
     `,
@@ -218,7 +218,7 @@ export async function findById(
     query: `
       query($id: LangId!) {
         findByIdLang(id: $id) {
-          ${ langFields.join(" ") }
+          ${ langQueryField }
         }
       }
     `,

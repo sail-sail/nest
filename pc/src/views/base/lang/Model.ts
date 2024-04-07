@@ -45,3 +45,7 @@ export const langFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const langQueryField = `
+  ${ langFields.join(" ") }
+`;

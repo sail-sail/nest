@@ -202,7 +202,7 @@ import type {<#
 } from "./Model";
 
 import {
-  <#=fieldsName#>,
+  <#=table_Up#>QueryField,
 } from "./Model";<#
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
@@ -686,7 +686,7 @@ export async function findAll(
     query: `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
-          ${ <#=fieldsName#>.join(" ") }
+          ${ <#=table_Up#>QueryField }
         }
       }
     `,
@@ -721,7 +721,7 @@ export async function findOne(
     query: `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
         findOne<#=Table_Up2#>(search: $search, sort: $sort) {
-          ${ <#=fieldsName#>.join(" ") }
+          ${ <#=table_Up#>QueryField }
         }
       }
     `,
@@ -939,7 +939,7 @@ export async function findById(
     query: `
       query($id: <#=Table_Up#>Id!) {
         findById<#=Table_Up2#>(id: $id) {
-          ${ <#=fieldsName#>.join(" ") }
+          ${ <#=table_Up#>QueryField }
         }
       }
     `,

@@ -46,3 +46,7 @@ export const i18nFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const i18nQueryField = `
+  ${ i18nFields.join(" ") }
+`;

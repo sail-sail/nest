@@ -23,7 +23,7 @@ import type {
 } from "./Model";
 
 import {
-  dictbizFields,
+  dictbizQueryField,
 } from "./Model";
 
 import {
@@ -87,7 +87,7 @@ export async function findAll(
     query: `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbiz(search: $search, page: $page, sort: $sort) {
-          ${ dictbizFields.join(" ") }
+          ${ dictbizQueryField }
         }
       }
     `,
@@ -122,7 +122,7 @@ export async function findOne(
     query: `
       query($search: DictbizSearch, $sort: [SortInput!]) {
         findOneDictbiz(search: $search, sort: $sort) {
-          ${ dictbizFields.join(" ") }
+          ${ dictbizQueryField }
         }
       }
     `,
@@ -234,7 +234,7 @@ export async function findById(
     query: `
       query($id: DictbizId!) {
         findByIdDictbiz(id: $id) {
-          ${ dictbizFields.join(" ") }
+          ${ dictbizQueryField }
         }
       }
     `,

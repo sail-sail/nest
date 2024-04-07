@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  orgFields,
+  orgQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -72,7 +72,7 @@ export async function findAll(
     query: `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOrg(search: $search, page: $page, sort: $sort) {
-          ${ orgFields.join(" ") }
+          ${ orgQueryField }
         }
       }
     `,
@@ -107,7 +107,7 @@ export async function findOne(
     query: `
       query($search: OrgSearch, $sort: [SortInput!]) {
         findOneOrg(search: $search, sort: $sort) {
-          ${ orgFields.join(" ") }
+          ${ orgQueryField }
         }
       }
     `,
@@ -219,7 +219,7 @@ export async function findById(
     query: `
       query($id: OrgId!) {
         findByIdOrg(id: $id) {
-          ${ orgFields.join(" ") }
+          ${ orgQueryField }
         }
       }
     `,

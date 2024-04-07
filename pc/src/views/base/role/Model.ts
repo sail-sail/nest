@@ -57,3 +57,7 @@ export const roleFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const roleQueryField = `
+  ${ roleFields.join(" ") }
+`;

@@ -24,7 +24,7 @@ import type {
 } from "./Model";
 
 import {
-  dataPermitFields,
+  dataPermitQueryField,
 } from "./Model";
 
 // 菜单
@@ -86,7 +86,7 @@ export async function findAll(
     query: `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDataPermit(search: $search, page: $page, sort: $sort) {
-          ${ dataPermitFields.join(" ") }
+          ${ dataPermitQueryField }
         }
       }
     `,
@@ -121,7 +121,7 @@ export async function findOne(
     query: `
       query($search: DataPermitSearch, $sort: [SortInput!]) {
         findOneDataPermit(search: $search, sort: $sort) {
-          ${ dataPermitFields.join(" ") }
+          ${ dataPermitQueryField }
         }
       }
     `,
@@ -233,7 +233,7 @@ export async function findById(
     query: `
       query($id: DataPermitId!) {
         findByIdDataPermit(id: $id) {
-          ${ dataPermitFields.join(" ") }
+          ${ dataPermitQueryField }
         }
       }
     `,

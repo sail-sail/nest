@@ -23,7 +23,7 @@ import type {
 } from "./Model";
 
 import {
-  dictFields,
+  dictQueryField,
 } from "./Model";
 
 import {
@@ -87,7 +87,7 @@ export async function findAll(
     query: `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDict(search: $search, page: $page, sort: $sort) {
-          ${ dictFields.join(" ") }
+          ${ dictQueryField }
         }
       }
     `,
@@ -122,7 +122,7 @@ export async function findOne(
     query: `
       query($search: DictSearch, $sort: [SortInput!]) {
         findOneDict(search: $search, sort: $sort) {
-          ${ dictFields.join(" ") }
+          ${ dictQueryField }
         }
       }
     `,
@@ -234,7 +234,7 @@ export async function findById(
     query: `
       query($id: DictId!) {
         findByIdDict(id: $id) {
-          ${ dictFields.join(" ") }
+          ${ dictQueryField }
         }
       }
     `,

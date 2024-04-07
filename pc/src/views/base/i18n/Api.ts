@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  i18nFields,
+  i18nQueryField,
 } from "./Model";
 
 // 语言
@@ -88,7 +88,7 @@ export async function findAll(
     query: `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
-          ${ i18nFields.join(" ") }
+          ${ i18nQueryField }
         }
       }
     `,
@@ -123,7 +123,7 @@ export async function findOne(
     query: `
       query($search: I18nSearch, $sort: [SortInput!]) {
         findOneI18n(search: $search, sort: $sort) {
-          ${ i18nFields.join(" ") }
+          ${ i18nQueryField }
         }
       }
     `,
@@ -235,7 +235,7 @@ export async function findById(
     query: `
       query($id: I18nId!) {
         findByIdI18n(id: $id) {
-          ${ i18nFields.join(" ") }
+          ${ i18nQueryField }
         }
       }
     `,

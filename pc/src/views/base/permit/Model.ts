@@ -43,3 +43,7 @@ export const permitFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const permitQueryField = `
+  ${ permitFields.join(" ") }
+`;

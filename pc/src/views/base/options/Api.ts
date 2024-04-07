@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  optionsFields,
+  optionsQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -77,7 +77,7 @@ export async function findAll(
     query: `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
-          ${ optionsFields.join(" ") }
+          ${ optionsQueryField }
         }
       }
     `,
@@ -112,7 +112,7 @@ export async function findOne(
     query: `
       query($search: OptionsSearch, $sort: [SortInput!]) {
         findOneOptions(search: $search, sort: $sort) {
-          ${ optionsFields.join(" ") }
+          ${ optionsQueryField }
         }
       }
     `,
@@ -224,7 +224,7 @@ export async function findById(
     query: `
       query($id: OptionsId!) {
         findByIdOptions(id: $id) {
-          ${ optionsFields.join(" ") }
+          ${ optionsQueryField }
         }
       }
     `,

@@ -20,7 +20,7 @@ import type {
 } from "./Model";
 
 import {
-  backgroundTaskFields,
+  backgroundTaskQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -81,7 +81,7 @@ export async function findAll(
     query: `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllBackgroundTask(search: $search, page: $page, sort: $sort) {
-          ${ backgroundTaskFields.join(" ") }
+          ${ backgroundTaskQueryField }
         }
       }
     `,
@@ -116,7 +116,7 @@ export async function findOne(
     query: `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
         findOneBackgroundTask(search: $search, sort: $sort) {
-          ${ backgroundTaskFields.join(" ") }
+          ${ backgroundTaskQueryField }
         }
       }
     `,
@@ -170,7 +170,7 @@ export async function findById(
     query: `
       query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
-          ${ backgroundTaskFields.join(" ") }
+          ${ backgroundTaskQueryField }
         }
       }
     `,

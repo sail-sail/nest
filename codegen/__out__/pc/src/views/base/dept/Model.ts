@@ -52,3 +52,7 @@ export const deptFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const deptQueryField = `
+  ${ deptFields.join(" ") }
+`;

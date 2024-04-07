@@ -45,3 +45,7 @@ export const dataPermitFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const dataPermitQueryField = `
+  ${ dataPermitFields.join(" ") }
+`;

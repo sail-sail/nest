@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  dictbizDetailFields,
+  dictbizDetailQueryField,
 } from "./Model";
 
 // 业务字典
@@ -83,7 +83,7 @@ export async function findAll(
     query: `
       query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
-          ${ dictbizDetailFields.join(" ") }
+          ${ dictbizDetailQueryField }
         }
       }
     `,
@@ -118,7 +118,7 @@ export async function findOne(
     query: `
       query($search: DictbizDetailSearch, $sort: [SortInput!]) {
         findOneDictbizDetail(search: $search, sort: $sort) {
-          ${ dictbizDetailFields.join(" ") }
+          ${ dictbizDetailQueryField }
         }
       }
     `,
@@ -230,7 +230,7 @@ export async function findById(
     query: `
       query($id: DictbizDetailId!) {
         findByIdDictbizDetail(id: $id) {
-          ${ dictbizDetailFields.join(" ") }
+          ${ dictbizDetailQueryField }
         }
       }
     `,

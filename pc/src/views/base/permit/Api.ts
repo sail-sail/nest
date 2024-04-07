@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  permitFields,
+  permitQueryField,
 } from "./Model";
 
 // 菜单
@@ -79,7 +79,7 @@ export async function findAll(
     query: `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
-          ${ permitFields.join(" ") }
+          ${ permitQueryField }
         }
       }
     `,
@@ -114,7 +114,7 @@ export async function findOne(
     query: `
       query($search: PermitSearch, $sort: [SortInput!]) {
         findOnePermit(search: $search, sort: $sort) {
-          ${ permitFields.join(" ") }
+          ${ permitQueryField }
         }
       }
     `,
@@ -226,7 +226,7 @@ export async function findById(
     query: `
       query($id: PermitId!) {
         findByIdPermit(id: $id) {
-          ${ permitFields.join(" ") }
+          ${ permitQueryField }
         }
       }
     `,

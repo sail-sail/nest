@@ -51,3 +51,7 @@ export const dictbizDetailFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const dictbizDetailQueryField = `
+  ${ dictbizDetailFields.join(" ") }
+`;

@@ -52,3 +52,7 @@ export const tenantFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const tenantQueryField = `
+  ${ tenantFields.join(" ") }
+`;

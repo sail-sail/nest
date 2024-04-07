@@ -64,3 +64,7 @@ export const usrFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const usrQueryField = `
+  ${ usrFields.join(" ") }
+`;

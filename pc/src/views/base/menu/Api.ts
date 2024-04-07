@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  menuFields,
+  menuQueryField,
 } from "./Model";
 
 import {
@@ -83,7 +83,7 @@ export async function findAll(
     query: `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
-          ${ menuFields.join(" ") }
+          ${ menuQueryField }
         }
       }
     `,
@@ -118,7 +118,7 @@ export async function findOne(
     query: `
       query($search: MenuSearch, $sort: [SortInput!]) {
         findOneMenu(search: $search, sort: $sort) {
-          ${ menuFields.join(" ") }
+          ${ menuQueryField }
         }
       }
     `,
@@ -255,7 +255,7 @@ export async function findById(
     query: `
       query($id: MenuId!) {
         findByIdMenu(id: $id) {
-          ${ menuFields.join(" ") }
+          ${ menuQueryField }
         }
       }
     `,

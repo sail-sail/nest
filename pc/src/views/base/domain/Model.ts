@@ -51,3 +51,7 @@ export const domainFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const domainQueryField = `
+  ${ domainFields.join(" ") }
+`;

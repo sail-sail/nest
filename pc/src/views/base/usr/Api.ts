@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  usrFields,
+  usrQueryField,
 } from "./Model";
 
 // 组织
@@ -117,7 +117,7 @@ export async function findAll(
     query: `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
-          ${ usrFields.join(" ") }
+          ${ usrQueryField }
         }
       }
     `,
@@ -152,7 +152,7 @@ export async function findOne(
     query: `
       query($search: UsrSearch, $sort: [SortInput!]) {
         findOneUsr(search: $search, sort: $sort) {
-          ${ usrFields.join(" ") }
+          ${ usrQueryField }
         }
       }
     `,
@@ -264,7 +264,7 @@ export async function findById(
     query: `
       query($id: UsrId!) {
         findByIdUsr(id: $id) {
-          ${ usrFields.join(" ") }
+          ${ usrQueryField }
         }
       }
     `,

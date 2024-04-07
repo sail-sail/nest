@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  deptFields,
+  deptQueryField,
 } from "./Model";
 
 // 用户
@@ -88,7 +88,7 @@ export async function findAll(
     query: `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
-          ${ deptFields.join(" ") }
+          ${ deptQueryField }
         }
       }
     `,
@@ -123,7 +123,7 @@ export async function findOne(
     query: `
       query($search: DeptSearch, $sort: [SortInput!]) {
         findOneDept(search: $search, sort: $sort) {
-          ${ deptFields.join(" ") }
+          ${ deptQueryField }
         }
       }
     `,
@@ -260,7 +260,7 @@ export async function findById(
     query: `
       query($id: DeptId!) {
         findByIdDept(id: $id) {
-          ${ deptFields.join(" ") }
+          ${ deptQueryField }
         }
       }
     `,

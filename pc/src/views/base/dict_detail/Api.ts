@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  dictDetailFields,
+  dictDetailQueryField,
 } from "./Model";
 
 // 系统字典
@@ -83,7 +83,7 @@ export async function findAll(
     query: `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictDetail(search: $search, page: $page, sort: $sort) {
-          ${ dictDetailFields.join(" ") }
+          ${ dictDetailQueryField }
         }
       }
     `,
@@ -118,7 +118,7 @@ export async function findOne(
     query: `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
         findOneDictDetail(search: $search, sort: $sort) {
-          ${ dictDetailFields.join(" ") }
+          ${ dictDetailQueryField }
         }
       }
     `,
@@ -230,7 +230,7 @@ export async function findById(
     query: `
       query($id: DictDetailId!) {
         findByIdDictDetail(id: $id) {
-          ${ dictDetailFields.join(" ") }
+          ${ dictDetailQueryField }
         }
       }
     `,

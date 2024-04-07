@@ -46,3 +46,7 @@ export const orgFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const orgQueryField = `
+  ${ orgFields.join(" ") }
+`;

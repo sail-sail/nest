@@ -54,3 +54,7 @@ export const backgroundTaskFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const backgroundTaskQueryField = `
+  ${ backgroundTaskFields.join(" ") }
+`;

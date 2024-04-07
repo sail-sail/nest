@@ -15,7 +15,7 @@ import type {
 } from "./Model";
 
 import {
-  loginLogFields,
+  loginLogQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -63,7 +63,7 @@ export async function findAll(
     query: `
       query($search: LoginLogSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLoginLog(search: $search, page: $page, sort: $sort) {
-          ${ loginLogFields.join(" ") }
+          ${ loginLogQueryField }
         }
       }
     `,
@@ -98,7 +98,7 @@ export async function findOne(
     query: `
       query($search: LoginLogSearch, $sort: [SortInput!]) {
         findOneLoginLog(search: $search, sort: $sort) {
-          ${ loginLogFields.join(" ") }
+          ${ loginLogQueryField }
         }
       }
     `,
@@ -152,7 +152,7 @@ export async function findById(
     query: `
       query($id: LoginLogId!) {
         findByIdLoginLog(id: $id) {
-          ${ loginLogFields.join(" ") }
+          ${ loginLogQueryField }
         }
       }
     `,

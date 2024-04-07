@@ -15,7 +15,7 @@ import type {
 } from "./Model";
 
 import {
-  operationRecordFields,
+  operationRecordQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -72,7 +72,7 @@ export async function findAll(
     query: `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOperationRecord(search: $search, page: $page, sort: $sort) {
-          ${ operationRecordFields.join(" ") }
+          ${ operationRecordQueryField }
         }
       }
     `,
@@ -107,7 +107,7 @@ export async function findOne(
     query: `
       query($search: OperationRecordSearch, $sort: [SortInput!]) {
         findOneOperationRecord(search: $search, sort: $sort) {
-          ${ operationRecordFields.join(" ") }
+          ${ operationRecordQueryField }
         }
       }
     `,
@@ -161,7 +161,7 @@ export async function findById(
     query: `
       query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
-          ${ operationRecordFields.join(" ") }
+          ${ operationRecordQueryField }
         }
       }
     `,

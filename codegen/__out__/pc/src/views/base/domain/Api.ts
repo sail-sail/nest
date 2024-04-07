@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  domainFields,
+  domainQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -77,7 +77,7 @@ export async function findAll(
     query: `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDomain(search: $search, page: $page, sort: $sort) {
-          ${ domainFields.join(" ") }
+          ${ domainQueryField }
         }
       }
     `,
@@ -112,7 +112,7 @@ export async function findOne(
     query: `
       query($search: DomainSearch, $sort: [SortInput!]) {
         findOneDomain(search: $search, sort: $sort) {
-          ${ domainFields.join(" ") }
+          ${ domainQueryField }
         }
       }
     `,
@@ -224,7 +224,7 @@ export async function findById(
     query: `
       query($id: DomainId!) {
         findByIdDomain(id: $id) {
-          ${ domainFields.join(" ") }
+          ${ domainQueryField }
         }
       }
     `,

@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  optbizFields,
+  optbizQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -77,7 +77,7 @@ export async function findAll(
     query: `
       query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptbiz(search: $search, page: $page, sort: $sort) {
-          ${ optbizFields.join(" ") }
+          ${ optbizQueryField }
         }
       }
     `,
@@ -112,7 +112,7 @@ export async function findOne(
     query: `
       query($search: OptbizSearch, $sort: [SortInput!]) {
         findOneOptbiz(search: $search, sort: $sort) {
-          ${ optbizFields.join(" ") }
+          ${ optbizQueryField }
         }
       }
     `,
@@ -224,7 +224,7 @@ export async function findById(
     query: `
       query($id: OptbizId!) {
         findByIdOptbiz(id: $id) {
-          ${ optbizFields.join(" ") }
+          ${ optbizQueryField }
         }
       }
     `,

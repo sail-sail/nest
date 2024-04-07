@@ -40,7 +40,28 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
   <#=fieldCommentName#> as <#=fieldCommentName#>Type,
-} from "#/types";
+} from "#/types";<#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const table_Up = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
+#>
+
+import {
+  <#=table_Up#>Fields,
+} from "@/views/<#=mod#>/<#=table#>/Model";<#
+}
+#>
 
 export interface <#=modelName#> extends <#=modelName#>Type {<#
   for (let i = 0; i < columns.length; i++) {
@@ -129,7 +150,11 @@ export const <#=fieldsName#> = [<#
   #>
   "is_deleted",<#
   }
-  #><#
+  #>
+];
+
+export const <#=table_Up#>QueryField = `
+  ${ <#=fieldsName#>.join(" ") }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
     const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -143,61 +168,11 @@ export const <#=fieldsName#> = [<#
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    let modelName = "";
-    let fieldCommentName = "";
-    let inputName = "";
-    let searchName = "";
-    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
-      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
-    ) {
-      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-      modelName = Table_Up + "model";
-      fieldCommentName = Table_Up + "fieldComment";
-      inputName = Table_Up + "input";
-      searchName = Table_Up + "search";
-    } else {
-      modelName = Table_Up + "Model";
-      fieldCommentName = Table_Up + "FieldComment";
-      inputName = Table_Up + "Input";
-      searchName = Table_Up + "Search";
-    }
+    const table_Up = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
     const inline_column_name = inlineForeignTab.column_name;
   #>
-  <#=inline_column_name#> {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "tenant_id") continue;
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const foreignKey = column.foreignKey;
-    #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
-    #>
-    // <#=column_comment#>
-    "<#=column_name#>",
-    "<#=column_name#>_lbl",<#
-      } else {
-    #>
-    // <#=column_comment#>
-    "<#=column_name#>",<#
-      }
-    }
-    #>
+  <#=inline_column_name#> {
+    ${ <#=table_Up#>Fields.join(" ") }
   }<#
   }
   #><#
@@ -229,44 +204,12 @@ export const <#=fieldsName#> = [<#
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const table_Up = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
     const inlineMany2manyColumns = inlineMany2manySchema.columns;
   #>
-  <#=column_name#>_<#=table#>_models {<#
-    for (let i = 0; i < inlineMany2manyColumns.length; i++) {
-      const column = inlineMany2manyColumns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "tenant_id") continue;
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const foreignKey = column.foreignKey;
-    #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
-    #>
-    // <#=column_comment#>
-    "<#=column_name#>",
-    "<#=column_name#>_lbl",<#
-      } else {
-    #>
-    // <#=column_comment#>
-    "<#=column_name#>",<#
-      }
-    }
-    #>
+  <#=column_name#>_<#=table#>_models {
+    ${ <#=table_Up#>Fields.join(" ") }
   }<#
   }
   #>
-];
+`;

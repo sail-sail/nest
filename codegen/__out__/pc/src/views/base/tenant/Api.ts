@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  tenantFields,
+  tenantQueryField,
 } from "./Model";
 
 // 域名
@@ -94,7 +94,7 @@ export async function findAll(
     query: `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
-          ${ tenantFields.join(" ") }
+          ${ tenantQueryField }
         }
       }
     `,
@@ -129,7 +129,7 @@ export async function findOne(
     query: `
       query($search: TenantSearch, $sort: [SortInput!]) {
         findOneTenant(search: $search, sort: $sort) {
-          ${ tenantFields.join(" ") }
+          ${ tenantQueryField }
         }
       }
     `,
@@ -241,7 +241,7 @@ export async function findById(
     query: `
       query($id: TenantId!) {
         findByIdTenant(id: $id) {
-          ${ tenantFields.join(" ") }
+          ${ tenantQueryField }
         }
       }
     `,

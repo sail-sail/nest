@@ -53,3 +53,7 @@ export const menuFields = [
   "update_time_lbl",
   "is_deleted",
 ];
+
+export const menuQueryField = `
+  ${ menuFields.join(" ") }
+`;

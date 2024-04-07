@@ -51,3 +51,7 @@ export const optbizFields = [
   "version",
   "is_deleted",
 ];
+
+export const optbizQueryField = `
+  ${ optbizFields.join(" ") }
+`;

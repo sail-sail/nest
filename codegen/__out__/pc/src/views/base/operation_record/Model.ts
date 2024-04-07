@@ -44,3 +44,7 @@ export const operationRecordFields = [
   "create_time_lbl",
   "is_deleted",
 ];
+
+export const operationRecordQueryField = `
+  ${ operationRecordFields.join(" ") }
+`;

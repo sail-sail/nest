@@ -19,7 +19,7 @@ import type {
 } from "./Model";
 
 import {
-  roleFields,
+  roleQueryField,
 } from "./Model";
 
 // 菜单
@@ -105,7 +105,7 @@ export async function findAll(
     query: `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
-          ${ roleFields.join(" ") }
+          ${ roleQueryField }
         }
       }
     `,
@@ -140,7 +140,7 @@ export async function findOne(
     query: `
       query($search: RoleSearch, $sort: [SortInput!]) {
         findOneRole(search: $search, sort: $sort) {
-          ${ roleFields.join(" ") }
+          ${ roleQueryField }
         }
       }
     `,
@@ -252,7 +252,7 @@ export async function findById(
     query: `
       query($id: RoleId!) {
         findByIdRole(id: $id) {
-          ${ roleFields.join(" ") }
+          ${ roleQueryField }
         }
       }
     `,
