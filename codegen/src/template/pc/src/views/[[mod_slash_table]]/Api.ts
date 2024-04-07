@@ -519,8 +519,9 @@ async function setLblById(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    (model as any).<#=column_name#>_lbl = location.origin + getImgUrl({
+    model.<#=column_name#>_lbl = location.origin + getImgUrl({
       id: model.<#=column_name#>,
+      height: 100,
     });
   }<#
     }

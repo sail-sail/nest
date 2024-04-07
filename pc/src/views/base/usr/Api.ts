@@ -54,8 +54,9 @@ async function setLblById(
   
   // 头像
   if (model.img) {
-    (model as any).img_lbl = location.origin + getImgUrl({
+    model.img_lbl = location.origin + getImgUrl({
       id: model.img,
+      height: 100,
     });
   }
 }

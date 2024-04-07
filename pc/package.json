@@ -27,7 +27,7 @@
     "cronstrue": "2.49.0",
     "dayjs": "1.11.10",
     "decimal.js-light": "2.5.1",
-    "ejsexcel-browserify": "4.3.2",
+    "ejsexcel-browserify": "4.4.2",
     "element-plus": "2.6.3",
     "file-saver": "2.0.5",
     "filesize": "10.1.1",
