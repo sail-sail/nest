@@ -18,6 +18,10 @@ import type {
   UsrModel,
 } from "./Model";
 
+import {
+  usrFields,
+} from "./Model";
+
 // 组织
 import type {
   OrgSearch,
@@ -113,33 +117,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrFields.join(" ") }
         }
       }
     `,
@@ -174,33 +152,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput!]) {
         findOneUsr(search: $search, sort: $sort) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrFields.join(" ") }
         }
       }
     `,
@@ -312,33 +264,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: UsrId!) {
         findByIdUsr(id: $id) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrFields.join(" ") }
         }
       }
     `,

@@ -18,6 +18,10 @@ import type {
   TenantModel,
 } from "./Model";
 
+import {
+  tenantFields,
+} from "./Model";
+
 // 域名
 import type {
   DomainSearch,
@@ -90,27 +94,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantFields.join(" ") }
         }
       }
     `,
@@ -145,27 +129,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: TenantSearch, $sort: [SortInput!]) {
         findOneTenant(search: $search, sort: $sort) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantFields.join(" ") }
         }
       }
     `,
@@ -277,27 +241,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: TenantId!) {
         findByIdTenant(id: $id) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantFields.join(" ") }
         }
       }
     `,

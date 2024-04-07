@@ -22,6 +22,10 @@ import type {
   FieldPermitModel,
 } from "./Model";
 
+import {
+  fieldPermitFields,
+} from "./Model";
+
 // 菜单
 import type {
   MenuSearch,
@@ -82,23 +86,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: FieldPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllFieldPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitFields.join(" ") }
         }
       }
     `,
@@ -133,23 +121,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: FieldPermitSearch, $sort: [SortInput!]) {
         findOneFieldPermit(search: $search, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitFields.join(" ") }
         }
       }
     `,
@@ -261,23 +233,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: FieldPermitId!) {
         findByIdFieldPermit(id: $id) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitFields.join(" ") }
         }
       }
     `,

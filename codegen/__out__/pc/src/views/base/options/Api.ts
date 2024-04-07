@@ -18,6 +18,10 @@ import type {
   OptionsModel,
 } from "./Model";
 
+import {
+  optionsFields,
+} from "./Model";
+
 async function setLblById(
   model?: OptionsModel | null,
   isExcelExport = false,
@@ -73,26 +77,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsFields.join(" ") }
         }
       }
     `,
@@ -127,26 +112,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: OptionsSearch, $sort: [SortInput!]) {
         findOneOptions(search: $search, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsFields.join(" ") }
         }
       }
     `,
@@ -258,26 +224,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: OptionsId!) {
         findByIdOptions(id: $id) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsFields.join(" ") }
         }
       }
     `,

@@ -18,6 +18,10 @@ import type {
   LangModel,
 } from "./Model";
 
+import {
+  langFields,
+} from "./Model";
+
 async function setLblById(
   model?: LangModel | null,
   isExcelExport = false,
@@ -67,22 +71,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langFields.join(" ") }
         }
       }
     `,
@@ -117,22 +106,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput!]) {
         findOneLang(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langFields.join(" ") }
         }
       }
     `,
@@ -244,22 +218,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: LangId!) {
         findByIdLang(id: $id) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langFields.join(" ") }
         }
       }
     `,

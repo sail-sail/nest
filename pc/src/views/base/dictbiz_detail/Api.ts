@@ -18,6 +18,10 @@ import type {
   DictbizDetailModel,
 } from "./Model";
 
+import {
+  dictbizDetailFields,
+} from "./Model";
+
 // 业务字典
 import type {
   DictbizSearch,
@@ -79,26 +83,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailFields.join(" ") }
         }
       }
     `,
@@ -133,26 +118,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DictbizDetailSearch, $sort: [SortInput!]) {
         findOneDictbizDetail(search: $search, sort: $sort) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailFields.join(" ") }
         }
       }
     `,
@@ -264,26 +230,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DictbizDetailId!) {
         findByIdDictbizDetail(id: $id) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailFields.join(" ") }
         }
       }
     `,

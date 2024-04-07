@@ -18,6 +18,10 @@ import type {
   PermitModel,
 } from "./Model";
 
+import {
+  permitFields,
+} from "./Model";
+
 // 菜单
 import type {
   MenuSearch,
@@ -75,21 +79,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitFields.join(" ") }
         }
       }
     `,
@@ -124,21 +114,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: PermitSearch, $sort: [SortInput!]) {
         findOnePermit(search: $search, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitFields.join(" ") }
         }
       }
     `,
@@ -250,21 +226,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: PermitId!) {
         findByIdPermit(id: $id) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitFields.join(" ") }
         }
       }
     `,

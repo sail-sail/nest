@@ -18,6 +18,10 @@ import type {
   DeptModel,
 } from "./Model";
 
+import {
+  deptFields,
+} from "./Model";
+
 // 用户
 import type {
   UsrSearch,
@@ -84,27 +88,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptFields.join(" ") }
         }
       }
     `,
@@ -139,27 +123,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DeptSearch, $sort: [SortInput!]) {
         findOneDept(search: $search, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptFields.join(" ") }
         }
       }
     `,
@@ -296,27 +260,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DeptId!) {
         findByIdDept(id: $id) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptFields.join(" ") }
         }
       }
     `,

@@ -1,35 +1,40 @@
 <template>
-<div>
+<div
+  un-flex="~ wrap"
+  un-w="full"
+>
+  <el-tag
+    v-for="item in labelValue"
+    :key="item"
+    type="info"
+    style="margin: 1px;"
+    :disable-transitions="true"
+  >
+    {{ item }}
+  </el-tag>
   <el-popover
     v-if="modelValue && modelValue.length > maxSize"
     :width="modelValue && modelValue.length > 5 ? 500 : 'auto'"
   >
     <template #reference>
       <el-tag
-        v-for="item in labelValue"
-        :key="item"
         type="info"
         style="margin: 1px;"
         :disable-transitions="true"
+        un-cursor-default
       >
-        {{ item }}
+        +{{ modelValue.length - maxSize }}
       </el-tag>
-      <div>
-        ...
-      </div>
     </template>
-    <template
-      v-for="item in modelValue"
+    <el-tag
+      v-for="item in modelValue.slice(maxSize)"
       :key="item"
+      type="info"
+      style="margin: 1px;"
+      :disable-transitions="true"
     >
-      <el-tag
-        type="info"
-        style="margin: 1px;"
-        :disable-transitions="true"
-      >
-        {{ item }}
-      </el-tag>
-    </template>
+      {{ item }}
+    </el-tag>
   </el-popover>
   <template v-else>
     <el-tag

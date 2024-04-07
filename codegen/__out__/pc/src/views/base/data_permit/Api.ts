@@ -23,6 +23,10 @@ import type {
   DataPermitModel,
 } from "./Model";
 
+import {
+  dataPermitFields,
+} from "./Model";
+
 // 菜单
 import type {
   MenuSearch,
@@ -82,23 +86,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDataPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          scope
-          scope_lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dataPermitFields.join(" ") }
         }
       }
     `,
@@ -133,23 +121,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DataPermitSearch, $sort: [SortInput!]) {
         findOneDataPermit(search: $search, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          scope
-          scope_lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dataPermitFields.join(" ") }
         }
       }
     `,
@@ -261,23 +233,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DataPermitId!) {
         findByIdDataPermit(id: $id) {
-          id
-          menu_id
-          menu_id_lbl
-          scope
-          scope_lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dataPermitFields.join(" ") }
         }
       }
     `,

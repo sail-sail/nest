@@ -18,6 +18,10 @@ import type {
   DomainModel,
 } from "./Model";
 
+import {
+  domainFields,
+} from "./Model";
+
 async function setLblById(
   model?: DomainModel | null,
   isExcelExport = false,
@@ -73,26 +77,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDomain(search: $search, page: $page, sort: $sort) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainFields.join(" ") }
         }
       }
     `,
@@ -127,26 +112,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DomainSearch, $sort: [SortInput!]) {
         findOneDomain(search: $search, sort: $sort) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainFields.join(" ") }
         }
       }
     `,
@@ -258,26 +224,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DomainId!) {
         findByIdDomain(id: $id) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainFields.join(" ") }
         }
       }
     `,

@@ -18,6 +18,10 @@ import type {
   OrgModel,
 } from "./Model";
 
+import {
+  orgFields,
+} from "./Model";
+
 async function setLblById(
   model?: OrgModel | null,
   isExcelExport = false,
@@ -68,23 +72,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOrg(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgFields.join(" ") }
         }
       }
     `,
@@ -119,23 +107,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: OrgSearch, $sort: [SortInput!]) {
         findOneOrg(search: $search, sort: $sort) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgFields.join(" ") }
         }
       }
     `,
@@ -247,23 +219,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: OrgId!) {
         findByIdOrg(id: $id) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgFields.join(" ") }
         }
       }
     `,

@@ -19,6 +19,10 @@ import type {
   BackgroundTaskModel,
 } from "./Model";
 
+import {
+  backgroundTaskFields,
+} from "./Model";
+
 async function setLblById(
   model?: BackgroundTaskModel | null,
   isExcelExport = false,
@@ -77,28 +81,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllBackgroundTask(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskFields.join(" ") }
         }
       }
     `,
@@ -133,28 +116,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
         findOneBackgroundTask(search: $search, sort: $sort) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskFields.join(" ") }
         }
       }
     `,
@@ -208,28 +170,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskFields.join(" ") }
         }
       }
     `,

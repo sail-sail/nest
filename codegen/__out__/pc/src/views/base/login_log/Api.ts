@@ -14,6 +14,10 @@ import type {
   LoginLogModel,
 } from "./Model";
 
+import {
+  loginLogFields,
+} from "./Model";
+
 async function setLblById(
   model?: LoginLogModel | null,
   isExcelExport = false,
@@ -59,14 +63,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: LoginLogSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLoginLog(search: $search, page: $page, sort: $sort) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogFields.join(" ") }
         }
       }
     `,
@@ -101,14 +98,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: LoginLogSearch, $sort: [SortInput!]) {
         findOneLoginLog(search: $search, sort: $sort) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogFields.join(" ") }
         }
       }
     `,
@@ -162,14 +152,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: LoginLogId!) {
         findByIdLoginLog(id: $id) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogFields.join(" ") }
         }
       }
     `,

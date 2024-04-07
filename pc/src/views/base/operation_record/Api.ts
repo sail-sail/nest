@@ -14,6 +14,10 @@ import type {
   OperationRecordModel,
 } from "./Model";
 
+import {
+  operationRecordFields,
+} from "./Model";
+
 async function setLblById(
   model?: OperationRecordModel | null,
   isExcelExport = false,
@@ -68,20 +72,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOperationRecord(search: $search, page: $page, sort: $sort) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordFields.join(" ") }
         }
       }
     `,
@@ -116,20 +107,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: OperationRecordSearch, $sort: [SortInput!]) {
         findOneOperationRecord(search: $search, sort: $sort) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordFields.join(" ") }
         }
       }
     `,
@@ -183,20 +161,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordFields.join(" ") }
         }
       }
     `,

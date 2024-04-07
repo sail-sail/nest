@@ -19,6 +19,10 @@ import type {
 } from "./Model";
 
 import {
+  menuFields,
+} from "./Model";
+
+import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
@@ -79,27 +83,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuFields.join(" ") }
         }
       }
     `,
@@ -134,27 +118,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput!]) {
         findOneMenu(search: $search, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuFields.join(" ") }
         }
       }
     `,
@@ -291,27 +255,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: MenuId!) {
         findByIdMenu(id: $id) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuFields.join(" ") }
         }
       }
     `,

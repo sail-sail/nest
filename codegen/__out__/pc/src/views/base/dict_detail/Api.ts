@@ -18,6 +18,10 @@ import type {
   DictDetailModel,
 } from "./Model";
 
+import {
+  dictDetailFields,
+} from "./Model";
+
 // 系统字典
 import type {
   DictSearch,
@@ -79,26 +83,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictDetail(search: $search, page: $page, sort: $sort) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailFields.join(" ") }
         }
       }
     `,
@@ -133,26 +118,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
         findOneDictDetail(search: $search, sort: $sort) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailFields.join(" ") }
         }
       }
     `,
@@ -264,26 +230,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DictDetailId!) {
         findByIdDictDetail(id: $id) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailFields.join(" ") }
         }
       }
     `,

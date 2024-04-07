@@ -23,6 +23,10 @@ import type {
 } from "./Model";
 
 import {
+  dictbizFields,
+} from "./Model";
+
+import {
   intoInput as intoInputDictbizDetail,
 } from "@/views/base/dictbiz_detail/Api";
 
@@ -83,45 +87,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbiz(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizFields.join(" ") }
         }
       }
     `,
@@ -156,45 +122,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: DictbizSearch, $sort: [SortInput!]) {
         findOneDictbiz(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizFields.join(" ") }
         }
       }
     `,
@@ -306,45 +234,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: DictbizId!) {
         findByIdDictbiz(id: $id) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizFields.join(" ") }
         }
       }
     `,

@@ -18,6 +18,10 @@ import type {
   I18nModel,
 } from "./Model";
 
+import {
+  i18nFields,
+} from "./Model";
+
 // 语言
 import type {
   LangSearch,
@@ -84,23 +88,7 @@ export async function findAll(
     query: /* GraphQL */ `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nFields.join(" ") }
         }
       }
     `,
@@ -135,23 +123,7 @@ export async function findOne(
     query: /* GraphQL */ `
       query($search: I18nSearch, $sort: [SortInput!]) {
         findOneI18n(search: $search, sort: $sort) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nFields.join(" ") }
         }
       }
     `,
@@ -263,23 +235,7 @@ export async function findById(
     query: /* GraphQL */ `
       query($id: I18nId!) {
         findByIdI18n(id: $id) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nFields.join(" ") }
         }
       }
     `,
