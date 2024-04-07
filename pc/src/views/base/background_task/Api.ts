@@ -345,30 +345,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
             findAllBackgroundTask(search: $search, sort: $sort) {
-              id
-              lbl
-              state
-              state_lbl
-              type
-              type_lbl
-              result
-              err_msg
-              begin_time
-              begin_time_lbl
-              end_time
-              end_time_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ backgroundTaskQueryField }
             }
             getDict(codes: [
               "background_task_state",

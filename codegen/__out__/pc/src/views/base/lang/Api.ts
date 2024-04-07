@@ -410,24 +410,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: LangSearch, $sort: [SortInput!]) {
             findAllLang(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ langQueryField }
             }
             getDict(codes: [
               "is_enabled",

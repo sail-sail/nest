@@ -458,23 +458,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: PermitSearch, $sort: [SortInput!]) {
             findAllPermit(search: $search, sort: $sort) {
-              id
-              menu_id
-              menu_id_lbl
-              code
-              lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ permitQueryField }
             }
             findAllMenu {
               lbl

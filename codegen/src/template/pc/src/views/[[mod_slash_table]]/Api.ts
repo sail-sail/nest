@@ -1794,48 +1794,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: <#=searchName#>, $sort: [SortInput!]) {
-            findAll<#=Table_Up2#>(search: $search, sort: $sort) {<#
-              for (let i = 0; i < columns.length; i++) {
-                const column = columns[i];
-                if (column.ignoreCodegen) continue;
-                if (column.onlyCodegenDeno) continue;
-                const column_name = column.COLUMN_NAME;
-                if (
-                  [
-                    "is_deleted", "is_sys",
-                    "tenant_id", "tenant_id_lbl",
-                    "org_id", "org_id_lbl",
-                  ].includes(column_name)
-                ) continue;
-                let column_type = column.COLUMN_TYPE;
-                let data_type = column.DATA_TYPE;
-                let column_comment = column.COLUMN_COMMENT;
-                let selectList = [ ];
-                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-                if (selectStr) {
-                  selectList = eval(`(${ selectStr })`);
-                }
-                if (column_comment.includes("[")) {
-                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
-                }
-                const foreignKey = column.foreignKey;
-                const isPassword = column.isPassword;
-                if (isPassword) continue;
-              #><#
-                if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-                  || data_type === "datetime" || data_type === "date"
-                ) {
-              #>
-              <#=column_name#>
-              <#=column_name#>_lbl<#
-                } else {
-              #>
-              <#=column_name#><#
-                }
-              }
-              #>
+            findAll<#=Table_Up2#>(search: $search, sort: $sort) {
+              ${ <#=table_Up#>QueryField }
             }<#
             const foreignTableArrTmp2 = [ table ];
             for (let i = 0; i < columns.length; i++) {

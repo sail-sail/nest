@@ -518,25 +518,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: I18nSearch, $sort: [SortInput!]) {
             findAllI18n(search: $search, sort: $sort) {
-              id
-              lang_id
-              lang_id_lbl
-              menu_id
-              menu_id_lbl
-              code
-              lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ i18nQueryField }
             }
             findAllLang {
               lbl

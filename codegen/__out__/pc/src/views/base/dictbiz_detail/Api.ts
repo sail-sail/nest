@@ -501,28 +501,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictbizDetailSearch, $sort: [SortInput!]) {
             findAllDictbizDetail(search: $search, sort: $sort) {
-              id
-              dictbiz_id
-              dictbiz_id_lbl
-              lbl
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictbizDetailQueryField }
             }
             findAllDictbiz {
               lbl

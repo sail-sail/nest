@@ -507,28 +507,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictbizSearch, $sort: [SortInput!]) {
             findAllDictbiz(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              type
-              type_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictbizQueryField }
             }
             getDict(codes: [
               "dict_type",

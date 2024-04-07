@@ -327,22 +327,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OperationRecordSearch, $sort: [SortInput!]) {
             findAllOperationRecord(search: $search, sort: $sort) {
-              id
-              module
-              module_lbl
-              method
-              method_lbl
-              lbl
-              time
-              old_data
-              new_data
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
+              ${ operationRecordQueryField }
             }
           }
         `,

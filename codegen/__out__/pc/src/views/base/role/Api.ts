@@ -637,32 +637,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: RoleSearch, $sort: [SortInput!]) {
             findAllRole(search: $search, sort: $sort) {
-              id
-              lbl
-              home_url
-              menu_ids
-              menu_ids_lbl
-              permit_ids
-              permit_ids_lbl
-              data_permit_ids
-              data_permit_ids_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ roleQueryField }
             }
             findAllMenu {
               lbl

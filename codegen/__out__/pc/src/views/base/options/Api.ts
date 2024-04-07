@@ -445,27 +445,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OptionsSearch, $sort: [SortInput!]) {
             findAllOptions(search: $search, sort: $sort) {
-              id
-              lbl
-              ky
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ optionsQueryField }
             }
             getDict(codes: [
               "is_locked",

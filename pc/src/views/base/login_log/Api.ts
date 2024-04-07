@@ -321,16 +321,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: LoginLogSearch, $sort: [SortInput!]) {
             findAllLoginLog(search: $search, sort: $sort) {
-              id
-              username
-              is_succ
-              is_succ_lbl
-              ip
-              create_time
-              create_time_lbl
+              ${ loginLogQueryField }
             }
             getDict(codes: [
               "yes_no",
