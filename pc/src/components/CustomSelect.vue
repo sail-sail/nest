@@ -150,36 +150,37 @@
           >
             {{ label }}
           </el-tag>
-          <el-tooltip
+          <el-popover
             v-if="modelLabels.length > props.readonlyMaxCollapseTags"
+            width="auto"
+            :teleported="false"
+            :persistent="false"
           >
-            <el-tag
-              type="info"
-              :disable-transitions="true"
-              @click="() => readonlyCollapseTags = false"
-              un-cursor-pointer
-            >
-              {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
-            </el-tag>
-            <template
-              #content
-            >
-              <div
-                un-flex="~ wrap"
-                un-gap="x-1 y-1"
-                un-m="y-1"
+            <template #reference>
+              <el-tag
+                type="info"
+                :disable-transitions="true"
+                @click="() => readonlyCollapseTags = false"
+                un-cursor-pointer
               >
-                <el-tag
-                  v-for="label in modelLabels.slice(props.readonlyMaxCollapseTags)"
-                  :key="label"
-                  type="info"
-                  :disable-transitions="true"
-                >
-                  {{ label }}
-                </el-tag>
-              </div>
+                {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
+              </el-tag>
             </template>
-          </el-tooltip>
+            <div
+              un-flex="~ wrap"
+              un-gap="x-1 y-1"
+              un-m="y-1"
+            >
+              <el-tag
+                v-for="label in modelLabels.slice(props.readonlyMaxCollapseTags)"
+                :key="label"
+                type="info"
+                :disable-transitions="true"
+              >
+                {{ label }}
+              </el-tag>
+            </div>
+          </el-popover>
         </template>
         <template
           v-else

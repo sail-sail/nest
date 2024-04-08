@@ -48,7 +48,7 @@ export class PoolConnection extends Connection {
    * Remove the connection from the pool permanently, when the connection is not usable.
    */
   removeFromPool() {
-    this._pool!.reduceSize();
+    this._pool?.reduceSize();
     this._pool = undefined;
   }
 

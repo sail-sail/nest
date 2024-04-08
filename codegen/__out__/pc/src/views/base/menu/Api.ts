@@ -19,6 +19,10 @@ import type {
 } from "./Model";
 
 import {
+  menuQueryField,
+} from "./Model";
+
+import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
@@ -76,30 +80,10 @@ export async function findAll(
   const data: {
     findAllMenu: MenuModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuQueryField }
         }
       }
     `,
@@ -131,30 +115,10 @@ export async function findOne(
   const data: {
     findOneMenu?: MenuModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: MenuSearch, $sort: [SortInput!]) {
         findOneMenu(search: $search, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuQueryField }
         }
       }
     `,
@@ -288,30 +252,10 @@ export async function findById(
   const data: {
     findByIdMenu?: MenuModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: MenuId!) {
         findByIdMenu(id: $id) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          route_path
-          route_query
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ menuQueryField }
         }
       }
     `,
@@ -609,29 +553,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: MenuSearch, $sort: [SortInput!]) {
             findAllMenu(search: $search, sort: $sort) {
-              id
-              parent_id
-              parent_id_lbl
-              lbl
-              route_path
-              route_query
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ menuQueryField }
             }
             getDict(codes: [
               "is_locked",
