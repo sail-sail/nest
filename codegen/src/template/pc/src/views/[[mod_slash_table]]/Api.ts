@@ -62,17 +62,17 @@ for (let i = 0; i < columns.length; i++) {
   }
   hasDecimal = true;
 }
-#><#
-if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
-#>import {
-  UniqueType,
-} from "#/types";
-
-<#
-}
 #>import type {
   <#=Table_Up#>Id,
 } from "@/typings/ids";<#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>
+
+import {
+  UniqueType,
+} from "#/types";<#
+}
+#><#
 let hasDefaultValue = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -287,7 +287,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
 
 import type {
   <#=Foreign_Table_Up#>Search,
-} from "#/types";<#
+  <#=Foreign_Table_Up#>Model,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
   }
 }
 #><#

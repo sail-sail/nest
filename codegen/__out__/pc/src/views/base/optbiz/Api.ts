@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   OptbizId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,

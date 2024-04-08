@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   FieldPermitId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import {
   FieldPermitType,

@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   DataPermitId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import {
   DataPermitScope,
