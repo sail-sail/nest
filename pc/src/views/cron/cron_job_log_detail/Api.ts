@@ -14,6 +14,10 @@ import type {
   CronJobLogDetailModel,
 } from "./Model";
 
+import {
+  cronJobLogDetailQueryField,
+} from "./Model";
+
 // 任务执行日志
 import type {
   CronJobLogSearch,
@@ -60,16 +64,10 @@ export async function findAll(
   const data: {
     findAllCronJobLogDetail: CronJobLogDetailModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobLogDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCronJobLogDetail(search: $search, page: $page, sort: $sort) {
-          id
-          cron_job_log_id
-          cron_job_log_id_lbl
-          lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogDetailQueryField }
         }
       }
     `,
@@ -101,16 +99,10 @@ export async function findOne(
   const data: {
     findOneCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
         findOneCronJobLogDetail(search: $search, sort: $sort) {
-          id
-          cron_job_log_id
-          cron_job_log_id_lbl
-          lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogDetailQueryField }
         }
       }
     `,
@@ -161,16 +153,10 @@ export async function findById(
   const data: {
     findByIdCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CronJobLogDetailId!) {
         findByIdCronJobLogDetail(id: $id) {
-          id
-          cron_job_log_id
-          cron_job_log_id_lbl
-          lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogDetailQueryField }
         }
       }
     `,
@@ -380,15 +366,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
             findAllCronJobLogDetail(search: $search, sort: $sort) {
-              id
-              cron_job_log_id
-              cron_job_log_id_lbl
-              lbl
-              create_time
-              create_time_lbl
+              ${ cronJobLogDetailQueryField }
             }
           }
         `,

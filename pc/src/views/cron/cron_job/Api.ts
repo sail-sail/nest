@@ -18,6 +18,10 @@ import type {
   CronJobModel,
 } from "./Model";
 
+import {
+  cronJobQueryField,
+} from "./Model";
+
 // 任务
 import type {
   JobSearch,
@@ -79,31 +83,10 @@ export async function findAll(
   const data: {
     findAllCronJob: CronJobModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCronJob(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          job_id
-          job_id_lbl
-          cron
-          timezone
-          timezone_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cronJobQueryField }
         }
       }
     `,
@@ -135,31 +118,10 @@ export async function findOne(
   const data: {
     findOneCronJob?: CronJobModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobSearch, $sort: [SortInput!]) {
         findOneCronJob(search: $search, sort: $sort) {
-          id
-          lbl
-          job_id
-          job_id_lbl
-          cron
-          timezone
-          timezone_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cronJobQueryField }
         }
       }
     `,
@@ -268,31 +230,10 @@ export async function findById(
   const data: {
     findByIdCronJob?: CronJobModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CronJobId!) {
         findByIdCronJob(id: $id) {
-          id
-          lbl
-          job_id
-          job_id_lbl
-          cron
-          timezone
-          timezone_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cronJobQueryField }
         }
       }
     `,
@@ -570,30 +511,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CronJobSearch, $sort: [SortInput!]) {
             findAllCronJob(search: $search, sort: $sort) {
-              id
-              lbl
-              job_id
-              job_id_lbl
-              cron
-              timezone
-              timezone_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ cronJobQueryField }
             }
             findAllJob {
               lbl

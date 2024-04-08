@@ -18,6 +18,10 @@ import type {
   CronJobLogModel,
 } from "./Model";
 
+import {
+  cronJobLogQueryField,
+} from "./Model";
+
 // 定时任务
 import type {
   CronJobSearch,
@@ -75,23 +79,10 @@ export async function findAll(
   const data: {
     findAllCronJobLog: CronJobLogModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobLogSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCronJobLog(search: $search, page: $page, sort: $sort) {
-          id
-          cron_job_id
-          cron_job_id_lbl
-          exec_state
-          exec_state_lbl
-          exec_result
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogQueryField }
         }
       }
     `,
@@ -123,23 +114,10 @@ export async function findOne(
   const data: {
     findOneCronJobLog?: CronJobLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CronJobLogSearch, $sort: [SortInput!]) {
         findOneCronJobLog(search: $search, sort: $sort) {
-          id
-          cron_job_id
-          cron_job_id_lbl
-          exec_state
-          exec_state_lbl
-          exec_result
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogQueryField }
         }
       }
     `,
@@ -190,23 +168,10 @@ export async function findById(
   const data: {
     findByIdCronJobLog?: CronJobLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CronJobLogId!) {
         findByIdCronJobLog(id: $id) {
-          id
-          cron_job_id
-          cron_job_id_lbl
-          exec_state
-          exec_state_lbl
-          exec_result
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ cronJobLogQueryField }
         }
       }
     `,
@@ -428,22 +393,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CronJobLogSearch, $sort: [SortInput!]) {
             findAllCronJobLog(search: $search, sort: $sort) {
-              id
-              cron_job_id
-              cron_job_id_lbl
-              exec_state
-              exec_state_lbl
-              exec_result
-              begin_time
-              begin_time_lbl
-              end_time
-              end_time_lbl
-              rem
-              create_time
-              create_time_lbl
+              ${ cronJobLogQueryField }
             }
             findAllCronJob {
               lbl
