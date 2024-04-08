@@ -20,6 +20,10 @@ import type {
   WxPayNoticeModel,
 } from "./Model";
 
+import {
+  wxPayNoticeQueryField,
+} from "./Model";
+
 async function setLblById(
   model?: WxPayNoticeModel | null,
   isExcelExport = false,
@@ -96,42 +100,10 @@ export async function findAll(
   const data: {
     findAllWxPayNotice: WxPayNoticeModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxPayNoticeSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxPayNotice(search: $search, page: $page, sort: $sort) {
-          id
-          appid
-          mchid
-          openid
-          out_trade_no
-          transaction_id
-          trade_type
-          trade_type_lbl
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          bank_type
-          attach
-          success_time
-          success_time_lbl
-          total
-          payer_total
-          currency
-          currency_lbl
-          payer_currency
-          payer_currency_lbl
-          device_id
-          rem
-          raw
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayNoticeQueryField }
         }
       }
     `,
@@ -163,42 +135,10 @@ export async function findOne(
   const data: {
     findOneWxPayNotice?: WxPayNoticeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
         findOneWxPayNotice(search: $search, sort: $sort) {
-          id
-          appid
-          mchid
-          openid
-          out_trade_no
-          transaction_id
-          trade_type
-          trade_type_lbl
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          bank_type
-          attach
-          success_time
-          success_time_lbl
-          total
-          payer_total
-          currency
-          currency_lbl
-          payer_currency
-          payer_currency_lbl
-          device_id
-          rem
-          raw
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayNoticeQueryField }
         }
       }
     `,
@@ -249,42 +189,10 @@ export async function findById(
   const data: {
     findByIdWxPayNotice?: WxPayNoticeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxPayNoticeId!) {
         findByIdWxPayNotice(id: $id) {
-          id
-          appid
-          mchid
-          openid
-          out_trade_no
-          transaction_id
-          trade_type
-          trade_type_lbl
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          bank_type
-          attach
-          success_time
-          success_time_lbl
-          total
-          payer_total
-          currency
-          currency_lbl
-          payer_currency
-          payer_currency_lbl
-          device_id
-          rem
-          raw
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayNoticeQueryField }
         }
       }
     `,
@@ -396,41 +304,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
             findAllWxPayNotice(search: $search, sort: $sort) {
-              id
-              appid
-              mchid
-              openid
-              out_trade_no
-              transaction_id
-              trade_type
-              trade_type_lbl
-              trade_state
-              trade_state_lbl
-              trade_state_desc
-              bank_type
-              attach
-              success_time
-              success_time_lbl
-              total
-              payer_total
-              currency
-              currency_lbl
-              payer_currency
-              payer_currency_lbl
-              device_id
-              rem
-              raw
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxPayNoticeQueryField }
             }
             getDict(codes: [
               "wx_unified_order_trade_type",
