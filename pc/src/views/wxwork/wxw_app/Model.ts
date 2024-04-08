@@ -16,3 +16,36 @@ export interface WxwAppSearch extends WxwAppSearchType {
 
 export interface WxwAppFieldComment extends WxwAppFieldCommentType {
 }
+
+export const wxwAppFields = [
+  // ID
+  "id",
+  // 名称
+  "lbl",
+  // 企业ID
+  "corpid",
+  // 应用ID
+  "agentid",
+  // 可信域名
+  "domain_id",
+  "domain_id_lbl",
+  // 应用密钥
+  "corpsecret",
+  // 通讯录密钥
+  "contactsecret",
+  // 锁定
+  "is_locked",
+  "is_locked_lbl",
+  // 启用
+  "is_enabled",
+  "is_enabled_lbl",
+  // 排序
+  "order_by",
+  // 备注
+  "rem",
+  "is_deleted",
+];
+
+export const wxwAppQueryField = `
+  ${ wxwAppFields.join(" ") }
+`;

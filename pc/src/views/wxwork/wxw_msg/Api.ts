@@ -14,6 +14,10 @@ import type {
   WxwMsgModel,
 } from "./Model";
 
+import {
+  wxwMsgQueryField,
+} from "./Model";
+
 // 企微应用
 import type {
   WxwAppSearch,
@@ -71,22 +75,10 @@ export async function findAll(
   const data: {
     findAllWxwMsg: WxwMsgModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwMsgSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxwMsg(search: $search, page: $page, sort: $sort) {
-          id
-          wxw_app_id
-          wxw_app_id_lbl
-          errcode
-          errcode_lbl
-          touser
-          title
-          description
-          btntxt
-          create_time
-          create_time_lbl
-          errmsg
-          is_deleted
+          ${ wxwMsgQueryField }
         }
       }
     `,
@@ -118,22 +110,10 @@ export async function findOne(
   const data: {
     findOneWxwMsg?: WxwMsgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwMsgSearch, $sort: [SortInput!]) {
         findOneWxwMsg(search: $search, sort: $sort) {
-          id
-          wxw_app_id
-          wxw_app_id_lbl
-          errcode
-          errcode_lbl
-          touser
-          title
-          description
-          btntxt
-          create_time
-          create_time_lbl
-          errmsg
-          is_deleted
+          ${ wxwMsgQueryField }
         }
       }
     `,
@@ -184,22 +164,10 @@ export async function findById(
   const data: {
     findByIdWxwMsg?: WxwMsgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxwMsgId!) {
         findByIdWxwMsg(id: $id) {
-          id
-          wxw_app_id
-          wxw_app_id_lbl
-          errcode
-          errcode_lbl
-          touser
-          title
-          description
-          btntxt
-          create_time
-          create_time_lbl
-          errmsg
-          is_deleted
+          ${ wxwMsgQueryField }
         }
       }
     `,
@@ -422,21 +390,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxwMsgSearch, $sort: [SortInput!]) {
             findAllWxwMsg(search: $search, sort: $sort) {
-              id
-              wxw_app_id
-              wxw_app_id_lbl
-              errcode
-              errcode_lbl
-              touser
-              title
-              description
-              btntxt
-              create_time
-              create_time_lbl
-              errmsg
+              ${ wxwMsgQueryField }
             }
             findAllWxwApp {
               lbl
