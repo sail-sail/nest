@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   DictbizId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import {
   DictbizType,
@@ -20,6 +20,10 @@ import type {
   DictbizSearch,
   DictbizInput,
   DictbizModel,
+} from "./Model";
+
+import {
+  dictbizQueryField,
 } from "./Model";
 
 import {
@@ -80,48 +84,10 @@ export async function findAll(
   const data: {
     findAllDictbiz: DictbizModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbiz(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizQueryField }
         }
       }
     `,
@@ -153,48 +119,10 @@ export async function findOne(
   const data: {
     findOneDictbiz?: DictbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictbizSearch, $sort: [SortInput!]) {
         findOneDictbiz(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizQueryField }
         }
       }
     `,
@@ -303,48 +231,10 @@ export async function findById(
   const data: {
     findByIdDictbiz?: DictbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictbizId!) {
         findByIdDictbiz(id: $id) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dictbiz_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictbizQueryField }
         }
       }
     `,
@@ -617,28 +507,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictbizSearch, $sort: [SortInput!]) {
             findAllDictbiz(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              type
-              type_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictbizQueryField }
             }
             getDict(codes: [
               "dict_type",

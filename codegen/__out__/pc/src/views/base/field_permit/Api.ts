@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   FieldPermitId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import {
   FieldPermitType,
@@ -20,6 +20,10 @@ import type {
   FieldPermitSearch,
   FieldPermitInput,
   FieldPermitModel,
+} from "./Model";
+
+import {
+  fieldPermitQueryField,
 } from "./Model";
 
 // 菜单
@@ -79,26 +83,10 @@ export async function findAll(
   const data: {
     findAllFieldPermit: FieldPermitModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: FieldPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllFieldPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitQueryField }
         }
       }
     `,
@@ -130,26 +118,10 @@ export async function findOne(
   const data: {
     findOneFieldPermit?: FieldPermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: FieldPermitSearch, $sort: [SortInput!]) {
         findOneFieldPermit(search: $search, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitQueryField }
         }
       }
     `,
@@ -258,26 +230,10 @@ export async function findById(
   const data: {
     findByIdFieldPermit?: FieldPermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: FieldPermitId!) {
         findByIdFieldPermit(id: $id) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          type
-          type_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ fieldPermitQueryField }
         }
       }
     `,
@@ -516,25 +472,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: FieldPermitSearch, $sort: [SortInput!]) {
             findAllFieldPermit(search: $search, sort: $sort) {
-              id
-              menu_id
-              menu_id_lbl
-              code
-              lbl
-              type
-              type_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ fieldPermitQueryField }
             }
             findAllMenu {
               lbl

@@ -940,7 +940,7 @@ function getTableColumns(): ColumnType[] {
       label: "菜单",
       prop: "menu_id_lbl",
       sortBy: "menu_id",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

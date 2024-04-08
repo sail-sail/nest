@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   OrgId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,
@@ -16,6 +16,10 @@ import type {
   OrgSearch,
   OrgInput,
   OrgModel,
+} from "./Model";
+
+import {
+  orgQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -65,26 +69,10 @@ export async function findAll(
   const data: {
     findAllOrg: OrgModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOrg(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgQueryField }
         }
       }
     `,
@@ -116,26 +104,10 @@ export async function findOne(
   const data: {
     findOneOrg?: OrgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrgSearch, $sort: [SortInput!]) {
         findOneOrg(search: $search, sort: $sort) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgQueryField }
         }
       }
     `,
@@ -244,26 +216,10 @@ export async function findById(
   const data: {
     findByIdOrg?: OrgModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OrgId!) {
         findByIdOrg(id: $id) {
-          id
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orgQueryField }
         }
       }
     `,
@@ -482,25 +438,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OrgSearch, $sort: [SortInput!]) {
             findAllOrg(search: $search, sort: $sort) {
-              id
-              lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ orgQueryField }
             }
             getDict(codes: [
               "is_locked",

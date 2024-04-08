@@ -347,6 +347,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += "model[prop]";
           }
           str += `%>`;
+          if (column.isImg) {
+            str += `<%_setHt_(100)%>`;
+          }
           fields.push(str);
         }
         const buffer2 = await ejsexcel.renderExcel(buffer, { lbls, fields });
