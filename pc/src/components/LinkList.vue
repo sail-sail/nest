@@ -1,36 +1,55 @@
 <template>
-<div>
-  <el-popover
-    v-if="modelValue && modelValue.length > maxSize"
-    :width="modelValue && modelValue.length > 5 ? 500 : 'auto'"
+<div
+  un-flex="~ wrap gap-1"
+  un-w="full"
+  un-p="y-1"
+  un-box-border
+>
+  <template
+    v-if="collapseTags && modelValue && modelValue.length > maxSize"
   >
-    <template #reference>
-      <el-tag
-        v-for="item in labelValue"
-        :key="item"
-        type="info"
-        style="margin: 1px;"
-        :disable-transitions="true"
-      >
-        {{ item }}
-      </el-tag>
-      <div>
-        ...
-      </div>
-    </template>
-    <template
-      v-for="item in modelValue"
+    <el-tag
+      v-for="item in labelValue"
       :key="item"
+      type="info"
+      :disable-transitions="true"
     >
-      <el-tag
-        type="info"
-        style="margin: 1px;"
-        :disable-transitions="true"
+      {{ item }}
+    </el-tag>
+    <el-popover
+      width="auto"
+      :teleported="false"
+      :persistent="false"
+    >
+      <template #reference>
+        <el-tag
+          type="info"
+          style="margin: 1px;"
+          :disable-transitions="true"
+          un-cursor-pointer
+          @click="() => collapseTags = false"
+        >
+          +{{ modelValue.length - maxSize }}
+        </el-tag>
+      </template>
+      <div
+        un-flex="~ wrap gap-1"
+        un-w="full"
+        un-p="y-1"
+        un-box-border
       >
-        {{ item }}
-      </el-tag>
-    </template>
-  </el-popover>
+        <el-tag
+          v-for="item in modelValue.slice(maxSize)"
+          :key="item"
+          type="info"
+          style="margin: 1px;"
+          :disable-transitions="true"
+        >
+          {{ item }}
+        </el-tag>
+      </div>
+    </el-popover>
+  </template>
   <template v-else>
     <el-tag
       v-for="item in modelValue"
@@ -57,6 +76,8 @@ const props = withDefaults(
   },
 );
 
+let collapseTags = $ref(true);
+
 let maxSize = $toRef(props, "maxSize");
 
 let modelValue = $ref<string[]>();
@@ -74,5 +95,4 @@ watch(
     immediate: true,
   },
 );
-
 </script>

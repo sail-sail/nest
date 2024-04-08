@@ -18,6 +18,10 @@ import type {
   PermitModel,
 } from "./Model";
 
+import {
+  permitQueryField,
+} from "./Model";
+
 // 菜单
 import type {
   MenuSearch,
@@ -72,24 +76,10 @@ export async function findAll(
   const data: {
     findAllPermit: PermitModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitQueryField }
         }
       }
     `,
@@ -121,24 +111,10 @@ export async function findOne(
   const data: {
     findOnePermit?: PermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PermitSearch, $sort: [SortInput!]) {
         findOnePermit(search: $search, sort: $sort) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitQueryField }
         }
       }
     `,
@@ -247,24 +223,10 @@ export async function findById(
   const data: {
     findByIdPermit?: PermitModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: PermitId!) {
         findByIdPermit(id: $id) {
-          id
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ permitQueryField }
         }
       }
     `,
@@ -496,23 +458,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: PermitSearch, $sort: [SortInput!]) {
             findAllPermit(search: $search, sort: $sort) {
-              id
-              menu_id
-              menu_id_lbl
-              code
-              lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ permitQueryField }
             }
             findAllMenu {
               lbl
