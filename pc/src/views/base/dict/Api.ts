@@ -23,6 +23,10 @@ import type {
 } from "./Model";
 
 import {
+  dictQueryField,
+} from "./Model";
+
+import {
   intoInput as intoInputDictDetail,
 } from "@/views/base/dict_detail/Api";
 
@@ -80,48 +84,10 @@ export async function findAll(
   const data: {
     findAllDict: DictModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDict(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dict_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictQueryField }
         }
       }
     `,
@@ -153,48 +119,10 @@ export async function findOne(
   const data: {
     findOneDict?: DictModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictSearch, $sort: [SortInput!]) {
         findOneDict(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dict_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictQueryField }
         }
       }
     `,
@@ -303,48 +231,10 @@ export async function findById(
   const data: {
     findByIdDict?: DictModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictId!) {
         findByIdDict(id: $id) {
-          id
-          code
-          lbl
-          type
-          type_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
-          dict_detail {
-            id
-            lbl
-            val
-            is_locked
-            is_locked_lbl
-            is_enabled
-            is_enabled_lbl
-            order_by
-            rem
-            create_usr_id
-            create_usr_id_lbl
-            create_time
-            create_time_lbl
-            update_usr_id
-            update_usr_id_lbl
-            update_time
-            update_time_lbl
-          }
+          ${ dictQueryField }
         }
       }
     `,
@@ -617,28 +507,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictSearch, $sort: [SortInput!]) {
             findAllDict(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              type
-              type_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictQueryField }
             }
             getDict(codes: [
               "dict_type",
