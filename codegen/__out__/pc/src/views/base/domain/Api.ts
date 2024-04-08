@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   DomainId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,
@@ -16,6 +16,10 @@ import type {
   DomainSearch,
   DomainInput,
   DomainModel,
+} from "./Model";
+
+import {
+  domainQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -70,29 +74,10 @@ export async function findAll(
   const data: {
     findAllDomain: DomainModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDomain(search: $search, page: $page, sort: $sort) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainQueryField }
         }
       }
     `,
@@ -124,29 +109,10 @@ export async function findOne(
   const data: {
     findOneDomain?: DomainModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DomainSearch, $sort: [SortInput!]) {
         findOneDomain(search: $search, sort: $sort) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainQueryField }
         }
       }
     `,
@@ -255,29 +221,10 @@ export async function findById(
   const data: {
     findByIdDomain?: DomainModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DomainId!) {
         findByIdDomain(id: $id) {
-          id
-          protocol
-          lbl
-          is_locked
-          is_locked_lbl
-          is_default
-          is_default_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ domainQueryField }
         }
       }
     `,
@@ -522,28 +469,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DomainSearch, $sort: [SortInput!]) {
             findAllDomain(search: $search, sort: $sort) {
-              id
-              protocol
-              lbl
-              is_locked
-              is_locked_lbl
-              is_default
-              is_default_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ domainQueryField }
             }
             getDict(codes: [
               "is_locked",

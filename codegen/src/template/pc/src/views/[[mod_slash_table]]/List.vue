@@ -596,6 +596,8 @@ const hasAtt = columns.some((item) => item.isAtt);
         <span>{{ ns('<#=label#>') }}</span>
       </el-button><#
       }
+      #><#
+      if (opts.noExport !== true) {
       #>
       
       <el-dropdown
@@ -745,7 +747,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             
           </el-dropdown-menu>
         </template>
-      </el-dropdown>
+      </el-dropdown><#
+      }
+      #>
       
     </template>
     

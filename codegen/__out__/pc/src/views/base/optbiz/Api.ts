@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   OptbizId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,
@@ -16,6 +16,10 @@ import type {
   OptbizSearch,
   OptbizInput,
   OptbizModel,
+} from "./Model";
+
+import {
+  optbizQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -70,29 +74,10 @@ export async function findAll(
   const data: {
     findAllOptbiz: OptbizModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptbiz(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optbizQueryField }
         }
       }
     `,
@@ -124,29 +109,10 @@ export async function findOne(
   const data: {
     findOneOptbiz?: OptbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptbizSearch, $sort: [SortInput!]) {
         findOneOptbiz(search: $search, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optbizQueryField }
         }
       }
     `,
@@ -255,29 +221,10 @@ export async function findById(
   const data: {
     findByIdOptbiz?: OptbizModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OptbizId!) {
         findByIdOptbiz(id: $id) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optbizQueryField }
         }
       }
     `,
@@ -498,27 +445,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OptbizSearch, $sort: [SortInput!]) {
             findAllOptbiz(search: $search, sort: $sort) {
-              id
-              lbl
-              ky
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ optbizQueryField }
             }
             getDict(codes: [
               "is_locked",

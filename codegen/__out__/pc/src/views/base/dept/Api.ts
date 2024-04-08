@@ -1,10 +1,10 @@
-import {
-  UniqueType,
-} from "#/types";
-
 import type {
   DeptId,
 } from "@/typings/ids";
+
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,
@@ -16,6 +16,10 @@ import type {
   DeptSearch,
   DeptInput,
   DeptModel,
+} from "./Model";
+
+import {
+  deptQueryField,
 } from "./Model";
 
 // 用户
@@ -81,30 +85,10 @@ export async function findAll(
   const data: {
     findAllDept: DeptModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptQueryField }
         }
       }
     `,
@@ -136,30 +120,10 @@ export async function findOne(
   const data: {
     findOneDept?: DeptModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DeptSearch, $sort: [SortInput!]) {
         findOneDept(search: $search, sort: $sort) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptQueryField }
         }
       }
     `,
@@ -293,30 +257,10 @@ export async function findById(
   const data: {
     findByIdDept?: DeptModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DeptId!) {
         findByIdDept(id: $id) {
-          id
-          parent_id
-          parent_id_lbl
-          lbl
-          usr_ids
-          usr_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ deptQueryField }
         }
       }
     `,
@@ -651,29 +595,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DeptSearch, $sort: [SortInput!]) {
             findAllDept(search: $search, sort: $sort) {
-              id
-              parent_id
-              parent_id_lbl
-              lbl
-              usr_ids
-              usr_ids_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ deptQueryField }
             }
             findAllUsr {
               lbl

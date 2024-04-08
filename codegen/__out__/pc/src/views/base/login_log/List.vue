@@ -221,31 +221,6 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span>
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
     </template>
     
     <template v-else>
