@@ -18,6 +18,10 @@ import type {
   JobModel,
 } from "./Model";
 
+import {
+  jobQueryField,
+} from "./Model";
+
 async function setLblById(
   model?: JobModel | null,
   isExcelExport = false,
@@ -67,27 +71,10 @@ export async function findAll(
   const data: {
     findAllJob: JobModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: JobSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllJob(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ jobQueryField }
         }
       }
     `,
@@ -119,27 +106,10 @@ export async function findOne(
   const data: {
     findOneJob?: JobModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: JobSearch, $sort: [SortInput!]) {
         findOneJob(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ jobQueryField }
         }
       }
     `,
@@ -248,27 +218,10 @@ export async function findById(
   const data: {
     findByIdJob?: JobModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: JobId!) {
         findByIdJob(id: $id) {
-          id
-          code
-          lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ jobQueryField }
         }
       }
     `,
@@ -488,26 +441,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: JobSearch, $sort: [SortInput!]) {
             findAllJob(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ jobQueryField }
             }
             getDict(codes: [
               "is_locked",
