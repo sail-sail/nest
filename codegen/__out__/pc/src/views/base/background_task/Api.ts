@@ -19,6 +19,10 @@ import type {
   BackgroundTaskModel,
 } from "./Model";
 
+import {
+  backgroundTaskQueryField,
+} from "./Model";
+
 async function setLblById(
   model?: BackgroundTaskModel | null,
   isExcelExport = false,
@@ -74,31 +78,10 @@ export async function findAll(
   const data: {
     findAllBackgroundTask: BackgroundTaskModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllBackgroundTask(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskQueryField }
         }
       }
     `,
@@ -130,31 +113,10 @@ export async function findOne(
   const data: {
     findOneBackgroundTask?: BackgroundTaskModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
         findOneBackgroundTask(search: $search, sort: $sort) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskQueryField }
         }
       }
     `,
@@ -205,31 +167,10 @@ export async function findById(
   const data: {
     findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: BackgroundTaskId!) {
         findByIdBackgroundTask(id: $id) {
-          id
-          lbl
-          state
-          state_lbl
-          type
-          type_lbl
-          result
-          err_msg
-          begin_time
-          begin_time_lbl
-          end_time
-          end_time_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ backgroundTaskQueryField }
         }
       }
     `,
@@ -404,30 +345,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
             findAllBackgroundTask(search: $search, sort: $sort) {
-              id
-              lbl
-              state
-              state_lbl
-              type
-              type_lbl
-              result
-              err_msg
-              begin_time
-              begin_time_lbl
-              end_time
-              end_time_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ backgroundTaskQueryField }
             }
             getDict(codes: [
               "background_task_state",
