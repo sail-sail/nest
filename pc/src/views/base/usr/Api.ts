@@ -18,6 +18,10 @@ import type {
   UsrModel,
 } from "./Model";
 
+import {
+  usrQueryField,
+} from "./Model";
+
 // 组织
 import type {
   OrgSearch,
@@ -50,8 +54,9 @@ async function setLblById(
   
   // 头像
   if (model.img) {
-    (model as any).img_lbl = location.origin + getImgUrl({
+    model.img_lbl = location.origin + getImgUrl({
       id: model.img,
+      height: 100,
     });
   }
 }
@@ -110,36 +115,10 @@ export async function findAll(
   const data: {
     findAllUsr: UsrModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrQueryField }
         }
       }
     `,
@@ -171,36 +150,10 @@ export async function findOne(
   const data: {
     findOneUsr?: UsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: UsrSearch, $sort: [SortInput!]) {
         findOneUsr(search: $search, sort: $sort) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrQueryField }
         }
       }
     `,
@@ -309,36 +262,10 @@ export async function findById(
   const data: {
     findByIdUsr?: UsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: UsrId!) {
         findByIdUsr(id: $id) {
-          id
-          img
-          lbl
-          username
-          org_ids
-          org_ids_lbl
-          default_org_id
-          default_org_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          dept_ids
-          dept_ids_lbl
-          role_ids
-          role_ids_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ usrQueryField }
         }
       }
     `,
@@ -729,35 +656,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: UsrSearch, $sort: [SortInput!]) {
             findAllUsr(search: $search, sort: $sort) {
-              id
-              img
-              lbl
-              username
-              org_ids
-              org_ids_lbl
-              default_org_id
-              default_org_id_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              dept_ids
-              dept_ids_lbl
-              role_ids
-              role_ids_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ usrQueryField }
             }
             findAllOrg {
               lbl

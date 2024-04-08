@@ -18,6 +18,10 @@ import type {
   DictbizDetailModel,
 } from "./Model";
 
+import {
+  dictbizDetailQueryField,
+} from "./Model";
+
 // 业务字典
 import type {
   DictbizSearch,
@@ -76,29 +80,10 @@ export async function findAll(
   const data: {
     findAllDictbizDetail: DictbizDetailModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailQueryField }
         }
       }
     `,
@@ -130,29 +115,10 @@ export async function findOne(
   const data: {
     findOneDictbizDetail?: DictbizDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictbizDetailSearch, $sort: [SortInput!]) {
         findOneDictbizDetail(search: $search, sort: $sort) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailQueryField }
         }
       }
     `,
@@ -261,29 +227,10 @@ export async function findById(
   const data: {
     findByIdDictbizDetail?: DictbizDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictbizDetailId!) {
         findByIdDictbizDetail(id: $id) {
-          id
-          dictbiz_id
-          dictbiz_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictbizDetailQueryField }
         }
       }
     `,
@@ -554,28 +501,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictbizDetailSearch, $sort: [SortInput!]) {
             findAllDictbizDetail(search: $search, sort: $sort) {
-              id
-              dictbiz_id
-              dictbiz_id_lbl
-              lbl
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictbizDetailQueryField }
             }
             findAllDictbiz {
               lbl
