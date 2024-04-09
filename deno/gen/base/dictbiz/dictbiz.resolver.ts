@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  DictbizInput,
-  DictbizModel,
-  DictbizSearch,
-  DictbizFieldComment,
-  DictbizId,
-} from "./dictbiz.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  LoginLogModel,
-  LoginLogSearch,
-  LoginLogFieldComment,
-  LoginLogId,
-} from "./login_log.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

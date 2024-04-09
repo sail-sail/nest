@@ -5,14 +5,52 @@ import type {
   I18nFieldComment as I18nFieldCommentType,
 } from "#/types";
 
-export interface I18nModel extends I18nModelType {
+declare global {
+  
+  interface I18nModel extends I18nModelType {
+  }
+
+  interface I18nInput extends I18nInputType {
+  }
+
+  interface I18nSearch extends I18nSearchType {
+  }
+
+  interface I18nFieldComment extends I18nFieldCommentType {
+  }
+  
 }
 
-export interface I18nInput extends I18nInputType {
-}
+export const i18nFields = [
+  // ID
+  "id",
+  // 语言
+  "lang_id",
+  "lang_id_lbl",
+  // 菜单
+  "menu_id",
+  "menu_id_lbl",
+  // 编码
+  "code",
+  // 名称
+  "lbl",
+  // 备注
+  "rem",
+  // 创建人
+  "create_usr_id",
+  "create_usr_id_lbl",
+  // 创建时间
+  "create_time",
+  "create_time_lbl",
+  // 更新人
+  "update_usr_id",
+  "update_usr_id_lbl",
+  // 更新时间
+  "update_time",
+  "update_time_lbl",
+  "is_deleted",
+];
 
-export interface I18nSearch extends I18nSearchType {
-}
-
-export interface I18nFieldComment extends I18nFieldCommentType {
-}
+export const i18nQueryField = `
+  ${ i18nFields.join(" ") }
+`;

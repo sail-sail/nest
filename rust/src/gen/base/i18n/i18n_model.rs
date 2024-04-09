@@ -203,13 +203,13 @@ pub struct I18nSearch {
   /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
-  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
+  pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
-  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
+  pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
 impl std::fmt::Debug for I18nSearch {
@@ -386,11 +386,11 @@ impl From<I18nInput> for I18nSearch {
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
+      create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
+      update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()
     }
   }

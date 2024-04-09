@@ -1,6 +1,4 @@
-import type {
-  OperationRecordId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
@@ -8,10 +6,8 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  OperationRecordSearch,
-  OperationRecordInput,
-  OperationRecordModel,
+import {
+  operationRecordQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -65,23 +61,10 @@ export async function findAll(
   const data: {
     findAllOperationRecord: OperationRecordModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOperationRecord(search: $search, page: $page, sort: $sort) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordQueryField }
         }
       }
     `,
@@ -113,23 +96,10 @@ export async function findOne(
   const data: {
     findOneOperationRecord?: OperationRecordModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OperationRecordSearch, $sort: [SortInput!]) {
         findOneOperationRecord(search: $search, sort: $sort) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordQueryField }
         }
       }
     `,
@@ -180,23 +150,10 @@ export async function findById(
   const data: {
     findByIdOperationRecord?: OperationRecordModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OperationRecordId!) {
         findByIdOperationRecord(id: $id) {
-          id
-          module
-          module_lbl
-          method
-          method_lbl
-          lbl
-          time
-          old_data
-          new_data
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ operationRecordQueryField }
         }
       }
     `,
@@ -362,22 +319,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OperationRecordSearch, $sort: [SortInput!]) {
             findAllOperationRecord(search: $search, sort: $sort) {
-              id
-              module
-              module_lbl
-              method
-              method_lbl
-              lbl
-              time
-              old_data
-              new_data
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
+              ${ operationRecordQueryField }
             }
           }
         `,

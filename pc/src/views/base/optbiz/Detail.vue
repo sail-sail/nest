@@ -256,14 +256,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  OptbizId,
-} from "@/typings/ids";
-
-import type {
-  OptbizInput,
-} from "./Model";
-
 import {
   subscribe,
   publish,

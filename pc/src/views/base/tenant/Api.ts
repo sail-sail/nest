@@ -3,32 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  TenantId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  TenantSearch,
-  TenantInput,
-  TenantModel,
+import {
+  tenantQueryField,
 } from "./Model";
-
-// 域名
-import type {
-  DomainSearch,
-  DomainModel,
-} from "@/views/base/domain/Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -87,30 +69,10 @@ export async function findAll(
   const data: {
     findAllTenant: TenantModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantQueryField }
         }
       }
     `,
@@ -142,30 +104,10 @@ export async function findOne(
   const data: {
     findOneTenant?: TenantModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: TenantSearch, $sort: [SortInput!]) {
         findOneTenant(search: $search, sort: $sort) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantQueryField }
         }
       }
     `,
@@ -274,30 +216,10 @@ export async function findById(
   const data: {
     findByIdTenant?: TenantModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: TenantId!) {
         findByIdTenant(id: $id) {
-          id
-          lbl
-          domain_ids
-          domain_ids_lbl
-          menu_ids
-          menu_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ tenantQueryField }
         }
       }
     `,
@@ -634,29 +556,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: TenantSearch, $sort: [SortInput!]) {
             findAllTenant(search: $search, sort: $sort) {
-              id
-              lbl
-              domain_ids
-              domain_ids_lbl
-              menu_ids
-              menu_ids_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ tenantQueryField }
             }
             findAllDomain {
               lbl

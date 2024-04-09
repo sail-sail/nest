@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  MenuInput,
-  MenuModel,
-  MenuSearch,
-  MenuFieldComment,
-  MenuId,
-} from "./menu.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

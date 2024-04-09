@@ -560,7 +560,7 @@ async fn get_where_query(
   let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
   if (hasIsDeleted) {
   #>
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());<#
   }
   #>
@@ -569,15 +569,8 @@ async fn get_where_query(
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -599,14 +592,16 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_create_permit {
     let usr_id = get_auth_id().unwrap_or_default();
-    where_query += " and t.create_usr_id = ?";
+    where_query.push_str(" and t.create_usr_id = ?");
     args.push(usr_id.into());
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
@@ -622,7 +617,9 @@ async fn get_where_query(
         items.join(",")
       }
     };
-    where_query += &format!(" and _permit_usr_dept_.dept_id in ({})", arg);
+    where_query.push_str(" and _permit_usr_dept_.dept_id in (");
+    where_query.push_str(&arg);
+    where_query.push(')');
   }
   if !has_tenant_permit && has_dept_parent_permit {
     let role_ids = get_auth_role_ids().await?;
@@ -638,7 +635,9 @@ async fn get_where_query(
         items.join(",")
       }
     };
-    where_query += &format!(" and _permit_usr_role_.role_id in {}", arg);
+    where_query.push_str(" and _permit_usr_role_.role_id in (");
+    where_query.push_str(&arg);
+    where_query.push(')');
   }<#
   }
   #><#
@@ -660,7 +659,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }<#
@@ -684,7 +683,7 @@ async fn get_where_query(
       org_id
     };
     if let Some(org_id) = org_id {
-      where_query += " and t.org_id = ?";
+      where_query.push_str(" and t.org_id = ?");
       args.push(org_id.into());
     }
   }<#
@@ -782,7 +781,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.<#=column_name#> in ({arg})");
+      where_query.push_str(" and t.<#=column_name#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many") {
@@ -806,7 +807,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and <#=column_name#>_lbl.id in ({})", arg);
+      where_query.push_str(" and <#=column_name#>_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -815,7 +818,7 @@ async fn get_where_query(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query += " and <#=column_name#>_lbl.id is null";
+      where_query.push_str(" and <#=column_name#>_lbl.id is null");
     }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -839,7 +842,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ({})", arg);
+      where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -848,7 +853,7 @@ async fn get_where_query(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query += " and <#=column_name#>_lbl.id is null";
+      where_query.push_str(" and <#=column_name#>_lbl.id is null");
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
@@ -888,7 +893,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.<#=column_name#> in ({})", arg);
+      where_query.push_str(" and t.<#=column_name#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }<#
     } else if (data_type === "int" && column_name.startsWith("is_")) {
@@ -900,26 +907,27 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
+      where_query.push_str(" and t.<#=column_name#> = ?");
+      args.push(<#=column_name_rust#>.into());
     }
   }<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   // <#=column_comment#>
   {
-    let mut <#=column_name_rust#>: Vec<Option<<#=_data_type#>>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
+    let mut <#=column_name_rust#> = match search {
+      Some(item) => item.<#=column_name_rust#>.unwrap_or_default(),
       None => Default::default(),
     };
-    let <#=column_name#>_gt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(0)
-      .and_then(|item| item.take());
-    let <#=column_name#>_lt: Option<<#=_data_type#>> = <#=column_name_rust#>.get_mut(1)
-      .and_then(|item| item.take());
+    let <#=column_name#>_gt = <#=column_name_rust#>[0].take();
+    let <#=column_name#>_lt = <#=column_name_rust#>[1].take();
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
-      where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));
+      where_query.push_str(" and t.<#=column_name#> >= ?");
+      args.push(<#=column_name#>_gt.into());
     }
     if let Some(<#=column_name#>_lt) = <#=column_name#>_lt {
-      where_query += &format!(" and t.<#=column_name#> <= {}", args.push(<#=column_name#>_lt.into()));
+      where_query.push_str(" and t.<#=column_name#> <= ?");
+      args.push(<#=column_name#>_lt.into());
     }
   }<#
     } else if (data_type === "tinyint") {
@@ -928,7 +936,8 @@ async fn get_where_query(
   {
     let <#=column_name_rust#> = search.<#=column_name_rust#>;
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
+      where_query.push_str(" and t.<#=column_name#> = ?");
+      args.push(<#=column_name_rust#>.into());
     }
   }<#
     } else if (data_type === "varchar" || data_type === "text") {
@@ -940,19 +949,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
+      where_query.push_str(" and t.<#=column_name#> = ?");
+      args.push(<#=column_name_rust#>.into());
     }
     let <#=column_name#>_like = match search {
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
     if let Some(<#=column_name#>_like) = <#=column_name#>_like {
-      where_query += &format!(
-        " and t.<#=column_name#> like {}",
-        args.push(
-          format!("%{}%", sql_like(&<#=column_name#>_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.<#=column_name#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());
     }
   }<#
     } else {
@@ -964,7 +970,8 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
+      where_query.push_str(" and t.<#=column_name#> = ?");
+      args.push(<#=column_name_rust#>.into());
     }
   }<#
     }

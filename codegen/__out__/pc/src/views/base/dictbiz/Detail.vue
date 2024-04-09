@@ -384,19 +384,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  DictbizId,
-} from "@/typings/ids";
-
-import type {
-  DictbizInput,
-} from "./Model";
-
-import type {
-  // 业务字典明细
-  DictbizDetailModel,
-} from "#/types";
-
 import {
   getDefaultInput as getDefaultInputDictbizDetail,
 } from "@/views/base/dictbiz_detail/Api";

@@ -2541,59 +2541,7 @@ import {<#
   getEditableDataPermitsByIds,<#
   }
   #>
-} from "./Api";
-
-import type {
-  <#=Table_Up#>Id,<#
-  if (mod === "base" && table === "usr") {
-  #>
-  OrgId,<#
-  }
-  #>
-} from "@/typings/ids";
-
-import type {
-  <#=inputName#>,
-} from "./Model";<#
-const foreignTableArr = [];
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "tenant_id") continue;
-  if (column_name === "org_id") continue;
-  const foreignKey = column.foreignKey;
-  const data_type = column.DATA_TYPE;
-  if (!foreignKey) continue;
-  if (foreignKey.showType === "dialog") {
-    continue;
-  }
-  const foreignTable = foreignKey.table;
-  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (column.noAdd && column.noEdit) {
-    continue;
-  }
-  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-  if (foreignSchema && foreignSchema.opts?.list_tree) {
-    continue;
-  }
-  // if (table === foreignTable) continue;
-  if (foreignTableArr.includes(foreignTable)) continue;
-  foreignTableArr.push(foreignTable);
-  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
-    continue;
-  }
-#>
-
-import type {
-  <#=Foreign_Table_Up#>Model,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
-}
-#><#
+} from "./Api";<#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
@@ -2727,19 +2675,10 @@ import {
   }
   #>
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
-if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
-#>
-
-import type {
-  MenuModel,
-} from "#/types";<#
-}
-#><#
 }
 #><#
 const findAllTableUps = [ ];
 const getDefaultInputTableUps = [ ];
-const inputTableUps = [ ];
 const listVueTableUps = [ ];
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -2818,22 +2757,6 @@ import {<#
   }
   #>
 } from "@/views/<#=mod#>/<#=table#>/Api";<#
-  }
-#><#
-  if (!inputTableUps.includes(Table_Up)) {
-    const hasInputTableUps = inputTableUps.includes(Table_Up);
-    if (!hasInputTableUps) {
-      inputTableUps.push(Table_Up);
-    }
-#>
-
-import type {<#
-  if (!hasInputTableUps) {
-  #>
-  <#=Table_Up#>Input,<#
-  }
-  #>
-} from "#/types";<#
   }
 #><#
 }
@@ -2916,66 +2839,7 @@ if (hasInlineForeignTabs) {
       break;
     }
   }
-#>
-
-import type {<#
-  for (const inlineForeignTab of inlineForeignTabs) {
-    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
-    if (!inlineForeignSchema) {
-      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-      process.exit(1);
-    }
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-  #><#
-    if (!foreignTableArr.includes(table)) {
-      foreignTableArr.push(table);
-  #>
-  // <#=inlineForeignTab.label#>
-  <#=Table_Up#>Model,<#
-    }
-  #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
-      const foreignKey = column.foreignKey;
-      const data_type = column.DATA_TYPE;
-      if (!foreignKey) continue;
-      if (foreignKey.showType === "dialog") {
-        continue;
-      }
-      const foreignTable = foreignKey.table;
-      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      if (column.noAdd && column.noEdit) {
-        continue;
-      }
-      const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-      if (foreignSchema && foreignSchema.opts?.list_tree) {
-        continue;
-      }
-      if (selectInputForeign_Table_Ups.includes(Table_Up)) {
-        continue;
-      }
-      if (foreignTableArr.includes(foreignTable)) continue;
-      foreignTableArr.push(foreignTable);
-  #>
-  <#=Foreign_Table_Up#>Model,<#
-    }
-  }
-  #>
-} from "#/types";<#
+#><#
 if (hasListApi) {
 #>
 

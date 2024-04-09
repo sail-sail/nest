@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  DictbizInput,
-  DictbizModel,
-  DictbizSearch,
-  DictbizFieldComment,
-  DictbizId,
-} from "./dictbiz.model.ts";
-
 import * as dictbizDao from "./dictbiz.dao.ts";
 
 /**

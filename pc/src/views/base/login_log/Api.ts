@@ -1,6 +1,4 @@
-import type {
-  LoginLogId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
@@ -8,10 +6,8 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  LoginLogSearch,
-  LoginLogInput,
-  LoginLogModel,
+import {
+  loginLogQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -56,17 +52,10 @@ export async function findAll(
   const data: {
     findAllLoginLog: LoginLogModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LoginLogSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLoginLog(search: $search, page: $page, sort: $sort) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogQueryField }
         }
       }
     `,
@@ -98,17 +87,10 @@ export async function findOne(
   const data: {
     findOneLoginLog?: LoginLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LoginLogSearch, $sort: [SortInput!]) {
         findOneLoginLog(search: $search, sort: $sort) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogQueryField }
         }
       }
     `,
@@ -159,17 +141,10 @@ export async function findById(
   const data: {
     findByIdLoginLog?: LoginLogModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: LoginLogId!) {
         findByIdLoginLog(id: $id) {
-          id
-          username
-          is_succ
-          is_succ_lbl
-          ip
-          create_time
-          create_time_lbl
-          is_deleted
+          ${ loginLogQueryField }
         }
       }
     `,
@@ -338,16 +313,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: LoginLogSearch, $sort: [SortInput!]) {
             findAllLoginLog(search: $search, sort: $sort) {
-              id
-              username
-              is_succ
-              is_succ_lbl
-              ip
-              create_time
-              create_time_lbl
+              ${ loginLogQueryField }
             }
             getDict(codes: [
               "yes_no",

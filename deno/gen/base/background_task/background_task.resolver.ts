@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  BackgroundTaskModel,
-  BackgroundTaskSearch,
-  BackgroundTaskFieldComment,
-  BackgroundTaskId,
-} from "./background_task.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

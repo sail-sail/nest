@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  MenuInput,
-  MenuModel,
-  MenuSearch,
-  MenuFieldComment,
-  MenuId,
-} from "./menu.model.ts";
-
 import * as menuDao from "./menu.dao.ts";
 
 /**
