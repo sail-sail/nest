@@ -21,7 +21,6 @@ declare global {
   
 }
 
-
 export const jobFields = [
   // ID
   "id",
