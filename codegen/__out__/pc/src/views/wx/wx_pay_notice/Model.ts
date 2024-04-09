@@ -5,17 +5,22 @@ import type {
   WxPayNoticeFieldComment as WxPayNoticeFieldCommentType,
 } from "#/types";
 
-export interface WxPayNoticeModel extends WxPayNoticeModelType {
+declare global {
+  
+  interface WxPayNoticeModel extends WxPayNoticeModelType {
+  }
+
+  interface WxPayNoticeInput extends WxPayNoticeInputType {
+  }
+
+  interface WxPayNoticeSearch extends WxPayNoticeSearchType {
+  }
+
+  interface WxPayNoticeFieldComment extends WxPayNoticeFieldCommentType {
+  }
+  
 }
 
-export interface WxPayNoticeInput extends WxPayNoticeInputType {
-}
-
-export interface WxPayNoticeSearch extends WxPayNoticeSearchType {
-}
-
-export interface WxPayNoticeFieldComment extends WxPayNoticeFieldCommentType {
-}
 
 export const wxPayNoticeFields = [
   // ID

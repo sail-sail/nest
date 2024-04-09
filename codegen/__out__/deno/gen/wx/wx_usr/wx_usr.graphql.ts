@@ -1,5 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
+import "./wx_usr.model.ts";
 import * as resolver from "./wx_usr.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `

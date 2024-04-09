@@ -60,19 +60,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxAppId,
-} from "/gen/wx/wx_app/wx_app.model.ts";
-
-import type {
-  WxAppTokenInput,
-  WxAppTokenModel,
-  WxAppTokenSearch,
-  WxAppTokenFieldComment,
-  WxAppTokenId,
-} from "./wx_app_token.model.ts";
-
-import * as wx_appDao from "/gen/wx/wx_app/wx_app.dao.ts";
+import {
+  findOne as findOneWxApp,
+} from "/gen/wx/wx_app/wx_app.dao.ts";
 
 const route_path = "/wx/wx_app_token";
 
@@ -391,7 +381,7 @@ export async function setIdByLbl(
   // 小程序设置
   if (isNotEmpty(input.wx_app_id_lbl) && input.wx_app_id == null) {
     input.wx_app_id_lbl = String(input.wx_app_id_lbl).trim();
-    const wx_appModel = await wx_appDao.findOne({ lbl: input.wx_app_id_lbl });
+    const wx_appModel = await findOneWxApp({ lbl: input.wx_app_id_lbl });
     if (wx_appModel) {
       input.wx_app_id = wx_appModel.id;
     }

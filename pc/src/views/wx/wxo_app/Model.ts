@@ -5,17 +5,22 @@ import type {
   WxoAppFieldComment as WxoAppFieldCommentType,
 } from "#/types";
 
-export interface WxoAppModel extends WxoAppModelType {
+declare global {
+  
+  interface WxoAppModel extends WxoAppModelType {
+  }
+
+  interface WxoAppInput extends WxoAppInputType {
+  }
+
+  interface WxoAppSearch extends WxoAppSearchType {
+  }
+
+  interface WxoAppFieldComment extends WxoAppFieldCommentType {
+  }
+  
 }
 
-export interface WxoAppInput extends WxoAppInputType {
-}
-
-export interface WxoAppSearch extends WxoAppSearchType {
-}
-
-export interface WxoAppFieldComment extends WxoAppFieldCommentType {
-}
 
 export const wxoAppFields = [
   // ID

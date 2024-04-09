@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxPayNoticeModel,
-  WxPayNoticeSearch,
-  WxPayNoticeFieldComment,
-  WxPayNoticeId,
-} from "./wx_pay_notice.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

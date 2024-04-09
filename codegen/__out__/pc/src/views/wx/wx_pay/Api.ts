@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  WxPayId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  WxPaySearch,
-  WxPayInput,
-  WxPayModel,
-} from "./Model";
 
 import {
   wxPayQueryField,

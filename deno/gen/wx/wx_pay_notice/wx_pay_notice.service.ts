@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxPayNoticeInput,
-  WxPayNoticeModel,
-  WxPayNoticeSearch,
-  WxPayNoticeFieldComment,
-  WxPayNoticeId,
-} from "./wx_pay_notice.model.ts";
-
 import * as wx_pay_noticeDao from "./wx_pay_notice.dao.ts";
 
 /**

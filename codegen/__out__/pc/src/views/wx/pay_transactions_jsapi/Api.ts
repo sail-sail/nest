@@ -1,6 +1,4 @@
-import type {
-  PayTransactionsJsapiId,
-} from "@/typings/ids";
+
 
 import {
   PayTransactionsJsapiTradeState,
@@ -11,12 +9,6 @@ import type {
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  PayTransactionsJsapiSearch,
-  PayTransactionsJsapiInput,
-  PayTransactionsJsapiModel,
-} from "./Model";
 
 import {
   payTransactionsJsapiQueryField,
