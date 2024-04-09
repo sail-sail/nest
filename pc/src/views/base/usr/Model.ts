@@ -23,7 +23,6 @@ declare global {
   
 }
 
-
 export const usrFields = [
   // ID
   "id",

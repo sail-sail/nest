@@ -25,7 +25,6 @@ declare global {
   
 }
 
-
 export const dictFields = [
   // ID
   "id",
