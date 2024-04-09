@@ -491,10 +491,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CronJobLogDetailId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -503,11 +499,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  CronJobLogDetailModel,
-  CronJobLogDetailSearch,
-} from "./Model";
 
 defineOptions({
   name: "任务执行日志明细",

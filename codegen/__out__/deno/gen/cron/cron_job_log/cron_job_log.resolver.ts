@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CronJobLogModel,
-  CronJobLogSearch,
-  CronJobLogFieldComment,
-  CronJobLogId,
-} from "./cron_job_log.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

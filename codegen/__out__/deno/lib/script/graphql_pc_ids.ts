@@ -130,26 +130,26 @@ export function getScalars() {
     
     // 定时任务
     "CronJobId": {
-      "input": `import("@/typings/ids.ts").CronJobId`,
-      "output": `import("@/typings/ids.ts").CronJobId`,
+      "input": "CronJobId",
+      "output": "CronJobId",
     },
     
     // 任务执行日志
     "CronJobLogId": {
-      "input": `import("@/typings/ids.ts").CronJobLogId`,
-      "output": `import("@/typings/ids.ts").CronJobLogId`,
+      "input": "CronJobLogId",
+      "output": "CronJobLogId",
     },
     
     // 任务执行日志明细
     "CronJobLogDetailId": {
-      "input": `import("@/typings/ids.ts").CronJobLogDetailId`,
-      "output": `import("@/typings/ids.ts").CronJobLogDetailId`,
+      "input": "CronJobLogDetailId",
+      "output": "CronJobLogDetailId",
     },
     
     // 任务
     "JobId": {
-      "input": `import("@/typings/ids.ts").JobId`,
-      "output": `import("@/typings/ids.ts").JobId`,
+      "input": "JobId",
+      "output": "JobId",
     },
     
   };

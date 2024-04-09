@@ -71,10 +71,6 @@ import {
   findCount as findCountCron_job_log,
 } from "@/views/cron/cron_job_log/Api";
 
-import type {
-  CronJobId,
-} from "@/typings/ids";
-
 const {
   n,
   initI18ns,

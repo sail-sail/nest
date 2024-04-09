@@ -129,26 +129,26 @@ export function getScalars() {
     
     // 定时任务
     "CronJobId": {
-      "input": `import("/gen/cron/cron_job/cron_job.model.ts").CronJobId`,
-      "output": `import("/gen/cron/cron_job/cron_job.model.ts").CronJobId`,
+      "input": "CronJobId",
+      "output": "CronJobId",
     },
     
     // 任务执行日志
     "CronJobLogId": {
-      "input": `import("/gen/cron/cron_job_log/cron_job_log.model.ts").CronJobLogId`,
-      "output": `import("/gen/cron/cron_job_log/cron_job_log.model.ts").CronJobLogId`,
+      "input": "CronJobLogId",
+      "output": "CronJobLogId",
     },
     
     // 任务执行日志明细
     "CronJobLogDetailId": {
-      "input": `import("/gen/cron/cron_job_log_detail/cron_job_log_detail.model.ts").CronJobLogDetailId`,
-      "output": `import("/gen/cron/cron_job_log_detail/cron_job_log_detail.model.ts").CronJobLogDetailId`,
+      "input": "CronJobLogDetailId",
+      "output": "CronJobLogDetailId",
     },
     
     // 任务
     "JobId": {
-      "input": `import("/gen/cron/job/job.model.ts").JobId`,
-      "output": `import("/gen/cron/job/job.model.ts").JobId`,
+      "input": "JobId",
+      "output": "JobId",
     },
     
   };

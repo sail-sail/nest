@@ -3,30 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  CronJobId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  CronJobSearch,
-  CronJobInput,
-  CronJobModel,
-} from "./Model";
-
 import {
   cronJobQueryField,
 } from "./Model";
-
-// 任务
-import type {
-  JobSearch,
-  JobModel,
-} from "@/views/cron/job/Model";
 
 async function setLblById(
   model?: CronJobModel | null,

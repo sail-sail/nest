@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  JobId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  JobSearch,
-  JobInput,
-  JobModel,
-} from "./Model";
 
 import {
   jobQueryField,

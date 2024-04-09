@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CronJobLogInput,
-  CronJobLogModel,
-  CronJobLogSearch,
-  CronJobLogFieldComment,
-  CronJobLogId,
-} from "./cron_job_log.model.ts";
-
 import * as cron_job_logDao from "./cron_job_log.dao.ts";
 
 /**

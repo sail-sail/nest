@@ -81,23 +81,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  JobId,
-} from "/gen/cron/job/job.model.ts";
-
-import type {
-  CronJobInput,
-  CronJobModel,
-  CronJobSearch,
-  CronJobFieldComment,
-  CronJobId,
-} from "./cron_job.model.ts";
-
-import * as jobDao from "/gen/cron/job/job.dao.ts";
+import {
+  findOne as findOneJob,
+} from "/gen/cron/job/job.dao.ts";
 
 const route_path = "/cron/cron_job";
 
@@ -510,7 +496,7 @@ export async function setIdByLbl(
   // 任务
   if (isNotEmpty(input.job_id_lbl) && input.job_id == null) {
     input.job_id_lbl = String(input.job_id_lbl).trim();
-    const jobModel = await jobDao.findOne({ lbl: input.job_id_lbl });
+    const jobModel = await findOneJob({ lbl: input.job_id_lbl });
     if (jobModel) {
       input.job_id = jobModel.id;
     }

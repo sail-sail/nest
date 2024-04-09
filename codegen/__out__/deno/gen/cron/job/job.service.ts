@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  JobInput,
-  JobModel,
-  JobSearch,
-  JobFieldComment,
-  JobId,
-} from "./job.model.ts";
-
 import * as jobDao from "./job.dao.ts";
 
 /**

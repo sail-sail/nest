@@ -667,10 +667,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  JobId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -684,12 +680,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  JobModel,
-  JobInput,
-  JobSearch,
-} from "./Model";
 
 defineOptions({
   name: "任务",

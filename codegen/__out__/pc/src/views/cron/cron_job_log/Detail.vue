@@ -220,14 +220,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  CronJobLogId,
-} from "@/typings/ids";
-
-import type {
-  CronJobLogInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {
