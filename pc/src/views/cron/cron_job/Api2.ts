@@ -1,8 +1,4 @@
 import type {
-  CronJobId,
-} from "@/typings/ids";
-
-import type {
   Mutation,
 } from "#/types";
 
