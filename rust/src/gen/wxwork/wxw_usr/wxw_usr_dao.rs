@@ -53,22 +53,15 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let mut where_query = String::with_capacity(80 * 19 * 2);
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
     let id = match search {
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -90,7 +83,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -109,7 +104,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }
@@ -120,19 +115,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
+      where_query.push_str(" and t.lbl = ?");
+      args.push(lbl.into());
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(
-        " and t.lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&lbl_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
   // 用户ID
@@ -142,19 +134,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(userid) = userid {
-      where_query += &format!(" and t.userid = {}", args.push(userid.into()));
+      where_query.push_str(" and t.userid = ?");
+      args.push(userid.into());
     }
     let userid_like = match search {
       Some(item) => item.userid_like.clone(),
       None => None,
     };
     if let Some(userid_like) = userid_like {
-      where_query += &format!(
-        " and t.userid like {}",
-        args.push(
-          format!("%{}%", sql_like(&userid_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.userid like ?");
+      args.push(format!("%{}%", sql_like(&userid_like)).into());
     }
   }
   // 手机号
@@ -164,19 +153,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(mobile) = mobile {
-      where_query += &format!(" and t.mobile = {}", args.push(mobile.into()));
+      where_query.push_str(" and t.mobile = ?");
+      args.push(mobile.into());
     }
     let mobile_like = match search {
       Some(item) => item.mobile_like.clone(),
       None => None,
     };
     if let Some(mobile_like) = mobile_like {
-      where_query += &format!(
-        " and t.mobile like {}",
-        args.push(
-          format!("%{}%", sql_like(&mobile_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.mobile like ?");
+      args.push(format!("%{}%", sql_like(&mobile_like)).into());
     }
   }
   // 性别
@@ -186,19 +172,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(gender) = gender {
-      where_query += &format!(" and t.gender = {}", args.push(gender.into()));
+      where_query.push_str(" and t.gender = ?");
+      args.push(gender.into());
     }
     let gender_like = match search {
       Some(item) => item.gender_like.clone(),
       None => None,
     };
     if let Some(gender_like) = gender_like {
-      where_query += &format!(
-        " and t.gender like {}",
-        args.push(
-          format!("%{}%", sql_like(&gender_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.gender like ?");
+      args.push(format!("%{}%", sql_like(&gender_like)).into());
     }
   }
   // 邮箱
@@ -208,19 +191,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(email) = email {
-      where_query += &format!(" and t.email = {}", args.push(email.into()));
+      where_query.push_str(" and t.email = ?");
+      args.push(email.into());
     }
     let email_like = match search {
       Some(item) => item.email_like.clone(),
       None => None,
     };
     if let Some(email_like) = email_like {
-      where_query += &format!(
-        " and t.email like {}",
-        args.push(
-          format!("%{}%", sql_like(&email_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.email like ?");
+      args.push(format!("%{}%", sql_like(&email_like)).into());
     }
   }
   // 企业邮箱
@@ -230,19 +210,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(biz_email) = biz_email {
-      where_query += &format!(" and t.biz_email = {}", args.push(biz_email.into()));
+      where_query.push_str(" and t.biz_email = ?");
+      args.push(biz_email.into());
     }
     let biz_email_like = match search {
       Some(item) => item.biz_email_like.clone(),
       None => None,
     };
     if let Some(biz_email_like) = biz_email_like {
-      where_query += &format!(
-        " and t.biz_email like {}",
-        args.push(
-          format!("%{}%", sql_like(&biz_email_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.biz_email like ?");
+      args.push(format!("%{}%", sql_like(&biz_email_like)).into());
     }
   }
   // 直属上级
@@ -252,19 +229,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(direct_leader) = direct_leader {
-      where_query += &format!(" and t.direct_leader = {}", args.push(direct_leader.into()));
+      where_query.push_str(" and t.direct_leader = ?");
+      args.push(direct_leader.into());
     }
     let direct_leader_like = match search {
       Some(item) => item.direct_leader_like.clone(),
       None => None,
     };
     if let Some(direct_leader_like) = direct_leader_like {
-      where_query += &format!(
-        " and t.direct_leader like {}",
-        args.push(
-          format!("%{}%", sql_like(&direct_leader_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.direct_leader like ?");
+      args.push(format!("%{}%", sql_like(&direct_leader_like)).into());
     }
   }
   // 职位
@@ -274,19 +248,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(position) = position {
-      where_query += &format!(" and t.position = {}", args.push(position.into()));
+      where_query.push_str(" and t.position = ?");
+      args.push(position.into());
     }
     let position_like = match search {
       Some(item) => item.position_like.clone(),
       None => None,
     };
     if let Some(position_like) = position_like {
-      where_query += &format!(
-        " and t.position like {}",
-        args.push(
-          format!("%{}%", sql_like(&position_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.position like ?");
+      args.push(format!("%{}%", sql_like(&position_like)).into());
     }
   }
   // 头像
@@ -296,19 +267,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(avatar) = avatar {
-      where_query += &format!(" and t.avatar = {}", args.push(avatar.into()));
+      where_query.push_str(" and t.avatar = ?");
+      args.push(avatar.into());
     }
     let avatar_like = match search {
       Some(item) => item.avatar_like.clone(),
       None => None,
     };
     if let Some(avatar_like) = avatar_like {
-      where_query += &format!(
-        " and t.avatar like {}",
-        args.push(
-          format!("%{}%", sql_like(&avatar_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.avatar like ?");
+      args.push(format!("%{}%", sql_like(&avatar_like)).into());
     }
   }
   // 头像缩略图
@@ -318,19 +286,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(thumb_avatar) = thumb_avatar {
-      where_query += &format!(" and t.thumb_avatar = {}", args.push(thumb_avatar.into()));
+      where_query.push_str(" and t.thumb_avatar = ?");
+      args.push(thumb_avatar.into());
     }
     let thumb_avatar_like = match search {
       Some(item) => item.thumb_avatar_like.clone(),
       None => None,
     };
     if let Some(thumb_avatar_like) = thumb_avatar_like {
-      where_query += &format!(
-        " and t.thumb_avatar like {}",
-        args.push(
-          format!("%{}%", sql_like(&thumb_avatar_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.thumb_avatar like ?");
+      args.push(format!("%{}%", sql_like(&thumb_avatar_like)).into());
     }
   }
   // 个人二维码
@@ -340,19 +305,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(qr_code) = qr_code {
-      where_query += &format!(" and t.qr_code = {}", args.push(qr_code.into()));
+      where_query.push_str(" and t.qr_code = ?");
+      args.push(qr_code.into());
     }
     let qr_code_like = match search {
       Some(item) => item.qr_code_like.clone(),
       None => None,
     };
     if let Some(qr_code_like) = qr_code_like {
-      where_query += &format!(
-        " and t.qr_code like {}",
-        args.push(
-          format!("%{}%", sql_like(&qr_code_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.qr_code like ?");
+      args.push(format!("%{}%", sql_like(&qr_code_like)).into());
     }
   }
   // 备注
@@ -362,19 +324,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+      where_query.push_str(" and t.rem = ?");
+      args.push(rem.into());
     }
     let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query += &format!(
-        " and t.rem like {}",
-        args.push(
-          format!("%{}%", sql_like(&rem_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.rem like ?");
+      args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
   // 创建人
@@ -396,7 +355,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and create_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -405,24 +366,24 @@ async fn get_where_query(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += " and create_usr_id_lbl.id is null";
+      where_query.push_str(" and create_usr_id_lbl.id is null");
     }
   }
   // 创建时间
   {
-    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.create_time.clone().unwrap_or_default(),
+    let mut create_time = match search {
+      Some(item) => item.create_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
-      .and_then(|item| item.take());
-    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
-      .and_then(|item| item.take());
+    let create_time_gt = create_time[0].take();
+    let create_time_lt = create_time[1].take();
     if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+      where_query.push_str(" and t.create_time >= ?");
+      args.push(create_time_gt.into());
     }
     if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+      where_query.push_str(" and t.create_time <= ?");
+      args.push(create_time_lt.into());
     }
   }
   // 更新人
@@ -444,7 +405,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and update_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -453,24 +416,24 @@ async fn get_where_query(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
+      where_query.push_str(" and update_usr_id_lbl.id is null");
     }
   }
   // 更新时间
   {
-    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
+    let mut update_time = match search {
+      Some(item) => item.update_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
-      .and_then(|item| item.take());
-    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
-      .and_then(|item| item.take());
+    let update_time_gt = update_time[0].take();
+    let update_time_lt = update_time[1].take();
     if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+      where_query.push_str(" and t.update_time >= ?");
+      args.push(update_time_gt.into());
     }
     if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+      where_query.push_str(" and t.update_time <= ?");
+      args.push(update_time_lt.into());
     }
   }
   Ok(where_query)

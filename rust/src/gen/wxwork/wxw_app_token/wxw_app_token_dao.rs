@@ -54,22 +54,15 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let mut where_query = String::with_capacity(80 * 12 * 2);
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
     let id = match search {
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -91,7 +84,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -110,7 +105,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }
@@ -133,7 +128,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and wxw_app_id_lbl.id in ({})", arg);
+      where_query.push_str(" and wxw_app_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -142,7 +139,7 @@ async fn get_where_query(
       None => false,
     };
     if wxw_app_id_is_null {
-      where_query += " and wxw_app_id_lbl.id is null";
+      where_query.push_str(" and wxw_app_id_lbl.id is null");
     }
   }
   // 类型corp和contact
@@ -152,19 +149,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(r#type) = r#type {
-      where_query += &format!(" and t.type = {}", args.push(r#type.into()));
+      where_query.push_str(" and t.type = ?");
+      args.push(r#type.into());
     }
     let type_like = match search {
       Some(item) => item.type_like.clone(),
       None => None,
     };
     if let Some(type_like) = type_like {
-      where_query += &format!(
-        " and t.type like {}",
-        args.push(
-          format!("%{}%", sql_like(&type_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.type like ?");
+      args.push(format!("%{}%", sql_like(&type_like)).into());
     }
   }
   // 令牌
@@ -174,53 +168,50 @@ async fn get_where_query(
       None => None,
     };
     if let Some(access_token) = access_token {
-      where_query += &format!(" and t.access_token = {}", args.push(access_token.into()));
+      where_query.push_str(" and t.access_token = ?");
+      args.push(access_token.into());
     }
     let access_token_like = match search {
       Some(item) => item.access_token_like.clone(),
       None => None,
     };
     if let Some(access_token_like) = access_token_like {
-      where_query += &format!(
-        " and t.access_token like {}",
-        args.push(
-          format!("%{}%", sql_like(&access_token_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.access_token like ?");
+      args.push(format!("%{}%", sql_like(&access_token_like)).into());
     }
   }
   // 令牌创建时间
   {
-    let mut token_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.token_time.clone().unwrap_or_default(),
+    let mut token_time = match search {
+      Some(item) => item.token_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let token_time_gt: Option<chrono::NaiveDateTime> = token_time.get_mut(0)
-      .and_then(|item| item.take());
-    let token_time_lt: Option<chrono::NaiveDateTime> = token_time.get_mut(1)
-      .and_then(|item| item.take());
+    let token_time_gt = token_time[0].take();
+    let token_time_lt = token_time[1].take();
     if let Some(token_time_gt) = token_time_gt {
-      where_query += &format!(" and t.token_time >= {}", args.push(token_time_gt.into()));
+      where_query.push_str(" and t.token_time >= ?");
+      args.push(token_time_gt.into());
     }
     if let Some(token_time_lt) = token_time_lt {
-      where_query += &format!(" and t.token_time <= {}", args.push(token_time_lt.into()));
+      where_query.push_str(" and t.token_time <= ?");
+      args.push(token_time_lt.into());
     }
   }
   // 令牌超时时间
   {
-    let mut expires_in: Vec<Option<u32>> = match search {
-      Some(item) => item.expires_in.clone().unwrap_or_default(),
+    let mut expires_in = match search {
+      Some(item) => item.expires_in.unwrap_or_default(),
       None => Default::default(),
     };
-    let expires_in_gt: Option<u32> = expires_in.get_mut(0)
-      .and_then(|item| item.take());
-    let expires_in_lt: Option<u32> = expires_in.get_mut(1)
-      .and_then(|item| item.take());
+    let expires_in_gt = expires_in[0].take();
+    let expires_in_lt = expires_in[1].take();
     if let Some(expires_in_gt) = expires_in_gt {
-      where_query += &format!(" and t.expires_in >= {}", args.push(expires_in_gt.into()));
+      where_query.push_str(" and t.expires_in >= ?");
+      args.push(expires_in_gt.into());
     }
     if let Some(expires_in_lt) = expires_in_lt {
-      where_query += &format!(" and t.expires_in <= {}", args.push(expires_in_lt.into()));
+      where_query.push_str(" and t.expires_in <= ?");
+      args.push(expires_in_lt.into());
     }
   }
   // 创建人
@@ -242,7 +233,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and create_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -251,24 +244,24 @@ async fn get_where_query(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += " and create_usr_id_lbl.id is null";
+      where_query.push_str(" and create_usr_id_lbl.id is null");
     }
   }
   // 创建时间
   {
-    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.create_time.clone().unwrap_or_default(),
+    let mut create_time = match search {
+      Some(item) => item.create_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
-      .and_then(|item| item.take());
-    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
-      .and_then(|item| item.take());
+    let create_time_gt = create_time[0].take();
+    let create_time_lt = create_time[1].take();
     if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+      where_query.push_str(" and t.create_time >= ?");
+      args.push(create_time_gt.into());
     }
     if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+      where_query.push_str(" and t.create_time <= ?");
+      args.push(create_time_lt.into());
     }
   }
   // 更新人
@@ -290,7 +283,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and update_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -299,24 +294,24 @@ async fn get_where_query(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
+      where_query.push_str(" and update_usr_id_lbl.id is null");
     }
   }
   // 更新时间
   {
-    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
+    let mut update_time = match search {
+      Some(item) => item.update_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
-      .and_then(|item| item.take());
-    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
-      .and_then(|item| item.take());
+    let update_time_gt = update_time[0].take();
+    let update_time_lt = update_time[1].take();
     if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+      where_query.push_str(" and t.update_time >= ?");
+      args.push(update_time_gt.into());
     }
     if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+      where_query.push_str(" and t.update_time <= ?");
+      args.push(update_time_lt.into());
     }
   }
   Ok(where_query)
