@@ -8,6 +8,8 @@ export async function getLoginTenants(
   const {
     getLoginTenants,
   } = await import("./tenant.service.ts");
+  
   const data = await getLoginTenants(domain);
+  
   return data;
 }

@@ -1,5 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
+import "./login_log.model.ts";
 import * as resolver from "./login_log.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `

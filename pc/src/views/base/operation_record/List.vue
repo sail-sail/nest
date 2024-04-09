@@ -586,10 +586,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  OperationRecordId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -598,11 +594,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  OperationRecordModel,
-  OperationRecordSearch,
-} from "./Model";
 
 defineOptions({
   name: "操作记录",

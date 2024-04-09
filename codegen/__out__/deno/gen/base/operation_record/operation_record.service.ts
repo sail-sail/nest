@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  OperationRecordInput,
-  OperationRecordModel,
-  OperationRecordSearch,
-  OperationRecordFieldComment,
-  OperationRecordId,
-} from "./operation_record.model.ts";
-
 import * as operation_recordDao from "./operation_record.dao.ts";
 
 /**

@@ -263,18 +263,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  DictbizDetailId,
-} from "@/typings/ids";
-
-import type {
-  DictbizDetailInput,
-} from "./Model";
-
-import type {
-  DictbizModel,
-} from "@/views/base/dictbiz/Model";
-
 import {
   getDictbizList,
 } from "./Api";

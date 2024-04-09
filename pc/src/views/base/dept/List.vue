@@ -668,10 +668,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  DeptId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -685,12 +681,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  DeptModel,
-  DeptInput,
-  DeptSearch,
-} from "./Model";
 
 defineOptions({
   name: "部门List",

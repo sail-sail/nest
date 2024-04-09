@@ -3,30 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  DictDetailId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  DictDetailSearch,
-  DictDetailInput,
-  DictDetailModel,
-} from "./Model";
-
 import {
   dictDetailQueryField,
 } from "./Model";
-
-// 系统字典
-import type {
-  DictSearch,
-  DictModel,
-} from "@/views/base/dict/Model";
 
 async function setLblById(
   model?: DictDetailModel | null,

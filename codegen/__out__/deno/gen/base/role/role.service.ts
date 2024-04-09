@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  RoleInput,
-  RoleModel,
-  RoleSearch,
-  RoleFieldComment,
-  RoleId,
-} from "./role.model.ts";
-
 import * as roleDao from "./role.dao.ts";
 
 /**

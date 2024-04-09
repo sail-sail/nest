@@ -221,14 +221,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  OperationRecordId,
-} from "@/typings/ids";
-
-import type {
-  OperationRecordInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

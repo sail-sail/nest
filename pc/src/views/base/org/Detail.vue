@@ -230,14 +230,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  OrgId,
-} from "@/typings/ids";
-
-import type {
-  OrgInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

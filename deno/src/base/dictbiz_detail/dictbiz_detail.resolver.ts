@@ -7,5 +7,6 @@ export async function getDictbiz(
   const {
     getDictbiz,
   } = await import("./dictbiz_detail.service.ts");
+  
   return await getDictbiz(codes);
 }
