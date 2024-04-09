@@ -48,6 +48,7 @@
   "less.validate": false,
   "scss.validate": false,
   "unocss.root": "",
+  "unocss.colorPreview": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "editor.quickSuggestionsDelay": 0,
