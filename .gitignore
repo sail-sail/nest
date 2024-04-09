@@ -17,7 +17,6 @@ pnpm-lock.yaml
 codegening.txt
 
 publish_cnf.js
-ids.d.ts
 
 /rust/target
 /rust/Cargo.lock
