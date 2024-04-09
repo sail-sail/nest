@@ -12,52 +12,6 @@
       "request": "attach",
       "smartStep": true,
       "type": "node"
-    },
-    {
-      "type": "msedge",
-      "name": "edge",
-      "request": "launch",
-      "runtimeArgs": [
-        "--headless",
-        "--remote-debugging-port=9222"
-      ],
-      "smartStep": true,
-      "url": "http://localhost:4000"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "vitest",
-      "autoAttachChildProcesses": true,
-      "skipFiles": [
-        "<node_internals>/**",
-        "**/node_modules/**",
-      ],
-      "cwd": "${workspaceFolder}/pc",
-      "program": "${workspaceRoot}/pc/node_modules/vitest/vitest.mjs",
-      "args": [
-        "run",
-        "${relativeFile}",
-      ],
-      "smartStep": true,
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "codegen",
-      "autoAttachChildProcesses": true,
-      "skipFiles": [
-        "<node_internals>/**",
-        "**/node_modules/**",
-      ],
-      "cwd": "${workspaceRoot}/codegen",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "program": "${workspaceRoot}/codegen/src/bin/codegen.ts",
-      "smartStep": true
     }
   ]
 }
