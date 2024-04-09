@@ -635,10 +635,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  LangId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -651,12 +647,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  LangModel,
-  LangInput,
-  LangSearch,
-} from "./Model";
 
 defineOptions({
   name: "语言",

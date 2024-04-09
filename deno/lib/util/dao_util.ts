@@ -25,10 +25,6 @@ import {
 
 import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
 export type SearchExtra = (args: QueryArgs) => Promise<string> | string | undefined | null;
 
 export async function setModelIds(

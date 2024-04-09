@@ -16,10 +16,6 @@ import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
 /** 获取当前角色的首页轮播图路由 */
 export async function getHomeUrls() {
   

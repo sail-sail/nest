@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  DictDetailInput,
-  DictDetailModel,
-  DictDetailSearch,
-  DictDetailFieldComment,
-  DictDetailId,
-} from "./dict_detail.model.ts";
-
 import * as dict_detailDao from "./dict_detail.dao.ts";
 
 /**

@@ -7,10 +7,6 @@ import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
 
-import type {
-  DictbizId,
-} from "/gen/base/dictbiz/dictbiz.model.ts";
-
 type DictModel = {
   id: DictbizId;
   code: string;

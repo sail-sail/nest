@@ -5,17 +5,22 @@ import type {
   TenantFieldComment as TenantFieldCommentType,
 } from "#/types";
 
-export interface TenantModel extends TenantModelType {
+declare global {
+  
+  interface TenantModel extends TenantModelType {
+  }
+
+  interface TenantInput extends TenantInputType {
+  }
+
+  interface TenantSearch extends TenantSearchType {
+  }
+
+  interface TenantFieldComment extends TenantFieldCommentType {
+  }
+  
 }
 
-export interface TenantInput extends TenantInputType {
-}
-
-export interface TenantSearch extends TenantSearchType {
-}
-
-export interface TenantFieldComment extends TenantFieldCommentType {
-}
 
 export const tenantFields = [
   // ID

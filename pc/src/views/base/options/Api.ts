@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  OptionsId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  OptionsSearch,
-  OptionsInput,
-  OptionsModel,
-} from "./Model";
 
 import {
   optionsQueryField,

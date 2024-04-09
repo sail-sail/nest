@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  TenantInput,
-  TenantModel,
-  TenantSearch,
-  TenantFieldComment,
-  TenantId,
-} from "./tenant.model.ts";
-
 import * as tenantDao from "./tenant.dao.ts";
 
 /**

@@ -261,14 +261,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  BackgroundTaskId,
-} from "@/typings/ids";
-
-import type {
-  BackgroundTaskInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

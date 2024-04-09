@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  OptionsInput,
-  OptionsModel,
-  OptionsSearch,
-  OptionsFieldComment,
-  OptionsId,
-} from "./options.model.ts";
-
 import * as optionsDao from "./options.dao.ts";
 
 /**

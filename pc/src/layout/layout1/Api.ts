@@ -5,10 +5,6 @@ import type {
   GetMenus,
 } from "#/types";
 
-import type {
-  OrgId,
-} from "@/typings/ids";
-
 type MenuModel = GetMenus & {
   children?: MenuModel[];
   oldRoute_path?: string;

@@ -256,14 +256,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  OptionsId,
-} from "@/typings/ids";
-
-import type {
-  OptionsInput,
-} from "./Model";
-
 import {
   subscribe,
   publish,

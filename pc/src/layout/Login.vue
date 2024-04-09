@@ -173,10 +173,6 @@ import type {
   MutationLoginArgs,
 } from "#/types";
 
-import type {
-  TenantId,
-} from "@/typings/ids";
-
 let i18n = $ref(useI18n("/base/usr"));
 
 const usrStore = useUsrStore();
