@@ -21,7 +21,6 @@ declare global {
   
 }
 
-
 export const i18nFields = [
   // ID
   "id",
