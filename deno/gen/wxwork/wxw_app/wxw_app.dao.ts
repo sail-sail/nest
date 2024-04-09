@@ -77,23 +77,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  DomainId,
-} from "/gen/base/domain/domain.model.ts";
-
-import type {
-  WxwAppInput,
-  WxwAppModel,
-  WxwAppSearch,
-  WxwAppFieldComment,
-  WxwAppId,
-} from "./wxw_app.model.ts";
-
-import * as domainDao from "/gen/base/domain/domain.dao.ts";
+import {
+  findOne as findOneDomain,
+} from "/gen/base/domain/domain.dao.ts";
 
 const route_path = "/wxwork/wxw_app";
 
@@ -468,7 +454,7 @@ export async function setIdByLbl(
   // 可信域名
   if (isNotEmpty(input.domain_id_lbl) && input.domain_id == null) {
     input.domain_id_lbl = String(input.domain_id_lbl).trim();
-    const domainModel = await domainDao.findOne({ lbl: input.domain_id_lbl });
+    const domainModel = await findOneDomain({ lbl: input.domain_id_lbl });
     if (domainModel) {
       input.domain_id = domainModel.id;
     }

@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  WxwUsrId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxwUsrSearch,
-  WxwUsrInput,
-  WxwUsrModel,
+import {
+  wxwUsrQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -59,14 +53,10 @@ export async function findAll(
   const data: {
     findAllWxwUsr: WxwUsrModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwUsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxwUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          userid
-          rem
-          is_deleted
+          ${ wxwUsrQueryField }
         }
       }
     `,
@@ -98,14 +88,10 @@ export async function findOne(
   const data: {
     findOneWxwUsr?: WxwUsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwUsrSearch, $sort: [SortInput!]) {
         findOneWxwUsr(search: $search, sort: $sort) {
-          id
-          lbl
-          userid
-          rem
-          is_deleted
+          ${ wxwUsrQueryField }
         }
       }
     `,
@@ -214,14 +200,10 @@ export async function findById(
   const data: {
     findByIdWxwUsr?: WxwUsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxwUsrId!) {
         findByIdWxwUsr(id: $id) {
-          id
-          lbl
-          userid
-          rem
-          is_deleted
+          ${ wxwUsrQueryField }
         }
       }
     `,
@@ -384,13 +366,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxwUsrSearch, $sort: [SortInput!]) {
             findAllWxwUsr(search: $search, sort: $sort) {
-              id
-              lbl
-              userid
-              rem
+              ${ wxwUsrQueryField }
             }
           }
         `,

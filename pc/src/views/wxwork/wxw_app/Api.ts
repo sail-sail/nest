@@ -3,26 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  WxwAppId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxwAppSearch,
-  WxwAppInput,
-  WxwAppModel,
+import {
+  wxwAppQueryField,
 } from "./Model";
-
-// 域名
-import type {
-  DomainSearch,
-  DomainModel,
-} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxwAppModel | null,
@@ -82,24 +70,10 @@ export async function findAll(
   const data: {
     findAllWxwApp: WxwAppModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxwApp(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          corpid
-          agentid
-          domain_id
-          domain_id_lbl
-          corpsecret
-          contactsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          is_deleted
+          ${ wxwAppQueryField }
         }
       }
     `,
@@ -131,24 +105,10 @@ export async function findOne(
   const data: {
     findOneWxwApp?: WxwAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxwAppSearch, $sort: [SortInput!]) {
         findOneWxwApp(search: $search, sort: $sort) {
-          id
-          lbl
-          corpid
-          agentid
-          domain_id
-          domain_id_lbl
-          corpsecret
-          contactsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          is_deleted
+          ${ wxwAppQueryField }
         }
       }
     `,
@@ -257,24 +217,10 @@ export async function findById(
   const data: {
     findByIdWxwApp?: WxwAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxwAppId!) {
         findByIdWxwApp(id: $id) {
-          id
-          lbl
-          corpid
-          agentid
-          domain_id
-          domain_id_lbl
-          corpsecret
-          contactsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          is_deleted
+          ${ wxwAppQueryField }
         }
       }
     `,
@@ -548,23 +494,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxwAppSearch, $sort: [SortInput!]) {
             findAllWxwApp(search: $search, sort: $sort) {
-              id
-              lbl
-              corpid
-              agentid
-              domain_id
-              domain_id_lbl
-              corpsecret
-              contactsecret
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
+              ${ wxwAppQueryField }
             }
             findAllDomain {
               lbl
