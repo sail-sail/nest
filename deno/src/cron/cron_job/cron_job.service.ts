@@ -5,11 +5,7 @@ import {
 import {
   findById as findByIdCronJob,
   validateOption as validateOptionCronJob,
-} from "/gen/cron/cron_job/cron_job.dao.ts"
-
-import type {
-  CronJobId,
-} from "/gen/cron/cron_job/cron_job.model.ts";
+} from "/gen/cron/cron_job/cron_job.dao.ts";
 
 /**
  * 手动执行定时任务
