@@ -796,10 +796,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  UsrId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -813,27 +809,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  UsrModel,
-  UsrInput,
-  UsrSearch,
-} from "./Model";
-
-// 组织
-import type {
-  OrgModel,
-} from "@/views/base/org/Model";
-
-// 部门
-import type {
-  DeptModel,
-} from "@/views/base/dept/Model";
-
-// 角色
-import type {
-  RoleModel,
-} from "@/views/base/role/Model";
 
 import {
   getOrgList, // 所属组织

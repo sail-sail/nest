@@ -1,5 +1,5 @@
-import {
-  type Mutation,
+import type {
+  Mutation,
 } from "/gen/types.ts"
 
 import {
@@ -13,10 +13,6 @@ import {
 import {
   createToken,
 } from "/lib/auth/auth.dao.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
 
 export async function orgLoginSelect(
   org_id: OrgId,

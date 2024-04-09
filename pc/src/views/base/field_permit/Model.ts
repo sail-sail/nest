@@ -5,16 +5,20 @@ import type {
   FieldPermitFieldComment as FieldPermitFieldCommentType,
 } from "#/types";
 
-export interface FieldPermitModel extends FieldPermitModelType {
-}
+declare global {
+  
+  interface FieldPermitModel extends FieldPermitModelType {
+  }
 
-export interface FieldPermitInput extends FieldPermitInputType {
-}
+  interface FieldPermitInput extends FieldPermitInputType {
+  }
 
-export interface FieldPermitSearch extends FieldPermitSearchType {
-}
+  interface FieldPermitSearch extends FieldPermitSearchType {
+  }
 
-export interface FieldPermitFieldComment extends FieldPermitFieldCommentType {
+  interface FieldPermitFieldComment extends FieldPermitFieldCommentType {
+  }
+  
 }
 
 export const fieldPermitFields = [

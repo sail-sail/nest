@@ -5,16 +5,20 @@ import type {
   PermitFieldComment as PermitFieldCommentType,
 } from "#/types";
 
-export interface PermitModel extends PermitModelType {
-}
+declare global {
+  
+  interface PermitModel extends PermitModelType {
+  }
 
-export interface PermitInput extends PermitInputType {
-}
+  interface PermitInput extends PermitInputType {
+  }
 
-export interface PermitSearch extends PermitSearchType {
-}
+  interface PermitSearch extends PermitSearchType {
+  }
 
-export interface PermitFieldComment extends PermitFieldCommentType {
+  interface PermitFieldComment extends PermitFieldCommentType {
+  }
+  
 }
 
 export const permitFields = [

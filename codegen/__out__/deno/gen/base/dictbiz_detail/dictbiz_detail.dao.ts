@@ -72,23 +72,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  DictbizId,
-} from "/gen/base/dictbiz/dictbiz.model.ts";
-
-import type {
-  DictbizDetailInput,
-  DictbizDetailModel,
-  DictbizDetailSearch,
-  DictbizDetailFieldComment,
-  DictbizDetailId,
-} from "./dictbiz_detail.model.ts";
-
-import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";
+import {
+  findOne as findOneDictbiz,
+} from "/gen/base/dictbiz/dictbiz.dao.ts";
 
 const route_path = "/base/dictbiz_detail";
 
@@ -477,7 +463,7 @@ export async function setIdByLbl(
   // 业务字典
   if (isNotEmpty(input.dictbiz_id_lbl) && input.dictbiz_id == null) {
     input.dictbiz_id_lbl = String(input.dictbiz_id_lbl).trim();
-    const dictbizModel = await dictbizDao.findOne({ lbl: input.dictbiz_id_lbl });
+    const dictbizModel = await findOneDictbiz({ lbl: input.dictbiz_id_lbl });
     if (dictbizModel) {
       input.dictbiz_id = dictbizModel.id;
     }

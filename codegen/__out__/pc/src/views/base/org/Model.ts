@@ -5,16 +5,20 @@ import type {
   OrgFieldComment as OrgFieldCommentType,
 } from "#/types";
 
-export interface OrgModel extends OrgModelType {
-}
+declare global {
+  
+  interface OrgModel extends OrgModelType {
+  }
 
-export interface OrgInput extends OrgInputType {
-}
+  interface OrgInput extends OrgInputType {
+  }
 
-export interface OrgSearch extends OrgSearchType {
-}
+  interface OrgSearch extends OrgSearchType {
+  }
 
-export interface OrgFieldComment extends OrgFieldCommentType {
+  interface OrgFieldComment extends OrgFieldCommentType {
+  }
+  
 }
 
 export const orgFields = [

@@ -73,18 +73,6 @@ import type {
   BackgroundTaskType,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  BackgroundTaskInput,
-  BackgroundTaskModel,
-  BackgroundTaskSearch,
-  BackgroundTaskFieldComment,
-  BackgroundTaskId,
-} from "./background_task.model.ts";
-
 const route_path = "/base/background_task";
 
 async function getWhereQuery(

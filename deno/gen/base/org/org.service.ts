@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  OrgInput,
-  OrgModel,
-  OrgSearch,
-  OrgFieldComment,
-  OrgId,
-} from "./org.model.ts";
-
 import * as orgDao from "./org.dao.ts";
 
 /**
