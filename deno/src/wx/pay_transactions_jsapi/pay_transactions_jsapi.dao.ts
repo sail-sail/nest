@@ -45,18 +45,6 @@ import {
 
 import WxPay from "wechatpay-node-v3";
 
-import type {
-  WxUsrId,
-} from "/gen/wx/wx_usr/wx_usr.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
 /** 订单金额信息 */
 interface Iamount {
   /** 订单总金额，单位为分 */

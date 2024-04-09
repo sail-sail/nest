@@ -42,22 +42,6 @@ import {
   PayTransactionsJsapiTradeState,
 } from "/gen/types.ts";
 
-import type {
-  WxPayNoticeId,
-} from "/gen/wx/wx_pay_notice/wx_pay_notice.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  PayTransactionsJsapiId,
-} from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts";
-
 interface Ipay {
   appid: string; //  直连商户申请的公众号或移动应用appid。
   mchid: string; // 商户号

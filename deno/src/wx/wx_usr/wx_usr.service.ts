@@ -44,14 +44,6 @@ import {
 } from "/src/wx/wx_app_token/wx_app_token.service.ts";
 
 import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
-import type {
-  WxUsrId,
-} from "/gen/wx/wx_usr/wx_usr.model.ts";
-
-import type {
   LoginInput,
   LoginModel,
 } from "/gen/types.ts";
@@ -69,10 +61,6 @@ import {
   findLoginUsr,
   getOrgIdsById,
 } from "/src/base/usr/usr.dao.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
  
 export async function code2Session(
   model: {
