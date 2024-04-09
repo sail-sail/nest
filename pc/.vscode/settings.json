@@ -53,6 +53,7 @@
   "editor.quickSuggestionsDelay": 0,
   "typescript.suggest.autoImports": false,
   "typescript.updateImportsOnFileMove.enabled": "never",
+  "unocss.root": "",
   "unocss.colorPreview": false,
   "files.eol": "\n"
 }
