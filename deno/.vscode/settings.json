@@ -57,15 +57,11 @@
   "less.validate": false,
   "scss.validate": false,
   "unocss.root": "",
-  "terminal.integrated.confirmOnKill": "never",
+  "unocss.colorPreview": false,
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "unocss.colorPreview": false,
   "files.eol": "\n",
-  "volar.updateImportsOnFileMove.enabled": false,
-  "volar.codeLens.references": false,
-  "references.preferredLocation": "peek",
   "pair-diff.patterns": [
     {
       "source": "./gen/**/*/*.ts",
