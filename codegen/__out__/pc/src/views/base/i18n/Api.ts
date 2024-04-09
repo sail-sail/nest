@@ -1,7 +1,3 @@
-import type {
-  I18nId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -12,27 +8,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  I18nSearch,
-  I18nInput,
-  I18nModel,
-} from "./Model";
-
 import {
   i18nQueryField,
 } from "./Model";
-
-// 语言
-import type {
-  LangSearch,
-  LangModel,
-} from "@/views/base/lang/Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,

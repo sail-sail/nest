@@ -9,16 +9,20 @@ import {
   dictDetailFields,
 } from "@/views/base/dict_detail/Model";
 
-export interface DictModel extends DictModelType {
-}
+declare global {
+  
+  interface DictModel extends DictModelType {
+  }
 
-export interface DictInput extends DictInputType {
-}
+  interface DictInput extends DictInputType {
+  }
 
-export interface DictSearch extends DictSearchType {
-}
+  interface DictSearch extends DictSearchType {
+  }
 
-export interface DictFieldComment extends DictFieldCommentType {
+  interface DictFieldComment extends DictFieldCommentType {
+  }
+  
 }
 
 export const dictFields = [

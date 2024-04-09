@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  DeptInput,
-  DeptModel,
-  DeptSearch,
-  DeptFieldComment,
-  DeptId,
-} from "./dept.model.ts";
-
 import * as deptDao from "./dept.dao.ts";
 
 /**

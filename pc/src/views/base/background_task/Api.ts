@@ -1,6 +1,4 @@
-import type {
-  BackgroundTaskId,
-} from "@/typings/ids";
+
 
 import {
   BackgroundTaskState,
@@ -12,12 +10,6 @@ import type {
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  BackgroundTaskSearch,
-  BackgroundTaskInput,
-  BackgroundTaskModel,
-} from "./Model";
 
 import {
   backgroundTaskQueryField,

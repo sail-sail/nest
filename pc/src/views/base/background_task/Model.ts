@@ -5,16 +5,20 @@ import type {
   BackgroundTaskFieldComment as BackgroundTaskFieldCommentType,
 } from "#/types";
 
-export interface BackgroundTaskModel extends BackgroundTaskModelType {
-}
+declare global {
+  
+  interface BackgroundTaskModel extends BackgroundTaskModelType {
+  }
 
-export interface BackgroundTaskInput extends BackgroundTaskInputType {
-}
+  interface BackgroundTaskInput extends BackgroundTaskInputType {
+  }
 
-export interface BackgroundTaskSearch extends BackgroundTaskSearchType {
-}
+  interface BackgroundTaskSearch extends BackgroundTaskSearchType {
+  }
 
-export interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {
+  interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {
+  }
+  
 }
 
 export const backgroundTaskFields = [

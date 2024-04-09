@@ -5,16 +5,20 @@ import type {
   DeptFieldComment as DeptFieldCommentType,
 } from "#/types";
 
-export interface DeptModel extends DeptModelType {
-}
+declare global {
+  
+  interface DeptModel extends DeptModelType {
+  }
 
-export interface DeptInput extends DeptInputType {
-}
+  interface DeptInput extends DeptInputType {
+  }
 
-export interface DeptSearch extends DeptSearchType {
-}
+  interface DeptSearch extends DeptSearchType {
+  }
 
-export interface DeptFieldComment extends DeptFieldCommentType {
+  interface DeptFieldComment extends DeptFieldCommentType {
+  }
+  
 }
 
 export const deptFields = [

@@ -5,16 +5,20 @@ import type {
   RoleFieldComment as RoleFieldCommentType,
 } from "#/types";
 
-export interface RoleModel extends RoleModelType {
-}
+declare global {
+  
+  interface RoleModel extends RoleModelType {
+  }
 
-export interface RoleInput extends RoleInputType {
-}
+  interface RoleInput extends RoleInputType {
+  }
 
-export interface RoleSearch extends RoleSearchType {
-}
+  interface RoleSearch extends RoleSearchType {
+  }
 
-export interface RoleFieldComment extends RoleFieldCommentType {
+  interface RoleFieldComment extends RoleFieldCommentType {
+  }
+  
 }
 
 export const roleFields = [

@@ -5,16 +5,20 @@ import type {
   OptbizFieldComment as OptbizFieldCommentType,
 } from "#/types";
 
-export interface OptbizModel extends OptbizModelType {
-}
+declare global {
+  
+  interface OptbizModel extends OptbizModelType {
+  }
 
-export interface OptbizInput extends OptbizInputType {
-}
+  interface OptbizInput extends OptbizInputType {
+  }
 
-export interface OptbizSearch extends OptbizSearchType {
-}
+  interface OptbizSearch extends OptbizSearchType {
+  }
 
-export interface OptbizFieldComment extends OptbizFieldCommentType {
+  interface OptbizFieldComment extends OptbizFieldCommentType {
+  }
+  
 }
 
 export const optbizFields = [

@@ -62,13 +62,9 @@ for (let i = 0; i < columns.length; i++) {
   }
   hasDecimal = true;
 }
-#>import type {
-  <#=Table_Up#>Id,
-} from "@/typings/ids";<#
+#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-
-import {
+#>import {
   UniqueType,
 } from "#/types";<#
 }
@@ -178,12 +174,6 @@ import {<#
   #>
 } from "#/types";<#
 }
-#><#
-if (hasDecimal) {
-#>
-
-import Decimal from "decimal.js-light";<#
-}
 #>
 
 import type {
@@ -192,106 +182,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {<#
-  const findAllSearchArgs = [ ];
-  findAllSearchArgs.push(searchName);
-  #>
-  <#=searchName#>,
-  <#=inputName#>,
-  <#=modelName#>,
-} from "./Model";
-
 import {
   <#=table_Up#>QueryField,
 } from "./Model";<#
-const importForeignTables = [ ];
-importForeignTables.push(Table_Up);
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (
-    [
-      "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-      "tenant_id", "tenant_id_lbl",
-      "org_id", "org_id_lbl",
-    ].includes(column_name)
-    || (column.noAdd && column.noEdit && !column.search)
-  ) continue;
-  if (column_name === "create_usr_id" && !column.search) continue;
-  if (column_name === "update_usr_id" && !column.search) continue;
-  const foreignKey = column.foreignKey;
-  const data_type = column.DATA_TYPE;
-  if (!foreignKey) continue;
-  const foreignTable = foreignKey.table;
-  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (foreignTableUp === tableUp) continue;
-  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  if (importForeignTables.includes(Foreign_Table_Up)) {
-    continue;
-  }
-  importForeignTables.push(Foreign_Table_Up);
-  if (findAllSearchArgs.includes(`${ Foreign_Table_Up }Search`)) {
-    continue;
-  }
-  findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
-  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-#>
-
-// <#=foreignSchema.opts.table_comment#>
-import type {
-  <#=Foreign_Table_Up#>Search,
-  <#=Foreign_Table_Up#>Model,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
-}
-#><#
-for (const inlineForeignTab of inlineForeignTabs) {
-  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-  const columns = inlineForeignSchema.columns;
-  const table = inlineForeignTab.table;
-  const mod = inlineForeignTab.mod;
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const Table_Up = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
-        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-        "tenant_id", "tenant_id_lbl",
-        "org_id", "org_id_lbl",
-      ].includes(column_name)
-      || (column.noAdd && column.noEdit)
-    ) continue;
-    const foreignKey = column.foreignKey;
-    const data_type = column.DATA_TYPE;
-    if (!foreignKey) continue;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    if (findAllSearchArgs.includes(`${ Foreign_Table_Up }Search`)) {
-      continue;
-    }
-    findAllSearchArgs.push(`${ Foreign_Table_Up }Search`);
-#>
-
-import type {
-  <#=Foreign_Table_Up#>Search,
-  <#=Foreign_Table_Up#>Model,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
-  }
-}
-#><#
 const importForeignTablesTree = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];

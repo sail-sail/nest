@@ -1,7 +1,3 @@
-import type {
-  DictbizDetailId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -12,21 +8,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  DictbizDetailSearch,
-  DictbizDetailInput,
-  DictbizDetailModel,
-} from "./Model";
-
 import {
   dictbizDetailQueryField,
 } from "./Model";
-
-// 业务字典
-import type {
-  DictbizSearch,
-  DictbizModel,
-} from "@/views/base/dictbiz/Model";
 
 async function setLblById(
   model?: DictbizDetailModel | null,

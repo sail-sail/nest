@@ -5,18 +5,22 @@ import type {
   UsrFieldComment as UsrFieldCommentType,
 } from "#/types";
 
-export interface UsrModel extends UsrModelType {
-  /** 头像 */
-  img_lbl: string;
-}
+declare global {
+  
+  interface UsrModel extends UsrModelType {
+    /** 头像 */
+    img_lbl: string;
+  }
 
-export interface UsrInput extends UsrInputType {
-}
+  interface UsrInput extends UsrInputType {
+  }
 
-export interface UsrSearch extends UsrSearchType {
-}
+  interface UsrSearch extends UsrSearchType {
+  }
 
-export interface UsrFieldComment extends UsrFieldCommentType {
+  interface UsrFieldComment extends UsrFieldCommentType {
+  }
+  
 }
 
 export const usrFields = [

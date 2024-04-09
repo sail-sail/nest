@@ -32,18 +32,6 @@ import {
   ns
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
 import dayjs from "dayjs";
 
 import {

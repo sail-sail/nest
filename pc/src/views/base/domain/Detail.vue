@@ -243,14 +243,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  DomainId,
-} from "@/typings/ids";
-
-import type {
-  DomainInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

@@ -5,16 +5,20 @@ import type {
   DictDetailFieldComment as DictDetailFieldCommentType,
 } from "#/types";
 
-export interface DictDetailModel extends DictDetailModelType {
-}
+declare global {
+  
+  interface DictDetailModel extends DictDetailModelType {
+  }
 
-export interface DictDetailInput extends DictDetailInputType {
-}
+  interface DictDetailInput extends DictDetailInputType {
+  }
 
-export interface DictDetailSearch extends DictDetailSearchType {
-}
+  interface DictDetailSearch extends DictDetailSearchType {
+  }
 
-export interface DictDetailFieldComment extends DictDetailFieldCommentType {
+  interface DictDetailFieldComment extends DictDetailFieldCommentType {
+  }
+  
 }
 
 export const dictDetailFields = [

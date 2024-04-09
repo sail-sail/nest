@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  I18nInput,
-  I18nModel,
-  I18nSearch,
-  I18nFieldComment,
-  I18nId,
-} from "./i18n.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -1,7 +1,3 @@
-import type {
-  DataPermitId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -17,21 +13,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  DataPermitSearch,
-  DataPermitInput,
-  DataPermitModel,
-} from "./Model";
-
 import {
   dataPermitQueryField,
 } from "./Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,

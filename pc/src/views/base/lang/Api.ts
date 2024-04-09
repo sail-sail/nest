@@ -1,7 +1,3 @@
-import type {
-  LangId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -11,12 +7,6 @@ import type {
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  LangSearch,
-  LangInput,
-  LangModel,
-} from "./Model";
 
 import {
   langQueryField,

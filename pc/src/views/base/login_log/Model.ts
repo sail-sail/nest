@@ -5,17 +5,21 @@ import type {
   LoginLogFieldComment as LoginLogFieldCommentType,
 } from "#/types";
 
-export interface LoginLogModel extends LoginLogModelType {
-}
+declare global {
+  
+  interface LoginLogModel extends LoginLogModelType {
+  }
 
-export interface LoginLogInput extends LoginLogInputType {
-  create_time_lbl?: string;
-}
+  interface LoginLogInput extends LoginLogInputType {
+    create_time_lbl?: string;
+  }
 
-export interface LoginLogSearch extends LoginLogSearchType {
-}
+  interface LoginLogSearch extends LoginLogSearchType {
+  }
 
-export interface LoginLogFieldComment extends LoginLogFieldCommentType {
+  interface LoginLogFieldComment extends LoginLogFieldCommentType {
+  }
+  
 }
 
 export const loginLogFields = [
