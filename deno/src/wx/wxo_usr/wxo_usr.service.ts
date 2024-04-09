@@ -37,10 +37,6 @@ import {
   fetchOpenid as fetchOpenidWxoUsr,
 } from "./wxo_usr.dao.ts";
 
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
 import {
   createToken as createTokenAuth,
   getPassword,
@@ -62,10 +58,6 @@ import {
 import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
-
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
 
 import {
   isEmpty,
