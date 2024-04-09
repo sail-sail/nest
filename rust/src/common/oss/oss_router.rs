@@ -9,7 +9,7 @@ use serde_json::json;
 
 use std::io::Cursor;
 use image::io::Reader as ImageReader;
-use image::ImageOutputFormat;
+use image::ImageFormat;
 use image::imageops::FilterType;
 use image::GenericImageView;
 
@@ -242,11 +242,11 @@ pub async fn img(
   let f_is_none = f.is_none();
   let format = f.unwrap_or("webp".to_owned());
   let output_format = match format.as_str() {
-    "webp" => ImageOutputFormat::WebP,
-    "jpg" => ImageOutputFormat::Jpeg(q.unwrap_or(80)),
-    "png" => ImageOutputFormat::Png,
-    "ico" => ImageOutputFormat::Ico,
-    _ => ImageOutputFormat::WebP,
+    "webp" => ImageFormat::WebP,
+    "jpg" => ImageFormat::Jpeg,
+    "png" => ImageFormat::Png,
+    "ico" => ImageFormat::Ico,
+    _ => ImageFormat::WebP,
   };
   let content_type = match format.as_str() {
     "webp" => "image/webp",
