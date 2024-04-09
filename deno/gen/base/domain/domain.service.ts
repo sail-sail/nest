@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  DomainInput,
-  DomainModel,
-  DomainSearch,
-  DomainFieldComment,
-  DomainId,
-} from "./domain.model.ts";
-
 import * as domainDao from "./domain.dao.ts";
 
 /**

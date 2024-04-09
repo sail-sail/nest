@@ -778,10 +778,6 @@ import PermitTreeList from "../permit/TreeList.vue";
 
 import DataPermitTreeList from "../data_permit/TreeList.vue";
 
-import type {
-  RoleId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -795,17 +791,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  RoleModel,
-  RoleInput,
-  RoleSearch,
-} from "./Model";
-
-// 菜单
-import type {
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,

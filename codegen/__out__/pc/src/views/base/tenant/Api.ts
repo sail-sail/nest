@@ -3,36 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  TenantId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  TenantSearch,
-  TenantInput,
-  TenantModel,
-} from "./Model";
-
 import {
   tenantQueryField,
 } from "./Model";
-
-// 域名
-import type {
-  DomainSearch,
-  DomainModel,
-} from "@/views/base/domain/Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,

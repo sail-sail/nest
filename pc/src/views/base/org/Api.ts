@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  OrgId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  OrgSearch,
-  OrgInput,
-  OrgModel,
-} from "./Model";
 
 import {
   orgQueryField,

@@ -71,18 +71,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  LoginLogInput,
-  LoginLogModel,
-  LoginLogSearch,
-  LoginLogFieldComment,
-  LoginLogId,
-} from "./login_log.model.ts";
-
 const route_path = "/base/login_log";
 
 async function getWhereQuery(

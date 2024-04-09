@@ -71,10 +71,6 @@ import {
   findCount as findCountDictbiz_detail,
 } from "@/views/base/dictbiz_detail/Api";
 
-import type {
-  DictbizId,
-} from "@/typings/ids";
-
 const {
   n,
   initI18ns,

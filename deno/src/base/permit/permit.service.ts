@@ -3,18 +3,6 @@ import type {
   GetUsrPermits,
 } from "/gen/types.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
-import type {
-  PermitId,
-} from "/gen/base/permit/permit.model.ts";
-
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
 /**
  * 根据当前用户获取权限列表
  */

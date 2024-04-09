@@ -3,10 +3,6 @@ import type {
 } from "#/types";
 
 import type {
-  MenuId,
-} from "@/typings/ids";
-
-import type {
   LocationQuery,
 } from "vue-router";
 

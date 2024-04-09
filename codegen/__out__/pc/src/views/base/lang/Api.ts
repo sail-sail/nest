@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  LangId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  LangSearch,
-  LangInput,
-  LangModel,
-} from "./Model";
 
 import {
   langQueryField,

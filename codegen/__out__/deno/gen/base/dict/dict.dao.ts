@@ -65,14 +65,6 @@ import type {
   DictType,
 } from "/gen/types.ts";
 
-import type {
-  DictInput,
-  DictModel,
-  DictSearch,
-  DictFieldComment,
-  DictId,
-} from "./dict.model.ts";
-
 import {
   findAll as findAllDictDetail,
   create as createDictDetail,

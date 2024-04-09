@@ -2,11 +2,6 @@ import type {
   GetLoginInfo,
 } from "@/typings/types";
 
-import type {
-  TenantId,
-  UsrId,
-} from "@/typings/ids";
-
 export default defineStore("usr", function() {
   
   const tabsStore = useTabsStore();

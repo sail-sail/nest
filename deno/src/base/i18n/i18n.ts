@@ -1,7 +1,3 @@
-import type {
-  I18nModel,
-} from "/gen/base/i18n/i18n.model.ts";
-
 import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
@@ -9,10 +5,6 @@ import {
 import {
   useContext,
 } from "/lib/context.ts";
-
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
 
 import { getEnv } from "/lib/env.ts";
 

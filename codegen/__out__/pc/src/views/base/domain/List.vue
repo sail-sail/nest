@@ -671,10 +671,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  DomainId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -689,12 +685,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  DomainModel,
-  DomainInput,
-  DomainSearch,
-} from "./Model";
 
 defineOptions({
   name: "域名",

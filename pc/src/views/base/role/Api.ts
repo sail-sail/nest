@@ -3,42 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  RoleId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  RoleSearch,
-  RoleInput,
-  RoleModel,
-} from "./Model";
-
 import {
   roleQueryField,
 } from "./Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
-
-// 按钮权限
-import type {
-  PermitSearch,
-  PermitModel,
-} from "@/views/base/permit/Model";
-
-// 数据权限
-import type {
-  DataPermitSearch,
-  DataPermitModel,
-} from "@/views/base/data_permit/Model";
 
 import {
   findTree as findMenuTree,

@@ -184,14 +184,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  LoginLogId,
-} from "@/typings/ids";
-
-import type {
-  LoginLogInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {
