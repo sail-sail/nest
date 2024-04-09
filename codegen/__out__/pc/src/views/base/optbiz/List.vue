@@ -677,10 +677,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  OptbizId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -694,12 +690,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  OptbizModel,
-  OptbizInput,
-  OptbizSearch,
-} from "./Model";
 
 import {
   publish,

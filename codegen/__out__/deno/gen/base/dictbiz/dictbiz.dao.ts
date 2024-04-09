@@ -73,18 +73,6 @@ import type {
   DictbizType,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  DictbizInput,
-  DictbizModel,
-  DictbizSearch,
-  DictbizFieldComment,
-  DictbizId,
-} from "./dictbiz.model.ts";
-
 import {
   findAll as findAllDictbizDetail,
   create as createDictbizDetail,

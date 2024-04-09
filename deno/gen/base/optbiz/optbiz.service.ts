@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  OptbizInput,
-  OptbizModel,
-  OptbizSearch,
-  OptbizFieldComment,
-  OptbizId,
-} from "./optbiz.model.ts";
-
 import * as optbizDao from "./optbiz.dao.ts";
 
 /**

@@ -255,22 +255,10 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  DataPermitId,
-} from "@/typings/ids";
-
-import type {
-  DataPermitInput,
-} from "./Model";
-
 import {
   getMenuTree,
   useMenuTreeFilter,
 } from "@/views/base/menu/Api";
-
-import type {
-  MenuModel,
-} from "#/types";
 
 const emit = defineEmits<{
   nextId: [

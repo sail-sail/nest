@@ -493,10 +493,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  BackgroundTaskId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -504,11 +500,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
 } from "./Api";
-
-import type {
-  BackgroundTaskModel,
-  BackgroundTaskSearch,
-} from "./Model";
 
 defineOptions({
   name: "后台任务",

@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxwMsgInput,
-  WxwMsgModel,
-  WxwMsgSearch,
-  WxwMsgFieldComment,
-  WxwMsgId,
-} from "./wxw_msg.model.ts";
-
 import * as wxw_msgDao from "./wxw_msg.dao.ts";
 
 /**

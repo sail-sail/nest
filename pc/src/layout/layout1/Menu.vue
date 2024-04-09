@@ -116,10 +116,6 @@ import type {
   LocationQueryRaw,
 } from "vue-router";
 
-import type {
-  MenuId,
-} from "@/typings/ids";
-
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 const tabsStore = useTabsStore();

@@ -559,10 +559,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxwMsgId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -571,16 +567,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  WxwMsgModel,
-  WxwMsgSearch,
-} from "./Model";
-
-// 企微应用
-import type {
-  WxwAppModel,
-} from "@/views/wxwork/wxw_app/Model";
 
 import {
   getWxwAppList, // 企微应用

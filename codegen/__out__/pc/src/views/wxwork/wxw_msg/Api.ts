@@ -1,6 +1,4 @@
-import type {
-  WxwMsgId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
@@ -8,21 +6,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  WxwMsgSearch,
-  WxwMsgInput,
-  WxwMsgModel,
-} from "./Model";
-
 import {
   wxwMsgQueryField,
 } from "./Model";
-
-// 企微应用
-import type {
-  WxwAppSearch,
-  WxwAppModel,
-} from "@/views/wxwork/wxw_app/Model";
 
 async function setLblById(
   model?: WxwMsgModel | null,

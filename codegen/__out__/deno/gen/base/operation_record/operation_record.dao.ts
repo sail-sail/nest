@@ -67,18 +67,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OperationRecordInput,
-  OperationRecordModel,
-  OperationRecordSearch,
-  OperationRecordFieldComment,
-  OperationRecordId,
-} from "./operation_record.model.ts";
-
 const route_path = "/base/operation_record";
 
 async function getWhereQuery(
