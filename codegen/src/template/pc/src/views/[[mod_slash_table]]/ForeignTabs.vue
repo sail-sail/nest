@@ -93,10 +93,6 @@ import {
 }
 #>
 
-import type {
-  <#=Table_Up#>Id,
-} from "@/typings/ids";
-
 const {
   n,
   initI18ns,

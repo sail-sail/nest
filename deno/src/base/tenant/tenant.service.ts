@@ -8,14 +8,6 @@ import {
   delCache as delCacheDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
-import type {
-  DomainId,
-} from "/gen/base/domain/domain.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
 export async function getLoginTenants(
   domain: string,
 ): Promise<{ id: TenantId, lbl: string }[]> {

@@ -101,7 +101,7 @@ pub async fn login(
         username: username.clone().into(),
         ip: ip.clone().into(),
         is_succ: vec![0].into(),
-        create_time: vec![begin.into(), end.into()].into(),
+        create_time: [begin.into(), end.into()].into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
       }.into(),

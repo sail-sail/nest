@@ -72,18 +72,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OptbizInput,
-  OptbizModel,
-  OptbizSearch,
-  OptbizFieldComment,
-  OptbizId,
-} from "./optbiz.model.ts";
-
 const route_path = "/base/optbiz";
 
 async function getWhereQuery(

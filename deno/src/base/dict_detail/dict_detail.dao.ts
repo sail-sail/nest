@@ -3,10 +3,6 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import type {
-  DictId,
-} from "/gen/base/dict/dict.model.ts";
-
 type DictModel = {
   id: DictId;
   code: string;

@@ -1293,7 +1293,7 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<Vec<Option<<#=_data_type#>>>>,<#
+  pub <#=column_name_rust#>: Option<[Option<<#=_data_type#>>; 2]>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
@@ -2028,7 +2028,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![Some(x), Some(x)]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| [Some(x), Some(x)]),<#
       } else {
       #>
       // <#=column_comment#>

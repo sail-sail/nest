@@ -373,7 +373,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
-        width: 160,
+        width: 180,
         require: true,
         search: true,
         align: "left",
@@ -382,7 +382,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "route_path",
         align: "left",
-        width: 200,
+        width: 240,
       },
       {
         COLUMN_NAME: "route_query",
@@ -673,7 +673,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "type",
         require: true,
-        width: 100,
+        width: 140,
         align: "center",
       },
       {

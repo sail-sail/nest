@@ -332,10 +332,6 @@ import {
   getLoginLangs,
 } from "../Api";
 
-import type {
-  OrgId,
-} from "@/typings/ids";
-
 const router = useRouter();
 
 const {

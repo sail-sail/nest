@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  LangId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  LangSearch,
-  LangInput,
-  LangModel,
+import {
+  langQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -64,25 +58,10 @@ export async function findAll(
   const data: {
     findAllLang: LangModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langQueryField }
         }
       }
     `,
@@ -114,25 +93,10 @@ export async function findOne(
   const data: {
     findOneLang?: LangModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: LangSearch, $sort: [SortInput!]) {
         findOneLang(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langQueryField }
         }
       }
     `,
@@ -241,25 +205,10 @@ export async function findById(
   const data: {
     findByIdLang?: LangModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: LangId!) {
         findByIdLang(id: $id) {
-          id
-          code
-          lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ langQueryField }
         }
       }
     `,
@@ -451,24 +400,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: LangSearch, $sort: [SortInput!]) {
             findAllLang(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ langQueryField }
             }
             getDict(codes: [
               "is_enabled",

@@ -77,31 +77,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  DeptId,
-} from "/gen/base/dept/dept.model.ts";
-
-import type {
-  RoleId,
-} from "/gen/base/role/role.model.ts";
-
-import type {
-  UsrInput,
-  UsrModel,
-  UsrSearch,
-  UsrFieldComment,
-  UsrId,
-} from "./usr.model.ts";
-
-import * as orgDao from "/gen/base/org/org.dao.ts";
+import {
+  findOne as findOneOrg,
+} from "/gen/base/org/org.dao.ts";
 
 const route_path = "/base/usr";
 
@@ -701,7 +679,7 @@ export async function setIdByLbl(
   // 默认组织
   if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id == null) {
     input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
+    const orgModel = await findOneOrg({ lbl: input.default_org_id_lbl });
     if (orgModel) {
       input.default_org_id = orgModel.id;
     }

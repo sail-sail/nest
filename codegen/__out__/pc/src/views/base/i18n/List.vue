@@ -640,10 +640,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  I18nId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -655,22 +651,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  I18nModel,
-  I18nInput,
-  I18nSearch,
-} from "./Model";
-
-// 语言
-import type {
-  LangModel,
-} from "@/views/base/lang/Model";
-
-// 菜单
-import type {
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   getLangList, // 语言
@@ -1001,7 +981,7 @@ function getTableColumns(): ColumnType[] {
       label: "菜单",
       prop: "menu_id_lbl",
       sortBy: "menu_id",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

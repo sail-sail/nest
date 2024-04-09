@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  FieldPermitInput,
-  FieldPermitModel,
-  FieldPermitSearch,
-  FieldPermitFieldComment,
-  FieldPermitId,
-} from "./field_permit.model.ts";
-
 import * as field_permitDao from "./field_permit.dao.ts";
 
 /**

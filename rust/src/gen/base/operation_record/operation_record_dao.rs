@@ -53,22 +53,15 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let mut where_query = String::with_capacity(80 * 15 * 2);
-  where_query += " t.is_deleted = ?";
+  where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
     let id = match search {
       Some(item) => item.id.as_ref(),
       None => None,
     };
-    let id = match id {
-      None => None,
-      Some(item) => match item.as_str() {
-        "-" => None,
-        _ => item.into(),
-      },
-    };
     if let Some(id) = id {
-      where_query += " and t.id = ?";
+      where_query.push_str(" and t.id = ?");
       args.push(id.into());
     }
   }
@@ -90,7 +83,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and t.id in ({arg})");
+      where_query.push_str(" and t.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -109,7 +104,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
+      where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
     }
   }
@@ -120,19 +115,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(module) = module {
-      where_query += &format!(" and t.module = {}", args.push(module.into()));
+      where_query.push_str(" and t.module = ?");
+      args.push(module.into());
     }
     let module_like = match search {
       Some(item) => item.module_like.clone(),
       None => None,
     };
     if let Some(module_like) = module_like {
-      where_query += &format!(
-        " and t.module like {}",
-        args.push(
-          format!("%{}%", sql_like(&module_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.module like ?");
+      args.push(format!("%{}%", sql_like(&module_like)).into());
     }
   }
   // 模块名称
@@ -142,19 +134,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(module_lbl) = module_lbl {
-      where_query += &format!(" and t.module_lbl = {}", args.push(module_lbl.into()));
+      where_query.push_str(" and t.module_lbl = ?");
+      args.push(module_lbl.into());
     }
     let module_lbl_like = match search {
       Some(item) => item.module_lbl_like.clone(),
       None => None,
     };
     if let Some(module_lbl_like) = module_lbl_like {
-      where_query += &format!(
-        " and t.module_lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&module_lbl_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.module_lbl like ?");
+      args.push(format!("%{}%", sql_like(&module_lbl_like)).into());
     }
   }
   // 方法
@@ -164,19 +153,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(method) = method {
-      where_query += &format!(" and t.method = {}", args.push(method.into()));
+      where_query.push_str(" and t.method = ?");
+      args.push(method.into());
     }
     let method_like = match search {
       Some(item) => item.method_like.clone(),
       None => None,
     };
     if let Some(method_like) = method_like {
-      where_query += &format!(
-        " and t.method like {}",
-        args.push(
-          format!("%{}%", sql_like(&method_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.method like ?");
+      args.push(format!("%{}%", sql_like(&method_like)).into());
     }
   }
   // 方法名称
@@ -186,19 +172,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(method_lbl) = method_lbl {
-      where_query += &format!(" and t.method_lbl = {}", args.push(method_lbl.into()));
+      where_query.push_str(" and t.method_lbl = ?");
+      args.push(method_lbl.into());
     }
     let method_lbl_like = match search {
       Some(item) => item.method_lbl_like.clone(),
       None => None,
     };
     if let Some(method_lbl_like) = method_lbl_like {
-      where_query += &format!(
-        " and t.method_lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&method_lbl_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.method_lbl like ?");
+      args.push(format!("%{}%", sql_like(&method_lbl_like)).into());
     }
   }
   // 操作
@@ -208,36 +191,33 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
+      where_query.push_str(" and t.lbl = ?");
+      args.push(lbl.into());
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query += &format!(
-        " and t.lbl like {}",
-        args.push(
-          format!("%{}%", sql_like(&lbl_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
   // 耗时(毫秒)
   {
-    let mut time: Vec<Option<u32>> = match search {
-      Some(item) => item.time.clone().unwrap_or_default(),
+    let mut time = match search {
+      Some(item) => item.time.unwrap_or_default(),
       None => Default::default(),
     };
-    let time_gt: Option<u32> = time.get_mut(0)
-      .and_then(|item| item.take());
-    let time_lt: Option<u32> = time.get_mut(1)
-      .and_then(|item| item.take());
+    let time_gt = time[0].take();
+    let time_lt = time[1].take();
     if let Some(time_gt) = time_gt {
-      where_query += &format!(" and t.time >= {}", args.push(time_gt.into()));
+      where_query.push_str(" and t.time >= ?");
+      args.push(time_gt.into());
     }
     if let Some(time_lt) = time_lt {
-      where_query += &format!(" and t.time <= {}", args.push(time_lt.into()));
+      where_query.push_str(" and t.time <= ?");
+      args.push(time_lt.into());
     }
   }
   // 操作前数据
@@ -247,19 +227,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(old_data) = old_data {
-      where_query += &format!(" and t.old_data = {}", args.push(old_data.into()));
+      where_query.push_str(" and t.old_data = ?");
+      args.push(old_data.into());
     }
     let old_data_like = match search {
       Some(item) => item.old_data_like.clone(),
       None => None,
     };
     if let Some(old_data_like) = old_data_like {
-      where_query += &format!(
-        " and t.old_data like {}",
-        args.push(
-          format!("%{}%", sql_like(&old_data_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.old_data like ?");
+      args.push(format!("%{}%", sql_like(&old_data_like)).into());
     }
   }
   // 操作后数据
@@ -269,19 +246,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(new_data) = new_data {
-      where_query += &format!(" and t.new_data = {}", args.push(new_data.into()));
+      where_query.push_str(" and t.new_data = ?");
+      args.push(new_data.into());
     }
     let new_data_like = match search {
       Some(item) => item.new_data_like.clone(),
       None => None,
     };
     if let Some(new_data_like) = new_data_like {
-      where_query += &format!(
-        " and t.new_data like {}",
-        args.push(
-          format!("%{}%", sql_like(&new_data_like)).into()
-        ),
-      );
+      where_query.push_str(" and t.new_data like ?");
+      args.push(format!("%{}%", sql_like(&new_data_like)).into());
     }
   }
   // 操作人
@@ -303,7 +277,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and create_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -312,24 +288,24 @@ async fn get_where_query(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += " and create_usr_id_lbl.id is null";
+      where_query.push_str(" and create_usr_id_lbl.id is null");
     }
   }
   // 操作时间
   {
-    let mut create_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.create_time.clone().unwrap_or_default(),
+    let mut create_time = match search {
+      Some(item) => item.create_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let create_time_gt: Option<chrono::NaiveDateTime> = create_time.get_mut(0)
-      .and_then(|item| item.take());
-    let create_time_lt: Option<chrono::NaiveDateTime> = create_time.get_mut(1)
-      .and_then(|item| item.take());
+    let create_time_gt = create_time[0].take();
+    let create_time_lt = create_time[1].take();
     if let Some(create_time_gt) = create_time_gt {
-      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+      where_query.push_str(" and t.create_time >= ?");
+      args.push(create_time_gt.into());
     }
     if let Some(create_time_lt) = create_time_lt {
-      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+      where_query.push_str(" and t.create_time <= ?");
+      args.push(create_time_lt.into());
     }
   }
   // 更新人
@@ -351,7 +327,9 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+      where_query.push_str(" and update_usr_id_lbl.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   {
@@ -360,24 +338,24 @@ async fn get_where_query(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += " and update_usr_id_lbl.id is null";
+      where_query.push_str(" and update_usr_id_lbl.id is null");
     }
   }
   // 更新时间
   {
-    let mut update_time: Vec<Option<chrono::NaiveDateTime>> = match search {
-      Some(item) => item.update_time.clone().unwrap_or_default(),
+    let mut update_time = match search {
+      Some(item) => item.update_time.unwrap_or_default(),
       None => Default::default(),
     };
-    let update_time_gt: Option<chrono::NaiveDateTime> = update_time.get_mut(0)
-      .and_then(|item| item.take());
-    let update_time_lt: Option<chrono::NaiveDateTime> = update_time.get_mut(1)
-      .and_then(|item| item.take());
+    let update_time_gt = update_time[0].take();
+    let update_time_lt = update_time[1].take();
     if let Some(update_time_gt) = update_time_gt {
-      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+      where_query.push_str(" and t.update_time >= ?");
+      args.push(update_time_gt.into());
     }
     if let Some(update_time_lt) = update_time_lt {
-      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+      where_query.push_str(" and t.update_time <= ?");
+      args.push(update_time_lt.into());
     }
   }
   Ok(where_query)
