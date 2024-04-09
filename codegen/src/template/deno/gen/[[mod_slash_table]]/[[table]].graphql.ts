@@ -38,7 +38,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { defineGraphql } from "/lib/context.ts";
 
-import "./<#=table#>.model.ts";
+import type { } from "./<#=table#>.model.ts";
 import * as resolver from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
