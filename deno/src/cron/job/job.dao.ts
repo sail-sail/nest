@@ -15,25 +15,9 @@ import {
 
 import dayjs from "dayjs";
 
-import type {
-  JobId,
-} from "/gen/cron/job/job.model.ts";
-
-import type {
-  CronJobId,
-} from "/gen/cron/cron_job/cron_job.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
 import {
   CronJobLogExecState,
 } from "/gen/types.ts";
-
-import type {
-  CronJobLogId,
-} from "/gen/cron/cron_job_log/cron_job_log.model.ts";
 
 export async function runJob(
   job_id: JobId,

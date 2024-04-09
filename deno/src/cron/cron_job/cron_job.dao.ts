@@ -13,18 +13,6 @@ import {
   runJob,
 } from "../job/job.dao.ts";
 
-import type {
-  JobId,
-} from "/gen/cron/job/job.model.ts";
-
-import type {
-  CronJobId,
-} from "/gen/cron/cron_job/cron_job.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
 import {
   ns,
 } from "/src/base/i18n/i18n.ts";
