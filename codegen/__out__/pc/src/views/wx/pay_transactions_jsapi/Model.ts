@@ -21,7 +21,6 @@ declare global {
   
 }
 
-
 export const payTransactionsJsapiFields = [
   // ID
   "id",

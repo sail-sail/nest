@@ -21,7 +21,6 @@ declare global {
   
 }
 
-
 export const wxoAppFields = [
   // ID
   "id",
