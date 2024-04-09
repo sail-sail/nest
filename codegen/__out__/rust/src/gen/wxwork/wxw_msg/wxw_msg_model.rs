@@ -257,7 +257,7 @@ pub struct WxwMsgSearch {
   /// 按钮文字
   pub btntxt_like: Option<String>,
   /// 发送时间
-  pub create_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
+  pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 错误信息
   pub errmsg: Option<String>,
   /// 错误信息
@@ -282,7 +282,7 @@ pub struct WxwMsgSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time: Option<Vec<Option<chrono::NaiveDateTime>>>,
+  pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
 impl std::fmt::Debug for WxwMsgSearch {
@@ -513,7 +513,7 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       // 按钮文字
       btntxt: input.btntxt,
       // 发送时间
-      create_time: input.create_time.map(|x| vec![Some(x), Some(x)]),
+      create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 错误信息
       errmsg: input.errmsg,
       // 消息ID
@@ -523,7 +523,7 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![Some(x), Some(x)]),
+      update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()
     }
   }
