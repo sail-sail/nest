@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxwMsgModel,
-  WxwMsgSearch,
-  WxwMsgFieldComment,
-  WxwMsgId,
-} from "./wxw_msg.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

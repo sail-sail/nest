@@ -129,26 +129,26 @@ export function getScalars() {
     
     // 企微应用
     "WxwAppId": {
-      "input": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxwAppId`,
-      "output": `import("/gen/wxwork/wxw_app/wxw_app.model.ts").WxwAppId`,
+      "input": "WxwAppId",
+      "output": "WxwAppId",
     },
     
     // 企微应用接口凭据
     "WxwAppTokenId": {
-      "input": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxwAppTokenId`,
-      "output": `import("/gen/wxwork/wxw_app_token/wxw_app_token.model.ts").WxwAppTokenId`,
+      "input": "WxwAppTokenId",
+      "output": "WxwAppTokenId",
     },
     
     // 企微消息
     "WxwMsgId": {
-      "input": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxwMsgId`,
-      "output": `import("/gen/wxwork/wxw_msg/wxw_msg.model.ts").WxwMsgId`,
+      "input": "WxwMsgId",
+      "output": "WxwMsgId",
     },
     
     // 企微用户
     "WxwUsrId": {
-      "input": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxwUsrId`,
-      "output": `import("/gen/wxwork/wxw_usr/wxw_usr.model.ts").WxwUsrId`,
+      "input": "WxwUsrId",
+      "output": "WxwUsrId",
     },
     
   };

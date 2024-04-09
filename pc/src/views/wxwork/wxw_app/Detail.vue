@@ -302,18 +302,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  WxwAppId,
-} from "@/typings/ids";
-
-import type {
-  WxwAppInput,
-} from "./Model";
-
-import type {
-  DomainModel,
-} from "@/views/base/domain/Model";
-
 import {
   getDomainList,
 } from "./Api";

@@ -71,19 +71,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  WxwMsgInput,
-  WxwMsgModel,
-  WxwMsgSearch,
-  WxwMsgFieldComment,
-  WxwMsgId,
-} from "./wxw_msg.model.ts";
-
-import * as wxw_appDao from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
+import {
+  findOne as findOneWxwApp,
+} from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 const route_path = "/wxwork/wxw_msg";
 
@@ -437,7 +427,7 @@ export async function setIdByLbl(
   // 企微应用
   if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id == null) {
     input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
+    const wxw_appModel = await findOneWxwApp({ lbl: input.wxw_app_id_lbl });
     if (wxw_appModel) {
       input.wxw_app_id = wxw_appModel.id;
     }

@@ -82,3 +82,19 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const wxw_appId: unique symbol;
+/** 企微应用 */
+type WxwAppId = Distinct<string, typeof wxw_appId>;
+
+declare const wxw_app_tokenId: unique symbol;
+/** 企微应用接口凭据 */
+type WxwAppTokenId = Distinct<string, typeof wxw_app_tokenId>;
+
+declare const wxw_msgId: unique symbol;
+/** 企微消息 */
+type WxwMsgId = Distinct<string, typeof wxw_msgId>;
+
+declare const wxw_usrId: unique symbol;
+/** 企微用户 */
+type WxwUsrId = Distinct<string, typeof wxw_usrId>;

@@ -531,10 +531,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxwUsrId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -546,12 +542,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  WxwUsrModel,
-  WxwUsrInput,
-  WxwUsrSearch,
-} from "./Model";
 
 defineOptions({
   name: "企微用户",

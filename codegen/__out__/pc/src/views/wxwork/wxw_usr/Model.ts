@@ -5,14 +5,34 @@ import type {
   WxwUsrFieldComment as WxwUsrFieldCommentType,
 } from "#/types";
 
-export interface WxwUsrModel extends WxwUsrModelType {
+declare global {
+  
+  interface WxwUsrModel extends WxwUsrModelType {
+  }
+
+  interface WxwUsrInput extends WxwUsrInputType {
+  }
+
+  interface WxwUsrSearch extends WxwUsrSearchType {
+  }
+
+  interface WxwUsrFieldComment extends WxwUsrFieldCommentType {
+  }
+  
 }
 
-export interface WxwUsrInput extends WxwUsrInputType {
-}
+export const wxwUsrFields = [
+  // ID
+  "id",
+  // 姓名
+  "lbl",
+  // 用户ID
+  "userid",
+  // 备注
+  "rem",
+  "is_deleted",
+];
 
-export interface WxwUsrSearch extends WxwUsrSearchType {
-}
-
-export interface WxwUsrFieldComment extends WxwUsrFieldCommentType {
-}
+export const wxwUsrQueryField = `
+  ${ wxwUsrFields.join(" ") }
+`;

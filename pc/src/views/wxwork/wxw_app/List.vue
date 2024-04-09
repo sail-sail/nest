@@ -680,10 +680,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxwAppId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -697,12 +693,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  WxwAppModel,
-  WxwAppInput,
-  WxwAppSearch,
-} from "./Model";
 
 defineOptions({
   name: "企微应用",

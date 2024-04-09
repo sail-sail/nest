@@ -21,14 +21,6 @@ import {
   validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
-import type {
-  WxwAppId,
-} from "/gen/wxwork/wxw_app/wxw_app.model.ts";
-
-import type {
-  WxwAppTokenId,
-} from "/gen/wxwork/wxw_app_token/wxw_app_token.model.ts";
-
 export async function getAccessToken(
   wxw_app_id: WxwAppId,
   force = false,

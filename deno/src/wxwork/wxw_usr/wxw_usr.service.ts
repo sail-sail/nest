@@ -9,10 +9,6 @@ import type {
   WxwLoginByCode,
 } from "/gen/types.ts";
 
-import type {
-  WxwUsrInput,
-} from "/gen/wxwork/wxw_usr/wxw_usr.model.ts";
-
 import {
   getuserinfoByCode,
   getuser,
@@ -47,26 +43,6 @@ import {
 } from "/gen/base/domain/domain.dao.ts";
 
 import * as authService from "/lib/auth/auth.service.ts";
-
-import type {
-  DomainId,
-} from "/gen/base/domain/domain.model.ts";
-
-import type {
-  WxwAppId,
-} from "/gen/wxwork/wxw_app/wxw_app.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
 
 /**
  * 通过host获取appid, agentid
