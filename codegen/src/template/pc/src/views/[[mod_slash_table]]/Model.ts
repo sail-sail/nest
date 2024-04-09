@@ -143,7 +143,6 @@ declare global {
   
 }
 
-
 export const <#=fieldsName#> = [<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
