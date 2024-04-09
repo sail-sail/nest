@@ -5,17 +5,22 @@ import type {
   OperationRecordFieldComment as OperationRecordFieldCommentType,
 } from "#/types";
 
-export interface OperationRecordModel extends OperationRecordModelType {
+declare global {
+  
+  interface OperationRecordModel extends OperationRecordModelType {
+  }
+
+  interface OperationRecordInput extends OperationRecordInputType {
+  }
+
+  interface OperationRecordSearch extends OperationRecordSearchType {
+  }
+
+  interface OperationRecordFieldComment extends OperationRecordFieldCommentType {
+  }
+  
 }
 
-export interface OperationRecordInput extends OperationRecordInputType {
-}
-
-export interface OperationRecordSearch extends OperationRecordSearchType {
-}
-
-export interface OperationRecordFieldComment extends OperationRecordFieldCommentType {
-}
 
 export const operationRecordFields = [
   // ID

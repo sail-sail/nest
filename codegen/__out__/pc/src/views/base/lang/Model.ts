@@ -5,17 +5,22 @@ import type {
   LangFieldComment as LangFieldCommentType,
 } from "#/types";
 
-export interface LangModel extends LangModelType {
+declare global {
+  
+  interface LangModel extends LangModelType {
+  }
+
+  interface LangInput extends LangInputType {
+  }
+
+  interface LangSearch extends LangSearchType {
+  }
+
+  interface LangFieldComment extends LangFieldCommentType {
+  }
+  
 }
 
-export interface LangInput extends LangInputType {
-}
-
-export interface LangSearch extends LangSearchType {
-}
-
-export interface LangFieldComment extends LangFieldCommentType {
-}
 
 export const langFields = [
   // ID

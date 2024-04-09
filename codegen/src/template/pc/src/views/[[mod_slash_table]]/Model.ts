@@ -100,44 +100,49 @@ import {
 }
 #>
 
-export interface <#=modelName#> extends <#=modelName#>Type {<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const data_type = column.DATA_TYPE;
-    const column_type = column.COLUMN_TYPE;
-    const column_comment = column.COLUMN_COMMENT || "";
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-  #><#
-    if (data_type === "decimal") {
-  #>
-  /** <#=column_comment#> */
-  <#=column_name#>_lbl: string;<#
-    } else if (column.isImg) {
-  #>
-  /** <#=column_comment#> */
-  <#=column_name#>_lbl: string;<#
+declare global {
+  
+  interface <#=modelName#> extends <#=modelName#>Type {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #><#
+      if (data_type === "decimal") {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_lbl: string;<#
+      } else if (column.isImg) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_lbl: string;<#
+      }
+    #><#
     }
-  #><#
+    #>
   }
-  #>
+
+  interface <#=inputName#> extends <#=inputName#>Type {
+  }
+
+  interface <#=searchName#> extends <#=searchName#>Type {
+  }
+
+  interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
+  }
+  
 }
 
-export interface <#=inputName#> extends <#=inputName#>Type {
-}
-
-export interface <#=searchName#> extends <#=searchName#>Type {
-}
-
-export interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
-}
 
 export const <#=fieldsName#> = [<#
   for (let i = 0; i < columns.length; i++) {

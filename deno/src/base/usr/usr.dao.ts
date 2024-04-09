@@ -7,18 +7,6 @@ import {
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
 /**
  * 返回当前登录的用户
  * @param {string} username 用户名

@@ -610,10 +610,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  PermitId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -625,17 +621,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  PermitModel,
-  PermitInput,
-  PermitSearch,
-} from "./Model";
-
-// 菜单
-import type {
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,

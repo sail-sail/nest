@@ -275,18 +275,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  TenantId,
-} from "@/typings/ids";
-
-import type {
-  TenantInput,
-} from "./Model";
-
-import type {
-  DomainModel,
-} from "@/views/base/domain/Model";
-
 import {
   getDomainList,
 } from "./Api";

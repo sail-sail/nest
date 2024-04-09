@@ -72,18 +72,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgInput,
-  OrgModel,
-  OrgSearch,
-  OrgFieldComment,
-  OrgId,
-} from "./org.model.ts";
-
 const route_path = "/base/org";
 
 async function getWhereQuery(

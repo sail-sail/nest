@@ -1,7 +1,3 @@
-import type {
-  UsrId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -12,33 +8,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  UsrSearch,
-  UsrInput,
-  UsrModel,
-} from "./Model";
-
 import {
   usrQueryField,
 } from "./Model";
-
-// 组织
-import type {
-  OrgSearch,
-  OrgModel,
-} from "@/views/base/org/Model";
-
-// 部门
-import type {
-  DeptSearch,
-  DeptModel,
-} from "@/views/base/dept/Model";
-
-// 角色
-import type {
-  RoleSearch,
-  RoleModel,
-} from "@/views/base/role/Model";
 
 import {
   findTree as findDeptTree,

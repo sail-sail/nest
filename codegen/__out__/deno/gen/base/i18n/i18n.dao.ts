@@ -60,25 +60,13 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  LangId,
-} from "/gen/base/lang/lang.model.ts";
+import {
+  findOne as findOneLang,
+} from "/gen/base/lang/lang.dao.ts";
 
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  I18nInput,
-  I18nModel,
-  I18nSearch,
-  I18nFieldComment,
-  I18nId,
-} from "./i18n.model.ts";
-
-import * as langDao from "/gen/base/lang/lang.dao.ts";
-
-import * as menuDao from "/gen/base/menu/menu.dao.ts";
+import {
+  findOne as findOneMenu,
+} from "/gen/base/menu/menu.dao.ts";
 
 const route_path = "/base/i18n";
 
@@ -403,7 +391,7 @@ export async function setIdByLbl(
   // 语言
   if (isNotEmpty(input.lang_id_lbl) && input.lang_id == null) {
     input.lang_id_lbl = String(input.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
+    const langModel = await findOneLang({ lbl: input.lang_id_lbl });
     if (langModel) {
       input.lang_id = langModel.id;
     }
@@ -412,7 +400,7 @@ export async function setIdByLbl(
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id == null) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    const menuModel = await findOneMenu({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
     }

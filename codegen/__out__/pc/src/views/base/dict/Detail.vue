@@ -384,19 +384,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  DictId,
-} from "@/typings/ids";
-
-import type {
-  DictInput,
-} from "./Model";
-
-import type {
-  // 系统字典明细
-  DictDetailModel,
-} from "#/types";
-
 import {
   getDefaultInput as getDefaultInputDictDetail,
 } from "@/views/base/dict_detail/Api";

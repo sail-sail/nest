@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  UsrInput,
-  UsrModel,
-  UsrSearch,
-  UsrFieldComment,
-  UsrId,
-} from "./usr.model.ts";
-
 import * as usrDao from "./usr.dao.ts";
 
 /**

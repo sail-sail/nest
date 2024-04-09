@@ -68,22 +68,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  DomainId,
-} from "/gen/base/domain/domain.model.ts";
-
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  TenantInput,
-  TenantModel,
-  TenantSearch,
-  TenantFieldComment,
-  TenantId,
-} from "./tenant.model.ts";
-
 const route_path = "/base/tenant";
 
 async function getWhereQuery(

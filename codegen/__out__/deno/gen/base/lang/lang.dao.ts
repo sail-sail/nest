@@ -64,14 +64,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  LangInput,
-  LangModel,
-  LangSearch,
-  LangFieldComment,
-  LangId,
-} from "./lang.model.ts";
-
 const route_path = "/base/lang";
 
 async function getWhereQuery(

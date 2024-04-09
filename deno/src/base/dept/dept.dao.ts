@@ -10,14 +10,6 @@ import {
   findAll as findAllDept,
 } from "/gen/base/dept/dept.dao.ts";
 
-import type {
-  DeptId,
-} from "/gen/base/dept/dept.model.ts";
-
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
 export async function getAuthDeptIds() {
   const authModel = await getAuthModel(false);
   if (!authModel) {

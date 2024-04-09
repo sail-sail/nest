@@ -1,7 +1,3 @@
-import type {
-  DeptId,
-} from "@/typings/ids";
-
 import {
   UniqueType,
 } from "#/types";
@@ -12,21 +8,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  DeptSearch,
-  DeptInput,
-  DeptModel,
-} from "./Model";
-
 import {
   deptQueryField,
 } from "./Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 import {
   findTree as findDeptTree,

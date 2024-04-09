@@ -645,10 +645,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  OrgId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -662,12 +658,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  OrgModel,
-  OrgInput,
-  OrgSearch,
-} from "./Model";
 
 defineOptions({
   name: "组织",

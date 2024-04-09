@@ -697,10 +697,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  DictDetailId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -714,17 +710,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  DictDetailModel,
-  DictDetailInput,
-  DictDetailSearch,
-} from "./Model";
-
-// 系统字典
-import type {
-  DictModel,
-} from "@/views/base/dict/Model";
 
 import {
   getDictList, // 系统字典
