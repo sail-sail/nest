@@ -713,10 +713,6 @@ import Detail from "./Detail.vue";
 
 import MenuTreeList from "../menu/TreeList.vue";
 
-import type {
-  TenantId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -730,17 +726,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  TenantModel,
-  TenantInput,
-  TenantSearch,
-} from "./Model";
-
-// 菜单
-import type {
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,

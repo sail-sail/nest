@@ -270,14 +270,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  MenuId,
-} from "@/typings/ids";
-
-import type {
-  MenuInput,
-} from "./Model";
-
 import {
   getMenuTree,
 } from "@/views/base/menu/Api";

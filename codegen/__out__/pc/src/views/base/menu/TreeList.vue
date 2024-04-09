@@ -86,10 +86,6 @@ import {
 } from "./Api";
 
 import type {
-  MenuId,
-} from "@/typings/ids";
-
-import type {
   TreeNodeData,
   TreeKey,
 } from "element-plus/es/components/tree/src/tree.type";

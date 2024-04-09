@@ -64,19 +64,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  DictId,
-} from "/gen/base/dict/dict.model.ts";
-
-import type {
-  DictDetailInput,
-  DictDetailModel,
-  DictDetailSearch,
-  DictDetailFieldComment,
-  DictDetailId,
-} from "./dict_detail.model.ts";
-
-import * as dictDao from "/gen/base/dict/dict.dao.ts";
+import {
+  findOne as findOneDict,
+} from "/gen/base/dict/dict.dao.ts";
 
 const route_path = "/base/dict_detail";
 
@@ -455,7 +445,7 @@ export async function setIdByLbl(
   // 系统字典
   if (isNotEmpty(input.dict_id_lbl) && input.dict_id == null) {
     input.dict_id_lbl = String(input.dict_id_lbl).trim();
-    const dictModel = await dictDao.findOne({ lbl: input.dict_id_lbl });
+    const dictModel = await findOneDict({ lbl: input.dict_id_lbl });
     if (dictModel) {
       input.dict_id = dictModel.id;
     }

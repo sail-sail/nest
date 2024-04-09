@@ -3,30 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  PermitId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  PermitSearch,
-  PermitInput,
-  PermitModel,
-} from "./Model";
-
 import {
   permitQueryField,
 } from "./Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,

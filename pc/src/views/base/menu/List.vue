@@ -693,10 +693,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  MenuId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -710,12 +706,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  MenuModel,
-  MenuInput,
-  MenuSearch,
-} from "./Model";
 
 import {
   getMenuTree,

@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PermitInput,
-  PermitModel,
-  PermitSearch,
-  PermitFieldComment,
-  PermitId,
-} from "./permit.model.ts";
-
 import * as permitDao from "./permit.dao.ts";
 
 /**

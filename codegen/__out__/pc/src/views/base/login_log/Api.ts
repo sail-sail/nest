@@ -1,18 +1,10 @@
-import type {
-  LoginLogId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  LoginLogSearch,
-  LoginLogInput,
-  LoginLogModel,
-} from "./Model";
 
 import {
   loginLogQueryField,

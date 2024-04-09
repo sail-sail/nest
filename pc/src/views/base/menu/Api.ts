@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  MenuId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  MenuSearch,
-  MenuInput,
-  MenuModel,
-} from "./Model";
 
 import {
   menuQueryField,

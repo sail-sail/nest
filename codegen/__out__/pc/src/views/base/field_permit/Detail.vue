@@ -258,14 +258,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  FieldPermitId,
-} from "@/typings/ids";
-
-import type {
-  FieldPermitInput,
-} from "./Model";
-
 import {
   getMenuTree,
 } from "@/views/base/menu/Api";

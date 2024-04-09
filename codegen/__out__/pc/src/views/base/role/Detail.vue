@@ -243,14 +243,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  RoleId,
-} from "@/typings/ids";
-
-import type {
-  RoleInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

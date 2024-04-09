@@ -5,17 +5,22 @@ import type {
   DomainFieldComment as DomainFieldCommentType,
 } from "#/types";
 
-export interface DomainModel extends DomainModelType {
+declare global {
+  
+  interface DomainModel extends DomainModelType {
+  }
+
+  interface DomainInput extends DomainInputType {
+  }
+
+  interface DomainSearch extends DomainSearchType {
+  }
+
+  interface DomainFieldComment extends DomainFieldCommentType {
+  }
+  
 }
 
-export interface DomainInput extends DomainInputType {
-}
-
-export interface DomainSearch extends DomainSearchType {
-}
-
-export interface DomainFieldComment extends DomainFieldCommentType {
-}
 
 export const domainFields = [
   // ID

@@ -1,18 +1,10 @@
-import type {
-  OperationRecordId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  OperationRecordSearch,
-  OperationRecordInput,
-  OperationRecordModel,
-} from "./Model";
 
 import {
   operationRecordQueryField,

@@ -76,30 +76,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  PermitId,
-} from "/gen/base/permit/permit.model.ts";
-
-import type {
-  DataPermitId,
-} from "/gen/base/data_permit/data_permit.model.ts";
-
-import type {
-  RoleInput,
-  RoleModel,
-  RoleSearch,
-  RoleFieldComment,
-  RoleId,
-} from "./role.model.ts";
-
 const route_path = "/base/role";
 
 async function getWhereQuery(

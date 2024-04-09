@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  DataPermitInput,
-  DataPermitModel,
-  DataPermitSearch,
-  DataPermitFieldComment,
-  DataPermitId,
-} from "./data_permit.model.ts";
-
 import * as data_permitDao from "./data_permit.dao.ts";
 
 /**
