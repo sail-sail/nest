@@ -5,17 +5,22 @@ import type {
   WxwMsgFieldComment as WxwMsgFieldCommentType,
 } from "#/types";
 
-export interface WxwMsgModel extends WxwMsgModelType {
+declare global {
+  
+  interface WxwMsgModel extends WxwMsgModelType {
+  }
+
+  interface WxwMsgInput extends WxwMsgInputType {
+  }
+
+  interface WxwMsgSearch extends WxwMsgSearchType {
+  }
+
+  interface WxwMsgFieldComment extends WxwMsgFieldCommentType {
+  }
+  
 }
 
-export interface WxwMsgInput extends WxwMsgInputType {
-}
-
-export interface WxwMsgSearch extends WxwMsgSearchType {
-}
-
-export interface WxwMsgFieldComment extends WxwMsgFieldCommentType {
-}
 
 export const wxwMsgFields = [
   // ID

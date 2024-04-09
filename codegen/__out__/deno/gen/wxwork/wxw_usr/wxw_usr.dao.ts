@@ -68,18 +68,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  WxwUsrInput,
-  WxwUsrModel,
-  WxwUsrSearch,
-  WxwUsrFieldComment,
-  WxwUsrId,
-} from "./wxw_usr.model.ts";
-
 const route_path = "/wxwork/wxw_usr";
 
 async function getWhereQuery(

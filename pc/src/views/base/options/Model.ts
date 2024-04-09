@@ -5,17 +5,22 @@ import type {
   OptionsFieldComment as OptionsFieldCommentType,
 } from "#/types";
 
-export interface OptionsModel extends OptionsModelType {
+declare global {
+  
+  interface OptionsModel extends OptionsModelType {
+  }
+
+  interface OptionsInput extends OptionsInputType {
+  }
+
+  interface OptionsSearch extends OptionsSearchType {
+  }
+
+  interface OptionsFieldComment extends OptionsFieldCommentType {
+  }
+  
 }
 
-export interface OptionsInput extends OptionsInputType {
-}
-
-export interface OptionsSearch extends OptionsSearchType {
-}
-
-export interface OptionsFieldComment extends OptionsFieldCommentType {
-}
 
 export const optionsFields = [
   // ID

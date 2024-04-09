@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxwAppTokenInput,
-  WxwAppTokenModel,
-  WxwAppTokenSearch,
-  WxwAppTokenFieldComment,
-  WxwAppTokenId,
-} from "./wxw_app_token.model.ts";
-
 import * as wxw_app_tokenDao from "./wxw_app_token.dao.ts";
 
 /**

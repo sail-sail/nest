@@ -8,18 +8,6 @@ import {
   createHash,
 } from "/lib/util/hash_util.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 export const NOT_VERIFY_TOKEN = "not_verify_token";
 export const TENANT_ID = "tenant_id";

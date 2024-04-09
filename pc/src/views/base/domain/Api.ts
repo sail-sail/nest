@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  DomainId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  DomainSearch,
-  DomainInput,
-  DomainModel,
-} from "./Model";
 
 import {
   domainQueryField,

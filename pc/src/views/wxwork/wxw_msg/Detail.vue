@@ -243,18 +243,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  WxwMsgId,
-} from "@/typings/ids";
-
-import type {
-  WxwMsgInput,
-} from "./Model";
-
-import type {
-  WxwAppModel,
-} from "@/views/wxwork/wxw_app/Model";
-
 import {
   getWxwAppList,
 } from "./Api";

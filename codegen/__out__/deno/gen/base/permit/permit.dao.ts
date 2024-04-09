@@ -60,19 +60,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  PermitInput,
-  PermitModel,
-  PermitSearch,
-  PermitFieldComment,
-  PermitId,
-} from "./permit.model.ts";
-
-import * as menuDao from "/gen/base/menu/menu.dao.ts";
+import {
+  findOne as findOneMenu,
+} from "/gen/base/menu/menu.dao.ts";
 
 const route_path = "/base/permit";
 
@@ -381,7 +371,7 @@ export async function setIdByLbl(
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id == null) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    const menuModel = await findOneMenu({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
     }

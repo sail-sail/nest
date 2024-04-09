@@ -388,10 +388,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
-      if (dir === "/pc/src/typings/ids.ts") {
+      if (dir === "/pc/src/typings/ids.d.ts") {
         return;
       }
-      if (dir === "/uni/src/typings/ids.ts") {
+      if (dir === "/uni/src/typings/ids.d.ts") {
         return;
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
@@ -540,8 +540,8 @@ export async function genRouter(context: Context) {
     "deno/gen/graphql.ts",
     "deno/lib/script/graphql_codegen_scalars.ts",
     "deno/lib/script/graphql_pc_ids.ts",
-    "pc/src/typings/ids.ts",
-    "uni/src/typings/ids.ts",
+    "pc/src/typings/ids.d.ts",
+    "uni/src/typings/ids.d.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];

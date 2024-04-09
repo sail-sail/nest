@@ -64,14 +64,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  OptionsInput,
-  OptionsModel,
-  OptionsSearch,
-  OptionsFieldComment,
-  OptionsId,
-} from "./options.model.ts";
-
 const route_path = "/base/options";
 
 async function getWhereQuery(

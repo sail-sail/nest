@@ -47,15 +47,7 @@ import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";<#
 }
-#>
-
-import type {
-  <#=inputName#>,
-  <#=modelName#>,
-  <#=searchName#>,
-  <#=fieldCommentName#>,
-  <#=Table_Up#>Id,
-} from "./<#=table#>.model.ts";<#
+#><#
 if (hasSummary) {
 #>
 

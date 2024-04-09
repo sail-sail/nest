@@ -1,6 +1,3 @@
-import type {
-  OperationRecordInput,
-} from "/gen/base/operation_record/operation_record.model.ts";
 
 /**
  * 记录系统日志

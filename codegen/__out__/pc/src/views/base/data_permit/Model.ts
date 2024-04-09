@@ -5,17 +5,22 @@ import type {
   DataPermitFieldComment as DataPermitFieldCommentType,
 } from "#/types";
 
-export interface DataPermitModel extends DataPermitModelType {
+declare global {
+  
+  interface DataPermitModel extends DataPermitModelType {
+  }
+
+  interface DataPermitInput extends DataPermitInputType {
+  }
+
+  interface DataPermitSearch extends DataPermitSearchType {
+  }
+
+  interface DataPermitFieldComment extends DataPermitFieldCommentType {
+  }
+  
 }
 
-export interface DataPermitInput extends DataPermitInputType {
-}
-
-export interface DataPermitSearch extends DataPermitSearchType {
-}
-
-export interface DataPermitFieldComment extends DataPermitFieldCommentType {
-}
 
 export const dataPermitFields = [
   // ID

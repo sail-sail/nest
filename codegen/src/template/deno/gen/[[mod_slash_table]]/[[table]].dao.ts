@@ -90,6 +90,17 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+const findOneTableUps = [ ];
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+const equalsByUniqueTableUps = [ ];
+const idTableUps = [ ];
+const modelTableUps = [ ];
+const inputTableUps = [ ];
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
@@ -224,7 +235,9 @@ import {
 if (hasOrgId) {
 #>
 
-import * as orgDao from "/gen/base/org/org.dao.ts";<#
+import {
+  existById as existByIdOrg,
+} from "/gen/base/org/org.dao.ts";<#
 }
 #><#
 if (hasMany2manyNotInline) {
@@ -314,143 +327,6 @@ import type {
   }
   #>
 } from "/gen/types.ts";<#
-const hasImportIds = [ ];
-#><#
-if (hasTenant_id) {
-#><#
-  if (!hasImportIds.includes("TenantId")) {
-    hasImportIds.push("TenantId");
-#>
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";<#
-  }
-#><#
-}
-#><#
-if (hasOrgId) {
-#><#
-  if (!hasImportIds.includes("OrgId")) {
-    hasImportIds.push("OrgId");
-#>
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";<#
-  }
-#><#
-}
-#><#
-for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
-  const uniques = opts.uniques[i];
-  for (let k = 0; k < uniques.length; k++) {
-    const unique = uniques[k];
-    const column = columns.find((item) => item.COLUMN_NAME === unique);
-    if (!column) {
-      throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
-    }
-    const column_name = column.COLUMN_NAME;
-    if (column_name === 'id') {
-      continue;
-    }
-    if (column_name === 'org_id') {
-      continue;
-    }
-    if (column_name === 'tenant_id') {
-      continue;
-    }
-    if (column_name === 'is_sys') {
-      continue;
-    }
-    if (column_name === 'is_deleted') {
-      continue;
-    }
-    if (column_name === 'is_hidden') {
-      continue;
-    }
-    const data_type = column.DATA_TYPE;
-    const foreignKey = column.foreignKey;
-    const isPassword = column.isPassword;
-    if (isPassword) continue;
-    if (!foreignKey) {
-      continue;
-    }
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    if (!hasImportIds.includes(foreignTable_Up + "Id")) {
-      hasImportIds.push(foreignTable_Up + "Id");
-#>
-
-import type {
-  <#=foreignTable_Up#>Id,
-} from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.model.ts";<#
-    }
-  }
-}
-#><#
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  const column_name = column.COLUMN_NAME;
-  if ([
-    "id",
-    "create_usr_id",
-    "create_time",
-    "update_usr_id",
-    "update_time",
-    "is_sys",
-    "is_deleted",
-    "is_hidden",
-  ].includes(column_name)) continue;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  const many2many = column.many2many;
-  const isPassword = column.isPassword;
-  const isVirtual = column.isVirtual;
-  if (isVirtual) continue;
-#><#
-if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
-#>
-
-import type {
-  <#=foreignTable_Up#>Id,
-} from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.model.ts";<#
-}
-#><#
-}
-#>
-
-import type {
-  <#=inputName#>,
-  <#=modelName#>,
-  <#=searchName#>,
-  <#=fieldCommentName#>,<#
-  if (!hasImportIds.includes(Table_Up + "Id")) {
-    hasImportIds.push(Table_Up + "Id");
-  #>
-  <#=Table_Up#>Id,<#
-  }
-  #>
-} from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
@@ -459,7 +335,6 @@ import type {
 } from "/gen/types.ts";<#
 }
 #><#
-const hasImportDaos = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -484,6 +359,9 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
   const many2many = column.many2many;
   const isPassword = column.isPassword;
   const isVirtual = column.isVirtual;
@@ -493,11 +371,13 @@ for (let i = 0; i < columns.length; i++) {
     if (foreignTable === table) {
       continue;
     }
-    if (hasImportDaos.includes(foreignTable)) continue;
-    hasImportDaos.push(foreignTable);
+    if (findOneTableUps.includes(foreignTable_Up)) continue;
+    findOneTableUps.push(foreignTable_Up);
 #>
 
-import * as <#=foreignTable#>Dao from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
+import {
+  findOne as findOne<#=foreignTable_Up#>,
+} from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
   }
 #><#
 }
@@ -521,17 +401,6 @@ import {
   getRoleIds,
 } from "/src/base/role/role.dao.ts";<#
 }
-#><#
-const findAllTableUps = [ ];
-const createTableUps = [ ];
-const deleteByIdsTableUps = [ ];
-const revertByIdsTableUps = [ ];
-const updateByIdTableUps = [ ];
-const forceDeleteByIdsUps = [ ];
-const equalsByUniqueTableUps = [ ];
-const idTableUps = [ ];
-const modelTableUps = [ ];
-const inputTableUps = [ ];
 #><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -2150,16 +2019,17 @@ export async function setIdByLbl(
     }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
-      let daoStr = "";
-      if (foreignTable !== table) {
-        daoStr = `${ foreignTable }Dao.`;
-      }
   #>
   
   // <#=column_comment#>
   if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
+    let foreignTable_UpTmp = foreignTable_Up;
+    if (foreignTable_Up === Table_Up) {
+      foreignTable_UpTmp = "";
+    }
+    #>
+    const <#=foreignTable#>Model = await findOne<#=foreignTable_UpTmp#>({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
       input.<#=column_name#> = <#=foreignTable#>Model.id;
     }
@@ -3730,7 +3600,7 @@ export async function updateOrgById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateOrgById";
   
-  const orgExist = await orgDao.existById(org_id);
+  const orgExist = await existByIdOrg(org_id);
   if (!orgExist) {
     return 0;
   }

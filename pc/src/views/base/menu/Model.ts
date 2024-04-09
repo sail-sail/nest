@@ -5,17 +5,22 @@ import type {
   MenuFieldComment as MenuFieldCommentType,
 } from "#/types";
 
-export interface MenuModel extends MenuModelType {
+declare global {
+  
+  interface MenuModel extends MenuModelType {
+  }
+
+  interface MenuInput extends MenuInputType {
+  }
+
+  interface MenuSearch extends MenuSearchType {
+  }
+
+  interface MenuFieldComment extends MenuFieldCommentType {
+  }
+  
 }
 
-export interface MenuInput extends MenuInputType {
-}
-
-export interface MenuSearch extends MenuSearchType {
-}
-
-export interface MenuFieldComment extends MenuFieldCommentType {
-}
 
 export const menuFields = [
   // ID

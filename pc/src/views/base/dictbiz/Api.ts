@@ -2,10 +2,6 @@ import {
   UniqueType,
 } from "#/types";
 
-import type {
-  DictbizId,
-} from "@/typings/ids";
-
 import {
   DictbizType,
 } from "#/types";
@@ -15,12 +11,6 @@ import type {
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  DictbizSearch,
-  DictbizInput,
-  DictbizModel,
-} from "./Model";
 
 import {
   dictbizQueryField,

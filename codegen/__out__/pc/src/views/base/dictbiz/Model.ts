@@ -9,17 +9,22 @@ import {
   dictbizDetailFields,
 } from "@/views/base/dictbiz_detail/Model";
 
-export interface DictbizModel extends DictbizModelType {
+declare global {
+  
+  interface DictbizModel extends DictbizModelType {
+  }
+
+  interface DictbizInput extends DictbizInputType {
+  }
+
+  interface DictbizSearch extends DictbizSearchType {
+  }
+
+  interface DictbizFieldComment extends DictbizFieldCommentType {
+  }
+  
 }
 
-export interface DictbizInput extends DictbizInputType {
-}
-
-export interface DictbizSearch extends DictbizSearchType {
-}
-
-export interface DictbizFieldComment extends DictbizFieldCommentType {
-}
 
 export const dictbizFields = [
   // ID

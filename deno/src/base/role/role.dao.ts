@@ -6,10 +6,6 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
-
 /**
  * 获取当前用户拥有的角色id列表
  */

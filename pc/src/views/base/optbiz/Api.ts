@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  OptbizId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  OptbizSearch,
-  OptbizInput,
-  OptbizModel,
-} from "./Model";
 
 import {
   optbizQueryField,

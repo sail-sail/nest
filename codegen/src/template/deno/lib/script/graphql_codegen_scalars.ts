@@ -25,8 +25,8 @@ export function getScalars() {
     
     // <#=table_comment#>
     "<#=Table_Up#>Id": {
-      "input": `import("/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts").<#=Table_Up#>Id`,
-      "output": `import("/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts").<#=Table_Up#>Id`,
+      "input": "<#=Table_Up#>Id",
+      "output": "<#=Table_Up#>Id",
     },<#
     }
     #>
