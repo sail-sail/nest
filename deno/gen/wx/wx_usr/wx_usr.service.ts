@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxUsrInput,
-  WxUsrModel,
-  WxUsrSearch,
-  WxUsrFieldComment,
-  WxUsrId,
-} from "./wx_usr.model.ts";
-
 import * as wx_usrDao from "./wx_usr.dao.ts";
 
 /**

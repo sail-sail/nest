@@ -5,17 +5,22 @@ import type {
   PayTransactionsJsapiFieldComment as PayTransactionsJsapiFieldCommentType,
 } from "#/types";
 
-export interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
+declare global {
+  
+  interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
+  }
+
+  interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
+  }
+
+  interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
+  }
+
+  interface PayTransactionsJsapiFieldComment extends PayTransactionsJsapiFieldCommentType {
+  }
+  
 }
 
-export interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
-}
-
-export interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
-}
-
-export interface PayTransactionsJsapiFieldComment extends PayTransactionsJsapiFieldCommentType {
-}
 
 export const payTransactionsJsapiFields = [
   // ID

@@ -725,10 +725,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxoAppId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -742,12 +738,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  WxoAppModel,
-  WxoAppInput,
-  WxoAppSearch,
-} from "./Model";
 
 defineOptions({
   name: "公众号设置",

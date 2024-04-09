@@ -3,30 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  WxoAppId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxoAppSearch,
-  WxoAppInput,
-  WxoAppModel,
-} from "./Model";
-
 import {
   wxoAppQueryField,
 } from "./Model";
-
-// 域名
-import type {
-  DomainSearch,
-  DomainModel,
-} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxoAppModel | null,

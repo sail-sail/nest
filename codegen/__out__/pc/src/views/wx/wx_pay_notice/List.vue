@@ -611,20 +611,11 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxPayNoticeId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
   useExportExcel,
 } from "./Api";
-
-import type {
-  WxPayNoticeModel,
-  WxPayNoticeSearch,
-} from "./Model";
 
 defineOptions({
   name: "微信支付通知",

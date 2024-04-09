@@ -5,17 +5,22 @@ import type {
   WxUsrFieldComment as WxUsrFieldCommentType,
 } from "#/types";
 
-export interface WxUsrModel extends WxUsrModelType {
+declare global {
+  
+  interface WxUsrModel extends WxUsrModelType {
+  }
+
+  interface WxUsrInput extends WxUsrInputType {
+  }
+
+  interface WxUsrSearch extends WxUsrSearchType {
+  }
+
+  interface WxUsrFieldComment extends WxUsrFieldCommentType {
+  }
+  
 }
 
-export interface WxUsrInput extends WxUsrInputType {
-}
-
-export interface WxUsrSearch extends WxUsrSearchType {
-}
-
-export interface WxUsrFieldComment extends WxUsrFieldCommentType {
-}
 
 export const wxUsrFields = [
   // ID

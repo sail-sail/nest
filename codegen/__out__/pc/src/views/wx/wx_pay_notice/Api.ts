@@ -1,6 +1,4 @@
-import type {
-  WxPayNoticeId,
-} from "@/typings/ids";
+
 
 import {
   WxPayNoticeTradeState,
@@ -13,12 +11,6 @@ import type {
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  WxPayNoticeSearch,
-  WxPayNoticeInput,
-  WxPayNoticeModel,
-} from "./Model";
 
 import {
   wxPayNoticeQueryField,

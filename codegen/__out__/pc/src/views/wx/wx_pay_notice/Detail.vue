@@ -392,14 +392,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  WxPayNoticeId,
-} from "@/typings/ids";
-
-import type {
-  WxPayNoticeInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

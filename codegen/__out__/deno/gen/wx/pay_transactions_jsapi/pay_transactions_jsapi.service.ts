@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  PayTransactionsJsapiInput,
-  PayTransactionsJsapiModel,
-  PayTransactionsJsapiSearch,
-  PayTransactionsJsapiFieldComment,
-  PayTransactionsJsapiId,
-} from "./pay_transactions_jsapi.model.ts";
-
 import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
 
 /**

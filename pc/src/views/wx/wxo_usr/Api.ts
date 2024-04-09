@@ -3,30 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  WxoUsrId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxoUsrSearch,
-  WxoUsrInput,
-  WxoUsrModel,
-} from "./Model";
-
 import {
   wxoUsrQueryField,
 } from "./Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: WxoUsrModel | null,

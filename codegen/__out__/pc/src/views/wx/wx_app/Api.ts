@@ -3,20 +3,10 @@ import {
 } from "#/types";
 
 import type {
-  WxAppId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
-
-import type {
-  WxAppSearch,
-  WxAppInput,
-  WxAppModel,
-} from "./Model";
 
 import {
   wxAppQueryField,
