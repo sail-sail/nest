@@ -1,6 +1,4 @@
-import type {
-  CronJobLogDetailId,
-} from "@/typings/ids";
+
 
 import type {
   Query,
@@ -8,21 +6,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  CronJobLogDetailSearch,
-  CronJobLogDetailInput,
-  CronJobLogDetailModel,
-} from "./Model";
-
 import {
   cronJobLogDetailQueryField,
 } from "./Model";
-
-// 任务执行日志
-import type {
-  CronJobLogSearch,
-  CronJobLogModel,
-} from "@/views/cron/cron_job_log/Model";
 
 async function setLblById(
   model?: CronJobLogDetailModel | null,

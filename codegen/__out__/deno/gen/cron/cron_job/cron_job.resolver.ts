@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CronJobInput,
-  CronJobModel,
-  CronJobSearch,
-  CronJobFieldComment,
-  CronJobId,
-} from "./cron_job.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -72,18 +72,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  JobInput,
-  JobModel,
-  JobSearch,
-  JobFieldComment,
-  JobId,
-} from "./job.model.ts";
-
 const route_path = "/cron/job";
 
 async function getWhereQuery(

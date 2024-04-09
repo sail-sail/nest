@@ -5,17 +5,22 @@ import type {
   JobFieldComment as JobFieldCommentType,
 } from "#/types";
 
-export interface JobModel extends JobModelType {
+declare global {
+  
+  interface JobModel extends JobModelType {
+  }
+
+  interface JobInput extends JobInputType {
+  }
+
+  interface JobSearch extends JobSearchType {
+  }
+
+  interface JobFieldComment extends JobFieldCommentType {
+  }
+  
 }
 
-export interface JobInput extends JobInputType {
-}
-
-export interface JobSearch extends JobSearchType {
-}
-
-export interface JobFieldComment extends JobFieldCommentType {
-}
 
 export const jobFields = [
   // ID

@@ -67,19 +67,9 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  CronJobLogDetailInput,
-  CronJobLogDetailModel,
-  CronJobLogDetailSearch,
-  CronJobLogDetailFieldComment,
-  CronJobLogDetailId,
-} from "./cron_job_log_detail.model.ts";
-
-import * as cron_job_logDao from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
+import {
+  findOne as findOneCronJobLog,
+} from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
 const route_path = "/cron/cron_job_log_detail";
 

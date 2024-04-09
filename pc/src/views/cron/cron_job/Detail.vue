@@ -280,18 +280,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  CronJobId,
-} from "@/typings/ids";
-
-import type {
-  CronJobInput,
-} from "./Model";
-
-import type {
-  JobModel,
-} from "@/views/cron/job/Model";
-
 import {
   getJobList,
 } from "./Api";

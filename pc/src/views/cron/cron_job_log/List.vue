@@ -562,10 +562,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CronJobLogId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -574,16 +570,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  CronJobLogModel,
-  CronJobLogSearch,
-} from "./Model";
-
-// 定时任务
-import type {
-  CronJobModel,
-} from "@/views/cron/cron_job/Model";
 
 import {
   getCronJobList, // 定时任务

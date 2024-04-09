@@ -5,17 +5,22 @@ import type {
   CronJobFieldComment as CronJobFieldCommentType,
 } from "#/types";
 
-export interface CronJobModel extends CronJobModelType {
+declare global {
+  
+  interface CronJobModel extends CronJobModelType {
+  }
+
+  interface CronJobInput extends CronJobInputType {
+  }
+
+  interface CronJobSearch extends CronJobSearchType {
+  }
+
+  interface CronJobFieldComment extends CronJobFieldCommentType {
+  }
+  
 }
 
-export interface CronJobInput extends CronJobInputType {
-}
-
-export interface CronJobSearch extends CronJobSearchType {
-}
-
-export interface CronJobFieldComment extends CronJobFieldCommentType {
-}
 
 export const cronJobFields = [
   // ID

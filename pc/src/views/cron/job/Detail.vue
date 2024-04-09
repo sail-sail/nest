@@ -243,14 +243,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  JobId,
-} from "@/typings/ids";
-
-import type {
-  JobInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

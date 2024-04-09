@@ -705,10 +705,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CronJobId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -722,17 +718,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  CronJobModel,
-  CronJobInput,
-  CronJobSearch,
-} from "./Model";
-
-// 任务
-import type {
-  JobModel,
-} from "@/views/cron/job/Model";
 
 import {
   getJobList, // 任务

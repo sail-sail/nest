@@ -72,19 +72,9 @@ import type {
   CronJobLogExecState,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  CronJobLogInput,
-  CronJobLogModel,
-  CronJobLogSearch,
-  CronJobLogFieldComment,
-  CronJobLogId,
-} from "./cron_job_log.model.ts";
-
-import * as cron_jobDao from "/gen/cron/cron_job/cron_job.dao.ts";
+import {
+  findOne as findOneCronJob,
+} from "/gen/cron/cron_job/cron_job.dao.ts";
 
 const route_path = "/cron/cron_job_log";
 
@@ -484,7 +474,7 @@ export async function setIdByLbl(
   // 定时任务
   if (isNotEmpty(input.cron_job_id_lbl) && input.cron_job_id == null) {
     input.cron_job_id_lbl = String(input.cron_job_id_lbl).trim();
-    const cron_jobModel = await cron_jobDao.findOne({ lbl: input.cron_job_id_lbl });
+    const cron_jobModel = await findOneCronJob({ lbl: input.cron_job_id_lbl });
     if (cron_jobModel) {
       input.cron_job_id = cron_jobModel.id;
     }
