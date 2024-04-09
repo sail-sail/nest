@@ -593,7 +593,7 @@ export async function gitDiffOut() {
         if (!item.startsWith("error: ") || !item.endsWith(": patch does not apply")) continue;
         item = item.substring("error: ".length, item.length - ": patch does not apply".length);
         // 打开vscode的diff
-        const cmdTmp = `code --diff "${ projectPh }/${ item }" "${ out }/${ item }"`;
+        const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
         console.log(cmdTmp);
         shelljs.exec(cmdTmp);
       }
