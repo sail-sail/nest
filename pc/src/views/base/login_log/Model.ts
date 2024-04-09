@@ -22,7 +22,6 @@ declare global {
   
 }
 
-
 export const loginLogFields = [
   // ID
   "id",
