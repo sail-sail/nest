@@ -24,6 +24,7 @@
     "oak": "https://deno.land/x/oak@v14.1.1/mod.ts",
     "graphql": "https://esm.sh/graphql@17.0.0-alpha.3",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
+    "generic_pool": "https://deno.land/x/generic_pool@v1.0.4/mod.ts",
     "redis": "https://deno.land/x/redis@v0.32.1/mod.ts",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
     "jose/": "https://deno.land/x/jose@v5.2.3/",
