@@ -40,6 +40,8 @@
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
-    "rust-analyzer.showUnlinkedFileNotification": false
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "deno.codeLens.references": true,
+    "deno.codeLens.referencesAllFunctions": true
   }
 }
