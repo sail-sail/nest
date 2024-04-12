@@ -36,7 +36,7 @@
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
-    "deno.codeLens.references": true,
-    "deno.codeLens.referencesAllFunctions": true
+    "deno.codeLens.references": false,
+    "deno.codeLens.referencesAllFunctions": false
   }
 }
