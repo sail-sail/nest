@@ -62,7 +62,7 @@
     "pinia-plugin-unistorage": "0.0.19",
     "vue": "3.4.21",
     "vue-demi": "0.14.7",
-    "vue-i18n": "9.11.0"
+    "vue-i18n": "9.11.1"
   },
   "devDependencies": {
     "@dcloudio/types": "3.4.8",
@@ -70,17 +70,17 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4000820240401001",
     "@dcloudio/uni-stacktracey": "3.0.0-4000820240401001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4000820240401001",
-    "@types/node": "20.12.5",
-    "@typescript-eslint/eslint-plugin": "7.5.0",
-    "@typescript-eslint/parser": "7.5.0",
+    "@types/node": "20.12.7",
+    "@typescript-eslint/eslint-plugin": "7.6.0",
+    "@typescript-eslint/parser": "7.6.0",
     "@uni-helper/uni-app-types": "0.5.12",
-    "@unocss/preset-attributify": "0.58.7",
+    "@unocss/preset-attributify": "0.59.0",
     "@vue-macros/reactivity-transform": "0.4.4",
     "@vue/runtime-core": "3.4.21",
     "@vue/runtime-dom": "3.4.21",
     "cross-env": "7.0.3",
     "eslint": "9.0.0",
-    "eslint-plugin-vue": "9.24.0",
+    "eslint-plugin-vue": "9.24.1",
     "husky": "9.0.11",
     "less": "4.2.0",
     "postcss": "8.4.38",
@@ -88,7 +88,7 @@
     "stylus": "0.63.0",
     "terser": "5.30.3",
     "tmui-cli": "1.1.2",
-    "typescript": "5.4.4",
+    "typescript": "5.4.5",
     "unocss": "0.58.7",
     "unocss-applet": "0.7.8",
     "unplugin-auto-import": "0.17.5",
@@ -99,6 +99,6 @@
     "vite-plugin-vue-inspector": "4.0.2",
     "vitest": "1.4.0",
     "vue-router": "4.3.0",
-    "vue-tsc": "2.0.11"
+    "vue-tsc": "2.0.12"
   }
 }
