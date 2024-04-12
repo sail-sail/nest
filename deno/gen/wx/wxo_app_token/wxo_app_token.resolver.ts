@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxoAppTokenInput,
-  WxoAppTokenModel,
-  WxoAppTokenSearch,
-  WxoAppTokenFieldComment,
-  WxoAppTokenId,
-} from "./wxo_app_token.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -589,20 +589,11 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  PayTransactionsJsapiId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
   useExportExcel,
 } from "./Api";
-
-import type {
-  PayTransactionsJsapiModel,
-  PayTransactionsJsapiSearch,
-} from "./Model";
 
 defineOptions({
   name: "微信JSAPI下单",

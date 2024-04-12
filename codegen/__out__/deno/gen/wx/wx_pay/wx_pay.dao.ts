@@ -72,18 +72,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  WxPayInput,
-  WxPayModel,
-  WxPaySearch,
-  WxPayFieldComment,
-  WxPayId,
-} from "./wx_pay.model.ts";
-
 const route_path = "/wx/wx_pay";
 
 async function getWhereQuery(

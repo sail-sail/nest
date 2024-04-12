@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  WxPayInput,
-  WxPayModel,
-  WxPaySearch,
-  WxPayFieldComment,
-  WxPayId,
-} from "./wx_pay.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

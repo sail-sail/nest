@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  WxAppId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxAppSearch,
-  WxAppInput,
-  WxAppModel,
+import {
+  wxAppQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -71,29 +65,10 @@ export async function findAll(
   const data: {
     findAllWxApp: WxAppModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxApp(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxAppQueryField }
         }
       }
     `,
@@ -125,29 +100,10 @@ export async function findOne(
   const data: {
     findOneWxApp?: WxAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxAppSearch, $sort: [SortInput!]) {
         findOneWxApp(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxAppQueryField }
         }
       }
     `,
@@ -256,29 +212,10 @@ export async function findById(
   const data: {
     findByIdWxApp?: WxAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxAppId!) {
         findByIdWxApp(id: $id) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxAppQueryField }
         }
       }
     `,
@@ -500,28 +437,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxAppSearch, $sort: [SortInput!]) {
             findAllWxApp(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              appid
-              appsecret
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxAppQueryField }
             }
             getDict(codes: [
               "is_locked",

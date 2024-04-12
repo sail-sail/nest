@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  WxAppInput,
-  WxAppModel,
-  WxAppSearch,
-  WxAppFieldComment,
-  WxAppId,
-} from "./wx_app.model.ts";
-
 import * as wx_appDao from "./wx_app.dao.ts";
 
 /**

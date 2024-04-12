@@ -3,26 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  WxoAppId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxoAppSearch,
-  WxoAppInput,
-  WxoAppModel,
+import {
+  wxoAppQueryField,
 } from "./Model";
-
-// 域名
-import type {
-  DomainSearch,
-  DomainModel,
-} from "@/views/base/domain/Model";
 
 async function setLblById(
   model?: WxoAppModel | null,
@@ -84,33 +72,10 @@ export async function findAll(
   const data: {
     findAllWxoApp: WxoAppModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxoAppSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxoApp(search: $search, page: $page, sort: $sort) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          token
-          encoding_aes_key
-          domain_id
-          domain_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxoAppQueryField }
         }
       }
     `,
@@ -142,33 +107,10 @@ export async function findOne(
   const data: {
     findOneWxoApp?: WxoAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxoAppSearch, $sort: [SortInput!]) {
         findOneWxoApp(search: $search, sort: $sort) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          token
-          encoding_aes_key
-          domain_id
-          domain_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxoAppQueryField }
         }
       }
     `,
@@ -277,33 +219,10 @@ export async function findById(
   const data: {
     findByIdWxoApp?: WxoAppModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxoAppId!) {
         findByIdWxoApp(id: $id) {
-          id
-          code
-          lbl
-          appid
-          appsecret
-          token
-          encoding_aes_key
-          domain_id
-          domain_id_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxoAppQueryField }
         }
       }
     `,
@@ -578,32 +497,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxoAppSearch, $sort: [SortInput!]) {
             findAllWxoApp(search: $search, sort: $sort) {
-              id
-              code
-              lbl
-              appid
-              appsecret
-              token
-              encoding_aes_key
-              domain_id
-              domain_id_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxoAppQueryField }
             }
             findAllDomain {
               lbl

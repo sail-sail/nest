@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  WxPayId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxPaySearch,
-  WxPayInput,
-  WxPayModel,
+import {
+  wxPayQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -79,33 +73,10 @@ export async function findAll(
   const data: {
     findAllWxPay: WxPayModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxPay(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          appid
-          mchid
-          public_key
-          private_key
-          v3_key
-          payer_client_ip
-          notify_url
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayQueryField }
         }
       }
     `,
@@ -137,33 +108,10 @@ export async function findOne(
   const data: {
     findOneWxPay?: WxPayModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxPaySearch, $sort: [SortInput!]) {
         findOneWxPay(search: $search, sort: $sort) {
-          id
-          lbl
-          appid
-          mchid
-          public_key
-          private_key
-          v3_key
-          payer_client_ip
-          notify_url
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayQueryField }
         }
       }
     `,
@@ -272,33 +220,10 @@ export async function findById(
   const data: {
     findByIdWxPay?: WxPayModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxPayId!) {
         findByIdWxPay(id: $id) {
-          id
-          lbl
-          appid
-          mchid
-          public_key
-          private_key
-          v3_key
-          payer_client_ip
-          notify_url
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxPayQueryField }
         }
       }
     `,
@@ -522,32 +447,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxPaySearch, $sort: [SortInput!]) {
             findAllWxPay(search: $search, sort: $sort) {
-              id
-              lbl
-              appid
-              mchid
-              public_key
-              private_key
-              v3_key
-              payer_client_ip
-              notify_url
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxPayQueryField }
             }
             getDict(codes: [
               "is_locked",

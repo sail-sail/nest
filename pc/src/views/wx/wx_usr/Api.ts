@@ -3,26 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  WxUsrId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxUsrSearch,
-  WxUsrInput,
-  WxUsrModel,
+import {
+  wxUsrQueryField,
 } from "./Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: WxUsrModel | null,
@@ -87,34 +75,10 @@ export async function findAll(
   const data: {
     findAllWxUsr: WxUsrModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxUsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          nick_name
-          avatar_url
-          mobile
-          openid
-          unionid
-          gender
-          gender_lbl
-          city
-          province
-          country
-          language
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxUsrQueryField }
         }
       }
     `,
@@ -146,34 +110,10 @@ export async function findOne(
   const data: {
     findOneWxUsr?: WxUsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxUsrSearch, $sort: [SortInput!]) {
         findOneWxUsr(search: $search, sort: $sort) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          nick_name
-          avatar_url
-          mobile
-          openid
-          unionid
-          gender
-          gender_lbl
-          city
-          province
-          country
-          language
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxUsrQueryField }
         }
       }
     `,
@@ -282,34 +222,10 @@ export async function findById(
   const data: {
     findByIdWxUsr?: WxUsrModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxUsrId!) {
         findByIdWxUsr(id: $id) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          nick_name
-          avatar_url
-          mobile
-          openid
-          unionid
-          gender
-          gender_lbl
-          city
-          province
-          country
-          language
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxUsrQueryField }
         }
       }
     `,
@@ -538,33 +454,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxUsrSearch, $sort: [SortInput!]) {
             findAllWxUsr(search: $search, sort: $sort) {
-              id
-              lbl
-              usr_id
-              usr_id_lbl
-              nick_name
-              avatar_url
-              mobile
-              openid
-              unionid
-              gender
-              gender_lbl
-              city
-              province
-              country
-              language
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxUsrQueryField }
             }
             findAllUsr {
               lbl

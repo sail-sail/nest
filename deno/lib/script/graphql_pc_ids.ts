@@ -178,56 +178,56 @@ export function getScalars() {
     
     // 微信JSAPI下单
     "PayTransactionsJsapiId": {
-      "input": `import("@/typings/ids.ts").PayTransactionsJsapiId`,
-      "output": `import("@/typings/ids.ts").PayTransactionsJsapiId`,
+      "input": "PayTransactionsJsapiId",
+      "output": "PayTransactionsJsapiId",
     },
     
     // 小程序设置
     "WxAppId": {
-      "input": `import("@/typings/ids.ts").WxAppId`,
-      "output": `import("@/typings/ids.ts").WxAppId`,
+      "input": "WxAppId",
+      "output": "WxAppId",
     },
     
     // 小程序接口凭据
     "WxAppTokenId": {
-      "input": `import("@/typings/ids.ts").WxAppTokenId`,
-      "output": `import("@/typings/ids.ts").WxAppTokenId`,
+      "input": "WxAppTokenId",
+      "output": "WxAppTokenId",
     },
     
     // 微信支付设置
     "WxPayId": {
-      "input": `import("@/typings/ids.ts").WxPayId`,
-      "output": `import("@/typings/ids.ts").WxPayId`,
+      "input": "WxPayId",
+      "output": "WxPayId",
     },
     
     // 微信支付通知
     "WxPayNoticeId": {
-      "input": `import("@/typings/ids.ts").WxPayNoticeId`,
-      "output": `import("@/typings/ids.ts").WxPayNoticeId`,
+      "input": "WxPayNoticeId",
+      "output": "WxPayNoticeId",
     },
     
     // 小程序用户
     "WxUsrId": {
-      "input": `import("@/typings/ids.ts").WxUsrId`,
-      "output": `import("@/typings/ids.ts").WxUsrId`,
+      "input": "WxUsrId",
+      "output": "WxUsrId",
     },
     
     // 公众号设置
     "WxoAppId": {
-      "input": `import("@/typings/ids.ts").WxoAppId`,
-      "output": `import("@/typings/ids.ts").WxoAppId`,
+      "input": "WxoAppId",
+      "output": "WxoAppId",
     },
     
     // 小程序接口凭据
     "WxoAppTokenId": {
-      "input": `import("@/typings/ids.ts").WxoAppTokenId`,
-      "output": `import("@/typings/ids.ts").WxoAppTokenId`,
+      "input": "WxoAppTokenId",
+      "output": "WxoAppTokenId",
     },
     
     // 公众号用户
     "WxoUsrId": {
-      "input": `import("@/typings/ids.ts").WxoUsrId`,
-      "output": `import("@/typings/ids.ts").WxoUsrId`,
+      "input": "WxoUsrId",
+      "output": "WxoUsrId",
     },
     
   };

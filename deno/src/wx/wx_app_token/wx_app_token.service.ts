@@ -19,14 +19,6 @@ import {
   findOne as findOneWxApp,
   validateOption as validateOptionWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
-
-import type {
-  WxAppId,
-} from "/gen/wx/wx_app/wx_app.model.ts";
-
-import type {
-  WxAppTokenId,
-} from "/gen/wx/wx_app_token/wx_app_token.model.ts";
  
 export async function getAccessToken(
   appid: string,

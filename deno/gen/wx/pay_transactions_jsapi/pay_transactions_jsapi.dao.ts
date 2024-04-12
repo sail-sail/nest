@@ -61,7 +61,9 @@ import {
   existById as existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
-import * as orgDao from "/gen/base/org/org.dao.ts";
+import {
+  existById as existByIdOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   UniqueType,
@@ -74,22 +76,6 @@ import type {
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiCurrency,
 } from "/gen/types.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  PayTransactionsJsapiInput,
-  PayTransactionsJsapiModel,
-  PayTransactionsJsapiSearch,
-  PayTransactionsJsapiFieldComment,
-  PayTransactionsJsapiId,
-} from "./pay_transactions_jsapi.model.ts";
 
 const route_path = "/wx/pay_transactions_jsapi";
 
@@ -1334,7 +1320,7 @@ export async function updateOrgById(
   const table = "wx_pay_transactions_jsapi";
   const method = "updateOrgById";
   
-  const orgExist = await orgDao.existById(org_id);
+  const orgExist = await existByIdOrg(org_id);
   if (!orgExist) {
     return 0;
   }

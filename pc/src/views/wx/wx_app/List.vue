@@ -698,10 +698,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxAppId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -715,12 +711,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  WxAppModel,
-  WxAppInput,
-  WxAppSearch,
-} from "./Model";
 
 defineOptions({
   name: "小程序设置",
