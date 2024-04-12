@@ -23,7 +23,10 @@
     "deno.enable": true,
     "deno.lint": true,
     "deno.unstable": true,
-    "unocss.root": "uni",
+    "unocss.root": [
+      "pc",
+      "uni"
+    ],
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
     "rust-analyzer.inlayHints.parameterHints.enable": false,
@@ -36,7 +39,7 @@
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
-    "deno.codeLens.references": true,
-    "deno.codeLens.referencesAllFunctions": true
+    "deno.codeLens.references": false,
+    "deno.codeLens.referencesAllFunctions": false
   }
 }
