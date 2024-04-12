@@ -239,7 +239,9 @@ export default defineConfig({
     //     "@rsw/excel-render"
     //   ],
     // }),
-    Unocss(),
+    Unocss({
+      configFile: "./uno.config.ts",
+    }),
     webUpdateNotice(),
   ],
   resolve: {
