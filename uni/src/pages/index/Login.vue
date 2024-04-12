@@ -117,10 +117,6 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-import type {
-  TenantId,
-} from "@/typings/ids";
-
 import {
   lang,
 } from "@/locales/index";
