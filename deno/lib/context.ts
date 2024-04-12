@@ -63,7 +63,7 @@ export type ExecuteResult = {
 }
 
 /** 临时文件路径 */
-export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
+// export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
 
 /** redis连接池 */
 let _redisClient: Redis | undefined = undefined;
