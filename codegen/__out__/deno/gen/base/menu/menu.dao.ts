@@ -64,17 +64,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  MenuInput,
-  MenuModel,
-  MenuSearch,
-  MenuFieldComment,
-} from "./menu.model.ts";
-
 const route_path = "/base/menu";
 
 async function getWhereQuery(

@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  UsrInput,
-  UsrModel,
-  UsrSearch,
-  UsrFieldComment,
-  UsrId,
-} from "./usr.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

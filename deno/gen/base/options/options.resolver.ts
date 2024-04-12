@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  OptionsInput,
-  OptionsModel,
-  OptionsSearch,
-  OptionsFieldComment,
-  OptionsId,
-} from "./options.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -3,32 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  I18nId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  I18nSearch,
-  I18nInput,
-  I18nModel,
+import {
+  i18nQueryField,
 } from "./Model";
-
-// 语言
-import type {
-  LangSearch,
-  LangModel,
-} from "@/views/base/lang/Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   findTree as findMenuTree,
@@ -81,26 +63,10 @@ export async function findAll(
   const data: {
     findAllI18n: I18nModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nQueryField }
         }
       }
     `,
@@ -132,26 +98,10 @@ export async function findOne(
   const data: {
     findOneI18n?: I18nModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: I18nSearch, $sort: [SortInput!]) {
         findOneI18n(search: $search, sort: $sort) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nQueryField }
         }
       }
     `,
@@ -260,26 +210,10 @@ export async function findById(
   const data: {
     findByIdI18n?: I18nModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: I18nId!) {
         findByIdI18n(id: $id) {
-          id
-          lang_id
-          lang_id_lbl
-          menu_id
-          menu_id_lbl
-          code
-          lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ i18nQueryField }
         }
       }
     `,
@@ -562,25 +496,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: I18nSearch, $sort: [SortInput!]) {
             findAllI18n(search: $search, sort: $sort) {
-              id
-              lang_id
-              lang_id_lbl
-              menu_id
-              menu_id_lbl
-              code
-              lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ i18nQueryField }
             }
             findAllLang {
               lbl

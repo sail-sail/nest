@@ -4,6 +4,8 @@ export async function getHomeUrls() {
   const {
     getHomeUrls,
   } = await import("./role.service.ts");
+  
   const data = await getHomeUrls();
+  
   return data;
 }

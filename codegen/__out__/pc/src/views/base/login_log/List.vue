@@ -221,31 +221,6 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span>
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
     </template>
     
     <template v-else>
@@ -444,10 +419,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  LoginLogId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -455,11 +426,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
 } from "./Api";
-
-import type {
-  LoginLogModel,
-  LoginLogSearch,
-} from "./Model";
 
 defineOptions({
   name: "登录日志",

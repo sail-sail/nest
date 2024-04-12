@@ -114,14 +114,6 @@ import TreeList from "./TreeList.vue";<#
 }
 #>
 
-import type {
-  <#=Table_Up#>Id,
-} from "@/typings/ids";
-
-import type {
-  <#=modelName#>,
-} from "#/types";
-
 const emit = defineEmits<{
   (e: "change", value?: <#=modelName#> | <#=modelName#>[] | null): void,
 }>();

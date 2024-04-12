@@ -688,10 +688,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  DictbizId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -705,12 +701,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  DictbizModel,
-  DictbizInput,
-  DictbizSearch,
-} from "./Model";
 
 import ForeignTabs from "./ForeignTabs.vue";
 

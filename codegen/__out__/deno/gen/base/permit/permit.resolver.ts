@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  PermitInput,
-  PermitModel,
-  PermitSearch,
-  PermitFieldComment,
-  PermitId,
-} from "./permit.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

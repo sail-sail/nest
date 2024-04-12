@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  DomainInput,
-  DomainModel,
-  DomainSearch,
-  DomainFieldComment,
-  DomainId,
-} from "./domain.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

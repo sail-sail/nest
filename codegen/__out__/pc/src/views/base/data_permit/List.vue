@@ -599,10 +599,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  DataPermitId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -614,17 +610,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  DataPermitModel,
-  DataPermitInput,
-  DataPermitSearch,
-} from "./Model";
-
-// 菜单
-import type {
-  MenuModel,
-} from "@/views/base/menu/Model";
 
 import {
   getMenuTree,
@@ -940,7 +925,7 @@ function getTableColumns(): ColumnType[] {
       label: "菜单",
       prop: "menu_id_lbl",
       sortBy: "menu_id",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -958,7 +943,7 @@ function getTableColumns(): ColumnType[] {
       label: "类型",
       prop: "type_lbl",
       sortBy: "type",
-      width: 100,
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

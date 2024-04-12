@@ -5,14 +5,52 @@ import type {
   FieldPermitFieldComment as FieldPermitFieldCommentType,
 } from "#/types";
 
-export interface FieldPermitModel extends FieldPermitModelType {
+declare global {
+  
+  interface FieldPermitModel extends FieldPermitModelType {
+  }
+
+  interface FieldPermitInput extends FieldPermitInputType {
+  }
+
+  interface FieldPermitSearch extends FieldPermitSearchType {
+  }
+
+  interface FieldPermitFieldComment extends FieldPermitFieldCommentType {
+  }
+  
 }
 
-export interface FieldPermitInput extends FieldPermitInputType {
-}
+export const fieldPermitFields = [
+  // ID
+  "id",
+  // 菜单
+  "menu_id",
+  "menu_id_lbl",
+  // 编码
+  "code",
+  // 名称
+  "lbl",
+  // 类型
+  "type",
+  "type_lbl",
+  // 备注
+  "rem",
+  // 创建人
+  "create_usr_id",
+  "create_usr_id_lbl",
+  // 创建时间
+  "create_time",
+  "create_time_lbl",
+  // 更新人
+  "update_usr_id",
+  "update_usr_id_lbl",
+  // 更新时间
+  "update_time",
+  "update_time_lbl",
+  "is_deleted",
+];
 
-export interface FieldPermitSearch extends FieldPermitSearchType {
-}
-
-export interface FieldPermitFieldComment extends FieldPermitFieldCommentType {
-}
+export const fieldPermitQueryField = `
+  ${ fieldPermitFields.join(" ") }
+`;

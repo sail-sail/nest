@@ -8,14 +8,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  RoleInput,
-  RoleModel,
-  RoleSearch,
-  RoleFieldComment,
-  RoleId,
-} from "./role.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

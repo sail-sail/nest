@@ -3,26 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  DictDetailId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  DictDetailSearch,
-  DictDetailInput,
-  DictDetailModel,
+import {
+  dictDetailQueryField,
 } from "./Model";
-
-// 系统字典
-import type {
-  DictSearch,
-  DictModel,
-} from "@/views/base/dict/Model";
 
 async function setLblById(
   model?: DictDetailModel | null,
@@ -76,29 +64,10 @@ export async function findAll(
   const data: {
     findAllDictDetail: DictDetailModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictDetail(search: $search, page: $page, sort: $sort) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailQueryField }
         }
       }
     `,
@@ -130,29 +99,10 @@ export async function findOne(
   const data: {
     findOneDictDetail?: DictDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: DictDetailSearch, $sort: [SortInput!]) {
         findOneDictDetail(search: $search, sort: $sort) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailQueryField }
         }
       }
     `,
@@ -261,29 +211,10 @@ export async function findById(
   const data: {
     findByIdDictDetail?: DictDetailModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: DictDetailId!) {
         findByIdDictDetail(id: $id) {
-          id
-          dict_id
-          dict_id_lbl
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ dictDetailQueryField }
         }
       }
     `,
@@ -554,28 +485,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: DictDetailSearch, $sort: [SortInput!]) {
             findAllDictDetail(search: $search, sort: $sort) {
-              id
-              dict_id
-              dict_id_lbl
-              lbl
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ dictDetailQueryField }
             }
             findAllDict {
               lbl

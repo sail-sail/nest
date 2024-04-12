@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  LoginLogInput,
-  LoginLogModel,
-  LoginLogSearch,
-  LoginLogFieldComment,
-  LoginLogId,
-} from "./login_log.model.ts";
-
 import * as login_logDao from "./login_log.dao.ts";
 
 /**

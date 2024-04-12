@@ -596,6 +596,8 @@ const hasAtt = columns.some((item) => item.isAtt);
         <span>{{ ns('<#=label#>') }}</span>
       </el-button><#
       }
+      #><#
+      if (opts.noExport !== true) {
       #>
       
       <el-dropdown
@@ -745,7 +747,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             
           </el-dropdown-menu>
         </template>
-      </el-dropdown>
+      </el-dropdown><#
+      }
+      #>
       
     </template>
     
@@ -1580,10 +1584,6 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 }
 #>
 
-import type {
-  <#=Table_Up#>Id,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,<#
@@ -1634,47 +1634,7 @@ import {
   findSummary,<#
     }
   #>
-} from "./Api";
-
-import type {
-  <#=modelName#>,<#
-  if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
-  #>
-  <#=inputName#>,<#
-  }
-  #>
-  <#=searchName#>,
-} from "./Model";<#
-const foreignTableUpArr = [ ];
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  const foreignKey = column.foreignKey;
-  const data_type = column.DATA_TYPE;
-  if (!foreignKey) continue;
-  const foreignTable = foreignKey.table;
-  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (table === foreignTable) continue;
-  if (foreignTableUpArr.includes(foreignTableUp)) continue;
-  const search = column.search;
-  if (!search) {
-    continue;
-  }
-  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  foreignTableUpArr.push(Foreign_Table_Up);
-  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-#>
-
-// <#=foreignSchema.opts.table_comment#>
-import type {
-  <#=Foreign_Table_Up#>Model,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Model";<#
-}
-#><#
+} from "./Api";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];

@@ -64,14 +64,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  DomainInput,
-  DomainModel,
-  DomainSearch,
-  DomainFieldComment,
-  DomainId,
-} from "./domain.model.ts";
-
 const route_path = "/base/domain";
 
 async function getWhereQuery(

@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  OperationRecordModel,
-  OperationRecordSearch,
-  OperationRecordFieldComment,
-  OperationRecordId,
-} from "./operation_record.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

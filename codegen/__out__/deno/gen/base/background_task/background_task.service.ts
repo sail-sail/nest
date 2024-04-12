@@ -8,14 +8,6 @@ import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
 
-import type {
-  BackgroundTaskInput,
-  BackgroundTaskModel,
-  BackgroundTaskSearch,
-  BackgroundTaskFieldComment,
-  BackgroundTaskId,
-} from "./background_task.model.ts";
-
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**

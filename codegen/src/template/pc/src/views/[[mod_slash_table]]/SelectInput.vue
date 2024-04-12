@@ -122,14 +122,6 @@ import {
   findAll,
 } from "./Api";
 
-import type {
-  <#=Table_Up#>Id,
-} from "@/typings/ids";
-
-import type {
-  <#=modelName#>,
-} from "#/types";
-
 let emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,

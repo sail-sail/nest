@@ -263,18 +263,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  I18nId,
-} from "@/typings/ids";
-
-import type {
-  I18nInput,
-} from "./Model";
-
-import type {
-  LangModel,
-} from "@/views/base/lang/Model";
-
 import {
   getLangList,
 } from "./Api";
