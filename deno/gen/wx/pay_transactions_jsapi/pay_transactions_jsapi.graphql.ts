@@ -1,5 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
+import type { } from "./pay_transactions_jsapi.model.ts";
 import * as resolver from "./pay_transactions_jsapi.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `

@@ -7,13 +7,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  PayTransactionsJsapiModel,
-  PayTransactionsJsapiSearch,
-  PayTransactionsJsapiFieldComment,
-  PayTransactionsJsapiId,
-} from "./pay_transactions_jsapi.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

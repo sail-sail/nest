@@ -1,6 +1,4 @@
-import type {
-  PayTransactionsJsapiId,
-} from "@/typings/ids";
+
 
 import {
   PayTransactionsJsapiTradeState,
@@ -12,10 +10,8 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  PayTransactionsJsapiSearch,
-  PayTransactionsJsapiInput,
-  PayTransactionsJsapiModel,
+import {
+  payTransactionsJsapiQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -91,40 +87,10 @@ export async function findAll(
   const data: {
     findAllPayTransactionsJsapi: PayTransactionsJsapiModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PayTransactionsJsapiSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPayTransactionsJsapi(search: $search, page: $page, sort: $sort) {
-          id
-          appid
-          mchid
-          description
-          out_trade_no
-          transaction_id
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          success_time
-          success_time_lbl
-          time_expire
-          attach
-          attach2
-          notify_url
-          support_fapiao
-          support_fapiao_lbl
-          total_fee
-          currency
-          currency_lbl
-          openid
-          prepay_id
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ payTransactionsJsapiQueryField }
         }
       }
     `,
@@ -156,40 +122,10 @@ export async function findOne(
   const data: {
     findOnePayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
         findOnePayTransactionsJsapi(search: $search, sort: $sort) {
-          id
-          appid
-          mchid
-          description
-          out_trade_no
-          transaction_id
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          success_time
-          success_time_lbl
-          time_expire
-          attach
-          attach2
-          notify_url
-          support_fapiao
-          support_fapiao_lbl
-          total_fee
-          currency
-          currency_lbl
-          openid
-          prepay_id
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ payTransactionsJsapiQueryField }
         }
       }
     `,
@@ -240,40 +176,10 @@ export async function findById(
   const data: {
     findByIdPayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: PayTransactionsJsapiId!) {
         findByIdPayTransactionsJsapi(id: $id) {
-          id
-          appid
-          mchid
-          description
-          out_trade_no
-          transaction_id
-          trade_state
-          trade_state_lbl
-          trade_state_desc
-          success_time
-          success_time_lbl
-          time_expire
-          attach
-          attach2
-          notify_url
-          support_fapiao
-          support_fapiao_lbl
-          total_fee
-          currency
-          currency_lbl
-          openid
-          prepay_id
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ payTransactionsJsapiQueryField }
         }
       }
     `,
@@ -383,39 +289,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
             findAllPayTransactionsJsapi(search: $search, sort: $sort) {
-              id
-              appid
-              mchid
-              description
-              out_trade_no
-              transaction_id
-              trade_state
-              trade_state_lbl
-              trade_state_desc
-              success_time
-              success_time_lbl
-              time_expire
-              attach
-              attach2
-              notify_url
-              support_fapiao
-              support_fapiao_lbl
-              total_fee
-              currency
-              currency_lbl
-              openid
-              prepay_id
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ payTransactionsJsapiQueryField }
             }
             getDict(codes: [
               "wx_pay_notice_trade_state",

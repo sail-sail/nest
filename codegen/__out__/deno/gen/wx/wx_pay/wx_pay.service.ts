@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  WxPayInput,
-  WxPayModel,
-  WxPaySearch,
-  WxPayFieldComment,
-  WxPayId,
-} from "./wx_pay.model.ts";
-
 import * as wx_payDao from "./wx_pay.dao.ts";
 
 /**

@@ -373,14 +373,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  PayTransactionsJsapiId,
-} from "@/typings/ids";
-
-import type {
-  PayTransactionsJsapiInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

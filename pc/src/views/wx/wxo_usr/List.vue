@@ -585,10 +585,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  WxoUsrId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -600,12 +596,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  WxoUsrModel,
-  WxoUsrInput,
-  WxoUsrSearch,
-} from "./Model";
 
 defineOptions({
   name: "公众号用户",

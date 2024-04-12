@@ -262,18 +262,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  WxoUsrId,
-} from "@/typings/ids";
-
-import type {
-  WxoUsrInput,
-} from "./Model";
-
-import type {
-  UsrModel,
-} from "@/views/base/usr/Model";
-
 import {
   getUsrList,
 } from "./Api";
