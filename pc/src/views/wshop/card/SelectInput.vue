@@ -101,14 +101,6 @@ import {
   findAll,
 } from "./Api";
 
-import type {
-  CardId,
-} from "@/typings/ids";
-
-import type {
-  CardModel,
-} from "#/types";
-
 let emit = defineEmits<{
   (e: "update:modelValue", value?: CardId | CardId[] | null): void,
   (e: "change", value?: CardModel | (CardModel | undefined)[] | null): void,

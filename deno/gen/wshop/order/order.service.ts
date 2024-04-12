@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  OrderInput,
-  OrderModel,
-  OrderSearch,
-  OrderFieldComment,
-  OrderId,
-} from "./order.model.ts";
-
 import * as orderDao from "./order.dao.ts";
 
 import {

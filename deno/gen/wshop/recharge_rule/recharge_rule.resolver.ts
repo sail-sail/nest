@@ -10,14 +10,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  RechargeRuleInput,
-  RechargeRuleModel,
-  RechargeRuleSearch,
-  RechargeRuleFieldComment,
-  RechargeRuleId,
-} from "./recharge_rule.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

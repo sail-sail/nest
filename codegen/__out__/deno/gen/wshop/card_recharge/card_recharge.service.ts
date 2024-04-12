@@ -4,14 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CardRechargeInput,
-  CardRechargeModel,
-  CardRechargeSearch,
-  CardRechargeFieldComment,
-  CardRechargeId,
-} from "./card_recharge.model.ts";
-
 import * as card_rechargeDao from "./card_recharge.dao.ts";
 
 /**

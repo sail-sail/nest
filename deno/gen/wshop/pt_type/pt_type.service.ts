@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  PtTypeInput,
-  PtTypeModel,
-  PtTypeSearch,
-  PtTypeFieldComment,
-  PtTypeId,
-} from "./pt_type.model.ts";
-
 import * as pt_typeDao from "./pt_type.dao.ts";
 
 /**

@@ -67,7 +67,9 @@ import {
   existById as existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
-import * as orgDao from "/gen/base/org/org.dao.ts";
+import {
+  existById as existByIdOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   UniqueType,
@@ -81,25 +83,13 @@ import type {
   OrderType,
 } from "/gen/types.ts";
 
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
+import {
+  findOne as findOneUsr,
+} from "/gen/base/usr/usr.dao.ts";
 
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  OrderInput,
-  OrderModel,
-  OrderSearch,
-  OrderFieldComment,
-  OrderId,
-} from "./order.model.ts";
-
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
-
-import * as cardDao from "/gen/wshop/card/card.dao.ts";
+import {
+  findOne as findOneCard,
+} from "/gen/wshop/card/card.dao.ts";
 
 const route_path = "/wshop/order";
 
@@ -626,7 +616,7 @@ export async function setIdByLbl(
   // 用户
   if (isNotEmpty(input.usr_id_lbl) && input.usr_id == null) {
     input.usr_id_lbl = String(input.usr_id_lbl).trim();
-    const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
+    const usrModel = await findOneUsr({ lbl: input.usr_id_lbl });
     if (usrModel) {
       input.usr_id = usrModel.id;
     }
@@ -635,7 +625,7 @@ export async function setIdByLbl(
   // 会员卡
   if (isNotEmpty(input.card_id_lbl) && input.card_id == null) {
     input.card_id_lbl = String(input.card_id_lbl).trim();
-    const cardModel = await cardDao.findOne({ lbl: input.card_id_lbl });
+    const cardModel = await findOneCard({ lbl: input.card_id_lbl });
     if (cardModel) {
       input.card_id = cardModel.id;
     }
@@ -1388,7 +1378,7 @@ export async function updateOrgById(
   const table = "wshop_order";
   const method = "updateOrgById";
   
-  const orgExist = await orgDao.existById(org_id);
+  const orgExist = await existByIdOrg(org_id);
   if (!orgExist) {
     return 0;
   }

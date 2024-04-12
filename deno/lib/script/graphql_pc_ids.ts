@@ -130,50 +130,50 @@ export function getScalars() {
     
     // 会员卡
     "CardId": {
-      "input": `import("@/typings/ids.ts").CardId`,
-      "output": `import("@/typings/ids.ts").CardId`,
+      "input": "CardId",
+      "output": "CardId",
     },
     
     // 会员卡消费记录
     "CardConsumeId": {
-      "input": `import("@/typings/ids.ts").CardConsumeId`,
-      "output": `import("@/typings/ids.ts").CardConsumeId`,
+      "input": "CardConsumeId",
+      "output": "CardConsumeId",
     },
     
     // 会员卡充值记录
     "CardRechargeId": {
-      "input": `import("@/typings/ids.ts").CardRechargeId`,
-      "output": `import("@/typings/ids.ts").CardRechargeId`,
+      "input": "CardRechargeId",
+      "output": "CardRechargeId",
     },
     
     // 订单
     "OrderId": {
-      "input": `import("@/typings/ids.ts").OrderId`,
-      "output": `import("@/typings/ids.ts").OrderId`,
+      "input": "OrderId",
+      "output": "OrderId",
     },
     
     // 产品
     "PtId": {
-      "input": `import("@/typings/ids.ts").PtId`,
-      "output": `import("@/typings/ids.ts").PtId`,
+      "input": "PtId",
+      "output": "PtId",
     },
     
     // 产品类别
     "PtTypeId": {
-      "input": `import("@/typings/ids.ts").PtTypeId`,
-      "output": `import("@/typings/ids.ts").PtTypeId`,
+      "input": "PtTypeId",
+      "output": "PtTypeId",
     },
     
     // 充值赠送规则
     "RechargeRuleId": {
-      "input": `import("@/typings/ids.ts").RechargeRuleId`,
-      "output": `import("@/typings/ids.ts").RechargeRuleId`,
+      "input": "RechargeRuleId",
+      "output": "RechargeRuleId",
     },
     
     // 小程序配置
     "WxappConfigId": {
-      "input": `import("@/typings/ids.ts").WxappConfigId`,
-      "output": `import("@/typings/ids.ts").WxappConfigId`,
+      "input": "WxappConfigId",
+      "output": "WxappConfigId",
     },
     
     // 微信JSAPI下单

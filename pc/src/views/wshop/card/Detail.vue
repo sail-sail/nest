@@ -351,18 +351,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  CardId,
-} from "@/typings/ids";
-
-import type {
-  CardInput,
-} from "./Model";
-
-import type {
-  UsrModel,
-} from "@/views/base/usr/Model";
-
 import {
   getUsrList,
 } from "./Api";

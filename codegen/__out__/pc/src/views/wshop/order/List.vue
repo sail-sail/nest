@@ -756,10 +756,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  OrderId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -773,12 +769,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  OrderModel,
-  OrderInput,
-  OrderSearch,
-} from "./Model";
 
 defineOptions({
   name: "订单",

@@ -64,7 +64,9 @@ import {
   existById as existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
-import * as orgDao from "/gen/base/org/org.dao.ts";
+import {
+  existById as existByIdOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   many2manyUpdate,
@@ -79,26 +81,6 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
-
-import type {
-  TenantId,
-} from "/gen/base/tenant/tenant.model.ts";
-
-import type {
-  OrgId,
-} from "/gen/base/org/org.model.ts";
-
-import type {
-  PtTypeId,
-} from "/gen/wshop/pt_type/pt_type.model.ts";
-
-import type {
-  PtInput,
-  PtModel,
-  PtSearch,
-  PtFieldComment,
-  PtId,
-} from "./pt.model.ts";
 
 const route_path = "/wshop/pt";
 
@@ -1382,7 +1364,7 @@ export async function updateOrgById(
   const table = "wshop_pt";
   const method = "updateOrgById";
   
-  const orgExist = await orgDao.existById(org_id);
+  const orgExist = await existByIdOrg(org_id);
   if (!orgExist) {
     return 0;
   }

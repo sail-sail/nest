@@ -5,16 +5,62 @@ import type {
   PtTypeFieldComment as PtTypeFieldCommentType,
 } from "#/types";
 
-export interface PtTypeModel extends PtTypeModelType {
-  /** 图标 */
-  img_lbl: string;
+declare global {
+  
+  interface PtTypeModel extends PtTypeModelType {
+    /** 图标 */
+    img_lbl: string;
+  }
+
+  interface PtTypeInput extends PtTypeInputType {
+  }
+
+  interface PtTypeSearch extends PtTypeSearchType {
+  }
+
+  interface PtTypeFieldComment extends PtTypeFieldCommentType {
+  }
+  
 }
 
-export interface PtTypeInput extends PtTypeInputType {
-}
+export const ptTypeFields = [
+  // ID
+  "id",
+  // 图标
+  "img",
+  // 名称
+  "lbl",
+  // 首页显示
+  "is_home",
+  "is_home_lbl",
+  // 推荐
+  "is_recommend",
+  "is_recommend_lbl",
+  // 锁定
+  "is_locked",
+  "is_locked_lbl",
+  // 启用
+  "is_enabled",
+  "is_enabled_lbl",
+  // 排序
+  "order_by",
+  // 备注
+  "rem",
+  // 创建人
+  "create_usr_id",
+  "create_usr_id_lbl",
+  // 创建时间
+  "create_time",
+  "create_time_lbl",
+  // 更新人
+  "update_usr_id",
+  "update_usr_id_lbl",
+  // 更新时间
+  "update_time",
+  "update_time_lbl",
+  "is_deleted",
+];
 
-export interface PtTypeSearch extends PtTypeSearchType {
-}
-
-export interface PtTypeFieldComment extends PtTypeFieldCommentType {
-}
+export const ptTypeQueryField = `
+  ${ ptTypeFields.join(" ") }
+`;

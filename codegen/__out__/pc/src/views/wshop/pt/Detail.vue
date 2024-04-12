@@ -391,18 +391,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  PtId,
-} from "@/typings/ids";
-
-import type {
-  PtInput,
-} from "./Model";
-
-import type {
-  PtTypeModel,
-} from "@/views/wshop/pt_type/Model";
-
 import {
   getPtTypeList,
 } from "./Api";

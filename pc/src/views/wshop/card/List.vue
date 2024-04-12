@@ -736,10 +736,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CardId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -753,12 +749,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  CardModel,
-  CardInput,
-  CardSearch,
-} from "./Model";
 
 defineOptions({
   name: "会员卡",

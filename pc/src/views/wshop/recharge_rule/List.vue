@@ -640,10 +640,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  RechargeRuleId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -657,12 +653,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  RechargeRuleModel,
-  RechargeRuleInput,
-  RechargeRuleSearch,
-} from "./Model";
 
 defineOptions({
   name: "充值赠送规则",

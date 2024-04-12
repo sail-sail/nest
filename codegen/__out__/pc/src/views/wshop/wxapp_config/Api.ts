@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  WxappConfigId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  WxappConfigSearch,
-  WxappConfigInput,
-  WxappConfigModel,
+import {
+  wxappConfigQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -28,8 +22,9 @@ async function setLblById(
   
   // 图片
   if (model.img) {
-    (model as any).img_lbl = location.origin + getImgUrl({
+    model.img_lbl = location.origin + getImgUrl({
       id: model.img,
+      height: 100,
     });
   }
 }
@@ -74,27 +69,10 @@ export async function findAll(
   const data: {
     findAllWxappConfig: WxappConfigModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxappConfigSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxappConfig(search: $search, page: $page, sort: $sort) {
-          id
-          img
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxappConfigQueryField }
         }
       }
     `,
@@ -126,27 +104,10 @@ export async function findOne(
   const data: {
     findOneWxappConfig?: WxappConfigModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: WxappConfigSearch, $sort: [SortInput!]) {
         findOneWxappConfig(search: $search, sort: $sort) {
-          id
-          img
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxappConfigQueryField }
         }
       }
     `,
@@ -255,27 +216,10 @@ export async function findById(
   const data: {
     findByIdWxappConfig?: WxappConfigModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: WxappConfigId!) {
         findByIdWxappConfig(id: $id) {
-          id
-          img
-          lbl
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ wxappConfigQueryField }
         }
       }
     `,
@@ -495,26 +439,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: WxappConfigSearch, $sort: [SortInput!]) {
             findAllWxappConfig(search: $search, sort: $sort) {
-              id
-              img
-              lbl
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ wxappConfigQueryField }
             }
             getDict(codes: [
               "is_locked",

@@ -9,13 +9,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CardRechargeModel,
-  CardRechargeSearch,
-  CardRechargeFieldComment,
-  CardRechargeId,
-} from "./card_recharge.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

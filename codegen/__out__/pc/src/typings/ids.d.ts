@@ -83,6 +83,38 @@ declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
 
+declare const cardId: unique symbol;
+/** 会员卡 */
+type CardId = Distinct<string, typeof cardId>;
+
+declare const card_consumeId: unique symbol;
+/** 会员卡消费记录 */
+type CardConsumeId = Distinct<string, typeof card_consumeId>;
+
+declare const card_rechargeId: unique symbol;
+/** 会员卡充值记录 */
+type CardRechargeId = Distinct<string, typeof card_rechargeId>;
+
+declare const orderId: unique symbol;
+/** 订单 */
+type OrderId = Distinct<string, typeof orderId>;
+
+declare const ptId: unique symbol;
+/** 产品 */
+type PtId = Distinct<string, typeof ptId>;
+
+declare const pt_typeId: unique symbol;
+/** 产品类别 */
+type PtTypeId = Distinct<string, typeof pt_typeId>;
+
+declare const recharge_ruleId: unique symbol;
+/** 充值赠送规则 */
+type RechargeRuleId = Distinct<string, typeof recharge_ruleId>;
+
+declare const wxapp_configId: unique symbol;
+/** 小程序配置 */
+type WxappConfigId = Distinct<string, typeof wxapp_configId>;
+
 declare const pay_transactions_jsapiId: unique symbol;
 /** 微信JSAPI下单 */
 type PayTransactionsJsapiId = Distinct<string, typeof pay_transactions_jsapiId>;

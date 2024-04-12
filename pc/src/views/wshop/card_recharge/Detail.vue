@@ -273,22 +273,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  CardRechargeId,
-} from "@/typings/ids";
-
-import type {
-  CardRechargeInput,
-} from "./Model";
-
-import type {
-  CardModel,
-} from "@/views/wshop/card/Model";
-
-import type {
-  UsrModel,
-} from "@/views/base/usr/Model";
-
 import {
   getCardList,
   getUsrList,

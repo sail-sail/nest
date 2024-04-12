@@ -1,8 +1,4 @@
-import type {
-  CardRechargeId,
-} from "@/typings/ids";
 
-import Decimal from "decimal.js-light";
 
 import type {
   Query,
@@ -10,23 +6,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  CardRechargeSearch,
-  CardRechargeInput,
-  CardRechargeModel,
+import {
+  cardRechargeQueryField,
 } from "./Model";
-
-// 会员卡
-import type {
-  CardSearch,
-  CardModel,
-} from "@/views/wshop/card/Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: CardRechargeModel | null,
@@ -133,29 +115,10 @@ export async function findAll(
   const data: {
     findAllCardRecharge: CardRechargeModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardRechargeSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCardRecharge(search: $search, page: $page, sort: $sort) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          balance
-          give_balance
-          integral
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardRechargeQueryField }
         }
       }
     `,
@@ -187,29 +150,10 @@ export async function findOne(
   const data: {
     findOneCardRecharge?: CardRechargeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardRechargeSearch, $sort: [SortInput!]) {
         findOneCardRecharge(search: $search, sort: $sort) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          balance
-          give_balance
-          integral
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardRechargeQueryField }
         }
       }
     `,
@@ -260,29 +204,10 @@ export async function findById(
   const data: {
     findByIdCardRecharge?: CardRechargeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CardRechargeId!) {
         findByIdCardRecharge(id: $id) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          balance
-          give_balance
-          integral
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardRechargeQueryField }
         }
       }
     `,
@@ -550,28 +475,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CardRechargeSearch, $sort: [SortInput!]) {
             findAllCardRecharge(search: $search, sort: $sort) {
-              id
-              card_id
-              card_id_lbl
-              usr_id
-              usr_id_lbl
-              amt
-              give_amt
-              balance
-              give_balance
-              integral
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ cardRechargeQueryField }
             }
             findAllCard {
               lbl

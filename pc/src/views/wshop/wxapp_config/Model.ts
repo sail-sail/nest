@@ -5,16 +5,56 @@ import type {
   WxappConfigFieldComment as WxappConfigFieldCommentType,
 } from "#/types";
 
-export interface WxappConfigModel extends WxappConfigModelType {
-  /** 图片 */
-  img_lbl: string;
+declare global {
+  
+  interface WxappConfigModel extends WxappConfigModelType {
+    /** 图片 */
+    img_lbl: string;
+  }
+
+  interface WxappConfigInput extends WxappConfigInputType {
+  }
+
+  interface WxappConfigSearch extends WxappConfigSearchType {
+  }
+
+  interface WxappConfigFieldComment extends WxappConfigFieldCommentType {
+  }
+  
 }
 
-export interface WxappConfigInput extends WxappConfigInputType {
-}
+export const wxappConfigFields = [
+  // ID
+  "id",
+  // 图片
+  "img",
+  // 名称
+  "lbl",
+  // 值
+  "val",
+  // 锁定
+  "is_locked",
+  "is_locked_lbl",
+  // 启用
+  "is_enabled",
+  "is_enabled_lbl",
+  // 备注
+  "rem",
+  // 创建人
+  "create_usr_id",
+  "create_usr_id_lbl",
+  // 创建时间
+  "create_time",
+  "create_time_lbl",
+  // 更新人
+  "update_usr_id",
+  "update_usr_id_lbl",
+  // 更新时间
+  "update_time",
+  "update_time_lbl",
+  "is_deleted",
+];
 
-export interface WxappConfigSearch extends WxappConfigSearchType {
-}
-
-export interface WxappConfigFieldComment extends WxappConfigFieldCommentType {
-}
+export const wxappConfigQueryField = `
+  ${ wxappConfigFields.join(" ") }
+`;

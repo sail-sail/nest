@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  RechargeRuleInput,
-  RechargeRuleModel,
-  RechargeRuleSearch,
-  RechargeRuleFieldComment,
-  RechargeRuleId,
-} from "./recharge_rule.model.ts";
-
 import * as recharge_ruleDao from "./recharge_rule.dao.ts";
 
 /**
