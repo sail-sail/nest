@@ -125,7 +125,9 @@ export default defineConfig({
       ],
       dts: "./src/typings/components.d.ts",
     }),
-    Unocss(),
+    Unocss({
+      configFile: "./uno.config.ts",
+    }),
   ],
   resolve: {
     alias: {
