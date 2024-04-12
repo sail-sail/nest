@@ -13,8 +13,12 @@ export async function n(
   routePath: string | null,
   code: string,
 ) {
-  const { nLang } = await import("./i18n.ts");
+  const {
+    nLang,
+  } = await import("./i18n.ts");
+  
   const context = useContext();
   context.notVerifyToken = true;
+  
   return await nLang(langCode, routePath, code);
 }

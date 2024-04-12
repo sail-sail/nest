@@ -11,10 +11,6 @@ import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
 
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
 async function _getMenus(
   parent_id?: MenuId,
 ) {

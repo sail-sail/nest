@@ -3,8 +3,8 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import {
-  type AuthModel,
+import type {
+  AuthModel,
 } from "/lib/auth/auth.constants.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -12,14 +12,6 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
-
-import type {
-  MenuId,
-} from "/gen/base/menu/menu.model.ts";
-
-import type {
-  UsrId,
-} from "/gen/base/usr/usr.model.ts";
 
 /**
  * 获取当前租户绑定的网址

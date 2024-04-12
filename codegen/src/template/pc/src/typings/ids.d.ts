@@ -23,7 +23,7 @@ for (let i = 0; i < allTables.length; i++) {
 #>
 declare const <#=table_Up#>Id: unique symbol;
 /** <#=table_comment#> */
-export type <#=Table_Up#>Id = Distinct<string, typeof <#=table_Up#>Id>;
+type <#=Table_Up#>Id = Distinct<string, typeof <#=table_Up#>Id>;
 <#
 }
 #>

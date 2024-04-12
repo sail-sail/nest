@@ -693,10 +693,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  MenuId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -710,12 +706,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  MenuModel,
-  MenuInput,
-  MenuSearch,
-} from "./Model";
 
 import {
   getMenuTree,
@@ -1025,7 +1015,7 @@ function getTableColumns(): ColumnType[] {
       label: "父菜单",
       prop: "parent_id_lbl",
       sortBy: "parent_id",
-      width: 160,
+      width: 180,
       sortable: "custom",
       align: "left",
       headerAlign: "center",
@@ -1035,7 +1025,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1044,7 +1034,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "路由",
       prop: "route_path",
-      width: 200,
+      width: 240,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

@@ -419,10 +419,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  LoginLogId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -430,11 +426,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
 } from "./Api";
-
-import type {
-  LoginLogModel,
-  LoginLogSearch,
-} from "./Model";
 
 defineOptions({
   name: "登录日志",

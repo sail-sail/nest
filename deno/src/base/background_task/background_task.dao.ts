@@ -5,10 +5,6 @@ import {
 
 import dayjs from "dayjs";
 
-import type {
-  BackgroundTaskId,
-} from "/gen/base/background_task/background_task.model.ts";
-
 import {
   BackgroundTaskState,
   BackgroundTaskType,

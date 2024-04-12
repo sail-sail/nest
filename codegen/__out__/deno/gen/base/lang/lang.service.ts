@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  LangInput,
-  LangModel,
-  LangSearch,
-  LangFieldComment,
-  LangId,
-} from "./lang.model.ts";
-
 import * as langDao from "./lang.dao.ts";
 
 /**

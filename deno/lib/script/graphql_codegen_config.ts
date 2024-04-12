@@ -16,6 +16,7 @@ const config: CodegenConfig = {
         "typescript-operations"
       ],
       "config": {
+        "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
           "Decimal": {
@@ -64,6 +65,7 @@ const config: CodegenConfig = {
         "typescript-operations"
       ],
       "config": {
+        "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
           "Decimal": {
@@ -112,6 +114,7 @@ const config: CodegenConfig = {
         "typescript-operations"
       ],
       "config": {
+        "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
           "Decimal": {

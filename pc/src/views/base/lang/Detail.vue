@@ -243,14 +243,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  LangId,
-} from "@/typings/ids";
-
-import type {
-  LangInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

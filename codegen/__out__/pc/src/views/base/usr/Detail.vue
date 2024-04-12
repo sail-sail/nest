@@ -357,23 +357,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  UsrId,
-  OrgId,
-} from "@/typings/ids";
-
-import type {
-  UsrInput,
-} from "./Model";
-
-import type {
-  OrgModel,
-} from "@/views/base/org/Model";
-
-import type {
-  RoleModel,
-} from "@/views/base/role/Model";
-
 import {
   getOrgList,
   getRoleList,

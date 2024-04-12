@@ -3,38 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  RoleId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  RoleSearch,
-  RoleInput,
-  RoleModel,
+import {
+  roleQueryField,
 } from "./Model";
-
-// 菜单
-import type {
-  MenuSearch,
-  MenuModel,
-} from "@/views/base/menu/Model";
-
-// 按钮权限
-import type {
-  PermitSearch,
-  PermitModel,
-} from "@/views/base/permit/Model";
-
-// 数据权限
-import type {
-  DataPermitSearch,
-  DataPermitModel,
-} from "@/views/base/data_permit/Model";
 
 import {
   findTree as findMenuTree,
@@ -105,33 +81,10 @@ export async function findAll(
   const data: {
     findAllRole: RoleModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          home_url
-          menu_ids
-          menu_ids_lbl
-          permit_ids
-          permit_ids_lbl
-          data_permit_ids
-          data_permit_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ roleQueryField }
         }
       }
     `,
@@ -163,33 +116,10 @@ export async function findOne(
   const data: {
     findOneRole?: RoleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RoleSearch, $sort: [SortInput!]) {
         findOneRole(search: $search, sort: $sort) {
-          id
-          lbl
-          home_url
-          menu_ids
-          menu_ids_lbl
-          permit_ids
-          permit_ids_lbl
-          data_permit_ids
-          data_permit_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ roleQueryField }
         }
       }
     `,
@@ -298,33 +228,10 @@ export async function findById(
   const data: {
     findByIdRole?: RoleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: RoleId!) {
         findByIdRole(id: $id) {
-          id
-          lbl
-          home_url
-          menu_ids
-          menu_ids_lbl
-          permit_ids
-          permit_ids_lbl
-          data_permit_ids
-          data_permit_ids_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ roleQueryField }
         }
       }
     `,
@@ -709,32 +616,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: RoleSearch, $sort: [SortInput!]) {
             findAllRole(search: $search, sort: $sort) {
-              id
-              lbl
-              home_url
-              menu_ids
-              menu_ids_lbl
-              permit_ids
-              permit_ids_lbl
-              data_permit_ids
-              data_permit_ids_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ roleQueryField }
             }
             findAllMenu {
               lbl

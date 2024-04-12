@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  OptionsId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  OptionsSearch,
-  OptionsInput,
-  OptionsModel,
+import {
+  optionsQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -70,29 +64,10 @@ export async function findAll(
   const data: {
     findAllOptions: OptionsModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsQueryField }
         }
       }
     `,
@@ -124,29 +99,10 @@ export async function findOne(
   const data: {
     findOneOptions?: OptionsModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OptionsSearch, $sort: [SortInput!]) {
         findOneOptions(search: $search, sort: $sort) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsQueryField }
         }
       }
     `,
@@ -255,29 +211,10 @@ export async function findById(
   const data: {
     findByIdOptions?: OptionsModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OptionsId!) {
         findByIdOptions(id: $id) {
-          id
-          lbl
-          ky
-          val
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          version
-          is_deleted
+          ${ optionsQueryField }
         }
       }
     `,
@@ -498,27 +435,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OptionsSearch, $sort: [SortInput!]) {
             findAllOptions(search: $search, sort: $sort) {
-              id
-              lbl
-              ky
-              val
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ optionsQueryField }
             }
             getDict(codes: [
               "is_locked",
