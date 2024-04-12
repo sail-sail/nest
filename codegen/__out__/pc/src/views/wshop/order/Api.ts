@@ -2,16 +2,10 @@ import {
   UniqueType,
 } from "#/types";
 
-import type {
-  OrderId,
-} from "@/typings/ids";
-
 import {
   OrderStatus,
   OrderType,
 } from "#/types";
-
-import Decimal from "decimal.js-light";
 
 import type {
   Query,
@@ -19,23 +13,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  OrderSearch,
-  OrderInput,
-  OrderModel,
+import {
+  orderQueryField,
 } from "./Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
-
-// 会员卡
-import type {
-  CardSearch,
-  CardModel,
-} from "@/views/wshop/card/Model";
 
 async function setLblById(
   model?: OrderModel | null,
@@ -175,41 +155,10 @@ export async function findAll(
   const data: {
     findAllOrder: OrderModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrderSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOrder(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          company
-          phone
-          status
-          status_lbl
-          usr_id
-          usr_id_lbl
-          card_id
-          card_id_lbl
-          price
-          type
-          type_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orderQueryField }
         }
       }
     `,
@@ -241,41 +190,10 @@ export async function findOne(
   const data: {
     findOneOrder?: OrderModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: OrderSearch, $sort: [SortInput!]) {
         findOneOrder(search: $search, sort: $sort) {
-          id
-          lbl
-          company
-          phone
-          status
-          status_lbl
-          usr_id
-          usr_id_lbl
-          card_id
-          card_id_lbl
-          price
-          type
-          type_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orderQueryField }
         }
       }
     `,
@@ -384,41 +302,10 @@ export async function findById(
   const data: {
     findByIdOrder?: OrderModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: OrderId!) {
         findByIdOrder(id: $id) {
-          id
-          lbl
-          company
-          phone
-          status
-          status_lbl
-          usr_id
-          usr_id_lbl
-          card_id
-          card_id_lbl
-          price
-          type
-          type_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ orderQueryField }
         }
       }
     `,
@@ -749,40 +636,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: OrderSearch, $sort: [SortInput!]) {
             findAllOrder(search: $search, sort: $sort) {
-              id
-              lbl
-              company
-              phone
-              status
-              status_lbl
-              usr_id
-              usr_id_lbl
-              card_id
-              card_id_lbl
-              price
-              type
-              type_lbl
-              amt
-              give_amt
-              integral
-              balance
-              give_balance
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ orderQueryField }
             }
             findAllUsr {
               lbl

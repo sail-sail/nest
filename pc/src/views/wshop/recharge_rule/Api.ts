@@ -3,21 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  RechargeRuleId,
-} from "@/typings/ids";
-
-import Decimal from "decimal.js-light";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  RechargeRuleSearch,
-  RechargeRuleInput,
-  RechargeRuleModel,
+import {
+  rechargeRuleQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -95,27 +87,10 @@ export async function findAll(
   const data: {
     findAllRechargeRule: RechargeRuleModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RechargeRuleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRechargeRule(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          amt
-          give_amt
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ rechargeRuleQueryField }
         }
       }
     `,
@@ -147,27 +122,10 @@ export async function findOne(
   const data: {
     findOneRechargeRule?: RechargeRuleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: RechargeRuleSearch, $sort: [SortInput!]) {
         findOneRechargeRule(search: $search, sort: $sort) {
-          id
-          lbl
-          amt
-          give_amt
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ rechargeRuleQueryField }
         }
       }
     `,
@@ -276,27 +234,10 @@ export async function findById(
   const data: {
     findByIdRechargeRule?: RechargeRuleModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: RechargeRuleId!) {
         findByIdRechargeRule(id: $id) {
-          id
-          lbl
-          amt
-          give_amt
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ rechargeRuleQueryField }
         }
       }
     `,
@@ -516,26 +457,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: RechargeRuleSearch, $sort: [SortInput!]) {
             findAllRechargeRule(search: $search, sort: $sort) {
-              id
-              lbl
-              amt
-              give_amt
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ rechargeRuleQueryField }
             }
             getDict(codes: [
               "is_locked",

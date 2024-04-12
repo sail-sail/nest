@@ -276,14 +276,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  PtTypeId,
-} from "@/typings/ids";
-
-import type {
-  PtTypeInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

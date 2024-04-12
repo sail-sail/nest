@@ -246,14 +246,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  RechargeRuleId,
-} from "@/typings/ids";
-
-import type {
-  RechargeRuleInput,
-} from "./Model";
-
 const emit = defineEmits<{
   nextId: [
     {

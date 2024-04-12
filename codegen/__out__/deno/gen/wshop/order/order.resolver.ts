@@ -10,14 +10,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  OrderInput,
-  OrderModel,
-  OrderSearch,
-  OrderFieldComment,
-  OrderId,
-} from "./order.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

@@ -765,10 +765,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  PtId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -782,12 +778,6 @@ import {
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
-
-import type {
-  PtModel,
-  PtInput,
-  PtSearch,
-} from "./Model";
 
 defineOptions({
   name: "产品",

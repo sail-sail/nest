@@ -3,28 +3,14 @@ import {
 } from "#/types";
 
 import type {
-  PtId,
-} from "@/typings/ids";
-
-import Decimal from "decimal.js-light";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  PtSearch,
-  PtInput,
-  PtModel,
+import {
+  ptQueryField,
 } from "./Model";
-
-// 产品类别
-import type {
-  PtTypeSearch,
-  PtTypeModel,
-} from "@/views/wshop/pt_type/Model";
 
 async function setLblById(
   model?: PtModel | null,
@@ -36,8 +22,9 @@ async function setLblById(
   
   // 图标
   if (model.img) {
-    (model as any).img_lbl = location.origin + getImgUrl({
+    model.img_lbl = location.origin + getImgUrl({
       id: model.img,
+      height: 100,
     });
   }
   
@@ -69,15 +56,17 @@ async function setLblById(
   
   // 详情顶部图片
   if (model.detail_top_img) {
-    (model as any).detail_top_img_lbl = location.origin + getImgUrl({
+    model.detail_top_img_lbl = location.origin + getImgUrl({
       id: model.detail_top_img,
+      height: 100,
     });
   }
   
   // 详情底部图片
   if (model.detail_bottom_img) {
-    (model as any).detail_bottom_img_lbl = location.origin + getImgUrl({
+    model.detail_bottom_img_lbl = location.origin + getImgUrl({
       id: model.detail_bottom_img,
+      height: 100,
     });
   }
 }
@@ -142,38 +131,10 @@ export async function findAll(
   const data: {
     findAllPt: PtModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PtSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPt(search: $search, page: $page, sort: $sort) {
-          id
-          img
-          lbl
-          pt_type_ids
-          pt_type_ids_lbl
-          price
-          original_price
-          unit
-          is_new
-          is_new_lbl
-          introduct
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          detail
-          detail_top_img
-          detail_bottom_img
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptQueryField }
         }
       }
     `,
@@ -205,38 +166,10 @@ export async function findOne(
   const data: {
     findOnePt?: PtModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PtSearch, $sort: [SortInput!]) {
         findOnePt(search: $search, sort: $sort) {
-          id
-          img
-          lbl
-          pt_type_ids
-          pt_type_ids_lbl
-          price
-          original_price
-          unit
-          is_new
-          is_new_lbl
-          introduct
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          detail
-          detail_top_img
-          detail_bottom_img
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptQueryField }
         }
       }
     `,
@@ -345,38 +278,10 @@ export async function findById(
   const data: {
     findByIdPt?: PtModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: PtId!) {
         findByIdPt(id: $id) {
-          id
-          img
-          lbl
-          pt_type_ids
-          pt_type_ids_lbl
-          price
-          original_price
-          unit
-          is_new
-          is_new_lbl
-          introduct
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          detail
-          detail_top_img
-          detail_bottom_img
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptQueryField }
         }
       }
     `,
@@ -661,37 +566,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: PtSearch, $sort: [SortInput!]) {
             findAllPt(search: $search, sort: $sort) {
-              id
-              img
-              lbl
-              pt_type_ids
-              pt_type_ids_lbl
-              price
-              original_price
-              unit
-              is_new
-              is_new_lbl
-              introduct
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              detail
-              detail_top_img
-              detail_bottom_img
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ ptQueryField }
             }
             findAllPtType {
               lbl

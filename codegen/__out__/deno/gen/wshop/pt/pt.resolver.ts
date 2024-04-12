@@ -10,14 +10,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  PtInput,
-  PtModel,
-  PtSearch,
-  PtFieldComment,
-  PtId,
-} from "./pt.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";

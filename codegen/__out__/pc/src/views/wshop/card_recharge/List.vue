@@ -543,10 +543,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CardRechargeId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -555,11 +551,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  CardRechargeModel,
-  CardRechargeSearch,
-} from "./Model";
 
 defineOptions({
   name: "会员卡充值记录",

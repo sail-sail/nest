@@ -129,50 +129,50 @@ export function getScalars() {
     
     // 会员卡
     "CardId": {
-      "input": `import("/gen/wshop/card/card.model.ts").CardId`,
-      "output": `import("/gen/wshop/card/card.model.ts").CardId`,
+      "input": "CardId",
+      "output": "CardId",
     },
     
     // 会员卡消费记录
     "CardConsumeId": {
-      "input": `import("/gen/wshop/card_consume/card_consume.model.ts").CardConsumeId`,
-      "output": `import("/gen/wshop/card_consume/card_consume.model.ts").CardConsumeId`,
+      "input": "CardConsumeId",
+      "output": "CardConsumeId",
     },
     
     // 会员卡充值记录
     "CardRechargeId": {
-      "input": `import("/gen/wshop/card_recharge/card_recharge.model.ts").CardRechargeId`,
-      "output": `import("/gen/wshop/card_recharge/card_recharge.model.ts").CardRechargeId`,
+      "input": "CardRechargeId",
+      "output": "CardRechargeId",
     },
     
     // 订单
     "OrderId": {
-      "input": `import("/gen/wshop/order/order.model.ts").OrderId`,
-      "output": `import("/gen/wshop/order/order.model.ts").OrderId`,
+      "input": "OrderId",
+      "output": "OrderId",
     },
     
     // 产品
     "PtId": {
-      "input": `import("/gen/wshop/pt/pt.model.ts").PtId`,
-      "output": `import("/gen/wshop/pt/pt.model.ts").PtId`,
+      "input": "PtId",
+      "output": "PtId",
     },
     
     // 产品类别
     "PtTypeId": {
-      "input": `import("/gen/wshop/pt_type/pt_type.model.ts").PtTypeId`,
-      "output": `import("/gen/wshop/pt_type/pt_type.model.ts").PtTypeId`,
+      "input": "PtTypeId",
+      "output": "PtTypeId",
     },
     
     // 充值赠送规则
     "RechargeRuleId": {
-      "input": `import("/gen/wshop/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
-      "output": `import("/gen/wshop/recharge_rule/recharge_rule.model.ts").RechargeRuleId`,
+      "input": "RechargeRuleId",
+      "output": "RechargeRuleId",
     },
     
     // 小程序配置
     "WxappConfigId": {
-      "input": `import("/gen/wshop/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
-      "output": `import("/gen/wshop/wxapp_config/wxapp_config.model.ts").WxappConfigId`,
+      "input": "WxappConfigId",
+      "output": "WxappConfigId",
     },
     
     // 微信JSAPI下单

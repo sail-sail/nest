@@ -8,14 +8,6 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import type {
-  CardInput,
-  CardModel,
-  CardSearch,
-  CardFieldComment,
-  CardId,
-} from "./card.model.ts";
-
 import * as cardDao from "./card.dao.ts";
 
 import {

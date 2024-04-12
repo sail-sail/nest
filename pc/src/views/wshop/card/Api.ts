@@ -2,15 +2,9 @@ import {
   UniqueType,
 } from "#/types";
 
-import type {
-  CardId,
-} from "@/typings/ids";
-
 import {
   CardGrade,
 } from "#/types";
-
-import Decimal from "decimal.js-light";
 
 import type {
   Query,
@@ -18,17 +12,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  CardSearch,
-  CardInput,
-  CardModel,
+import {
+  cardQueryField,
 } from "./Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: CardModel | null,
@@ -135,37 +121,10 @@ export async function findAll(
   const data: {
     findAllCard: CardModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCard(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          grade
-          grade_lbl
-          name
-          mobile
-          balance
-          give_balance
-          integral
-          growth_amt
-          is_default_card
-          is_default_card_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardQueryField }
         }
       }
     `,
@@ -197,37 +156,10 @@ export async function findOne(
   const data: {
     findOneCard?: CardModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardSearch, $sort: [SortInput!]) {
         findOneCard(search: $search, sort: $sort) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          grade
-          grade_lbl
-          name
-          mobile
-          balance
-          give_balance
-          integral
-          growth_amt
-          is_default_card
-          is_default_card_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardQueryField }
         }
       }
     `,
@@ -336,37 +268,10 @@ export async function findById(
   const data: {
     findByIdCard?: CardModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CardId!) {
         findByIdCard(id: $id) {
-          id
-          lbl
-          usr_id
-          usr_id_lbl
-          grade
-          grade_lbl
-          name
-          mobile
-          balance
-          give_balance
-          integral
-          growth_amt
-          is_default_card
-          is_default_card_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardQueryField }
         }
       }
     `,
@@ -653,36 +558,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CardSearch, $sort: [SortInput!]) {
             findAllCard(search: $search, sort: $sort) {
-              id
-              lbl
-              usr_id
-              usr_id_lbl
-              grade
-              grade_lbl
-              name
-              mobile
-              balance
-              give_balance
-              integral
-              growth_amt
-              is_default_card
-              is_default_card_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ cardQueryField }
             }
             findAllUsr {
               lbl

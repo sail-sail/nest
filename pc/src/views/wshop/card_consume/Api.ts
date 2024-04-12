@@ -1,8 +1,4 @@
-import type {
-  CardConsumeId,
-} from "@/typings/ids";
 
-import Decimal from "decimal.js-light";
 
 import type {
   Query,
@@ -10,23 +6,9 @@ import type {
   PageInput,
 } from "#/types";
 
-import type {
-  CardConsumeSearch,
-  CardConsumeInput,
-  CardConsumeModel,
+import {
+  cardConsumeQueryField,
 } from "./Model";
-
-// 会员卡
-import type {
-  CardSearch,
-  CardModel,
-} from "@/views/wshop/card/Model";
-
-// 用户
-import type {
-  UsrSearch,
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 async function setLblById(
   model?: CardConsumeModel | null,
@@ -133,29 +115,10 @@ export async function findAll(
   const data: {
     findAllCardConsume: CardConsumeModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardConsumeSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllCardConsume(search: $search, page: $page, sort: $sort) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardConsumeQueryField }
         }
       }
     `,
@@ -187,29 +150,10 @@ export async function findOne(
   const data: {
     findOneCardConsume?: CardConsumeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: CardConsumeSearch, $sort: [SortInput!]) {
         findOneCardConsume(search: $search, sort: $sort) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardConsumeQueryField }
         }
       }
     `,
@@ -260,29 +204,10 @@ export async function findById(
   const data: {
     findByIdCardConsume?: CardConsumeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: CardConsumeId!) {
         findByIdCardConsume(id: $id) {
-          id
-          card_id
-          card_id_lbl
-          usr_id
-          usr_id_lbl
-          amt
-          give_amt
-          integral
-          balance
-          give_balance
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ cardConsumeQueryField }
         }
       }
     `,
@@ -550,28 +475,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: CardConsumeSearch, $sort: [SortInput!]) {
             findAllCardConsume(search: $search, sort: $sort) {
-              id
-              card_id
-              card_id_lbl
-              usr_id
-              usr_id_lbl
-              amt
-              give_amt
-              integral
-              balance
-              give_balance
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ cardConsumeQueryField }
             }
             findAllCard {
               lbl

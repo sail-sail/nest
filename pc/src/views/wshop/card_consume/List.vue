@@ -585,10 +585,6 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import type {
-  CardConsumeId,
-} from "@/typings/ids";
-
 import {
   findAll,
   findCount,
@@ -597,21 +593,6 @@ import {
   forceDeleteByIds,
   useExportExcel,
 } from "./Api";
-
-import type {
-  CardConsumeModel,
-  CardConsumeSearch,
-} from "./Model";
-
-// 会员卡
-import type {
-  CardModel,
-} from "@/views/wshop/card/Model";
-
-// 用户
-import type {
-  UsrModel,
-} from "@/views/base/usr/Model";
 
 import {
   getCardList, // 卡号

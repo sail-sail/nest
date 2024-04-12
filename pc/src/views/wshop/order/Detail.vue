@@ -321,18 +321,6 @@ import {
   getDefaultInput,
 } from "./Api";
 
-import type {
-  OrderId,
-} from "@/typings/ids";
-
-import type {
-  OrderInput,
-} from "./Model";
-
-import type {
-  UsrModel,
-} from "@/views/base/usr/Model";
-
 import {
   getUsrList,
 } from "./Api";

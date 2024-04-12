@@ -3,19 +3,13 @@ import {
 } from "#/types";
 
 import type {
-  PtTypeId,
-} from "@/typings/ids";
-
-import type {
   Query,
   Mutation,
   PageInput,
 } from "#/types";
 
-import type {
-  PtTypeSearch,
-  PtTypeInput,
-  PtTypeModel,
+import {
+  ptTypeQueryField,
 } from "./Model";
 
 async function setLblById(
@@ -28,8 +22,9 @@ async function setLblById(
   
   // 图标
   if (model.img) {
-    (model as any).img_lbl = location.origin + getImgUrl({
+    model.img_lbl = location.origin + getImgUrl({
       id: model.img,
+      height: 100,
     });
   }
 }
@@ -80,31 +75,10 @@ export async function findAll(
   const data: {
     findAllPtType: PtTypeModel[];
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PtTypeSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPtType(search: $search, page: $page, sort: $sort) {
-          id
-          img
-          lbl
-          is_home
-          is_home_lbl
-          is_recommend
-          is_recommend_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptTypeQueryField }
         }
       }
     `,
@@ -136,31 +110,10 @@ export async function findOne(
   const data: {
     findOnePtType?: PtTypeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($search: PtTypeSearch, $sort: [SortInput!]) {
         findOnePtType(search: $search, sort: $sort) {
-          id
-          img
-          lbl
-          is_home
-          is_home_lbl
-          is_recommend
-          is_recommend_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptTypeQueryField }
         }
       }
     `,
@@ -269,31 +222,10 @@ export async function findById(
   const data: {
     findByIdPtType?: PtTypeModel;
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($id: PtTypeId!) {
         findByIdPtType(id: $id) {
-          id
-          img
-          lbl
-          is_home
-          is_home_lbl
-          is_recommend
-          is_recommend_lbl
-          is_locked
-          is_locked_lbl
-          is_enabled
-          is_enabled_lbl
-          order_by
-          rem
-          create_usr_id
-          create_usr_id_lbl
-          create_time
-          create_time_lbl
-          update_usr_id
-          update_usr_id_lbl
-          update_time
-          update_time_lbl
-          is_deleted
+          ${ ptTypeQueryField }
         }
       }
     `,
@@ -522,30 +454,10 @@ export function useExportExcel(routePath: string) {
     
     try {
       const data = await query({
-        query: /* GraphQL */ `
+        query: `
           query($search: PtTypeSearch, $sort: [SortInput!]) {
             findAllPtType(search: $search, sort: $sort) {
-              id
-              img
-              lbl
-              is_home
-              is_home_lbl
-              is_recommend
-              is_recommend_lbl
-              is_locked
-              is_locked_lbl
-              is_enabled
-              is_enabled_lbl
-              order_by
-              rem
-              create_usr_id
-              create_usr_id_lbl
-              create_time
-              create_time_lbl
-              update_usr_id
-              update_usr_id_lbl
-              update_time
-              update_time_lbl
+              ${ ptTypeQueryField }
             }
             getDict(codes: [
               "yes_no",

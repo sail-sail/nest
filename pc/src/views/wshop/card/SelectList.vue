@@ -70,14 +70,6 @@ import {
 
 import List from "./List.vue";
 
-import type {
-  CardId,
-} from "@/typings/ids";
-
-import type {
-  CardModel,
-} from "#/types";
-
 const emit = defineEmits<{
   (e: "change", value?: CardModel | CardModel[] | null): void,
 }>();

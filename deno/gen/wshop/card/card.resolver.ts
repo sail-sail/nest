@@ -10,14 +10,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import type {
-  CardInput,
-  CardModel,
-  CardSearch,
-  CardFieldComment,
-  CardId,
-} from "./card.model.ts";
-
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
