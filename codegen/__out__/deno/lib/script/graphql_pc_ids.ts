@@ -128,6 +128,18 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 全宗设置
+    "ArchiveId": {
+      "input": "ArchiveId",
+      "output": "ArchiveId",
+    },
+    
+    // 单位
+    "CompanyId": {
+      "input": "CompanyId",
+      "output": "CompanyId",
+    },
+    
   };
   return scalars;
 }

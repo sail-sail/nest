@@ -82,3 +82,11 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const archiveId: unique symbol;
+/** 全宗设置 */
+type ArchiveId = Distinct<string, typeof archiveId>;
+
+declare const companyId: unique symbol;
+/** 单位 */
+type CompanyId = Distinct<string, typeof companyId>;
