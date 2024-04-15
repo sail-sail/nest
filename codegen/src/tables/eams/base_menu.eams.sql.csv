@@ -1,0 +1,4 @@
+id,parent_id,lbl,route_path,route_query,is_enabled,order_by
+AEK9E7ZTTV+ZTXNpx73AOg,,电子档案,,,1,20001
+RbDAFq7CTzuAaxQP12fSCQ,AEK9E7ZTTV+ZTXNpx73AOg,单位,/eams/company,,1,20002
+KbZS6RW5TaK4rZGVBUXMfQ,AEK9E7ZTTV+ZTXNpx73AOg,全宗设置,/eams/archive,,1,20003

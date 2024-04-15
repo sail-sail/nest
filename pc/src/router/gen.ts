@@ -254,4 +254,28 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/eams/archive",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "全宗设置",
+        component: () => import("@/views/eams/archive/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/eams/company",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "单位",
+        component: () => import("@/views/eams/company/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
