@@ -5,7 +5,7 @@ import cfg from "@/utils/config";
 
 import tmui from "./tmui";
 
-import "uno.css";
+import "virtual:uno.css";
 
 globalThis.process = globalThis.process || { };
 globalThis.process.env = globalThis.process.env || { };
