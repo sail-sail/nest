@@ -43,11 +43,10 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
-      un-p="x-2.75 y-1"
+      un-p="x-2.5 y-1.25"
       un-box-border
-      un-rounded
       un-w="full"
-      un-min="h-8"
+      un-min="h-7.5"
       un-break-words
       class="custom_input_readonly"
       un-whitespace-pre-wrap
@@ -129,7 +128,7 @@ let textareaHeight = $shallowRef<number>();
 useResizeObserver($$(inputRef) as any, (entries) => {
   const [ entry ] = entries;
   const { height } = entry.contentRect;
-  textareaHeight = height;
+  textareaHeight = height - 2;
 });
 
 function onChange() {
