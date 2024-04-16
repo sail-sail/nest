@@ -237,6 +237,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             lbl += `<%_cols_({ min: _col, width: column.width, hidden: column.hidden })%>`;
             // Excel里面的下拉框
             if (
+              !column.notImportExportList &&
               (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
               || (selectList.length > 0 || column.dict || column.dictbiz)
             ) {
@@ -275,6 +276,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             lbl += `%>`;
             // Excel里面的下拉框
             if (
+              !column.notImportExportList &&
               (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
               || (selectList.length > 0 || column.dict || column.dictbiz)
             ) {
