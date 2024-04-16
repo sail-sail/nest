@@ -32,34 +32,45 @@
   v-else
 >
   <div
-    un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.5 y-1"
-    un-box-border
-    un-rounded
     un-w="full"
-    un-min="h-8"
-    un-line-height="normal"
-    un-break-words
-    class="custom_input_readonly"
-    :class="{
-      'whitespace-pre-wrap': type === 'textarea',
-      'custom_input_placeholder': shouldShowPlaceholder
-    }"
-    :style="{
-      height: textareaHeight != null ? textareaHeight + 'px' : undefined,
-    }"
-    v-bind="$attrs"
+    un-whitespace-nowrap
+    un-flex="~"
+    un-justify="start"
+    un-items="center"
+    un-b="1 solid [var(--el-border-color)]"
+    un-rounded
   >
-    <template
-      v-if="!(modelValue ?? '')"
+    <div
+      un-flex="~ [1_0_0]"
+      un-overflow-hidden
+      un-p="x-2.75 y-1"
+      un-box-border
+      un-rounded
+      un-w="full"
+      un-min="h-8"
+      un-break-words
+      class="custom_input_readonly"
+      un-whitespace-pre-wrap
+      :class="{
+        'custom_input_placeholder': shouldShowPlaceholder
+      }"
+      :style="{
+        height: textareaHeight != null ? textareaHeight + 'px' : undefined,
+      }"
+      v-bind="$attrs"
     >
-      {{ props.readonlyPlaceholder ?? "" }}
-    </template>
-    <template
-      v-else
-    >
-      {{ modelValue ?? "" }}
-    </template>
+      <template
+        v-if="!(modelValue ?? '')"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </template>
+      <template
+        v-else
+      >
+        {{ modelValue ?? "" }}
+      </template>
+    </div>
+    <slot name="suffix"></slot>
   </div>
 </template>
 </template>
