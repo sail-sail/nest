@@ -13,11 +13,11 @@ import {
 import {
   presetApplet,
   presetRemRpx,
-  transformerApplet,
   transformerAttributify,
 } from "unocss-applet";
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
+const isApplet = process.env?.UNI_PLATFORM?.startsWith('mp-') ?? false;
 
 const presets = [
   presetIcons({
@@ -38,7 +38,7 @@ const presets = [
    */
   presetApplet({
     prefix: "n-",
-    enable: !isH5,
+    enable: isApplet,
   }),
   presetAttributify({
     prefix: "u",
@@ -65,7 +65,6 @@ export default defineConfig({
       prefix: "u",
       prefixedOnly: true,
     }),
-    transformerApplet(),
   ],
   rules: [
     [
