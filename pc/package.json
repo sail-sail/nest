@@ -29,10 +29,12 @@
     "decimal.js-light": "2.5.1",
     "ejsexcel-browserify": "4.4.2",
     "element-plus": "2.7.0",
+    "events": "3.3.0",
     "file-saver": "2.0.5",
     "filesize": "10.1.1",
     "graphql": "17.0.0-alpha.3",
     "graphql-combine-query": "1.2.4",
+    "image-size": "1.1.1",
     "jszip": "3.10.1",
     "pinia": "2.1.7",
     "pinia-plugin-persistedstate": "3.2.1",
@@ -78,6 +80,7 @@
     "vite-plugin-pwa": "0.19.8",
     "vite-plugin-vue-devtools": "7.0.27",
     "vite-plugin-vue-inspector": "5.0.0",
+    "vite-plugin-wasm": "3.3.0",
     "vitest": "1.5.0",
     "vue-tsc": "2.0.13"
   }
