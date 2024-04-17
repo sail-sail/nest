@@ -27,12 +27,12 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     dialog_visible: dialog_visible,
   }"
 >
-  <el-input
+  <CustomInput
     v-bind="$attrs"
     ref="inputRef"
     @click="onInput"
     v-model="inputValue"
-    @clear="onClear"
+    @clear="(onClear as any)"
     readonly
     :placeholder="props.placeholder"
     @mouseenter="mouseEnter"
@@ -87,7 +87,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
       </template>
     </template>
-  </el-input>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
@@ -225,7 +225,8 @@ async function refreshInputValue() {
   inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
 }
 
-function onClear() {
+function onClear(e?: PointerEvent) {
+  e?.stopPropagation();
   modelValue = undefined;
   inputValue = "";
   emit("update:modelValue", modelValue);
