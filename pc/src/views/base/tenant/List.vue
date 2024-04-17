@@ -203,6 +203,18 @@
       </el-button>
       
       <el-button
+        v-if="permit('pwd') && !isLocked"
+        plain
+        type="primary"
+        @click="openPwd"
+      >
+        <template #icon>
+          <ElIconUser />
+        </template>
+        <span>{{ ns('租户管理员密码') }}</span>
+      </el-button>
+      
+      <el-button
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
@@ -705,11 +717,19 @@
     @stop="stopImport"
   ></ImportPercentageDialog>
   
+  <!-- 设置租户管理员密码 -->
+  <PwdDialog
+    ref="pwdDialogRef"
+  ></PwdDialog>
+  
 </div>
 </template>
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
+
+// 设置租户管理员密码
+import PwdDialog from "./PwdDialog.vue";
 
 import MenuTreeList from "../menu/TreeList.vue";
 
@@ -1163,6 +1183,9 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
+// 设置租户管理员密码
+let pwdDialogRef = $ref<InstanceType<typeof PwdDialog>>();
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -1536,6 +1559,36 @@ async function openEdit() {
     showBuildIn: $$(showBuildIn),
     isReadonly: $$(isLocked),
     isLocked: $$(isLocked),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
+  emit("edit", changedIds);
+}
+
+/** 租户管理员密码 */
+async function openPwd() {
+  if (!pwdDialogRef) {
+    return;
+  }
+  if (!permit("pwd")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要设置租户管理员密码的 {0}", await nsAsync("租户")));
+    return;
+  }
+  const {
+    changedIds,
+  } = await pwdDialogRef.showDialog({
+    title: await nsAsync("租户管理员密码"),
     model: {
       ids: selectedIds,
     },
