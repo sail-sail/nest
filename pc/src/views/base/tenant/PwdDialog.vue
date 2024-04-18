@@ -34,7 +34,54 @@
       un-justify-start
       un-items-safe-center
     >
-      aaa
+      <el-form
+        ref="formRef"
+        size="default"
+        label-width="auto"
+        
+        un-grid="~ cols-[repeat(1,380px)]"
+        un-gap="x-2 y-4"
+        un-justify-items-end
+        un-items-center
+        
+        :model="dialogModel"
+        :rules="form_rules"
+        :validate-on-rule-change="false"
+      >
+        
+        <el-form-item
+          :label="n('租户名称')"
+        >
+          <CustomInput
+            v-model="lblModel.tenant_lbl"
+            readonly
+            :is-readonly-border="false"
+          ></CustomInput>
+        </el-form-item>
+        
+        <el-form-item
+          :label="n('用户名')"
+        >
+          <CustomInput
+            v-model="lblModel.usr_username"
+            readonly
+            :is-readonly-border="false"
+          ></CustomInput>
+        </el-form-item>
+        
+        <el-form-item
+          :label="n('新密码')"
+          prop="pwd"
+        >
+          <CustomInput
+            v-model="dialogModel.pwd"
+            type="password"
+            show-password
+            :placeholder="`${ n('请输入') } ${ n('admin 的新密码') }`"
+          ></CustomInput>
+        </el-form-item>
+        
+      </el-form>
     </div>
     <div
       un-p="y-2.5"
@@ -119,6 +166,9 @@ import {
   findOne,
 } from './Api';
 
+import {
+  setTenantAdminPwd,
+} from "./Api2";
 
 const emit = defineEmits<{
   nextId: [
@@ -157,6 +207,11 @@ type SetTenantAdminPwdInput = Partial<SetTenantAdminPwdInput0>;
 
 let dialogModel: SetTenantAdminPwdInput = $ref({
 } as SetTenantAdminPwdInput);
+
+let lblModel = $ref({
+  tenant_lbl: "",
+  usr_username: "admin",
+});
 
 let ids = $ref<TenantId[]>([ ]);
 let is_deleted = $ref<number>(0);
@@ -280,6 +335,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
+    lblModel.tenant_lbl = data.lbl;
     dialogModel = {
       tenant_id: data.id,
       pwd: "",
@@ -385,8 +441,19 @@ async function onSaveKeydown(e: KeyboardEvent) {
 }
 
 /** 保存并返回id */
-async function save(): Promise<TenantId> {
-  throw new Error("Not implemented");
+async function save() {
+  const tenant_id = dialogModel.tenant_id;
+  if (!tenant_id) {
+    return tenant_id;
+  }
+  await setTenantAdminPwd({
+    tenant_id,
+    pwd: dialogModel.pwd!,
+  });
+  if (!changedIds.includes(tenant_id)) {
+    changedIds.push(tenant_id);
+  }
+  return tenant_id;
 }
 
 /** 保存 */
@@ -443,6 +510,7 @@ async function onInitI18ns() {
     "租户名称",
     "用户名",
     "新密码",
+    "admin 的新密码",
   ];
   await Promise.all([
     initDetailI18ns(),
