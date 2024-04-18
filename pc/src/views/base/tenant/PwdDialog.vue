@@ -199,8 +199,6 @@ type DialogAction = "pwd";
 let dialogAction = $ref<DialogAction>("pwd");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
-let oldDialogNotice: string | undefined = undefined;
-let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 type SetTenantAdminPwdInput = Partial<SetTenantAdminPwdInput0>;
