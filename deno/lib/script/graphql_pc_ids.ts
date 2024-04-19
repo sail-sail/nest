@@ -128,6 +128,12 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // SEO优化
+    "SeoId": {
+      "input": "SeoId",
+      "output": "SeoId",
+    },
+    
   };
   return scalars;
 }
