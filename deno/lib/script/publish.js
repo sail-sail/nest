@@ -72,14 +72,17 @@ console.log(publishPath);
     let cmd = "";
     cmd += `rm -rf ${ publishPath }/docs`;
     cmd += ` ; pm2 stop ${ projectName }`;
+    cmd += ` ; pm2 stop ${ projectName }4nuxt`;
     cmd += ` ; rm -rf ${ publishPath }/pc`
     cmd += ` ; rm -rf ${ publishPath }/deno`
     cmd += ` ; rm -rf ${ publishPath }/uni`
+    cmd += ` ; rm -rf ${ publishPath }/nuxt`;
     cmd += ` ; mkdir -p ${ publishPath }`;
     cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
     cmd += ` ; rm -rf ${ publishPathTmp }`;
     cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
     cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+    cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start`;
     data = await ssh.exec(cmd);
   } catch (err) {
     console.error(err);
