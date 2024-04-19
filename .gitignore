@@ -3,6 +3,7 @@ npm-debug.log
 *.log
 *.diff
 .nuxt
+.output
 package-lock.json
 yarn.lock
 unpackage
