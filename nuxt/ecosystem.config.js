@@ -1,7 +1,8 @@
 module.exports = {
   apps: [{
-    name: "nest4nuxt4{env}",
-    script: "./nest4nuxt4{env}",
+    name: "nest4{env}4nuxt",
+    port: "{NUXT_PORT}",
+    script: "./server/index.mjs",
     instances: 1,
     autorestart: true,
     watch: false,

@@ -2,6 +2,10 @@
 import "/lib/env.ts";
 import { getEnv, getEnvs } from "/lib/env.ts";
 
+import {
+  configAsync,
+} from "dotenv";
+
 import { copyDir } from "/lib/util/fs_util.ts";
 
 const separator = Deno.build.os == "windows" ? ";" : ":";
@@ -22,6 +26,7 @@ function getArg(name: string): string | undefined {
 const denoDir = Deno.cwd();
 const pcDir = denoDir + "/../pc";
 const uniDir = denoDir + "/../uni";
+const nuxtDir = denoDir + "/../nuxt";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
 const commands = (getArg("--command") || "").split(",").filter((v) => v);
 let target = getArg("--target") || "";
@@ -236,6 +241,56 @@ async function uni() {
   await copyDir(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
 }
 
+async function nuxt() {
+  console.log("nuxt");
+  const command = new Deno.Command(pnpmCmd, {
+    cwd: denoDir + "/../nuxt",
+    args: [
+      "run",
+      `build-${ env }`,
+    ],
+    stderr: "inherit",
+    stdout: "inherit",
+  });
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
+  {
+    const command = new Deno.Command(npmDir, {
+      cwd: denoDir + "/../nuxt/server/",
+      args: [
+        "install",
+        "--production",
+      ],
+      stderr: "inherit",
+      stdout: "inherit",
+    });
+    const output = await command.output();
+    if (output.code == 1) {
+      Deno.exit(1);
+    }
+  }
+  try {
+    await Deno.remove(`${ buildDir }/../nuxt/`, { recursive: true });
+  // deno-lint-ignore no-empty
+  } catch (_err) {
+  }
+  await Deno.mkdir(`${ buildDir }/../nuxt/`, { recursive: true });
+  await copyDir(`${ nuxtDir }/.output/`, `${ buildDir }/../nuxt/`);
+  
+  const parsedEnv = await configAsync({
+    export: false,
+    path: `${ nuxtDir }/.env.${ env }`,
+  });
+  
+  const ecosystemStr = await Deno.readTextFile(`${ nuxtDir }/ecosystem.config.js`);
+  const ecosystemStr2 = ecosystemStr
+    .replaceAll("{env}", env)
+    .replaceAll("{NUXT_PORT}", parsedEnv.NUXT_PORT);
+  await Deno.writeTextFile(`${ buildDir }/../nuxt/ecosystem.config.js`, ecosystemStr2);
+}
+
 async function docs() {
   console.log("docs");
   const command = new Deno.Command(pnpmCmd, {
@@ -283,6 +338,8 @@ for (let i = 0; i < commands.length; i++) {
     await pc();
   } else if (command === "uni") {
     await uni();
+  } else if (command === "nuxt") {
+    await nuxt();
   } else if (command === "docs") {
     await docs();
   } else if (command === "publish") {
@@ -302,6 +359,7 @@ if (commands.length === 0) {
   await compile();
   await pc();
   await uni();
+  await nuxt();
   // await docs();
   await publish();
 }
