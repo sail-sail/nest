@@ -9,6 +9,10 @@
       "deno": false
     },
     {
+      "path": "./nuxt",
+      "deno": false
+    },
+    {
       "path": "./uni",
       "deno": false
     },
@@ -25,6 +29,7 @@
     "deno.unstable": true,
     "unocss.root": [
       "pc",
+      "nuxt",
       "uni"
     ],
     "unocss.colorPreview": false,
