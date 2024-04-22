@@ -1,8 +1,6 @@
 <template>
-<div
-  un-text="red"
->
-  <div un-i="iconfont-moon"></div>
+<div>
+  <NuxtPage />
 </div>
 </template>
 
