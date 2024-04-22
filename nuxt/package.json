@@ -6,6 +6,7 @@
     "build-test": "nuxt build --dotenv .env.test",
     "build-prod": "nuxt build --dotenv .env.prod",
     "start": "nuxt dev",
+    "typecheck": "nuxt typecheck",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -19,6 +20,7 @@
     "vue-router": "4.3.2"
   },
   "devDependencies": {
+    "@types/file-saver": "2.0.7",
     "@unocss/nuxt": "0.59.4",
     "@unocss/preset-rem-to-px": "0.59.4",
     "@vue-macros/nuxt": "1.9.30",

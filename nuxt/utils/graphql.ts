@@ -7,7 +7,8 @@ import {
   Kind,
   parse,
   print,
-} from "graphql";
+// @ts-ignore
+} from "graphql/index.mjs";
 
 import combinedQuery from "graphql-combine-query";
 
