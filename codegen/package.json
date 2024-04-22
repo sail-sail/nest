@@ -24,13 +24,13 @@
     "fs-extra": "11.2.0",
     "iconv-lite": "0.6.3",
     "jschardet": "3.1.2",
-    "mysql2": "3.9.4",
+    "mysql2": "3.9.7",
     "shelljs": "0.8.5",
     "toml": "3.0.0",
     "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@swc/wasm": "1.4.13",
+    "@swc/wasm": "1.4.16",
     "@types/fs-extra": "11.0.4",
     "@types/node": "20.12.7",
     "@types/shelljs": "0.8.15",
