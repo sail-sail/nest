@@ -11,6 +11,9 @@ unpackage
 target
 Cargo.lock
 
+*/typings/ids.d.ts
+*/typings/types.ts
+
 /build
 /log
 /error.js
