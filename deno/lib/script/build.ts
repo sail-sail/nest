@@ -8,6 +8,8 @@ import {
 
 import { copyDir } from "/lib/util/fs_util.ts";
 
+import * as child_process from "node:child_process";
+
 const separator = Deno.build.os == "windows" ? ";" : ":";
 const path = Deno.env.get("path") || "";
 const paths = path.split(separator);
@@ -256,21 +258,7 @@ async function nuxt() {
   if (output.code == 1) {
     Deno.exit(1);
   }
-  {
-    const command = new Deno.Command(npmDir, {
-      cwd: denoDir + "/../nuxt/server/",
-      args: [
-        "install",
-        "--production",
-      ],
-      stderr: "inherit",
-      stdout: "inherit",
-    });
-    const output = await command.output();
-    if (output.code == 1) {
-      Deno.exit(1);
-    }
-  }
+  
   try {
     await Deno.remove(`${ buildDir }/../nuxt/`, { recursive: true });
   // deno-lint-ignore no-empty
@@ -278,6 +266,11 @@ async function nuxt() {
   }
   await Deno.mkdir(`${ buildDir }/../nuxt/`, { recursive: true });
   await copyDir(`${ nuxtDir }/.output/`, `${ buildDir }/../nuxt/`);
+  
+  child_process.execSync(`npm install --production`, {
+    cwd: `${ buildDir }/../nuxt/server/`,
+    stdio: "inherit",
+  });
   
   const parsedEnv = await configAsync({
     export: false,
