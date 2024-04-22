@@ -7,5 +7,3 @@ Date.prototype.toString = function() {
   return dateStr;
 };
 Date.prototype.toJSON = Date.prototype.toString;
-
-export { };
