@@ -11,7 +11,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "nuxt": "3.11.2",
+    "decimal.js-light": "2.5.1",
+    "file-saver": "2.0.5",
+    "graphql": "16.8.1",
+    "graphql-combine-query": "1.2.4",
     "vue": "3.4.23",
     "vue-router": "4.3.2"
   },
@@ -20,6 +23,7 @@
     "@unocss/preset-rem-to-px": "0.59.4",
     "@vue-macros/nuxt": "1.9.30",
     "@vue-macros/reactivity-transform": "0.4.4",
+    "nuxt": "3.11.2",
     "unocss": "0.59.4"
   }
 }

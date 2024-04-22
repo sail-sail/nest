@@ -513,6 +513,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_default: undefined,
+        is_default_lbl: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -725,10 +727,14 @@ async function nextId() {
 watch(
   () => [
     inited,
+    dialogModel.is_default,
   ],
   () => {
     if (!inited) {
       return;
+    }
+    if (!dialogModel.is_default) {
+      dialogModel.is_default_lbl = "";
     }
   },
 );
@@ -835,6 +841,8 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
+    is_default: undefined,
+    is_default_lbl: undefined,
     is_locked: undefined,
     is_locked_lbl: undefined,
     order_by: order_by + 1,
@@ -903,6 +911,7 @@ async function onInitI18ns() {
     "分享标题",
     "分享描述",
     "锁定",
+    "默认",
     "排序",
     "备注",
     "创建人",

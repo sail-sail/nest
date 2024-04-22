@@ -108,6 +108,55 @@ const config: CodegenConfig = {
         }
       }
     },
+    "../nuxt/typings/types.ts": {
+      "plugins": [
+        "typescript",
+        "typescript-operations"
+      ],
+      "config": {
+        "declarationKind": "interface",
+        "useTypeImports": true,
+        "scalars": {
+          "Decimal": {
+            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+          },
+          "BigDecimal": {
+            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+          },
+          "NaiveDate": {
+            "input": "string",
+            "output": "string"
+          },
+          "Date": {
+            "input": "string",
+            "output": "string"
+          },
+          "DateTime": {
+            "input": "string",
+            "output": "string"
+          },
+          "JSON": {
+            "input": "string",
+            "output": "string"
+          },
+          "Uuid": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveTime": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveDateTime": {
+            "input": "string",
+            "output": "string"
+          },
+          ...getScalarsPC(),
+        }
+      }
+    },
     "../uni/src/typings/types.ts": {
       "plugins": [
         "typescript",

@@ -170,6 +170,18 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 id 设置默认SEO优化
+ * @param {SeoId} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: SeoId,
+): Promise<number> {
+  const data = await seoDao.defaultById(id);
+  return data;
+}
+
+/**
  * 根据 ids 锁定或者解锁SEO优化
  * @param {SeoId[]} ids
  * @param {0 | 1} is_locked

@@ -50,6 +50,9 @@ export function intoInput(
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
+    // 默认
+    is_default: model?.is_default,
+    is_default_lbl: model?.is_default_lbl,
     // 排序
     order_by: model?.order_by,
     // 备注
@@ -263,6 +266,31 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 id 设置默认SEO优化
+ * @param {SeoId} id
+ * @param {GqlOpt} opt?
+ */
+export async function defaultById(
+  id: SeoId,
+  opt?: GqlOpt,
+) {
+  const data: {
+    defaultByIdSeo: Mutation["defaultByIdSeo"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: SeoId!) {
+        defaultByIdSeo(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.defaultByIdSeo;
+  return res;
+}
+
+/**
  * 根据 ids 锁定或解锁SEO优化
  * @param {SeoId[]} ids
  * @param {0 | 1} is_locked
@@ -427,6 +455,7 @@ export function useExportExcel(routePath: string) {
             }
             getDict(codes: [
               "is_locked",
+              "is_default",
             ]) {
               code
               lbl
