@@ -1,0 +1,14 @@
+<template>
+<div>
+  <div
+    un-bg="blue-500"
+    un-text="white"
+    un-p="p-4"
+    un-mb="mb-4"
+    un-h="12"
+    un-w="full"
+  >
+    index
+  </div>
+</div>
+</template>
