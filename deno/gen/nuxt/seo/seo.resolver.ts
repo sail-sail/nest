@@ -166,6 +166,29 @@ export async function deleteByIdsSeo(
 }
 
 /**
+ * 根据 id 设置默认SEO优化
+ */
+export async function defaultByIdSeo(
+  id: SeoId,
+): Promise<number> {
+  
+  const {
+    defaultById,
+  } = await import("./seo.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/nuxt/seo",
+    "edit",
+  );
+  const res = await defaultById(id);
+  return res;
+}
+
+/**
  * 根据 ids 锁定或者解锁SEO优化
  */
 export async function lockByIdsSeo(

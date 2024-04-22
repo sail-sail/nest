@@ -526,6 +526,23 @@
             </el-table-column>
           </template>
           
+          <!-- 默认 -->
+          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_default"
+                  :before-change="() => row.is_default == 0"
+                  @change="onIs_default(row.id)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
@@ -657,6 +674,7 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  defaultById,
   lockByIds,
   useExportExcel,
   updateById,
@@ -728,6 +746,7 @@ const props = defineProps<{
   og_description?: string; // 分享描述
   og_description_like?: string; // 分享描述
   is_locked?: string|string[]; // 锁定
+  is_default?: string|string[]; // 默认
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
@@ -743,6 +762,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
+  is_default: "number[]",
+  is_default_lbl: "string[]",
   order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
@@ -1000,6 +1021,15 @@ function getTableColumns(): ColumnType[] {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "默认",
+      prop: "is_default_lbl",
+      sortBy: "is_default",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1422,6 +1452,27 @@ async function onIs_locked(id: SeoId, is_locked: 0 | 1) {
   );
 }
 
+/** 默认 */
+async function onIs_default(id: SeoId) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await defaultById(
+    id,
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
 /** 打开编辑页面 */
 async function openEdit() {
   if (isLocked) {
@@ -1670,6 +1721,7 @@ async function initI18nsEfc() {
     "分享标题",
     "分享描述",
     "锁定",
+    "默认",
     "排序",
     "备注",
     "创建人",

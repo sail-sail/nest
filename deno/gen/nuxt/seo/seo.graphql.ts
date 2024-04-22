@@ -26,6 +26,10 @@ type SeoModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String!
+  "默认"
+  is_default: Int!
+  "默认"
+  is_default_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -68,6 +72,10 @@ type SeoFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "默认"
+  is_default: String!
+  "默认"
+  is_default_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -108,6 +116,10 @@ input SeoInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "默认"
+  is_default: Int
+  "默认"
+  is_default_lbl: String
   "排序"
   order_by: Int
   "备注"
@@ -140,6 +152,8 @@ input SeoSearch {
   og_description_like: String
   "锁定"
   is_locked: [Int!]
+  "默认"
+  is_default: [Int!]
   "排序"
   order_by: [Int]
   "备注"
@@ -177,6 +191,8 @@ type Mutation {
   updateByIdSeo(id: SeoId!, input: SeoInput!): SeoId!
   "根据 ids 删除SEO优化"
   deleteByIdsSeo(ids: [SeoId!]!): Int!
+  "根据 id 设置默认SEO优化"
+  defaultByIdSeo(id: SeoId!): Int!
   "根据 ids 锁定或者解锁SEO优化"
   lockByIdsSeo(ids: [SeoId!]!, is_locked: Int!): Int!
   "根据 ids 还原SEO优化"

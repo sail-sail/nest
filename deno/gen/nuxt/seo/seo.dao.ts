@@ -143,6 +143,12 @@ async function getWhereQuery(
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
+  if (search?.is_default != null && !Array.isArray(search?.is_default)) {
+    search.is_default = [ search.is_default ];
+  }
+  if (search?.is_default != null) {
+    whereQuery += ` and t.is_default in ${ args.push(search.is_default) }`;
+  }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
@@ -304,6 +310,10 @@ export async function findAll(
   if (search && search.is_locked != null && search.is_locked.length === 0) {
     return [ ];
   }
+  // 默认
+  if (search && search.is_default != null && search.is_default.length === 0) {
+    return [ ];
+  }
   // 创建人
   if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
     return [ ];
@@ -384,8 +394,10 @@ export async function findAll(
   
   const [
     is_lockedDict, // 锁定
+    is_defaultDict, // 默认
   ] = await getDict([
     "is_locked",
+    "is_default",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -400,6 +412,16 @@ export async function findAll(
       }
     }
     model.is_locked_lbl = is_locked_lbl;
+    
+    // 默认
+    let is_default_lbl = model.is_default?.toString() || "";
+    if (model.is_default != null) {
+      const dictItem = is_defaultDict.find((dictItem) => dictItem.val === model.is_default.toString());
+      if (dictItem) {
+        is_default_lbl = dictItem.lbl;
+      }
+    }
+    model.is_default_lbl = is_default_lbl;
     
     // 创建时间
     if (model.create_time) {
@@ -436,8 +458,10 @@ export async function setIdByLbl(
   
   const [
     is_lockedDict, // 锁定
+    is_defaultDict, // 默认
   ] = await getDict([
     "is_locked",
+    "is_default",
   ]);
   
   // 锁定
@@ -445,6 +469,14 @@ export async function setIdByLbl(
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
     if (val != null) {
       input.is_locked = Number(val);
+    }
+  }
+  
+  // 默认
+  if (isNotEmpty(input.is_default_lbl) && input.is_default == null) {
+    const val = is_defaultDict.find((itemTmp) => itemTmp.lbl === input.is_default_lbl)?.val;
+    if (val != null) {
+      input.is_default = Number(val);
     }
   }
 }
@@ -464,6 +496,8 @@ export async function getFieldComments(): Promise<SeoFieldComment> {
     og_description: await n("分享描述"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
+    is_default: await n("默认"),
+    is_default_lbl: await n("默认"),
     order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
@@ -929,6 +963,9 @@ export async function create(
   if (input.is_locked != null) {
     sql += `,is_locked`;
   }
+  if (input.is_default != null) {
+    sql += `,is_default`;
+  }
   if (input.order_by != null) {
     sql += `,order_by`;
   }
@@ -973,6 +1010,9 @@ export async function create(
   }
   if (input.is_locked != null) {
     sql += `,${ args.push(input.is_locked) }`;
+  }
+  if (input.is_default != null) {
+    sql += `,${ args.push(input.is_default) }`;
   }
   if (input.order_by != null) {
     sql += `,${ args.push(input.order_by) }`;
@@ -1177,6 +1217,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.is_default != null) {
+    if (input.is_default != oldModel.is_default) {
+      sql += `is_default = ${ args.push(input.is_default) },`;
+      updateFldNum++;
+    }
+  }
   if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(input.order_by) },`;
@@ -1278,6 +1324,66 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 id 设置默认SEO优化
+ * @param {SeoId} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: SeoId,
+  options?: {
+  },
+): Promise<number> {
+  const table = "nuxt_seo";
+  const method = "defaultById";
+  
+  if (!id) {
+    throw new Error("defaultById: id cannot be empty");
+  }
+  
+  await delCache();
+  
+  {
+    const args = new QueryArgs();
+    let sql = `
+      update
+        nuxt_seo
+      set
+        is_default = 0
+      where
+        is_default = 1
+        and id != ${ args.push(id) }
+    `;
+    await execute(sql, args);
+  }
+  
+  const args = new QueryArgs();
+  let sql = `
+    update
+      nuxt_seo
+    set
+      is_default = 1
+    
+  `;
+  {
+    const authModel = await getAuthModel();
+    if (authModel?.id != null) {
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += `
+  
+  where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
   
   await delCache();
   
