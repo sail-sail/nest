@@ -15,3 +15,11 @@ import {
 
 await useMySeoMeta();
 </script>
+
+<style lang="scss">
+#app,#__nuxt {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+</style>
