@@ -1,5 +1,7 @@
 <template>
-<div>
+<div
+  id="app"
+>
   <NuxtPage />
 </div>
 </template>
@@ -12,5 +14,4 @@ import {
 } from "./Api";
 
 await useMySeoMeta();
-
 </script>
