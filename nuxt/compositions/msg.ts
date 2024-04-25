@@ -1,9 +1,7 @@
 export type Message = {
-  hide: boolean;
+  id: number;
   type: "info" | "error";
   content: string;
-  /** 暂停计时 */
-  isPause: boolean;
   /** 倒计时 */
   duration: number;
   timer?: NodeJS.Timeout;
@@ -13,6 +11,8 @@ export const useMsgs = () => {
   
   const msgs = useState<Message[]>("msg/msgs", () => [ ]);
   
+  let duration = 3000;
+  
   const showMsg = (msg: {
     type?: "info" | "error";
     content: string;
@@ -20,24 +20,39 @@ export const useMsgs = () => {
     if (!msg.content) {
       return;
     }
-    const idx = msgs.value.push({
-      hide: false,
+    const id = Date.now();
+    const msg2: Message = {
+      id,
       type: msg.type || "info",
       content: msg.content,
-      isPause: false,
-      duration: 3000,
+      duration,
       timer: undefined,
-    });
-    const i = idx - 1;
-    msgs.value[i].timer = setTimeout(() => {
-      msgs.value[i].hide = true;
-      if (msgs.value.filter((item) => item.hide === false).length === 0) {
-        msgs.value = [ ];
-      }
-    }, msgs.value[i].duration || 300);
+    };
+    msg2.timer = setTimeout(() => {
+      msgs.value = msgs.value.filter((item) => item.id !== id);
+    }, msg2.duration || 300);
+    msgs.value.push(msg2);
   };
+  
+  const pauseMsg = (msg: Message) => {
+    if (msg.timer) {
+      clearTimeout(msg.timer);
+      msg.timer = undefined;
+    }
+  }
+  
+  const resumeMsg = (msg: Message) => {
+    if (!msg.timer) {
+      msg.timer = setTimeout(() => {
+        msgs.value = msgs.value.filter((item) => item.id !== msg.id);
+      }, msg.duration || 300);
+    }
+  }
+  
   return {
     msgs,
     showMsg,
+    pauseMsg,
+    resumeMsg,
   };
 };
