@@ -20,6 +20,9 @@ use crate::gen::base::usr::usr_dao::{
   validate_is_enabled as validate_is_enabled_usr,
 };
 
+use crate::gen::base::role::role_dao::find_all as find_all_role;
+use crate::gen::base::role::role_model::RoleSearch;
+
 /// 获取数据权限列表
 #[allow(dead_code)]
 pub async fn get_data_permits(
@@ -28,7 +31,6 @@ pub async fn get_data_permits(
 ) -> Result<Vec<DataPermitModel>> {
   
   let has_data_permits = options
-    .as_ref()
     .map(|options|
       options.get_has_data_permit().unwrap_or(false)
     )
@@ -51,6 +53,7 @@ pub async fn get_data_permits(
   validate_is_enabled_usr(&usr_model).await?;
   
   let username = usr_model.username;
+  let role_ids = usr_model.role_ids;
   
   if username == "admin" {
     return Ok(vec![]);
@@ -71,8 +74,28 @@ pub async fn get_data_permits(
   let menu_model = menu_model.unwrap();
   let menu_id = menu_model.id;
   
+  let role_models = find_all_role(
+    RoleSearch {
+      ids: role_ids.into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  let data_permit_ids = role_models
+    .into_iter()
+    .flat_map(|role_model|
+      role_model.data_permit_ids.into_iter()
+    )
+    .collect::<std::collections::HashSet<_>>()
+    .into_iter()
+    .collect::<Vec<_>>();
+  
   let data_permit_models = find_all_permit(
     DataPermitSearch {
+      ids: data_permit_ids.into(),
       menu_id: vec![menu_id].into(),
       ..Default::default()
     }.into(),
