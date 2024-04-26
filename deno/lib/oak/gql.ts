@@ -1,5 +1,6 @@
 import {
   Router,
+  Context as OakContext,
 } from "oak";
 
 import {
@@ -7,6 +8,8 @@ import {
   log,
   error,
   rollback,
+  newContext,
+  runInAsyncHooks,
 } from "/lib/context.ts";
 
 import {
@@ -95,25 +98,6 @@ export function clearSchema() {
   queryCacheMap.clear();
 }
 
-const gqlRootValueProxy = new Proxy(
-  gqlRootValue,
-  {
-    get(target: typeof gqlRootValue, prop: string) {
-      // deno-lint-ignore no-explicit-any
-      return function(...args: any[]) {
-        const callback = target[prop];
-        if (!callback || typeof callback !== "function") {
-          throw new Error(`方法 ${ prop } 不存在!`);
-        }
-        const args2 = args[2].fieldNodes[0].arguments;
-        // deno-lint-ignore no-explicit-any
-        const cbArgs = args2.map((item: any) => args[0][item.name.value]);
-        return callback.apply(null, cbArgs);
-      };
-    },
-  },
-);
-
 // function getTypeResolver() {
 //   return {
 //     Decimal: new GraphQLScalarType({
@@ -194,6 +178,7 @@ const queryCacheMap = new Map<string, {
 }>();
 
 async function handleGraphql(
+  oakCtx: OakContext,
   gqlObj: {
     query: string,
     variables?: { [key: string]: unknown; },
@@ -253,7 +238,48 @@ async function handleGraphql(
       result = await execute({
         schema: gqlSchema!,
         document,
-        rootValue: gqlRootValueProxy,
+        rootValue: new Proxy(
+          gqlRootValue,
+          {
+            get(target: typeof gqlRootValue, prop: string) {
+              // deno-lint-ignore no-explicit-any
+              return function(...args: any[]) {
+                const callback = target[prop];
+                if (!callback || typeof callback !== "function") {
+                  throw new Error(`方法 ${ prop } 不存在!`);
+                }
+                const args2 = args[2].fieldNodes[0].arguments;
+                // deno-lint-ignore no-explicit-any
+                const cbArgs = args2.map((item: any) => args[0][item.name.value]);
+                const context = newContext(oakCtx);
+                return runInAsyncHooks(context, async function() {
+                  // deno-lint-ignore no-explicit-any
+                  let res: any;
+                  let isRollback = false;
+                  try {
+                    res = await callback.apply(null, cbArgs);
+                  } catch (err) {
+                    if (err instanceof ServiceException) {
+                      if (err._rollback !== false) {
+                        isRollback = true;
+                      }
+                    } else {
+                      isRollback = true;
+                    }
+                    throw err;
+                  } finally {
+                    if (isRollback) {
+                      await rollback();
+                    } else {
+                      await commit();
+                    }
+                  }
+                  return res;
+                });
+              };
+            },
+          },
+        ),
         variableValues: variables,
         // operationName: undefined,
         // fieldResolver: undefined,
@@ -273,11 +299,6 @@ async function handleGraphql(
           if (err.originalError.message) {
             log(err.originalError.message);
           }
-          if (err.originalError._rollback !== false) {
-            await rollback();
-          } else {
-            await commit();
-          }
         } else if (isValidationError) {
           const message = errors[0].message;
           result.errors.push({
@@ -285,7 +306,6 @@ async function handleGraphql(
           });
           log(`GraphQL Query Error: ${ message }`);
         } else if (err.originalError?.name === "NonErrorThrown") {
-          await rollback();
           // deno-lint-ignore no-explicit-any
           const message = (err.originalError as any).thrownValue;
           result.errors.push({
@@ -293,7 +313,6 @@ async function handleGraphql(
           });
           log(message);
         } else {
-          await rollback();
           error(err);
           let msg = "";
           const errLen = errors.length;
@@ -309,12 +328,9 @@ async function handleGraphql(
           });
         }
       }
-    } else {
-      await commit();
     }
   } catch (err) {
     error(err);
-    await rollback();
   }
   return result;
 }
@@ -333,7 +349,7 @@ gqlRouter.post("/graphql", async function(ctx) {
   const body = request.body;
   const gqlObj = await body.json();
   try {
-    response.body = await handleGraphql(gqlObj);
+    response.body = await handleGraphql(ctx, gqlObj);
   } catch (err) {
     error(err);
     response.body = {
@@ -361,10 +377,13 @@ gqlRouter.get("/graphql", async function(ctx) {
     variables = JSON.parse(variablesStr);
   }
   try {
-    response.body = await handleGraphql({
-      query,
-      variables,
-    });
+    response.body = await handleGraphql(
+      ctx,
+      {
+        query,
+        variables,
+      },
+    );
   } catch (err) {
     error(err);
     response.body = {
