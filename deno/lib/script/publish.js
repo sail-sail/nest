@@ -16,6 +16,11 @@ const options = program.opts();
 const env = options.env || "prod";
 
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
+console.log("projectName: " + projectName);
+if (!publish_cnf[projectName]) {
+  console.error(`在 publish_cnf.js 中找不到项目 ${ projectName } 的配置`);
+  process.exit(1);
+}
 const publishBase = publish_cnf[projectName].publishBase;
 
 const sshConfig = {
