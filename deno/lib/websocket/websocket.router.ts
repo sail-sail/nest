@@ -1,6 +1,8 @@
 import {
   // log,
   error,
+  newContext,
+  runInAsyncHooks,
 } from "/lib/context.ts";
 
 import {
@@ -95,7 +97,7 @@ router.get("upgrade", async function(ctx) {
     socketMap.delete(clientId);
     clientIdTopicsMap.delete(clientId);
   }
-  socket.onmessage = function(event) {
+  socket.onmessage = async function(event) {
     const eventData = event.data;
     if (eventData === "ping") {
       socket.send("pong");
@@ -132,7 +134,10 @@ router.get("upgrade", async function(ctx) {
         const callbacks = callbacksMap.get(topic);
         if (callbacks && callbacks.length > 0) {
           for (const callback of callbacks) {
-            callback(data.payload);
+            const context = newContext(ctx);
+            await runInAsyncHooks(context, async function() {
+              await callback(data.payload);
+            });
           }
         }
         const dataStr = JSON.stringify(data);
