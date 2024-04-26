@@ -503,7 +503,7 @@ export async function deleteByIds(
   #>
   return data;
 }<#
-  if (hasDefault && opts.noEdit !== true) {
+  if (hasDefault) {
 #>
 
 /**
