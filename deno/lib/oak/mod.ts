@@ -1,6 +1,5 @@
 import { Application } from "oak";
 
-import { createContext } from "./create_context.ts";
 import { timing } from "./timing.ts";
 import { gqlRouter } from "./gql.ts";
 
@@ -11,7 +10,6 @@ import websocketRouter from "../websocket/websocket.router.ts";
 export function initApp() {
   const app = new Application();
   
-  app.use(createContext());
   app.use(timing());
   
   app.use(gqlRouter.routes());

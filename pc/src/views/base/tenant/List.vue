@@ -1597,6 +1597,7 @@ async function openPwd() {
   if (changedIds.length === 0) {
     return;
   }
+  ElMessage.success(await nsAsync("设置租户管理员密码成功"));
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
