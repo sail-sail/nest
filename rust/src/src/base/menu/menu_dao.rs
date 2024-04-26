@@ -1,13 +1,19 @@
 use anyhow::Result;
 use crate::common::context::{
   query,
-  get_auth_model,
+  get_auth_id_err,
   get_auth_tenant_id,
   QueryArgs,
   Options,
 };
 
 use super::menu_model::GetMenus;
+
+use crate::gen::base::usr::usr_dao::{
+  find_by_id as find_by_id_usr,
+  validate_option as validate_option_usr,
+  validate_is_enabled as validate_is_enabled_usr,
+};
 
 async fn find_menus() -> Result<Vec<GetMenus>> {
   
@@ -23,10 +29,21 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     args.push(tenant_id.into());
   }
   
-  let auth_model = get_auth_model();
-  if let Some(auth_model) = auth_model {
+  let usr_id = get_auth_id_err()?;
+  
+  let usr_model = validate_option_usr(
+    find_by_id_usr(
+      usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  validate_is_enabled_usr(&usr_model).await?;
+  
+  let username = usr_model.username;
+  
+  if username != "admin" {
     where_query.push_str(" and base_usr_role.usr_id = ?");
-    args.push(auth_model.id.into());
+    args.push(usr_id.into());
   }
   
   let sql = format!(
