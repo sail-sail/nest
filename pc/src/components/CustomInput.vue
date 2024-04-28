@@ -37,8 +37,11 @@
     un-flex="~"
     un-justify="start"
     un-items="center"
-    un-b="1 solid [var(--el-border-color)]"
-    un-rounded
+    class="custom_input_readonly"
+    :class="{
+      'custom_input_readonly_border': props.isReadonlyBorder,
+      'custom_input_readonly_no_border': !props.isReadonlyBorder
+    }"
   >
     <div
       un-flex="~ [1_0_0]"
@@ -48,8 +51,8 @@
       un-w="full"
       un-min="h-7.5"
       un-break-words
-      class="custom_input_readonly"
       un-whitespace-pre-wrap
+      class="custom_input_readonly_content"
       :class="{
         'custom_input_placeholder': shouldShowPlaceholder
       }"
@@ -89,6 +92,7 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    isReadonlyBorder?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -97,6 +101,7 @@ const props = withDefaults(
     readonly: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    isReadonlyBorder: true,
   },
 );
 
@@ -151,3 +156,14 @@ defineExpose({
   focus,
 });
 </script>
+
+<style lang="scss" scoped>
+.custom_input_readonly_border {
+  @apply b-1 b-solid b-[var(--el-border-color)] rounded;
+}
+.custom_input_readonly_no_border {
+  .custom_input_readonly_content {
+    @apply p-y-1.5;
+  }
+}
+</style>

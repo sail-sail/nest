@@ -140,8 +140,6 @@ export async function updateById(
   // 不能修改系统记录的系统字段
   const model = await tenantDao.findById(id);
   if (model && model.is_sys === 1) {
-    // 名称
-    input.lbl = undefined;
   }
   
   const id2: TenantId = await tenantDao.updateById(id, input);

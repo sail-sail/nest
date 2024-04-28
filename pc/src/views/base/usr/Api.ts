@@ -45,6 +45,8 @@ export function intoInput(
     lbl: model?.lbl,
     // 用户名
     username: model?.username,
+    // 密码
+    password: model?.password,
     // 所属组织
     org_ids: model?.org_ids,
     org_ids_lbl: model?.org_ids_lbl,
