@@ -182,7 +182,7 @@ drop table if exists `base_usr_org`;
 CREATE TABLE if not exists `base_usr_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',

@@ -11,6 +11,11 @@ import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
 
+import {
+  findById as findByIdUsr,
+  validateOption as validateOptionUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 async function _getMenus(
   parent_id?: MenuId,
 ) {
@@ -42,15 +47,20 @@ async function _getMenus(
       and t.is_enabled = 1
   `;
   const authModel = await getAuthModel();
-  const tenant_id = await getTenant_id(authModel?.id);
+  const usr_id = authModel.id;
+  const tenant_id = await getTenant_id(usr_id);
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
   if (parent_id != null) {
     sql += ` and t.parent_id = ${ args.push(parent_id) }`;
   }
-  if (authModel?.id) {
-    sql += ` and base_usr_role.usr_id = ${ args.push(authModel.id) }`;
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(usr_id),
+  );
+  const username = usr_model.username;
+  if (username !== "admin") {
+    sql += ` and base_usr_role.usr_id = ${ args.push(usr_id) }`;
   }
   
   const table = "base_menu";
