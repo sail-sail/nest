@@ -3,12 +3,16 @@ npm-debug.log
 *.log
 *.diff
 .nuxt
+.output
 package-lock.json
 yarn.lock
 unpackage
 ~$*.xlsx
 target
 Cargo.lock
+
+*/typings/ids.d.ts
+*/typings/types.ts
 
 /build
 /log
