@@ -176,6 +176,7 @@ const old_table = table;
         :rules="form_rules"
         :validate-on-rule-change="false"
       ><#
+        let form_item_index = 0;
         const selectInputForeign_Table_Ups = [ ];
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
@@ -237,9 +238,21 @@ const old_table = table;
           const modelLabel = column.modelLabel;
           if (column.inlineMany2manyTab) continue;
           const isPassword = column.isPassword;
+          form_item_index++;
         #>
         
-        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>"><#
+          if (column.isImg) {
+          #><#
+            if (columnNum > 4 && form_item_index % 2 === 0) {
+          #>
+          
+          <div></div>
+          <#
+            }
+          #><#
+          }
+          #>
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
