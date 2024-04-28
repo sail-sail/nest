@@ -173,6 +173,8 @@
 </template>
 
 <script lang="ts" setup>
+import { checkImageMaxSize } from "@/utils/image_util";
+
 const {
   ns,
   nsAsync,
@@ -247,7 +249,7 @@ async function onInput() {
       return;
     }
   }
-  const file = fileRef?.files?.[0];
+  let file = fileRef?.files?.[0];
   fileRef.value = "";
   if (!file) {
     return;
@@ -256,6 +258,9 @@ async function onInput() {
     ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
     return;
   }
+  
+  file = await checkImageMaxSize(file);
+  
   let id = undefined;
   loading = true;
   try {
