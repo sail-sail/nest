@@ -42,7 +42,8 @@ lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
     .parse::<i64>()
     .unwrap_or(3600);
-  static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
+  static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
+  static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
   pub static ref IS_DEBUG: bool = init_debug();
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
@@ -56,15 +57,36 @@ fn init_debug() -> bool {
   is_debug
 }
 
-fn init_db_pool() -> Result<Pool<MySql>> {
-  let database_hostname = env::var("database_hostname").unwrap_or("localhost".to_owned());
-  let database_port = env::var("database_port").unwrap_or("3306".to_owned());
+fn init_db_pool(
+  _database_name: &'static str,
+) -> Result<Pool<MySql>> {
+  
+  let database_hostname = env::var(
+    format!("database{_database_name}_hostname")
+  ).unwrap_or("localhost".to_owned());
+  
+  let database_port = env::var(
+    format!("database{_database_name}_port")
+  ).unwrap_or("3306".to_owned());
   let database_port: Result<u16, ParseIntError> = database_port.parse();
   let database_port = database_port.unwrap_or(3306);
-  let database_username = env::var("database_username").unwrap_or("root".to_owned());
-  let database_password = env::var("database_password").unwrap_or_default();
-  let database_database = env::var("database_database").unwrap_or_default();
-  let database_pool_size = env::var("database_pool_size").unwrap_or("10".to_owned());
+  
+  let database_username = env::var(
+    format!("database{_database_name}_username")
+  ).unwrap_or("root".to_owned());
+  
+  let database_password = env::var(
+    format!("database{_database_name}_password")
+  ).unwrap_or_default();
+  
+  let database_database = env::var(
+    format!("database{_database_name}_database")
+  ).unwrap_or_default();
+  
+  let database_pool_size = env::var(
+    format!("database{_database_name}_pool_size")
+  ).unwrap_or("10".to_owned());
+  
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
   let database_pool_size = database_pool_size.unwrap_or(default_pool_size);
@@ -559,7 +581,13 @@ impl Ctx {
         }
       };
     }
-    let res = query.execute(&DB_POOL.clone()).await?;
+    // let db_pool = if self.database_name == "dw" {
+    //   DB_POOL_DW.clone()
+    // } else {
+    //   DB_POOL.clone()
+    // };
+    let db_pool = DB_POOL.clone();
+    let res = query.execute(&db_pool).await?;
     let rows_affected = res.rows_affected();
     if rows_affected > 0 {
       if let Some(options) = &options {
@@ -767,7 +795,12 @@ impl Ctx {
         }
       };
     }
-    let res = query.fetch_all(&DB_POOL.clone()).await?;
+    let db_pool = if self.database_name == "dw" {
+      DB_POOL_DW.clone()
+    } else {
+      DB_POOL.clone()
+    };
+    let res = query.fetch_all(&db_pool).await?;
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
         let cache_key1 = options.cache_key1.as_ref().unwrap();
@@ -969,7 +1002,12 @@ impl Ctx {
         }
       };
     }
-    let res = query.fetch_optional(&DB_POOL.clone()).await?;
+    let db_pool = if self.database_name == "dw" {
+      DB_POOL_DW.clone()
+    } else {
+      DB_POOL.clone()
+    };
+    let res = query.fetch_optional(&db_pool).await?;
     if let Some(res) = &res {
       if let Some(options) = &options {
         if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -986,6 +1024,8 @@ impl Ctx {
 }
 
 pub struct Ctx {
+  
+  database_name: &'static str,
   
   is_tran: bool,
   
@@ -1492,6 +1532,8 @@ impl Options {
 
 pub struct CtxBuilder<'a> {
   
+  database_name: &'static str,
+  
   gql_ctx: Option<&'a async_graphql::Context<'a>>,
   
   is_tran: Option<bool>,
@@ -1512,12 +1554,20 @@ impl <'a> CtxBuilder<'a> {
     let now = Local::now().naive_local();
     let req_id = now.and_utc().timestamp_millis().to_string();
     CtxBuilder {
+      database_name: "",
       gql_ctx,
       is_tran: None,
       auth_model: None,
       req_id,
       now,
     }
+  }
+  
+  /// 设置是否连接数据仓库
+  #[allow(dead_code)]
+  pub fn with_database_name_dw(mut self) -> Result<CtxBuilder<'a>> {
+    self.database_name = "dw";
+    Ok(self)
   }
   
   // 开启事务
@@ -1597,6 +1647,7 @@ impl <'a> CtxBuilder<'a> {
   
   pub fn build(self) -> Ctx {
     Ctx {
+      database_name: "",
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
