@@ -571,7 +571,7 @@ pub async fn delete_by_ids(
   
   Ok(num)
 }<#
-if (hasDefault) {
+if (hasDefault && opts.noEdit !== true) {
 #>
 
 /// 根据 id 设置默认<#=table_comment#>

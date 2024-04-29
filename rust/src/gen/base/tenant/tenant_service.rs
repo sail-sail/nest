@@ -135,19 +135,6 @@ pub async fn update_by_id(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  // 不能修改系统记录的系统字段
-  let model = tenant_dao::find_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 名称
-      input.lbl = None;
-    }
-  }
-  
   let res = tenant_dao::update_by_id(
     id,
     input,

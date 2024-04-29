@@ -174,7 +174,10 @@ function initTabsSort() {
           emit("refreshActive_line")
         }
       },
-      filter(_, el: HTMLElement) {
+      filter(_, el?: HTMLElement) {
+        if (!el) {
+          return true;
+        }
         if (el.classList.contains("tab_fixed")) {
           return true;
         }

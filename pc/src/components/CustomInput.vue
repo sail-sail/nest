@@ -32,34 +32,47 @@
   v-else
 >
   <div
-    un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.5 y-1"
-    un-box-border
-    un-rounded
     un-w="full"
-    un-min="h-8"
-    un-line-height="normal"
-    un-break-words
+    un-whitespace-nowrap
+    un-flex="~"
+    un-justify="start"
+    un-items="center"
     class="custom_input_readonly"
     :class="{
-      'whitespace-pre-wrap': type === 'textarea',
-      'custom_input_placeholder': shouldShowPlaceholder
+      'custom_input_readonly_border': props.isReadonlyBorder,
+      'custom_input_readonly_no_border': !props.isReadonlyBorder
     }"
-    :style="{
-      height: textareaHeight != null ? textareaHeight + 'px' : undefined,
-    }"
-    v-bind="$attrs"
   >
-    <template
-      v-if="!(modelValue ?? '')"
+    <div
+      un-flex="~ [1_0_0]"
+      un-overflow-hidden
+      un-p="x-2.5 y-1.25"
+      un-box-border
+      un-w="full"
+      un-min="h-7.5"
+      un-break-words
+      un-whitespace-pre-wrap
+      class="custom_input_readonly_content"
+      :class="{
+        'custom_input_placeholder': shouldShowPlaceholder
+      }"
+      :style="{
+        height: textareaHeight != null ? textareaHeight + 'px' : undefined,
+      }"
+      v-bind="$attrs"
     >
-      {{ props.readonlyPlaceholder ?? "" }}
-    </template>
-    <template
-      v-else
-    >
-      {{ modelValue ?? "" }}
-    </template>
+      <template
+        v-if="!(modelValue ?? '')"
+      >
+        {{ props.readonlyPlaceholder ?? "" }}
+      </template>
+      <template
+        v-else
+      >
+        {{ modelValue ?? "" }}
+      </template>
+    </div>
+    <slot name="suffix"></slot>
   </div>
 </template>
 </template>
@@ -79,6 +92,7 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    isReadonlyBorder?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -87,6 +101,7 @@ const props = withDefaults(
     readonly: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    isReadonlyBorder: true,
   },
 );
 
@@ -118,7 +133,7 @@ let textareaHeight = $shallowRef<number>();
 useResizeObserver($$(inputRef) as any, (entries) => {
   const [ entry ] = entries;
   const { height } = entry.contentRect;
-  textareaHeight = height;
+  textareaHeight = height - 2;
 });
 
 function onChange() {
@@ -141,3 +156,14 @@ defineExpose({
   focus,
 });
 </script>
+
+<style lang="scss" scoped>
+.custom_input_readonly_border {
+  @apply b-1 b-solid b-[var(--el-border-color)] rounded;
+}
+.custom_input_readonly_no_border {
+  .custom_input_readonly_content {
+    @apply p-y-1.5;
+  }
+}
+</style>
