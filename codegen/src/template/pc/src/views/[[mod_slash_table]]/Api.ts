@@ -456,8 +456,6 @@ export function intoInput(
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
       const foreignKey = column.foreignKey;
-      const isPassword = column.isPassword;
-      if (isPassword) continue;
     #><#
       if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"

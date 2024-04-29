@@ -114,21 +114,81 @@ async function redisClient() {
   return _redisClient;
 }
 
-let client: Client;
+const database_names = ((await getEnv("database_names")) || "").split(",")
+  .map((item) => item.trim());
 
-export async function getClient(): Promise<Client> {
+const clientMap = new Map<string, Client | undefined>();
+
+clientMap.set("", undefined);
+
+for (const database_name of database_names) {
+  clientMap.set(database_name, undefined);
+}
+
+export async function getClient(
+  database_name = "",
+): Promise<Client> {
+  
+  const {
+    Client,
+    configLogger,
+  } = await import("./mysql/mod.ts");
+  
+  let client = clientMap.get(database_name);
   if (!client) {
+    let database_username_key = "database";
+    if (database_name) {
+      database_username_key += "_" + database_name;
+    }
+    database_username_key += "_username";
+    
+    let database_password_key = "database";
+    if (database_name) {
+      database_password_key += "_" + database_name;
+    }
+    database_password_key += "_password";
+    
+    let database_database_key = "database";
+    if (database_name) {
+      database_database_key += "_" + database_name;
+    }
+    database_database_key += "_database";
+    
+    let database_socketpath_key = "database";
+    if (database_name) {
+      database_socketpath_key += "_" + database_name;
+    }
+    database_socketpath_key += "_socketpath";
+    
+    let database_hostname_key = "database";
+    if (database_name) {
+      database_hostname_key += "_" + database_name;
+    }
+    database_hostname_key += "_hostname";
+    
+    let database_port_key = "database";
+    if (database_name) {
+      database_port_key += "_" + database_name;
+    }
+    database_port_key += "_port";
+    
+    let database_pool_size_key = "database";
+    if (database_name) {
+      database_pool_size_key += "_" + database_name;
+    }
+    database_pool_size_key += "_pool_size";
+    
     const opt: ClientConfig = {
-      username: await getEnv("database_username"),
-      password: await getEnv("database_password"),
-      db: await getEnv("database_database"),
+      username: await getEnv(database_username_key),
+      password: await getEnv(database_password_key),
+      db: await getEnv(database_database_key),
     };
-    const socketPath = await getEnv("database_socketpath");
+    const socketPath = await getEnv(database_socketpath_key);
     if (socketPath) {
       opt.socketPath = socketPath;
     } else {
-      opt.hostname = await getEnv("database_hostname");
-      const portStr = await getEnv("database_port");
+      opt.hostname = await getEnv(database_hostname_key);
+      const portStr = await getEnv(database_port_key);
       if (portStr) {
         const port = Number(portStr);
         if (port > 0) {
@@ -136,21 +196,19 @@ export async function getClient(): Promise<Client> {
         }
       }
     }
+    
     const debug = await getEnv("database_debug");
-    const {
-      Client,
-      configLogger,
-    } = await import("./mysql/mod.ts");
     if (debug === "true") {
       configLogger({ enable: true });
     } else {
       configLogger({ enable: false });
     }
+    
     opt.dateStrings = false;
     opt.bigNumberStrings = true;
     // opt.stringifyObjects = true;
     // console.log(opt);
-    const poolSizeStr = await getEnv("database_pool_size");
+    const poolSizeStr = await getEnv(database_pool_size_key);
     if (poolSizeStr) {
       const poolSize = Number(poolSizeStr);
       if (poolSize > 0) {
@@ -158,15 +216,19 @@ export async function getClient(): Promise<Client> {
       }
     }
     client = await new Client().connect(opt);
+    clientMap.set(database_name, client);
   }
   return client;
 }
 
+let req_id = 0;
+
 export class Context {
   
+  #database_name = "";
   #is_tran = false;
   #conn: PoolConnection | undefined;
-  #req_id = 0;
+  #req_id = "0";
   
   /** 不校验token是否过期, 默认校验 */
   notVerifyToken = false;
@@ -189,7 +251,22 @@ export class Context {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
     this.reqDate = dateNow;
-    this.#req_id = dateNow.getTime();
+    if (req_id >= Number.MAX_SAFE_INTEGER) {
+      req_id = 0;
+    }
+    req_id++;
+    this.#req_id = req_id.toString(36);
+  }
+  
+  get database_name() {
+    return this.#database_name;
+  }
+  
+  set database_name(database_name: string) {
+    if (!database_names.includes(database_name)) {
+      throw new Error(`database_name: ${ database_name } is not in ${ database_names }`);
+    }
+    this.#database_name = database_name;
   }
   
   get conn() {
@@ -565,7 +642,7 @@ export async function beginTran(opt?: { debug?: boolean }): Promise<PoolConnecti
   const context = useContext();
   let conn = context.conn;
   if (conn) return conn;
-  const client = await getClient();
+  const client = await getClient(context.database_name);
   if (!client.pool) {
     throw new ServiceException("client pool is empty!");
   }
@@ -648,7 +725,7 @@ export async function close(context: Context) {
     // conn.close();
     conn.returnToPool();
   }
-  const client = await getClient();
+  const client = await getClient(context.database_name);
   // client.poolConn?.close();
   await client?.close();
   const redisCln = await redisClient();
@@ -796,7 +873,7 @@ export async function query<T = any>(
       //   debugSql = getDebugQuery(sql, args);
       //   log(debugSql);
       // }
-      const pool = await getClient();
+      const pool = await getClient(context.database_name);
       result = await pool.query(sql, args, { debug: opt?.debug });
     }
   } catch (err) {
@@ -849,7 +926,7 @@ export async function execute(
       if (!opt || opt.debug !== false) {
         log(getDebugQuery(sql, args));
       }
-      const pool = await getClient();
+      const pool = await getClient(context.database_name);
       result = await pool.execute(sql, args);
     }
   } catch (err) {
