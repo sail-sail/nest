@@ -244,6 +244,9 @@
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.detail_bottom_img == null)">
+          
+          <div></div>
+          
           <el-form-item
             :label="n('详情底部图片')"
             prop="detail_bottom_img"
