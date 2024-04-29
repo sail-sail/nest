@@ -22,6 +22,8 @@ import defineOptions from "unplugin-vue-define-options/vite";
 
 import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
 
+import wasm from "vite-plugin-wasm";
+
 // import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
@@ -35,6 +37,7 @@ export default defineConfig({
     ReactivityTransform(),
     defineOptions(),
     vueJsx(),
+    wasm(),
     Icons({
       compiler: "vue3",
       customCollections: {

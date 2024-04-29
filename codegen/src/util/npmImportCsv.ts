@@ -115,7 +115,12 @@ async function exec() {
         base_role_menu += "ZDbZlC1OT8KaDg6soxMCBQ,";
         base_role_menu += rows[k].order_by + "\n";
       }
-      await writeFile(`${ dirname(file) }/base_role_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`, base_role_menu);
+      const base_role_menu_path = `${ dirname(file) }/base_role_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`;
+      await writeFile(base_role_menu_path, base_role_menu);
+      if (!csvFiles.includes(base_role_menu_path)) {
+        csvFiles.push(base_role_menu_path);
+      }
+      
       let base_tenant_menu = "id,tenant_id,menu_id,order_by\n";
       for (let k = 0; k < base_tenant_menu_ids.length; k++) {
         const base_tenant_menu_id = base_tenant_menu_ids[k];
@@ -124,7 +129,11 @@ async function exec() {
         base_tenant_menu += rows[k].id + ",";
         base_tenant_menu += rows[k].order_by + "\n";
       }
-      await writeFile(`${ dirname(file) }/base_tenant_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`, base_tenant_menu);
+      const base_tenant_menu_path = `${ dirname(file) }/base_tenant_menu${ mod_name === "base" ? "" : ("." + mod_name) }.sql.csv`;
+      await writeFile(base_tenant_menu_path, base_tenant_menu);
+      if (!csvFiles.includes(base_tenant_menu_path)) {
+        csvFiles.push(base_tenant_menu_path);
+      }
     }
   }
   
