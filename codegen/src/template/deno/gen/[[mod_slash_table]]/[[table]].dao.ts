@@ -4546,7 +4546,7 @@ export async function deleteByIds(
   
   return num;
 }<#
-if (hasDefault && opts.noEdit !== true) {
+if (hasDefault) {
 #>
 
 /**
