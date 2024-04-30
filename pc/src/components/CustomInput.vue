@@ -123,7 +123,7 @@ watch(
   },
 );
 
-let shouldShowPlaceholder = $computed(() => {
+let shouldShowPlaceholder = $computed<boolean>(() => {
   return modelValue == null || modelValue === "";
 });
 
