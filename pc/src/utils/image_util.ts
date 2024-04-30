@@ -1,28 +1,28 @@
-import imageSize from "image-size";
+// import imageSize from "image-size";
 
-import type {
-  ISizeCalculationResult,
-} from "image-size/dist/types/interface";
+// import type {
+//   ISizeCalculationResult,
+// } from "image-size/dist/types/interface";
 
-const maxImageWidth = 1024;
-const maxImageHeight = 768;
+// const maxImageWidth = 1024;
+// const maxImageHeight = 768;
 
-const { workerFn } = useWebWorkerFn(
-  async function (buffer: Uint8Array, dimensions: ISizeCalculationResult) {
-    const maxImageWidth = 1024;
-    const maxImageHeight = 768;
-    try {
-      return buffer;
-    } catch (err) {
-      console.error("checkImageMaxSize", buffer);
-      return buffer;
-    }
-  },
-  {
-    dependencies: [
-    ],
-  },
-);
+// const { workerFn } = useWebWorkerFn(
+//   async function (buffer: Uint8Array, dimensions: ISizeCalculationResult) {
+//     const maxImageWidth = 1024;
+//     const maxImageHeight = 768;
+//     try {
+//       return buffer;
+//     } catch (err) {
+//       console.error("checkImageMaxSize", buffer);
+//       return buffer;
+//     }
+//   },
+//   {
+//     dependencies: [
+//     ],
+//   },
+// );
 
 export async function checkImageMaxSize(
   file: File,
