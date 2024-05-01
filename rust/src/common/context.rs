@@ -229,6 +229,22 @@ pub async fn execute(
   ctx.execute(sql, args, options).await
 }
 
+/// 查询数据仓库多条记录
+#[allow(dead_code)]
+pub async fn query_dw<R>(
+  sql: String,
+  args: Vec<ArgType>,
+  options: Option<Options>,
+) -> Result<Vec<R>>
+where
+  R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
+{
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  let mut options = Options::from(options);
+  options.database_name = "dw";
+  ctx.query(sql, args, options.into()).await
+}
+
 /// 查询多条记录
 pub async fn query<R>(
   sql: String,
@@ -240,6 +256,22 @@ where
 {
   let ctx = &CTX.with(|ctx| ctx.clone());
   ctx.query(sql, args, options).await
+}
+
+/// 查询数据仓库一条记录
+#[allow(dead_code)]
+pub async fn query_one_dw<R>(
+  sql: String,
+  args: Vec<ArgType>,
+  options: Option<Options>,
+) -> Result<Option<R>>
+where
+  R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
+{
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  let mut options = Options::from(options);
+  options.database_name = "dw";
+  ctx.query_one(sql, args, options.into()).await
 }
 
 /// 查询一条记录
@@ -581,11 +613,6 @@ impl Ctx {
         }
       };
     }
-    // let db_pool = if self.database_name == "dw" {
-    //   DB_POOL_DW.clone()
-    // } else {
-    //   DB_POOL.clone()
-    // };
     let db_pool = DB_POOL.clone();
     let res = query.execute(&db_pool).await?;
     let rows_affected = res.rows_affected();
@@ -795,7 +822,11 @@ impl Ctx {
         }
       };
     }
-    let db_pool = if self.database_name == "dw" {
+    
+    let database_name = options.as_ref().map_or("", |options| {
+      options.database_name
+    });
+    let db_pool = if database_name == "dw" {
       DB_POOL_DW.clone()
     } else {
       DB_POOL.clone()
@@ -1002,7 +1033,11 @@ impl Ctx {
         }
       };
     }
-    let db_pool = if self.database_name == "dw" {
+    
+    let database_name = options.as_ref().map_or("", |options| {
+      options.database_name
+    });
+    let db_pool = if database_name == "dw" {
       DB_POOL_DW.clone()
     } else {
       DB_POOL.clone()
@@ -1024,8 +1059,6 @@ impl Ctx {
 }
 
 pub struct Ctx {
-  
-  database_name: &'static str,
   
   is_tran: bool,
   
@@ -1390,6 +1423,10 @@ pub struct Options {
   #[allow(dead_code)]
   has_data_permit: Option<bool>,
   
+  #[new(default)]
+  #[allow(dead_code)]
+  database_name: &'static str,
+  
 }
 
 impl Debug for Options {
@@ -1424,6 +1461,9 @@ impl Debug for Options {
       if has_data_permit {
         item = item.field("has_data_permit", &has_data_permit);
       }
+    }
+    if !self.database_name.is_empty() {
+      item = item.field("database_name", &self.database_name);
     }
     item.finish()
   }
@@ -1532,8 +1572,6 @@ impl Options {
 
 pub struct CtxBuilder<'a> {
   
-  database_name: &'static str,
-  
   gql_ctx: Option<&'a async_graphql::Context<'a>>,
   
   is_tran: Option<bool>,
@@ -1554,20 +1592,12 @@ impl <'a> CtxBuilder<'a> {
     let now = Local::now().naive_local();
     let req_id = now.and_utc().timestamp_millis().to_string();
     CtxBuilder {
-      database_name: "",
       gql_ctx,
       is_tran: None,
       auth_model: None,
       req_id,
       now,
     }
-  }
-  
-  /// 设置是否连接数据仓库
-  #[allow(dead_code)]
-  pub fn with_database_name_dw(mut self) -> Result<CtxBuilder<'a>> {
-    self.database_name = "dw";
-    Ok(self)
   }
   
   // 开启事务
@@ -1647,7 +1677,6 @@ impl <'a> CtxBuilder<'a> {
   
   pub fn build(self) -> Ctx {
     Ctx {
-      database_name: "",
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
