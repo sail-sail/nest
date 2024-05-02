@@ -2765,15 +2765,7 @@ pub async fn create(
   #[allow(unused_mut)]
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
-  if (false) {
-  #>
-  
-  validate(
-    &input,
-  )?;<#
-  }
-  #>
+) -> Result<<#=Table_Up#>Id> {
   
   let table = "<#=mod#>_<#=table#>";
   let method = "create";
@@ -2800,7 +2792,15 @@ pub async fn create(
     return Err(SrvErr::msg(
       format!("Can not set id when create in dao: {table}")
     ).into());
+  }<#
+  if (false) {
+  #>
+  
+  validate(
+    &input,
+  )?;<#
   }
+  #>
   
   let old_models = find_by_unique(
     input.clone().into(),
