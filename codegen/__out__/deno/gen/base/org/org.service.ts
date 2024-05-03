@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建组织
  * @param {OrgInput} input
  * @return {Promise<OrgId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<OrgId> {
-  const id: OrgId = await orgDao.create(input, options);
+  const id = await orgDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建组织
+ * @param {OrgInput[]} inputs
+ * @return {Promise<OrgId[]>} ids
+ */
+export async function creates(
+  inputs: OrgInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<OrgId[]> {
+  const ids = await orgDao.creates(inputs, options);
+  return ids;
 }
 
 /**

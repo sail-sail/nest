@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建数据权限
  * @param {DataPermitInput} input
  * @return {Promise<DataPermitId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<DataPermitId> {
-  const id: DataPermitId = await data_permitDao.create(input, options);
+  const id = await data_permitDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建数据权限
+ * @param {DataPermitInput[]} inputs
+ * @return {Promise<DataPermitId[]>} ids
+ */
+export async function creates(
+  inputs: DataPermitInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<DataPermitId[]> {
+  const ids = await data_permitDao.creates(inputs, options);
+  return ids;
 }
 
 /**

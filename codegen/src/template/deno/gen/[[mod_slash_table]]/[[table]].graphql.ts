@@ -836,7 +836,9 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建<#=table_comment#>"
-  create<#=Table_Up2#>(input: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!<#
+  create<#=Table_Up2#>(input: <#=inputName#>!, unique_type: UniqueType): <#=Table_Up#>Id!
+  "批量创建<#=table_comment#>"
+  creates<#=Table_Up2#>(inputs: [<#=inputName#>!]!, unique_type: UniqueType): [<#=Table_Up#>Id!]!<#
   }
   #><#
   if (opts.noEdit !== true) {
