@@ -142,6 +142,8 @@ type Query {
 type Mutation {
   "创建组织"
   createOrg(input: OrgInput!, unique_type: UniqueType): OrgId!
+  "批量创建组织"
+  createsOrg(inputs: [OrgInput!]!, unique_type: UniqueType): [OrgId!]!
   "根据 id 修改组织"
   updateByIdOrg(id: OrgId!, input: OrgInput!): OrgId!
   "根据 ids 删除组织"

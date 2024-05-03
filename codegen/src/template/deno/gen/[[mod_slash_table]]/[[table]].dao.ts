@@ -112,6 +112,7 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
 } from "/lib/util/dao_util.ts";<#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -2989,359 +2990,405 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: <#=Table_Up#>Id | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
+  return id;
+}
+
+/**
+ * 批量创建<#=table_comment#>
+ * @param {<#=inputName#>[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<<#=Table_Up#>Id[]>} 
+ */
+export async function creates(
+  inputs: <#=inputName#>[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<<#=Table_Up#>Id[]> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: <#=inputName#>[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<<#=Table_Up#>Id[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "<#=mod#>_<#=table#>";
+  
+  const ids2: <#=Table_Up#>Id[] = [ ];
+  const inputs2: <#=inputName#>[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    await setIdByLbl(input);
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: <#=Table_Up#>Id | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
+      }
       if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }<#
+    if (mod === "base" && table === "role") {
+    #>
+    
+    {
+      const {
+        filterMenuIdsByTenant,
+      } = await import("/src/base/tenant/tenant.dao.ts");
+      
+      input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
+    }<#
+    }
+    #>
+    
+    let id = shortUuidV4<<#=Table_Up#>Id>();
+    while (true) {
+      const isExist = await existById(id);
+      if (!isExist) {
         break;
       }
+      error(`ID_COLLIDE: ${ table } ${ id as unknown as string }`);
+      id = shortUuidV4<<#=Table_Up#>Id>();
     }
-    if (id) {
-      return id;
-    }
-  }<#
-  if (mod === "base" && table === "role") {
-  #>
-  
-  {
-    const {
-      filterMenuIdsByTenant,
-    } = await import("/src/base/tenant/tenant.dao.ts");
-    
-    input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
-  }<#
+    input.id = id;
+    ids2.push(id);
   }
-  #>
   
-  while (true) {
-    input.id = shortUuidV4<<#=Table_Up#>Id>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into <#=mod#>_<#=table#>(
-      id<#
+  let sql = `insert into <#=mod#>_<#=table#>(id<#
+    if (hasCreateTime) {
+    #>,create_time<#
+    }
+    #><#
+    if (hasTenant_id) {
+    #>,tenant_id<#
+    }
+    #><#
+    if (hasOrgId) {
+    #>,org_id<#
+    }
+    #><#
+    if (hasCreateUsrId) {
+    #>,create_usr_id<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      if (column_name === "update_usr_id") continue;
+      if (column_name === "update_time") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      const column_name_mysql = mysqlKeyEscape(column_name);
+      const modelLabel = column.modelLabel;
+    #><#
+      if (modelLabel) {
+    #>,<#=modelLabel#><#
+      }
+    #><#
+      if (column.isPassword) {
+    #>,<#=column_name_mysql#><#
+      } else if (foreignKey && foreignKey.type === "many2many") {
+    #><#
+      } else if (!foreignKey) {
+    #>,<#=column_name_mysql#><#
+      } else {
+    #>,<#=column_name_mysql#><#
+      }
+    #><#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const redundLbl = column.redundLbl;
+      if (!redundLbl) {
+        continue;
+      }
+      const redundLblKeys = Object.keys(redundLbl);
+      if (redundLblKeys.length === 0) {
+        continue;
+      }
+    #><#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>,<#=val#><#
+    }
+    #><#
+    }
+    #>)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;<#
       if (hasCreateTime) {
-      #>,create_time<#
+      #>
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }<#
+      }
+      #><#
+      if (hasTenant_id) {
+      #>
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const org_id = authModel?.org_id;
+        if (org_id != null) {
+          sql += `,${ args.push(org_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }<#
+      }
+      #><#
+      if (hasCreateUsrId) {
+      #>
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        if (column_name === "create_usr_id") continue;
+        if (column_name === "create_time") continue;
+        if (column_name === "update_usr_id") continue;
+        if (column_name === "update_time") continue;
+        let data_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE;
+        let column_comment = column.COLUMN_COMMENT || "";
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const modelLabel = column.modelLabel;
+        const isEncrypt = column.isEncrypt;
+      #><#
+        if (modelLabel) {
+      #>
+      if (input.<#=modelLabel#> != null) {
+        sql += `,${ args.push(input.<#=modelLabel#>) }`;
+      } else {
+        sql += ",default";
+      }<#
+        }
+      #><#
+        if (column.isPassword) {
+      #>
+      if (isNotEmpty(input.<#=column_name#>)) {
+        sql += `,${ args.push(await getPassword(input.<#=column_name#>)) }`;
+      } else {
+        sql += ",default";
+      }<#
+        } else if (foreignKey && foreignKey.type === "many2many") {
+      #><#
+        } else if (!foreignKey) {
+      #>
+      if (input.<#=column_name#> != null) {<#
+        if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+        } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+        } else if (isEncrypt && [ "int" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+        } else {
+        #>
+        sql += `,${ args.push(input.<#=column_name#>) }`;<#
+        }
+        #>
+      } else {
+        sql += ",default";
+      }<#
+        } else {
+      #>
+      if (input.<#=column_name#> != null) {<#
+        if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
+        } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+        } else if (isEncrypt && [ "int" ].includes(data_type)) {
+        #>
+        sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
+        } else {
+        #>
+        sql += `,${ args.push(input.<#=column_name#>) }`;<#
+        }
+        #>
+      } else {
+        sql += ",default";
+      }<#
+        }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        let column_comment = column.COLUMN_COMMENT || "";
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const redundLbl = column.redundLbl;
+        if (!redundLbl) {
+          continue;
+        }
+        const redundLblKeys = Object.keys(redundLbl);
+        if (redundLblKeys.length === 0) {
+          continue;
+        }
+      #><#
+        for (const key of redundLblKeys) {
+          const val = redundLbl[key];
+      #>
+      
+      if (input.<#=val#> != null) {
+        sql += `,${ args.push(input.<#=val#>) }`;
+      } else {
+        sql += ",default";
+      }<#
+        }
+      #><#
+      }
+      #><#
       }
       #>
-  `;<#
-  if (hasTenant_id) {
-  #>
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  if (input.org_id != null) {
-    sql += `,org_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,org_id`;
-    }
-  }<#
-  }
-  #><#
-  if (hasCreateUsrId) {
-  #>
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }<#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "create_usr_id") continue;
-    if (column_name === "create_time") continue;
-    if (column_name === "update_usr_id") continue;
-    if (column_name === "update_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    const column_name_mysql = mysqlKeyEscape(column_name);
-    const modelLabel = column.modelLabel;
-  #><#
-    if (modelLabel) {
-  #>
-  if (isNotEmpty(input.<#=modelLabel#>)) {
-    sql += `,<#=modelLabel#>`;
-  }<#
-    }
-  #><#
-    if (column.isPassword) {
-  #>
-  if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `,<#=column_name_mysql#>`;
-  }<#
-    } else if (foreignKey && foreignKey.type === "json") {
-  #>
-  if (input.<#=column_name#> != null) {
-    sql += `,<#=column_name_mysql#>`;
-  }<#
-    } else if (foreignKey && foreignKey.type === "many2many") {
-  #><#
-    } else if (!foreignKey) {
-  #>
-  if (input.<#=column_name#> != null) {
-    sql += `,<#=column_name_mysql#>`;
-  }<#
-    } else {
-  #>
-  if (input.<#=column_name#> != null) {
-    sql += `,<#=column_name_mysql#>`;
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-  for (const key of redundLblKeys) {
-    const val = redundLbl[key];
-  #>
-  
-  if (input.<#=val#> != null) {
-    sql += `,<#=val#>`;
-  }<#
-  }
-  #><#
-  }
-  #>
-  sql += `)values(${ args.push(input.id) }<#
-  if (hasCreateTime) {
-  #>,${ args.push(reqDate()) }<#
-  }
-  #>`;<#
-  if (hasTenant_id) {
-  #>
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  if (input.org_id != null) {
-    sql += `,${ args.push(input.org_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,${ args.push(authModel?.org_id) }`;
-    }
-  }<#
-  }
-  #><#
-  if (hasCreateUsrId) {
-  #>
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }<#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "create_usr_id") continue;
-    if (column_name === "create_time") continue;
-    if (column_name === "update_usr_id") continue;
-    if (column_name === "update_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const modelLabel = column.modelLabel;
-    const isEncrypt = column.isEncrypt;
-  #><#
-    if (modelLabel) {
-  #>
-  if (input.<#=modelLabel#> != null) {
-    sql += `,${ args.push(input.<#=modelLabel#>) }`;
-  }<#
-    }
-  #><#
-    if (column.isPassword) {
-  #>
-  if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `,${ args.push(await getPassword(input.<#=column_name#>)) }`;
-  }<#
-    } else if (foreignKey && foreignKey.type === "json") {
-  #>
-  if (input.<#=column_name#> != null) {<#
-    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
-    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else if (isEncrypt && [ "int" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else {
-    #>
-    sql += `,${ args.push(input.<#=column_name#>) }`;<#
-    }
-    #>
-  }<#
-    } else if (foreignKey && foreignKey.type === "many2many") {
-  #><#
-    } else if (!foreignKey) {
-  #>
-  if (input.<#=column_name#> != null) {<#
-    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
-    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else if (isEncrypt && [ "int" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else {
-    #>
-    sql += `,${ args.push(input.<#=column_name#>) }`;<#
-    }
-    #>
-  }<#
-    } else {
-  #>
-  if (input.<#=column_name#> != null) {<#
-    if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
-    } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else if (isEncrypt && [ "int" ].includes(data_type)) {
-    #>
-    sql += `,${ args.push(await encrypt(input.<#=column_name#>.toString())) }`;<#
-    } else {
-    #>
-    sql += `,${ args.push(input.<#=column_name#>) }`;<#
-    }
-    #>
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-  for (const key of redundLblKeys) {
-    const val = redundLbl[key];
-  #>
-  
-  if (input.<#=val#> != null) {
-    sql += `,${ args.push(input.<#=val#>) }`;
-  }<#
-  }
-  #><#
-  }
-  #>
-  sql += `)`;<#
   if (cache) {
   #>
   
@@ -3353,124 +3400,122 @@ export async function create(
   
   await execute(sql, args, {
     debug,
-  });<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-  #><#
-    if (foreignKey && foreignKey.type === "json") {
-  #><#
-    } else if (foreignKey && foreignKey.type === "many2many") {
-      if (column.inlineMany2manyTab) continue;
-  #>
+  });
   
-  // <#=column_comment#>
-  await many2manyUpdate(
-    input,
-    "<#=column_name#>",
-    {
-      mod: "<#=many2many.mod#>",
-      table: "<#=many2many.table#>",
-      column1: "<#=many2many.column1#>",
-      column2: "<#=many2many.column2#>",
-    },
-  );<#
-    } else if (!foreignKey) {
-  #><#
-    } else {
-  #><#
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+    #><#
+      if (foreignKey && foreignKey.type === "many2many") {
+        if (column.inlineMany2manyTab) continue;
+    #>
+    
+    // <#=column_comment#>
+    await many2manyUpdate(
+      input,
+      "<#=column_name#>",
+      {
+        mod: "<#=many2many.mod#>",
+        table: "<#=many2many.table#>",
+        column1: "<#=many2many.column1#>",
+        column2: "<#=many2many.column2#>",
+      },
+    );<#
+      }
+    #><#
     }
-  #><#
-  }
-  #><#
-  for (const inlineForeignTab of inlineForeignTabs) {
-    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
-    if (!inlineForeignSchema) {
-      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
-      process.exit(1);
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      if (!inlineForeignSchema) {
+        throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #>
+    
+    // <#=inlineForeignTab.label#><#
+      if (inline_foreign_type === "one2many") {
+    #>
+    const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
+    if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
+      for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
+        const model = <#=inline_column_name#>_input[i];
+        model.<#=inlineForeignTab.column#> = input.id;
+        await create<#=Table_Up#>(model);
+      }
+    }<#
+      } else if (inline_foreign_type === "one2one") {
+    #>
+    if (input.<#=inline_column_name#>) {
+      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
+      await create<#=Table_Up#>(input.<#=inline_column_name#>);
+    }<#
+      }
+    #><#
     }
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    const inline_column_name = inlineForeignTab.column_name;
-    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
-  #>
-  
-  // <#=inlineForeignTab.label#><#
-    if (inline_foreign_type === "one2many") {
-  #>
-  const <#=inline_column_name#>_input = input.<#=inline_column_name#>;
-  if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
-    for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
-      const model = <#=inline_column_name#>_input[i];
-      model.<#=inlineForeignTab.column#> = input.id;
-      await create<#=Table_Up#>(model);
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      const table = many2many.table;
+      const mod = many2many.mod;
+      if (!inlineMany2manySchema) {
+        throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=column_comment#>
+    if (input.<#=column_name#>_<#=table#>_models) {
+      for (const item of input.<#=column_name#>_<#=table#>_models) {
+        await create<#=Table_Up#>({ ...item, <#=many2many.column1#>: input.id });
+      }
+    }<#
     }
+    #>
   }<#
-    } else if (inline_foreign_type === "one2one") {
-  #>
-  if (input.<#=inline_column_name#>) {
-    input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
-    await create<#=Table_Up#>(input.<#=inline_column_name#>);
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_comment = column.COLUMN_COMMENT;
-    let is_nullable = column.IS_NULLABLE === "YES";
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    let data_type = column.DATA_TYPE;
-    const many2many = column.many2many;
-    if (!many2many || !foreignKey) continue;
-    if (!column.inlineMany2manyTab) continue;
-    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-    const table = many2many.table;
-    const mod = many2many.mod;
-    if (!inlineMany2manySchema) {
-      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
-      process.exit(1);
-    }
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#>_<#=table#>_models) {
-    for (const item of input.<#=column_name#>_<#=table#>_models) {
-      await create<#=Table_Up#>({ ...item, <#=many2many.column1#>: input.id });
-    }
-  }<#
-  }
-  #><#
   if (cache) {
   #>
   
@@ -3484,7 +3529,7 @@ export async function create(
   }
   #>
   
-  return input.id;
+  return ids2;
 }<#
 if (cache) {
 #>
