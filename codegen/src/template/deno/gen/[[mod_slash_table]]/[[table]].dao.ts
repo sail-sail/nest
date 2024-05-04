@@ -2728,7 +2728,7 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,<#
     if (cache) {
@@ -2736,7 +2736,7 @@ export async function existById(
     }
     #>
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }<#
