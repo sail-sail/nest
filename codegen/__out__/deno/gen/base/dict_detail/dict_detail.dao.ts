@@ -959,8 +959,6 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    await setIdByLbl(input);
-    
     const oldModels = await findByUnique(input, options);
     if (oldModels.length > 0) {
       let id: DictDetailId | undefined = undefined;
@@ -1139,8 +1137,6 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {

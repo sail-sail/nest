@@ -1004,8 +1004,6 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    await setIdByLbl(input);
-    
     const oldModels = await findByUnique(input, options);
     if (oldModels.length > 0) {
       let id: BackgroundTaskId | undefined = undefined;
@@ -1241,8 +1239,6 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {

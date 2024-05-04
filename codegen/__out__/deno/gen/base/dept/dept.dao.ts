@@ -1065,8 +1065,6 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    await setIdByLbl(input);
-    
     const oldModels = await findByUnique(input, options);
     if (oldModels.length > 0) {
       let id: DeptId | undefined = undefined;
@@ -1375,8 +1373,6 @@ export async function updateById(
   if (isNotEmpty(input.org_id)) {
     await updateOrgById(id, input.org_id as unknown as OrgId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {
