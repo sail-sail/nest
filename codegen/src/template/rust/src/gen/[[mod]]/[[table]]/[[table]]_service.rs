@@ -213,6 +213,29 @@ pub async fn create(
   ).await?;
   
   Ok(id)
+}
+
+/// 批量创建<#=table_comment#>
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<<#=tableUP#>Input>,
+  options: Option<Options>,
+) -> Result<Vec<<#=Table_Up#>Id>> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true)
+    .into();<#
+  }
+  #>
+  
+  let ids = <#=table#>_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
 }<#
 if (hasTenant_id) {
 #>

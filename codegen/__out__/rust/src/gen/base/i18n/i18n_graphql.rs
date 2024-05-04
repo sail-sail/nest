@@ -147,6 +147,30 @@ impl I18nGenMutation {
       }).await
   }
   
+  /// 批量创建国际化
+  #[graphql(name = "createsI18n")]
+  async fn creates_i18n(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<I18nInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<I18nId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        i18n_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改国际化
   #[graphql(name = "updateByIdI18n")]
   async fn update_by_id_i18n(

@@ -98,6 +98,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建国际化
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<I18nInput>,
+  options: Option<Options>,
+) -> Result<Vec<I18nId>> {
+  
+  let ids = i18n_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改国际化
 #[allow(dead_code)]
 #[allow(unused_mut)]

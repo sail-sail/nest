@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建业务选项
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<OptbizInput>,
+  options: Option<Options>,
+) -> Result<Vec<OptbizId>> {
+  
+  let ids = optbiz_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 业务选项根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

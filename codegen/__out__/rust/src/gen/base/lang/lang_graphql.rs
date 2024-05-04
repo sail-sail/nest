@@ -174,6 +174,29 @@ impl LangGenMutation {
       }).await
   }
   
+  /// 批量创建语言
+  async fn creates_lang(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<LangInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<LangId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        lang_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改语言
   async fn update_by_id_lang(
     &self,

@@ -143,6 +143,41 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建用户
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<UsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
+  
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = usr_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
+  
+  use_permit(
+    "/base/usr".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let ids = usr_service::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 用户根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

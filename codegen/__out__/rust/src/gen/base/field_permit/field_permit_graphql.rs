@@ -141,6 +141,29 @@ impl FieldPermitGenMutation {
       }).await
   }
   
+  /// 批量创建字段权限
+  async fn creates_field_permit(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<FieldPermitInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<FieldPermitId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        field_permit_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改字段权限
   async fn update_by_id_field_permit(
     &self,

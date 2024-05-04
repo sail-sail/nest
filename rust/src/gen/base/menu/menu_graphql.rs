@@ -193,6 +193,29 @@ impl MenuGenMutation {
       }).await
   }
   
+  /// 批量创建菜单
+  async fn creates_menu(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<MenuInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<MenuId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        menu_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改菜单
   async fn update_by_id_menu(
     &self,

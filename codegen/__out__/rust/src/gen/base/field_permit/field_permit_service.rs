@@ -101,6 +101,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建字段权限
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<FieldPermitInput>,
+  options: Option<Options>,
+) -> Result<Vec<FieldPermitId>> {
+  
+  let ids = field_permit_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改字段权限
 #[allow(dead_code)]
 #[allow(unused_mut)]

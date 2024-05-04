@@ -100,6 +100,41 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建租户
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<TenantInput>,
+  options: Option<Options>,
+) -> Result<Vec<TenantId>> {
+  
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
+  
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = tenant_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
+  
+  use_permit(
+    "/base/tenant".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let ids = tenant_service::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改租户
 #[allow(dead_code)]
 pub async fn update_by_id(

@@ -105,6 +105,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建部门
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<DeptInput>,
+  options: Option<Options>,
+) -> Result<Vec<DeptId>> {
+  
+  let ids = dept_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 部门根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

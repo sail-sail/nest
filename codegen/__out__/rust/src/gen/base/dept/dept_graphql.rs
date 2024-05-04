@@ -197,6 +197,29 @@ impl DeptGenMutation {
       }).await
   }
   
+  /// 批量创建部门
+  async fn creates_dept(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<DeptInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<DeptId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        dept_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 部门根据id修改租户id
   async fn update_tenant_by_id_dept(
     &self,

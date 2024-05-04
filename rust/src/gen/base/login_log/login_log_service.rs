@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建登录日志
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<LoginLogInput>,
+  options: Option<Options>,
+) -> Result<Vec<LoginLogId>> {
+  
+  let ids = login_log_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 登录日志根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

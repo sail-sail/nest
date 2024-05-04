@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建角色
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<RoleInput>,
+  options: Option<Options>,
+) -> Result<Vec<RoleId>> {
+  
+  let ids = role_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 角色根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

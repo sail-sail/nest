@@ -141,6 +141,29 @@ impl PermitGenMutation {
       }).await
   }
   
+  /// 批量创建按钮权限
+  async fn creates_permit(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<PermitInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<PermitId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        permit_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改按钮权限
   async fn update_by_id_permit(
     &self,

@@ -101,6 +101,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建系统字典
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<DictInput>,
+  options: Option<Options>,
+) -> Result<Vec<DictId>> {
+  
+  let ids = dict_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改系统字典
 #[allow(dead_code)]
 #[allow(unused_mut)]

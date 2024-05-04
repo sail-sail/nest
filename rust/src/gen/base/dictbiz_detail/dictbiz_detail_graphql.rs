@@ -195,6 +195,29 @@ impl DictbizDetailGenMutation {
       }).await
   }
   
+  /// 批量创建业务字典明细
+  async fn creates_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<DictbizDetailInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<DictbizDetailId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 业务字典明细根据id修改租户id
   async fn update_tenant_by_id_dictbiz_detail(
     &self,

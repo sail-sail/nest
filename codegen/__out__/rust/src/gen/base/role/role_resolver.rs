@@ -102,6 +102,41 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建角色
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<RoleInput>,
+  options: Option<Options>,
+) -> Result<Vec<RoleId>> {
+  
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
+  
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = role_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
+  
+  use_permit(
+    "/base/role".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let ids = role_service::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 角色根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

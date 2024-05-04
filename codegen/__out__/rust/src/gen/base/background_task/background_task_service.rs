@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建后台任务
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<BackgroundTaskInput>,
+  options: Option<Options>,
+) -> Result<Vec<BackgroundTaskId>> {
+  
+  let ids = background_task_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 后台任务根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

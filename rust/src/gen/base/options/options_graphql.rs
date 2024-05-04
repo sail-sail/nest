@@ -193,6 +193,29 @@ impl OptionsGenMutation {
       }).await
   }
   
+  /// 批量创建系统选项
+  async fn creates_options(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<OptionsInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<OptionsId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        options_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改系统选项
   async fn update_by_id_options(
     &self,

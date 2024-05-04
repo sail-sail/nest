@@ -141,6 +141,29 @@ impl DataPermitGenMutation {
       }).await
   }
   
+  /// 批量创建数据权限
+  async fn creates_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<DataPermitInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<DataPermitId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        data_permit_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改数据权限
   async fn update_by_id_data_permit(
     &self,

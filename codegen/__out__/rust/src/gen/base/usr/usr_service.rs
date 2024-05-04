@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建用户
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<UsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  
+  let ids = usr_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 用户根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

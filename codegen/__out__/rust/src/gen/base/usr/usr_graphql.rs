@@ -195,6 +195,29 @@ impl UsrGenMutation {
       }).await
   }
   
+  /// 批量创建用户
+  async fn creates_usr(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<UsrInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<UsrId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        usr_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 用户根据id修改租户id
   async fn update_tenant_by_id_usr(
     &self,

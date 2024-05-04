@@ -193,6 +193,29 @@ impl DictDetailGenMutation {
       }).await
   }
   
+  /// 批量创建系统字典明细
+  async fn creates_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<DictDetailInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<DictDetailId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        dict_detail_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改系统字典明细
   async fn update_by_id_dict_detail(
     &self,

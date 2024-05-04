@@ -195,6 +195,29 @@ impl OrgGenMutation {
       }).await
   }
   
+  /// 批量创建组织
+  async fn creates_org(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<OrgInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<OrgId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        org_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 组织根据id修改租户id
   async fn update_tenant_by_id_org(
     &self,
