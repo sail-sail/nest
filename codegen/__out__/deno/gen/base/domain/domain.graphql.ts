@@ -165,6 +165,8 @@ type Query {
 type Mutation {
   "创建域名"
   createDomain(input: DomainInput!, unique_type: UniqueType): DomainId!
+  "批量创建域名"
+  createsDomain(inputs: [DomainInput!]!, unique_type: UniqueType): [DomainId!]!
   "根据 id 修改域名"
   updateByIdDomain(id: DomainId!, input: DomainInput!): DomainId!
   "根据 ids 删除域名"

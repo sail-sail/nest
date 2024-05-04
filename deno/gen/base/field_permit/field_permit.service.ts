@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建字段权限
  * @param {FieldPermitInput} input
  * @return {Promise<FieldPermitId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<FieldPermitId> {
-  const id: FieldPermitId = await field_permitDao.create(input, options);
+  const id = await field_permitDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建字段权限
+ * @param {FieldPermitInput[]} inputs
+ * @return {Promise<FieldPermitId[]>} ids
+ */
+export async function creates(
+  inputs: FieldPermitInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<FieldPermitId[]> {
+  const ids = await field_permitDao.creates(inputs, options);
+  return ids;
 }
 
 /**
