@@ -109,8 +109,43 @@ export async function createCompany(
     "add",
   );
   const uniqueType = unique_type;
-  const id: CompanyId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建单位
+ */
+export async function createsCompany(
+  inputs: CompanyInput[],
+  unique_type?: UniqueType,
+): Promise<CompanyId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./company.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/eams/company",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

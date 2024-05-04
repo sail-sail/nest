@@ -103,7 +103,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建全宗设置
  * @param {ArchiveInput} input
  * @return {Promise<ArchiveId>} id
  */
@@ -113,8 +113,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<ArchiveId> {
-  const id: ArchiveId = await archiveDao.create(input, options);
+  const id = await archiveDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建全宗设置
+ * @param {ArchiveInput[]} inputs
+ * @return {Promise<ArchiveId[]>} ids
+ */
+export async function creates(
+  inputs: ArchiveInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<ArchiveId[]> {
+  const ids = await archiveDao.creates(inputs, options);
+  return ids;
 }
 
 /**
