@@ -101,6 +101,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建语言
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<LangInput>,
+  options: Option<Options>,
+) -> Result<Vec<LangId>> {
+  
+  let ids = lang_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改语言
 #[allow(dead_code)]
 #[allow(unused_mut)]

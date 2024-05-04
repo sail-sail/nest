@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建业务字典
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<DictbizInput>,
+  options: Option<Options>,
+) -> Result<Vec<DictbizId>> {
+  
+  let ids = dictbiz_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 业务字典根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

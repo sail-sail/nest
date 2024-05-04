@@ -193,6 +193,29 @@ impl DomainGenMutation {
       }).await
   }
   
+  /// 批量创建域名
+  async fn creates_domain(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<DomainInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<DomainId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        domain_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 根据 id 修改域名
   async fn update_by_id_domain(
     &self,

@@ -375,6 +375,88 @@ pub async fn create(
   #>
   
   Ok(id)
+}
+
+/// 批量创建<#=table_comment#>
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<<#=tableUP#>Input>,
+  options: Option<Options>,
+) -> Result<Vec<<#=Table_Up#>Id>> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
+  
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
+  
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = <#=table#>_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
+  
+  use_permit(
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let ids = <#=table#>_service::creates(
+    inputs,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let new_data = find_all(
+    <#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  let method_lbl = ns("新增".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
+  log(
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "create".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.into(),
+      time: time.into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(ids)
 }<#
 if (hasTenant_id) {
 #>

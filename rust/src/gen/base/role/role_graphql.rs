@@ -195,6 +195,29 @@ impl RoleGenMutation {
       }).await
   }
   
+  /// 批量创建角色
+  async fn creates_role(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<RoleInput>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<RoleId>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        role_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
+  }
+  
   /// 角色根据id修改租户id
   async fn update_tenant_by_id_role(
     &self,

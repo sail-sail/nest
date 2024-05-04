@@ -332,6 +332,34 @@ impl <#=tableUP#>GenMutation {<#
           options.into(),
         )
       }).await
+  }
+  
+  /// 批量创建<#=table_comment#><#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "createsI18n")]<#
+  }
+  #>
+  async fn creates_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    inputs: Vec<<#=tableUP#>Input>,
+    unique_type: Option<UniqueType>,
+  ) -> Result<Vec<<#=Table_Up#>Id>> {
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::creates(
+          inputs,
+          options.into(),
+        )
+      }).await
   }<#
     }
   #><#

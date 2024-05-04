@@ -103,6 +103,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建操作记录
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<OperationRecordInput>,
+  options: Option<Options>,
+) -> Result<Vec<OperationRecordId>> {
+  
+  let ids = operation_record_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 操作记录根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

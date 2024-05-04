@@ -102,6 +102,41 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建后台任务
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<BackgroundTaskInput>,
+  options: Option<Options>,
+) -> Result<Vec<BackgroundTaskId>> {
+  
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
+  
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = background_task_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
+  
+  use_permit(
+    "/base/background_task".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let ids = background_task_service::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 后台任务根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(

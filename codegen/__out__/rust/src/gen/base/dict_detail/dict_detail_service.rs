@@ -101,6 +101,21 @@ pub async fn create(
   Ok(id)
 }
 
+/// 批量创建系统字典明细
+#[allow(dead_code)]
+pub async fn creates(
+  inputs: Vec<DictDetailInput>,
+  options: Option<Options>,
+) -> Result<Vec<DictDetailId>> {
+  
+  let ids = dict_detail_dao::creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
 /// 根据 id 修改系统字典明细
 #[allow(dead_code)]
 #[allow(unused_mut)]
