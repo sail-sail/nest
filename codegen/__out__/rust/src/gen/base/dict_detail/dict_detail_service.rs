@@ -1,14 +1,9 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -132,7 +127,7 @@ pub async fn update_by_id(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   let res = dict_detail_dao::update_by_id(
@@ -178,7 +173,7 @@ pub async fn delete_by_ids(
       "不能删除已经锁定的 {0}",
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   let ids = ids;
   
@@ -201,7 +196,7 @@ pub async fn delete_by_ids(
   }
   if ids.is_empty() && len > 0 {
     let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   let num = dict_detail_dao::delete_by_ids(

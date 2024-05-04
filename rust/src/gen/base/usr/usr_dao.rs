@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};
 use crate::common::auth::auth_dao::get_password;
 #[allow(unused_imports)]
@@ -29,7 +29,6 @@ use crate::common::context::{
   Options,
   CountModel,
   UniqueType,
-  SrvErr,
   OrderByModel,
   get_short_uuid,
   get_order_by_query,
@@ -783,7 +782,7 @@ pub async fn find_all(
     is_enabled_dict,
   ]: [Vec<_>; 2] = dict_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
+    .map_err(|err| anyhow!(format!("{:#?}", err)))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -1337,7 +1336,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -1522,6 +1521,377 @@ pub fn get_is_debug(
   is_debug
 }
 
+/// 批量创建用户
+pub async fn creates(
+  inputs: Vec<UsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  
+  let table = "base_usr";
+  let method = "creates";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
+/// 批量创建用户
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<UsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  
+  let table = "base_usr";
+  
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<UsrId> = vec![];
+  let mut inputs2: Vec<UsrInput> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!(format!("Can not set id when create in dao: {table}")));
+    }
+    
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
+      None,
+    ).await?;
+    
+    if !old_models.is_empty() {
+      let mut id: Option<UsrId> = None;
+      
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+  }
+  
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
+  let mut args = QueryArgs::new();
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  
+  sql_fields += "id";
+  sql_fields += ",create_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",tenant_id";
+  // 头像
+  sql_fields += ",img";
+  // 名称
+  sql_fields += ",lbl";
+  // 用户名
+  sql_fields += ",username";
+  // 密码
+  sql_fields += ",password";
+  // 默认组织
+  sql_fields += ",default_org_id";
+  // 锁定
+  sql_fields += ",is_locked";
+  // 启用
+  sql_fields += ",is_enabled";
+  // 排序
+  sql_fields += ",order_by";
+  // 备注
+  sql_fields += ",rem";
+  // 更新人
+  sql_fields += ",update_usr_id";
+  // 更新时间
+  sql_fields += ",update_time";
+  // 隐藏记录
+  sql_fields += ",is_hidden";
+  
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: UsrId = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
+      ).await?;
+      if !is_exist {
+        break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    
+    if let Some(tenant_id) = input.tenant_id {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 头像
+    if let Some(img) = input.img {
+      sql_values += ",?";
+      args.push(img.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 名称
+    if let Some(lbl) = input.lbl {
+      sql_values += ",?";
+      args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 用户名
+    if let Some(username) = input.username {
+      sql_values += ",?";
+      args.push(username.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 密码
+    if let Some(password) = input.password {
+      if !password.is_empty() {
+        sql_values += ",?";
+        args.push(get_password(password)?.into());
+      } else {
+        sql_values += ",default";
+      }
+    } else {
+      sql_values += ",default";
+    }
+    // 默认组织
+    if let Some(default_org_id) = input.default_org_id {
+      sql_values += ",?";
+      args.push(default_org_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 锁定
+    if let Some(is_locked) = input.is_locked {
+      sql_values += ",?";
+      args.push(is_locked.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 启用
+    if let Some(is_enabled) = input.is_enabled {
+      sql_values += ",?";
+      args.push(is_enabled.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 排序
+    if let Some(order_by) = input.order_by {
+      sql_values += ",?";
+      args.push(order_by.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 备注
+    if let Some(rem) = input.rem {
+      sql_values += ",?";
+      args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新人
+    if let Some(update_usr_id) = input.update_usr_id {
+      sql_values += ",?";
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新时间
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 隐藏记录
+    if let Some(is_hidden) = input.is_hidden {
+      sql_values += ",?";
+      args.push(is_hidden.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
+  }
+  
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_cache_tables());
+  
+  let options = options.into();
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
+  execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();
+    
+    // 所属组织
+    if let Some(org_ids) = input.org_ids {
+      many2many_update(
+        id.clone().into(),
+        org_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_org",
+          column1: "usr_id",
+          column2: "org_id",
+        },
+      ).await?;
+    }
+    
+    // 所属部门
+    if let Some(dept_ids) = input.dept_ids {
+      many2many_update(
+        id.clone().into(),
+        dept_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_dept",
+          column1: "usr_id",
+          column2: "dept_id",
+        },
+      ).await?;
+    }
+    
+    // 拥有角色
+    if let Some(role_ids) = input.role_ids {
+      many2many_update(
+        id.clone().into(),
+        role_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_role",
+          column1: "usr_id",
+          column2: "role_id",
+        },
+      ).await?;
+    }
+  }
+  
+  Ok(ids2)
+}
+
 /// 创建用户
 pub async fn create(
   #[allow(unused_mut)]
@@ -1546,267 +1916,15 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
-  ).await?;
-  
-  if !old_models.is_empty() {
-    
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
-    
-    let mut id: Option<UsrId> = None;
-    
-    for old_model in old_models {
-      
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
-      ).await?;
-      
-      if id.is_some() {
-        break;
-      }
-    }
-    
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }
-  
-  let mut id: UsrId;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if !is_exist {
-      break;
-    }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
-  }
-  let id = id;
-  
-  let mut args = QueryArgs::new();
-  
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
-  let mut sql_values = String::with_capacity(2 * 20 + 2);
-  
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
-      sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }
-  
-  if let Some(tenant_id) = input.tenant_id {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  } else if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }
-  // 头像
-  if let Some(img) = input.img {
-    sql_fields += ",img";
-    sql_values += ",?";
-    args.push(img.into());
-  }
-  // 名称
-  if let Some(lbl) = input.lbl {
-    sql_fields += ",lbl";
-    sql_values += ",?";
-    args.push(lbl.into());
-  }
-  // 用户名
-  if let Some(username) = input.username {
-    sql_fields += ",username";
-    sql_values += ",?";
-    args.push(username.into());
-  }
-  // 密码
-  if let Some(password) = input.password {
-    if !password.is_empty() {
-      sql_fields += ",password";
-      sql_values += ",?";
-      args.push(get_password(password)?.into());
-    }
-  }
-  // 默认组织
-  if let Some(default_org_id) = input.default_org_id {
-    sql_fields += ",default_org_id";
-    sql_values += ",?";
-    args.push(default_org_id.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
-    sql_values += ",?";
-    args.push(is_locked.into());
-  }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    sql_fields += ",is_enabled";
-    sql_values += ",?";
-    args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  // 隐藏记录
-  if let Some(is_hidden) = input.is_hidden {
-    sql_fields += ",is_hidden";
-    sql_values += ",?";
-    args.push(is_hidden.into());
-  }
-  
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = options.into();
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  execute(
-    sql,
-    args,
+  let ids = _creates(
+    vec![input],
     options,
   ).await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  // 所属组织
-  if let Some(org_ids) = input.org_ids {
-    many2many_update(
-      id.clone().into(),
-      org_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_org",
-        column1: "usr_id",
-        column2: "org_id",
-      },
-    ).await?;
+  if ids.is_empty() {
+    return Err(anyhow!(format!("_creates: Create failed in dao: {table}")));
   }
-  
-  // 所属部门
-  if let Some(dept_ids) = input.dept_ids {
-    many2many_update(
-      id.clone().into(),
-      dept_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_dept",
-        column1: "usr_id",
-        column2: "dept_id",
-      },
-    ).await?;
-  }
-  
-  // 拥有角色
-  if let Some(role_ids) = input.role_ids {
-    many2many_update(
-      id.clone().into(),
-      role_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_role",
-        column1: "usr_id",
-        column2: "role_id",
-      },
-    ).await?;
-  }
+  let id = ids[0].clone();
   
   Ok(id)
 }
@@ -1894,7 +2012,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   {
@@ -1934,7 +2052,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -2541,7 +2659,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -2699,7 +2817,6 @@ pub async fn find_last_order_by(
 }
 
 /// 校验用户是否启用
-#[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
   model: &UsrModel,
@@ -2714,7 +2831,7 @@ pub async fn validate_is_enabled(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(())
 }
@@ -2734,7 +2851,7 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }

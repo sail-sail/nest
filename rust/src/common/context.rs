@@ -1108,37 +1108,6 @@ pub struct OrderByModel {
   
 }
 
-#[derive(Debug)]
-pub struct SrvErr {
-  #[allow(dead_code)]
-  code: Option<String>,
-  msg: String,
-}
-
-impl SrvErr {
-  pub fn msg<T: Into<String>>(msg: T) -> Self {
-    SrvErr {
-      code: None,
-      msg: msg.into(),
-    }
-  }
-  #[allow(dead_code)]
-  pub fn new<T: Into<String>>(code: T, msg: T) -> Self {
-    SrvErr {
-      code: Some(code.into()),
-      msg: msg.into(),
-    }
-  }
-}
-
-impl std::error::Error for SrvErr { }
-
-impl std::fmt::Display for SrvErr {
-  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-    write!(f, "{}", self.msg)
-  }
-}
-
 #[derive(Clone, Debug)]
 pub enum ArgType {
   Bool(bool),
