@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建域名
  * @param {DomainInput} input
  * @return {Promise<DomainId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<DomainId> {
-  const id: DomainId = await domainDao.create(input, options);
+  const id = await domainDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建域名
+ * @param {DomainInput[]} inputs
+ * @return {Promise<DomainId[]>} ids
+ */
+export async function creates(
+  inputs: DomainInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<DomainId[]> {
+  const ids = await domainDao.creates(inputs, options);
+  return ids;
 }
 
 /**

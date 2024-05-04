@@ -103,7 +103,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建操作记录
  * @param {OperationRecordInput} input
  * @return {Promise<OperationRecordId>} id
  */
@@ -113,8 +113,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<OperationRecordId> {
-  const id: OperationRecordId = await operation_recordDao.create(input, options);
+  const id = await operation_recordDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建操作记录
+ * @param {OperationRecordInput[]} inputs
+ * @return {Promise<OperationRecordId[]>} ids
+ */
+export async function creates(
+  inputs: OperationRecordInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<OperationRecordId[]> {
+  const ids = await operation_recordDao.creates(inputs, options);
+  return ids;
 }
 
 /**

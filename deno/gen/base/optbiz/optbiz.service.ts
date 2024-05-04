@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建业务选项
  * @param {OptbizInput} input
  * @return {Promise<OptbizId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<OptbizId> {
-  const id: OptbizId = await optbizDao.create(input, options);
+  const id = await optbizDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建业务选项
+ * @param {OptbizInput[]} inputs
+ * @return {Promise<OptbizId[]>} ids
+ */
+export async function creates(
+  inputs: OptbizInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<OptbizId[]> {
+  const ids = await optbizDao.creates(inputs, options);
+  return ids;
 }
 
 /**

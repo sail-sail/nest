@@ -76,6 +76,9 @@ export default defineConfig({
             "toExcelColumns",
             "useRenderExcel",
             "saveAsExcel",
+            "SPLIT_SQL_INSERT_LEN",
+            "splitArr",
+            "splitCreateArr",
           ],
         },
         {
