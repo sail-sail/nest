@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建SEO优化
  * @param {SeoInput} input
  * @return {Promise<SeoId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<SeoId> {
-  const id: SeoId = await seoDao.create(input, options);
+  const id = await seoDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建SEO优化
+ * @param {SeoInput[]} inputs
+ * @return {Promise<SeoId[]>} ids
+ */
+export async function creates(
+  inputs: SeoInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<SeoId[]> {
+  const ids = await seoDao.creates(inputs, options);
+  return ids;
 }
 
 /**
