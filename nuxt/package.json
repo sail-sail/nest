@@ -14,9 +14,9 @@
   "dependencies": {
     "decimal.js-light": "2.5.1",
     "file-saver": "2.0.5",
-    "graphql": "16.8.1",
+    "graphql": "17.0.0-alpha.3",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.4.23",
+    "vue": "3.4.26",
     "vue-router": "4.3.2"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@vue-macros/nuxt": "1.9.30",
     "@vue-macros/reactivity-transform": "0.4.4",
     "nuxt": "3.11.2",
-    "sass": "1.75.0",
+    "sass": "1.76.0",
     "unocss": "0.59.4"
   }
 }
