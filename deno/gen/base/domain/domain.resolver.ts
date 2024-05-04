@@ -109,8 +109,43 @@ export async function createDomain(
     "add",
   );
   const uniqueType = unique_type;
-  const id: DomainId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建域名
+ */
+export async function createsDomain(
+  inputs: DomainInput[],
+  unique_type?: UniqueType,
+): Promise<DomainId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./domain.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/domain",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

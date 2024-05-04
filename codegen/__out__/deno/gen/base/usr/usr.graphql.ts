@@ -224,6 +224,8 @@ type Query {
 type Mutation {
   "创建用户"
   createUsr(input: UsrInput!, unique_type: UniqueType): UsrId!
+  "批量创建用户"
+  createsUsr(inputs: [UsrInput!]!, unique_type: UniqueType): [UsrId!]!
   "根据 id 修改用户"
   updateByIdUsr(id: UsrId!, input: UsrInput!): UsrId!
   "根据 ids 删除用户"

@@ -128,6 +128,8 @@ type Query {
 type Mutation {
   "创建按钮权限"
   createPermit(input: PermitInput!, unique_type: UniqueType): PermitId!
+  "批量创建按钮权限"
+  createsPermit(inputs: [PermitInput!]!, unique_type: UniqueType): [PermitId!]!
   "根据 id 修改按钮权限"
   updateByIdPermit(id: PermitId!, input: PermitInput!): PermitId!
   "根据 ids 删除按钮权限"

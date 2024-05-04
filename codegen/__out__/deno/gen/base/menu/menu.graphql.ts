@@ -175,6 +175,8 @@ type Query {
 type Mutation {
   "创建菜单"
   createMenu(input: MenuInput!, unique_type: UniqueType): MenuId!
+  "批量创建菜单"
+  createsMenu(inputs: [MenuInput!]!, unique_type: UniqueType): [MenuId!]!
   "根据 id 修改菜单"
   updateByIdMenu(id: MenuId!, input: MenuInput!): MenuId!
   "根据 ids 删除菜单"

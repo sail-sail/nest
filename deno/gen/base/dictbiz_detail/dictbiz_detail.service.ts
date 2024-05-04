@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建业务字典明细
  * @param {DictbizDetailInput} input
  * @return {Promise<DictbizDetailId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<DictbizDetailId> {
-  const id: DictbizDetailId = await dictbiz_detailDao.create(input, options);
+  const id = await dictbiz_detailDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建业务字典明细
+ * @param {DictbizDetailInput[]} inputs
+ * @return {Promise<DictbizDetailId[]>} ids
+ */
+export async function creates(
+  inputs: DictbizDetailInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<DictbizDetailId[]> {
+  const ids = await dictbiz_detailDao.creates(inputs, options);
+  return ids;
 }
 
 /**
