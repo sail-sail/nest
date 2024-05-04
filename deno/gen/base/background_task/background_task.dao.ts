@@ -789,16 +789,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      base_background_task t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from base_background_task t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,

@@ -2712,20 +2712,11 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      <#=mod#>_<#=table#> t
-    where
-      t.id = ${ args.push(id) }<#
+  const sql = `select 1 e from <#=mod#>_<#=table#> t where t.id = ${ args.push(id) }<#
       if (hasIsDeleted) {
-      #>
-      and t.is_deleted = 0<#
+      #> and t.is_deleted = 0<#
       }
-      #>
-    limit 1
-  `;<#
+      #> limit 1`;<#
   if (cache) {
   #>
   
