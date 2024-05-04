@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建语言
  * @param {LangInput} input
  * @return {Promise<LangId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<LangId> {
-  const id: LangId = await langDao.create(input, options);
+  const id = await langDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建语言
+ * @param {LangInput[]} inputs
+ * @return {Promise<LangId[]>} ids
+ */
+export async function creates(
+  inputs: LangInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<LangId[]> {
+  const ids = await langDao.creates(inputs, options);
+  return ids;
 }
 
 /**
