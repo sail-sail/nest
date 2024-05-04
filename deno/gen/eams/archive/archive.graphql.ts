@@ -138,6 +138,8 @@ type Query {
 type Mutation {
   "创建全宗设置"
   createArchive(input: ArchiveInput!, unique_type: UniqueType): ArchiveId!
+  "批量创建全宗设置"
+  createsArchive(inputs: [ArchiveInput!]!, unique_type: UniqueType): [ArchiveId!]!
   "根据 id 修改全宗设置"
   updateByIdArchive(id: ArchiveId!, input: ArchiveInput!): ArchiveId!
   "根据 ids 删除全宗设置"
