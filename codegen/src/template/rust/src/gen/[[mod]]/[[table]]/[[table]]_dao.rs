@@ -94,7 +94,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};<#
 if (hasPassword) {
 #>
@@ -160,8 +160,7 @@ use crate::common::context::{
   QueryArgs,
   Options,
   CountModel,
-  UniqueType,
-  SrvErr,<#
+  UniqueType,<#
   if (hasOrderBy) {
   #>
   OrderByModel,<#
@@ -1364,7 +1363,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictNum#>] = dict_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
+    .map_err(|err| anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
     if (hasDictbiz) {
@@ -1429,7 +1428,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;<#
+    .map_err(|err| anyhow!(format!("{:#?}", err)))?;<#
     }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -2250,7 +2249,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -2303,7 +2302,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+        return Err(anyhow!(format!("{column_comment} {err_msg}")));
       }
     }
   }
@@ -2330,7 +2329,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+        return Err(anyhow!(format!("{column_comment} {err_msg}")));
       }
     }
   }<#
@@ -2354,7 +2353,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
+        return Err(anyhow!(format!("{column_comment} {err_msg}")));
       }
     }
   }<#
@@ -2760,21 +2759,20 @@ pub fn get_is_debug(
   is_debug
 }
 
-/// 创建<#=table_comment#>
-pub async fn create(
-  #[allow(unused_mut)]
-  mut input: <#=tableUP#>Input,
+/// 批量创建<#=table_comment#>
+pub async fn creates(
+  inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {
+) -> Result<Vec<<#=Table_Up#>Id>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "create";
+  let method = "creates";
   
   let is_debug = get_is_debug(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" inputs: {:?}", &inputs);
     if let Some(options) = &options {
       msg += &format!(" options: {:?}", &options);
     }
@@ -2784,155 +2782,119 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }<#
-  if (false) {
-  #>
-  
-  validate(
-    &input,
-  )?;<#
-  }
-  #>
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
+  let ids = _creates(
+    inputs,
+    options,
   ).await?;
   
-  if !old_models.is_empty() {
-    
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
-    
-    let mut id: Option<<#=Table_Up#>Id> = None;
-    
-    for old_model in old_models {
-      
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
-      ).await?;
-      
-      if id.is_some() {
-        break;
-      }
-    }
-    
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }<#
-  if (mod === "base" && table === "role") {
-  #>
+  Ok(ids)
+}
+
+/// 批量创建<#=table_comment#>
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<<#=tableUP#>Input>,
+  options: Option<Options>,
+) -> Result<Vec<<#=Table_Up#>Id>> {
   
-  if input.menu_ids.is_some() {
-    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
-      input.menu_ids.unwrap(),
-    ).await?.into();
-  }<#
-  }
-  #>
+  let table = "<#=mod#>_<#=table#>";
   
-  let mut id: <#=Table_Up#>Id;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
+  let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!(format!("Can not set id when create in dao: {table}")));
+    }<#
+    if (false) {
+    #>
+    
+    validate(
+      &input,
+    )?;<#
+    }
+    #><#
+    if (mod === "base" && table === "role") {
+    #>
+    
+    let mut input = input;
+    if input.menu_ids.is_some() {
+      input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+        input.menu_ids.unwrap(),
+      ).await?.into();
+    }
+    let input = input;<#
+    }
+    #>
+    
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
       None,
     ).await?;
-    if !is_exist {
-      break;
+    
+    if !old_models.is_empty() {
+      let mut id: Option<<#=Table_Up#>Id> = None;
+      
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
+    
   }
-  let id = id;
   
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
   let mut args = QueryArgs::new();
-  
   let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
-  let mut sql_values = String::with_capacity(2 * <#=columns.length#> + 2);
   
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());<#
+  sql_fields += "id";<#
   if (hasCreateTime) {
   #>
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }<#
+  sql_fields += ",create_time";<#
   }
   #><#
   if (hasCreateUsrId) {
   #>
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
-      sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }<#
+  sql_fields += ",create_usr_id";<#
   }
   #><#
   if (hasTenantId) {
   #>
-  
-  if let Some(tenant_id) = input.tenant_id {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  } else if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }<#
+  sql_fields += ",tenant_id";<#
   }
   #><#
   if (hasOrgId) {
   #>
-  
-  if let Some(org_id) = input.org_id {
-    sql_fields += ",org_id";
-    sql_values += ",?";
-    args.push(org_id.into());
-  } else if let Some(org_id) = get_auth_org_id() {
-    sql_fields += ",org_id";
-    sql_values += ",?";
-    args.push(org_id.into());
-  }<#
+  sql_fields += ",org_id";<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -2961,61 +2923,31 @@ pub async fn create(
     if (modelLabel) {
   #>
   // <#=column_comment#>
-  if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
-    if !<#=modelLabel#>.is_empty() {
-      sql_fields += ",<#=modelLabel#>";
-      sql_values += ",?";
-      args.push(<#=modelLabel#>.into());
-    }
-  }<#
+  sql_fields += ",<#=modelLabel#>";<#
     }
   #><#
     if (column.isPassword) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    if !<#=column_name_rust#>.is_empty() {
-      sql_fields += ",<#=column_name_mysql#>";
-      sql_values += ",?";
-      args.push(get_password(<#=column_name_rust#>)?.into());
-    }
-  }<#
-    } else if (foreignKey && foreignKey.type === "json") {
-  #><#
+  sql_fields += ",<#=column_name_mysql#>";<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name_mysql#>";
-    sql_values += ",?";
-    args.push(encrypt(&<#=column_name_rust#>).into());
-  }<#
+  sql_fields += ",<#=column_name_mysql#>";<#
     } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name_mysql#>";
-    sql_values += ",?";
-    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
-  }<#
+  sql_fields += ",<#=column_name_mysql#>";<#
     } else if (isEncrypt && [ "int" ].includes(data_type)) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name_mysql#>";
-    sql_values += ",?";
-    args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
-  }<#
+  sql_fields += ",<#=column_name_mysql#>";<#
     } else {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name_mysql#>";
-    sql_values += ",?";
-    args.push(<#=column_name_rust#>.into());
-  }<#
+  sql_fields += ",<#=column_name_mysql#>";<#
     }
   #><#
   }
@@ -3047,22 +2979,241 @@ pub async fn create(
       const val = redundLbl[key];
   #>
   // <#=column_comment#>
-  if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
-    sql_fields += ",<#=val#>";
-    sql_values += ",?";
-    args.push(<#=rustKeyEscape(val)#>.into());
-  }<#
+  sql_fields += ",<#=val#>";<#
     }
   #><#
   }
   #>
   
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * <#=columns.length#> + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: <#=Table_Up#>Id = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
+      ).await?;
+      if !is_exist {
+        break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());<#
+    if (hasCreateTime) {
+    #>
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }<#
+    }
+    #><#
+    if (hasCreateUsrId) {
+    #>
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+    }<#
+    }
+    #><#
+    if (hasTenantId) {
+    #>
+    
+    if let Some(tenant_id) = input.tenant_id {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }<#
+    }
+    #><#
+    if (hasOrgId) {
+    #>
+    
+    if let Some(org_id) = input.org_id {
+      sql_values += ",?";
+      args.push(org_id.into());
+    } else if let Some(org_id) = get_auth_org_id() {
+      sql_values += ",?";
+      args.push(org_id.into());
+    } else {
+      sql_values += ",default";
+    }<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      const column_name_mysql = mysqlKeyEscape(column_name);
+      const modelLabel = column.modelLabel;
+      const isEncrypt = column.isEncrypt;
+    #><#
+      if (modelLabel) {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
+      if !<#=modelLabel#>.is_empty() {
+        sql_values += ",?";
+        args.push(<#=modelLabel#>.into());
+      } else {
+        sql_values += ",default";
+      }
+    } else {
+      sql_values += ",default";
+    }<#
+      }
+    #><#
+      if (column.isPassword) {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      if !<#=column_name_rust#>.is_empty() {
+        sql_values += ",?";
+        args.push(get_password(<#=column_name_rust#>)?.into());
+      } else {
+        sql_values += ",default";
+      }
+    } else {
+      sql_values += ",default";
+    }<#
+      } else if (foreignKey && foreignKey.type === "many2many") {
+    #><#
+      } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      sql_values += ",?";
+      args.push(encrypt(&<#=column_name_rust#>).into());
+    } else {
+      sql_values += ",default";
+    }<#
+      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      sql_values += ",?";
+      args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+    } else {
+      sql_values += ",default";
+    }<#
+      } else if (isEncrypt && [ "int" ].includes(data_type)) {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      sql_values += ",?";
+      args.push(encrypt(&<#=column_name_rust#>.to_string()).into());
+    } else {
+      sql_values += ",default";
+    }<#
+      } else {
+    #>
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      sql_values += ",?";
+      args.push(<#=column_name_rust#>.into());
+    } else {
+      sql_values += ",default";
+    }<#
+      }
+    #><#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const redundLbl = column.redundLbl;
+      if (!redundLbl) {
+        continue;
+      }
+      const redundLblKeys = Object.keys(redundLbl);
+      if (redundLblKeys.length === 0) {
+        continue;
+      }
+    #><#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+    #>
+    // <#=column_comment#>
+    if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
+      sql_values += ",?";
+      args.push(<#=rustKeyEscape(val)#>.into());
+    } else {
+      sql_values += ",default";
+    }<#
+      }
+    #><#
+    }
+    #>
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
+  }
+  
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
   
   let args = args.into();
   
@@ -3108,133 +3259,177 @@ pub async fn create(
     vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    if (column_name === "id") continue;
-    if (column_name === "create_usr_id") continue;
-    if (column_name === "create_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  #>
+  
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+    #><#
+    if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
+    #>
+    
+    // <#=column_comment#>
+    if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+      many2many_update(
+        id.clone().into(),
+        <#=column_name_rust#>
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "<#=many2many.mod#>",
+          table: "<#=many2many.table#>",
+          column1: "<#=many2many.column1#>",
+          column2: "<#=many2many.column2#>",
+        },
+      ).await?;
+    }<#
     }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-  #><#
-  if (foreignKey && foreignKey.type === "many2many") {
-    if (column.inlineMany2manyTab) continue;
-  #>
-  
-  // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    many2many_update(
-      id.clone().into(),
-      <#=column_name_rust#>
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "<#=many2many.mod#>",
-        table: "<#=many2many.table#>",
-        column1: "<#=many2many.column1#>",
-        column2: "<#=many2many.column2#>",
-      },
-    ).await?;
-  }<#
-  }
-  #><#
-  }
-  #><#
-  for (const inlineForeignTab of inlineForeignTabs) {
-    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
-    const table = inlineForeignTab.table;
-    const mod = inlineForeignTab.mod;
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    const inline_column_name = inlineForeignTab.column_name;
-    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
-  #><#
-    if (inline_foreign_type === "one2many") {
-  #>
-  
-  // <#=inlineForeignTab.label#>
-  if let Some(<#=inline_column_name#>) = input.<#=inline_column_name#> {
-    for mut model in <#=inline_column_name#> {
-      model.<#=inlineForeignTab.column#> = id.clone().into();
+    #><#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    #><#
+      if (inline_foreign_type === "one2many") {
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    if let Some(<#=inline_column_name#>) = input.<#=inline_column_name#> {
+      for mut model in <#=inline_column_name#> {
+        model.<#=inlineForeignTab.column#> = id.clone().into();
+        create_<#=table#>(
+          model,
+          None,
+        ).await?;
+      }
+    }<#
+      } else if (inline_foreign_type === "one2one") {
+    #>
+    
+    // <#=inlineForeignTab.label#>
+    if let Some(mut <#=inline_column_name#>) = input.<#=inline_column_name#> {
+      <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
       create_<#=table#>(
-        model,
+        <#=inline_column_name#>,
         None,
       ).await?;
+    }<#
+      }
+    #><#
     }
-  }<#
-    } else if (inline_foreign_type === "one2one") {
-  #>
-  
-  // <#=inlineForeignTab.label#>
-  if let Some(mut <#=inline_column_name#>) = input.<#=inline_column_name#> {
-    <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
-    create_<#=table#>(
-      <#=inline_column_name#>,
-      None,
-    ).await?;
-  }<#
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let data_type = column.DATA_TYPE;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (!column.inlineMany2manyTab) continue;
+      const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      const table = many2many.table;
+      const mod = many2many.mod;
+      if (!inlineMany2manySchema) {
+        throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+    #>
+    
+    // <#=column_comment#>
+    if let Some(<#=column_name#>_<#=table#>_models) = input.<#=column_name#>_<#=table#>_models {
+      for input in <#=column_name#>_<#=table#>_models {
+        let mut input = input;
+        input.<#=many2many.column1#> = id.clone().into();
+        create_<#=table#>(
+          input,
+          None,
+        ).await?;
+      }
+    }<#
     }
-  #><#
+    #>
   }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_comment = column.COLUMN_COMMENT;
-    let is_nullable = column.IS_NULLABLE === "YES";
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    let data_type = column.DATA_TYPE;
-    const many2many = column.many2many;
-    if (!many2many || !foreignKey) continue;
-    if (!column.inlineMany2manyTab) continue;
-    const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-    const table = many2many.table;
-    const mod = many2many.mod;
-    if (!inlineMany2manySchema) {
-      throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
-      process.exit(1);
-    }
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-  #>
   
-  // <#=column_comment#>
-  if let Some(<#=column_name#>_<#=table#>_models) = input.<#=column_name#>_<#=table#>_models {
-    for input in <#=column_name#>_<#=table#>_models {
-      let mut input = input;
-      input.<#=many2many.column1#> = id.clone().into();
-      create_<#=table#>(
-        input,
-        None,
-      ).await?;
+  Ok(ids2)
+}
+
+/// 创建<#=table_comment#>
+pub async fn create(
+  #[allow(unused_mut)]
+  mut input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<<#=Table_Up#>Id> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "create";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
     }
-  }<#
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
   }
-  #>
+  
+  let ids = _creates(
+    vec![input],
+    options,
+  ).await?;
+  
+  if ids.is_empty() {
+    return Err(anyhow!(format!("_creates: Create failed in dao: {table}")));
+  }
+  let id = ids[0].clone();
   
   Ok(id)
 }<#
@@ -3496,7 +3691,17 @@ pub async fn update_by_id(
   id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {
+) -> Result<<#=Table_Up#>Id> {<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  if input.menu_ids.is_some() {
+    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      input.menu_ids.unwrap(),
+    ).await?.into();
+  }<#
+  }
+  #>
   
   let old_model = find_by_id(
     id.clone(),
@@ -3515,7 +3720,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -3537,7 +3742,7 @@ pub async fn update_by_id(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<SrvErr> {
+  async fn get_not_permit_err_fn() -> Result<()> {
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -3549,18 +3754,18 @@ pub async fn update_by_id(
       "没有权限编辑此 {0}".to_owned(),
       map.into(),
     ).await?;
-    Ok(SrvErr::msg(err_msg))
+    Err(anyhow!(err_msg))
   }
   
   if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
-    return Err(get_not_permit_err_fn().await?.into());
+    return Err(get_not_permit_err_fn().await?);
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_dept_ids().await?;
     let model_dept_ids = get_parents_dept_ids(
       old_model.create_usr_id.clone().into(),
     ).await?;
     if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?.into());
+      return Err(get_not_permit_err_fn().await?);
     }
   } else if !has_tenant_permit && has_dept_permit {
     let dept_ids = get_auth_dept_ids().await?;
@@ -3568,7 +3773,7 @@ pub async fn update_by_id(
       old_model.create_usr_id.clone(),
     ).await?;
     if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?.into());
+      return Err(get_not_permit_err_fn().await?);
     }
   }
   
@@ -3578,7 +3783,7 @@ pub async fn update_by_id(
       old_model.create_usr_id.clone(),
     ).await?;
     if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?.into());
+      return Err(get_not_permit_err_fn().await?);
     }
   }<#
   }
@@ -3629,7 +3834,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -4090,7 +4295,7 @@ pub async fn update_by_id(
               "此 {0} 已被修改，请刷新后重试".to_owned(),
               map.into(),
             ).await?;
-            return Err(SrvErr::msg(err_msg).into());
+            return Err(anyhow!(err_msg));
           }
         }
         sql_fields += "version=?,";
@@ -4189,16 +4394,6 @@ pub async fn update_by_id(
     #>
     
   }<#
-  if (mod === "base" && table === "role") {
-  #>
-  
-  if input.menu_ids.is_some() {
-    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
-      input.menu_ids.unwrap(),
-    ).await?.into();
-  }<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -4349,7 +4544,7 @@ pub async fn delete_by_ids(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<SrvErr> {
+  async fn get_not_permit_err_fn() -> Result<()> {
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -4361,11 +4556,11 @@ pub async fn delete_by_ids(
       "没有权限删除此 {0}".to_owned(),
       map.into(),
     ).await?;
-    Ok(SrvErr::msg(err_msg))
+    Err(anyhow!(err_msg))
   }
   
   if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
-    return Err(get_not_permit_err_fn().await?.into());
+    return Err(get_not_permit_err_fn().await?);
   }<#
   }
   #>
@@ -4394,7 +4589,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone().into(),
       ).await?;
       if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?.into());
+        return Err(get_not_permit_err_fn().await?);
       }
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
@@ -4402,7 +4597,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone(),
       ).await?;
       if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?.into());
+        return Err(get_not_permit_err_fn().await?);
       }
     }
     
@@ -4412,7 +4607,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone(),
       ).await?;
       if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?.into());
+        return Err(get_not_permit_err_fn().await?);
       }
     }<#
     }
@@ -5040,7 +5235,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -5478,7 +5673,6 @@ if (hasEnabled) {
 #>
 
 /// 校验<#=table_comment#>是否启用
-#[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
   model: &<#=tableUP#>Model,
@@ -5493,7 +5687,7 @@ pub async fn validate_is_enabled(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(())
 }<#
@@ -5515,14 +5709,14 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }<#
 if (false) {
 #>
 
-/// 校验, 校验失败时抛出SrvErr异常
+/// 校验
 #[allow(unused_imports)]
 pub fn validate(
   input: &<#=tableUP#>Input,

@@ -1,14 +1,9 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -166,7 +161,7 @@ pub async fn delete_by_ids(
   }
   if ids.is_empty() && len > 0 {
     let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   let num = field_permit_dao::delete_by_ids(
