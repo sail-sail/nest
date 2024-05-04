@@ -109,8 +109,43 @@ export async function createSeo(
     "add",
   );
   const uniqueType = unique_type;
-  const id: SeoId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建SEO优化
+ */
+export async function createsSeo(
+  inputs: SeoInput[],
+  unique_type?: UniqueType,
+): Promise<SeoId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./seo.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/nuxt/seo",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

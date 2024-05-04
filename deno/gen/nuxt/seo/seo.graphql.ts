@@ -187,6 +187,8 @@ type Query {
 type Mutation {
   "创建SEO优化"
   createSeo(input: SeoInput!, unique_type: UniqueType): SeoId!
+  "批量创建SEO优化"
+  createsSeo(inputs: [SeoInput!]!, unique_type: UniqueType): [SeoId!]!
   "根据 id 修改SEO优化"
   updateByIdSeo(id: SeoId!, input: SeoInput!): SeoId!
   "根据 ids 删除SEO优化"
