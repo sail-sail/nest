@@ -1185,15 +1185,7 @@ async function _creates(
       input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
     }
     
-    let id = shortUuidV4<RoleId>();
-    while (true) {
-      const isExist = await existById(id);
-      if (!isExist) {
-        break;
-      }
-      error(`ID_COLLIDE: ${ table } ${ id as unknown as string }`);
-      id = shortUuidV4<RoleId>();
-    }
+    const id = shortUuidV4<RoleId>();
     input.id = id;
     ids2.push(id);
   }
