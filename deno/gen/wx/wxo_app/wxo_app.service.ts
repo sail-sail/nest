@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建公众号设置
  * @param {WxoAppInput} input
  * @return {Promise<WxoAppId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<WxoAppId> {
-  const id: WxoAppId = await wxo_appDao.create(input, options);
+  const id = await wxo_appDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建公众号设置
+ * @param {WxoAppInput[]} inputs
+ * @return {Promise<WxoAppId[]>} ids
+ */
+export async function creates(
+  inputs: WxoAppInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<WxoAppId[]> {
+  const ids = await wxo_appDao.creates(inputs, options);
+  return ids;
 }
 
 /**

@@ -166,6 +166,8 @@ type Query {
 type Mutation {
   "创建小程序设置"
   createWxApp(input: WxAppInput!, unique_type: UniqueType): WxAppId!
+  "批量创建小程序设置"
+  createsWxApp(inputs: [WxAppInput!]!, unique_type: UniqueType): [WxAppId!]!
   "根据 id 修改小程序设置"
   updateByIdWxApp(id: WxAppId!, input: WxAppInput!): WxAppId!
   "根据 ids 删除小程序设置"

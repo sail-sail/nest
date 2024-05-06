@@ -205,6 +205,8 @@ type Query {
 type Mutation {
   "创建微信支付设置"
   createWxPay(input: WxPayInput!, unique_type: UniqueType): WxPayId!
+  "批量创建微信支付设置"
+  createsWxPay(inputs: [WxPayInput!]!, unique_type: UniqueType): [WxPayId!]!
   "根据 id 修改微信支付设置"
   updateByIdWxPay(id: WxPayId!, input: WxPayInput!): WxPayId!
   "根据 ids 删除微信支付设置"
