@@ -4468,25 +4468,10 @@ export async function deleteByIds(
     const args = new QueryArgs();<#
     if (hasIsDeleted) {
     #>
-    const sql = `
-      update
-        <#=mod#>_<#=table#>
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;<#
+    const sql = `update <#=mod#>_<#=table#> set is_deleted=1,delete_time=${ args.push(reqDate()) } where id = ${ args.push(id) } limit 1`;<#
     } else {
     #>
-    const sql = `
-      delete from
-        <#=mod#>_<#=table#>
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;<#
+    const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
     }
     #>
     const result = await execute(sql, args);
@@ -4885,15 +4870,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: <#=Table_Up#>Id = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        <#=mod#>_<#=table#>
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update <#=mod#>_<#=table#> set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -5046,26 +5023,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          <#=mod#>_<#=table#>
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from <#=mod#>_<#=table#> where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        <#=mod#>_<#=table#>
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from <#=mod#>_<#=table#> where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
