@@ -109,8 +109,43 @@ export async function createWxPay(
     "add",
   );
   const uniqueType = unique_type;
-  const id: WxPayId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建微信支付设置
+ */
+export async function createsWxPay(
+  inputs: WxPayInput[],
+  unique_type?: UniqueType,
+): Promise<WxPayId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./wx_pay.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wx/wx_pay",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**
