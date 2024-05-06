@@ -6,16 +6,27 @@ import {
   error,
 } from "/lib/context.ts";
 
+const KEY = "lLpR1EKETWSb5x7TR4R32Q";
+
 const router = new Router({
   prefix: "/api/",
 });
 
 router.get("health", async function(ctx) {
+  const request = ctx.request;
   const response = ctx.response;
   try {
     const {
       healthCheck,
     } = await import("./health.service.ts");
+    
+    const searchParams = request.url.searchParams;
+    const key = searchParams.get("key");
+    if (key !== KEY) {
+      response.status = 401;
+      response.body = "Unauthorized";
+      return;
+    }
     
     await healthCheck();
     

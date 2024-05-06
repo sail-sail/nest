@@ -1,7 +1,9 @@
-import { encodeBase64 } from "std/encoding/base64.ts";
-
 import {
-  type JWTPayload,
+  encodeBase64,
+} from "std/encoding/base64.ts";
+
+import type {
+  JWTPayload,
 } from "jose/index.ts";
 
 import {
