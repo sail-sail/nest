@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建充值赠送规则
  * @param {RechargeRuleInput} input
  * @return {Promise<RechargeRuleId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<RechargeRuleId> {
-  const id: RechargeRuleId = await recharge_ruleDao.create(input, options);
+  const id = await recharge_ruleDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建充值赠送规则
+ * @param {RechargeRuleInput[]} inputs
+ * @return {Promise<RechargeRuleId[]>} ids
+ */
+export async function creates(
+  inputs: RechargeRuleInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<RechargeRuleId[]> {
+  const ids = await recharge_ruleDao.creates(inputs, options);
+  return ids;
 }
 
 /**

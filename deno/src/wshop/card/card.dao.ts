@@ -7,10 +7,6 @@ import {
   updateById as updateByIdCard,
 } from "/gen/wshop/card/card.dao.ts";
 
-import type {
-  CardId,
-} from "/gen/wshop/card/card.model.ts";
-
 /** 自动生成会员卡卡号 */
 export async function updateSeqLbl(id: CardId) {
   const cardModel = await findOneCard(

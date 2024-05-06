@@ -126,8 +126,58 @@ export async function createCard(
     "add",
   );
   const uniqueType = unique_type;
-  const id: CardId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建会员卡
+ */
+export async function createsCard(
+  inputs: CardInput[],
+  unique_type?: UniqueType,
+): Promise<CardId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./card.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wshop/card",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    // 充值余额
+    if (input.balance != null) {
+      input.balance = new Decimal(input.balance);
+    }
+    
+    // 赠送余额
+    if (input.give_balance != null) {
+      input.give_balance = new Decimal(input.give_balance);
+    }
+    
+    // 累计消费
+    if (input.growth_amt != null) {
+      input.growth_amt = new Decimal(input.growth_amt);
+    }
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

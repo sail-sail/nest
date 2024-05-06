@@ -111,7 +111,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建订单
  * @param {OrderInput} input
  * @return {Promise<OrderId>} id
  */
@@ -121,9 +121,27 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<OrderId> {
-  const id: OrderId = await orderDao.create(input, options);
+  const id = await orderDao.create(input, options);
   await updateSeqLbl(id);
   return id;
+}
+
+/**
+ * 批量创建订单
+ * @param {OrderInput[]} inputs
+ * @return {Promise<OrderId[]>} ids
+ */
+export async function creates(
+  inputs: OrderInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<OrderId[]> {
+  const ids = await orderDao.creates(inputs, options);
+  for (let i = 0; i < ids.length; i++) {
+    await updateSeqLbl(ids[i]);
+  }
+  return ids;
 }
 
 /**

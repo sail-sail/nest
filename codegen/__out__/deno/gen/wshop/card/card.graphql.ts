@@ -236,6 +236,8 @@ type Query {
 type Mutation {
   "创建会员卡"
   createCard(input: CardInput!, unique_type: UniqueType): CardId!
+  "批量创建会员卡"
+  createsCard(inputs: [CardInput!]!, unique_type: UniqueType): [CardId!]!
   "根据 id 修改会员卡"
   updateByIdCard(id: CardId!, input: CardInput!): CardId!
   "根据 ids 删除会员卡"

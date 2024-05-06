@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建小程序配置
  * @param {WxappConfigInput} input
  * @return {Promise<WxappConfigId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<WxappConfigId> {
-  const id: WxappConfigId = await wxapp_configDao.create(input, options);
+  const id = await wxapp_configDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建小程序配置
+ * @param {WxappConfigInput[]} inputs
+ * @return {Promise<WxappConfigId[]>} ids
+ */
+export async function creates(
+  inputs: WxappConfigInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<WxappConfigId[]> {
+  const ids = await wxapp_configDao.creates(inputs, options);
+  return ids;
 }
 
 /**

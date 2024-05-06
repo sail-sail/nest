@@ -121,8 +121,53 @@ export async function createRechargeRule(
     "add",
   );
   const uniqueType = unique_type;
-  const id: RechargeRuleId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建充值赠送规则
+ */
+export async function createsRechargeRule(
+  inputs: RechargeRuleInput[],
+  unique_type?: UniqueType,
+): Promise<RechargeRuleId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./recharge_rule.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wshop/recharge_rule",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    // 充值金额
+    if (input.amt != null) {
+      input.amt = new Decimal(input.amt);
+    }
+    
+    // 赠送金额
+    if (input.give_amt != null) {
+      input.give_amt = new Decimal(input.give_amt);
+    }
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

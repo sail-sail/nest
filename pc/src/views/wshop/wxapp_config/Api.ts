@@ -171,8 +171,37 @@ export async function create(
       unique_type,
     },
   }, opt);
-  const id: WxappConfigId = data.createWxappConfig;
+  const id = data.createWxappConfig;
   return id;
+}
+
+/**
+ * 批量创建小程序配置
+ * @param {WxappConfigInput[]} inputs
+ * @param {UniqueType} unique_type?
+ * @param {GqlOpt} opt?
+ */
+export async function creates(
+  inputs: WxappConfigInput[],
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<WxappConfigId[]> {
+  inputs = inputs.map(intoInput);
+  const data: {
+    createsWxappConfig: Mutation["createsWxappConfig"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($inputs: [WxappConfigInput!]!, $unique_type: UniqueType) {
+        createsWxappConfig(inputs: $inputs, unique_type: $unique_type)
+      }
+    `,
+    variables: {
+      inputs,
+      unique_type,
+    },
+  }, opt);
+  const ids = data.createsWxappConfig;
+  return ids;
 }
 
 /**
@@ -364,7 +393,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载导入模板
+ * 下载小程序配置导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
@@ -489,11 +518,11 @@ export function useExportExcel(routePath: string) {
 }
 
 /**
- * 批量导入
- * @param {WxappConfigInput[]} models
+ * 批量导入小程序配置
+ * @param {WxappConfigInput[]} inputs
  */
 export async function importModels(
-  models: WxappConfigInput[],
+  inputs: WxappConfigInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
@@ -502,36 +531,39 @@ export async function importModels(
     nsAsync,
   } = useI18n();
   
+  opt = opt || { };
+  opt.showErrMsg = false;
+  opt.notLoading = true;
+  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];
   percentage.value = 0;
   
-  for (let i = 0; i < models.length; i++) {
+  const len = inputs.length;
+  const inputsArr = splitCreateArr(inputs);
+  
+  let i = 0;
+  for (const inputs of inputsArr) {
     if (isCancel.value) {
       break;
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
-    
-    const item = models[i];
-    
-    opt = opt || { };
-    opt.showErrMsg = false;
-    opt.notLoading = true;
+    i += inputs.length;
     
     try {
-      await create(
-        item,
+      await creates(
+        inputs,
         UniqueType.Update,
         opt,
       );
-      succNum++;
+      succNum += inputs.length;
     } catch (err) {
-      failNum++;
-      failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
+      failNum += inputs.length;
+      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
     }
     
+    percentage.value = Math.floor((i + 1) / len * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);

@@ -388,7 +388,7 @@ export async function getUsrList() {
 }
 
 /**
- * 下载导入模板
+ * 下载会员卡充值记录导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
