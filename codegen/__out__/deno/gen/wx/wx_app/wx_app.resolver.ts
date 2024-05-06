@@ -109,8 +109,43 @@ export async function createWxApp(
     "add",
   );
   const uniqueType = unique_type;
-  const id: WxAppId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建小程序设置
+ */
+export async function createsWxApp(
+  inputs: WxAppInput[],
+  unique_type?: UniqueType,
+): Promise<WxAppId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./wx_app.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wx/wx_app",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

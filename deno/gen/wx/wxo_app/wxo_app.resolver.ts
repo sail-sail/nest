@@ -109,8 +109,43 @@ export async function createWxoApp(
     "add",
   );
   const uniqueType = unique_type;
-  const id: WxoAppId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建公众号设置
+ */
+export async function createsWxoApp(
+  inputs: WxoAppInput[],
+  unique_type?: UniqueType,
+): Promise<WxoAppId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./wxo_app.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wx/wxo_app",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

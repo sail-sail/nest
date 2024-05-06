@@ -198,7 +198,7 @@ export async function findById(
 }
 
 /**
- * 下载导入模板
+ * 下载微信支付通知导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {

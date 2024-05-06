@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建微信支付设置
  * @param {WxPayInput} input
  * @return {Promise<WxPayId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<WxPayId> {
-  const id: WxPayId = await wx_payDao.create(input, options);
+  const id = await wx_payDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建微信支付设置
+ * @param {WxPayInput[]} inputs
+ * @return {Promise<WxPayId[]>} ids
+ */
+export async function creates(
+  inputs: WxPayInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<WxPayId[]> {
+  const ids = await wx_payDao.creates(inputs, options);
+  return ids;
 }
 
 /**

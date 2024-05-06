@@ -90,6 +90,8 @@ type Query {
 type Mutation {
   "创建小程序接口凭据"
   createWxAppToken(input: WxAppTokenInput!, unique_type: UniqueType): WxAppTokenId!
+  "批量创建小程序接口凭据"
+  createsWxAppToken(inputs: [WxAppTokenInput!]!, unique_type: UniqueType): [WxAppTokenId!]!
   "根据 id 修改小程序接口凭据"
   updateByIdWxAppToken(id: WxAppTokenId!, input: WxAppTokenInput!): WxAppTokenId!
   "根据 ids 删除小程序接口凭据"
