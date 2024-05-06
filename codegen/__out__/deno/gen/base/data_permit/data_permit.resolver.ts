@@ -109,8 +109,43 @@ export async function createDataPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const id: DataPermitId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建数据权限
+ */
+export async function createsDataPermit(
+  inputs: DataPermitInput[],
+  unique_type?: UniqueType,
+): Promise<DataPermitId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./data_permit.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/data_permit",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

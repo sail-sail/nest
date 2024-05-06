@@ -349,7 +349,7 @@ export async function create<#=Table_Up2#>(
   }
   #>
   const uniqueType = unique_type;
-  const id: <#=Table_Up#>Id = await create(input, { uniqueType });<#
+  const id = await create(input, { uniqueType });<#
   if (log) {
   #>
   
@@ -368,6 +368,102 @@ export async function create<#=Table_Up2#>(
   }
   #>
   return id;
+}
+
+/**
+ * 批量创建<#=table_comment#>
+ */
+export async function creates<#=Table_Up2#>(
+  inputs: <#=inputName#>[],
+  unique_type?: UniqueType,
+): Promise<<#=Table_Up#>Id[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "add",
+  );<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();<#
+  }
+  #>
+  
+  for (const input of inputs) {
+    input.id = undefined;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      if (column.noList) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "version") continue;
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      if (!column_type) {
+        continue;
+      }
+      if (!column_type.startsWith("decimal")) {
+        continue;
+      }
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #>
+    
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      input.<#=column_name#> = new Decimal(input.<#=column_name#>);
+    }<#
+    }
+    #>
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });<#
+  if (log) {
+  #>
+  
+  const new_data = await findAll<#=Table_Up2#>({
+    ids,
+  });
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "creates",
+    method_lbl: "批量创建",
+    lbl: "批量创建",
+    time: end_time.getTime() - begin_time.getTime(),
+    new_data: JSON.stringify(new_data),
+  });<#
+  }
+  #>
+  return ids;
 }<#
 }
 #><#

@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建部门
  * @param {DeptInput} input
  * @return {Promise<DeptId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<DeptId> {
-  const id: DeptId = await deptDao.create(input, options);
+  const id = await deptDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建部门
+ * @param {DeptInput[]} inputs
+ * @return {Promise<DeptId[]>} ids
+ */
+export async function creates(
+  inputs: DeptInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<DeptId[]> {
+  const ids = await deptDao.creates(inputs, options);
+  return ids;
 }
 
 /**

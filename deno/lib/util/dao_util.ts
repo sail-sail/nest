@@ -302,3 +302,25 @@ export function getDebugSearch(
   }
   return JSON.stringify(search2);
 }
+
+export const SPLIT_SQL_INSERT_LEN = 1000;
+
+export function splitArr<T>(
+  arr: T[],
+  size: number,
+): T[][] {
+  if (size <= SPLIT_SQL_INSERT_LEN) {
+    return [ arr ];
+  }
+  const res = [ ];
+  for (let i = 0; i < arr.length; i += size) {
+    res.push(arr.slice(i, i + size));
+  }
+  return res;
+}
+
+export function splitCreateArr<T>(
+  arr: T[],
+) {
+  return splitArr(arr, SPLIT_SQL_INSERT_LEN);
+}

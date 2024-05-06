@@ -172,6 +172,8 @@ type Query {
 type Mutation {
   "创建部门"
   createDept(input: DeptInput!, unique_type: UniqueType): DeptId!
+  "批量创建部门"
+  createsDept(inputs: [DeptInput!]!, unique_type: UniqueType): [DeptId!]!
   "根据 id 修改部门"
   updateByIdDept(id: DeptId!, input: DeptInput!): DeptId!
   "根据 ids 删除部门"

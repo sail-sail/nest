@@ -109,8 +109,43 @@ export async function createDictDetail(
     "add",
   );
   const uniqueType = unique_type;
-  const id: DictDetailId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建系统字典明细
+ */
+export async function createsDictDetail(
+  inputs: DictDetailInput[],
+  unique_type?: UniqueType,
+): Promise<DictDetailId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./dict_detail.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**
