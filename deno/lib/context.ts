@@ -114,16 +114,7 @@ async function redisClient() {
   return _redisClient;
 }
 
-const database_names = ((await getEnv("database_names")) || "").split(",")
-  .map((item) => item.trim());
-
 const clientMap = new Map<string, Client | undefined>();
-
-clientMap.set("", undefined);
-
-for (const database_name of database_names) {
-  clientMap.set(database_name, undefined);
-}
 
 export async function getClient(
   database_name = "",
@@ -225,7 +216,6 @@ let req_id = 0;
 
 export class Context {
   
-  #database_name = "";
   #is_tran = false;
   #conn: PoolConnection | undefined;
   #req_id = "0";
@@ -256,17 +246,6 @@ export class Context {
     }
     req_id++;
     this.#req_id = req_id.toString(36);
-  }
-  
-  get database_name() {
-    return this.#database_name;
-  }
-  
-  set database_name(database_name: string) {
-    if (!database_names.includes(database_name)) {
-      throw new Error(`database_name: ${ database_name } is not in ${ database_names }`);
-    }
-    this.#database_name = database_name;
   }
   
   get conn() {
@@ -642,7 +621,7 @@ export async function beginTran(opt?: { debug?: boolean }): Promise<PoolConnecti
   const context = useContext();
   let conn = context.conn;
   if (conn) return conn;
-  const client = await getClient(context.database_name);
+  const client = await getClient();
   if (!client.pool) {
     throw new ServiceException("client pool is empty!");
   }
@@ -725,11 +704,11 @@ export async function close(context: Context) {
     // conn.close();
     conn.returnToPool();
   }
-  const client = await getClient(context.database_name);
-  // client.poolConn?.close();
-  await client?.close();
   const redisCln = await redisClient();
   redisCln?.close();
+  for (const client of clientMap.values()) {
+    await client?.close();
+  }
 }
 
 export function escapeDec(orderDec?: InputMaybe<SortOrderEnum>|"asc"|"desc") {
@@ -826,6 +805,34 @@ export async function queryOne<T = any>(
 }
 
 /**
+ * 数据仓库执行sql查询语句
+ * @template T
+ * @param {string} sql sql语句
+ * @param {any[]|QueryArgs} args? 参数
+ * @param {{ debug?: boolean, logResult?: boolean }} opt?
+ *   debug: 是否打印sql日志,默认为true
+ *   logResult: 是否打印执行sql返回的结果,默认为true
+ * @return {Promise<T[]>}
+ */
+// deno-lint-ignore no-explicit-any
+export async function query_dw<T = any>(
+  sql: string,
+  // deno-lint-ignore no-explicit-any
+  args?: any[]|QueryArgs,
+  opt?: {
+    debug?: boolean,
+    // logResult?: boolean,
+    cacheKey1?: string,
+    cacheKey2?: string,
+    database_name?: string,
+  },
+): Promise<T[]> {
+  opt = opt || { };
+  opt.database_name = "dw";
+  return await query<T>(sql, args, opt);
+}
+
+/**
  * 执行sql查询语句
  * @template T
  * @param {string} sql sql语句
@@ -845,6 +852,7 @@ export async function query<T = any>(
     // logResult?: boolean,
     cacheKey1?: string,
     cacheKey2?: string,
+    database_name?: string,
   },
 ): Promise<T[]> {
   const context = useContext();
@@ -873,7 +881,7 @@ export async function query<T = any>(
       //   debugSql = getDebugQuery(sql, args);
       //   log(debugSql);
       // }
-      const pool = await getClient(context.database_name);
+      const pool = await getClient(opt?.database_name);
       result = await pool.query(sql, args, { debug: opt?.debug });
     }
   } catch (err) {
@@ -926,7 +934,7 @@ export async function execute(
       if (!opt || opt.debug !== false) {
         log(getDebugQuery(sql, args));
       }
-      const pool = await getClient(context.database_name);
+      const pool = await getClient();
       result = await pool.execute(sql, args);
     }
   } catch (err) {
