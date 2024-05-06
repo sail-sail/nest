@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -699,16 +700,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      wxwork_wxw_app_token t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from wxwork_wxw_app_token t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -716,11 +708,11 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,{ cacheKey1, cacheKey2 },
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -809,111 +801,176 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: WxwAppTokenId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建企微应用接口凭据
+ * @param {WxwAppTokenInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<WxwAppTokenId[]>} 
+ */
+export async function creates(
+  inputs: WxwAppTokenInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxwAppTokenId[]> {
+  const table = "wxwork_wxw_app_token";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: WxwAppTokenInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxwAppTokenId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "wxwork_wxw_app_token";
+  
+  const ids2: WxwAppTokenId[] = [ ];
+  const inputs2: WxwAppTokenInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: WxwAppTokenId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<WxwAppTokenId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<WxwAppTokenId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into wxwork_wxw_app_token(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into wxwork_wxw_app_token(id,create_time,tenant_id,create_usr_id,wxw_app_id,type,access_token,token_time,expires_in)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.wxw_app_id != null) {
+        sql += `,${ args.push(input.wxw_app_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.type != null) {
+        sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.access_token != null) {
+        sql += `,${ args.push(input.access_token) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.token_time != null) {
+        sql += `,${ args.push(input.token_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.expires_in != null) {
+        sql += `,${ args.push(input.expires_in) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.wxw_app_id != null) {
-    sql += `,wxw_app_id`;
-  }
-  if (input.type != null) {
-    sql += `,type`;
-  }
-  if (input.access_token != null) {
-    sql += `,access_token`;
-  }
-  if (input.token_time != null) {
-    sql += `,token_time`;
-  }
-  if (input.expires_in != null) {
-    sql += `,expires_in`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.wxw_app_id != null) {
-    sql += `,${ args.push(input.wxw_app_id) }`;
-  }
-  if (input.type != null) {
-    sql += `,${ args.push(input.type) }`;
-  }
-  if (input.access_token != null) {
-    sql += `,${ args.push(input.access_token) }`;
-  }
-  if (input.token_time != null) {
-    sql += `,${ args.push(input.token_time) }`;
-  }
-  if (input.expires_in != null) {
-    sql += `,${ args.push(input.expires_in) }`;
-  }
-  sql += `)`;
   
   await delCache();
   
@@ -923,9 +980,13 @@ export async function create(
     debug,
   });
   
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
   await delCache();
   
-  return input.id;
+  return ids2;
 }
 
 /**
@@ -1038,8 +1099,6 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {
