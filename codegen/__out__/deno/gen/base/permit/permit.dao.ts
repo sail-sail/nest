@@ -869,15 +869,7 @@ async function _creates(
       inputs2.push(input);
     }
     
-    let id = shortUuidV4<PermitId>();
-    while (true) {
-      const isExist = await existById(id);
-      if (!isExist) {
-        break;
-      }
-      error(`ID_COLLIDE: ${ table } ${ id as unknown as string }`);
-      id = shortUuidV4<PermitId>();
-    }
+    const id = shortUuidV4<PermitId>();
     input.id = id;
     ids2.push(id);
   }
