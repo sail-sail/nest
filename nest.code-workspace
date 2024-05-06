@@ -40,6 +40,11 @@
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "deno.codeLens.references": false,
-    "deno.codeLens.referencesAllFunctions": false
+    "deno.codeLens.referencesAllFunctions": false,
+    "workbench.editor.customLabels.patterns": {
+      "**/__out__/**/*.*": "__out__ ${filename}.${extname}",
+      "**/gen/**/*.*": "gen/${filename}.${extname}",
+      "**/src/**/*.*": "src/${filename}.${extname}"
+    }
   }
 }

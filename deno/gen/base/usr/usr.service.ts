@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建用户
  * @param {UsrInput} input
  * @return {Promise<UsrId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<UsrId> {
-  const id: UsrId = await usrDao.create(input, options);
+  const id = await usrDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建用户
+ * @param {UsrInput[]} inputs
+ * @return {Promise<UsrId[]>} ids
+ */
+export async function creates(
+  inputs: UsrInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<UsrId[]> {
+  const ids = await usrDao.creates(inputs, options);
+  return ids;
 }
 
 /**
