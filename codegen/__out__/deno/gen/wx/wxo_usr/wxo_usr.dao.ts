@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -678,16 +679,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      wx_wxo_usr t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from wx_wxo_usr t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -695,11 +687,11 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,{ cacheKey1, cacheKey2 },
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -816,127 +808,187 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: WxoUsrId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建公众号用户
+ * @param {WxoUsrInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<WxoUsrId[]>} 
+ */
+export async function creates(
+  inputs: WxoUsrInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxoUsrId[]> {
+  const table = "wx_wxo_usr";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: WxoUsrInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxoUsrId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "wx_wxo_usr";
+  
+  const ids2: WxoUsrId[] = [ ];
+  const inputs2: WxoUsrInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: WxoUsrId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<WxoUsrId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<WxoUsrId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into wx_wxo_usr(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into wx_wxo_usr(id,create_time,tenant_id,org_id,create_usr_id,lbl,usr_id,openid,unionid,rem)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const org_id = authModel?.org_id;
+        if (org_id != null) {
+          sql += `,${ args.push(org_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.usr_id != null) {
+        sql += `,${ args.push(input.usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.openid != null) {
+        sql += `,${ args.push(input.openid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.unionid != null) {
+        sql += `,${ args.push(input.unionid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.org_id != null) {
-    sql += `,org_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,org_id`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,lbl`;
-  }
-  if (input.usr_id != null) {
-    sql += `,usr_id`;
-  }
-  if (input.openid != null) {
-    sql += `,openid`;
-  }
-  if (input.unionid != null) {
-    sql += `,unionid`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.org_id != null) {
-    sql += `,${ args.push(input.org_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,${ args.push(authModel?.org_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,${ args.push(input.lbl) }`;
-  }
-  if (input.usr_id != null) {
-    sql += `,${ args.push(input.usr_id) }`;
-  }
-  if (input.openid != null) {
-    sql += `,${ args.push(input.openid) }`;
-  }
-  if (input.unionid != null) {
-    sql += `,${ args.push(input.unionid) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  sql += `)`;
   
   await delCache();
   
@@ -946,9 +998,13 @@ export async function create(
     debug,
   });
   
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
   await delCache();
   
-  return input.id;
+  return ids2;
 }
 
 /**
@@ -1108,8 +1164,6 @@ export async function updateById(
   if (isNotEmpty(input.org_id)) {
     await updateOrgById(id, input.org_id as unknown as OrgId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {

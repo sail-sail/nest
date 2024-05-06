@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -893,25 +894,16 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      wx_wx_pay_notice t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from wx_wx_pay_notice t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -1091,205 +1083,252 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: WxPayNoticeId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建微信支付通知
+ * @param {WxPayNoticeInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<WxPayNoticeId[]>} 
+ */
+export async function creates(
+  inputs: WxPayNoticeInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxPayNoticeId[]> {
+  const table = "wx_wx_pay_notice";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: WxPayNoticeInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<WxPayNoticeId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "wx_wx_pay_notice";
+  
+  const ids2: WxPayNoticeId[] = [ ];
+  const inputs2: WxPayNoticeInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: WxPayNoticeId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<WxPayNoticeId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<WxPayNoticeId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into wx_wx_pay_notice(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into wx_wx_pay_notice(id,create_time,tenant_id,org_id,create_usr_id,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem,raw)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const org_id = authModel?.org_id;
+        if (org_id != null) {
+          sql += `,${ args.push(org_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.appid != null) {
+        sql += `,${ args.push(input.appid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.mchid != null) {
+        sql += `,${ args.push(input.mchid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.openid != null) {
+        sql += `,${ args.push(input.openid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.out_trade_no != null) {
+        sql += `,${ args.push(input.out_trade_no) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.transaction_id != null) {
+        sql += `,${ args.push(input.transaction_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.trade_type != null) {
+        sql += `,${ args.push(input.trade_type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.trade_state != null) {
+        sql += `,${ args.push(input.trade_state) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.trade_state_desc != null) {
+        sql += `,${ args.push(input.trade_state_desc) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.bank_type != null) {
+        sql += `,${ args.push(input.bank_type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.attach != null) {
+        sql += `,${ args.push(input.attach) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.success_time != null) {
+        sql += `,${ args.push(input.success_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.total != null) {
+        sql += `,${ args.push(input.total) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.payer_total != null) {
+        sql += `,${ args.push(input.payer_total) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.currency != null) {
+        sql += `,${ args.push(input.currency) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.payer_currency != null) {
+        sql += `,${ args.push(input.payer_currency) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.device_id != null) {
+        sql += `,${ args.push(input.device_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.raw != null) {
+        sql += `,${ args.push(input.raw) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.org_id != null) {
-    sql += `,org_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,org_id`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.appid != null) {
-    sql += `,appid`;
-  }
-  if (input.mchid != null) {
-    sql += `,mchid`;
-  }
-  if (input.openid != null) {
-    sql += `,openid`;
-  }
-  if (input.out_trade_no != null) {
-    sql += `,out_trade_no`;
-  }
-  if (input.transaction_id != null) {
-    sql += `,transaction_id`;
-  }
-  if (input.trade_type != null) {
-    sql += `,trade_type`;
-  }
-  if (input.trade_state != null) {
-    sql += `,trade_state`;
-  }
-  if (input.trade_state_desc != null) {
-    sql += `,trade_state_desc`;
-  }
-  if (input.bank_type != null) {
-    sql += `,bank_type`;
-  }
-  if (input.attach != null) {
-    sql += `,attach`;
-  }
-  if (input.success_time != null) {
-    sql += `,success_time`;
-  }
-  if (input.total != null) {
-    sql += `,total`;
-  }
-  if (input.payer_total != null) {
-    sql += `,payer_total`;
-  }
-  if (input.currency != null) {
-    sql += `,currency`;
-  }
-  if (input.payer_currency != null) {
-    sql += `,payer_currency`;
-  }
-  if (input.device_id != null) {
-    sql += `,device_id`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  if (input.raw != null) {
-    sql += `,raw`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.org_id != null) {
-    sql += `,${ args.push(input.org_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,${ args.push(authModel?.org_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.appid != null) {
-    sql += `,${ args.push(input.appid) }`;
-  }
-  if (input.mchid != null) {
-    sql += `,${ args.push(input.mchid) }`;
-  }
-  if (input.openid != null) {
-    sql += `,${ args.push(input.openid) }`;
-  }
-  if (input.out_trade_no != null) {
-    sql += `,${ args.push(input.out_trade_no) }`;
-  }
-  if (input.transaction_id != null) {
-    sql += `,${ args.push(input.transaction_id) }`;
-  }
-  if (input.trade_type != null) {
-    sql += `,${ args.push(input.trade_type) }`;
-  }
-  if (input.trade_state != null) {
-    sql += `,${ args.push(input.trade_state) }`;
-  }
-  if (input.trade_state_desc != null) {
-    sql += `,${ args.push(input.trade_state_desc) }`;
-  }
-  if (input.bank_type != null) {
-    sql += `,${ args.push(input.bank_type) }`;
-  }
-  if (input.attach != null) {
-    sql += `,${ args.push(input.attach) }`;
-  }
-  if (input.success_time != null) {
-    sql += `,${ args.push(input.success_time) }`;
-  }
-  if (input.total != null) {
-    sql += `,${ args.push(input.total) }`;
-  }
-  if (input.payer_total != null) {
-    sql += `,${ args.push(input.payer_total) }`;
-  }
-  if (input.currency != null) {
-    sql += `,${ args.push(input.currency) }`;
-  }
-  if (input.payer_currency != null) {
-    sql += `,${ args.push(input.payer_currency) }`;
-  }
-  if (input.device_id != null) {
-    sql += `,${ args.push(input.device_id) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.raw != null) {
-    sql += `,${ args.push(input.raw) }`;
-  }
-  sql += `)`;
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
@@ -1297,7 +1336,11 @@ export async function create(
     debug,
   });
   
-  return input.id;
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
+  return ids2;
 }
 
 /**
@@ -1444,8 +1487,6 @@ export async function updateById(
   if (isNotEmpty(input.org_id)) {
     await updateOrgById(id, input.org_id as unknown as OrgId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {

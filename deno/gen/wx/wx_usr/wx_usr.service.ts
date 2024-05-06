@@ -103,7 +103,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建小程序用户
  * @param {WxUsrInput} input
  * @return {Promise<WxUsrId>} id
  */
@@ -113,8 +113,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<WxUsrId> {
-  const id: WxUsrId = await wx_usrDao.create(input, options);
+  const id = await wx_usrDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建小程序用户
+ * @param {WxUsrInput[]} inputs
+ * @return {Promise<WxUsrId[]>} ids
+ */
+export async function creates(
+  inputs: WxUsrInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<WxUsrId[]> {
+  const ids = await wx_usrDao.creates(inputs, options);
+  return ids;
 }
 
 /**
