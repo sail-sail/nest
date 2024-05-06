@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -746,25 +747,16 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      cron_cron_job_log t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from cron_cron_job_log t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -853,117 +845,181 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: CronJobLogId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建任务执行日志
+ * @param {CronJobLogInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<CronJobLogId[]>} 
+ */
+export async function creates(
+  inputs: CronJobLogInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<CronJobLogId[]> {
+  const table = "cron_cron_job_log";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: CronJobLogInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<CronJobLogId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "cron_cron_job_log";
+  
+  const ids2: CronJobLogId[] = [ ];
+  const inputs2: CronJobLogInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: CronJobLogId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<CronJobLogId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<CronJobLogId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into cron_cron_job_log(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into cron_cron_job_log(id,create_time,tenant_id,create_usr_id,cron_job_id,exec_state,exec_result,begin_time,end_time,rem)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.cron_job_id != null) {
+        sql += `,${ args.push(input.cron_job_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.exec_state != null) {
+        sql += `,${ args.push(input.exec_state) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.exec_result != null) {
+        sql += `,${ args.push(input.exec_result) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.begin_time != null) {
+        sql += `,${ args.push(input.begin_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.end_time != null) {
+        sql += `,${ args.push(input.end_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.cron_job_id != null) {
-    sql += `,cron_job_id`;
-  }
-  if (input.exec_state != null) {
-    sql += `,exec_state`;
-  }
-  if (input.exec_result != null) {
-    sql += `,exec_result`;
-  }
-  if (input.begin_time != null) {
-    sql += `,begin_time`;
-  }
-  if (input.end_time != null) {
-    sql += `,end_time`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.cron_job_id != null) {
-    sql += `,${ args.push(input.cron_job_id) }`;
-  }
-  if (input.exec_state != null) {
-    sql += `,${ args.push(input.exec_state) }`;
-  }
-  if (input.exec_result != null) {
-    sql += `,${ args.push(input.exec_result) }`;
-  }
-  if (input.begin_time != null) {
-    sql += `,${ args.push(input.begin_time) }`;
-  }
-  if (input.end_time != null) {
-    sql += `,${ args.push(input.end_time) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  sql += `)`;
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
@@ -971,7 +1027,11 @@ export async function create(
     debug,
   });
   
-  return input.id;
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
+  return ids2;
 }
 
 /**
@@ -1075,8 +1135,6 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {

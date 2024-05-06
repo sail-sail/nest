@@ -275,7 +275,7 @@ export async function getCronJobLogList() {
 }
 
 /**
- * 下载导入模板
+ * 下载任务执行日志明细导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
