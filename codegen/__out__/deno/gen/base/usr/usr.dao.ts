@@ -129,6 +129,24 @@ async function getWhereQuery(
   if (isNotEmpty(search?.username_like)) {
     whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
   }
+  if (search?.role_ids != null && !Array.isArray(search?.role_ids)) {
+    search.role_ids = [ search.role_ids ];
+  }
+  if (search?.role_ids != null) {
+    whereQuery += ` and base_role.id in ${ args.push(search.role_ids) }`;
+  }
+  if (search?.role_ids_is_null) {
+    whereQuery += ` and base_role.id is null`;
+  }
+  if (search?.dept_ids != null && !Array.isArray(search?.dept_ids)) {
+    search.dept_ids = [ search.dept_ids ];
+  }
+  if (search?.dept_ids != null) {
+    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
+  }
+  if (search?.dept_ids_is_null) {
+    whereQuery += ` and base_dept.id is null`;
+  }
   if (search?.org_ids != null && !Array.isArray(search?.org_ids)) {
     search.org_ids = [ search.org_ids ];
   }
@@ -166,24 +184,6 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
-  }
-  if (search?.dept_ids != null && !Array.isArray(search?.dept_ids)) {
-    search.dept_ids = [ search.dept_ids ];
-  }
-  if (search?.dept_ids != null) {
-    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
-  }
-  if (search?.dept_ids_is_null) {
-    whereQuery += ` and base_dept.id is null`;
-  }
-  if (search?.role_ids != null && !Array.isArray(search?.role_ids)) {
-    search.role_ids = [ search.role_ids ];
-  }
-  if (search?.role_ids != null) {
-    whereQuery += ` and base_role.id in ${ args.push(search.role_ids) }`;
-  }
-  if (search?.role_ids_is_null) {
-    whereQuery += ` and base_role.id is null`;
   }
   if (search?.rem != null) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -239,6 +239,48 @@ async function getFromQuery(
 ) {
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_usr t
+    left join base_usr_role
+      on base_usr_role.usr_id = t.id
+      and base_usr_role.is_deleted = ${ args.push(is_deleted) }
+    left join base_role
+      on base_usr_role.role_id = base_role.id
+      and base_role.is_deleted = ${ args.push(is_deleted) }
+    left join (
+      select
+        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
+        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_role
+      inner join base_role
+        on base_role.id = base_usr_role.role_id
+      inner join base_usr
+        on base_usr.id = base_usr_role.usr_id
+      where
+        base_usr_role.is_deleted = ${ args.push(is_deleted) }
+      group by usr_id
+    ) _role
+      on _role.usr_id = t.id
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = ${ args.push(is_deleted) }
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = ${ args.push(is_deleted) }
+    left join (
+      select
+        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
+        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_dept
+      inner join base_dept
+        on base_dept.id = base_usr_dept.dept_id
+      inner join base_usr
+        on base_usr.id = base_usr_dept.usr_id
+      where
+        base_usr_dept.is_deleted = ${ args.push(is_deleted) }
+      group by usr_id
+    ) _dept
+      on _dept.usr_id = t.id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = ${ args.push(is_deleted) }
@@ -262,48 +304,6 @@ async function getFromQuery(
       on _org.usr_id = t.id
     left join base_org default_org_id_lbl
       on default_org_id_lbl.id = t.default_org_id
-    left join base_usr_dept
-      on base_usr_dept.usr_id = t.id
-      and base_usr_dept.is_deleted = ${ args.push(is_deleted) }
-    left join base_dept
-      on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
-        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_dept
-      inner join base_dept
-        on base_dept.id = base_usr_dept.dept_id
-      inner join base_usr
-        on base_usr.id = base_usr_dept.usr_id
-      where
-        base_usr_dept.is_deleted = ${ args.push(is_deleted) }
-      group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
-    left join base_usr_role
-      on base_usr_role.usr_id = t.id
-      and base_usr_role.is_deleted = ${ args.push(is_deleted) }
-    left join base_role
-      on base_usr_role.role_id = base_role.id
-      and base_role.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
-        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_role
-      inner join base_role
-        on base_role.id = base_usr_role.role_id
-      inner join base_usr
-        on base_usr.id = base_usr_role.usr_id
-      where
-        base_usr_role.is_deleted = ${ args.push(is_deleted) }
-      group by usr_id
-    ) _role
-      on _role.usr_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -403,6 +403,14 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 所属角色
+  if (search && search.role_ids != null && search.role_ids.length === 0) {
+    return [ ];
+  }
+  // 所属部门
+  if (search && search.dept_ids != null && search.dept_ids.length === 0) {
+    return [ ];
+  }
   // 所属组织
   if (search && search.org_ids != null && search.org_ids.length === 0) {
     return [ ];
@@ -417,14 +425,6 @@ export async function findAll(
   }
   // 启用
   if (search && search.is_enabled != null && search.is_enabled.length === 0) {
-    return [ ];
-  }
-  // 所属部门
-  if (search && search.dept_ids != null && search.dept_ids.length === 0) {
-    return [ ];
-  }
-  // 拥有角色
-  if (search && search.role_ids != null && search.role_ids.length === 0) {
     return [ ];
   }
   // 创建人
@@ -444,13 +444,13 @@ export async function findAll(
   let sql = `
     select f.* from (
     select t.*
+      ,max(role_ids) role_ids
+      ,max(role_ids_lbl) role_ids_lbl
+      ,max(dept_ids) dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
       ,default_org_id_lbl.lbl default_org_id_lbl
-      ,max(dept_ids) dept_ids
-      ,max(dept_ids_lbl) dept_ids_lbl
-      ,max(role_ids) role_ids
-      ,max(role_ids_lbl) role_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -517,24 +517,24 @@ export async function findAll(
   );
   for (const item of result) {
     
-    // 所属组织
-    if (item.org_ids) {
-      const obj = item.org_ids;
+    // 所属角色
+    if (item.role_ids) {
+      const obj = item.role_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
           return a - b ? 1 : -1;
         });
-      item.org_ids = keys.map((key) => obj[key]);
+      item.role_ids = keys.map((key) => obj[key]);
     }
-    if (item.org_ids_lbl) {
-      const obj = item.org_ids_lbl;
+    if (item.role_ids_lbl) {
+      const obj = item.role_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
           return a - b ? 1 : -1;
         });
-      item.org_ids_lbl = keys.map((key) => obj[key]);
+      item.role_ids_lbl = keys.map((key) => obj[key]);
     }
     
     // 所属部门
@@ -557,24 +557,24 @@ export async function findAll(
       item.dept_ids_lbl = keys.map((key) => obj[key]);
     }
     
-    // 拥有角色
-    if (item.role_ids) {
-      const obj = item.role_ids;
+    // 所属组织
+    if (item.org_ids) {
+      const obj = item.org_ids;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
           return a - b ? 1 : -1;
         });
-      item.role_ids = keys.map((key) => obj[key]);
+      item.org_ids = keys.map((key) => obj[key]);
     }
-    if (item.role_ids_lbl) {
-      const obj = item.role_ids_lbl;
+    if (item.org_ids_lbl) {
+      const obj = item.org_ids_lbl;
       const keys = Object.keys(obj)
         .map((key) => Number(key))
         .sort((a, b) => {
           return a - b ? 1 : -1;
         });
-      item.role_ids_lbl = keys.map((key) => obj[key]);
+      item.org_ids_lbl = keys.map((key) => obj[key]);
     }
   }
   
@@ -650,6 +650,60 @@ export async function setIdByLbl(
     "is_enabled",
   ]);
   
+  // 所属角色
+  if (!input.role_ids && input.role_ids_lbl) {
+    input.role_ids_lbl = input.role_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.role_ids_lbl = Array.from(new Set(input.role_ids_lbl));
+    if (input.role_ids_lbl.length === 0) {
+      input.role_ids = [ ];
+    } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
+      const args = new QueryArgs();
+      const sql = `select
+          t.id
+        from
+          base_role t
+        where
+          t.lbl in ${ args.push(input.role_ids_lbl) }`;
+      interface Result {
+        id: RoleId;
+      }
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
+      input.role_ids = models.map((item: { id: RoleId }) => item.id);
+    }
+  }
+  
+  // 所属部门
+  if (!input.dept_ids && input.dept_ids_lbl) {
+    input.dept_ids_lbl = input.dept_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.dept_ids_lbl = Array.from(new Set(input.dept_ids_lbl));
+    if (input.dept_ids_lbl.length === 0) {
+      input.dept_ids = [ ];
+    } else {
+      const debug = getParsedEnv("database_debug_sql") === "true";
+      const args = new QueryArgs();
+      const sql = `select
+          t.id
+        from
+          base_dept t
+        where
+          t.lbl in ${ args.push(input.dept_ids_lbl) }`;
+      interface Result {
+        id: DeptId;
+      }
+      const models = await query<Result>(sql, args, {
+        debug,
+      });
+      input.dept_ids = models.map((item: { id: DeptId }) => item.id);
+    }
+  }
+  
   // 所属组织
   if (!input.org_ids && input.org_ids_lbl) {
     input.org_ids_lbl = input.org_ids_lbl
@@ -701,60 +755,6 @@ export async function setIdByLbl(
       input.is_enabled = Number(val);
     }
   }
-  
-  // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl) {
-    input.dept_ids_lbl = input.dept_ids_lbl
-      .map((item: string) => item.trim())
-      .filter((item: string) => item);
-    input.dept_ids_lbl = Array.from(new Set(input.dept_ids_lbl));
-    if (input.dept_ids_lbl.length === 0) {
-      input.dept_ids = [ ];
-    } else {
-      const debug = getParsedEnv("database_debug_sql") === "true";
-      const args = new QueryArgs();
-      const sql = `select
-          t.id
-        from
-          base_dept t
-        where
-          t.lbl in ${ args.push(input.dept_ids_lbl) }`;
-      interface Result {
-        id: DeptId;
-      }
-      const models = await query<Result>(sql, args, {
-        debug,
-      });
-      input.dept_ids = models.map((item: { id: DeptId }) => item.id);
-    }
-  }
-  
-  // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl) {
-    input.role_ids_lbl = input.role_ids_lbl
-      .map((item: string) => item.trim())
-      .filter((item: string) => item);
-    input.role_ids_lbl = Array.from(new Set(input.role_ids_lbl));
-    if (input.role_ids_lbl.length === 0) {
-      input.role_ids = [ ];
-    } else {
-      const debug = getParsedEnv("database_debug_sql") === "true";
-      const args = new QueryArgs();
-      const sql = `select
-          t.id
-        from
-          base_role t
-        where
-          t.lbl in ${ args.push(input.role_ids_lbl) }`;
-      interface Result {
-        id: RoleId;
-      }
-      const models = await query<Result>(sql, args, {
-        debug,
-      });
-      input.role_ids = models.map((item: { id: RoleId }) => item.id);
-    }
-  }
 }
 
 /**
@@ -767,6 +767,10 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     img: await n("头像"),
     lbl: await n("名称"),
     username: await n("用户名"),
+    role_ids: await n("所属角色"),
+    role_ids_lbl: await n("所属角色"),
+    dept_ids: await n("所属部门"),
+    dept_ids_lbl: await n("所属部门"),
     org_ids: await n("所属组织"),
     org_ids_lbl: await n("所属组织"),
     default_org_id: await n("默认组织"),
@@ -776,10 +780,6 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
-    dept_ids: await n("所属部门"),
-    dept_ids_lbl: await n("所属部门"),
-    role_ids: await n("拥有角色"),
-    role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -1390,15 +1390,15 @@ async function _creates(
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
     
-    // 所属组织
+    // 所属角色
     await many2manyUpdate(
       input,
-      "org_ids",
+      "role_ids",
       {
         mod: "base",
-        table: "usr_org",
+        table: "usr_role",
         column1: "usr_id",
-        column2: "org_id",
+        column2: "role_id",
       },
     );
     
@@ -1414,15 +1414,15 @@ async function _creates(
       },
     );
     
-    // 拥有角色
+    // 所属组织
     await many2manyUpdate(
       input,
-      "role_ids",
+      "org_ids",
       {
         mod: "base",
-        table: "usr_role",
+        table: "usr_org",
         column1: "usr_id",
-        column2: "role_id",
+        column2: "org_id",
       },
     );
   }
@@ -1633,18 +1633,18 @@ export async function updateById(
   
   updateFldNum++;
   
-  // 所属组织
+  // 所属角色
   await many2manyUpdate(
     {
       ...input,
       id: id as unknown as string,
     },
-    "org_ids",
+    "role_ids",
     {
       mod: "base",
-      table: "usr_org",
+      table: "usr_role",
       column1: "usr_id",
-      column2: "org_id",
+      column2: "role_id",
     },
   );
   
@@ -1667,18 +1667,18 @@ export async function updateById(
   
   updateFldNum++;
   
-  // 拥有角色
+  // 所属组织
   await many2manyUpdate(
     {
       ...input,
       id: id as unknown as string,
     },
-    "role_ids",
+    "org_ids",
     {
       mod: "base",
-      table: "usr_role",
+      table: "usr_org",
       column1: "usr_id",
-      column2: "role_id",
+      column2: "org_id",
     },
   );
   
