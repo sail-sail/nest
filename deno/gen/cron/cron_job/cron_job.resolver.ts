@@ -111,8 +111,43 @@ export async function createCronJob(
     "add",
   );
   const uniqueType = unique_type;
-  const id: CronJobId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建定时任务
+ */
+export async function createsCronJob(
+  inputs: CronJobInput[],
+  unique_type?: UniqueType,
+): Promise<CronJobId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./cron_job.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/cron/cron_job",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

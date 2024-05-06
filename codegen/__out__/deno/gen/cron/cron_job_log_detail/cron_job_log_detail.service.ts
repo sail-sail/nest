@@ -103,7 +103,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建任务执行日志明细
  * @param {CronJobLogDetailInput} input
  * @return {Promise<CronJobLogDetailId>} id
  */
@@ -113,8 +113,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<CronJobLogDetailId> {
-  const id: CronJobLogDetailId = await cron_job_log_detailDao.create(input, options);
+  const id = await cron_job_log_detailDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建任务执行日志明细
+ * @param {CronJobLogDetailInput[]} inputs
+ * @return {Promise<CronJobLogDetailId[]>} ids
+ */
+export async function creates(
+  inputs: CronJobLogDetailInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<CronJobLogDetailId[]> {
+  const ids = await cron_job_log_detailDao.creates(inputs, options);
+  return ids;
 }
 
 /**

@@ -180,6 +180,8 @@ type Query {
 type Mutation {
   "创建定时任务"
   createCronJob(input: CronJobInput!, unique_type: UniqueType): CronJobId!
+  "批量创建定时任务"
+  createsCronJob(inputs: [CronJobInput!]!, unique_type: UniqueType): [CronJobId!]!
   "根据 id 修改定时任务"
   updateByIdCronJob(id: CronJobId!, input: CronJobInput!): CronJobId!
   "根据 ids 删除定时任务"
