@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建菜单
  * @param {MenuInput} input
  * @return {Promise<MenuId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<MenuId> {
-  const id: MenuId = await menuDao.create(input, options);
+  const id = await menuDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建菜单
+ * @param {MenuInput[]} inputs
+ * @return {Promise<MenuId[]>} ids
+ */
+export async function creates(
+  inputs: MenuInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<MenuId[]> {
+  const ids = await menuDao.creates(inputs, options);
+  return ids;
 }
 
 /**

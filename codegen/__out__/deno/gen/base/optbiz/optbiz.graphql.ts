@@ -164,6 +164,8 @@ type Query {
 type Mutation {
   "创建业务选项"
   createOptbiz(input: OptbizInput!, unique_type: UniqueType): OptbizId!
+  "批量创建业务选项"
+  createsOptbiz(inputs: [OptbizInput!]!, unique_type: UniqueType): [OptbizId!]!
   "根据 id 修改业务选项"
   updateByIdOptbiz(id: OptbizId!, input: OptbizInput!): OptbizId!
   "根据 ids 删除业务选项"

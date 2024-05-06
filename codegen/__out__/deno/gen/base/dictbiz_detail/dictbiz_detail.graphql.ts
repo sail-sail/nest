@@ -166,6 +166,8 @@ type Query {
 type Mutation {
   "创建业务字典明细"
   createDictbizDetail(input: DictbizDetailInput!, unique_type: UniqueType): DictbizDetailId!
+  "批量创建业务字典明细"
+  createsDictbizDetail(inputs: [DictbizDetailInput!]!, unique_type: UniqueType): [DictbizDetailId!]!
   "根据 id 修改业务字典明细"
   updateByIdDictbizDetail(id: DictbizDetailId!, input: DictbizDetailInput!): DictbizDetailId!
   "根据 ids 删除业务字典明细"

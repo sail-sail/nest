@@ -109,8 +109,43 @@ export async function createDept(
     "add",
   );
   const uniqueType = unique_type;
-  const id: DeptId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建部门
+ */
+export async function createsDept(
+  inputs: DeptInput[],
+  unique_type?: UniqueType,
+): Promise<DeptId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./dept.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/dept",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

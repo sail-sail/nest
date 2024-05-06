@@ -109,8 +109,43 @@ export async function createFieldPermit(
     "add",
   );
   const uniqueType = unique_type;
-  const id: FieldPermitId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建字段权限
+ */
+export async function createsFieldPermit(
+  inputs: FieldPermitInput[],
+  unique_type?: UniqueType,
+): Promise<FieldPermitId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./field_permit.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/field_permit",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**
