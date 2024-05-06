@@ -1,4 +1,4 @@
-import { type AttributifyAttributes } from "@unocss/preset-attributify";
+import type { AttributifyAttributes } from "@unocss/preset-attributify";
 
 type AttributifyAttributes2 = AttributifyAttributes & {
   overflowHidden?: boolean;

@@ -42,7 +42,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    uni(),
+    (uni as any).default(),
     reactivityTransform(),
     ...pluginsH5,
     Icons({

@@ -109,8 +109,43 @@ export async function createMenu(
     "add",
   );
   const uniqueType = unique_type;
-  const id: MenuId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建菜单
+ */
+export async function createsMenu(
+  inputs: MenuInput[],
+  unique_type?: UniqueType,
+): Promise<MenuId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./menu.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**
