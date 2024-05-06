@@ -3,6 +3,7 @@
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "types": [
+      "node",
       "@vue-macros/reactivity-transform/macros-global"
     ],
     "paths": {

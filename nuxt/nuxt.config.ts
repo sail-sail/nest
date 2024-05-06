@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     asyncContext: true,
   },
   devtools: {
-    enabled: true,
+    enabled: false,
   },
   modules: [
     "@unocss/nuxt",
