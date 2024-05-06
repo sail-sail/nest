@@ -288,7 +288,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建<#=table_comment#>
  * @param {<#=inputName#>} input
  * @return {Promise<<#=Table_Up#>Id>} id
  */
@@ -298,8 +298,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<<#=Table_Up#>Id> {
-  const id: <#=Table_Up#>Id = await <#=table#>Dao.create(input, options);
+  const id = await <#=table#>Dao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建<#=table_comment#>
+ * @param {<#=inputName#>[]} inputs
+ * @return {Promise<<#=Table_Up#>Id[]>} ids
+ */
+export async function creates(
+  inputs: <#=inputName#>[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<<#=Table_Up#>Id[]> {
+  const ids = await <#=table#>Dao.creates(inputs, options);
+  return ids;
 }<#
 if (hasVersion) {
 #>
