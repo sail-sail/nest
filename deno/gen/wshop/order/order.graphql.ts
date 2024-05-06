@@ -278,6 +278,8 @@ type Query {
 type Mutation {
   "创建订单"
   createOrder(input: OrderInput!, unique_type: UniqueType): OrderId!
+  "批量创建订单"
+  createsOrder(inputs: [OrderInput!]!, unique_type: UniqueType): [OrderId!]!
   "根据 id 修改订单"
   updateByIdOrder(id: OrderId!, input: OrderInput!): OrderId!
   "根据 ids 删除订单"

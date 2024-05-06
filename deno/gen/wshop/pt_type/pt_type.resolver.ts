@@ -109,8 +109,43 @@ export async function createPtType(
     "add",
   );
   const uniqueType = unique_type;
-  const id: PtTypeId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建产品类别
+ */
+export async function createsPtType(
+  inputs: PtTypeInput[],
+  unique_type?: UniqueType,
+): Promise<PtTypeId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./pt_type.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wshop/pt_type",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

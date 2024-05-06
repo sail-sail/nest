@@ -103,7 +103,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建会员卡消费记录
  * @param {CardConsumeInput} input
  * @return {Promise<CardConsumeId>} id
  */
@@ -113,8 +113,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<CardConsumeId> {
-  const id: CardConsumeId = await card_consumeDao.create(input, options);
+  const id = await card_consumeDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建会员卡消费记录
+ * @param {CardConsumeInput[]} inputs
+ * @return {Promise<CardConsumeId[]>} ids
+ */
+export async function creates(
+  inputs: CardConsumeInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<CardConsumeId[]> {
+  const ids = await card_consumeDao.creates(inputs, options);
+  return ids;
 }
 
 /**

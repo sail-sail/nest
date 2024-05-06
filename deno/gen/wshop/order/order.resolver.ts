@@ -136,8 +136,68 @@ export async function createOrder(
     "add",
   );
   const uniqueType = unique_type;
-  const id: OrderId = await create(input, { uniqueType });
+  const id = await create(input, { uniqueType });
   return id;
+}
+
+/**
+ * 批量创建订单
+ */
+export async function createsOrder(
+  inputs: OrderInput[],
+  unique_type?: UniqueType,
+): Promise<OrderId[]> {
+  
+  const {
+    validate,
+    setIdByLbl,
+    creates,
+  } = await import("./order.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/wshop/order",
+    "add",
+  );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    // 订单金额
+    if (input.price != null) {
+      input.price = new Decimal(input.price);
+    }
+    
+    // 消费充值金额
+    if (input.amt != null) {
+      input.amt = new Decimal(input.amt);
+    }
+    
+    // 消费赠送金额
+    if (input.give_amt != null) {
+      input.give_amt = new Decimal(input.give_amt);
+    }
+    
+    // 消费后充值余额
+    if (input.balance != null) {
+      input.balance = new Decimal(input.balance);
+    }
+    
+    // 消费后赠送余额
+    if (input.give_balance != null) {
+      input.give_balance = new Decimal(input.give_balance);
+    }
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
+  const uniqueType = unique_type;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

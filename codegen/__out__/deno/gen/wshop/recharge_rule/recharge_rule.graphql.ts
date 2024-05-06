@@ -148,6 +148,8 @@ type Query {
 type Mutation {
   "创建充值赠送规则"
   createRechargeRule(input: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
+  "批量创建充值赠送规则"
+  createsRechargeRule(inputs: [RechargeRuleInput!]!, unique_type: UniqueType): [RechargeRuleId!]!
   "根据 id 修改充值赠送规则"
   updateByIdRechargeRule(id: RechargeRuleId!, input: RechargeRuleInput!): RechargeRuleId!
   "根据 ids 删除充值赠送规则"

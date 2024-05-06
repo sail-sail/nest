@@ -179,6 +179,8 @@ type Query {
 type Mutation {
   "创建产品类别"
   createPtType(input: PtTypeInput!, unique_type: UniqueType): PtTypeId!
+  "批量创建产品类别"
+  createsPtType(inputs: [PtTypeInput!]!, unique_type: UniqueType): [PtTypeId!]!
   "根据 id 修改产品类别"
   updateByIdPtType(id: PtTypeId!, input: PtTypeInput!): PtTypeId!
   "根据 ids 删除产品类别"

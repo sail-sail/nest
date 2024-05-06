@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建产品
  * @param {PtInput} input
  * @return {Promise<PtId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<PtId> {
-  const id: PtId = await ptDao.create(input, options);
+  const id = await ptDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建产品
+ * @param {PtInput[]} inputs
+ * @return {Promise<PtId[]>} ids
+ */
+export async function creates(
+  inputs: PtInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<PtId[]> {
+  const ids = await ptDao.creates(inputs, options);
+  return ids;
 }
 
 /**
