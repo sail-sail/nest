@@ -107,7 +107,7 @@ export async function validate(
 }
 
 /**
- * 创建数据
+ * 创建角色
  * @param {RoleInput} input
  * @return {Promise<RoleId>} id
  */
@@ -117,8 +117,23 @@ export async function create(
     uniqueType?: UniqueType;
   },
 ): Promise<RoleId> {
-  const id: RoleId = await roleDao.create(input, options);
+  const id = await roleDao.create(input, options);
   return id;
+}
+
+/**
+ * 批量创建角色
+ * @param {RoleInput[]} inputs
+ * @return {Promise<RoleId[]>} ids
+ */
+export async function creates(
+  inputs: RoleInput[],
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<RoleId[]> {
+  const ids = await roleDao.creates(inputs, options);
+  return ids;
 }
 
 /**
