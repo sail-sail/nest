@@ -1277,37 +1277,12 @@ export async function defaultById(
   
   {
     const args = new QueryArgs();
-    let sql = `
-      update
-        base_domain
-      set
-        is_default = 0
-      where
-        is_default = 1
-        and id != ${ args.push(id) }
-    `;
+    const sql = `update base_domain set is_default=0 where is_default=1 and id!=${ args.push(id) }`;
     await execute(sql, args);
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_domain
-    set
-      is_default = 1
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update base_domain set is_default=1 where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1374,24 +1349,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_domain
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update base_domain set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1459,24 +1417,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_domain
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update base_domain set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
