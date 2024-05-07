@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建用户
- * @param {UsrInput} input
- * @return {Promise<UsrId>} id
- */
-export async function create(
-  input: UsrInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<UsrId> {
-  const id = await usrDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建用户
  * @param {UsrInput[]} inputs
  * @return {Promise<UsrId[]>} ids

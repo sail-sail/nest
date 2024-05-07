@@ -81,39 +81,6 @@ export async function findByIdMenu(
 }
 
 /**
- * 创建菜单
- */
-export async function createMenu(
-  input: MenuInput,
-  unique_type?: UniqueType,
-): Promise<MenuId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./menu.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/menu",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建菜单
  */
 export async function createsMenu(

@@ -194,8 +194,6 @@ type Query {
   findLastOrderByRole: Int!
 }
 type Mutation {
-  "创建角色"
-  createRole(input: RoleInput!, unique_type: UniqueType): RoleId!
   "批量创建角色"
   createsRole(inputs: [RoleInput!]!, unique_type: UniqueType): [RoleId!]!
   "根据 id 修改角色"
