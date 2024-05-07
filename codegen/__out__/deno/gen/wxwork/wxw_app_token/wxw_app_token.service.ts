@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建企微应用接口凭据
- * @param {WxwAppTokenInput} input
- * @return {Promise<WxwAppTokenId>} id
- */
-export async function create(
-  input: WxwAppTokenInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxwAppTokenId> {
-  const id = await wxw_app_tokenDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建企微应用接口凭据
  * @param {WxwAppTokenInput[]} inputs
  * @return {Promise<WxwAppTokenId[]>} ids

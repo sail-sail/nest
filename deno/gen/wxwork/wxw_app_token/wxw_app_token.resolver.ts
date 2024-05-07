@@ -81,39 +81,6 @@ export async function findByIdWxwAppToken(
 }
 
 /**
- * 创建企微应用接口凭据
- */
-export async function createWxwAppToken(
-  input: WxwAppTokenInput,
-  unique_type?: UniqueType,
-): Promise<WxwAppTokenId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxw_app_token.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wxwork/wxw_app_token",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建企微应用接口凭据
  */
 export async function createsWxwAppToken(

@@ -143,8 +143,6 @@ type Query {
   findLastOrderByWxwApp: Int!
 }
 type Mutation {
-  "创建企微应用"
-  createWxwApp(input: WxwAppInput!, unique_type: UniqueType): WxwAppId!
   "批量创建企微应用"
   createsWxwApp(inputs: [WxwAppInput!]!, unique_type: UniqueType): [WxwAppId!]!
   "根据 id 修改企微应用"

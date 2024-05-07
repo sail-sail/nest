@@ -81,39 +81,6 @@ export async function findByIdWxwUsr(
 }
 
 /**
- * 创建企微用户
- */
-export async function createWxwUsr(
-  input: WxwUsrInput,
-  unique_type?: UniqueType,
-): Promise<WxwUsrId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxw_usr.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wxwork/wxw_usr",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建企微用户
  */
 export async function createsWxwUsr(
