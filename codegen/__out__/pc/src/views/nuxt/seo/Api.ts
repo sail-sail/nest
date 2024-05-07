@@ -165,21 +165,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<SeoId> {
-  input = intoInput(input);
-  const data: {
-    createSeo: Mutation["createSeo"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: SeoInput!, $unique_type: UniqueType) {
-        createSeo(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createSeo;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

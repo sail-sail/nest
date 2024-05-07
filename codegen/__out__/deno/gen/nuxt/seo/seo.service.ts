@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建SEO优化
- * @param {SeoInput} input
- * @return {Promise<SeoId>} id
- */
-export async function create(
-  input: SeoInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<SeoId> {
-  const id = await seoDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建SEO优化
  * @param {SeoInput[]} inputs
  * @return {Promise<SeoId[]>} ids
