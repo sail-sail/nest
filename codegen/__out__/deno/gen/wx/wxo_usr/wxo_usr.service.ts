@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建公众号用户
- * @param {WxoUsrInput} input
- * @return {Promise<WxoUsrId>} id
- */
-export async function create(
-  input: WxoUsrInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxoUsrId> {
-  const id = await wxo_usrDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建公众号用户
  * @param {WxoUsrInput[]} inputs
  * @return {Promise<WxoUsrId[]>} ids
