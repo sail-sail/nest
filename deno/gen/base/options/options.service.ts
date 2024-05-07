@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建系统选项
- * @param {OptionsInput} input
- * @return {Promise<OptionsId>} id
- */
-export async function create(
-  input: OptionsInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<OptionsId> {
-  const id = await optionsDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建系统选项
  * @param {OptionsInput[]} inputs
  * @return {Promise<OptionsId[]>} ids

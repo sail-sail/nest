@@ -155,21 +155,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
-  input = intoInput(input);
-  const data: {
-    createFieldPermit: Mutation["createFieldPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: FieldPermitInput!, $unique_type: UniqueType) {
-        createFieldPermit(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createFieldPermit;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

@@ -135,8 +135,6 @@ type Query {
   findLastOrderByLang: Int!
 }
 type Mutation {
-  "创建语言"
-  createLang(input: LangInput!, unique_type: UniqueType): LangId!
   "批量创建语言"
   createsLang(inputs: [LangInput!]!, unique_type: UniqueType): [LangId!]!
   "根据 id 修改语言"

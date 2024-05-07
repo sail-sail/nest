@@ -81,39 +81,6 @@ export async function findByIdDataPermit(
 }
 
 /**
- * 创建数据权限
- */
-export async function createDataPermit(
-  input: DataPermitInput,
-  unique_type?: UniqueType,
-): Promise<DataPermitId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./data_permit.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/data_permit",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建数据权限
  */
 export async function createsDataPermit(
