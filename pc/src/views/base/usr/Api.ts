@@ -47,6 +47,12 @@ export function intoInput(
     username: model?.username,
     // 密码
     password: model?.password,
+    // 所属角色
+    role_ids: model?.role_ids,
+    role_ids_lbl: model?.role_ids_lbl,
+    // 所属部门
+    dept_ids: model?.dept_ids,
+    dept_ids_lbl: model?.dept_ids_lbl,
     // 所属组织
     org_ids: model?.org_ids,
     org_ids_lbl: model?.org_ids_lbl,
@@ -61,12 +67,6 @@ export function intoInput(
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
     order_by: model?.order_by,
-    // 所属部门
-    dept_ids: model?.dept_ids,
-    dept_ids_lbl: model?.dept_ids_lbl,
-    // 拥有角色
-    role_ids: model?.role_ids,
-    role_ids_lbl: model?.role_ids_lbl,
     // 备注
     rem: model?.rem,
   };
@@ -177,21 +177,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<UsrId> {
-  input = intoInput(input);
-  const data: {
-    createUsr: Mutation["createUsr"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: UsrInput!, $unique_type: UniqueType) {
-        createUsr(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createUsr;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
@@ -412,18 +403,18 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllOrg(
-  search?: OrgSearch,
+export async function findAllRole(
+  search?: RoleSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOrg: OrgModel[];
+    findAllRole: RoleModel[];
   } = await query({
     query: /* GraphQL */ `
-      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllOrg(search: $search, page: $page, sort: $sort) {
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -435,12 +426,12 @@ export async function findAllOrg(
       sort,
     },
   }, opt);
-  const res = data.findAllOrg;
+  const res = data.findAllRole;
   return res;
 }
 
-export async function getOrgList() {
-  const data = await findAllOrg(
+export async function getRoleList() {
+  const data = await findAllRole(
     {
       is_enabled: [ 1 ],
     },
@@ -504,18 +495,18 @@ export async function getDeptList() {
   return data;
 }
 
-export async function findAllRole(
-  search?: RoleSearch,
+export async function findAllOrg(
+  search?: OrgSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllRole: RoleModel[];
+    findAllOrg: OrgModel[];
   } = await query({
     query: /* GraphQL */ `
-      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllRole(search: $search, page: $page, sort: $sort) {
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -527,12 +518,12 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const res = data.findAllRole;
+  const res = data.findAllOrg;
   return res;
 }
 
-export async function getRoleList() {
-  const data = await findAllRole(
+export async function getOrgList() {
+  const data = await findAllOrg(
     {
       is_enabled: [ 1 ],
     },
@@ -586,14 +577,14 @@ export function useDownloadImportTemplate(routePath: string) {
             img
             lbl
             username
+            role_ids_lbl
+            dept_ids_lbl
             org_ids_lbl
             default_org_id_lbl
             order_by
-            dept_ids_lbl
-            role_ids_lbl
             rem
           }
-          findAllOrg {
+          findAllRole {
             id
             lbl
           }
@@ -601,7 +592,7 @@ export function useDownloadImportTemplate(routePath: string) {
             id
             lbl
           }
-          findAllRole {
+          findAllOrg {
             id
             lbl
           }
@@ -664,13 +655,13 @@ export function useExportExcel(routePath: string) {
             findAllUsr(search: $search, sort: $sort) {
               ${ usrQueryField }
             }
-            findAllOrg {
+            findAllRole {
               lbl
             }
             findAllDept {
               lbl
             }
-            findAllRole {
+            findAllOrg {
               lbl
             }
             getDict(codes: [

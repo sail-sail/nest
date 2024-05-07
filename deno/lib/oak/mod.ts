@@ -7,6 +7,7 @@ import { gqlRouter } from "./gql.ts";
 import tmpfileRouter from "/lib/tmpfile/tmpfile.router.ts";
 import ossRouter from "/lib/oss/oss.router.ts";
 import websocketRouter from "../websocket/websocket.router.ts";
+import healthRouter from "/lib/health/health.router.ts";
 
 export function initApp() {
   const app = new Application();
@@ -18,6 +19,7 @@ export function initApp() {
   app.use(tmpfileRouter.routes());
   app.use(ossRouter.routes());
   app.use(websocketRouter.routes());
+  app.use(healthRouter.routes());
   
   return app;
 }

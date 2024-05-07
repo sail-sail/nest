@@ -81,39 +81,6 @@ export async function findByIdDictDetail(
 }
 
 /**
- * 创建系统字典明细
- */
-export async function createDictDetail(
-  input: DictDetailInput,
-  unique_type?: UniqueType,
-): Promise<DictDetailId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./dict_detail.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/dict_detail",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建系统字典明细
  */
 export async function createsDictDetail(

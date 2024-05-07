@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建按钮权限
- * @param {PermitInput} input
- * @return {Promise<PermitId>} id
- */
-export async function create(
-  input: PermitInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<PermitId> {
-  const id = await permitDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建按钮权限
  * @param {PermitInput[]} inputs
  * @return {Promise<PermitId[]>} ids

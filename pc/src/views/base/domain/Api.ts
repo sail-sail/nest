@@ -152,21 +152,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId> {
-  input = intoInput(input);
-  const data: {
-    createDomain: Mutation["createDomain"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: DomainInput!, $unique_type: UniqueType) {
-        createDomain(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createDomain;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
