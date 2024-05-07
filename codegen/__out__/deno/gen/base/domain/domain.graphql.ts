@@ -163,8 +163,6 @@ type Query {
   findLastOrderByDomain: Int!
 }
 type Mutation {
-  "创建域名"
-  createDomain(input: DomainInput!, unique_type: UniqueType): DomainId!
   "批量创建域名"
   createsDomain(inputs: [DomainInput!]!, unique_type: UniqueType): [DomainId!]!
   "根据 id 修改域名"

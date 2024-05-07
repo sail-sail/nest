@@ -81,39 +81,6 @@ export async function findByIdLang(
 }
 
 /**
- * 创建语言
- */
-export async function createLang(
-  input: LangInput,
-  unique_type?: UniqueType,
-): Promise<LangId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./lang.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/lang",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建语言
  */
 export async function createsLang(

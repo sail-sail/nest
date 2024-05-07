@@ -32,6 +32,12 @@ export const usrFields = [
   "lbl",
   // 用户名
   "username",
+  // 所属角色
+  "role_ids",
+  "role_ids_lbl",
+  // 所属部门
+  "dept_ids",
+  "dept_ids_lbl",
   // 所属组织
   "org_ids",
   "org_ids_lbl",
@@ -46,12 +52,6 @@ export const usrFields = [
   "is_enabled_lbl",
   // 排序
   "order_by",
-  // 所属部门
-  "dept_ids",
-  "dept_ids_lbl",
-  // 拥有角色
-  "role_ids",
-  "role_ids_lbl",
   // 备注
   "rem",
   // 创建人
