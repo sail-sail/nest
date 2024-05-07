@@ -146,21 +146,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<ArchiveId> {
-  input = intoInput(input);
-  const data: {
-    createArchive: Mutation["createArchive"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: ArchiveInput!, $unique_type: UniqueType) {
-        createArchive(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createArchive;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

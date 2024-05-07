@@ -149,8 +149,6 @@ type Query {
   findLastOrderByCompany: Int!
 }
 type Mutation {
-  "创建单位"
-  createCompany(input: CompanyInput!, unique_type: UniqueType): CompanyId!
   "批量创建单位"
   createsCompany(inputs: [CompanyInput!]!, unique_type: UniqueType): [CompanyId!]!
   "根据 id 修改单位"

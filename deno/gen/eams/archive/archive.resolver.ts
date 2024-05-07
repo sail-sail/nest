@@ -81,39 +81,6 @@ export async function findByIdArchive(
 }
 
 /**
- * 创建全宗设置
- */
-export async function createArchive(
-  input: ArchiveInput,
-  unique_type?: UniqueType,
-): Promise<ArchiveId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./archive.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/eams/archive",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建全宗设置
  */
 export async function createsArchive(

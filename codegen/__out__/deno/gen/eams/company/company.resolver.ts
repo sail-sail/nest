@@ -81,39 +81,6 @@ export async function findByIdCompany(
 }
 
 /**
- * 创建单位
- */
-export async function createCompany(
-  input: CompanyInput,
-  unique_type?: UniqueType,
-): Promise<CompanyId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./company.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/eams/company",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建单位
  */
 export async function createsCompany(
