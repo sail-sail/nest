@@ -19,6 +19,7 @@
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
     ".eslintrc-auto-import.json": true,
+    "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true
   },
   "search.exclude": {
@@ -41,6 +42,7 @@
     "dist": true,
     "**/__unconfig_vite.config.ts": true,
     ".eslintrc-auto-import.json": true,
+    "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true
   },
   "deno.enable": false,
