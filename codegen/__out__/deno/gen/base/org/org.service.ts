@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建组织
- * @param {OrgInput} input
- * @return {Promise<OrgId>} id
- */
-export async function create(
-  input: OrgInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<OrgId> {
-  const id = await orgDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建组织
  * @param {OrgInput[]} inputs
  * @return {Promise<OrgId[]>} ids

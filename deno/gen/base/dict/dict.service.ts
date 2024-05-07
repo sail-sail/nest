@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建系统字典
- * @param {DictInput} input
- * @return {Promise<DictId>} id
- */
-export async function create(
-  input: DictInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<DictId> {
-  const id = await dictDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建系统字典
  * @param {DictInput[]} inputs
  * @return {Promise<DictId[]>} ids

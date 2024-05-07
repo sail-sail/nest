@@ -22,7 +22,7 @@ export interface AuthModel extends JWTPayload {
   org_id?: OrgId;
   lang: string;
 }
-export async function getPassword(str: string): Promise<string> {
+export async function getPassword(str?: string | null): Promise<string> {
   if (!str) return "";
   const textEncoder = new TextEncoder();
   let hash = await createHash("SHA-256", textEncoder.encode(str + SECRET_KEY));

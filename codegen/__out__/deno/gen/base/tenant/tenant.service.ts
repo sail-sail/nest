@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建租户
- * @param {TenantInput} input
- * @return {Promise<TenantId>} id
- */
-export async function create(
-  input: TenantInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<TenantId> {
-  const id = await tenantDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建租户
  * @param {TenantInput[]} inputs
  * @return {Promise<TenantId[]>} ids
