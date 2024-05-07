@@ -81,39 +81,6 @@ export async function findByIdFieldPermit(
 }
 
 /**
- * 创建字段权限
- */
-export async function createFieldPermit(
-  input: FieldPermitInput,
-  unique_type?: UniqueType,
-): Promise<FieldPermitId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./field_permit.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/field_permit",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建字段权限
  */
 export async function createsFieldPermit(

@@ -127,21 +127,6 @@ export async function validate(
 }
 
 /**
- * 创建后台任务
- * @param {BackgroundTaskInput} input
- * @return {Promise<BackgroundTaskId>} id
- */
-export async function create(
-  input: BackgroundTaskInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<BackgroundTaskId> {
-  const id = await background_taskDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建后台任务
  * @param {BackgroundTaskInput[]} inputs
  * @return {Promise<BackgroundTaskId[]>} ids

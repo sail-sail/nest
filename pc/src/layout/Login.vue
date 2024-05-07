@@ -308,6 +308,16 @@ let tenants = $ref<{
   lbl: string;
 }[]>([ ]);
 
+try {
+  tenants = JSON.parse(localStorage.getItem("login/tenants") || "[]");
+} catch (err) {
+  tenants = [ ];
+}
+
+if (!model.tenant_id && tenants.length > 0) {
+  model.tenant_id = tenants[0].id;
+}
+
 /**
  * 获取租户列表
  */
@@ -316,6 +326,7 @@ async function getLoginTenantsEfc() {
   if (!model.tenant_id && tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   }
+  localStorage.setItem("login/tenants", JSON.stringify(tenants));
 }
 
 async function initI18nEfc() {
