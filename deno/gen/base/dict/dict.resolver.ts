@@ -81,39 +81,6 @@ export async function findByIdDict(
 }
 
 /**
- * 创建系统字典
- */
-export async function createDict(
-  input: DictInput,
-  unique_type?: UniqueType,
-): Promise<DictId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./dict.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/dict",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建系统字典
  */
 export async function createsDict(

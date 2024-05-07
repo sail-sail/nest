@@ -130,6 +130,44 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
+          <el-form-item
+            :label="n('所属角色')"
+            prop="role_ids"
+          >
+            <CustomSelect
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
+              v-model="dialogModel.role_ids"
+              :method="getRoleList"
+              :options-map="((item: RoleModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('所属角色') }`"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
+          <el-form-item
+            :label="n('所属部门')"
+            prop="dept_ids"
+          >
+            <CustomTreeSelect
+              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
+              v-model="dialogModel.dept_ids"
+              :method="getDeptTree"
+              :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
           <el-form-item
             :label="n('所属组织')"
@@ -185,44 +223,6 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
-          <el-form-item
-            :label="n('所属部门')"
-            prop="dept_ids"
-          >
-            <CustomTreeSelect
-              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
-              v-model="dialogModel.dept_ids"
-              :method="getDeptTree"
-              :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
-              multiple
-              :readonly="isLocked || isReadonly"
-            ></CustomTreeSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
-          <el-form-item
-            :label="n('拥有角色')"
-            prop="role_ids"
-          >
-            <CustomSelect
-              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
-              v-model="dialogModel.role_ids"
-              :method="getRoleList"
-              :options-map="((item: RoleModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('拥有角色') }`"
-              multiple
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -358,8 +358,8 @@ import {
 } from "./Api";
 
 import {
-  getOrgList,
   getRoleList,
+  getOrgList,
 } from "./Api";
 
 import {
@@ -400,9 +400,9 @@ let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: UsrInput = $ref({
-  org_ids: [ ],
-  dept_ids: [ ],
   role_ids: [ ],
+  dept_ids: [ ],
+  org_ids: [ ],
 } as UsrInput);
 
 let ids = $ref<UsrId[]>([ ]);
@@ -795,26 +795,26 @@ async function nextId() {
 watch(
   () => [
     inited,
+    dialogModel.role_ids,
+    dialogModel.dept_ids,
     dialogModel.org_ids,
     dialogModel.default_org_id,
-    dialogModel.dept_ids,
-    dialogModel.role_ids,
   ],
   () => {
     if (!inited) {
       return;
+    }
+    if (!dialogModel.role_ids || dialogModel.role_ids.length === 0) {
+      dialogModel.role_ids_lbl = [ ];
+    }
+    if (!dialogModel.dept_ids || dialogModel.dept_ids.length === 0) {
+      dialogModel.dept_ids_lbl = [ ];
     }
     if (!dialogModel.org_ids || dialogModel.org_ids.length === 0) {
       dialogModel.org_ids_lbl = [ ];
     }
     if (!dialogModel.default_org_id) {
       dialogModel.default_org_id_lbl = "";
-    }
-    if (!dialogModel.dept_ids || dialogModel.dept_ids.length === 0) {
-      dialogModel.dept_ids_lbl = [ ];
-    }
-    if (!dialogModel.role_ids || dialogModel.role_ids.length === 0) {
-      dialogModel.role_ids_lbl = [ ];
     }
   },
 );
@@ -1018,13 +1018,13 @@ async function onInitI18ns() {
     "头像",
     "名称",
     "用户名",
+    "所属角色",
+    "所属部门",
     "所属组织",
     "默认组织",
     "锁定",
     "启用",
     "排序",
-    "所属部门",
-    "拥有角色",
     "备注",
     "创建人",
     "创建时间",

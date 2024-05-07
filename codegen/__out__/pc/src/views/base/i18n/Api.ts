@@ -151,21 +151,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<I18nId> {
-  input = intoInput(input);
-  const data: {
-    createI18n: Mutation["createI18n"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: I18nInput!, $unique_type: UniqueType) {
-        createI18n(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createI18n;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
