@@ -136,8 +136,6 @@ type Query {
   findLastOrderByArchive: Int!
 }
 type Mutation {
-  "创建全宗设置"
-  createArchive(input: ArchiveInput!, unique_type: UniqueType): ArchiveId!
   "批量创建全宗设置"
   createsArchive(inputs: [ArchiveInput!]!, unique_type: UniqueType): [ArchiveId!]!
   "根据 id 修改全宗设置"
