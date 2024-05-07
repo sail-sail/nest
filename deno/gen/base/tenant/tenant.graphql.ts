@@ -170,8 +170,6 @@ type Query {
   findLastOrderByTenant: Int!
 }
 type Mutation {
-  "创建租户"
-  createTenant(input: TenantInput!, unique_type: UniqueType): TenantId!
   "批量创建租户"
   createsTenant(inputs: [TenantInput!]!, unique_type: UniqueType): [TenantId!]!
   "根据 id 修改租户"

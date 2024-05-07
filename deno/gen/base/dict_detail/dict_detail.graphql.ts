@@ -164,8 +164,6 @@ type Query {
   findLastOrderByDictDetail: Int!
 }
 type Mutation {
-  "创建系统字典明细"
-  createDictDetail(input: DictDetailInput!, unique_type: UniqueType): DictDetailId!
   "批量创建系统字典明细"
   createsDictDetail(inputs: [DictDetailInput!]!, unique_type: UniqueType): [DictDetailId!]!
   "根据 id 修改系统字典明细"

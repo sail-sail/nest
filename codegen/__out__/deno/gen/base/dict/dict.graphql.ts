@@ -182,8 +182,6 @@ type Query {
   findLastOrderByDict: Int!
 }
 type Mutation {
-  "创建系统字典"
-  createDict(input: DictInput!, unique_type: UniqueType): DictId!
   "批量创建系统字典"
   createsDict(inputs: [DictInput!]!, unique_type: UniqueType): [DictId!]!
   "根据 id 修改系统字典"
