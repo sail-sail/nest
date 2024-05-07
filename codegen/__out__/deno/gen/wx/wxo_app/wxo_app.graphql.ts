@@ -191,8 +191,6 @@ type Query {
   findLastOrderByWxoApp: Int!
 }
 type Mutation {
-  "创建公众号设置"
-  createWxoApp(input: WxoAppInput!, unique_type: UniqueType): WxoAppId!
   "批量创建公众号设置"
   createsWxoApp(inputs: [WxoAppInput!]!, unique_type: UniqueType): [WxoAppId!]!
   "根据 id 修改公众号设置"

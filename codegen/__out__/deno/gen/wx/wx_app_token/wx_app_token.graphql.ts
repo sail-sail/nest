@@ -88,8 +88,6 @@ type Query {
   findByIdWxAppToken(id: WxAppTokenId!): WxAppTokenModel
 }
 type Mutation {
-  "创建小程序接口凭据"
-  createWxAppToken(input: WxAppTokenInput!, unique_type: UniqueType): WxAppTokenId!
   "批量创建小程序接口凭据"
   createsWxAppToken(inputs: [WxAppTokenInput!]!, unique_type: UniqueType): [WxAppTokenId!]!
   "根据 id 修改小程序接口凭据"
