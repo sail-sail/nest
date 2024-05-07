@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建企微用户
- * @param {WxwUsrInput} input
- * @return {Promise<WxwUsrId>} id
- */
-export async function create(
-  input: WxwUsrInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxwUsrId> {
-  const id = await wxw_usrDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建企微用户
  * @param {WxwUsrInput[]} inputs
  * @return {Promise<WxwUsrId[]>} ids

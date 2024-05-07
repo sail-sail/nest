@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建企微消息
- * @param {WxwMsgInput} input
- * @return {Promise<WxwMsgId>} id
- */
-export async function create(
-  input: WxwMsgInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxwMsgId> {
-  const id = await wxw_msgDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建企微消息
  * @param {WxwMsgInput[]} inputs
  * @return {Promise<WxwMsgId[]>} ids
