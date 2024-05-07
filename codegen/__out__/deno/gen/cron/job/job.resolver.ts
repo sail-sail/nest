@@ -81,39 +81,6 @@ export async function findByIdJob(
 }
 
 /**
- * 创建任务
- */
-export async function createJob(
-  input: JobInput,
-  unique_type?: UniqueType,
-): Promise<JobId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./job.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/cron/job",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建任务
  */
 export async function createsJob(

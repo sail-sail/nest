@@ -155,21 +155,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
-  input = intoInput(input);
-  const data: {
-    createCronJob: Mutation["createCronJob"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: CronJobInput!, $unique_type: UniqueType) {
-        createCronJob(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createCronJob;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
