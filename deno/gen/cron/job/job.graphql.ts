@@ -149,8 +149,6 @@ type Query {
   findLastOrderByJob: Int!
 }
 type Mutation {
-  "创建任务"
-  createJob(input: JobInput!, unique_type: UniqueType): JobId!
   "批量创建任务"
   createsJob(inputs: [JobInput!]!, unique_type: UniqueType): [JobId!]!
   "根据 id 修改任务"

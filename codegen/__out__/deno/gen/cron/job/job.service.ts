@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建任务
- * @param {JobInput} input
- * @return {Promise<JobId>} id
- */
-export async function create(
-  input: JobInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<JobId> {
-  const id = await jobDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建任务
  * @param {JobInput[]} inputs
  * @return {Promise<JobId[]>} ids

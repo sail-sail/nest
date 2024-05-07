@@ -178,8 +178,6 @@ type Query {
   findLastOrderByCronJob: Int!
 }
 type Mutation {
-  "创建定时任务"
-  createCronJob(input: CronJobInput!, unique_type: UniqueType): CronJobId!
   "批量创建定时任务"
   createsCronJob(inputs: [CronJobInput!]!, unique_type: UniqueType): [CronJobId!]!
   "根据 id 修改定时任务"

@@ -149,21 +149,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<JobId> {
-  input = intoInput(input);
-  const data: {
-    createJob: Mutation["createJob"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: JobInput!, $unique_type: UniqueType) {
-        createJob(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createJob;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
