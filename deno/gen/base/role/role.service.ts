@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建角色
- * @param {RoleInput} input
- * @return {Promise<RoleId>} id
- */
-export async function create(
-  input: RoleInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<RoleId> {
-  const id = await roleDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建角色
  * @param {RoleInput[]} inputs
  * @return {Promise<RoleId[]>} ids

@@ -52,21 +52,21 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.org_ids == null">
+      <template v-if="showBuildIn || builtInSearch?.role_ids == null">
         <el-form-item
-          label="所属组织"
-          prop="org_ids"
+          label="所属角色"
+          prop="role_ids"
         >
           <CustomSelect
-            v-model="org_ids_search"
-            :method="getOrgList"
-            :options-map="((item: OrgModel) => {
+            v-model="role_ids_search"
+            :method="getRoleList"
+            :options-map="((item: RoleModel) => {
               return {
                 label: item.lbl,
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
+            :placeholder="`${ ns('请选择') } ${ n('所属角色') }`"
             multiple
             @change="onSearch"
           ></CustomSelect>
@@ -94,21 +94,21 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.role_ids == null">
+      <template v-if="showBuildIn || builtInSearch?.org_ids == null">
         <el-form-item
-          label="拥有角色"
-          prop="role_ids"
+          label="所属组织"
+          prop="org_ids"
         >
           <CustomSelect
-            v-model="role_ids_search"
-            :method="getRoleList"
-            :options-map="((item: RoleModel) => {
+            v-model="org_ids_search"
+            :method="getOrgList"
+            :options-map="((item: OrgModel) => {
               return {
                 label: item.lbl,
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('拥有角色') }`"
+            :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
             multiple
             @change="onSearch"
           ></CustomSelect>
@@ -588,6 +588,34 @@
             </el-table-column>
           </template>
           
+          <!-- 所属角色 -->
+          <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 所属部门 -->
+          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 所属组织 -->
           <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
             <el-table-column
@@ -662,34 +690,6 @@
                     { notLoading: true },
                   )"
                 ></CustomInputNumber>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 所属部门 -->
-          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 拥有角色 -->
-          <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
               </template>
             </el-table-column>
           </template>
@@ -811,8 +811,8 @@ import {
 } from "./Api";
 
 import {
+  getRoleList, // 所属角色
   getOrgList, // 所属组织
-  getRoleList, // 拥有角色
 } from "./Api";
 
 import {
@@ -878,6 +878,10 @@ const props = defineProps<{
   username_like?: string; // 用户名
   password?: string; // 密码
   password_like?: string; // 密码
+  role_ids?: string|string[]; // 所属角色
+  role_ids_lbl?: string[]; // 所属角色
+  dept_ids?: string|string[]; // 所属部门
+  dept_ids_lbl?: string[]; // 所属部门
   org_ids?: string|string[]; // 所属组织
   org_ids_lbl?: string[]; // 所属组织
   default_org_id?: string|string[]; // 默认组织
@@ -885,10 +889,6 @@ const props = defineProps<{
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
-  dept_ids?: string|string[]; // 所属部门
-  dept_ids_lbl?: string[]; // 所属部门
-  role_ids?: string|string[]; // 拥有角色
-  role_ids_lbl?: string[]; // 拥有角色
   rem?: string; // 备注
   rem_like?: string; // 备注
 }>();
@@ -901,6 +901,10 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  role_ids: "string[]",
+  role_ids_lbl: "string[]",
+  dept_ids: "string[]",
+  dept_ids_lbl: "string[]",
   org_ids: "string[]",
   org_ids_lbl: "string[]",
   default_org_id: "string[]",
@@ -910,10 +914,6 @@ const builtInSearchType: { [key: string]: string } = {
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
-  dept_ids: "string[]",
-  dept_ids_lbl: "string[]",
-  role_ids: "string[]",
-  role_ids_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -976,16 +976,16 @@ function initSearch() {
 
 let search = $ref(initSearch());
 
-// 所属组织
-const org_ids_search = $computed({
+// 所属角色
+const role_ids_search = $computed({
   get() {
-    return search.org_ids || [ ];
+    return search.role_ids || [ ];
   },
   set(val) {
     if (!val || val.length === 0) {
-      search.org_ids = undefined;
+      search.role_ids = undefined;
     } else {
-      search.org_ids = val;
+      search.role_ids = val;
     }
   },
 });
@@ -1004,16 +1004,16 @@ const dept_ids_search = $computed({
   },
 });
 
-// 拥有角色
-const role_ids_search = $computed({
+// 所属组织
+const org_ids_search = $computed({
   get() {
-    return search.role_ids || [ ];
+    return search.org_ids || [ ];
   },
   set(val) {
     if (!val || val.length === 0) {
-      search.role_ids = undefined;
+      search.org_ids = undefined;
     } else {
-      search.role_ids = val;
+      search.org_ids = val;
     }
   },
 });
@@ -1188,6 +1188,24 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "所属角色",
+      prop: "role_ids_lbl",
+      sortBy: "role_ids",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "所属部门",
+      prop: "dept_ids_lbl",
+      sortBy: "dept_ids",
+      width: 240,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "所属组织",
       prop: "org_ids_lbl",
       sortBy: "org_ids",
@@ -1229,24 +1247,6 @@ function getTableColumns(): ColumnType[] {
       width: 100,
       sortable: "custom",
       align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "所属部门",
-      prop: "dept_ids_lbl",
-      sortBy: "dept_ids",
-      width: 240,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "拥有角色",
-      prop: "role_ids_lbl",
-      sortBy: "role_ids",
-      width: 280,
-      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1571,13 +1571,13 @@ async function onImportExcel() {
     [ await nAsync("头像") ]: "img",
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("用户名") ]: "username",
+    [ await nAsync("所属角色") ]: "role_ids_lbl",
+    [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
-    [ await nAsync("所属部门") ]: "dept_ids_lbl",
-    [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1603,13 +1603,13 @@ async function onImportExcel() {
           "img": "string",
           "lbl": "string",
           "username": "string",
+          "role_ids_lbl": "string[]",
+          "dept_ids_lbl": "string[]",
           "org_ids_lbl": "string[]",
           "default_org_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
-          "dept_ids_lbl": "string[]",
-          "role_ids_lbl": "string[]",
           "rem": "string",
         },
       },
@@ -1962,13 +1962,13 @@ async function initI18nsEfc() {
     "头像",
     "名称",
     "用户名",
+    "所属角色",
+    "所属部门",
     "所属组织",
     "默认组织",
     "锁定",
     "启用",
     "排序",
-    "所属部门",
-    "拥有角色",
     "备注",
     "创建人",
     "创建时间",
