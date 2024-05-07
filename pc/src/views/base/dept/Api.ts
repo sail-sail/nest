@@ -182,21 +182,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DeptId> {
-  input = intoInput(input);
-  const data: {
-    createDept: Mutation["createDept"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: DeptInput!, $unique_type: UniqueType) {
-        createDept(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createDept;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 
