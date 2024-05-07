@@ -81,39 +81,6 @@ export async function findByIdDomain(
 }
 
 /**
- * 创建域名
- */
-export async function createDomain(
-  input: DomainInput,
-  unique_type?: UniqueType,
-): Promise<DomainId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./domain.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/domain",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建域名
  */
 export async function createsDomain(

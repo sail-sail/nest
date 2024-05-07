@@ -1272,16 +1272,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_dict_detail
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_dict_detail set is_deleted=1,delete_time=${ args.push(reqDate()) } where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1349,24 +1340,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_dict_detail
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update base_dict_detail set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1434,24 +1408,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_dict_detail
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update base_dict_detail set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1497,15 +1454,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: DictDetailId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_dict_detail
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_dict_detail set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1569,26 +1518,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          base_dict_detail
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from base_dict_detail where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        base_dict_detail
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from base_dict_detail where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
