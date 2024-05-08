@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -272,26 +273,48 @@ export async function findAll(
     return [ ];
   }
   // 语言
-  if (search && search.lang_id != null && search.lang_id.length === 0) {
-    return [ ];
+  if (search && search.lang_id != null) {
+    const len = search.lang_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.lang_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 菜单
-  if (search && search.menu_id != null && search.menu_id.length === 0) {
-    return [ ];
+  if (search && search.menu_id != null) {
+    const len = search.menu_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.menu_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,lang_id_lbl.lbl lang_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl

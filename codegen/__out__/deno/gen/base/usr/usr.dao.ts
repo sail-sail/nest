@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -404,46 +405,98 @@ export async function findAll(
     return [ ];
   }
   // 所属角色
-  if (search && search.role_ids != null && search.role_ids.length === 0) {
-    return [ ];
+  if (search && search.role_ids != null) {
+    const len = search.role_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.role_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 所属部门
-  if (search && search.dept_ids != null && search.dept_ids.length === 0) {
-    return [ ];
+  if (search && search.dept_ids != null) {
+    const len = search.dept_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.dept_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 所属组织
-  if (search && search.org_ids != null && search.org_ids.length === 0) {
-    return [ ];
+  if (search && search.org_ids != null) {
+    const len = search.org_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.org_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 默认组织
-  if (search && search.default_org_id != null && search.default_org_id.length === 0) {
-    return [ ];
+  if (search && search.default_org_id != null) {
+    const len = search.default_org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.default_org_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 锁定
-  if (search && search.is_locked != null && search.is_locked.length === 0) {
-    return [ ];
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.is_locked.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 启用
-  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
-    return [ ];
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.is_enabled.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 隐藏记录
-  if (search && search.is_hidden != null && search.is_hidden.length === 0) {
-    return [ ];
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.is_hidden.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
       ,max(dept_ids) dept_ids

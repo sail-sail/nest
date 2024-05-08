@@ -113,6 +113,7 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";<#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -1064,8 +1065,14 @@ export async function findAll(
     ) {
   #>
   // <#=column_comment#>
-  if (search && search.<#=column_name#> != null && search.<#=column_name#>.length === 0) {
-    return [ ];
+  if (search && search.<#=column_name#> != null) {
+    const len = search.<#=column_name#>.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.<#=column_name#>.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }<#
     }
   #><#
@@ -1073,9 +1080,7 @@ export async function findAll(
   #>
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*<#
+  let sql = `select f.* from (select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
