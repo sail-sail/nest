@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -374,34 +375,68 @@ export async function findAll(
     return [ ];
   }
   // 交易类型
-  if (search && search.trade_type != null && search.trade_type.length === 0) {
-    return [ ];
+  if (search && search.trade_type != null) {
+    const len = search.trade_type.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.trade_type.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 交易状态
-  if (search && search.trade_state != null && search.trade_state.length === 0) {
-    return [ ];
+  if (search && search.trade_state != null) {
+    const len = search.trade_state.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.trade_state.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 货币类型
-  if (search && search.currency != null && search.currency.length === 0) {
-    return [ ];
+  if (search && search.currency != null) {
+    const len = search.currency.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.currency.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 用户支付币种
-  if (search && search.payer_currency != null && search.payer_currency.length === 0) {
-    return [ ];
+  if (search && search.payer_currency != null) {
+    const len = search.payer_currency.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.payer_currency.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    if (len > FIND_ALL_IDS_LIMIT) {
+      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
