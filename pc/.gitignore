@@ -12,3 +12,5 @@ pnpm-lock.yaml
 yarn.lock
 
 src/typings/types.ts
+
+**/vite.config.mts.timestamp-*.mjs
