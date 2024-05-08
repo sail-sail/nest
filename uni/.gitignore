@@ -11,3 +11,5 @@ yarn.lock
 
 src/typings/types.ts
 src/typings/auto-imports.d.ts
+
+**/vite.config.mts.timestamp-*.mjs
