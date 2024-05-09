@@ -132,7 +132,7 @@ type Query {
   findOneArchive(search: ArchiveSearch, sort: [SortInput!]): ArchiveModel
   "根据 id 查找全宗设置"
   findByIdArchive(id: ArchiveId!): ArchiveModel
-  "查找 全宗设置 order_by 字段的最大值"
+  "查找全宗设置 order_by 字段的最大值"
   findLastOrderByArchive: Int!
 }
 type Mutation {

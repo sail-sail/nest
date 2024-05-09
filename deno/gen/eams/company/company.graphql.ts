@@ -145,7 +145,7 @@ type Query {
   findOneCompany(search: CompanySearch, sort: [SortInput!]): CompanyModel
   "根据 id 查找单位"
   findByIdCompany(id: CompanyId!): CompanyModel
-  "查找 单位 order_by 字段的最大值"
+  "查找单位 order_by 字段的最大值"
   findLastOrderByCompany: Int!
 }
 type Mutation {
