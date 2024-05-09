@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {WxwAppInput} input
- * @return {Promise<WxwAppId>} id
+ * 批量创建企微应用
+ * @param {WxwAppInput[]} inputs
+ * @return {Promise<WxwAppId[]>} ids
  */
-export async function create(
-  input: WxwAppInput,
+export async function creates(
+  inputs: WxwAppInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<WxwAppId> {
-  const id: WxwAppId = await wxw_appDao.create(input, options);
-  return id;
+): Promise<WxwAppId[]> {
+  const ids = await wxw_appDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -151,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: WxwAppId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: WxwAppId = ids[i];
-      const is_locked = await wxw_appDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await wxw_appDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "企微应用");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await wxw_appDao.deleteByIds(ids);

@@ -173,12 +173,12 @@ pub struct WxwAppGenMutation;
 impl WxwAppGenMutation {
   
   /// 创建企微应用
-  async fn create_wxw_app(
+  async fn creates_wxw_app(
     &self,
     ctx: &Context<'_>,
-    input: WxwAppInput,
+    inputs: Vec<WxwAppInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<WxwAppId> {
+  ) -> Result<Vec<WxwAppId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl WxwAppGenMutation {
       .with_tran()?
       .build()
       .scope({
-        wxw_app_resolver::create(
-          input,
+        wxw_app_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

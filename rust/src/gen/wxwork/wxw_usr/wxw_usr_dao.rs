@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};
 #[allow(unused_imports)]
 use crate::common::util::string::*;
@@ -21,9 +21,9 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,
-  SrvErr,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -497,13 +497,35 @@ pub async fn find_all(
   }
   // 创建人
   if let Some(search) = &search {
-    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 更新人
   if let Some(search) = &search {
-    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
@@ -535,17 +557,10 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1084,7 +1099,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -1111,7 +1126,334 @@ pub fn get_is_debug(
   is_debug
 }
 
+/// 批量创建企微用户
+pub async fn creates(
+  inputs: Vec<WxwUsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<WxwUsrId>> {
+  
+  let table = "wxwork_wxw_usr";
+  let method = "creates";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
+/// 批量创建企微用户
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<WxwUsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<WxwUsrId>> {
+  
+  let table = "wxwork_wxw_usr";
+  
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<WxwUsrId> = vec![];
+  let mut inputs2: Vec<WxwUsrInput> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
+    }
+    
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
+      None,
+    ).await?;
+    
+    if !old_models.is_empty() {
+      let mut id: Option<WxwUsrId> = None;
+      
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+  }
+  
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
+  let mut args = QueryArgs::new();
+  let mut sql_fields = String::with_capacity(80 * 19 + 20);
+  
+  sql_fields += "id";
+  sql_fields += ",create_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",tenant_id";
+  // 姓名
+  sql_fields += ",lbl";
+  // 用户ID
+  sql_fields += ",userid";
+  // 手机号
+  sql_fields += ",mobile";
+  // 性别
+  sql_fields += ",gender";
+  // 邮箱
+  sql_fields += ",email";
+  // 企业邮箱
+  sql_fields += ",biz_email";
+  // 直属上级
+  sql_fields += ",direct_leader";
+  // 职位
+  sql_fields += ",position";
+  // 头像
+  sql_fields += ",avatar";
+  // 头像缩略图
+  sql_fields += ",thumb_avatar";
+  // 个人二维码
+  sql_fields += ",qr_code";
+  // 备注
+  sql_fields += ",rem";
+  // 更新人
+  sql_fields += ",update_usr_id";
+  // 更新时间
+  sql_fields += ",update_time";
+  
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * 19 + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: WxwUsrId = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
+      ).await?;
+      if !is_exist {
+        break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    
+    if let Some(tenant_id) = input.tenant_id {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 姓名
+    if let Some(lbl) = input.lbl {
+      sql_values += ",?";
+      args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 用户ID
+    if let Some(userid) = input.userid {
+      sql_values += ",?";
+      args.push(userid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 手机号
+    if let Some(mobile) = input.mobile {
+      sql_values += ",?";
+      args.push(mobile.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 性别
+    if let Some(gender) = input.gender {
+      sql_values += ",?";
+      args.push(gender.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 邮箱
+    if let Some(email) = input.email {
+      sql_values += ",?";
+      args.push(email.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企业邮箱
+    if let Some(biz_email) = input.biz_email {
+      sql_values += ",?";
+      args.push(biz_email.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 直属上级
+    if let Some(direct_leader) = input.direct_leader {
+      sql_values += ",?";
+      args.push(direct_leader.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 职位
+    if let Some(position) = input.position {
+      sql_values += ",?";
+      args.push(position.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 头像
+    if let Some(avatar) = input.avatar {
+      sql_values += ",?";
+      args.push(avatar.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 头像缩略图
+    if let Some(thumb_avatar) = input.thumb_avatar {
+      sql_values += ",?";
+      args.push(thumb_avatar.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 个人二维码
+    if let Some(qr_code) = input.qr_code {
+      sql_values += ",?";
+      args.push(qr_code.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 备注
+    if let Some(rem) = input.rem {
+      sql_values += ",?";
+      args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新人
+    if let Some(update_usr_id) = input.update_usr_id {
+      sql_values += ",?";
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新时间
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
+  }
+  
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_cache_tables());
+  
+  let options = options.into();
+  
+  execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();
+  }
+  
+  Ok(ids2)
+}
+
 /// 创建企微用户
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: WxwUsrInput,
@@ -1135,218 +1477,15 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
-  ).await?;
-  
-  if !old_models.is_empty() {
-    
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
-    
-    let mut id: Option<WxwUsrId> = None;
-    
-    for old_model in old_models {
-      
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
-      ).await?;
-      
-      if id.is_some() {
-        break;
-      }
-    }
-    
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }
-  
-  let mut id: WxwUsrId;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if !is_exist {
-      break;
-    }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
-  }
-  let id = id;
-  
-  let mut args = QueryArgs::new();
-  
-  let mut sql_fields = String::with_capacity(80 * 19 + 20);
-  let mut sql_values = String::with_capacity(2 * 19 + 2);
-  
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
-      sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }
-  
-  if let Some(tenant_id) = input.tenant_id {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  } else if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }
-  // 姓名
-  if let Some(lbl) = input.lbl {
-    sql_fields += ",lbl";
-    sql_values += ",?";
-    args.push(lbl.into());
-  }
-  // 用户ID
-  if let Some(userid) = input.userid {
-    sql_fields += ",userid";
-    sql_values += ",?";
-    args.push(userid.into());
-  }
-  // 手机号
-  if let Some(mobile) = input.mobile {
-    sql_fields += ",mobile";
-    sql_values += ",?";
-    args.push(mobile.into());
-  }
-  // 性别
-  if let Some(gender) = input.gender {
-    sql_fields += ",gender";
-    sql_values += ",?";
-    args.push(gender.into());
-  }
-  // 邮箱
-  if let Some(email) = input.email {
-    sql_fields += ",email";
-    sql_values += ",?";
-    args.push(email.into());
-  }
-  // 企业邮箱
-  if let Some(biz_email) = input.biz_email {
-    sql_fields += ",biz_email";
-    sql_values += ",?";
-    args.push(biz_email.into());
-  }
-  // 直属上级
-  if let Some(direct_leader) = input.direct_leader {
-    sql_fields += ",direct_leader";
-    sql_values += ",?";
-    args.push(direct_leader.into());
-  }
-  // 职位
-  if let Some(position) = input.position {
-    sql_fields += ",position";
-    sql_values += ",?";
-    args.push(position.into());
-  }
-  // 头像
-  if let Some(avatar) = input.avatar {
-    sql_fields += ",avatar";
-    sql_values += ",?";
-    args.push(avatar.into());
-  }
-  // 头像缩略图
-  if let Some(thumb_avatar) = input.thumb_avatar {
-    sql_fields += ",thumb_avatar";
-    sql_values += ",?";
-    args.push(thumb_avatar.into());
-  }
-  // 个人二维码
-  if let Some(qr_code) = input.qr_code {
-    sql_fields += ",qr_code";
-    sql_values += ",?";
-    args.push(qr_code.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = options.into();
-  
-  execute(
-    sql,
-    args,
+  let ids = _creates(
+    vec![input],
     options,
   ).await?;
+  
+  if ids.is_empty() {
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
+  }
+  let id = ids[0].clone();
   
   Ok(id)
 }
@@ -1434,7 +1573,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   {
@@ -1474,7 +1613,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -1838,7 +1977,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -1938,7 +2077,7 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }

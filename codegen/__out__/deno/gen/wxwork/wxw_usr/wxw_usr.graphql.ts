@@ -69,8 +69,8 @@ type Query {
   findByIdWxwUsr(id: WxwUsrId!): WxwUsrModel
 }
 type Mutation {
-  "创建企微用户"
-  createWxwUsr(input: WxwUsrInput!, unique_type: UniqueType): WxwUsrId!
+  "批量创建企微用户"
+  createsWxwUsr(inputs: [WxwUsrInput!]!, unique_type: UniqueType): [WxwUsrId!]!
   "根据 id 修改企微用户"
   updateByIdWxwUsr(id: WxwUsrId!, input: WxwUsrInput!): WxwUsrId!
   "根据 ids 删除企微用户"

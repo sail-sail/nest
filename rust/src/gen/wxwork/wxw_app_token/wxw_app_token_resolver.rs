@@ -76,30 +76,37 @@ pub async fn find_by_id(
 
 /// 创建企微应用接口凭据
 #[allow(dead_code)]
-pub async fn create(
-  input: WxwAppTokenInput,
+pub async fn creates(
+  inputs: Vec<WxwAppTokenInput>,
   options: Option<Options>,
-) -> Result<WxwAppTokenId> {
+) -> Result<Vec<WxwAppTokenId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = wxw_app_token_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = wxw_app_token_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/wxwork/wxw_app_token".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = wxw_app_token_service::create(
-    input,
+  let ids = wxw_app_token_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 企微应用接口凭据根据id修改租户id

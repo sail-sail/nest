@@ -81,36 +81,38 @@ export async function findByIdWxwApp(
 }
 
 /**
- * 创建企微应用
+ * 批量创建企微应用
  */
-export async function createWxwApp(
-  input: WxwAppInput,
+export async function createsWxwApp(
+  inputs: WxwAppInput[],
   unique_type?: UniqueType,
-): Promise<WxwAppId> {
-  
-  input.id = undefined;
+): Promise<WxwAppId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./wxw_app.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/wxwork/wxw_app",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: WxwAppId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

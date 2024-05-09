@@ -121,12 +121,12 @@ pub struct WxwUsrGenMutation;
 impl WxwUsrGenMutation {
   
   /// 创建企微用户
-  async fn create_wxw_usr(
+  async fn creates_wxw_usr(
     &self,
     ctx: &Context<'_>,
-    input: WxwUsrInput,
+    inputs: Vec<WxwUsrInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<WxwUsrId> {
+  ) -> Result<Vec<WxwUsrId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -136,8 +136,8 @@ impl WxwUsrGenMutation {
       .with_tran()?
       .build()
       .scope({
-        wxw_usr_resolver::create(
-          input,
+        wxw_usr_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await
