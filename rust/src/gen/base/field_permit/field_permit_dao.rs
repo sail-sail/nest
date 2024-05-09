@@ -21,6 +21,7 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -365,25 +366,69 @@ pub async fn find_all(
   }
   // 菜单
   if let Some(search) = &search {
-    if search.menu_id.is_some() && search.menu_id.as_ref().unwrap().is_empty() {
+    if search.menu_id.is_some() {
+      let len = search.menu_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.menu_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 类型
   if let Some(search) = &search {
-    if search.r#type.is_some() && search.r#type.as_ref().unwrap().is_empty() {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.type.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 创建人
   if let Some(search) = &search {
-    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 更新人
   if let Some(search) = &search {
-    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
@@ -442,7 +487,7 @@ pub async fn find_all(
     type_dict,
   ]: [Vec<_>; 1] = dict_vec
     .try_into()
-    .map_err(|err| anyhow!(format!("{:#?}", err)))?;
+    .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -1061,7 +1106,7 @@ async fn _creates(
   for input in inputs {
   
     if input.id.is_some() {
-      return Err(anyhow!(format!("Can not set id when create in dao: {table}")));
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
     }
     
     let old_models = find_by_unique(
@@ -1301,7 +1346,7 @@ pub async fn create(
   ).await?;
   
   if ids.is_empty() {
-    return Err(anyhow!(format!("_creates: Create failed in dao: {table}")));
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
   }
   let id = ids[0].clone();
   
