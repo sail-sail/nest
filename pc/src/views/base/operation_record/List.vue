@@ -1334,7 +1334,19 @@ async function openDataDialog(
   await nextTick();
   const method = model.method;
   if ((moduleComponentRef.value as any).showDialog) {
-    if ([ "create", "updateById" ].includes(method)) {
+    if ([ "creates" ].includes(method)) {
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: dataObj.map((item: any) => item.id),
+        },
+        findOne: ({ id }: any) => dataObj.find((item: any) => item.id === id),
+      });
+      tableFocus();
+    } else if ([ "updateById" ].includes(method)) {
       if (!dataObj.id) {
         return;
       }
