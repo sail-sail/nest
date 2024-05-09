@@ -6,6 +6,7 @@
   :precision="props.precision"
   :step="props.step"
   :step-strictly="props.stepStrictly"
+  :min="props.min"
   :controls="props.controls"
   v-bind="$attrs"
   v-model="modelValueComputed"
@@ -71,6 +72,7 @@ const props = withDefaults(
     precision?: number;
     step?: number;
     stepStrictly?: boolean;
+    min?: number;
     controls?: boolean;
     clearable?: boolean;
     disabled?: boolean;
@@ -84,6 +86,7 @@ const props = withDefaults(
     precision: 0,
     step: 1,
     stepStrictly: false,
+    min: 0,
     controls: false,
     clearable: false,
     disabled: undefined,
