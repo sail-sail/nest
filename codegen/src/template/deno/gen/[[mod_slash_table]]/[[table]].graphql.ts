@@ -271,9 +271,12 @@ type <#=modelName#> {<#
       else if (cascade_field_column.DATA_TYPE === 'decimal') {
         _data_type = 'Decimal';
       }
+      if (foreignKey.multiple) {
+        _data_type = `[${ _data_type }!]`;
+      }
   #>
   "<#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#>"
-  <#=column_name#>_<#=cascade_field#>: [<#=_data_type#>!]<#
+  <#=column_name#>_<#=cascade_field#>: <#=_data_type#><#
     }
   #><#
     } else {
