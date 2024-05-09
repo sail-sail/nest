@@ -378,47 +378,41 @@ async fn get_from_query(
     .unwrap_or(0);
   let from_query = r#"base_tenant t
     left join base_tenant_domain
-      on base_tenant_domain.tenant_id = t.id
+      on base_tenant_domain.tenant_id=t.id
       and base_tenant_domain.is_deleted = ?
     left join base_domain
       on base_tenant_domain.domain_id = base_domain.id
-      and base_domain.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
-        json_objectagg(base_tenant_domain.order_by, base_domain.lbl) domain_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_domain
-      inner join base_domain
-        on base_domain.id = base_tenant_domain.domain_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_domain.tenant_id
-      where
-        base_tenant_domain.is_deleted = ?
-      group by tenant_id
-    ) _domain
-      on _domain.tenant_id = t.id
+      and base_domain.is_deleted=?
+    left join (select
+    json_objectagg(base_tenant_domain.order_by,base_domain.id) domain_ids,
+    json_objectagg(base_tenant_domain.order_by,base_domain.lbl) domain_ids_lbl,
+    base_tenant.id tenant_id
+    from base_tenant_domain
+    inner join base_domain
+      on base_domain.id=base_tenant_domain.domain_id
+    inner join base_tenant
+      on base_tenant.id=base_tenant_domain.tenant_id
+    where
+      base_tenant_domain.is_deleted=?
+    group by tenant_id) _domain on _domain.tenant_id=t.id
     left join base_tenant_menu
-      on base_tenant_menu.tenant_id = t.id
+      on base_tenant_menu.tenant_id=t.id
       and base_tenant_menu.is_deleted = ?
     left join base_menu
       on base_tenant_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
-        json_objectagg(base_tenant_menu.order_by, base_menu.lbl) menu_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_menu
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-      where
-        base_tenant_menu.is_deleted = ?
-      group by tenant_id
-    ) _menu
-      on _menu.tenant_id = t.id
+      and base_menu.is_deleted=?
+    left join (select
+    json_objectagg(base_tenant_menu.order_by,base_menu.id) menu_ids,
+    json_objectagg(base_tenant_menu.order_by,base_menu.lbl) menu_ids_lbl,
+    base_tenant.id tenant_id
+    from base_tenant_menu
+    inner join base_menu
+      on base_menu.id=base_tenant_menu.menu_id
+    inner join base_tenant
+      on base_tenant.id=base_tenant_menu.tenant_id
+    where
+      base_tenant_menu.is_deleted=?
+    group by tenant_id) _menu on _menu.tenant_id=t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -545,21 +539,14 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,max(domain_ids) domain_ids
       ,max(domain_ids_lbl) domain_ids_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1532,6 +1519,7 @@ async fn _creates(
 }
 
 /// 创建租户
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: TenantInput,
@@ -1865,6 +1853,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1897,20 +1889,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1960,6 +1948,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1981,20 +1977,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2049,6 +2041,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -2069,20 +2065,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2306,7 +2298,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

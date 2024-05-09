@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建语言
 #[allow(dead_code)]
-pub async fn create(
-  input: LangInput,
-  options: Option<Options>,
-) -> Result<LangId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = lang_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/lang".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = lang_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建语言
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<LangInput>,
   options: Option<Options>,

@@ -529,68 +529,59 @@ async fn get_from_query(
     .unwrap_or(0);
   let from_query = r#"base_usr t
     left join base_usr_role
-      on base_usr_role.usr_id = t.id
+      on base_usr_role.usr_id=t.id
       and base_usr_role.is_deleted = ?
     left join base_role
       on base_usr_role.role_id = base_role.id
-      and base_role.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
-        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_role
-      inner join base_role
-        on base_role.id = base_usr_role.role_id
-      inner join base_usr
-        on base_usr.id = base_usr_role.usr_id
-      where
-        base_usr_role.is_deleted = ?
-      group by usr_id
-    ) _role
-      on _role.usr_id = t.id
+      and base_role.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_role.order_by,base_role.id) role_ids,
+    json_objectagg(base_usr_role.order_by,base_role.lbl) role_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_role
+    inner join base_role
+      on base_role.id=base_usr_role.role_id
+    inner join base_usr
+      on base_usr.id=base_usr_role.usr_id
+    where
+      base_usr_role.is_deleted=?
+    group by usr_id) _role on _role.usr_id=t.id
     left join base_usr_dept
-      on base_usr_dept.usr_id = t.id
+      on base_usr_dept.usr_id=t.id
       and base_usr_dept.is_deleted = ?
     left join base_dept
       on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
-        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_dept
-      inner join base_dept
-        on base_dept.id = base_usr_dept.dept_id
-      inner join base_usr
-        on base_usr.id = base_usr_dept.usr_id
-      where
-        base_usr_dept.is_deleted = ?
-      group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
+      and base_dept.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_dept.order_by,base_dept.id) dept_ids,
+    json_objectagg(base_usr_dept.order_by,base_dept.lbl) dept_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_dept
+    inner join base_dept
+      on base_dept.id=base_usr_dept.dept_id
+    inner join base_usr
+      on base_usr.id=base_usr_dept.usr_id
+    where
+      base_usr_dept.is_deleted=?
+    group by usr_id) _dept on _dept.usr_id=t.id
     left join base_usr_org
-      on base_usr_org.usr_id = t.id
+      on base_usr_org.usr_id=t.id
       and base_usr_org.is_deleted = ?
     left join base_org
       on base_usr_org.org_id = base_org.id
-      and base_org.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_org.order_by, base_org.id) org_ids,
-        json_objectagg(base_usr_org.order_by, base_org.lbl) org_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_org
-      inner join base_org
-        on base_org.id = base_usr_org.org_id
-      inner join base_usr
-        on base_usr.id = base_usr_org.usr_id
-      where
-        base_usr_org.is_deleted = ?
-      group by usr_id
-    ) _org
-      on _org.usr_id = t.id
+      and base_org.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_org.order_by,base_org.id) org_ids,
+    json_objectagg(base_usr_org.order_by,base_org.lbl) org_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_org
+    inner join base_org
+      on base_org.id=base_usr_org.org_id
+    inner join base_usr
+      on base_usr.id=base_usr_org.usr_id
+    where
+      base_usr_org.is_deleted=?
+    group by usr_id) _org on _org.usr_id=t.id
     left join base_org default_org_id_lbl
       on default_org_id_lbl.id = t.default_org_id
     left join base_usr create_usr_id_lbl
@@ -740,9 +731,7 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
       ,max(dept_ids) dept_ids
@@ -752,12 +741,7 @@ pub async fn find_all(
       ,default_org_id_lbl.lbl default_org_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1893,6 +1877,7 @@ async fn _creates(
 }
 
 /// 创建用户
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: UsrInput,
@@ -2335,6 +2320,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2367,20 +2356,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2430,6 +2415,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2451,20 +2444,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2519,6 +2508,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -2539,20 +2532,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2776,7 +2765,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

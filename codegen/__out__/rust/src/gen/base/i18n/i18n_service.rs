@@ -85,21 +85,6 @@ pub async fn set_id_by_lbl(
 
 /// 创建国际化
 #[allow(dead_code)]
-pub async fn create(
-  input: I18nInput,
-  options: Option<Options>,
-) -> Result<I18nId> {
-  
-  let id = i18n_dao::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建国际化
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<I18nInput>,
   options: Option<Options>,

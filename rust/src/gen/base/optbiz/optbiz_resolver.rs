@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建业务选项
 #[allow(dead_code)]
-pub async fn create(
-  input: OptbizInput,
-  options: Option<Options>,
-) -> Result<OptbizId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = optbiz_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/optbiz".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = optbiz_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建业务选项
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<OptbizInput>,
   options: Option<Options>,

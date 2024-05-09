@@ -173,29 +173,6 @@ pub struct OrgGenMutation;
 impl OrgGenMutation {
   
   /// 创建组织
-  async fn create_org(
-    &self,
-    ctx: &Context<'_>,
-    input: OrgInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<OrgId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        org_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建组织
   async fn creates_org(
     &self,
     ctx: &Context<'_>,

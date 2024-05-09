@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建业务字典明细
 #[allow(dead_code)]
-pub async fn create(
-  input: DictbizDetailInput,
-  options: Option<Options>,
-) -> Result<DictbizDetailId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = dictbiz_detail_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/dictbiz_detail".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = dictbiz_detail_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建业务字典明细
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<DictbizDetailInput>,
   options: Option<Options>,

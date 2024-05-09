@@ -171,29 +171,6 @@ pub struct DictGenMutation;
 impl DictGenMutation {
   
   /// 创建系统字典
-  async fn create_dict(
-    &self,
-    ctx: &Context<'_>,
-    input: DictInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DictId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dict_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建系统字典
   async fn creates_dict(
     &self,
     ctx: &Context<'_>,

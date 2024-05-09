@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建系统字典明细
 #[allow(dead_code)]
-pub async fn create(
-  input: DictDetailInput,
-  options: Option<Options>,
-) -> Result<DictDetailId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = dict_detail_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/dict_detail".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = dict_detail_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建系统字典明细
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<DictDetailInput>,
   options: Option<Options>,

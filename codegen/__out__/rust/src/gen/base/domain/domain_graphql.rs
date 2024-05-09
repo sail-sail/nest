@@ -171,29 +171,6 @@ pub struct DomainGenMutation;
 impl DomainGenMutation {
   
   /// 创建域名
-  async fn create_domain(
-    &self,
-    ctx: &Context<'_>,
-    input: DomainInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DomainId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        domain_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建域名
   async fn creates_domain(
     &self,
     ctx: &Context<'_>,

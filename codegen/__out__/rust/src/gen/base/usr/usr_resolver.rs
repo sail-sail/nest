@@ -36,7 +36,7 @@ pub async fn find_all(
   let mut res = res;
   for model in &mut res {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   let res = res;
   
@@ -85,7 +85,7 @@ pub async fn find_one(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   
   let model = model;
@@ -107,7 +107,7 @@ pub async fn find_by_id(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   
   let model = model;
@@ -116,34 +116,6 @@ pub async fn find_by_id(
 }
 
 /// 创建用户
-#[allow(dead_code)]
-pub async fn create(
-  input: UsrInput,
-  options: Option<Options>,
-) -> Result<UsrId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = usr_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/usr".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = usr_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建用户
 #[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<UsrInput>,

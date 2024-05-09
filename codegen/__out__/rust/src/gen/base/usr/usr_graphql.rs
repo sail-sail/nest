@@ -173,29 +173,6 @@ pub struct UsrGenMutation;
 impl UsrGenMutation {
   
   /// 创建用户
-  async fn create_usr(
-    &self,
-    ctx: &Context<'_>,
-    input: UsrInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<UsrId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        usr_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建用户
   async fn creates_usr(
     &self,
     ctx: &Context<'_>,

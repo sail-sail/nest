@@ -78,34 +78,6 @@ pub async fn find_by_id(
 
 /// 创建部门
 #[allow(dead_code)]
-pub async fn create(
-  input: DeptInput,
-  options: Option<Options>,
-) -> Result<DeptId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = dept_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/dept".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = dept_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建部门
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<DeptInput>,
   options: Option<Options>,

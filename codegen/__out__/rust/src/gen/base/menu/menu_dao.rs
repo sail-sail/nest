@@ -488,18 +488,11 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1412,6 +1405,7 @@ async fn _creates(
 }
 
 /// 创建菜单
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: MenuInput,
@@ -1719,6 +1713,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1751,20 +1749,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1814,6 +1808,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1835,20 +1837,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1903,6 +1901,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -1923,20 +1925,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2160,7 +2158,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建菜单
 #[allow(dead_code)]
-pub async fn create(
-  input: MenuInput,
-  options: Option<Options>,
-) -> Result<MenuId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = menu_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/menu".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = menu_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建菜单
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<MenuInput>,
   options: Option<Options>,

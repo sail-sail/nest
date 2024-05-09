@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建角色
 #[allow(dead_code)]
-pub async fn create(
-  input: RoleInput,
-  options: Option<Options>,
-) -> Result<RoleId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = role_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/role".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = role_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建角色
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<RoleInput>,
   options: Option<Options>,

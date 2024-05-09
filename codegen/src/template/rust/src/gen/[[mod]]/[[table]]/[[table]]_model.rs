@@ -255,16 +255,8 @@ pub struct <#=tableUP#>Model {<#
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -272,6 +264,22 @@ pub struct <#=tableUP#>Model {<#
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+      if (!foreignSchema) {
+        throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    }
+    const modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
+    }
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
@@ -319,7 +327,9 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub <#=column_name_rust#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
+    if (!modelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
@@ -327,6 +337,60 @@ pub struct <#=tableUP#>Model {<#
   }
   #>
   pub <#=column_name#>_lbl: Vec<String>,<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+      // 查找外键表的字段的数据类型, 重置 _data_type
+      const cascade_field_column = foreignSchema.columns.find((itemTmp) => itemTmp.COLUMN_NAME === cascade_field);
+      if (!cascade_field_column) {
+        throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
+        process.exit(1);
+      }
+      let _data_type = "String";
+      if (cascade_field_column.DATA_TYPE === 'varchar') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'date') {
+        _data_type = "chrono::NaiveDate";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'datetime') {
+        _data_type = "chrono::NaiveDateTime";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'time') {
+        _data_type = "chrono::NaiveTime";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'int' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'i32';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'int' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'u32';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'json') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'text') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'i8';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'tinyint' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'u8';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'decimal') {
+        _data_type = 'Decimal';
+      }
+  #>
+  /// <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub <#=column_name#>_<#=cascade_field#>: Vec<<#=_data_type#>>,<#
+    }
+  #><#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#><#
@@ -335,7 +399,9 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub <#=column_name_rust#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
+    if (!modelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
@@ -343,6 +409,60 @@ pub struct <#=tableUP#>Model {<#
   }
   #>
   pub <#=column_name#>_lbl: String,<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+      // 查找外键表的字段的数据类型, 重置 _data_type
+      const cascade_field_column = foreignSchema.columns.find((itemTmp) => itemTmp.COLUMN_NAME === cascade_field);
+      if (!cascade_field_column) {
+        throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
+        process.exit(1);
+      }
+      let _data_type = "String";
+      if (cascade_field_column.DATA_TYPE === 'varchar') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'date') {
+        _data_type = "chrono::NaiveDate";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'datetime') {
+        _data_type = "chrono::NaiveDateTime";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'time') {
+        _data_type = "chrono::NaiveTime";
+      }
+      else if (cascade_field_column.DATA_TYPE === 'int' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'i32';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'int' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'u32';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'json') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'text') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'i8';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'tinyint' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+        _data_type = 'u8';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'decimal') {
+        _data_type = 'Decimal';
+      }
+  #>
+  /// <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  }
+  #>
+  pub <#=column_name#>_<#=cascade_field#>: <#=_data_type#>,<#
+    }
+  #><#
     } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#><#
@@ -359,7 +479,7 @@ pub struct <#=tableUP#>Model {<#
   }
   #>
   pub <#=column_name#>_lbl: String,<#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -627,6 +747,22 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+      if (!foreignSchema) {
+        throw `表: ${ mod }_${ table } 的外键 ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    }
+    const modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
+    }
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
@@ -709,30 +845,162 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
             .to_owned()
         )
         .collect::<Vec<<#=foreignTable_Up#>Id>>()
-    };
+    };<#
+      if (!modelLabel) {
+    #>
     let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
     let <#=column_name#>_lbl = {
       let mut keys: Vec<u32> = <#=column_name#>_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "<#=column_name#>_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
           <#=column_name#>_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };<#
+      }
+    #><#
+      for (let j = 0; j < cascade_fields.length; j++) {
+        const cascade_field = cascade_fields[j];
+        // 查找外键表的字段的数据类型, 重置 _data_type
+        const cascade_field_column = foreignSchema.columns.find((itemTmp) => itemTmp.COLUMN_NAME === cascade_field);
+        if (!cascade_field_column) {
+          throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
+          process.exit(1);
+        }
+        let _data_type = "String";
+        if (cascade_field_column.DATA_TYPE === 'varchar') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'date') {
+          _data_type = "chrono::NaiveDate";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'datetime') {
+          _data_type = "chrono::NaiveDateTime";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'time') {
+          _data_type = "chrono::NaiveTime";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'int' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'i32';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'int' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'u32';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'json') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'text') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'i8';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'tinyint' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'u8';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'decimal') {
+          _data_type = 'Decimal';
+        }
+    #>
+    // <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#>
+    let <#=column_name#>_<#=cascade_field#>: Option<sqlx::types::Json<HashMap<String, <#=_data_type#>>>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
+    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default().0;
+    let <#=column_name#>_<#=cascade_field#> = {
+      let mut keys: Vec<u32> = <#=column_name#>_<#=cascade_field#>.keys()
+        .map(|x| 
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "<#=column_name#>_<#=cascade_field#> order_by Invalid u32".to_string()
+              ))
+            ))
+        )
+        .collect::<Result<_, _>>()?;
+      keys.sort();
+      keys
+        .into_iter()
+        .map(|x| 
+          <#=column_name#>_<#=cascade_field#>
+            .get(&x.to_string())
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
+        )
+        .collect::<Vec<<#=_data_type#>>>()
+    };<#
+      }
+    #><#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;<#
+      if (!modelLabel) {
+    #>
     let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
+      }
+    #><#
+      for (let j = 0; j < cascade_fields.length; j++) {
+        const cascade_field = cascade_fields[j];
+        // 查找外键表的字段的数据类型, 重置 _data_type
+        const cascade_field_column = foreignSchema.columns.find((itemTmp) => itemTmp.COLUMN_NAME === cascade_field);
+        if (!cascade_field_column) {
+          throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
+          process.exit(1);
+        }
+        let _data_type = "String";
+        if (cascade_field_column.DATA_TYPE === 'varchar') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'date') {
+          _data_type = "chrono::NaiveDate";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'datetime') {
+          _data_type = "chrono::NaiveDateTime";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'time') {
+          _data_type = "chrono::NaiveTime";
+        }
+        else if (cascade_field_column.DATA_TYPE === 'int' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'i32';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'int' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'u32';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'json') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'text') {
+          _data_type = 'String';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'i8';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'tinyint' && cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
+          _data_type = 'u8';
+        }
+        else if (cascade_field_column.DATA_TYPE === 'decimal') {
+          _data_type = 'Decimal';
+        }
+    #>
+    // <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#>
+    let <#=column_name#>_<#=cascade_field#>: Option<<#_data_type#>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
+    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default();<#
+      }
+    #><#
       } else if (column.DATA_TYPE === 'tinyint') {
     #>
     // <#=column_comment#>
@@ -781,7 +1049,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };<#
       } else {
     #>
@@ -802,7 +1070,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #>"%Y-%m-%d"<#
         }
       #>).to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };<#
       } else {
     #>
@@ -861,7 +1129,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };<#
     }
     #><#
@@ -879,7 +1147,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };<#
     }
     #><#
@@ -922,39 +1190,65 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (
-        column_name === "tenant_id" ||
-        column_name === "org_id" ||
-        column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden" ||
-        column_name === "create_usr_id" ||
-        column_name === "create_time" ||
-        column_name === "update_usr_id" ||
-        column_name === "update_time"
-      ) continue;
-      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const isPassword = column.isPassword;
-      const foreignKey = column.foreignKey;
-      let is_nullable = column.IS_NULLABLE === "YES";
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        const column_name = column.COLUMN_NAME;
+        if (
+          column_name === "tenant_id" ||
+          column_name === "org_id" ||
+          column_name === "is_sys" ||
+          column_name === "is_deleted" ||
+          column_name === "is_hidden" ||
+          column_name === "create_usr_id" ||
+          column_name === "create_time" ||
+          column_name === "update_usr_id" ||
+          column_name === "update_time"
+        ) continue;
+        const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        const column_comment = column.COLUMN_COMMENT || "";
+        const isPassword = column.isPassword;
+        const foreignKey = column.foreignKey;
+        const modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+          }
+        }
+        let is_nullable = column.IS_NULLABLE === "YES";
       #><#
-        if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-          || data_type === "date" || data_type === "datetime"
-        ) {
+        if (foreignKey && foreignKey.multiple) {
+      #>
+      <#=column_name_rust#>,<#
+        if (!modelLabel) {
+      #>
+      <#=column_name#>_lbl,<#
+        }
+      #><#
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      <#=column_name#>_<#=cascade_field#>,<#
+        }
+      #><#
+        } else if (foreignKey && !foreignKey.multiple) {
+      #>
+      <#=column_name_rust#>,<#
+        if (!modelLabel) {
+      #>
+      <#=column_name#>_lbl,<#
+        }
+      #><#
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      <#=column_name#>_<#=cascade_field#>,<#
+        }
+      #><#
+        } else if (column.dict || column.dictbiz|| data_type === "date" || data_type === "datetime") {
       #>
       <#=column_name_rust#>,
       <#=column_name#>_lbl,<#

@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建登录日志
 #[allow(dead_code)]
-pub async fn create(
-  input: LoginLogInput,
-  options: Option<Options>,
-) -> Result<LoginLogId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = login_log_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/login_log".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = login_log_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建登录日志
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<LoginLogInput>,
   options: Option<Options>,

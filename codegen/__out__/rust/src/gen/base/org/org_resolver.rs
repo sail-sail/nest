@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建组织
 #[allow(dead_code)]
-pub async fn create(
-  input: OrgInput,
-  options: Option<Options>,
-) -> Result<OrgId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = org_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/org".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = org_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建组织
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<OrgInput>,
   options: Option<Options>,

@@ -173,29 +173,6 @@ pub struct DictbizDetailGenMutation;
 impl DictbizDetailGenMutation {
   
   /// 创建业务字典明细
-  async fn create_dictbiz_detail(
-    &self,
-    ctx: &Context<'_>,
-    input: DictbizDetailInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DictbizDetailId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dictbiz_detail_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建业务字典明细
   async fn creates_dictbiz_detail(
     &self,
     ctx: &Context<'_>,

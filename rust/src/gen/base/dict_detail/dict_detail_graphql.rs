@@ -171,29 +171,6 @@ pub struct DictDetailGenMutation;
 impl DictDetailGenMutation {
   
   /// 创建系统字典明细
-  async fn create_dict_detail(
-    &self,
-    ctx: &Context<'_>,
-    input: DictDetailInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DictDetailId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dict_detail_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建系统字典明细
   async fn creates_dict_detail(
     &self,
     ctx: &Context<'_>,

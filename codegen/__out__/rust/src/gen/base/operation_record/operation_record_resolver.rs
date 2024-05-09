@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建操作记录
 #[allow(dead_code)]
-pub async fn create(
-  input: OperationRecordInput,
-  options: Option<Options>,
-) -> Result<OperationRecordId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = operation_record_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/operation_record".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = operation_record_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建操作记录
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<OperationRecordInput>,
   options: Option<Options>,

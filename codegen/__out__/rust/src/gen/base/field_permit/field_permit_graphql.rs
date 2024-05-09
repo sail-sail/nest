@@ -119,29 +119,6 @@ pub struct FieldPermitGenMutation;
 impl FieldPermitGenMutation {
   
   /// 创建字段权限
-  async fn create_field_permit(
-    &self,
-    ctx: &Context<'_>,
-    input: FieldPermitInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<FieldPermitId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        field_permit_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建字段权限
   async fn creates_field_permit(
     &self,
     ctx: &Context<'_>,

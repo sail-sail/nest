@@ -171,29 +171,6 @@ pub struct TenantGenMutation;
 impl TenantGenMutation {
   
   /// 创建租户
-  async fn create_tenant(
-    &self,
-    ctx: &Context<'_>,
-    input: TenantInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<TenantId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        tenant_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建租户
   async fn creates_tenant(
     &self,
     ctx: &Context<'_>,

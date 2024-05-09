@@ -453,68 +453,59 @@ async fn get_from_query(
     .unwrap_or(0);
   let from_query = r#"base_role t
     left join base_role_menu
-      on base_role_menu.role_id = t.id
+      on base_role_menu.role_id=t.id
       and base_role_menu.is_deleted = ?
     left join base_menu
       on base_role_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
-        json_objectagg(base_role_menu.order_by, base_menu.lbl) menu_ids_lbl,
-        base_role.id role_id
-      from base_role_menu
-      inner join base_menu
-        on base_menu.id = base_role_menu.menu_id
-      inner join base_role
-        on base_role.id = base_role_menu.role_id
-      where
-        base_role_menu.is_deleted = ?
-      group by role_id
-    ) _menu
-      on _menu.role_id = t.id
+      and base_menu.is_deleted=?
+    left join (select
+    json_objectagg(base_role_menu.order_by,base_menu.id) menu_ids,
+    json_objectagg(base_role_menu.order_by,base_menu.lbl) menu_ids_lbl,
+    base_role.id role_id
+    from base_role_menu
+    inner join base_menu
+      on base_menu.id=base_role_menu.menu_id
+    inner join base_role
+      on base_role.id=base_role_menu.role_id
+    where
+      base_role_menu.is_deleted=?
+    group by role_id) _menu on _menu.role_id=t.id
     left join base_role_permit
-      on base_role_permit.role_id = t.id
+      on base_role_permit.role_id=t.id
       and base_role_permit.is_deleted = ?
     left join base_permit
       on base_role_permit.permit_id = base_permit.id
-      and base_permit.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
-        json_objectagg(base_role_permit.order_by, base_permit.lbl) permit_ids_lbl,
-        base_role.id role_id
-      from base_role_permit
-      inner join base_permit
-        on base_permit.id = base_role_permit.permit_id
-      inner join base_role
-        on base_role.id = base_role_permit.role_id
-      where
-        base_role_permit.is_deleted = ?
-      group by role_id
-    ) _permit
-      on _permit.role_id = t.id
+      and base_permit.is_deleted=?
+    left join (select
+    json_objectagg(base_role_permit.order_by,base_permit.id) permit_ids,
+    json_objectagg(base_role_permit.order_by,base_permit.lbl) permit_ids_lbl,
+    base_role.id role_id
+    from base_role_permit
+    inner join base_permit
+      on base_permit.id=base_role_permit.permit_id
+    inner join base_role
+      on base_role.id=base_role_permit.role_id
+    where
+      base_role_permit.is_deleted=?
+    group by role_id) _permit on _permit.role_id=t.id
     left join base_role_data_permit
-      on base_role_data_permit.role_id = t.id
+      on base_role_data_permit.role_id=t.id
       and base_role_data_permit.is_deleted = ?
     left join base_data_permit
       on base_role_data_permit.data_permit_id = base_data_permit.id
-      and base_data_permit.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.scope) data_permit_ids_lbl,
-        base_role.id role_id
-      from base_role_data_permit
-      inner join base_data_permit
-        on base_data_permit.id = base_role_data_permit.data_permit_id
-      inner join base_role
-        on base_role.id = base_role_data_permit.role_id
-      where
-        base_role_data_permit.is_deleted = ?
-      group by role_id
-    ) _data_permit
-      on _data_permit.role_id = t.id
+      and base_data_permit.is_deleted=?
+    left join (select
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
+    base_role.id role_id
+    from base_role_data_permit
+    inner join base_data_permit
+      on base_data_permit.id=base_role_data_permit.data_permit_id
+    inner join base_role
+      on base_role.id=base_role_data_permit.role_id
+    where
+      base_role_data_permit.is_deleted=?
+    group by role_id) _data_permit on _data_permit.role_id=t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -650,9 +641,7 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
       ,max(permit_ids) permit_ids
@@ -661,12 +650,7 @@ pub async fn find_all(
       ,max(data_permit_ids_lbl) data_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1681,6 +1665,7 @@ async fn _creates(
 }
 
 /// 创建角色
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: RoleInput,
@@ -2103,6 +2088,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2135,20 +2124,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2198,6 +2183,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2219,20 +2212,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2287,6 +2276,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -2307,20 +2300,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2544,7 +2533,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

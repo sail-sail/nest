@@ -76,34 +76,6 @@ pub async fn find_by_id(
 
 /// 创建后台任务
 #[allow(dead_code)]
-pub async fn create(
-  input: BackgroundTaskInput,
-  options: Option<Options>,
-) -> Result<BackgroundTaskId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = background_task_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/background_task".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = background_task_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建后台任务
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
