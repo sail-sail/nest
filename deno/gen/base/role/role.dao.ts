@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -13,7 +13,6 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -87,19 +86,19 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -108,13 +107,13 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.home_url != null) {
-    whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
+    whereQuery += ` and t.home_url=${ args.push(search.home_url) }`;
   }
   if (isNotEmpty(search?.home_url_like)) {
     whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
@@ -160,14 +159,14 @@ async function getWhereQuery(
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -183,10 +182,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -200,15 +199,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: RoleSearch,
@@ -218,72 +218,52 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_role t
     left join base_role_menu
-      on base_role_menu.role_id = t.id
-      and base_role_menu.is_deleted = ${ args.push(is_deleted) }
+      on base_role_menu.role_id=t.id
+      and base_role_menu.is_deleted=${ args.push(is_deleted) }
     left join base_menu
-      on base_role_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
-        json_objectagg(base_role_menu.order_by, base_menu.lbl) menu_ids_lbl,
-        base_role.id role_id
-      from base_role_menu
-      inner join base_menu
-        on base_menu.id = base_role_menu.menu_id
-      inner join base_role
-        on base_role.id = base_role_menu.role_id
-      where
-        base_role_menu.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _menu
-      on _menu.role_id = t.id
+      on base_role_menu.menu_id=base_menu.id
+      and base_menu.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_menu.order_by,base_menu.id) menu_ids,
+    json_objectagg(base_role_menu.order_by,base_menu.lbl) menu_ids_lbl,
+    base_role.id role_id
+    from base_role_menu
+    inner join base_menu on base_menu.id=base_role_menu.menu_id
+    inner join base_role on base_role.id=base_role_menu.role_id
+    where base_role_menu.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _menu on _menu.role_id=t.id
     left join base_role_permit
-      on base_role_permit.role_id = t.id
-      and base_role_permit.is_deleted = ${ args.push(is_deleted) }
+      on base_role_permit.role_id=t.id
+      and base_role_permit.is_deleted=${ args.push(is_deleted) }
     left join base_permit
-      on base_role_permit.permit_id = base_permit.id
-      and base_permit.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
-        json_objectagg(base_role_permit.order_by, base_permit.lbl) permit_ids_lbl,
-        base_role.id role_id
-      from base_role_permit
-      inner join base_permit
-        on base_permit.id = base_role_permit.permit_id
-      inner join base_role
-        on base_role.id = base_role_permit.role_id
-      where
-        base_role_permit.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _permit
-      on _permit.role_id = t.id
+      on base_role_permit.permit_id=base_permit.id
+      and base_permit.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_permit.order_by,base_permit.id) permit_ids,
+    json_objectagg(base_role_permit.order_by,base_permit.lbl) permit_ids_lbl,
+    base_role.id role_id
+    from base_role_permit
+    inner join base_permit on base_permit.id=base_role_permit.permit_id
+    inner join base_role on base_role.id=base_role_permit.role_id
+    where base_role_permit.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _permit on _permit.role_id=t.id
     left join base_role_data_permit
-      on base_role_data_permit.role_id = t.id
-      and base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
+      on base_role_data_permit.role_id=t.id
+      and base_role_data_permit.is_deleted=${ args.push(is_deleted) }
     left join base_data_permit
-      on base_role_data_permit.data_permit_id = base_data_permit.id
-      and base_data_permit.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.scope) data_permit_ids_lbl,
-        base_role.id role_id
-      from base_role_data_permit
-      inner join base_data_permit
-        on base_data_permit.id = base_role_data_permit.data_permit_id
-      inner join base_role
-        on base_role.id = base_role_data_permit.role_id
-      where
-        base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _data_permit
-      on _data_permit.role_id = t.id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+      on base_role_data_permit.data_permit_id=base_data_permit.id
+      and base_data_permit.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
+    base_role.id role_id
+    from base_role_data_permit
+    inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
+    inner join base_role on base_role.id=base_role_data_permit.role_id
+    where base_role_data_permit.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _data_permit on _data_permit.role_id=t.id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -313,15 +293,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -351,6 +323,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<RoleModel[]> {
   const table = "base_role";
@@ -385,8 +358,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.menu_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.menu_ids.length > ${ ids_limit }`);
     }
   }
   // 按钮权限
@@ -395,8 +369,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.permit_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.permit_ids.length > ${ ids_limit }`);
     }
   }
   // 数据权限
@@ -405,8 +380,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.data_permit_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.data_permit_ids.length > ${ ids_limit }`);
     }
   }
   // 锁定
@@ -415,8 +391,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.is_locked.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -425,8 +402,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.is_enabled.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -435,8 +413,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
     }
   }
   // 更新人
@@ -445,8 +424,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   

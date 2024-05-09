@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -13,7 +13,6 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -79,9 +78,9 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -90,7 +89,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
@@ -127,14 +126,14 @@ async function getWhereQuery(
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -150,10 +149,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -167,15 +166,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: TenantSearch,
@@ -185,51 +185,37 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_tenant t
     left join base_tenant_domain
-      on base_tenant_domain.tenant_id = t.id
-      and base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
+      on base_tenant_domain.tenant_id=t.id
+      and base_tenant_domain.is_deleted=${ args.push(is_deleted) }
     left join base_domain
-      on base_tenant_domain.domain_id = base_domain.id
-      and base_domain.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
-        json_objectagg(base_tenant_domain.order_by, base_domain.lbl) domain_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_domain
-      inner join base_domain
-        on base_domain.id = base_tenant_domain.domain_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_domain.tenant_id
-      where
-        base_tenant_domain.is_deleted = ${ args.push(is_deleted) }
-      group by tenant_id
-    ) _domain
-      on _domain.tenant_id = t.id
+      on base_tenant_domain.domain_id=base_domain.id
+      and base_domain.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_tenant_domain.order_by,base_domain.id) domain_ids,
+    json_objectagg(base_tenant_domain.order_by,base_domain.lbl) domain_ids_lbl,
+    base_tenant.id tenant_id
+    from base_tenant_domain
+    inner join base_domain on base_domain.id=base_tenant_domain.domain_id
+    inner join base_tenant on base_tenant.id=base_tenant_domain.tenant_id
+    where base_tenant_domain.is_deleted=${ args.push(is_deleted) }
+    group by tenant_id) _domain on _domain.tenant_id=t.id
     left join base_tenant_menu
-      on base_tenant_menu.tenant_id = t.id
-      and base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
+      on base_tenant_menu.tenant_id=t.id
+      and base_tenant_menu.is_deleted=${ args.push(is_deleted) }
     left join base_menu
-      on base_tenant_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
-        json_objectagg(base_tenant_menu.order_by, base_menu.lbl) menu_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_menu
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-      where
-        base_tenant_menu.is_deleted = ${ args.push(is_deleted) }
-      group by tenant_id
-    ) _menu
-      on _menu.tenant_id = t.id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+      on base_tenant_menu.menu_id=base_menu.id
+      and base_menu.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_tenant_menu.order_by,base_menu.id) menu_ids,
+    json_objectagg(base_tenant_menu.order_by,base_menu.lbl) menu_ids_lbl,
+    base_tenant.id tenant_id
+    from base_tenant_menu
+    inner join base_menu on base_menu.id=base_tenant_menu.menu_id
+    inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id
+    where base_tenant_menu.is_deleted=${ args.push(is_deleted) }
+    group by tenant_id) _menu on _menu.tenant_id=t.id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -259,15 +245,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -297,6 +275,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<TenantModel[]> {
   const table = "base_tenant";
@@ -331,8 +310,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.domain_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.domain_ids.length > ${ ids_limit }`);
     }
   }
   // 菜单权限
@@ -341,8 +321,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.menu_ids.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.menu_ids.length > ${ ids_limit }`);
     }
   }
   // 锁定
@@ -351,8 +332,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.is_locked.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -361,8 +343,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.is_enabled.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -371,8 +354,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
     }
   }
   // 更新人
@@ -381,8 +365,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   

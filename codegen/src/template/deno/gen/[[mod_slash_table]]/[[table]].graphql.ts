@@ -110,6 +110,14 @@ type <#=modelName#> {<#
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
+    }
     let data_type = column.DATA_TYPE;
     if (column_name === "is_sys") {
       continue;
@@ -222,6 +230,52 @@ type <#=modelName#> {<#
   <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
+    } else if (foreignKey) {
+      const foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#><#
+    if (!modelLabel) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: <#=_data_type#><#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+      // 查找外键表的字段的数据类型, 重置 _data_type
+      const cascade_field_column = foreignSchema.columns.find((itemTmp) => itemTmp.COLUMN_NAME === cascade_field);
+      if (!cascade_field_column) {
+        throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
+        process.exit(1);
+      }
+      let _data_type = "String";
+      if (cascade_field_column.DATA_TYPE === 'varchar') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'date') {
+        _data_type = 'NaiveDate';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'datetime') {
+        _data_type = 'NaiveDateTime';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'int') {
+        _data_type = 'Int';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'text') {
+        _data_type = 'String';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'tinyint') {
+        _data_type = 'Int';
+      }
+      else if (cascade_field_column.DATA_TYPE === 'decimal') {
+        _data_type = 'Decimal';
+      }
+  #>
+  "<#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#>"
+  <#=column_name#>_<#=cascade_field#>: [<#=_data_type#>!]<#
+    }
+  #><#
     } else {
   #>
   "<#=column_comment#>"
@@ -822,7 +876,7 @@ type Query {
   #><#
   if (hasOrderBy) {
   #>
-  "查找 <#=table_comment#> order_by 字段的最大值"
+  "查找<#=table_comment#> order_by 字段的最大值"
   findLastOrderBy<#=Table_Up2#>: Int!<#
   }
   #>
