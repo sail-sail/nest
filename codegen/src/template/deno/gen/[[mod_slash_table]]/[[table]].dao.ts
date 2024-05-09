@@ -4465,9 +4465,7 @@ export async function deleteByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -4516,7 +4514,7 @@ export async function deleteByIds(
     const args = new QueryArgs();<#
     if (hasIsDeleted) {
     #>
-    const sql = `update <#=mod#>_<#=table#> set is_deleted=1,delete_time=${ args.push(reqDate()) } where id = ${ args.push(id) } limit 1`;<#
+    const sql = `update <#=mod#>_<#=table#> set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;<#
     } else {
     #>
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
@@ -4794,9 +4792,7 @@ export async function lockByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -4849,9 +4845,7 @@ export async function revertByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -5001,9 +4995,7 @@ export async function forceDeleteByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
