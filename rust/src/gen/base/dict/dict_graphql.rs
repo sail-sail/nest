@@ -171,12 +171,12 @@ pub struct DictGenMutation;
 impl DictGenMutation {
   
   /// 创建系统字典
-  async fn create_dict(
+  async fn creates_dict(
     &self,
     ctx: &Context<'_>,
-    input: DictInput,
+    inputs: Vec<DictInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<DictId> {
+  ) -> Result<Vec<DictId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -186,8 +186,8 @@ impl DictGenMutation {
       .with_tran()?
       .build()
       .scope({
-        dict_resolver::create(
-          input,
+        dict_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

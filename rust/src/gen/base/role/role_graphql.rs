@@ -173,12 +173,12 @@ pub struct RoleGenMutation;
 impl RoleGenMutation {
   
   /// 创建角色
-  async fn create_role(
+  async fn creates_role(
     &self,
     ctx: &Context<'_>,
-    input: RoleInput,
+    inputs: Vec<RoleInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<RoleId> {
+  ) -> Result<Vec<RoleId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl RoleGenMutation {
       .with_tran()?
       .build()
       .scope({
-        role_resolver::create(
-          input,
+        role_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

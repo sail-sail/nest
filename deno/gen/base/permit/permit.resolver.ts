@@ -81,36 +81,38 @@ export async function findByIdPermit(
 }
 
 /**
- * 创建按钮权限
+ * 批量创建按钮权限
  */
-export async function createPermit(
-  input: PermitInput,
+export async function createsPermit(
+  inputs: PermitInput[],
   unique_type?: UniqueType,
-): Promise<PermitId> {
-  
-  input.id = undefined;
+): Promise<PermitId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./permit.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/permit",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: PermitId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

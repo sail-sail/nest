@@ -160,12 +160,12 @@ type Query {
   findOneDictDetail(search: DictDetailSearch, sort: [SortInput!]): DictDetailModel
   "根据 id 查找系统字典明细"
   findByIdDictDetail(id: DictDetailId!): DictDetailModel
-  "查找 系统字典明细 order_by 字段的最大值"
+  "查找系统字典明细 order_by 字段的最大值"
   findLastOrderByDictDetail: Int!
 }
 type Mutation {
-  "创建系统字典明细"
-  createDictDetail(input: DictDetailInput!, unique_type: UniqueType): DictDetailId!
+  "批量创建系统字典明细"
+  createsDictDetail(inputs: [DictDetailInput!]!, unique_type: UniqueType): [DictDetailId!]!
   "根据 id 修改系统字典明细"
   updateByIdDictDetail(id: DictDetailId!, input: DictDetailInput!): DictDetailId!
   "根据 ids 删除系统字典明细"

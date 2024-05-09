@@ -1,18 +1,13 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
@@ -95,17 +90,17 @@ pub async fn set_id_by_lbl(
 
 /// 创建登录日志
 #[allow(dead_code)]
-pub async fn create(
-  input: LoginLogInput,
+pub async fn creates(
+  inputs: Vec<LoginLogInput>,
   options: Option<Options>,
-) -> Result<LoginLogId> {
+) -> Result<Vec<LoginLogId>> {
   
-  let id = login_log_dao::create(
-    input,
+  let ids = login_log_dao::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 登录日志根据id修改租户id

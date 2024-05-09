@@ -78,30 +78,37 @@ pub async fn find_by_id(
 
 /// 创建部门
 #[allow(dead_code)]
-pub async fn create(
-  input: DeptInput,
+pub async fn creates(
+  inputs: Vec<DeptInput>,
   options: Option<Options>,
-) -> Result<DeptId> {
+) -> Result<Vec<DeptId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = dept_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = dept_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/dept".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = dept_service::create(
-    input,
+  let ids = dept_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 部门根据id修改租户id

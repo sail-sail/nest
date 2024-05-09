@@ -171,12 +171,12 @@ pub struct DictDetailGenMutation;
 impl DictDetailGenMutation {
   
   /// 创建系统字典明细
-  async fn create_dict_detail(
+  async fn creates_dict_detail(
     &self,
     ctx: &Context<'_>,
-    input: DictDetailInput,
+    inputs: Vec<DictDetailInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<DictDetailId> {
+  ) -> Result<Vec<DictDetailId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -186,8 +186,8 @@ impl DictDetailGenMutation {
       .with_tran()?
       .build()
       .scope({
-        dict_detail_resolver::create(
-          input,
+        dict_detail_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

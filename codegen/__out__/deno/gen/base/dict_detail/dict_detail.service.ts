@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {DictDetailInput} input
- * @return {Promise<DictDetailId>} id
+ * 批量创建系统字典明细
+ * @param {DictDetailInput[]} inputs
+ * @return {Promise<DictDetailId[]>} ids
  */
-export async function create(
-  input: DictDetailInput,
+export async function creates(
+  inputs: DictDetailInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<DictDetailId> {
-  const id: DictDetailId = await dict_detailDao.create(input, options);
-  return id;
+): Promise<DictDetailId[]> {
+  const ids = await dict_detailDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -156,34 +156,25 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: DictDetailId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: DictDetailId = ids[i];
-      const is_locked = await dict_detailDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await dict_detailDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "系统字典明细");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   {
-    const ids2: DictDetailId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: DictDetailId = ids[i];
-      const model = await dict_detailDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await dict_detailDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await dict_detailDao.deleteByIds(ids);

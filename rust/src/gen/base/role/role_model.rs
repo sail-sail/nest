@@ -121,15 +121,21 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let menu_ids_lbl = {
       let mut keys: Vec<u32> = menu_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "menu_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
           menu_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
@@ -156,15 +162,21 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let permit_ids_lbl = {
       let mut keys: Vec<u32> = permit_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "permit_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
           permit_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
@@ -191,15 +203,21 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let data_permit_ids_lbl = {
       let mut keys: Vec<u32> = data_permit_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "data_permit_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
           data_permit_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
@@ -221,7 +239,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
@@ -231,7 +249,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;

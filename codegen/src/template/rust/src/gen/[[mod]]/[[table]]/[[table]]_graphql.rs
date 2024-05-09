@@ -309,15 +309,15 @@ impl <#=tableUP#>GenMutation {<#
   /// 创建<#=table_comment#><#
   if (table === "i18n") {
   #>
-  #[graphql(name = "createI18n")]<#
+  #[graphql(name = "createsI18n")]<#
   }
   #>
-  async fn create_<#=table#>(
+  async fn creates_<#=table#>(
     &self,
     ctx: &Context<'_>,
-    input: <#=tableUP#>Input,
+    inputs: Vec<<#=tableUP#>Input>,
     unique_type: Option<UniqueType>,
-  ) -> Result<<#=Table_Up#>Id> {
+  ) -> Result<Vec<<#=Table_Up#>Id>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -327,8 +327,8 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()?
       .build()
       .scope({
-        <#=table#>_resolver::create(
-          input,
+        <#=table#>_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

@@ -74,30 +74,37 @@ pub async fn find_by_id(
 
 /// 创建系统选项
 #[allow(dead_code)]
-pub async fn create(
-  input: OptionsInput,
+pub async fn creates(
+  inputs: Vec<OptionsInput>,
   options: Option<Options>,
-) -> Result<OptionsId> {
+) -> Result<Vec<OptionsId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = options_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = options_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/options".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = options_service::create(
-    input,
+  let ids = options_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改系统选项

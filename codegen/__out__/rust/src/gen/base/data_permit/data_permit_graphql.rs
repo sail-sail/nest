@@ -119,12 +119,12 @@ pub struct DataPermitGenMutation;
 impl DataPermitGenMutation {
   
   /// 创建数据权限
-  async fn create_data_permit(
+  async fn creates_data_permit(
     &self,
     ctx: &Context<'_>,
-    input: DataPermitInput,
+    inputs: Vec<DataPermitInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<DataPermitId> {
+  ) -> Result<Vec<DataPermitId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -134,8 +134,8 @@ impl DataPermitGenMutation {
       .with_tran()?
       .build()
       .scope({
-        data_permit_resolver::create(
-          input,
+        data_permit_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

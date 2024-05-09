@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};
 #[allow(unused_imports)]
 use crate::common::util::string::*;
@@ -21,9 +21,9 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,
-  SrvErr,
   OrderByModel,
   get_short_uuid,
   get_order_by_query,
@@ -426,31 +426,86 @@ pub async fn find_all(
   }
   // 父菜单
   if let Some(search) = &search {
-    if search.parent_id.is_some() && search.parent_id.as_ref().unwrap().is_empty() {
+    if search.parent_id.is_some() {
+      let len = search.parent_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.parent_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 锁定
   if let Some(search) = &search {
-    if search.is_locked.is_some() && search.is_locked.as_ref().unwrap().is_empty() {
+    if search.is_locked.is_some() {
+      let len = search.is_locked.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_locked.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 启用
   if let Some(search) = &search {
-    if search.is_enabled.is_some() && search.is_enabled.as_ref().unwrap().is_empty() {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_enabled.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 创建人
   if let Some(search) = &search {
-    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 更新人
   if let Some(search) = &search {
-    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
@@ -489,18 +544,11 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -525,7 +573,7 @@ pub async fn find_all(
     is_enabled_dict,
   ]: [Vec<_>; 2] = dict_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
+    .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -1042,7 +1090,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -1125,7 +1173,295 @@ pub fn get_is_debug(
   is_debug
 }
 
+/// 批量创建菜单
+pub async fn creates(
+  inputs: Vec<MenuInput>,
+  options: Option<Options>,
+) -> Result<Vec<MenuId>> {
+  
+  let table = "base_menu";
+  let method = "creates";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
+/// 批量创建菜单
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<MenuInput>,
+  options: Option<Options>,
+) -> Result<Vec<MenuId>> {
+  
+  let table = "base_menu";
+  
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<MenuId> = vec![];
+  let mut inputs2: Vec<MenuInput> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
+    }
+    
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
+      None,
+    ).await?;
+    
+    if !old_models.is_empty() {
+      let mut id: Option<MenuId> = None;
+      
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+  }
+  
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
+  let mut args = QueryArgs::new();
+  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  
+  sql_fields += "id";
+  sql_fields += ",create_time";
+  sql_fields += ",create_usr_id";
+  // 父菜单
+  sql_fields += ",parent_id";
+  // 名称
+  sql_fields += ",lbl";
+  // 路由
+  sql_fields += ",route_path";
+  // 参数
+  sql_fields += ",route_query";
+  // 锁定
+  sql_fields += ",is_locked";
+  // 启用
+  sql_fields += ",is_enabled";
+  // 排序
+  sql_fields += ",order_by";
+  // 备注
+  sql_fields += ",rem";
+  // 更新人
+  sql_fields += ",update_usr_id";
+  // 更新时间
+  sql_fields += ",update_time";
+  
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: MenuId = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
+      ).await?;
+      if !is_exist {
+        break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    // 父菜单
+    if let Some(parent_id) = input.parent_id {
+      sql_values += ",?";
+      args.push(parent_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 名称
+    if let Some(lbl) = input.lbl {
+      sql_values += ",?";
+      args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 路由
+    if let Some(route_path) = input.route_path {
+      sql_values += ",?";
+      args.push(route_path.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 参数
+    if let Some(route_query) = input.route_query {
+      sql_values += ",?";
+      args.push(route_query.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 锁定
+    if let Some(is_locked) = input.is_locked {
+      sql_values += ",?";
+      args.push(is_locked.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 启用
+    if let Some(is_enabled) = input.is_enabled {
+      sql_values += ",?";
+      args.push(is_enabled.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 排序
+    if let Some(order_by) = input.order_by {
+      sql_values += ",?";
+      args.push(order_by.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 备注
+    if let Some(rem) = input.rem {
+      sql_values += ",?";
+      args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新人
+    if let Some(update_usr_id) = input.update_usr_id {
+      sql_values += ",?";
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新时间
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
+  }
+  
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_cache_tables());
+  
+  let options = options.into();
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
+  execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();
+  }
+  
+  Ok(ids2)
+}
+
 /// 创建菜单
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: MenuInput,
@@ -1149,192 +1485,15 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
-  ).await?;
-  
-  if !old_models.is_empty() {
-    
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
-    
-    let mut id: Option<MenuId> = None;
-    
-    for old_model in old_models {
-      
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
-      ).await?;
-      
-      if id.is_some() {
-        break;
-      }
-    }
-    
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }
-  
-  let mut id: MenuId;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if !is_exist {
-      break;
-    }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
-  }
-  let id = id;
-  
-  let mut args = QueryArgs::new();
-  
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
-  let mut sql_values = String::with_capacity(2 * 14 + 2);
-  
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
-      sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }
-  // 父菜单
-  if let Some(parent_id) = input.parent_id {
-    sql_fields += ",parent_id";
-    sql_values += ",?";
-    args.push(parent_id.into());
-  }
-  // 名称
-  if let Some(lbl) = input.lbl {
-    sql_fields += ",lbl";
-    sql_values += ",?";
-    args.push(lbl.into());
-  }
-  // 路由
-  if let Some(route_path) = input.route_path {
-    sql_fields += ",route_path";
-    sql_values += ",?";
-    args.push(route_path.into());
-  }
-  // 参数
-  if let Some(route_query) = input.route_query {
-    sql_fields += ",route_query";
-    sql_values += ",?";
-    args.push(route_query.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
-    sql_values += ",?";
-    args.push(is_locked.into());
-  }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    sql_fields += ",is_enabled";
-    sql_values += ",?";
-    args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = options.into();
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  execute(
-    sql,
-    args,
+  let ids = _creates(
+    vec![input],
     options,
   ).await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
+  if ids.is_empty() {
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
+  }
+  let id = ids[0].clone();
   
   Ok(id)
 }
@@ -1364,7 +1523,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   {
@@ -1404,7 +1563,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -1610,6 +1769,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1642,20 +1805,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1705,6 +1864,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -1726,20 +1893,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1794,6 +1957,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -1814,20 +1981,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -1934,7 +2097,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -2051,7 +2214,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   
@@ -2087,7 +2250,6 @@ pub async fn find_last_order_by(
 }
 
 /// 校验菜单是否启用
-#[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
   model: &MenuModel,
@@ -2102,7 +2264,7 @@ pub async fn validate_is_enabled(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(())
 }
@@ -2122,7 +2284,7 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }

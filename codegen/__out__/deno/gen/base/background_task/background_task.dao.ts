@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -7,14 +7,14 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
-  delCache as delCacheCtx,
   query,
   queryOne,
   execute,
@@ -82,19 +82,19 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -103,7 +103,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
@@ -121,35 +121,35 @@ async function getWhereQuery(
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
   if (search?.result != null) {
-    whereQuery += ` and t.result = ${ args.push(search.result) }`;
+    whereQuery += ` and t.result=${ args.push(search.result) }`;
   }
   if (isNotEmpty(search?.result_like)) {
     whereQuery += ` and t.result like ${ args.push("%" + sqlLike(search?.result_like) + "%") }`;
   }
   if (search?.err_msg != null) {
-    whereQuery += ` and t.err_msg = ${ args.push(search.err_msg) }`;
+    whereQuery += ` and t.err_msg=${ args.push(search.err_msg) }`;
   }
   if (isNotEmpty(search?.err_msg_like)) {
     whereQuery += ` and t.err_msg like ${ args.push("%" + sqlLike(search?.err_msg_like) + "%") }`;
   }
   if (search?.begin_time != null) {
     if (search.begin_time[0] != null) {
-      whereQuery += ` and t.begin_time >= ${ args.push(search.begin_time[0]) }`;
+      whereQuery += ` and t.begin_time>=${ args.push(search.begin_time[0]) }`;
     }
     if (search.begin_time[1] != null) {
-      whereQuery += ` and t.begin_time <= ${ args.push(search.begin_time[1]) }`;
+      whereQuery += ` and t.begin_time<=${ args.push(search.begin_time[1]) }`;
     }
   }
   if (search?.end_time != null) {
     if (search.end_time[0] != null) {
-      whereQuery += ` and t.end_time >= ${ args.push(search.end_time[0]) }`;
+      whereQuery += ` and t.end_time>=${ args.push(search.end_time[0]) }`;
     }
     if (search.end_time[1] != null) {
-      whereQuery += ` and t.end_time <= ${ args.push(search.end_time[1]) }`;
+      whereQuery += ` and t.end_time<=${ args.push(search.end_time[1]) }`;
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -165,10 +165,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -182,15 +182,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: BackgroundTaskSearch,
@@ -198,10 +199,8 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_background_task t
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -231,15 +230,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -266,6 +257,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<BackgroundTaskModel[]> {
   const table = "base_background_task";
@@ -295,26 +287,52 @@ export async function findAll(
     return [ ];
   }
   // 状态
-  if (search && search.state != null && search.state.length === 0) {
-    return [ ];
+  if (search && search.state != null) {
+    const len = search.state.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.state.length > ${ ids_limit }`);
+    }
   }
   // 类型
-  if (search && search.type != null && search.type.length === 0) {
-    return [ ];
+  if (search && search.type != null) {
+    const len = search.type.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.type.length > ${ ids_limit }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -788,25 +806,16 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      base_background_task t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from base_background_task t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -930,129 +939,191 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: BackgroundTaskId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建后台任务
+ * @param {BackgroundTaskInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<BackgroundTaskId[]>} 
+ */
+export async function creates(
+  inputs: BackgroundTaskInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<BackgroundTaskId[]> {
+  const table = "base_background_task";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: BackgroundTaskInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<BackgroundTaskId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "base_background_task";
+  
+  const ids2: BackgroundTaskId[] = [ ];
+  const inputs2: BackgroundTaskInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: BackgroundTaskId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<BackgroundTaskId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<BackgroundTaskId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into base_background_task(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into base_background_task(id,create_time,tenant_id,create_usr_id,lbl,state,type,result,err_msg,begin_time,end_time,rem)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.state != null) {
+        sql += `,${ args.push(input.state) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.type != null) {
+        sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.result != null) {
+        sql += `,${ args.push(input.result) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.err_msg != null) {
+        sql += `,${ args.push(input.err_msg) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.begin_time != null) {
+        sql += `,${ args.push(input.begin_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.end_time != null) {
+        sql += `,${ args.push(input.end_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,lbl`;
-  }
-  if (input.state != null) {
-    sql += `,state`;
-  }
-  if (input.type != null) {
-    sql += `,type`;
-  }
-  if (input.result != null) {
-    sql += `,result`;
-  }
-  if (input.err_msg != null) {
-    sql += `,err_msg`;
-  }
-  if (input.begin_time != null) {
-    sql += `,begin_time`;
-  }
-  if (input.end_time != null) {
-    sql += `,end_time`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,${ args.push(input.lbl) }`;
-  }
-  if (input.state != null) {
-    sql += `,${ args.push(input.state) }`;
-  }
-  if (input.type != null) {
-    sql += `,${ args.push(input.type) }`;
-  }
-  if (input.result != null) {
-    sql += `,${ args.push(input.result) }`;
-  }
-  if (input.err_msg != null) {
-    sql += `,${ args.push(input.err_msg) }`;
-  }
-  if (input.begin_time != null) {
-    sql += `,${ args.push(input.begin_time) }`;
-  }
-  if (input.end_time != null) {
-    sql += `,${ args.push(input.end_time) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  sql += `)`;
   
   const debug = getParsedEnv("database_debug_sql") === "true";
   
@@ -1060,7 +1131,11 @@ export async function create(
     debug,
   });
   
-  return input.id;
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
+  return ids2;
 }
 
 /**
@@ -1164,8 +1239,6 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1308,16 +1381,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_background_task
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_background_task set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1358,15 +1422,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: BackgroundTaskId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_background_task
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_background_task set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1424,26 +1480,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          base_background_task
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from base_background_task where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        base_background_task
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from base_background_task where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

@@ -171,12 +171,12 @@ pub struct MenuGenMutation;
 impl MenuGenMutation {
   
   /// 创建菜单
-  async fn create_menu(
+  async fn creates_menu(
     &self,
     ctx: &Context<'_>,
-    input: MenuInput,
+    inputs: Vec<MenuInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<MenuId> {
+  ) -> Result<Vec<MenuId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -186,8 +186,8 @@ impl MenuGenMutation {
       .with_tran()?
       .build()
       .scope({
-        menu_resolver::create(
-          input,
+        menu_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

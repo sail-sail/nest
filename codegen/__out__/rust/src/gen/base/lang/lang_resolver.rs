@@ -74,30 +74,37 @@ pub async fn find_by_id(
 
 /// 创建语言
 #[allow(dead_code)]
-pub async fn create(
-  input: LangInput,
+pub async fn creates(
+  inputs: Vec<LangInput>,
   options: Option<Options>,
-) -> Result<LangId> {
+) -> Result<Vec<LangId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = lang_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = lang_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/lang".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = lang_service::create(
-    input,
+  let ids = lang_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改语言

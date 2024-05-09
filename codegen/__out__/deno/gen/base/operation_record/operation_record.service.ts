@@ -103,18 +103,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {OperationRecordInput} input
- * @return {Promise<OperationRecordId>} id
+ * 批量创建操作记录
+ * @param {OperationRecordInput[]} inputs
+ * @return {Promise<OperationRecordId[]>} ids
  */
-export async function create(
-  input: OperationRecordInput,
+export async function creates(
+  inputs: OperationRecordInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<OperationRecordId> {
-  const id: OperationRecordId = await operation_recordDao.create(input, options);
-  return id;
+): Promise<OperationRecordId[]> {
+  const ids = await operation_recordDao.creates(inputs, options);
+  return ids;
 }
 
 /**

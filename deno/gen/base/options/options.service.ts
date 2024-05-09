@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {OptionsInput} input
- * @return {Promise<OptionsId>} id
+ * 批量创建系统选项
+ * @param {OptionsInput[]} inputs
+ * @return {Promise<OptionsId[]>} ids
  */
-export async function create(
-  input: OptionsInput,
+export async function creates(
+  inputs: OptionsInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<OptionsId> {
-  const id: OptionsId = await optionsDao.create(input, options);
-  return id;
+): Promise<OptionsId[]> {
+  const ids = await optionsDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -168,34 +168,25 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: OptionsId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OptionsId = ids[i];
-      const is_locked = await optionsDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await optionsDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "系统选项");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   {
-    const ids2: OptionsId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OptionsId = ids[i];
-      const model = await optionsDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await optionsDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await optionsDao.deleteByIds(ids);

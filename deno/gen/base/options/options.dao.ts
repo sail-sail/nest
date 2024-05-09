@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -7,11 +7,12 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -73,9 +74,9 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -84,19 +85,19 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.ky != null) {
-    whereQuery += ` and t.ky = ${ args.push(search.ky) }`;
+    whereQuery += ` and t.ky=${ args.push(search.ky) }`;
   }
   if (isNotEmpty(search?.ky_like)) {
     whereQuery += ` and t.ky like ${ args.push("%" + sqlLike(search?.ky_like) + "%") }`;
   }
   if (search?.val != null) {
-    whereQuery += ` and t.val = ${ args.push(search.val) }`;
+    whereQuery += ` and t.val=${ args.push(search.val) }`;
   }
   if (isNotEmpty(search?.val_like)) {
     whereQuery += ` and t.val like ${ args.push("%" + sqlLike(search?.val_like) + "%") }`;
@@ -115,14 +116,14 @@ async function getWhereQuery(
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -138,10 +139,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -155,15 +156,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: OptionsSearch,
@@ -171,10 +173,8 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_options t
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -204,15 +204,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -242,6 +234,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<OptionsModel[]> {
   const table = "base_options";
@@ -271,26 +264,52 @@ export async function findAll(
     return [ ];
   }
   // 锁定
-  if (search && search.is_locked != null && search.is_locked.length === 0) {
-    return [ ];
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
   }
   // 启用
-  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
-    return [ ];
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -716,16 +735,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      base_options t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from base_options t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -733,11 +743,11 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,{ cacheKey1, cacheKey2 },
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -856,111 +866,180 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: OptionsId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
+  return id;
+}
+
+/**
+ * 批量创建系统选项
+ * @param {OptionsInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<OptionsId[]>} 
+ */
+export async function creates(
+  inputs: OptionsInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<OptionsId[]> {
+  const table = "base_options";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: OptionsInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<OptionsId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "base_options";
+  
+  const ids2: OptionsId[] = [ ];
+  const inputs2: OptionsInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: OptionsId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
       }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
     }
-    if (id) {
-      return id;
-    }
+    
+    const id = shortUuidV4<OptionsId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<OptionsId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into base_options(
-      id,create_time
-  `;
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
+  let sql = `insert into base_options(id,create_time,create_usr_id,lbl,ky,val,is_locked,is_enabled,order_by,rem,is_sys)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.ky != null) {
+        sql += `,${ args.push(input.ky) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.val != null) {
+        sql += `,${ args.push(input.val) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_locked != null) {
+        sql += `,${ args.push(input.is_locked) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_enabled != null) {
+        sql += `,${ args.push(input.is_enabled) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.order_by != null) {
+        sql += `,${ args.push(input.order_by) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_sys != null) {
+        sql += `,${ args.push(input.is_sys) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.lbl != null) {
-    sql += `,lbl`;
-  }
-  if (input.ky != null) {
-    sql += `,ky`;
-  }
-  if (input.val != null) {
-    sql += `,val`;
-  }
-  if (input.is_locked != null) {
-    sql += `,is_locked`;
-  }
-  if (input.is_enabled != null) {
-    sql += `,is_enabled`;
-  }
-  if (input.order_by != null) {
-    sql += `,order_by`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  if (input.is_sys != null) {
-    sql += `,is_sys`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,${ args.push(input.lbl) }`;
-  }
-  if (input.ky != null) {
-    sql += `,${ args.push(input.ky) }`;
-  }
-  if (input.val != null) {
-    sql += `,${ args.push(input.val) }`;
-  }
-  if (input.is_locked != null) {
-    sql += `,${ args.push(input.is_locked) }`;
-  }
-  if (input.is_enabled != null) {
-    sql += `,${ args.push(input.is_enabled) }`;
-  }
-  if (input.order_by != null) {
-    sql += `,${ args.push(input.order_by) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.is_sys != null) {
-    sql += `,${ args.push(input.is_sys) }`;
-  }
-  sql += `)`;
   
   await delCache();
   
@@ -970,9 +1049,13 @@ export async function create(
     debug,
   });
   
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+  }
+  
   await delCache();
   
-  return input.id;
+  return ids2;
 }
 
 /**
@@ -1040,8 +1123,6 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1189,9 +1270,7 @@ export async function deleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1201,16 +1280,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_options
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_options set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1278,24 +1348,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_options
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update base_options set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1358,29 +1411,10 @@ export async function lockByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_options
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update base_options set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1418,23 +1452,13 @@ export async function revertByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id: OptionsId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_options
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_options set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1489,35 +1513,19 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          base_options
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from base_options where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        base_options
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from base_options where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

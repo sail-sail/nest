@@ -18,6 +18,14 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
+  "所属角色"
+  role_ids: [RoleId!]
+  "所属角色"
+  role_ids_lbl: [String!]
+  "所属部门"
+  dept_ids: [DeptId!]
+  "所属部门"
+  dept_ids_lbl: [String!]
   "所属组织"
   org_ids: [OrgId!]
   "所属组织"
@@ -36,14 +44,6 @@ type UsrModel {
   is_enabled_lbl: String!
   "排序"
   order_by: Int!
-  "所属部门"
-  dept_ids: [DeptId!]
-  "所属部门"
-  dept_ids_lbl: [String!]
-  "拥有角色"
-  role_ids: [RoleId!]
-  "拥有角色"
-  role_ids_lbl: [String!]
   "备注"
   rem: String!
   "创建人"
@@ -74,6 +74,14 @@ type UsrFieldComment {
   lbl: String!
   "用户名"
   username: String!
+  "所属角色"
+  role_ids: String!
+  "所属角色"
+  role_ids_lbl: String!
+  "所属部门"
+  dept_ids: String!
+  "所属部门"
+  dept_ids_lbl: String!
   "所属组织"
   org_ids: String!
   "所属组织"
@@ -92,14 +100,6 @@ type UsrFieldComment {
   is_enabled_lbl: String!
   "排序"
   order_by: String!
-  "所属部门"
-  dept_ids: String!
-  "所属部门"
-  dept_ids_lbl: String!
-  "拥有角色"
-  role_ids: String!
-  "拥有角色"
-  role_ids_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -130,6 +130,14 @@ input UsrInput {
   username: String
   "密码"
   password: String
+  "所属角色"
+  role_ids: [RoleId!]
+  "所属角色"
+  role_ids_lbl: [String!]
+  "所属部门"
+  dept_ids: [DeptId!]
+  "所属部门"
+  dept_ids_lbl: [String!]
   "所属组织"
   org_ids: [OrgId!]
   "所属组织"
@@ -148,14 +156,6 @@ input UsrInput {
   is_enabled_lbl: String
   "排序"
   order_by: Int
-  "所属部门"
-  dept_ids: [DeptId!]
-  "所属部门"
-  dept_ids_lbl: [String!]
-  "拥有角色"
-  role_ids: [RoleId!]
-  "拥有角色"
-  role_ids_lbl: [String!]
   "备注"
   rem: String
 }
@@ -175,6 +175,12 @@ input UsrSearch {
   "用户名"
   username: String
   username_like: String
+  "所属角色"
+  role_ids: [RoleId!]
+  role_ids_is_null: Boolean
+  "所属部门"
+  dept_ids: [DeptId!]
+  dept_ids_is_null: Boolean
   "所属组织"
   org_ids: [OrgId!]
   org_ids_is_null: Boolean
@@ -187,12 +193,6 @@ input UsrSearch {
   is_enabled: [Int!]
   "排序"
   order_by: [Int]
-  "所属部门"
-  dept_ids: [DeptId!]
-  dept_ids_is_null: Boolean
-  "拥有角色"
-  role_ids: [RoleId!]
-  role_ids_is_null: Boolean
   "备注"
   rem: String
   rem_like: String
@@ -218,12 +218,12 @@ type Query {
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据 id 查找用户"
   findByIdUsr(id: UsrId!): UsrModel
-  "查找 用户 order_by 字段的最大值"
+  "查找用户 order_by 字段的最大值"
   findLastOrderByUsr: Int!
 }
 type Mutation {
-  "创建用户"
-  createUsr(input: UsrInput!, unique_type: UniqueType): UsrId!
+  "批量创建用户"
+  createsUsr(inputs: [UsrInput!]!, unique_type: UniqueType): [UsrId!]!
   "根据 id 修改用户"
   updateByIdUsr(id: UsrId!, input: UsrInput!): UsrId!
   "根据 ids 删除用户"

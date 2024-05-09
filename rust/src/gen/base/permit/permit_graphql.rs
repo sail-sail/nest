@@ -119,12 +119,12 @@ pub struct PermitGenMutation;
 impl PermitGenMutation {
   
   /// 创建按钮权限
-  async fn create_permit(
+  async fn creates_permit(
     &self,
     ctx: &Context<'_>,
-    input: PermitInput,
+    inputs: Vec<PermitInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<PermitId> {
+  ) -> Result<Vec<PermitId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -134,8 +134,8 @@ impl PermitGenMutation {
       .with_tran()?
       .build()
       .scope({
-        permit_resolver::create(
-          input,
+        permit_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

@@ -5,10 +5,13 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "Node",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "declaration": false,
     "noImplicitAny": false,
     "strict": true,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "allowJs": true,
     "sourceMap": true,
     "resolveJsonModule": true,
@@ -19,6 +22,7 @@
       "@vue-macros/reactivity-transform/macros-global",
       "node",
       "vite/client",
+      "@dcloudio/types",
       "@uni-helper/uni-app-types"
     ],
     "paths": {
@@ -28,11 +32,8 @@
   },
   "vueCompilerOptions": {
     "strictTemplates": false,
-    "nativeTags": [
-      "block",
-      "component",
-      "template",
-      "slot"
+    "plugins": [
+      "@uni-helper/uni-app-types/volar-plugin"
     ]
   },
   "include": [

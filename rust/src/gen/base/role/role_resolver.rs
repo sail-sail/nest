@@ -76,30 +76,37 @@ pub async fn find_by_id(
 
 /// 创建角色
 #[allow(dead_code)]
-pub async fn create(
-  input: RoleInput,
+pub async fn creates(
+  inputs: Vec<RoleInput>,
   options: Option<Options>,
-) -> Result<RoleId> {
+) -> Result<Vec<RoleId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = role_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = role_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/role".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = role_service::create(
-    input,
+  let ids = role_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 角色根据id修改租户id

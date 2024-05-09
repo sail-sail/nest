@@ -76,30 +76,37 @@ pub async fn find_by_id(
 
 /// 创建后台任务
 #[allow(dead_code)]
-pub async fn create(
-  input: BackgroundTaskInput,
+pub async fn creates(
+  inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
-) -> Result<BackgroundTaskId> {
+) -> Result<Vec<BackgroundTaskId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = background_task_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = background_task_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/background_task".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = background_task_service::create(
-    input,
+  let ids = background_task_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 后台任务根据id修改租户id

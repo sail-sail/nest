@@ -142,7 +142,7 @@ pub async fn find_all(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -226,7 +226,7 @@ pub async fn find_one(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -275,7 +275,7 @@ pub async fn find_by_id(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -309,10 +309,10 @@ pub async fn get_editable_data_permits_by_ids(
 
 /// 创建<#=table_comment#>
 #[allow(dead_code)]
-pub async fn create(
-  input: <#=tableUP#>Input,
+pub async fn creates(
+  inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
+) -> Result<Vec<<#=Table_Up#>Id>> {<#
   if (log) {
   #>
   
@@ -320,28 +320,40 @@ pub async fn create(
   }
   #>
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = <#=table#>_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = <#=table#>_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = <#=table#>_service::create(
-    input,
+  let ids = <#=table#>_service::creates(
+    inputs,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let new_data = find_by_id(
-    id.clone(),
+  let new_data = find_all(
+    <#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
     None,
   ).await?;
   
@@ -363,7 +375,7 @@ pub async fn create(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "create".to_owned().into(),
+      method: "creates".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -374,7 +386,7 @@ pub async fn create(
   }
   #>
   
-  Ok(id)
+  Ok(ids)
 }<#
 if (hasTenant_id) {
 #>

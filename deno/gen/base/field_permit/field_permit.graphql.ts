@@ -149,8 +149,8 @@ type Query {
   findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
 }
 type Mutation {
-  "创建字段权限"
-  createFieldPermit(input: FieldPermitInput!, unique_type: UniqueType): FieldPermitId!
+  "批量创建字段权限"
+  createsFieldPermit(inputs: [FieldPermitInput!]!, unique_type: UniqueType): [FieldPermitId!]!
   "根据 id 修改字段权限"
   updateByIdFieldPermit(id: FieldPermitId!, input: FieldPermitInput!): FieldPermitId!
   "根据 ids 删除字段权限"

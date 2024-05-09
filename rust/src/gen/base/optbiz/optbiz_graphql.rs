@@ -173,12 +173,12 @@ pub struct OptbizGenMutation;
 impl OptbizGenMutation {
   
   /// 创建业务选项
-  async fn create_optbiz(
+  async fn creates_optbiz(
     &self,
     ctx: &Context<'_>,
-    input: OptbizInput,
+    inputs: Vec<OptbizInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<OptbizId> {
+  ) -> Result<Vec<OptbizId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl OptbizGenMutation {
       .with_tran()?
       .build()
       .scope({
-        optbiz_resolver::create(
-          input,
+        optbiz_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await
