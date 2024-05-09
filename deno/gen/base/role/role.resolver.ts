@@ -81,39 +81,6 @@ export async function findByIdRole(
 }
 
 /**
- * 创建角色
- */
-export async function createRole(
-  input: RoleInput,
-  unique_type?: UniqueType,
-): Promise<RoleId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./role.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/role",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建角色
  */
 export async function createsRole(

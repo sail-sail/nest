@@ -156,8 +156,6 @@ type Query {
   findByIdDataPermit(id: DataPermitId!): DataPermitModel
 }
 type Mutation {
-  "创建数据权限"
-  createDataPermit(input: DataPermitInput!, unique_type: UniqueType): DataPermitId!
   "批量创建数据权限"
   createsDataPermit(inputs: [DataPermitInput!]!, unique_type: UniqueType): [DataPermitId!]!
   "根据 id 修改数据权限"

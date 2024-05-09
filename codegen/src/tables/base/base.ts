@@ -225,6 +225,20 @@ export default defineConfig({
         isPassword: true,
       },
       {
+        COLUMN_NAME: "role_ids",
+        COLUMN_COMMENT: "所属角色",
+        search: true,
+        width: 280,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "dept_ids",
+        COLUMN_COMMENT: "所属部门",
+        search: true,
+        width: 240,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "org_ids",
         require: false,
         COLUMN_COMMENT: "所属组织",
@@ -269,20 +283,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "order_by",
-      },
-      {
-        COLUMN_NAME: "dept_ids",
-        COLUMN_COMMENT: "所属部门",
-        search: true,
-        width: 240,
-        align: "left",
-      },
-      {
-        COLUMN_NAME: "role_ids",
-        COLUMN_COMMENT: "拥有角色",
-        search: true,
-        width: 280,
-        align: "left",
       },
       {
         COLUMN_NAME: "rem",

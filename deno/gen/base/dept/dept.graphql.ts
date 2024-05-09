@@ -166,12 +166,10 @@ type Query {
   findOneDept(search: DeptSearch, sort: [SortInput!]): DeptModel
   "根据 id 查找部门"
   findByIdDept(id: DeptId!): DeptModel
-  "查找 部门 order_by 字段的最大值"
+  "查找部门 order_by 字段的最大值"
   findLastOrderByDept: Int!
 }
 type Mutation {
-  "创建部门"
-  createDept(input: DeptInput!, unique_type: UniqueType): DeptId!
   "批量创建部门"
   createsDept(inputs: [DeptInput!]!, unique_type: UniqueType): [DeptId!]!
   "根据 id 修改部门"
