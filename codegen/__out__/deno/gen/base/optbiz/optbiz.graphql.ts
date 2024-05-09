@@ -158,12 +158,10 @@ type Query {
   findOneOptbiz(search: OptbizSearch, sort: [SortInput!]): OptbizModel
   "根据 id 查找业务选项"
   findByIdOptbiz(id: OptbizId!): OptbizModel
-  "查找 业务选项 order_by 字段的最大值"
+  "查找业务选项 order_by 字段的最大值"
   findLastOrderByOptbiz: Int!
 }
 type Mutation {
-  "创建业务选项"
-  createOptbiz(input: OptbizInput!, unique_type: UniqueType): OptbizId!
   "批量创建业务选项"
   createsOptbiz(inputs: [OptbizInput!]!, unique_type: UniqueType): [OptbizId!]!
   "根据 id 修改业务选项"

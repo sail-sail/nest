@@ -81,39 +81,6 @@ export async function findByIdDictbizDetail(
 }
 
 /**
- * 创建业务字典明细
- */
-export async function createDictbizDetail(
-  input: DictbizDetailInput,
-  unique_type?: UniqueType,
-): Promise<DictbizDetailId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./dictbiz_detail.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/dictbiz_detail",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建业务字典明细
  */
 export async function createsDictbizDetail(

@@ -103,7 +103,7 @@ const modelTableUps = [ ];
 const inputTableUps = [ ];
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -113,6 +113,7 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";<#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -153,10 +154,13 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
-  reqDate,
-  delCache as delCacheCtx,
+  reqDate,<#
+  if (cache) {
+  #>
+  delCache as delCacheCtx,<#
+  }
+  #>
   query,
   queryOne,
   execute,
@@ -645,7 +649,7 @@ async function getWhereQuery(
   let whereQuery = "";<#
   if (hasIsDeleted) {
   #>
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
   }
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -665,7 +669,7 @@ async function getWhereQuery(
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasCreatePermit) {
     const authModel = await getAuthModel();
     if (authModel?.id != null) {
-      whereQuery += ` and t.create_usr_id = ${ args.push(authModel.id) }`;
+      whereQuery += ` and t.create_usr_id=${ args.push(authModel.id) }`;
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
     const dept_ids = await getAuthAndParentsDeptIds();
@@ -687,10 +691,10 @@ async function getWhereQuery(
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }<#
   }
   #><#
@@ -701,10 +705,10 @@ async function getWhereQuery(
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
-      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
+      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
     }
   } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }<#
   }
   #><#
@@ -773,7 +777,7 @@ async function getWhereQuery(
   } else if (column_name === "id") {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#>=${ args.push(search?.<#=column_name#>) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -790,10 +794,10 @@ async function getWhereQuery(
   #>
   if (search?.<#=column_name#> != null) {
     if (search.<#=column_name#>[0] != null) {
-      whereQuery += ` and t.<#=column_name#> >= ${ args.push(search.<#=column_name#>[0]) }`;
+      whereQuery += ` and t.<#=column_name#>>=${ args.push(search.<#=column_name#>[0]) }`;
     }
     if (search.<#=column_name#>[1] != null) {
-      whereQuery += ` and t.<#=column_name#> <= ${ args.push(search.<#=column_name#>[1]) }`;
+      whereQuery += ` and t.<#=column_name#><=${ args.push(search.<#=column_name#>[1]) }`;
     }
   }<#
   } else if (data_type === "tinyint") {
@@ -804,7 +808,7 @@ async function getWhereQuery(
   } else if (!column.isEncrypt) {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
   }
   if (isNotEmpty(search?.<#=column_name#>_like)) {
     whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
@@ -815,7 +819,14 @@ async function getWhereQuery(
   #>
   return whereQuery;
 }
-
+<#
+if (
+  !(hasDataPermit() && hasCreateUsrId)
+) {
+#>
+// deno-lint-ignore require-await<#
+}
+#>
 async function getFromQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
@@ -853,50 +864,54 @@ async function getFromQuery(
       const foreignTable = foreignKey.table;
       const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
+      let cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
     #><#
-      if (foreignKey && foreignKey.type === "many2many") {
+      if (foreignKey.type === "many2many") {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id<#
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
       if (hasIsDeleted) {
       #>
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ${ args.push(is_deleted) }<#
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
       }
       #>
     left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
       if (hasIsDeleted) {
       #>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = ${ args.push(is_deleted) }<#
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
       }
       #>
-    left join (
-      select
-        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-          if (foreignKey.lbl) {
-        #>
-        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
-          }
-        #>
-        <#=mod#>_<#=table#>.id <#=many2many.column1#>
-      from <#=foreignKey.mod#>_<#=many2many.table#>
-      inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
-        on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-      inner join <#=mod#>_<#=table#>
-        on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
-      if (hasIsDeleted) {
-      #>
-      where
-        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ${ args.push(is_deleted) }<#
+    left join(select
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+      if (foreignKey.lbl && !modelLabel) {
+    #>
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
       }
-      #>
-      group by <#=many2many.column1#>
-    ) _<#=foreignTable#>
-      on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
+    #><#
+      for (let j = 0; j < cascade_fields.length; j++) {
+        const cascade_field = cascade_fields[j];
+    #>
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
+      }
+    #>
+    <#=mod#>_<#=table#>.id <#=many2many.column1#>
+    from <#=foreignKey.mod#>_<#=many2many.table#>
+    inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+    inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+    if (hasIsDeleted) {
+    #>
+    where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
+    }
+    #>
+    group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl
-      on <#=column_name#>_lbl.<#=foreignKey.column#> = t.<#=column_name#><#
+    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
       }
     #><#
     }
@@ -904,10 +919,10 @@ async function getFromQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
-    fromQuery += ` left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id  = t.create_usr_id`;
+    fromQuery += ` left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id=t.create_usr_id`;
   }
   if (!hasTenantPermit && hasRolePermit) {
-    fromQuery += ` left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id  = t.create_usr_id`;
+    fromQuery += ` left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id=t.create_usr_id`;
   }<#
   }
   #>
@@ -945,15 +960,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -990,7 +997,8 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
-    debug?: boolean;<#
+    debug?: boolean;
+    ids_limit?: number;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -1064,8 +1072,15 @@ export async function findAll(
     ) {
   #>
   // <#=column_comment#>
-  if (search && search.<#=column_name#> != null && search.<#=column_name#>.length === 0) {
-    return [ ];
+  if (search && search.<#=column_name#> != null) {
+    const len = search.<#=column_name#>.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.<#=column_name#>.length > ${ ids_limit }`);
+    }
   }<#
     }
   #><#
@@ -1073,9 +1088,7 @@ export async function findAll(
   #>
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*<#
+  let sql = `select f.* from (select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -1088,8 +1101,12 @@ export async function findAll(
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
         const modelLabel = column.modelLabel;
+        let cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+        }
       #><#
-        if (foreignKey && foreignKey.type === "many2many") {
+        if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
         if (!modelLabel) {
@@ -1097,14 +1114,26 @@ export async function findAll(
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
         }
       #><#
-      } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+        }
       #><#
-        if (!modelLabel) {
+      } else {
+      #><#
+        if (foreignKey.lbl && !modelLabel) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
         }
       #><#
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
         }
+      #><#
+      }
       #><#
       }
       #>
@@ -1264,6 +1293,11 @@ export async function findAll(
       const foreignTable = foreignKey.table;
       const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
+      let cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
     #>
     
     // <#=column_comment#>
@@ -1276,7 +1310,7 @@ export async function findAll(
         });
       item.<#=column_name#> = keys.map((key) => obj[key]);
     }<#
-      if (foreignKey.lbl) {
+      if (foreignKey.lbl && !modelLabel) {
     #>
     if (item.<#=column_name#>_lbl) {
       const obj = item.<#=column_name#>_lbl;
@@ -1286,6 +1320,20 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_lbl = keys.map((key) => obj[key]);
+    }<#
+      }
+    #><#
+      for (let j = 0; j < cascade_fields.length; j++) {
+        const cascade_field = cascade_fields[j];
+    #>
+    if (item.<#=column_name#>_<#=cascade_field#>) {
+      const obj = item.<#=column_name#>_<#=cascade_field#>;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.<#=column_name#>_<#=cascade_field#> = keys.map((key) => obj[key]);
     }<#
       }
     #><#
@@ -2712,20 +2760,11 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      <#=mod#>_<#=table#> t
-    where
-      t.id = ${ args.push(id) }<#
+  const sql = `select 1 e from <#=mod#>_<#=table#> t where t.id = ${ args.push(id) }<#
       if (hasIsDeleted) {
-      #>
-      and t.is_deleted = 0<#
+      #> and t.is_deleted = 0<#
       }
-      #>
-    limit 1
-  `;<#
+      #> limit 1`;<#
   if (cache) {
   #>
   
@@ -2737,7 +2776,7 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,<#
     if (cache) {
@@ -2745,7 +2784,7 @@ export async function existById(
     }
     #>
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }<#
@@ -3063,8 +3102,6 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    await setIdByLbl(input);
-    
     const oldModels = await findByUnique(input, options);
     if (oldModels.length > 0) {
       let id: <#=Table_Up#>Id | undefined = undefined;
@@ -3100,15 +3137,7 @@ async function _creates(
     }
     #>
     
-    let id = shortUuidV4<<#=Table_Up#>Id>();
-    while (true) {
-      const isExist = await existById(id);
-      if (!isExist) {
-        break;
-      }
-      error(`ID_COLLIDE: ${ table } ${ id as unknown as string }`);
-      id = shortUuidV4<<#=Table_Up#>Id>();
-    }
+    const id = shortUuidV4<<#=Table_Up#>Id>();
     input.id = id;
     ids2.push(id);
   }
@@ -3852,8 +3881,6 @@ export async function updateById(
   }
   #>
   
-  await setIdByLbl(input);
-  
   {
     const input2 = {
       ...input,
@@ -4438,9 +4465,7 @@ export async function deleteByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -4489,25 +4514,10 @@ export async function deleteByIds(
     const args = new QueryArgs();<#
     if (hasIsDeleted) {
     #>
-    const sql = `
-      update
-        <#=mod#>_<#=table#>
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;<#
+    const sql = `update <#=mod#>_<#=table#> set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;<#
     } else {
     #>
-    const sql = `
-      delete from
-        <#=mod#>_<#=table#>
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;<#
+    const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
     }
     #>
     const result = await execute(sql, args);
@@ -4619,37 +4629,12 @@ export async function defaultById(
   
   {
     const args = new QueryArgs();
-    let sql = `
-      update
-        <#=mod#>_<#=table#>
-      set
-        is_default = 0
-      where
-        is_default = 1
-        and id != ${ args.push(id) }
-    `;
+    const sql = `update <#=mod#>_<#=table#> set is_default=0 where is_default=1 and id!=${ args.push(id) }`;
     await execute(sql, args);
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      <#=mod#>_<#=table#>
-    set
-      is_default = 1
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update <#=mod#>_<#=table#> set is_default=1 where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -4728,24 +4713,7 @@ export async function enableByIds(
   #>
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      <#=mod#>_<#=table#>
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update <#=mod#>_<#=table#> set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -4824,31 +4792,12 @@ export async function lockByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      <#=mod#>_<#=table#>
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update <#=mod#>_<#=table#> set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -4896,9 +4845,7 @@ export async function revertByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -4906,15 +4853,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: <#=Table_Up#>Id = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        <#=mod#>_<#=table#>
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update <#=mod#>_<#=table#> set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -5056,9 +4995,7 @@ export async function forceDeleteByIds(
   if (cache) {
   #>
   
-  if (ids.length > 0) {
-    await delCache();
-  }<#
+  await delCache();<#
   }
   #>
   
@@ -5067,26 +5004,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          <#=mod#>_<#=table#>
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from <#=mod#>_<#=table#> where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        <#=mod#>_<#=table#>
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from <#=mod#>_<#=table#> where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#

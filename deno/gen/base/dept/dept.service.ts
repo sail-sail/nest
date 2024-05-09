@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建部门
- * @param {DeptInput} input
- * @return {Promise<DeptId>} id
- */
-export async function create(
-  input: DeptInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<DeptId> {
-  const id = await deptDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建部门
  * @param {DeptInput[]} inputs
  * @return {Promise<DeptId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: DeptId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: DeptId = ids[i];
-      const is_locked = await deptDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await deptDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "部门");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await deptDao.deleteByIds(ids);
