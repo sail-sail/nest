@@ -49,9 +49,9 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::org::org_model::OrgId;
-use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::role::role_model::RoleId;
+use crate::gen::base::dept::dept_model::DeptId;
+use crate::gen::base::org::org_model::OrgId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -173,6 +173,72 @@ async fn get_where_query(
     if let Some(username_like) = username_like {
       where_query.push_str(" and t.username like ?");
       args.push(format!("%{}%", sql_like(&username_like)).into());
+    }
+  }
+  // 所属角色
+  {
+    let role_ids: Option<Vec<RoleId>> = match search {
+      Some(item) => item.role_ids.clone(),
+      None => None,
+    };
+    if let Some(role_ids) = role_ids {
+      let arg = {
+        if role_ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(role_ids.len());
+          for item in role_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_role.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let role_ids_is_null: bool = match search {
+      Some(item) => item.role_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if role_ids_is_null {
+      where_query.push_str(" and role_ids_lbl.id is null");
+    }
+  }
+  // 所属部门
+  {
+    let dept_ids: Option<Vec<DeptId>> = match search {
+      Some(item) => item.dept_ids.clone(),
+      None => None,
+    };
+    if let Some(dept_ids) = dept_ids {
+      let arg = {
+        if dept_ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(dept_ids.len());
+          for item in dept_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_dept.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let dept_ids_is_null: bool = match search {
+      Some(item) => item.dept_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if dept_ids_is_null {
+      where_query.push_str(" and dept_ids_lbl.id is null");
     }
   }
   // 所属组织
@@ -304,72 +370,6 @@ async fn get_where_query(
     if let Some(order_by_lt) = order_by_lt {
       where_query.push_str(" and t.order_by <= ?");
       args.push(order_by_lt.into());
-    }
-  }
-  // 所属部门
-  {
-    let dept_ids: Option<Vec<DeptId>> = match search {
-      Some(item) => item.dept_ids.clone(),
-      None => None,
-    };
-    if let Some(dept_ids) = dept_ids {
-      let arg = {
-        if dept_ids.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(dept_ids.len());
-          for item in dept_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and base_dept.id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let dept_ids_is_null: bool = match search {
-      Some(item) => item.dept_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if dept_ids_is_null {
-      where_query.push_str(" and dept_ids_lbl.id is null");
-    }
-  }
-  // 拥有角色
-  {
-    let role_ids: Option<Vec<RoleId>> = match search {
-      Some(item) => item.role_ids.clone(),
-      None => None,
-    };
-    if let Some(role_ids) = role_ids {
-      let arg = {
-        if role_ids.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(role_ids.len());
-          for item in role_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and base_role.id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let role_ids_is_null: bool = match search {
-      Some(item) => item.role_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if role_ids_is_null {
-      where_query.push_str(" and role_ids_lbl.id is null");
     }
   }
   // 备注
@@ -528,6 +528,48 @@ async fn get_from_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let from_query = r#"base_usr t
+    left join base_usr_role
+      on base_usr_role.usr_id = t.id
+      and base_usr_role.is_deleted = ?
+    left join base_role
+      on base_usr_role.role_id = base_role.id
+      and base_role.is_deleted = ?
+    left join (
+      select
+        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
+        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_role
+      inner join base_role
+        on base_role.id = base_usr_role.role_id
+      inner join base_usr
+        on base_usr.id = base_usr_role.usr_id
+      where
+        base_usr_role.is_deleted = ?
+      group by usr_id
+    ) _role
+      on _role.usr_id = t.id
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = ?
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = ?
+    left join (
+      select
+        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
+        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_dept
+      inner join base_dept
+        on base_dept.id = base_usr_dept.dept_id
+      inner join base_usr
+        on base_usr.id = base_usr_dept.usr_id
+      where
+        base_usr_dept.is_deleted = ?
+      group by usr_id
+    ) _dept
+      on _dept.usr_id = t.id
     left join base_usr_org
       on base_usr_org.usr_id = t.id
       and base_usr_org.is_deleted = ?
@@ -551,48 +593,6 @@ async fn get_from_query(
       on _org.usr_id = t.id
     left join base_org default_org_id_lbl
       on default_org_id_lbl.id = t.default_org_id
-    left join base_usr_dept
-      on base_usr_dept.usr_id = t.id
-      and base_usr_dept.is_deleted = ?
-    left join base_dept
-      on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
-        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_dept
-      inner join base_dept
-        on base_dept.id = base_usr_dept.dept_id
-      inner join base_usr
-        on base_usr.id = base_usr_dept.usr_id
-      where
-        base_usr_dept.is_deleted = ?
-      group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
-    left join base_usr_role
-      on base_usr_role.usr_id = t.id
-      and base_usr_role.is_deleted = ?
-    left join base_role
-      on base_usr_role.role_id = base_role.id
-      and base_role.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
-        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_role
-      inner join base_role
-        on base_role.id = base_usr_role.role_id
-      inner join base_usr
-        on base_usr.id = base_usr_role.usr_id
-      where
-        base_usr_role.is_deleted = ?
-      group by usr_id
-    ) _role
-      on _role.usr_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -651,6 +651,18 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 所属角色
+  if let Some(search) = &search {
+    if search.role_ids.is_some() && search.role_ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
+  // 所属部门
+  if let Some(search) = &search {
+    if search.dept_ids.is_some() && search.dept_ids.as_ref().unwrap().is_empty() {
+      return Ok(vec![]);
+    }
+  }
   // 所属组织
   if let Some(search) = &search {
     if search.org_ids.is_some() && search.org_ids.as_ref().unwrap().is_empty() {
@@ -672,18 +684,6 @@ pub async fn find_all(
   // 启用
   if let Some(search) = &search {
     if search.is_enabled.is_some() && search.is_enabled.as_ref().unwrap().is_empty() {
-      return Ok(vec![]);
-    }
-  }
-  // 所属部门
-  if let Some(search) = &search {
-    if search.dept_ids.is_some() && search.dept_ids.as_ref().unwrap().is_empty() {
-      return Ok(vec![]);
-    }
-  }
-  // 拥有角色
-  if let Some(search) = &search {
-    if search.role_ids.is_some() && search.role_ids.as_ref().unwrap().is_empty() {
       return Ok(vec![]);
     }
   }
@@ -743,13 +743,13 @@ pub async fn find_all(
   let sql = format!(r#"
     select f.* from (
     select t.*
+      ,max(role_ids) role_ids
+      ,max(role_ids_lbl) role_ids_lbl
+      ,max(dept_ids) dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
       ,default_org_id_lbl.lbl default_org_id_lbl
-      ,max(dept_ids) dept_ids
-      ,max(dept_ids_lbl) dept_ids_lbl
-      ,max(role_ids) role_ids
-      ,max(role_ids_lbl) role_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -913,6 +913,10 @@ pub async fn get_field_comments(
     "头像".into(),
     "名称".into(),
     "用户名".into(),
+    "所属角色".into(),
+    "所属角色".into(),
+    "所属部门".into(),
+    "所属部门".into(),
     "所属组织".into(),
     "所属组织".into(),
     "默认组织".into(),
@@ -922,10 +926,6 @@ pub async fn get_field_comments(
     "启用".into(),
     "启用".into(),
     "排序".into(),
-    "所属部门".into(),
-    "所属部门".into(),
-    "拥有角色".into(),
-    "拥有角色".into(),
     "备注".into(),
     "创建人".into(),
     "创建人".into(),
@@ -955,19 +955,19 @@ pub async fn get_field_comments(
     img: vec[1].to_owned(),
     lbl: vec[2].to_owned(),
     username: vec[3].to_owned(),
-    org_ids: vec[4].to_owned(),
-    org_ids_lbl: vec[5].to_owned(),
-    default_org_id: vec[6].to_owned(),
-    default_org_id_lbl: vec[7].to_owned(),
-    is_locked: vec[8].to_owned(),
-    is_locked_lbl: vec[9].to_owned(),
-    is_enabled: vec[10].to_owned(),
-    is_enabled_lbl: vec[11].to_owned(),
-    order_by: vec[12].to_owned(),
-    dept_ids: vec[13].to_owned(),
-    dept_ids_lbl: vec[14].to_owned(),
-    role_ids: vec[15].to_owned(),
-    role_ids_lbl: vec[16].to_owned(),
+    role_ids: vec[4].to_owned(),
+    role_ids_lbl: vec[5].to_owned(),
+    dept_ids: vec[6].to_owned(),
+    dept_ids_lbl: vec[7].to_owned(),
+    org_ids: vec[8].to_owned(),
+    org_ids_lbl: vec[9].to_owned(),
+    default_org_id: vec[10].to_owned(),
+    default_org_id_lbl: vec[11].to_owned(),
+    is_locked: vec[12].to_owned(),
+    is_locked_lbl: vec[13].to_owned(),
+    is_enabled: vec[14].to_owned(),
+    is_enabled_lbl: vec[15].to_owned(),
+    order_by: vec[16].to_owned(),
     rem: vec[17].to_owned(),
     create_usr_id: vec[18].to_owned(),
     create_usr_id_lbl: vec[19].to_owned(),
@@ -1385,6 +1385,74 @@ pub async fn set_id_by_lbl(
     }
   }
   
+  // 所属角色
+  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
+    input.role_ids_lbl = input.role_ids_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
+        .collect::<Vec<String>>()
+    );
+    input.role_ids_lbl = input.role_ids_lbl.map(|item| {
+      let mut set = HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
+    let mut models = vec![];
+    for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
+      let model = crate::gen::base::role::role_dao::find_one(
+        crate::gen::base::role::role_model::RoleSearch {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    input.role_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<RoleId>>()
+      .into();
+  }
+  
+  // 所属部门
+  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
+    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
+        .collect::<Vec<String>>()
+    );
+    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
+      let mut set = HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
+    let mut models = vec![];
+    for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
+      let model = crate::gen::base::dept::dept_dao::find_one(
+        crate::gen::base::dept::dept_model::DeptSearch {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    input.dept_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DeptId>>()
+      .into();
+  }
+  
   // 所属组织
   if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
@@ -1438,74 +1506,6 @@ pub async fn set_id_by_lbl(
     if let Some(model) = model {
       input.default_org_id = model.id.into();
     }
-  }
-  
-  // 所属部门
-  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
-    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .filter(|item| !item.is_empty())
-        .collect::<Vec<String>>()
-    );
-    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
-      let mut set = HashSet::new();
-      item.into_iter()
-        .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<String>>()
-    });
-    let mut models = vec![];
-    for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::dept::dept_dao::find_one(
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    input.dept_ids = models.into_iter()
-      .map(|item| item.id)
-      .collect::<Vec<DeptId>>()
-      .into();
-  }
-  
-  // 拥有角色
-  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
-    input.role_ids_lbl = input.role_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .filter(|item| !item.is_empty())
-        .collect::<Vec<String>>()
-    );
-    input.role_ids_lbl = input.role_ids_lbl.map(|item| {
-      let mut set = HashSet::new();
-      item.into_iter()
-        .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<String>>()
-    });
-    let mut models = vec![];
-    for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::role::role_dao::find_one(
-        crate::gen::base::role::role_model::RoleSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    input.role_ids = models.into_iter()
-      .map(|item| item.id)
-      .collect::<Vec<RoleId>>()
-      .into();
   }
   
   Ok(input)
@@ -1837,19 +1837,19 @@ async fn _creates(
   {
     let id = inputs2_ids.get(i).unwrap().clone();
     
-    // 所属组织
-    if let Some(org_ids) = input.org_ids {
+    // 所属角色
+    if let Some(role_ids) = input.role_ids {
       many2many_update(
         id.clone().into(),
-        org_ids
+        role_ids
           .iter()
           .map(|item| item.clone().into())
           .collect(),
         ManyOpts {
           r#mod: "base",
-          table: "usr_org",
+          table: "usr_role",
           column1: "usr_id",
-          column2: "org_id",
+          column2: "role_id",
         },
       ).await?;
     }
@@ -1871,19 +1871,19 @@ async fn _creates(
       ).await?;
     }
     
-    // 拥有角色
-    if let Some(role_ids) = input.role_ids {
+    // 所属组织
+    if let Some(org_ids) = input.org_ids {
       many2many_update(
         id.clone().into(),
-        role_ids
+        org_ids
           .iter()
           .map(|item| item.clone().into())
           .collect(),
         ManyOpts {
           r#mod: "base",
-          table: "usr_role",
+          table: "usr_org",
           column1: "usr_id",
-          column2: "role_id",
+          column2: "org_id",
         },
       ).await?;
     }
@@ -2215,19 +2215,19 @@ pub async fn update_by_id(
     
   }
   
-  // 所属组织
-  if let Some(org_ids) = input.org_ids {
+  // 所属角色
+  if let Some(role_ids) = input.role_ids {
     many2many_update(
       id.clone().into(),
-      org_ids
+      role_ids
         .iter()
         .map(|item| item.clone().into())
         .collect(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_org",
+        table: "usr_role",
         column1: "usr_id",
-        column2: "org_id",
+        column2: "role_id",
       },
     ).await?;
     
@@ -2253,19 +2253,19 @@ pub async fn update_by_id(
     field_num += 1;
   }
   
-  // 拥有角色
-  if let Some(role_ids) = input.role_ids {
+  // 所属组织
+  if let Some(org_ids) = input.org_ids {
     many2many_update(
       id.clone().into(),
-      role_ids
+      org_ids
         .iter()
         .map(|item| item.clone().into())
         .collect(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_role",
+        table: "usr_org",
         column1: "usr_id",
-        column2: "role_id",
+        column2: "org_id",
       },
     ).await?;
     
