@@ -36,7 +36,7 @@ pub async fn find_all(
   let mut res = res;
   for model in &mut res {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   let res = res;
   
@@ -85,7 +85,7 @@ pub async fn find_one(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   
   let model = model;
@@ -107,7 +107,7 @@ pub async fn find_by_id(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = "".to_owned();
+    model.password = String::new();
   }
   
   let model = model;
@@ -117,30 +117,37 @@ pub async fn find_by_id(
 
 /// 创建用户
 #[allow(dead_code)]
-pub async fn create(
-  input: UsrInput,
+pub async fn creates(
+  inputs: Vec<UsrInput>,
   options: Option<Options>,
-) -> Result<UsrId> {
+) -> Result<Vec<UsrId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = usr_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = usr_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/usr".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = usr_service::create(
-    input,
+  let ids = usr_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 用户根据id修改租户id

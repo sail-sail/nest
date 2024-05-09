@@ -81,36 +81,38 @@ export async function findByIdOrg(
 }
 
 /**
- * 创建组织
+ * 批量创建组织
  */
-export async function createOrg(
-  input: OrgInput,
+export async function createsOrg(
+  inputs: OrgInput[],
   unique_type?: UniqueType,
-): Promise<OrgId> {
-  
-  input.id = undefined;
+): Promise<OrgId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./org.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/org",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: OrgId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

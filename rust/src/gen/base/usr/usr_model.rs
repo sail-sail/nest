@@ -27,9 +27,9 @@ use async_graphql::{
 use crate::common::context::ArgType;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::org::org_model::OrgId;
-use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::role::role_model::RoleId;
+use crate::gen::base::dept::dept_model::DeptId;
+use crate::gen::base::org::org_model::OrgId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case")]
@@ -50,6 +50,14 @@ pub struct UsrModel {
   pub username: String,
   /// 密码
   pub password: String,
+  /// 所属角色
+  pub role_ids: Vec<RoleId>,
+  /// 所属角色
+  pub role_ids_lbl: Vec<String>,
+  /// 所属部门
+  pub dept_ids: Vec<DeptId>,
+  /// 所属部门
+  pub dept_ids_lbl: Vec<String>,
   /// 所属组织
   pub org_ids: Vec<OrgId>,
   /// 所属组织
@@ -68,14 +76,6 @@ pub struct UsrModel {
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: u32,
-  /// 所属部门
-  pub dept_ids: Vec<DeptId>,
-  /// 所属部门
-  pub dept_ids_lbl: Vec<String>,
-  /// 拥有角色
-  pub role_ids: Vec<RoleId>,
-  /// 拥有角色
-  pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
   /// 是否已删除
@@ -114,11 +114,11 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let username: String = row.try_get("username")?;
     // 密码
     let password: String = row.try_get("password")?;
-    // 所属组织
-    let org_ids: Option<sqlx::types::Json<HashMap<String, OrgId>>> = row.try_get("org_ids")?;
-    let org_ids = org_ids.unwrap_or_default().0;
-    let org_ids = {
-      let mut keys: Vec<u32> = org_ids.keys()
+    // 所属角色
+    let role_ids: Option<sqlx::types::Json<HashMap<String, RoleId>>> = row.try_get("role_ids")?;
+    let role_ids = role_ids.unwrap_or_default().0;
+    let role_ids = {
+      let mut keys: Vec<u32> = role_ids.keys()
         .map(|x| 
           x.parse::<u32>().unwrap_or_default()
         )
@@ -126,41 +126,35 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.sort();
       keys.into_iter()
         .map(|x| 
-          org_ids.get(&x.to_string())
-            .unwrap_or(&OrgId::default())
+          role_ids.get(&x.to_string())
+            .unwrap_or(&RoleId::default())
             .to_owned()
         )
-        .collect::<Vec<OrgId>>()
+        .collect::<Vec<RoleId>>()
     };
-    let org_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
-    let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
-    let org_ids_lbl = {
-      let mut keys: Vec<u32> = org_ids_lbl.keys()
+    let role_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
+    let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
+    let role_ids_lbl = {
+      let mut keys: Vec<u32> = role_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "role_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
-          org_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+          role_ids_lbl.get(&x.to_string())
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
-    // 默认组织
-    let default_org_id: OrgId = row.try_get("default_org_id")?;
-    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
-    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
     // 所属部门
     let dept_ids: Option<sqlx::types::Json<HashMap<String, DeptId>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
@@ -184,23 +178,29 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let dept_ids_lbl = {
       let mut keys: Vec<u32> = dept_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "dept_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
           dept_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
-    // 拥有角色
-    let role_ids: Option<sqlx::types::Json<HashMap<String, RoleId>>> = row.try_get("role_ids")?;
-    let role_ids = role_ids.unwrap_or_default().0;
-    let role_ids = {
-      let mut keys: Vec<u32> = role_ids.keys()
+    // 所属组织
+    let org_ids: Option<sqlx::types::Json<HashMap<String, OrgId>>> = row.try_get("org_ids")?;
+    let org_ids = org_ids.unwrap_or_default().0;
+    let org_ids = {
+      let mut keys: Vec<u32> = org_ids.keys()
         .map(|x| 
           x.parse::<u32>().unwrap_or_default()
         )
@@ -208,29 +208,47 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.sort();
       keys.into_iter()
         .map(|x| 
-          role_ids.get(&x.to_string())
-            .unwrap_or(&RoleId::default())
+          org_ids.get(&x.to_string())
+            .unwrap_or(&OrgId::default())
             .to_owned()
         )
-        .collect::<Vec<RoleId>>()
+        .collect::<Vec<OrgId>>()
     };
-    let role_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
-    let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
-    let role_ids_lbl = {
-      let mut keys: Vec<u32> = role_ids_lbl.keys()
+    let org_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
+    let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
+    let org_ids_lbl = {
+      let mut keys: Vec<u32> = org_ids_lbl.keys()
         .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "org_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
         )
-        .collect();
+        .collect::<Result<_, _>>()?;
       keys.sort();
-      keys.into_iter()
+      keys
+        .into_iter()
         .map(|x| 
-          role_ids_lbl.get(&x.to_string())
-            .unwrap_or(&"".to_owned())
-            .to_owned()
+          org_ids_lbl.get(&x.to_string())
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
         )
         .collect::<Vec<String>>()
     };
+    // 默认组织
+    let default_org_id: OrgId = row.try_get("default_org_id")?;
+    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
+    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
+    // 锁定
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -241,7 +259,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
@@ -251,7 +269,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -265,6 +283,10 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       lbl,
       username,
       password,
+      role_ids,
+      role_ids_lbl,
+      dept_ids,
+      dept_ids_lbl,
       org_ids,
       org_ids_lbl,
       default_org_id,
@@ -274,10 +296,6 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       is_enabled,
       is_enabled_lbl,
       order_by,
-      dept_ids,
-      dept_ids_lbl,
-      role_ids,
-      role_ids_lbl,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -304,6 +322,14 @@ pub struct UsrFieldComment {
   pub lbl: String,
   /// 用户名
   pub username: String,
+  /// 所属角色
+  pub role_ids: String,
+  /// 所属角色
+  pub role_ids_lbl: String,
+  /// 所属部门
+  pub dept_ids: String,
+  /// 所属部门
+  pub dept_ids_lbl: String,
   /// 所属组织
   pub org_ids: String,
   /// 所属组织
@@ -322,14 +348,6 @@ pub struct UsrFieldComment {
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: String,
-  /// 所属部门
-  pub dept_ids: String,
-  /// 所属部门
-  pub dept_ids_lbl: String,
-  /// 拥有角色
-  pub role_ids: String,
-  /// 拥有角色
-  pub role_ids_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -378,6 +396,14 @@ pub struct UsrSearch {
   pub password: Option<String>,
   /// 密码
   pub password_like: Option<String>,
+  /// 所属角色
+  pub role_ids: Option<Vec<RoleId>>,
+  /// 所属角色
+  pub role_ids_is_null: Option<bool>,
+  /// 所属部门
+  pub dept_ids: Option<Vec<DeptId>>,
+  /// 所属部门
+  pub dept_ids_is_null: Option<bool>,
   /// 所属组织
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
@@ -392,14 +418,6 @@ pub struct UsrSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
   pub order_by: Option<[Option<u32>; 2]>,
-  /// 所属部门
-  pub dept_ids: Option<Vec<DeptId>>,
-  /// 所属部门
-  pub dept_ids_is_null: Option<bool>,
-  /// 拥有角色
-  pub role_ids: Option<Vec<RoleId>>,
-  /// 拥有角色
-  pub role_ids_is_null: Option<bool>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -466,6 +484,20 @@ impl std::fmt::Debug for UsrSearch {
     if let Some(ref password_like) = self.password_like {
       item = item.field("password_like", password_like);
     }
+    // 所属角色
+    if let Some(ref role_ids) = self.role_ids {
+      item = item.field("role_ids", role_ids);
+    }
+    if let Some(ref role_ids_is_null) = self.role_ids_is_null {
+      item = item.field("role_ids_is_null", role_ids_is_null);
+    }
+    // 所属部门
+    if let Some(ref dept_ids) = self.dept_ids {
+      item = item.field("dept_ids", dept_ids);
+    }
+    if let Some(ref dept_ids_is_null) = self.dept_ids_is_null {
+      item = item.field("dept_ids_is_null", dept_ids_is_null);
+    }
     // 所属组织
     if let Some(ref org_ids) = self.org_ids {
       item = item.field("org_ids", org_ids);
@@ -491,20 +523,6 @@ impl std::fmt::Debug for UsrSearch {
     // 排序
     if let Some(ref order_by) = self.order_by {
       item = item.field("order_by", order_by);
-    }
-    // 所属部门
-    if let Some(ref dept_ids) = self.dept_ids {
-      item = item.field("dept_ids", dept_ids);
-    }
-    if let Some(ref dept_ids_is_null) = self.dept_ids_is_null {
-      item = item.field("dept_ids_is_null", dept_ids_is_null);
-    }
-    // 拥有角色
-    if let Some(ref role_ids) = self.role_ids {
-      item = item.field("role_ids", role_ids);
-    }
-    if let Some(ref role_ids_is_null) = self.role_ids_is_null {
-      item = item.field("role_ids_is_null", role_ids_is_null);
     }
     // 备注
     if let Some(ref rem) = self.rem {
@@ -560,6 +578,14 @@ pub struct UsrInput {
   pub username: Option<String>,
   /// 密码
   pub password: Option<String>,
+  /// 所属角色
+  pub role_ids: Option<Vec<RoleId>>,
+  /// 所属角色
+  pub role_ids_lbl: Option<Vec<String>>,
+  /// 所属部门
+  pub dept_ids: Option<Vec<DeptId>>,
+  /// 所属部门
+  pub dept_ids_lbl: Option<Vec<String>>,
   /// 所属组织
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
@@ -578,14 +604,6 @@ pub struct UsrInput {
   pub is_enabled_lbl: Option<String>,
   /// 排序
   pub order_by: Option<u32>,
-  /// 所属部门
-  pub dept_ids: Option<Vec<DeptId>>,
-  /// 所属部门
-  pub dept_ids_lbl: Option<Vec<String>>,
-  /// 拥有角色
-  pub role_ids: Option<Vec<RoleId>>,
-  /// 拥有角色
-  pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -629,6 +647,12 @@ impl From<UsrModel> for UsrInput {
       username: model.username.into(),
       // 密码
       password: model.password.into(),
+      // 所属角色
+      role_ids: model.role_ids.into(),
+      role_ids_lbl: model.role_ids_lbl.into(),
+      // 所属部门
+      dept_ids: model.dept_ids.into(),
+      dept_ids_lbl: model.dept_ids_lbl.into(),
       // 所属组织
       org_ids: model.org_ids.into(),
       org_ids_lbl: model.org_ids_lbl.into(),
@@ -643,12 +667,6 @@ impl From<UsrModel> for UsrInput {
       is_enabled_lbl: model.is_enabled_lbl.into(),
       // 排序
       order_by: model.order_by.into(),
-      // 所属部门
-      dept_ids: model.dept_ids.into(),
-      dept_ids_lbl: model.dept_ids_lbl.into(),
-      // 拥有角色
-      role_ids: model.role_ids.into(),
-      role_ids_lbl: model.role_ids_lbl.into(),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -685,6 +703,10 @@ impl From<UsrInput> for UsrSearch {
       username: input.username,
       // 密码
       password: input.password,
+      // 所属角色
+      role_ids: input.role_ids,
+      // 所属部门
+      dept_ids: input.dept_ids,
       // 所属组织
       org_ids: input.org_ids,
       // 默认组织
@@ -695,10 +717,6 @@ impl From<UsrInput> for UsrSearch {
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
-      // 所属部门
-      dept_ids: input.dept_ids,
-      // 拥有角色
-      role_ids: input.role_ids,
       // 备注
       rem: input.rem,
       // 创建人

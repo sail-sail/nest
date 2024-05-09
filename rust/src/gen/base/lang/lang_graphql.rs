@@ -152,12 +152,12 @@ pub struct LangGenMutation;
 impl LangGenMutation {
   
   /// 创建语言
-  async fn create_lang(
+  async fn creates_lang(
     &self,
     ctx: &Context<'_>,
-    input: LangInput,
+    inputs: Vec<LangInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<LangId> {
+  ) -> Result<Vec<LangId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -167,8 +167,8 @@ impl LangGenMutation {
       .with_tran()?
       .build()
       .scope({
-        lang_resolver::create(
-          input,
+        lang_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

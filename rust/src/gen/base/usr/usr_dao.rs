@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};
 use crate::common::auth::auth_dao::get_password;
 #[allow(unused_imports)]
@@ -27,9 +27,9 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,
-  SrvErr,
   OrderByModel,
   get_short_uuid,
   get_order_by_query,
@@ -50,9 +50,9 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::org::org_model::OrgId;
-use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::role::role_model::RoleId;
+use crate::gen::base::dept::dept_model::DeptId;
+use crate::gen::base::org::org_model::OrgId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -174,6 +174,72 @@ async fn get_where_query(
     if let Some(username_like) = username_like {
       where_query.push_str(" and t.username like ?");
       args.push(format!("%{}%", sql_like(&username_like)).into());
+    }
+  }
+  // 所属角色
+  {
+    let role_ids: Option<Vec<RoleId>> = match search {
+      Some(item) => item.role_ids.clone(),
+      None => None,
+    };
+    if let Some(role_ids) = role_ids {
+      let arg = {
+        if role_ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(role_ids.len());
+          for item in role_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_role.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let role_ids_is_null: bool = match search {
+      Some(item) => item.role_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if role_ids_is_null {
+      where_query.push_str(" and role_ids_lbl.id is null");
+    }
+  }
+  // 所属部门
+  {
+    let dept_ids: Option<Vec<DeptId>> = match search {
+      Some(item) => item.dept_ids.clone(),
+      None => None,
+    };
+    if let Some(dept_ids) = dept_ids {
+      let arg = {
+        if dept_ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(dept_ids.len());
+          for item in dept_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_dept.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let dept_ids_is_null: bool = match search {
+      Some(item) => item.dept_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if dept_ids_is_null {
+      where_query.push_str(" and dept_ids_lbl.id is null");
     }
   }
   // 所属组织
@@ -305,72 +371,6 @@ async fn get_where_query(
     if let Some(order_by_lt) = order_by_lt {
       where_query.push_str(" and t.order_by <= ?");
       args.push(order_by_lt.into());
-    }
-  }
-  // 所属部门
-  {
-    let dept_ids: Option<Vec<DeptId>> = match search {
-      Some(item) => item.dept_ids.clone(),
-      None => None,
-    };
-    if let Some(dept_ids) = dept_ids {
-      let arg = {
-        if dept_ids.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(dept_ids.len());
-          for item in dept_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and base_dept.id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let dept_ids_is_null: bool = match search {
-      Some(item) => item.dept_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if dept_ids_is_null {
-      where_query.push_str(" and dept_ids_lbl.id is null");
-    }
-  }
-  // 拥有角色
-  {
-    let role_ids: Option<Vec<RoleId>> = match search {
-      Some(item) => item.role_ids.clone(),
-      None => None,
-    };
-    if let Some(role_ids) = role_ids {
-      let arg = {
-        if role_ids.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(role_ids.len());
-          for item in role_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and base_role.id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let role_ids_is_null: bool = match search {
-      Some(item) => item.role_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if role_ids_is_null {
-      where_query.push_str(" and role_ids_lbl.id is null");
     }
   }
   // 备注
@@ -529,71 +529,62 @@ async fn get_from_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   let from_query = r#"base_usr t
-    left join base_usr_org
-      on base_usr_org.usr_id = t.id
-      and base_usr_org.is_deleted = ?
-    left join base_org
-      on base_usr_org.org_id = base_org.id
-      and base_org.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_org.order_by, base_org.id) org_ids,
-        json_objectagg(base_usr_org.order_by, base_org.lbl) org_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_org
-      inner join base_org
-        on base_org.id = base_usr_org.org_id
-      inner join base_usr
-        on base_usr.id = base_usr_org.usr_id
-      where
-        base_usr_org.is_deleted = ?
-      group by usr_id
-    ) _org
-      on _org.usr_id = t.id
-    left join base_org default_org_id_lbl
-      on default_org_id_lbl.id = t.default_org_id
-    left join base_usr_dept
-      on base_usr_dept.usr_id = t.id
-      and base_usr_dept.is_deleted = ?
-    left join base_dept
-      on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
-        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_dept
-      inner join base_dept
-        on base_dept.id = base_usr_dept.dept_id
-      inner join base_usr
-        on base_usr.id = base_usr_dept.usr_id
-      where
-        base_usr_dept.is_deleted = ?
-      group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
     left join base_usr_role
-      on base_usr_role.usr_id = t.id
+      on base_usr_role.usr_id=t.id
       and base_usr_role.is_deleted = ?
     left join base_role
       on base_usr_role.role_id = base_role.id
-      and base_role.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
-        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
-        base_usr.id usr_id
-      from base_usr_role
-      inner join base_role
-        on base_role.id = base_usr_role.role_id
-      inner join base_usr
-        on base_usr.id = base_usr_role.usr_id
-      where
-        base_usr_role.is_deleted = ?
-      group by usr_id
-    ) _role
-      on _role.usr_id = t.id
+      and base_role.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_role.order_by,base_role.id) role_ids,
+    json_objectagg(base_usr_role.order_by,base_role.lbl) role_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_role
+    inner join base_role
+      on base_role.id=base_usr_role.role_id
+    inner join base_usr
+      on base_usr.id=base_usr_role.usr_id
+    where
+      base_usr_role.is_deleted=?
+    group by usr_id) _role on _role.usr_id=t.id
+    left join base_usr_dept
+      on base_usr_dept.usr_id=t.id
+      and base_usr_dept.is_deleted = ?
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_dept.order_by,base_dept.id) dept_ids,
+    json_objectagg(base_usr_dept.order_by,base_dept.lbl) dept_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_dept
+    inner join base_dept
+      on base_dept.id=base_usr_dept.dept_id
+    inner join base_usr
+      on base_usr.id=base_usr_dept.usr_id
+    where
+      base_usr_dept.is_deleted=?
+    group by usr_id) _dept on _dept.usr_id=t.id
+    left join base_usr_org
+      on base_usr_org.usr_id=t.id
+      and base_usr_org.is_deleted = ?
+    left join base_org
+      on base_usr_org.org_id = base_org.id
+      and base_org.is_deleted=?
+    left join (select
+    json_objectagg(base_usr_org.order_by,base_org.id) org_ids,
+    json_objectagg(base_usr_org.order_by,base_org.lbl) org_ids_lbl,
+    base_usr.id usr_id
+    from base_usr_org
+    inner join base_org
+      on base_org.id=base_usr_org.org_id
+    inner join base_usr
+      on base_usr.id=base_usr_org.usr_id
+    where
+      base_usr_org.is_deleted=?
+    group by usr_id) _org on _org.usr_id=t.id
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -652,57 +643,156 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
-  // 所属组织
+  // 所属角色
   if let Some(search) = &search {
-    if search.org_ids.is_some() && search.org_ids.as_ref().unwrap().is_empty() {
-      return Ok(vec![]);
-    }
-  }
-  // 默认组织
-  if let Some(search) = &search {
-    if search.default_org_id.is_some() && search.default_org_id.as_ref().unwrap().is_empty() {
-      return Ok(vec![]);
-    }
-  }
-  // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() && search.is_locked.as_ref().unwrap().is_empty() {
-      return Ok(vec![]);
-    }
-  }
-  // 启用
-  if let Some(search) = &search {
-    if search.is_enabled.is_some() && search.is_enabled.as_ref().unwrap().is_empty() {
+    if search.role_ids.is_some() {
+      let len = search.role_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.role_ids.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 所属部门
   if let Some(search) = &search {
-    if search.dept_ids.is_some() && search.dept_ids.as_ref().unwrap().is_empty() {
+    if search.dept_ids.is_some() {
+      let len = search.dept_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.dept_ids.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
-  // 拥有角色
+  // 所属组织
   if let Some(search) = &search {
-    if search.role_ids.is_some() && search.role_ids.as_ref().unwrap().is_empty() {
+    if search.org_ids.is_some() {
+      let len = search.org_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.org_ids.length > {ids_limit}"));
+      }
+      return Ok(vec![]);
+    }
+  }
+  // 默认组织
+  if let Some(search) = &search {
+    if search.default_org_id.is_some() {
+      let len = search.default_org_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.default_org_id.length > {ids_limit}"));
+      }
+      return Ok(vec![]);
+    }
+  }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() {
+      let len = search.is_locked.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_locked.length > {ids_limit}"));
+      }
+      return Ok(vec![]);
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_enabled.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 创建人
   if let Some(search) = &search {
-    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 更新人
   if let Some(search) = &search {
-    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 隐藏记录
   if let Some(search) = &search {
-    if search.is_hidden.is_some() && search.is_hidden.as_ref().unwrap().is_empty() {
+    if search.is_hidden.is_some() {
+      let len = search.is_hidden.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_hidden.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
@@ -741,24 +831,17 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
+      ,max(role_ids) role_ids
+      ,max(role_ids_lbl) role_ids_lbl
+      ,max(dept_ids) dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
       ,default_org_id_lbl.lbl default_org_id_lbl
-      ,max(dept_ids) dept_ids
-      ,max(dept_ids_lbl) dept_ids_lbl
-      ,max(role_ids) role_ids
-      ,max(role_ids_lbl) role_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -783,7 +866,7 @@ pub async fn find_all(
     is_enabled_dict,
   ]: [Vec<_>; 2] = dict_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
+    .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -914,6 +997,10 @@ pub async fn get_field_comments(
     "头像".into(),
     "名称".into(),
     "用户名".into(),
+    "所属角色".into(),
+    "所属角色".into(),
+    "所属部门".into(),
+    "所属部门".into(),
     "所属组织".into(),
     "所属组织".into(),
     "默认组织".into(),
@@ -923,10 +1010,6 @@ pub async fn get_field_comments(
     "启用".into(),
     "启用".into(),
     "排序".into(),
-    "所属部门".into(),
-    "所属部门".into(),
-    "拥有角色".into(),
-    "拥有角色".into(),
     "备注".into(),
     "创建人".into(),
     "创建人".into(),
@@ -956,19 +1039,19 @@ pub async fn get_field_comments(
     img: vec[1].to_owned(),
     lbl: vec[2].to_owned(),
     username: vec[3].to_owned(),
-    org_ids: vec[4].to_owned(),
-    org_ids_lbl: vec[5].to_owned(),
-    default_org_id: vec[6].to_owned(),
-    default_org_id_lbl: vec[7].to_owned(),
-    is_locked: vec[8].to_owned(),
-    is_locked_lbl: vec[9].to_owned(),
-    is_enabled: vec[10].to_owned(),
-    is_enabled_lbl: vec[11].to_owned(),
-    order_by: vec[12].to_owned(),
-    dept_ids: vec[13].to_owned(),
-    dept_ids_lbl: vec[14].to_owned(),
-    role_ids: vec[15].to_owned(),
-    role_ids_lbl: vec[16].to_owned(),
+    role_ids: vec[4].to_owned(),
+    role_ids_lbl: vec[5].to_owned(),
+    dept_ids: vec[6].to_owned(),
+    dept_ids_lbl: vec[7].to_owned(),
+    org_ids: vec[8].to_owned(),
+    org_ids_lbl: vec[9].to_owned(),
+    default_org_id: vec[10].to_owned(),
+    default_org_id_lbl: vec[11].to_owned(),
+    is_locked: vec[12].to_owned(),
+    is_locked_lbl: vec[13].to_owned(),
+    is_enabled: vec[14].to_owned(),
+    is_enabled_lbl: vec[15].to_owned(),
+    order_by: vec[16].to_owned(),
     rem: vec[17].to_owned(),
     create_usr_id: vec[18].to_owned(),
     create_usr_id_lbl: vec[19].to_owned(),
@@ -1337,7 +1420,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -1384,6 +1467,74 @@ pub async fn set_id_by_lbl(
           item.val.parse().unwrap_or_default()
         });
     }
+  }
+  
+  // 所属角色
+  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
+    input.role_ids_lbl = input.role_ids_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
+        .collect::<Vec<String>>()
+    );
+    input.role_ids_lbl = input.role_ids_lbl.map(|item| {
+      let mut set = HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
+    let mut models = vec![];
+    for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
+      let model = crate::gen::base::role::role_dao::find_one(
+        crate::gen::base::role::role_model::RoleSearch {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    input.role_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<RoleId>>()
+      .into();
+  }
+  
+  // 所属部门
+  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
+    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
+        .collect::<Vec<String>>()
+    );
+    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
+      let mut set = HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
+    let mut models = vec![];
+    for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
+      let model = crate::gen::base::dept::dept_dao::find_one(
+        crate::gen::base::dept::dept_model::DeptSearch {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    input.dept_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<DeptId>>()
+      .into();
   }
   
   // 所属组织
@@ -1441,74 +1592,6 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 所属部门
-  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
-    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .filter(|item| !item.is_empty())
-        .collect::<Vec<String>>()
-    );
-    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
-      let mut set = HashSet::new();
-      item.into_iter()
-        .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<String>>()
-    });
-    let mut models = vec![];
-    for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::dept::dept_dao::find_one(
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    input.dept_ids = models.into_iter()
-      .map(|item| item.id)
-      .collect::<Vec<DeptId>>()
-      .into();
-  }
-  
-  // 拥有角色
-  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
-    input.role_ids_lbl = input.role_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .filter(|item| !item.is_empty())
-        .collect::<Vec<String>>()
-    );
-    input.role_ids_lbl = input.role_ids_lbl.map(|item| {
-      let mut set = HashSet::new();
-      item.into_iter()
-        .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<String>>()
-    });
-    let mut models = vec![];
-    for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::role::role_dao::find_one(
-        crate::gen::base::role::role_model::RoleSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    input.role_ids = models.into_iter()
-      .map(|item| item.id)
-      .collect::<Vec<RoleId>>()
-      .into();
-  }
-  
   Ok(input)
 }
 
@@ -1522,21 +1605,20 @@ pub fn get_is_debug(
   is_debug
 }
 
-/// 创建用户
-pub async fn create(
-  #[allow(unused_mut)]
-  mut input: UsrInput,
+/// 批量创建用户
+pub async fn creates(
+  inputs: Vec<UsrInput>,
   options: Option<Options>,
-) -> Result<UsrId> {
+) -> Result<Vec<UsrId>> {
   
   let table = "base_usr";
-  let method = "create";
+  let method = "creates";
   
   let is_debug = get_is_debug(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" inputs: {:?}", &inputs);
     if let Some(options) = &options {
       msg += &format!(" options: {:?}", &options);
     }
@@ -1546,194 +1628,270 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
+  let ids = _creates(
+    inputs,
+    options,
   ).await?;
   
-  if !old_models.is_empty() {
+  Ok(ids)
+}
+
+/// 批量创建用户
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<UsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  
+  let table = "base_usr";
+  
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<UsrId> = vec![];
+  let mut inputs2: Vec<UsrInput> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
+    }
     
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
+      None,
+    ).await?;
     
-    let mut id: Option<UsrId> = None;
-    
-    for old_model in old_models {
+    if !old_models.is_empty() {
+      let mut id: Option<UsrId> = None;
       
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+  }
+  
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
+  let mut args = QueryArgs::new();
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  
+  sql_fields += "id";
+  sql_fields += ",create_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",tenant_id";
+  // 头像
+  sql_fields += ",img";
+  // 名称
+  sql_fields += ",lbl";
+  // 用户名
+  sql_fields += ",username";
+  // 密码
+  sql_fields += ",password";
+  // 默认组织
+  sql_fields += ",default_org_id";
+  // 锁定
+  sql_fields += ",is_locked";
+  // 启用
+  sql_fields += ",is_enabled";
+  // 排序
+  sql_fields += ",order_by";
+  // 备注
+  sql_fields += ",rem";
+  // 更新人
+  sql_fields += ",update_usr_id";
+  // 更新时间
+  sql_fields += ",update_time";
+  // 隐藏记录
+  sql_fields += ",is_hidden";
+  
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: UsrId = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
       ).await?;
-      
-      if id.is_some() {
+      if !is_exist {
         break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
       }
     }
     
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }
-  
-  let mut id: UsrId;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if !is_exist {
-      break;
-    }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
-  }
-  let id = id;
-  
-  let mut args = QueryArgs::new();
-  
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
-  let mut sql_values = String::with_capacity(2 * 20 + 2);
-  
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
+    if let Some(tenant_id) = input.tenant_id {
       sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }
-  
-  if let Some(tenant_id) = input.tenant_id {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  } else if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }
-  // 头像
-  if let Some(img) = input.img {
-    sql_fields += ",img";
-    sql_values += ",?";
-    args.push(img.into());
-  }
-  // 名称
-  if let Some(lbl) = input.lbl {
-    sql_fields += ",lbl";
-    sql_values += ",?";
-    args.push(lbl.into());
-  }
-  // 用户名
-  if let Some(username) = input.username {
-    sql_fields += ",username";
-    sql_values += ",?";
-    args.push(username.into());
-  }
-  // 密码
-  if let Some(password) = input.password {
-    if !password.is_empty() {
-      sql_fields += ",password";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
-      args.push(get_password(password)?.into());
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
     }
-  }
-  // 默认组织
-  if let Some(default_org_id) = input.default_org_id {
-    sql_fields += ",default_org_id";
-    sql_values += ",?";
-    args.push(default_org_id.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
-    sql_values += ",?";
-    args.push(is_locked.into());
-  }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    sql_fields += ",is_enabled";
-    sql_values += ",?";
-    args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
-  }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  // 隐藏记录
-  if let Some(is_hidden) = input.is_hidden {
-    sql_fields += ",is_hidden";
-    sql_values += ",?";
-    args.push(is_hidden.into());
+    // 头像
+    if let Some(img) = input.img {
+      sql_values += ",?";
+      args.push(img.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 名称
+    if let Some(lbl) = input.lbl {
+      sql_values += ",?";
+      args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 用户名
+    if let Some(username) = input.username {
+      sql_values += ",?";
+      args.push(username.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 密码
+    if let Some(password) = input.password {
+      if !password.is_empty() {
+        sql_values += ",?";
+        args.push(get_password(password)?.into());
+      } else {
+        sql_values += ",default";
+      }
+    } else {
+      sql_values += ",default";
+    }
+    // 默认组织
+    if let Some(default_org_id) = input.default_org_id {
+      sql_values += ",?";
+      args.push(default_org_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 锁定
+    if let Some(is_locked) = input.is_locked {
+      sql_values += ",?";
+      args.push(is_locked.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 启用
+    if let Some(is_enabled) = input.is_enabled {
+      sql_values += ",?";
+      args.push(is_enabled.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 排序
+    if let Some(order_by) = input.order_by {
+      sql_values += ",?";
+      args.push(order_by.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 备注
+    if let Some(rem) = input.rem {
+      sql_values += ",?";
+      args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新人
+    if let Some(update_usr_id) = input.update_usr_id {
+      sql_values += ",?";
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新时间
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 隐藏记录
+    if let Some(is_hidden) = input.is_hidden {
+      sql_values += ",?";
+      args.push(is_hidden.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
   }
   
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
   
   let args = args.into();
   
@@ -1757,56 +1915,101 @@ pub async fn create(
     vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;
   
-  // 所属组织
-  if let Some(org_ids) = input.org_ids {
-    many2many_update(
-      id.clone().into(),
-      org_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_org",
-        column1: "usr_id",
-        column2: "org_id",
-      },
-    ).await?;
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();
+    
+    // 所属角色
+    if let Some(role_ids) = input.role_ids {
+      many2many_update(
+        id.clone().into(),
+        role_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_role",
+          column1: "usr_id",
+          column2: "role_id",
+        },
+      ).await?;
+    }
+    
+    // 所属部门
+    if let Some(dept_ids) = input.dept_ids {
+      many2many_update(
+        id.clone().into(),
+        dept_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_dept",
+          column1: "usr_id",
+          column2: "dept_id",
+        },
+      ).await?;
+    }
+    
+    // 所属组织
+    if let Some(org_ids) = input.org_ids {
+      many2many_update(
+        id.clone().into(),
+        org_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "usr_org",
+          column1: "usr_id",
+          column2: "org_id",
+        },
+      ).await?;
+    }
   }
   
-  // 所属部门
-  if let Some(dept_ids) = input.dept_ids {
-    many2many_update(
-      id.clone().into(),
-      dept_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_dept",
-        column1: "usr_id",
-        column2: "dept_id",
-      },
-    ).await?;
+  Ok(ids2)
+}
+
+/// 创建用户
+#[allow(dead_code)]
+pub async fn create(
+  #[allow(unused_mut)]
+  mut input: UsrInput,
+  options: Option<Options>,
+) -> Result<UsrId> {
+  
+  let table = "base_usr";
+  let method = "create";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
   }
   
-  // 拥有角色
-  if let Some(role_ids) = input.role_ids {
-    many2many_update(
-      id.clone().into(),
-      role_ids
-        .iter()
-        .map(|item| item.clone().into())
-        .collect(),
-      ManyOpts {
-        r#mod: "base",
-        table: "usr_role",
-        column1: "usr_id",
-        column2: "role_id",
-      },
-    ).await?;
+  let ids = _creates(
+    vec![input],
+    options,
+  ).await?;
+  
+  if ids.is_empty() {
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
   }
+  let id = ids[0].clone();
   
   Ok(id)
 }
@@ -1894,7 +2097,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   {
@@ -1934,7 +2137,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -2097,19 +2300,19 @@ pub async fn update_by_id(
     
   }
   
-  // 所属组织
-  if let Some(org_ids) = input.org_ids {
+  // 所属角色
+  if let Some(role_ids) = input.role_ids {
     many2many_update(
       id.clone().into(),
-      org_ids
+      role_ids
         .iter()
         .map(|item| item.clone().into())
         .collect(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_org",
+        table: "usr_role",
         column1: "usr_id",
-        column2: "org_id",
+        column2: "role_id",
       },
     ).await?;
     
@@ -2135,19 +2338,19 @@ pub async fn update_by_id(
     field_num += 1;
   }
   
-  // 拥有角色
-  if let Some(role_ids) = input.role_ids {
+  // 所属组织
+  if let Some(org_ids) = input.org_ids {
     many2many_update(
       id.clone().into(),
-      role_ids
+      org_ids
         .iter()
         .map(|item| item.clone().into())
         .collect(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_role",
+        table: "usr_org",
         column1: "usr_id",
-        column2: "role_id",
+        column2: "org_id",
       },
     ).await?;
     
@@ -2217,6 +2420,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2249,20 +2456,16 @@ pub async fn delete_by_ids(
     
     let options = options.into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2312,6 +2515,14 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2333,20 +2544,16 @@ pub async fn enable_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2401,6 +2608,10 @@ pub async fn lock_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options);
   
   let options = options.set_del_cache_key1s(get_cache_tables());
@@ -2421,20 +2632,16 @@ pub async fn lock_by_ids(
     
     let options = options.clone().into();
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }
@@ -2541,7 +2748,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -2658,7 +2865,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   
@@ -2699,7 +2906,6 @@ pub async fn find_last_order_by(
 }
 
 /// 校验用户是否启用
-#[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
   model: &UsrModel,
@@ -2714,7 +2920,7 @@ pub async fn validate_is_enabled(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(())
 }
@@ -2734,7 +2940,7 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }

@@ -81,36 +81,38 @@ export async function findByIdDictbiz(
 }
 
 /**
- * 创建业务字典
+ * 批量创建业务字典
  */
-export async function createDictbiz(
-  input: DictbizInput,
+export async function createsDictbiz(
+  inputs: DictbizInput[],
   unique_type?: UniqueType,
-): Promise<DictbizId> {
-  
-  input.id = undefined;
+): Promise<DictbizId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./dictbiz.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/dictbiz",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: DictbizId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

@@ -155,22 +155,42 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
-  input = intoInput(input);
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
+  return id;
+}
+
+/**
+ * 批量创建数据权限
+ * @param {DataPermitInput[]} inputs
+ * @param {UniqueType} unique_type?
+ * @param {GqlOpt} opt?
+ */
+export async function creates(
+  inputs: DataPermitInput[],
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<DataPermitId[]> {
+  inputs = inputs.map(intoInput);
   const data: {
-    createDataPermit: Mutation["createDataPermit"];
+    createsDataPermit: Mutation["createsDataPermit"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($input: DataPermitInput!, $unique_type: UniqueType) {
-        createDataPermit(input: $input, unique_type: $unique_type)
+      mutation($inputs: [DataPermitInput!]!, $unique_type: UniqueType) {
+        createsDataPermit(inputs: $inputs, unique_type: $unique_type)
       }
     `,
     variables: {
-      input,
+      inputs,
       unique_type,
     },
   }, opt);
-  const id: DataPermitId = data.createDataPermit;
-  return id;
+  const ids = data.createsDataPermit;
+  return ids;
 }
 
 /**
@@ -370,7 +390,7 @@ export async function getMenuTree() {
 }
 
 /**
- * 下载导入模板
+ * 下载数据权限导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
@@ -509,11 +529,11 @@ export function useExportExcel(routePath: string) {
 }
 
 /**
- * 批量导入
- * @param {DataPermitInput[]} models
+ * 批量导入数据权限
+ * @param {DataPermitInput[]} inputs
  */
 export async function importModels(
-  models: DataPermitInput[],
+  inputs: DataPermitInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
@@ -522,36 +542,39 @@ export async function importModels(
     nsAsync,
   } = useI18n();
   
+  opt = opt || { };
+  opt.showErrMsg = false;
+  opt.notLoading = true;
+  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];
   percentage.value = 0;
   
-  for (let i = 0; i < models.length; i++) {
+  const len = inputs.length;
+  const inputsArr = splitCreateArr(inputs);
+  
+  let i = 0;
+  for (const inputs of inputsArr) {
     if (isCancel.value) {
       break;
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
-    
-    const item = models[i];
-    
-    opt = opt || { };
-    opt.showErrMsg = false;
-    opt.notLoading = true;
+    i += inputs.length;
     
     try {
-      await create(
-        item,
+      await creates(
+        inputs,
         UniqueType.Update,
         opt,
       );
-      succNum++;
+      succNum += inputs.length;
     } catch (err) {
-      failNum++;
-      failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
+      failNum += inputs.length;
+      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
     }
     
+    percentage.value = Math.floor((i + 1) / len * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);

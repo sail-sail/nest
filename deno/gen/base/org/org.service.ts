@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {OrgInput} input
- * @return {Promise<OrgId>} id
+ * 批量创建组织
+ * @param {OrgInput[]} inputs
+ * @return {Promise<OrgId[]>} ids
  */
-export async function create(
-  input: OrgInput,
+export async function creates(
+  inputs: OrgInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<OrgId> {
-  const id: OrgId = await orgDao.create(input, options);
-  return id;
+): Promise<OrgId[]> {
+  const ids = await orgDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -151,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: OrgId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OrgId = ids[i];
-      const is_locked = await orgDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await orgDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "组织");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await orgDao.deleteByIds(ids);

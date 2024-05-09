@@ -160,12 +160,12 @@ type Query {
   findOneDictbizDetail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
   "根据 id 查找业务字典明细"
   findByIdDictbizDetail(id: DictbizDetailId!): DictbizDetailModel
-  "查找 业务字典明细 order_by 字段的最大值"
+  "查找业务字典明细 order_by 字段的最大值"
   findLastOrderByDictbizDetail: Int!
 }
 type Mutation {
-  "创建业务字典明细"
-  createDictbizDetail(input: DictbizDetailInput!, unique_type: UniqueType): DictbizDetailId!
+  "批量创建业务字典明细"
+  createsDictbizDetail(inputs: [DictbizDetailInput!]!, unique_type: UniqueType): [DictbizDetailId!]!
   "根据 id 修改业务字典明细"
   updateByIdDictbizDetail(id: DictbizDetailId!, input: DictbizDetailInput!): DictbizDetailId!
   "根据 ids 删除业务字典明细"

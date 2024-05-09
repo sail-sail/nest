@@ -76,30 +76,37 @@ pub async fn find_by_id(
 
 /// 创建操作记录
 #[allow(dead_code)]
-pub async fn create(
-  input: OperationRecordInput,
+pub async fn creates(
+  inputs: Vec<OperationRecordInput>,
   options: Option<Options>,
-) -> Result<OperationRecordId> {
+) -> Result<Vec<OperationRecordId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = operation_record_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = operation_record_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/operation_record".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = operation_record_service::create(
-    input,
+  let ids = operation_record_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 操作记录根据id修改租户id

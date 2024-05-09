@@ -173,12 +173,12 @@ pub struct UsrGenMutation;
 impl UsrGenMutation {
   
   /// 创建用户
-  async fn create_usr(
+  async fn creates_usr(
     &self,
     ctx: &Context<'_>,
-    input: UsrInput,
+    inputs: Vec<UsrInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<UsrId> {
+  ) -> Result<Vec<UsrId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl UsrGenMutation {
       .with_tran()?
       .build()
       .scope({
-        usr_resolver::create(
-          input,
+        usr_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

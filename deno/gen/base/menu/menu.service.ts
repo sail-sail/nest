@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {MenuInput} input
- * @return {Promise<MenuId>} id
+ * 批量创建菜单
+ * @param {MenuInput[]} inputs
+ * @return {Promise<MenuId[]>} ids
  */
-export async function create(
-  input: MenuInput,
+export async function creates(
+  inputs: MenuInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<MenuId> {
-  const id: MenuId = await menuDao.create(input, options);
-  return id;
+): Promise<MenuId[]> {
+  const ids = await menuDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -151,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: MenuId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: MenuId = ids[i];
-      const is_locked = await menuDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await menuDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "菜单");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await menuDao.deleteByIds(ids);

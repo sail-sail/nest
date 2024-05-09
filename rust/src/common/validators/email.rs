@@ -1,7 +1,6 @@
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use fast_chemail::is_valid_email;
 
-use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
@@ -30,5 +29,5 @@ pub async fn email(
   err_msg.push_str(&msg);
   let err_msg = err_msg;
   
-  Err(SrvErr::msg(err_msg).into())
+  Err(anyhow!(err_msg))
 }

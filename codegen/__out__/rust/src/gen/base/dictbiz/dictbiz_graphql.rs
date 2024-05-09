@@ -173,12 +173,12 @@ pub struct DictbizGenMutation;
 impl DictbizGenMutation {
   
   /// 创建业务字典
-  async fn create_dictbiz(
+  async fn creates_dictbiz(
     &self,
     ctx: &Context<'_>,
-    input: DictbizInput,
+    inputs: Vec<DictbizInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<DictbizId> {
+  ) -> Result<Vec<DictbizId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl DictbizGenMutation {
       .with_tran()?
       .build()
       .scope({
-        dictbiz_resolver::create(
-          input,
+        dictbiz_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

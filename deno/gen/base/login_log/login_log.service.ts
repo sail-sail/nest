@@ -103,18 +103,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {LoginLogInput} input
- * @return {Promise<LoginLogId>} id
+ * 批量创建登录日志
+ * @param {LoginLogInput[]} inputs
+ * @return {Promise<LoginLogId[]>} ids
  */
-export async function create(
-  input: LoginLogInput,
+export async function creates(
+  inputs: LoginLogInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<LoginLogId> {
-  const id: LoginLogId = await login_logDao.create(input, options);
-  return id;
+): Promise<LoginLogId[]> {
+  const ids = await login_logDao.creates(inputs, options);
+  return ids;
 }
 
 /**

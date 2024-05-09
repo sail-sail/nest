@@ -131,12 +131,12 @@ type Query {
   findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
   "根据 id 查找语言"
   findByIdLang(id: LangId!): LangModel
-  "查找 语言 order_by 字段的最大值"
+  "查找语言 order_by 字段的最大值"
   findLastOrderByLang: Int!
 }
 type Mutation {
-  "创建语言"
-  createLang(input: LangInput!, unique_type: UniqueType): LangId!
+  "批量创建语言"
+  createsLang(inputs: [LangInput!]!, unique_type: UniqueType): [LangId!]!
   "根据 id 修改语言"
   updateByIdLang(id: LangId!, input: LangInput!): LangId!
   "根据 ids 删除语言"

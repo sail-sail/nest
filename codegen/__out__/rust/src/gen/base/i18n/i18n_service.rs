@@ -1,14 +1,9 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::i18n_model::*;
@@ -90,17 +85,17 @@ pub async fn set_id_by_lbl(
 
 /// 创建国际化
 #[allow(dead_code)]
-pub async fn create(
-  input: I18nInput,
+pub async fn creates(
+  inputs: Vec<I18nInput>,
   options: Option<Options>,
-) -> Result<I18nId> {
+) -> Result<Vec<I18nId>> {
   
-  let id = i18n_dao::create(
-    input,
+  let ids = i18n_dao::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改国际化

@@ -136,12 +136,12 @@ type Query {
   findOneOrg(search: OrgSearch, sort: [SortInput!]): OrgModel
   "根据 id 查找组织"
   findByIdOrg(id: OrgId!): OrgModel
-  "查找 组织 order_by 字段的最大值"
+  "查找组织 order_by 字段的最大值"
   findLastOrderByOrg: Int!
 }
 type Mutation {
-  "创建组织"
-  createOrg(input: OrgInput!, unique_type: UniqueType): OrgId!
+  "批量创建组织"
+  createsOrg(inputs: [OrgInput!]!, unique_type: UniqueType): [OrgId!]!
   "根据 id 修改组织"
   updateByIdOrg(id: OrgId!, input: OrgInput!): OrgId!
   "根据 ids 删除组织"

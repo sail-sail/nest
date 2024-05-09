@@ -20,14 +20,11 @@ pub async fn get_dictbiz<T: AsRef<str>>(
   
   let mut args = QueryArgs::new();
   
-  let code = {
-    let mut code = "".to_owned();
-    for item in codes.iter() {
-      code += &format!("{},", args.push(item.as_ref().into()));
-    }
-    code = code.trim_end_matches(',').to_owned();
-    code
-  };
+  let code  = codes
+    .iter()
+    .map(|x| args.push(x.as_ref().into()))
+    .collect::<Vec<_>>()
+    .join(",");
   
   let sql = format!(r#"
     select

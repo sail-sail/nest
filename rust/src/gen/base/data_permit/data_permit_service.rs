@@ -1,18 +1,13 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use super::data_permit_model::*;
 use super::data_permit_dao;
@@ -93,17 +88,17 @@ pub async fn set_id_by_lbl(
 
 /// 创建数据权限
 #[allow(dead_code)]
-pub async fn create(
-  input: DataPermitInput,
+pub async fn creates(
+  inputs: Vec<DataPermitInput>,
   options: Option<Options>,
-) -> Result<DataPermitId> {
+) -> Result<Vec<DataPermitId>> {
   
-  let id = data_permit_dao::create(
-    input,
+  let ids = data_permit_dao::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改数据权限
@@ -148,26 +143,20 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<DataPermitId> = vec![];
-  for id in ids0 {
-    let model = data_permit_dao::find_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if model.is_none() {
-      continue;
-    }
-    let model = model.unwrap();
+  let models = data_permit_dao::find_all(
+    Some(DataPermitSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
     if model.is_sys == 1 {
-      continue;
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      return Err(anyhow!(err_msg));
     }
-    ids.push(id);
-  }
-  if ids.is_empty() && len > 0 {
-    let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(SrvErr::msg(err_msg).into());
   }
   
   let num = data_permit_dao::delete_by_ids(

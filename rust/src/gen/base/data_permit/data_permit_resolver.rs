@@ -74,30 +74,37 @@ pub async fn find_by_id(
 
 /// 创建数据权限
 #[allow(dead_code)]
-pub async fn create(
-  input: DataPermitInput,
+pub async fn creates(
+  inputs: Vec<DataPermitInput>,
   options: Option<Options>,
-) -> Result<DataPermitId> {
+) -> Result<Vec<DataPermitId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = data_permit_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = data_permit_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/data_permit".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = data_permit_service::create(
-    input,
+  let ids = data_permit_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改数据权限

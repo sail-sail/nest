@@ -1,6 +1,4 @@
-use anyhow::Result;
-
-use crate::common::context::SrvErr;
+use anyhow::{Result,anyhow};
 
 #[allow(dead_code)]
 pub fn chars_max_length(
@@ -24,5 +22,5 @@ pub fn chars_max_length(
     "The {label} length cannot greater than {len}",
   );
   
-  Err(SrvErr::msg(err_msg).into())
+  Err(anyhow!(err_msg))
 }

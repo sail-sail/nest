@@ -234,15 +234,18 @@ export interface TableCloumn {
     /**
      * 下拉框显示字段, 默认为: lbl
      */
-    lbl?: string | string[],
+    lbl?: string,
+    
+    /** 多对多需要级联查询的字段, 默认包含 lbl 字段 */
+    cascade_fields?: string[],
     
     /**
-     * 外键关联的类型, json还是 多对多关联
+     * 外键关联的类型, many2many: 多对多关联
      */
-    type?: "json"|"many2many",
+    type?: "many2many",
     
     /**
-     * Detail中选择数据的方式
+     * Detail.vue 修改页面中选择数据的方式
      *   select: 下拉框 (默认)
      *   selectInput: 弹框选择
      *   tree: 树形选择

@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -7,11 +7,12 @@ import dayjs from "dayjs";
 
 import {
   getDebugSearch,
+  splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -85,19 +86,19 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -106,13 +107,13 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.home_url != null) {
-    whereQuery += ` and t.home_url = ${ args.push(search.home_url) }`;
+    whereQuery += ` and t.home_url=${ args.push(search.home_url) }`;
   }
   if (isNotEmpty(search?.home_url_like)) {
     whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
@@ -158,14 +159,14 @@ async function getWhereQuery(
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -181,10 +182,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -198,15 +199,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: RoleSearch,
@@ -216,72 +218,52 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_role t
     left join base_role_menu
-      on base_role_menu.role_id = t.id
-      and base_role_menu.is_deleted = ${ args.push(is_deleted) }
+      on base_role_menu.role_id=t.id
+      and base_role_menu.is_deleted=${ args.push(is_deleted) }
     left join base_menu
-      on base_role_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
-        json_objectagg(base_role_menu.order_by, base_menu.lbl) menu_ids_lbl,
-        base_role.id role_id
-      from base_role_menu
-      inner join base_menu
-        on base_menu.id = base_role_menu.menu_id
-      inner join base_role
-        on base_role.id = base_role_menu.role_id
-      where
-        base_role_menu.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _menu
-      on _menu.role_id = t.id
+      on base_role_menu.menu_id=base_menu.id
+      and base_menu.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_menu.order_by,base_menu.id) menu_ids,
+    json_objectagg(base_role_menu.order_by,base_menu.lbl) menu_ids_lbl,
+    base_role.id role_id
+    from base_role_menu
+    inner join base_menu on base_menu.id=base_role_menu.menu_id
+    inner join base_role on base_role.id=base_role_menu.role_id
+    where base_role_menu.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _menu on _menu.role_id=t.id
     left join base_role_permit
-      on base_role_permit.role_id = t.id
-      and base_role_permit.is_deleted = ${ args.push(is_deleted) }
+      on base_role_permit.role_id=t.id
+      and base_role_permit.is_deleted=${ args.push(is_deleted) }
     left join base_permit
-      on base_role_permit.permit_id = base_permit.id
-      and base_permit.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
-        json_objectagg(base_role_permit.order_by, base_permit.lbl) permit_ids_lbl,
-        base_role.id role_id
-      from base_role_permit
-      inner join base_permit
-        on base_permit.id = base_role_permit.permit_id
-      inner join base_role
-        on base_role.id = base_role_permit.role_id
-      where
-        base_role_permit.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _permit
-      on _permit.role_id = t.id
+      on base_role_permit.permit_id=base_permit.id
+      and base_permit.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_permit.order_by,base_permit.id) permit_ids,
+    json_objectagg(base_role_permit.order_by,base_permit.lbl) permit_ids_lbl,
+    base_role.id role_id
+    from base_role_permit
+    inner join base_permit on base_permit.id=base_role_permit.permit_id
+    inner join base_role on base_role.id=base_role_permit.role_id
+    where base_role_permit.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _permit on _permit.role_id=t.id
     left join base_role_data_permit
-      on base_role_data_permit.role_id = t.id
-      and base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
+      on base_role_data_permit.role_id=t.id
+      and base_role_data_permit.is_deleted=${ args.push(is_deleted) }
     left join base_data_permit
-      on base_role_data_permit.data_permit_id = base_data_permit.id
-      and base_data_permit.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
-        json_objectagg(base_role_data_permit.order_by, base_data_permit.scope) data_permit_ids_lbl,
-        base_role.id role_id
-      from base_role_data_permit
-      inner join base_data_permit
-        on base_data_permit.id = base_role_data_permit.data_permit_id
-      inner join base_role
-        on base_role.id = base_role_data_permit.role_id
-      where
-        base_role_data_permit.is_deleted = ${ args.push(is_deleted) }
-      group by role_id
-    ) _data_permit
-      on _data_permit.role_id = t.id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+      on base_role_data_permit.data_permit_id=base_data_permit.id
+      and base_data_permit.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
+    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
+    base_role.id role_id
+    from base_role_data_permit
+    inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
+    inner join base_role on base_role.id=base_role_data_permit.role_id
+    where base_role_data_permit.is_deleted=${ args.push(is_deleted) }
+    group by role_id) _data_permit on _data_permit.role_id=t.id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -311,15 +293,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -349,6 +323,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<RoleModel[]> {
   const table = "base_role";
@@ -378,38 +353,85 @@ export async function findAll(
     return [ ];
   }
   // 菜单权限
-  if (search && search.menu_ids != null && search.menu_ids.length === 0) {
-    return [ ];
+  if (search && search.menu_ids != null) {
+    const len = search.menu_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.menu_ids.length > ${ ids_limit }`);
+    }
   }
   // 按钮权限
-  if (search && search.permit_ids != null && search.permit_ids.length === 0) {
-    return [ ];
+  if (search && search.permit_ids != null) {
+    const len = search.permit_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.permit_ids.length > ${ ids_limit }`);
+    }
   }
   // 数据权限
-  if (search && search.data_permit_ids != null && search.data_permit_ids.length === 0) {
-    return [ ];
+  if (search && search.data_permit_ids != null) {
+    const len = search.data_permit_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.data_permit_ids.length > ${ ids_limit }`);
+    }
   }
   // 锁定
-  if (search && search.is_locked != null && search.is_locked.length === 0) {
-    return [ ];
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
   }
   // 启用
-  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
-    return [ ];
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
       ,max(permit_ids) permit_ids
@@ -956,16 +978,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select
-      1 e
-    from
-      base_role t
-    where
-      t.id = ${ args.push(id) }
-      and t.is_deleted = 0
-    limit 1
-  `;
+  const sql = `select 1 e from base_role t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -973,11 +986,11 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,{ cacheKey1, cacheKey2 },
   );
-  let result = !!model?.e;
+  const result = !!model?.e;
   
   return result;
 }
@@ -1089,125 +1102,189 @@ export async function create(
     options.debug = false;
   }
   
-  if (input.id) {
-    throw new Error(`Can not set id when create in dao: ${ table }`);
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
   }
   
-  await setIdByLbl(input);
+  const [ id ] = await _creates([ input ], options);
   
-  const oldModels = await findByUnique(input, options);
-  if (oldModels.length > 0) {
-    let id: RoleId | undefined = undefined;
-    for (const oldModel of oldModels) {
-      id = await checkByUnique(
-        input,
-        oldModel,
-        options?.uniqueType,
-        options,
-      );
-      if (id) {
-        break;
-      }
+  return id;
+}
+
+/**
+ * 批量创建角色
+ * @param {RoleInput[]} inputs
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<RoleId[]>} 
+ */
+export async function creates(
+  inputs: RoleInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<RoleId[]> {
+  const table = "base_role";
+  const method = "creates";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
     }
-    if (id) {
-      return id;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
     }
+    log(msg);
+    options = options || { };
+    options.debug = false;
   }
   
-  {
-    const {
-      filterMenuIdsByTenant,
-    } = await import("/src/base/tenant/tenant.dao.ts");
+  const ids = await _creates(inputs, options);
+  
+  return ids;
+}
+
+async function _creates(
+  inputs: RoleInput[],
+  options?: {
+    debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+  },
+): Promise<RoleId[]> {
+  
+  if (inputs.length === 0) {
+    return [ ];
+  }
+  
+  const table = "base_role";
+  
+  const ids2: RoleId[] = [ ];
+  const inputs2: RoleInput[] = [ ];
+  
+  for (const input of inputs) {
+  
+    if (input.id) {
+      throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
     
-    input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
+    const oldModels = await findByUnique(input, options);
+    if (oldModels.length > 0) {
+      let id: RoleId | undefined = undefined;
+      for (const oldModel of oldModels) {
+        id = await checkByUnique(
+          input,
+          oldModel,
+          options?.uniqueType,
+          options,
+        );
+        if (id) {
+          break;
+        }
+      }
+      if (id) {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+    {
+      const {
+        filterMenuIdsByTenant,
+      } = await import("/src/base/tenant/tenant.dao.ts");
+      
+      input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
+    }
+    
+    const id = shortUuidV4<RoleId>();
+    input.id = id;
+    ids2.push(id);
   }
   
-  while (true) {
-    input.id = shortUuidV4<RoleId>();
-    const isExist = await existById(input.id);
-    if (!isExist) {
-      break;
-    }
-    error(`ID_COLLIDE: ${ table } ${ input.id as unknown as string }`);
+  if (inputs2.length === 0) {
+    return ids2;
   }
   
   const args = new QueryArgs();
-  let sql = `
-    insert into base_role(
-      id,create_time
-  `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
+  let sql = `insert into base_role(id,create_time,tenant_id,create_usr_id,lbl,home_url,is_locked,is_enabled,order_by,rem)values`;
+  
+  const inputs2Arr = splitCreateArr(inputs2);
+  for (const inputs2 of inputs2Arr) {
+    for (let i = 0; i < inputs2.length; i++) {
+      const input = inputs2[i];
+      sql += `(${ args.push(input.id) }`;
+      if (input.create_time != null) {
+        sql += `,${ args.push(input.create_time) }`;
+      } else {
+        sql += `,${ args.push(reqDate()) }`;
+      }
+      if (input.tenant_id != null) {
+        sql += `,${ args.push(input.tenant_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        const tenant_id = await getTenant_id(authModel?.id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      } else {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `,${ args.push(authModel.id) }`;
+        } else {
+          sql += ",default";
+        }
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.home_url != null) {
+        sql += `,${ args.push(input.home_url) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_locked != null) {
+        sql += `,${ args.push(input.is_locked) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_enabled != null) {
+        sql += `,${ args.push(input.is_enabled) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.order_by != null) {
+        sql += `,${ args.push(input.order_by) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.rem != null) {
+        sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      sql += ")";
+      if (i !== inputs2.length - 1) {
+        sql += ",";
+      }
     }
   }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,create_usr_id`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,create_usr_id`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,lbl`;
-  }
-  if (input.home_url != null) {
-    sql += `,home_url`;
-  }
-  if (input.is_locked != null) {
-    sql += `,is_locked`;
-  }
-  if (input.is_enabled != null) {
-    sql += `,is_enabled`;
-  }
-  if (input.order_by != null) {
-    sql += `,order_by`;
-  }
-  if (input.rem != null) {
-    sql += `,rem`;
-  }
-  sql += `)values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-    sql += `,${ args.push(input.create_usr_id) }`;
-  } else {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,${ args.push(authModel.id) }`;
-    }
-  }
-  if (input.lbl != null) {
-    sql += `,${ args.push(input.lbl) }`;
-  }
-  if (input.home_url != null) {
-    sql += `,${ args.push(input.home_url) }`;
-  }
-  if (input.is_locked != null) {
-    sql += `,${ args.push(input.is_locked) }`;
-  }
-  if (input.is_enabled != null) {
-    sql += `,${ args.push(input.is_enabled) }`;
-  }
-  if (input.order_by != null) {
-    sql += `,${ args.push(input.order_by) }`;
-  }
-  if (input.rem != null) {
-    sql += `,${ args.push(input.rem) }`;
-  }
-  sql += `)`;
   
   await delCache();
   
@@ -1217,45 +1294,49 @@ export async function create(
     debug,
   });
   
-  // 菜单权限
-  await many2manyUpdate(
-    input,
-    "menu_ids",
-    {
-      mod: "base",
-      table: "role_menu",
-      column1: "role_id",
-      column2: "menu_id",
-    },
-  );
-  
-  // 按钮权限
-  await many2manyUpdate(
-    input,
-    "permit_ids",
-    {
-      mod: "base",
-      table: "role_permit",
-      column1: "role_id",
-      column2: "permit_id",
-    },
-  );
-  
-  // 数据权限
-  await many2manyUpdate(
-    input,
-    "data_permit_ids",
-    {
-      mod: "base",
-      table: "role_data_permit",
-      column1: "role_id",
-      column2: "data_permit_id",
-    },
-  );
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+    
+    // 菜单权限
+    await many2manyUpdate(
+      input,
+      "menu_ids",
+      {
+        mod: "base",
+        table: "role_menu",
+        column1: "role_id",
+        column2: "menu_id",
+      },
+    );
+    
+    // 按钮权限
+    await many2manyUpdate(
+      input,
+      "permit_ids",
+      {
+        mod: "base",
+        table: "role_permit",
+        column1: "role_id",
+        column2: "permit_id",
+      },
+    );
+    
+    // 数据权限
+    await many2manyUpdate(
+      input,
+      "data_permit_ids",
+      {
+        mod: "base",
+        table: "role_data_permit",
+        column1: "role_id",
+        column2: "data_permit_id",
+      },
+    );
+  }
   
   await delCache();
   
-  return input.id;
+  return ids2;
 }
 
 /**
@@ -1369,8 +1450,6 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
-  
-  await setIdByLbl(input);
   
   {
     const input2 = {
@@ -1558,9 +1637,7 @@ export async function deleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1570,16 +1647,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_role
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_role set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1647,24 +1715,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_role
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update base_role set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1727,29 +1778,10 @@ export async function lockByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      base_role
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update base_role set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1787,23 +1819,13 @@ export async function revertByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id: RoleId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_role
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_role set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1858,35 +1880,19 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          base_role
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from base_role where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        base_role
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from base_role where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

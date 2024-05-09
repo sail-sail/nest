@@ -173,12 +173,12 @@ pub struct OrgGenMutation;
 impl OrgGenMutation {
   
   /// 创建组织
-  async fn create_org(
+  async fn creates_org(
     &self,
     ctx: &Context<'_>,
-    input: OrgInput,
+    inputs: Vec<OrgInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<OrgId> {
+  ) -> Result<Vec<OrgId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -188,8 +188,8 @@ impl OrgGenMutation {
       .with_tran()?
       .build()
       .scope({
-        org_resolver::create(
-          input,
+        org_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

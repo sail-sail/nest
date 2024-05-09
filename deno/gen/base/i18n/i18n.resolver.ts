@@ -81,36 +81,38 @@ export async function findByIdI18n(
 }
 
 /**
- * 创建国际化
+ * 批量创建国际化
  */
-export async function createI18n(
-  input: I18nInput,
+export async function createsI18n(
+  inputs: I18nInput[],
   unique_type?: UniqueType,
-): Promise<I18nId> {
-  
-  input.id = undefined;
+): Promise<I18nId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./i18n.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/i18n",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: I18nId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

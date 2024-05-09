@@ -74,30 +74,37 @@ pub async fn find_by_id(
 
 /// 创建国际化
 #[allow(dead_code)]
-pub async fn create(
-  input: I18nInput,
+pub async fn creates(
+  inputs: Vec<I18nInput>,
   options: Option<Options>,
-) -> Result<I18nId> {
+) -> Result<Vec<I18nId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = i18n_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = i18n_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/i18n".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = i18n_service::create(
-    input,
+  let ids = i18n_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改国际化

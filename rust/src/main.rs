@@ -224,6 +224,12 @@ async fn main() -> Result<(), std::io::Error> {
       get(common::websocket::websocket_router::ws_upgrade),
     );
     
+    // 心跳检测
+    app = app.at(
+      "/api/health",
+      get(common::health::health_router::health),
+    );
+    
     app
   };
   let app = app

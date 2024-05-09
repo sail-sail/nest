@@ -81,36 +81,38 @@ export async function findByIdOptbiz(
 }
 
 /**
- * 创建业务选项
+ * 批量创建业务选项
  */
-export async function createOptbiz(
-  input: OptbizInput,
+export async function createsOptbiz(
+  inputs: OptbizInput[],
   unique_type?: UniqueType,
-): Promise<OptbizId> {
-  
-  input.id = undefined;
+): Promise<OptbizId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./optbiz.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/optbiz",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: OptbizId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

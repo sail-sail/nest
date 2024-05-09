@@ -141,8 +141,8 @@ type Query {
   findByIdI18n(id: I18nId!): I18nModel
 }
 type Mutation {
-  "创建国际化"
-  createI18n(input: I18nInput!, unique_type: UniqueType): I18nId!
+  "批量创建国际化"
+  createsI18n(inputs: [I18nInput!]!, unique_type: UniqueType): [I18nId!]!
   "根据 id 修改国际化"
   updateByIdI18n(id: I18nId!, input: I18nInput!): I18nId!
   "根据 ids 删除国际化"

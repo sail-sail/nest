@@ -81,36 +81,38 @@ export async function findByIdDept(
 }
 
 /**
- * 创建部门
+ * 批量创建部门
  */
-export async function createDept(
-  input: DeptInput,
+export async function createsDept(
+  inputs: DeptInput[],
   unique_type?: UniqueType,
-): Promise<DeptId> {
-  
-  input.id = undefined;
+): Promise<DeptId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./dept.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/dept",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: DeptId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**

@@ -74,30 +74,37 @@ pub async fn find_by_id(
 
 /// 创建字段权限
 #[allow(dead_code)]
-pub async fn create(
-  input: FieldPermitInput,
+pub async fn creates(
+  inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
-) -> Result<FieldPermitId> {
+) -> Result<Vec<FieldPermitId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = field_permit_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = field_permit_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/field_permit".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = field_permit_service::create(
-    input,
+  let ids = field_permit_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改字段权限

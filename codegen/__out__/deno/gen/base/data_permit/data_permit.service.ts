@@ -107,18 +107,18 @@ export async function validate(
 }
 
 /**
- * 创建数据
- * @param {DataPermitInput} input
- * @return {Promise<DataPermitId>} id
+ * 批量创建数据权限
+ * @param {DataPermitInput[]} inputs
+ * @return {Promise<DataPermitId[]>} ids
  */
-export async function create(
-  input: DataPermitInput,
+export async function creates(
+  inputs: DataPermitInput[],
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<DataPermitId> {
-  const id: DataPermitId = await data_permitDao.create(input, options);
-  return id;
+): Promise<DataPermitId[]> {
+  const ids = await data_permitDao.creates(inputs, options);
+  return ids;
 }
 
 /**
@@ -157,19 +157,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: DataPermitId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: DataPermitId = ids[i];
-      const model = await data_permitDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await data_permitDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await data_permitDao.deleteByIds(ids);

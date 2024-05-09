@@ -76,30 +76,37 @@ pub async fn find_by_id(
 
 /// 创建业务选项
 #[allow(dead_code)]
-pub async fn create(
-  input: OptbizInput,
+pub async fn creates(
+  inputs: Vec<OptbizInput>,
   options: Option<Options>,
-) -> Result<OptbizId> {
+) -> Result<Vec<OptbizId>> {
   
-  let mut input = input;
-  input.id = None;
-  let input = input;
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    input.id = None;
+  }
+  let inputs = inputs;
   
-  let input = optbiz_service::set_id_by_lbl(
-    input,
-  ).await?;
+  let mut inputs2 = Vec::with_capacity(inputs.len());
+  for input in inputs {
+    let input = optbiz_service::set_id_by_lbl(
+      input,
+    ).await?;
+    inputs2.push(input);
+  }
+  let inputs = inputs2;
   
   use_permit(
     "/base/optbiz".to_owned(),
     "add".to_owned(),
   ).await?;
   
-  let id = optbiz_service::create(
-    input,
+  let ids = optbiz_service::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 业务选项根据id修改租户id

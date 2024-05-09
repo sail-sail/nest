@@ -1,18 +1,13 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
@@ -95,17 +90,17 @@ pub async fn set_id_by_lbl(
 
 /// 创建后台任务
 #[allow(dead_code)]
-pub async fn create(
-  input: BackgroundTaskInput,
+pub async fn creates(
+  inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
-) -> Result<BackgroundTaskId> {
+) -> Result<Vec<BackgroundTaskId>> {
   
-  let id = background_task_dao::create(
-    input,
+  let ids = background_task_dao::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 后台任务根据id修改租户id

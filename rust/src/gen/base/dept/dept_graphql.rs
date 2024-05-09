@@ -175,12 +175,12 @@ pub struct DeptGenMutation;
 impl DeptGenMutation {
   
   /// 创建部门
-  async fn create_dept(
+  async fn creates_dept(
     &self,
     ctx: &Context<'_>,
-    input: DeptInput,
+    inputs: Vec<DeptInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<DeptId> {
+  ) -> Result<Vec<DeptId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -190,8 +190,8 @@ impl DeptGenMutation {
       .with_tran()?
       .build()
       .scope({
-        dept_resolver::create(
-          input,
+        dept_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

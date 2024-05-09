@@ -171,12 +171,12 @@ pub struct TenantGenMutation;
 impl TenantGenMutation {
   
   /// 创建租户
-  async fn create_tenant(
+  async fn creates_tenant(
     &self,
     ctx: &Context<'_>,
-    input: TenantInput,
+    inputs: Vec<TenantInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<TenantId> {
+  ) -> Result<Vec<TenantId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -186,8 +186,8 @@ impl TenantGenMutation {
       .with_tran()?
       .build()
       .scope({
-        tenant_resolver::create(
-          input,
+        tenant_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

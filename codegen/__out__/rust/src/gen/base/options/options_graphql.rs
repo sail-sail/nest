@@ -171,12 +171,12 @@ pub struct OptionsGenMutation;
 impl OptionsGenMutation {
   
   /// 创建系统选项
-  async fn create_options(
+  async fn creates_options(
     &self,
     ctx: &Context<'_>,
-    input: OptionsInput,
+    inputs: Vec<OptionsInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<OptionsId> {
+  ) -> Result<Vec<OptionsId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -186,8 +186,8 @@ impl OptionsGenMutation {
       .with_tran()?
       .build()
       .scope({
-        options_resolver::create(
-          input,
+        options_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await

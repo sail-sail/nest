@@ -1,18 +1,13 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-use anyhow::Result;
-
 #[allow(unused_imports)]
-use crate::common::context::{
-  SrvErr,
-  Options,
-};
+use anyhow::{Result,anyhow};
 
+use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use super::dict_model::*;
 use super::dict_dao;
@@ -93,17 +88,17 @@ pub async fn set_id_by_lbl(
 
 /// 创建系统字典
 #[allow(dead_code)]
-pub async fn create(
-  input: DictInput,
+pub async fn creates(
+  inputs: Vec<DictInput>,
   options: Option<Options>,
-) -> Result<DictId> {
+) -> Result<Vec<DictId>> {
   
-  let id = dict_dao::create(
-    input,
+  let ids = dict_dao::creates(
+    inputs,
     options,
   ).await?;
   
-  Ok(id)
+  Ok(ids)
 }
 
 /// 根据 id 修改系统字典
@@ -121,18 +116,18 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
-    let table_comment = i18n_dao::ns(
+    let table_comment = ns(
       "系统字典".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
       ("0".to_owned(), table_comment),
     ]);
-    let err_msg = i18n_dao::ns(
+    let err_msg = ns(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   // 不能修改系统记录的系统字段
@@ -170,57 +165,46 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<DictId> = vec![];
-  for id in ids0 {
-    let is_locked = dict_dao::get_is_locked_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    
-    if is_locked {
-      continue;
+  let models = dict_dao::find_all(
+    Some(DictSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
+    if model.is_locked == 1 {
+      let table_comment = ns(
+        "系统字典".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = ns(
+        "不能删除已经锁定的 {0}",
+        map.into(),
+      ).await?;
+      return Err(anyhow!(err_msg));
     }
-    
-    ids.push(id);
   }
-  if ids.is_empty() && len > 0 {
-    let table_comment = i18n_dao::ns(
-      "系统字典".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "不能删除已经锁定的 {0}",
-      map.into(),
-    ).await?;
-    return Err(SrvErr::msg(err_msg).into());
-  }
-  let ids = ids;
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<DictId> = vec![];
-  for id in ids0 {
-    let model = dict_dao::find_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if model.is_none() {
-      continue;
-    }
-    let model = model.unwrap();
+  let models = dict_dao::find_all(
+    Some(DictSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
     if model.is_sys == 1 {
-      continue;
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      return Err(anyhow!(err_msg));
     }
-    ids.push(id);
-  }
-  if ids.is_empty() && len > 0 {
-    let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(SrvErr::msg(err_msg).into());
   }
   
   let num = dict_dao::delete_by_ids(

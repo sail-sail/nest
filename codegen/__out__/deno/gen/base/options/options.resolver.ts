@@ -81,36 +81,38 @@ export async function findByIdOptions(
 }
 
 /**
- * 创建系统选项
+ * 批量创建系统选项
  */
-export async function createOptions(
-  input: OptionsInput,
+export async function createsOptions(
+  inputs: OptionsInput[],
   unique_type?: UniqueType,
-): Promise<OptionsId> {
-  
-  input.id = undefined;
+): Promise<OptionsId[]> {
   
   const {
     validate,
     setIdByLbl,
-    create,
+    creates,
   } = await import("./options.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
   
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
   await usePermit(
     "/base/options",
     "add",
   );
+  
+  for (const input of inputs) {
+    input.id = undefined;
+    
+    await setIdByLbl(input);
+    
+    await validate(input);
+  }
   const uniqueType = unique_type;
-  const id: OptionsId = await create(input, { uniqueType });
-  return id;
+  const ids = await creates(inputs, { uniqueType });
+  return ids;
 }
 
 /**
