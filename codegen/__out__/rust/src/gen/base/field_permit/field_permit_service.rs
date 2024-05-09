@@ -7,7 +7,7 @@ use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use super::field_permit_model::*;
 use super::field_permit_dao;
@@ -88,21 +88,6 @@ pub async fn set_id_by_lbl(
 
 /// 创建字段权限
 #[allow(dead_code)]
-pub async fn create(
-  input: FieldPermitInput,
-  options: Option<Options>,
-) -> Result<FieldPermitId> {
-  
-  let id = field_permit_dao::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建字段权限
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
@@ -157,26 +142,20 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<FieldPermitId> = vec![];
-  for id in ids0 {
-    let model = field_permit_dao::find_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if model.is_none() {
-      continue;
-    }
-    let model = model.unwrap();
+  let models = field_permit_dao::find_all(
+    Some(FieldPermitSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
     if model.is_sys == 1 {
-      continue;
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      return Err(anyhow!(err_msg));
     }
-    ids.push(id);
-  }
-  if ids.is_empty() && len > 0 {
-    let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(anyhow!(err_msg));
   }
   
   let num = field_permit_dao::delete_by_ids(

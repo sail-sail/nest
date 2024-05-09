@@ -119,29 +119,6 @@ pub struct DataPermitGenMutation;
 impl DataPermitGenMutation {
   
   /// 创建数据权限
-  async fn create_data_permit(
-    &self,
-    ctx: &Context<'_>,
-    input: DataPermitInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DataPermitId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        data_permit_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建数据权限
   async fn creates_data_permit(
     &self,
     ctx: &Context<'_>,

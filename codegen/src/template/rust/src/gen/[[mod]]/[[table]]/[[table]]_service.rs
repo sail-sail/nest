@@ -45,7 +45,7 @@ if (table !== "i18n") {
 #>
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;<#
+use crate::src::base::i18n::i18n_dao::ns;<#
 }
 #><#
 if (hasTenant_id) {
@@ -194,29 +194,6 @@ pub async fn set_id_by_lbl(
 
 /// 创建<#=table_comment#>
 #[allow(dead_code)]
-pub async fn create(
-  input: <#=tableUP#>Input,
-  options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  
-  let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
-  }
-  #>
-  
-  let id = <#=table#>_dao::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建<#=table_comment#>
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
@@ -321,14 +298,14 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
-    let table_comment = i18n_dao::ns(
+    let table_comment = ns(
       "<#=table_comment#>".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
       ("0".to_owned(), table_comment),
     ]);
-    let err_msg = i18n_dao::ns(
+    let err_msg = ns(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
     ).await?;
@@ -422,61 +399,50 @@ pub async fn delete_by_ids(
   if (hasLocked) {
   #>
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<<#=Table_Up#>Id> = vec![];
-  for id in ids0 {
-    let is_locked = <#=table#>_dao::get_is_locked_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    
-    if is_locked {
-      continue;
+  let models = <#=table#>_dao::find_all(
+    Some(<#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
+    if model.is_locked == 1 {
+      let table_comment = ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = ns(
+        "不能删除已经锁定的 {0}",
+        map.into(),
+      ).await?;
+      return Err(anyhow!(err_msg));
     }
-    
-    ids.push(id);
-  }
-  if ids.is_empty() && len > 0 {
-    let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "不能删除已经锁定的 {0}",
-      map.into(),
-    ).await?;
-    return Err(anyhow!(err_msg));
-  }
-  let ids = ids;<#
+  }<#
   }
   #><#
   if (hasIsSys) {
   #>
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<<#=Table_Up#>Id> = vec![];
-  for id in ids0 {
-    let model = <#=table#>_dao::find_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if model.is_none() {
-      continue;
-    }
-    let model = model.unwrap();
+  let models = <#=table#>_dao::find_all(
+    Some(<#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
     if model.is_sys == 1 {
-      continue;
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      return Err(anyhow!(err_msg));
     }
-    ids.push(id);
-  }
-  if ids.is_empty() && len > 0 {
-    let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;
-    return Err(anyhow!(err_msg));
   }<#
   }
   #>

@@ -119,29 +119,6 @@ pub struct PermitGenMutation;
 impl PermitGenMutation {
   
   /// 创建按钮权限
-  async fn create_permit(
-    &self,
-    ctx: &Context<'_>,
-    input: PermitInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<PermitId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        permit_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建按钮权限
   async fn creates_permit(
     &self,
     ctx: &Context<'_>,

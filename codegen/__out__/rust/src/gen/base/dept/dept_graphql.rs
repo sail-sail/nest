@@ -175,29 +175,6 @@ pub struct DeptGenMutation;
 impl DeptGenMutation {
   
   /// 创建部门
-  async fn create_dept(
-    &self,
-    ctx: &Context<'_>,
-    input: DeptInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<DeptId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dept_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建部门
   async fn creates_dept(
     &self,
     ctx: &Context<'_>,

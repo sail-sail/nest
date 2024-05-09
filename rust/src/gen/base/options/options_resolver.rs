@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建系统选项
 #[allow(dead_code)]
-pub async fn create(
-  input: OptionsInput,
-  options: Option<Options>,
-) -> Result<OptionsId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = options_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/options".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = options_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建系统选项
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<OptionsInput>,
   options: Option<Options>,

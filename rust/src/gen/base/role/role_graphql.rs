@@ -173,29 +173,6 @@ pub struct RoleGenMutation;
 impl RoleGenMutation {
   
   /// 创建角色
-  async fn create_role(
-    &self,
-    ctx: &Context<'_>,
-    input: RoleInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<RoleId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        role_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建角色
   async fn creates_role(
     &self,
     ctx: &Context<'_>,

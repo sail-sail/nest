@@ -295,6 +295,10 @@ impl Ctx {
     CtxBuilder::new(ctx.into())
   }
   
+  pub fn resful_builder<'a>() -> CtxBuilder<'a> {
+    CtxBuilder::new(None)
+  }
+  
   pub fn set_auth_model(
     &mut self,
     auth_model: AuthModel,
@@ -1729,9 +1733,9 @@ pub fn get_order_by_query(
       order_by_query += ",";
     }
     if order == "ascending" {
-      order = "asc".to_owned();
+      "asc".clone_into(&mut order)
     } else if order == "descending" {
-      order = "desc".to_owned();
+      "desc".clone_into(&mut order)
     }
     if order != "asc" && order != "desc" {
       continue;

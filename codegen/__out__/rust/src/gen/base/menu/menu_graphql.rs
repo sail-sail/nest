@@ -171,29 +171,6 @@ pub struct MenuGenMutation;
 impl MenuGenMutation {
   
   /// 创建菜单
-  async fn create_menu(
-    &self,
-    ctx: &Context<'_>,
-    input: MenuInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<MenuId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        menu_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建菜单
   async fn creates_menu(
     &self,
     ctx: &Context<'_>,

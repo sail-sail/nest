@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建国际化
 #[allow(dead_code)]
-pub async fn create(
-  input: I18nInput,
-  options: Option<Options>,
-) -> Result<I18nId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = i18n_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/i18n".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = i18n_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建国际化
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<I18nInput>,
   options: Option<Options>,

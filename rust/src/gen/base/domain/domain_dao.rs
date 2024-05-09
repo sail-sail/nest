@@ -458,17 +458,10 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1365,6 +1358,7 @@ async fn _creates(
 }
 
 /// 创建域名
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: DomainInput,
@@ -1732,7 +1726,7 @@ pub async fn default_by_id(
     let mut args = QueryArgs::new();
     
     let sql = format!(
-      "update {} set is_default=0 where is_default = 1 and id!=?",
+      "update {} set is_default=0 where is_default=1 and id!=?",
       table,
     );
     
@@ -1816,6 +1810,10 @@ pub async fn enable_by_ids(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
   }
   
   let options = Options::from(options)
@@ -2132,7 +2130,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

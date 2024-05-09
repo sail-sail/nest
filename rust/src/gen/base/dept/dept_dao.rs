@@ -422,26 +422,23 @@ async fn get_from_query(
     left join base_dept parent_id_lbl
       on parent_id_lbl.id = t.parent_id
     left join base_dept_usr
-      on base_dept_usr.dept_id = t.id
+      on base_dept_usr.dept_id=t.id
       and base_dept_usr.is_deleted = ?
     left join base_usr
       on base_dept_usr.usr_id = base_usr.id
-      and base_usr.is_deleted = ?
-    left join (
-      select
-        json_objectagg(base_dept_usr.order_by, base_usr.id) usr_ids,
-        json_objectagg(base_dept_usr.order_by, base_usr.lbl) usr_ids_lbl,
-        base_dept.id dept_id
-      from base_dept_usr
-      inner join base_usr
-        on base_usr.id = base_dept_usr.usr_id
-      inner join base_dept
-        on base_dept.id = base_dept_usr.dept_id
-      where
-        base_dept_usr.is_deleted = ?
-      group by dept_id
-    ) _usr
-      on _usr.dept_id = t.id
+      and base_usr.is_deleted=?
+    left join (select
+    json_objectagg(base_dept_usr.order_by,base_usr.id) usr_ids,
+    json_objectagg(base_dept_usr.order_by,base_usr.lbl) usr_ids_lbl,
+    base_dept.id dept_id
+    from base_dept_usr
+    inner join base_usr
+      on base_usr.id=base_dept_usr.usr_id
+    inner join base_dept
+      on base_dept.id=base_dept_usr.dept_id
+    where
+      base_dept_usr.is_deleted=?
+    group by dept_id) _usr on _usr.dept_id=t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -565,20 +562,13 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,max(usr_ids) usr_ids
       ,max(usr_ids_lbl) usr_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -1538,6 +1528,7 @@ async fn _creates(
 }
 
 /// 创建部门
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: DeptInput,
@@ -2053,6 +2044,10 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -2367,7 +2362,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();
+  let mut sql_where = String::with_capacity(53);
   
   sql_where += "t.is_deleted = 0";
   

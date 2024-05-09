@@ -1026,11 +1026,16 @@ async fn get_from_query(
       const foreignTable = foreignKey.table;
       const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
+      let cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
     #><#
-      if (foreignKey && foreignKey.type === "many2many") {
+      if (foreignKey.type === "many2many") {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id<#
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
       if (hasIsDeleted) {
         fromQueryIsDeletedNum++;
       #>
@@ -1042,34 +1047,37 @@ async fn get_from_query(
       if (hasIsDeleted) {
         fromQueryIsDeletedNum++;
       #>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = ?<#
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=?<#
       }
       #>
-    left join (
-      select
-        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-          if (foreignKey.lbl) {
-        #>
-        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
-          }
-        #>
-        <#=mod#>_<#=table#>.id <#=many2many.column1#>
-      from <#=foreignKey.mod#>_<#=many2many.table#>
-      inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
-        on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-      inner join <#=mod#>_<#=table#>
-        on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
-      where<#
-      if (hasIsDeleted) {
-        fromQueryIsDeletedNum++;
-      #>
-        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
+    left join (select
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+      if (foreignKey.lbl) {
+    #>
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
       }
-      #>
-      group by <#=many2many.column1#>
-    ) _<#=foreignTable#>
-      on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
-      } else if (foreignKey && !foreignKey.multiple) {
+    #><#
+      for (let j = 0; j < cascade_fields.length; j++) {
+        const cascade_field = cascade_fields[j];
+    #>
+    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
+      }
+    #>
+    <#=mod#>_<#=table#>.id <#=many2many.column1#>
+    from <#=foreignKey.mod#>_<#=many2many.table#>
+    inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
+      on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+    inner join <#=mod#>_<#=table#>
+      on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
+    where<#
+    if (hasIsDeleted) {
+      fromQueryIsDeletedNum++;
+    #>
+      <#=many2many.mod#>_<#=many2many.table#>.is_deleted=?<#
+    }
+    #>
+    group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
+      } else if (!foreignKey.multiple) {
     #>
     left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl
       on <#=column_name#>_lbl.<#=foreignKey.column#> = t.<#=column_name#><#
@@ -1242,9 +1250,7 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*<#
+  let sql = format!(r#"select f.* from (select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -1257,8 +1263,12 @@ pub async fn find_all(
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
         const modelLabel = column.modelLabel;
+        let cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+        }
       #><#
-        if (foreignKey && foreignKey.type === "many2many") {
+        if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
         if (!modelLabel) {
@@ -1266,23 +1276,30 @@ pub async fn find_all(
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
         }
       #><#
-      } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+        }
       #><#
-        if (!modelLabel) {
+      } else {
+      #><#
+        if (foreignKey.lbl && !modelLabel) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
         }
       #><#
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
         }
       #><#
       }
+      #><#
+      }
       #>
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -3398,6 +3415,7 @@ async fn _creates(
 }
 
 /// 创建<#=table_comment#>
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: <#=tableUP#>Input,
@@ -4525,6 +4543,20 @@ pub async fn delete_by_ids(
   if ids.is_empty() {
     return Ok(0);
   }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -4633,41 +4665,13 @@ pub async fn delete_by_ids(
     }
     #>
     
-    let options = options.into();<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    let options = options.into();
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    ).await?;
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -4772,6 +4776,20 @@ pub async fn delete_by_ids(
   ).await?;<#
   }
   #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #><#
     if (table === "i18n" && mod === "base") {
   #>
   
@@ -4805,7 +4823,21 @@ pub async fn default_by_id(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
   }
+  #>
   
   let options = Options::from(options)
     .set_is_debug(false);
@@ -4816,7 +4848,7 @@ pub async fn default_by_id(
     let mut args = QueryArgs::new();
     
     let sql = format!(
-      "update {} set is_default=0 where is_default = 1 and id!=?",
+      "update {} set is_default=0 where is_default=1 and id!=?",
       table,
     );
     
@@ -4824,41 +4856,13 @@ pub async fn default_by_id(
     
     let args = args.into();
     
-    let options = options.clone().into();<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    let options = options.clone().into();
     
     execute(
       sql,
       args,
       options,
-    ).await?;<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    ).await?;
   }
   
   let mut num = 0;
@@ -4880,7 +4884,21 @@ pub async fn default_by_id(
     sql,
     args,
     options,
-  ).await?;
+  ).await?;<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -4934,6 +4952,24 @@ pub async fn enable_by_ids(
     );
   }
   
+  if ids.is_empty() {
+    return Ok(0);
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #>
+  
   let options = Options::from(options)
     .set_is_debug(false);
   
@@ -4953,42 +4989,28 @@ pub async fn enable_by_ids(
     
     let args = args.into();
     
-    let options = options.clone().into();<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    let options = options.clone().into();
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    ).await?;
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
   }
+  #>
   
   Ok(num)
 }<#
@@ -5045,7 +5067,21 @@ pub async fn lock_by_ids(
   
   if ids.is_empty() {
     return Ok(0);
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
   }
+  #>
   
   let options = Options::from(options);
   
@@ -5065,42 +5101,28 @@ pub async fn lock_by_ids(
     
     let args = args.into();
     
-    let options = options.clone().into();<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    let options = options.clone().into();
     
     num += execute(
       sql,
       args,
       options,
-    ).await?;<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
+    ).await?;
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
   }
+  #>
   
   Ok(num)
 }<#
@@ -5611,7 +5633,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = "".to_owned();<#
+  let mut sql_where = String::with_capacity(53);<#
   if (hasIsDeleted) {
   #>
   

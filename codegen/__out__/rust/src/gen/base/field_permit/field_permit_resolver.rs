@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建字段权限
 #[allow(dead_code)]
-pub async fn create(
-  input: FieldPermitInput,
-  options: Option<Options>,
-) -> Result<FieldPermitId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = field_permit_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/field_permit".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = field_permit_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建字段权限
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<FieldPermitInput>,
   options: Option<Options>,

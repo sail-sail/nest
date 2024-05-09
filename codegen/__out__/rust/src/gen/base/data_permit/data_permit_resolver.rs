@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建数据权限
 #[allow(dead_code)]
-pub async fn create(
-  input: DataPermitInput,
-  options: Option<Options>,
-) -> Result<DataPermitId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = data_permit_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/data_permit".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = data_permit_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建数据权限
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<DataPermitInput>,
   options: Option<Options>,

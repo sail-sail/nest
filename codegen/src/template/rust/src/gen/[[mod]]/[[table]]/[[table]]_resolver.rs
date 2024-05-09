@@ -142,7 +142,7 @@ pub async fn find_all(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -226,7 +226,7 @@ pub async fn find_one(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -275,7 +275,7 @@ pub async fn find_by_id(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = "".to_owned();<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -308,76 +308,6 @@ pub async fn get_editable_data_permits_by_ids(
 #>
 
 /// 创建<#=table_comment#>
-#[allow(dead_code)]
-pub async fn create(
-  input: <#=tableUP#>Input,
-  options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
-  if (log) {
-  #>
-  
-  let begin_time = Instant::now();<#
-  }
-  #>
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = <#=table#>_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = <#=table#>_service::create(
-    input,
-    options,
-  ).await?;<#
-  if (log) {
-  #>
-  
-  let new_data = find_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  let method_lbl = ns("新增".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
-  
-  let end_time = Instant::now();
-  
-  let time = {
-    let time = (end_time - begin_time).as_millis();
-    if time > u32::MAX as u128 {
-      u32::MAX
-    } else {
-      time as u32
-    }
-  };
-  
-  log(
-    OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
-      module_lbl: table_comment.clone().into(),
-      method: "create".to_owned().into(),
-      method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
-      time: time.into(),
-      new_data: serde_json::to_string(&new_data)?.into(),
-      ..Default::default()
-    },
-  ).await?;<#
-  }
-  #>
-  
-  Ok(id)
-}
-
-/// 批量创建<#=table_comment#>
 #[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<<#=tableUP#>Input>,
@@ -445,7 +375,7 @@ pub async fn creates(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "create".to_owned().into(),
+      method: "creates".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),

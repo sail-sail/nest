@@ -171,29 +171,6 @@ pub struct OptionsGenMutation;
 impl OptionsGenMutation {
   
   /// 创建系统选项
-  async fn create_options(
-    &self,
-    ctx: &Context<'_>,
-    input: OptionsInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<OptionsId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        options_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建系统选项
   async fn creates_options(
     &self,
     ctx: &Context<'_>,

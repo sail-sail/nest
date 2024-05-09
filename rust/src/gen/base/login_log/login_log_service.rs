@@ -7,7 +7,7 @@ use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
@@ -89,21 +89,6 @@ pub async fn set_id_by_lbl(
 }
 
 /// 创建登录日志
-#[allow(dead_code)]
-pub async fn create(
-  input: LoginLogInput,
-  options: Option<Options>,
-) -> Result<LoginLogId> {
-  
-  let id = login_log_dao::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建登录日志
 #[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<LoginLogInput>,

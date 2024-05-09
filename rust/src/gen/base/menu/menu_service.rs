@@ -7,7 +7,7 @@ use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 use super::menu_model::*;
 use super::menu_dao;
@@ -88,21 +88,6 @@ pub async fn set_id_by_lbl(
 
 /// 创建菜单
 #[allow(dead_code)]
-pub async fn create(
-  input: MenuInput,
-  options: Option<Options>,
-) -> Result<MenuId> {
-  
-  let id = menu_dao::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建菜单
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
@@ -131,14 +116,14 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
-    let table_comment = i18n_dao::ns(
+    let table_comment = ns(
       "菜单".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
       ("0".to_owned(), table_comment),
     ]);
-    let err_msg = i18n_dao::ns(
+    let err_msg = ns(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
     ).await?;
@@ -161,36 +146,31 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let len = ids.len();
-  let ids0 = ids.clone();
-  let mut ids: Vec<MenuId> = vec![];
-  for id in ids0 {
-    let is_locked = menu_dao::get_is_locked_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    
-    if is_locked {
-      continue;
+  let models = menu_dao::find_all(
+    Some(MenuSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    None,
+  ).await?;
+  for model in models {
+    if model.is_locked == 1 {
+      let table_comment = ns(
+        "菜单".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = ns(
+        "不能删除已经锁定的 {0}",
+        map.into(),
+      ).await?;
+      return Err(anyhow!(err_msg));
     }
-    
-    ids.push(id);
   }
-  if ids.is_empty() && len > 0 {
-    let table_comment = i18n_dao::ns(
-      "菜单".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "不能删除已经锁定的 {0}",
-      map.into(),
-    ).await?;
-    return Err(anyhow!(err_msg));
-  }
-  let ids = ids;
   
   let num = menu_dao::delete_by_ids(
     ids,

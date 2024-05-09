@@ -152,29 +152,6 @@ pub struct LangGenMutation;
 impl LangGenMutation {
   
   /// 创建语言
-  async fn create_lang(
-    &self,
-    ctx: &Context<'_>,
-    input: LangInput,
-    unique_type: Option<UniqueType>,
-  ) -> Result<LangId> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        lang_resolver::create(
-          input,
-          options.into(),
-        )
-      }).await
-  }
-  
-  /// 批量创建语言
   async fn creates_lang(
     &self,
     ctx: &Context<'_>,

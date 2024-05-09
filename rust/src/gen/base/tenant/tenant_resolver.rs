@@ -74,34 +74,6 @@ pub async fn find_by_id(
 
 /// 创建租户
 #[allow(dead_code)]
-pub async fn create(
-  input: TenantInput,
-  options: Option<Options>,
-) -> Result<TenantId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = tenant_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    "/base/tenant".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = tenant_service::create(
-    input,
-    options,
-  ).await?;
-  
-  Ok(id)
-}
-
-/// 批量创建租户
-#[allow(dead_code)]
 pub async fn creates(
   inputs: Vec<TenantInput>,
   options: Option<Options>,
