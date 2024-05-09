@@ -151,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: RoleId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: RoleId = ids[i];
-      const is_locked = await roleDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await roleDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "角色");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await roleDao.deleteByIds(ids);

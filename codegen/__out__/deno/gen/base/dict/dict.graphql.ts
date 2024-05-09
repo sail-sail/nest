@@ -178,7 +178,7 @@ type Query {
   findOneDict(search: DictSearch, sort: [SortInput!]): DictModel
   "根据 id 查找系统字典"
   findByIdDict(id: DictId!): DictModel
-  "查找 系统字典 order_by 字段的最大值"
+  "查找系统字典 order_by 字段的最大值"
   findLastOrderByDict: Int!
 }
 type Mutation {

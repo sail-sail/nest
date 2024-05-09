@@ -190,7 +190,7 @@ type Query {
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
   "根据 id 查找角色"
   findByIdRole(id: RoleId!): RoleModel
-  "查找 角色 order_by 字段的最大值"
+  "查找角色 order_by 字段的最大值"
   findLastOrderByRole: Int!
 }
 type Mutation {
