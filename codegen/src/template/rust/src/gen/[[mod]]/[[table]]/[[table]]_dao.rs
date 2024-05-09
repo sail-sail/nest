@@ -159,6 +159,7 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,<#
   if (hasOrderBy) {
@@ -1188,7 +1189,18 @@ pub async fn find_all(
   #>
   // <#=column_comment#>
   if let Some(search) = &search {
-    if search.<#=column_name_rust#>.is_some() && search.<#=column_name_rust#>.as_ref().unwrap().is_empty() {
+    if search.<#=column_name_rust#>.is_some() {
+      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.<#=column_name#>.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }<#
@@ -1380,7 +1392,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictNum#>] = dict_vec
     .try_into()
-    .map_err(|err| anyhow!(format!("{:#?}", err)))?;<#
+    .map_err(|err| anyhow!("{:#?}", err))?;<#
     }
   #><#
     if (hasDictbiz) {
@@ -1445,7 +1457,7 @@ pub async fn find_all(
     #>
   ]: [Vec<_>; <#=dictBizNum#>] = dictbiz_vec
     .try_into()
-    .map_err(|err| anyhow!(format!("{:#?}", err)))?;<#
+    .map_err(|err| anyhow!("{:#?}", err))?;<#
     }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -2319,7 +2331,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!(format!("{column_comment} {err_msg}")));
+        return Err(anyhow!("{column_comment} {err_msg}"));
       }
     }
   }
@@ -2346,7 +2358,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!(format!("{column_comment} {err_msg}")));
+        return Err(anyhow!("{column_comment} {err_msg}"));
       }
     }
   }<#
@@ -2370,7 +2382,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!(format!("{column_comment} {err_msg}")));
+        return Err(anyhow!("{column_comment} {err_msg}"));
       }
     }
   }<#
@@ -2828,7 +2840,7 @@ async fn _creates(
   for input in inputs {
   
     if input.id.is_some() {
-      return Err(anyhow!(format!("Can not set id when create in dao: {table}")));
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
     }<#
     if (false) {
     #>
@@ -3445,7 +3457,7 @@ pub async fn create(
   ).await?;
   
   if ids.is_empty() {
-    return Err(anyhow!(format!("_creates: Create failed in dao: {table}")));
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
   }
   let id = ids[0].clone();
   

@@ -38,6 +38,8 @@ use crate::gen::base::usr::usr_model::UsrId;
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::org::org_model::OrgId;
 
+pub static FIND_ALL_IDS_LIMIT: usize = 5000;
+
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
     .parse::<i64>()
@@ -1400,6 +1402,9 @@ pub struct Options {
   #[allow(dead_code)]
   database_name: &'static str,
   
+  #[new(default)]
+  ids_limit: Option<usize>,
+  
 }
 
 impl Debug for Options {
@@ -1529,6 +1534,11 @@ impl Options {
   #[allow(dead_code)]
   pub fn get_has_data_permit(&self) -> Option<bool> {
     self.has_data_permit
+  }
+  
+  #[inline]
+  pub fn get_ids_limit(&self) -> Option<usize> {
+    self.ids_limit
   }
   
 }
