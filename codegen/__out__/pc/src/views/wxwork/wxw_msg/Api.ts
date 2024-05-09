@@ -288,7 +288,7 @@ export async function getWxwAppList() {
 }
 
 /**
- * 下载导入模板
+ * 下载企微消息导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {

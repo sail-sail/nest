@@ -139,12 +139,12 @@ type Query {
   findOneWxwApp(search: WxwAppSearch, sort: [SortInput!]): WxwAppModel
   "根据 id 查找企微应用"
   findByIdWxwApp(id: WxwAppId!): WxwAppModel
-  "查找 企微应用 order_by 字段的最大值"
+  "查找企微应用 order_by 字段的最大值"
   findLastOrderByWxwApp: Int!
 }
 type Mutation {
-  "创建企微应用"
-  createWxwApp(input: WxwAppInput!, unique_type: UniqueType): WxwAppId!
+  "批量创建企微应用"
+  createsWxwApp(inputs: [WxwAppInput!]!, unique_type: UniqueType): [WxwAppId!]!
   "根据 id 修改企微应用"
   updateByIdWxwApp(id: WxwAppId!, input: WxwAppInput!): WxwAppId!
   "根据 ids 删除企微应用"

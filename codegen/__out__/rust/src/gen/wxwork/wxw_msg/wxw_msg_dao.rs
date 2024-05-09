@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 use tracing::{info, error};
 #[allow(unused_imports)]
 use crate::common::util::string::*;
@@ -21,9 +21,9 @@ use crate::common::context::{
   get_req_id,
   QueryArgs,
   Options,
+  FIND_ALL_IDS_LIMIT,
   CountModel,
   UniqueType,
-  SrvErr,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -464,25 +464,69 @@ pub async fn find_all(
   }
   // 企微应用
   if let Some(search) = &search {
-    if search.wxw_app_id.is_some() && search.wxw_app_id.as_ref().unwrap().is_empty() {
+    if search.wxw_app_id.is_some() {
+      let len = search.wxw_app_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.wxw_app_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 发送状态
   if let Some(search) = &search {
-    if search.errcode.is_some() && search.errcode.as_ref().unwrap().is_empty() {
+    if search.errcode.is_some() {
+      let len = search.errcode.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.errcode.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 创建人
   if let Some(search) = &search {
-    if search.create_usr_id.is_some() && search.create_usr_id.as_ref().unwrap().is_empty() {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
   // 更新人
   if let Some(search) = &search {
-    if search.update_usr_id.is_some() && search.update_usr_id.as_ref().unwrap().is_empty() {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
       return Ok(vec![]);
     }
   }
@@ -514,18 +558,11 @@ pub async fn find_all(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!(r#"
-    select f.* from (
-    select t.*
+  let sql = format!(r#"select f.* from (select t.*
       ,wxw_app_id_lbl.lbl wxw_app_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
-    from
-      {from_query}
-    where
-      {where_query}
-    group by t.id{order_by_query}) f {page_query}
-  "#);
+    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -546,7 +583,7 @@ pub async fn find_all(
     errcode_dict,
   ]: [Vec<_>; 1] = dict_vec
     .try_into()
-    .map_err(|err| anyhow::anyhow!(format!("{:#?}", err)))?;
+    .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -1016,7 +1053,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(None)
 }
@@ -1083,7 +1120,305 @@ pub fn get_is_debug(
   is_debug
 }
 
+/// 批量创建企微消息
+pub async fn creates(
+  inputs: Vec<WxwMsgInput>,
+  options: Option<Options>,
+) -> Result<Vec<WxwMsgId>> {
+  
+  let table = "wxwork_wxw_msg";
+  let method = "creates";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs,
+    options,
+  ).await?;
+  
+  Ok(ids)
+}
+
+/// 批量创建企微消息
+#[allow(unused_variables)]
+async fn _creates(
+  inputs: Vec<WxwMsgInput>,
+  options: Option<Options>,
+) -> Result<Vec<WxwMsgId>> {
+  
+  let table = "wxwork_wxw_msg";
+  
+  let unique_type = options.as_ref()
+    .and_then(|item|
+      item.get_unique_type()
+    )
+    .unwrap_or_default();
+  
+  let mut ids2: Vec<WxwMsgId> = vec![];
+  let mut inputs2: Vec<WxwMsgInput> = vec![];
+  
+  for input in inputs {
+  
+    if input.id.is_some() {
+      return Err(anyhow!("Can not set id when create in dao: {table}"));
+    }
+    
+    let old_models = find_by_unique(
+      input.clone().into(),
+      None,
+      None,
+    ).await?;
+    
+    if !old_models.is_empty() {
+      let mut id: Option<WxwMsgId> = None;
+      
+      for old_model in old_models {
+        let options = Options::from(options.clone())
+          .set_unique_type(unique_type);
+        let options = Some(options);
+        
+        id = check_by_unique(
+          input.clone(),
+          old_model,
+          options,
+        ).await?;
+        
+        if id.is_some() {
+          break;
+        }
+      }
+      if let Some(id) = id {
+        ids2.push(id);
+        continue;
+      }
+      inputs2.push(input);
+    } else {
+      inputs2.push(input);
+    }
+    
+  }
+  
+  if inputs2.is_empty() {
+    return Ok(ids2);
+  }
+    
+  let mut args = QueryArgs::new();
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  
+  sql_fields += "id";
+  sql_fields += ",create_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",tenant_id";
+  // 企微应用
+  sql_fields += ",wxw_app_id";
+  // 发送状态
+  sql_fields += ",errcode";
+  // 成员ID
+  sql_fields += ",touser";
+  // 标题
+  sql_fields += ",title";
+  // 描述
+  sql_fields += ",description";
+  // 链接
+  sql_fields += ",url";
+  // 按钮文字
+  sql_fields += ",btntxt";
+  // 错误信息
+  sql_fields += ",errmsg";
+  // 消息ID
+  sql_fields += ",msgid";
+  // 更新人
+  sql_fields += ",update_usr_id";
+  // 更新时间
+  sql_fields += ",update_time";
+  
+  let inputs2_len = inputs2.len();
+  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
+  let mut inputs2_ids = vec![];
+  
+  for (i, input) in inputs2
+    .clone()
+    .into_iter()
+    .enumerate()
+  {
+    
+    let mut id: WxwMsgId = get_short_uuid().into();
+    loop {
+      let is_exist = exists_by_id(
+        id.clone(),
+        None,
+      ).await?;
+      if !is_exist {
+        break;
+      }
+      error!(
+        "{req_id} ID_COLLIDE: {table} {id}",
+        req_id = get_req_id(),
+      );
+      id = get_short_uuid().into();
+    }
+    let id = id;
+    ids2.push(id.clone());
+    
+    inputs2_ids.push(id.clone());
+    
+    sql_values += "(?";
+    args.push(id.into());
+    
+    if let Some(create_time) = input.create_time {
+      sql_values += ",?";
+      args.push(create_time.into());
+    } else {
+      sql_values += ",?";
+      args.push(get_now().into());
+    }
+    
+    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
+      let create_usr_id = input.create_usr_id.clone().unwrap();
+      sql_values += ",?";
+      args.push(create_usr_id.into());
+    } else {
+      let usr_id = get_auth_id();
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    
+    if let Some(tenant_id) = input.tenant_id {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企微应用
+    if let Some(wxw_app_id) = input.wxw_app_id {
+      sql_values += ",?";
+      args.push(wxw_app_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 发送状态
+    if let Some(errcode) = input.errcode {
+      sql_values += ",?";
+      args.push(errcode.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 成员ID
+    if let Some(touser) = input.touser {
+      sql_values += ",?";
+      args.push(touser.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 标题
+    if let Some(title) = input.title {
+      sql_values += ",?";
+      args.push(title.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 描述
+    if let Some(description) = input.description {
+      sql_values += ",?";
+      args.push(description.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 链接
+    if let Some(url) = input.url {
+      sql_values += ",?";
+      args.push(url.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 按钮文字
+    if let Some(btntxt) = input.btntxt {
+      sql_values += ",?";
+      args.push(btntxt.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 错误信息
+    if let Some(errmsg) = input.errmsg {
+      sql_values += ",?";
+      args.push(errmsg.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 消息ID
+    if let Some(msgid) = input.msgid {
+      sql_values += ",?";
+      args.push(msgid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新人
+    if let Some(update_usr_id) = input.update_usr_id {
+      sql_values += ",?";
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 更新时间
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    sql_values.push(')');
+    if i < inputs2_len - 1 {
+      sql_values.push(',');
+    }
+    
+  }
+  
+  let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.into();
+  
+  execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  for (i, input) in inputs2
+    .into_iter()
+    .enumerate()
+  {
+    let id = inputs2_ids.get(i).unwrap().clone();
+  }
+  
+  Ok(ids2)
+}
+
 /// 创建企微消息
+#[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
   mut input: WxwMsgInput,
@@ -1107,198 +1442,15 @@ pub async fn create(
     );
   }
   
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
-  
-  if input.id.is_some() {
-    return Err(SrvErr::msg(
-      format!("Can not set id when create in dao: {table}")
-    ).into());
-  }
-  
-  let old_models = find_by_unique(
-    input.clone().into(),
-    None,
-    None,
-  ).await?;
-  
-  if !old_models.is_empty() {
-    
-    let unique_type = options.as_ref()
-      .and_then(|item|
-        item.get_unique_type()
-      )
-      .unwrap_or_default();
-    
-    let mut id: Option<WxwMsgId> = None;
-    
-    for old_model in old_models {
-      
-      let options = Options::from(options.clone())
-        .set_unique_type(unique_type);
-      let options = Some(options);
-      
-      id = check_by_unique(
-        input.clone(),
-        old_model,
-        options,
-      ).await?;
-      
-      if id.is_some() {
-        break;
-      }
-    }
-    
-    if let Some(id) = id {
-      return Ok(id);
-    }
-  }
-  
-  let mut id: WxwMsgId;
-  loop {
-    id = get_short_uuid().into();
-    let is_exist = exists_by_id(
-      id.clone(),
-      None,
-    ).await?;
-    if !is_exist {
-      break;
-    }
-    error!(
-      "{req_id} ID_COLLIDE: {table} {id}",
-      req_id = get_req_id(),
-    );
-  }
-  let id = id;
-  
-  let mut args = QueryArgs::new();
-  
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
-  let mut sql_values = String::with_capacity(2 * 16 + 2);
-  
-  sql_fields += "id";
-  sql_values += "?";
-  args.push(id.clone().into());
-  
-  if let Some(create_time) = input.create_time {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(create_time.into());
-  } else {
-    sql_fields += ",create_time";
-    sql_values += ",?";
-    args.push(get_now().into());
-  }
-  
-  if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-    let create_usr_id = input.create_usr_id.clone().unwrap();
-    sql_fields += ",create_usr_id";
-    sql_values += ",?";
-    args.push(create_usr_id.into());
-  } else {
-    let usr_id = get_auth_id();
-    if let Some(usr_id) = usr_id {
-      sql_fields += ",create_usr_id";
-      sql_values += ",?";
-      args.push(usr_id.into());
-    }
-  }
-  
-  if let Some(tenant_id) = input.tenant_id {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  } else if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }
-  // 企微应用
-  if let Some(wxw_app_id) = input.wxw_app_id {
-    sql_fields += ",wxw_app_id";
-    sql_values += ",?";
-    args.push(wxw_app_id.into());
-  }
-  // 发送状态
-  if let Some(errcode) = input.errcode {
-    sql_fields += ",errcode";
-    sql_values += ",?";
-    args.push(errcode.into());
-  }
-  // 成员ID
-  if let Some(touser) = input.touser {
-    sql_fields += ",touser";
-    sql_values += ",?";
-    args.push(touser.into());
-  }
-  // 标题
-  if let Some(title) = input.title {
-    sql_fields += ",title";
-    sql_values += ",?";
-    args.push(title.into());
-  }
-  // 描述
-  if let Some(description) = input.description {
-    sql_fields += ",description";
-    sql_values += ",?";
-    args.push(description.into());
-  }
-  // 链接
-  if let Some(url) = input.url {
-    sql_fields += ",url";
-    sql_values += ",?";
-    args.push(url.into());
-  }
-  // 按钮文字
-  if let Some(btntxt) = input.btntxt {
-    sql_fields += ",btntxt";
-    sql_values += ",?";
-    args.push(btntxt.into());
-  }
-  // 错误信息
-  if let Some(errmsg) = input.errmsg {
-    sql_fields += ",errmsg";
-    sql_values += ",?";
-    args.push(errmsg.into());
-  }
-  // 消息ID
-  if let Some(msgid) = input.msgid {
-    sql_fields += ",msgid";
-    sql_values += ",?";
-    args.push(msgid.into());
-  }
-  // 更新人
-  if let Some(update_usr_id) = input.update_usr_id {
-    sql_fields += ",update_usr_id";
-    sql_values += ",?";
-    args.push(update_usr_id.into());
-  }
-  // 更新时间
-  if let Some(update_time) = input.update_time {
-    sql_fields += ",update_time";
-    sql_values += ",?";
-    args.push(update_time.into());
-  }
-  
-  let sql = format!(
-    "insert into {} ({}) values ({})",
-    table,
-    sql_fields,
-    sql_values,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  execute(
-    sql,
-    args,
+  let ids = _creates(
+    vec![input],
     options,
   ).await?;
+  
+  if ids.is_empty() {
+    return Err(anyhow!("_creates: Create failed in dao: {table}"));
+  }
+  let id = ids[0].clone();
   
   Ok(id)
 }
@@ -1386,7 +1538,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   
   {
@@ -1426,7 +1578,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -1766,7 +1918,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(SrvErr::msg(err_msg).into());
+        return Err(anyhow!(err_msg));
       }
     }
     
@@ -1864,7 +2016,7 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
-    return Err(SrvErr::msg(err_msg).into());
+    return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
 }

@@ -98,7 +98,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let token_time: Option<chrono::NaiveDateTime> = row.try_get("token_time")?;
     let token_time_lbl: String = match token_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 令牌超时时间
     let expires_in: u32 = row.try_get("expires_in")?;
@@ -110,7 +110,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
@@ -120,7 +120,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => "".to_owned(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;

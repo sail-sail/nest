@@ -121,12 +121,12 @@ pub struct WxwAppTokenGenMutation;
 impl WxwAppTokenGenMutation {
   
   /// 创建企微应用接口凭据
-  async fn create_wxw_app_token(
+  async fn creates_wxw_app_token(
     &self,
     ctx: &Context<'_>,
-    input: WxwAppTokenInput,
+    inputs: Vec<WxwAppTokenInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<WxwAppTokenId> {
+  ) -> Result<Vec<WxwAppTokenId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -136,8 +136,8 @@ impl WxwAppTokenGenMutation {
       .with_tran()?
       .build()
       .scope({
-        wxw_app_token_resolver::create(
-          input,
+        wxw_app_token_resolver::creates(
+          inputs,
           options.into(),
         )
       }).await
