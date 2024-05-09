@@ -18,29 +18,32 @@
   },
   "npmRegistry": "https://registry.npmmirror.com",
   "imports": {
-    "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.224.0/",
-    "oak": "https://deno.land/x/oak@v14.1.1/mod.ts",
-    "graphql": "https://esm.sh/graphql@17.0.0-alpha.3",
-    "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
-    "generic_pool": "https://deno.land/x/generic_pool@v1.0.4/mod.ts",
-    "redis": "https://deno.land/x/redis@v0.32.3/mod.ts",
-    "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
-    "jose/": "https://deno.land/x/jose@v5.2.4/",
-    "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
+    "/": "./",
+    "@hexagon/croner": "jsr:@hexagon/croner@8.0.2",
+    "@oak/oak": "jsr:@oak/oak@16.0.0",
+    "@std/crypto": "jsr:@std/crypto@0.224.0",
+    "@std/encoding": "jsr:@std/encoding@0.224.0",
+    "@std/io": "jsr:@std/io@0.224.0",
+    "@std/log": "jsr:@std/log@0.224.0",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
     "S3/S3Error": "https://deno.land/x/s3@0.5.0/src/error.ts",
+    "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
     "comrak": "https://deno.land/x/comrak@0.1.1/mod.ts",
     "dayjs": "https://esm.sh/dayjs@1.11.11",
-    "mnemonist": "https://esm.sh/mnemonist@0.39.8",
-    "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
-    "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
-    "imagescript": "https://deno.land/x/imagescript@1.2.17/mod.ts",
     "decimal.js": "https://esm.sh/decimal.js-light@2.5.1",
-    "croner": "https://deno.land/x/croner@8.0.2/dist/croner.js"
+    "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
+    "generic_pool": "https://deno.land/x/generic_pool@v1.0.4/mod.ts",
+    "graphql": "https://esm.sh/graphql@17.0.0-alpha.3",
+    "imagescript": "https://deno.land/x/imagescript@1.2.17/mod.ts",
+    "jose/": "https://deno.land/x/jose@v5.2.4/",
+    "mnemonist": "https://esm.sh/mnemonist@0.39.8",
+    "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
+    "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
+    "redis": "https://deno.land/x/redis@v0.32.3/mod.ts",
+    "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts"
   },
   "tasks": {
-    "update": "deno run --allow-read=./ --allow-net --allow-write=./ https://deno.land/x/deno_outdated@0.2.4/cli.ts"
+    "update": "deno run --allow-read=./ --allow-net --allow-write=./ https://deno.land/x/deno_outdated@0.2.5/cli.ts"
   }
 }
