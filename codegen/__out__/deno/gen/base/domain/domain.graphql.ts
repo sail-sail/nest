@@ -159,7 +159,7 @@ type Query {
   findOneDomain(search: DomainSearch, sort: [SortInput!]): DomainModel
   "根据 id 查找域名"
   findByIdDomain(id: DomainId!): DomainModel
-  "查找 域名 order_by 字段的最大值"
+  "查找域名 order_by 字段的最大值"
   findLastOrderByDomain: Int!
 }
 type Mutation {
