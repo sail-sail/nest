@@ -169,7 +169,7 @@ type Query {
   findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
   "根据 id 查找菜单"
   findByIdMenu(id: MenuId!): MenuModel
-  "查找 菜单 order_by 字段的最大值"
+  "查找菜单 order_by 字段的最大值"
   findLastOrderByMenu: Int!
 }
 type Mutation {

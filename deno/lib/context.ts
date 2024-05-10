@@ -20,7 +20,7 @@ import type {
   FieldInfo,
 } from "./mysql/src/packets/parsers/result.ts";
 
-import { Context as OakContext } from "oak";
+import { Context as OakContext } from "@oak/oak";
 
 import { getEnv } from "/lib/env.ts";
 import { AUTHORIZATION } from "./auth/auth.constants.ts";

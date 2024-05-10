@@ -3,7 +3,7 @@ import { encode } from "./buffer.ts";
 
 import type {
   DigestAlgorithm,
-} from "std/crypto/mod.ts";
+} from "@std/crypto";
 
 async function hash(
   algorithm: DigestAlgorithm,
