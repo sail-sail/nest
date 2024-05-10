@@ -26,7 +26,6 @@ export const cronJobLogDetailFields = [
   "id",
   // 任务执行日志
   "cron_job_log_id",
-  "cron_job_log_id_lbl",
   // 日志明细
   "lbl",
   // 创建时间

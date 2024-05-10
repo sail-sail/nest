@@ -174,7 +174,7 @@ type Query {
   findOneCronJob(search: CronJobSearch, sort: [SortInput!]): CronJobModel
   "根据 id 查找定时任务"
   findByIdCronJob(id: CronJobId!): CronJobModel
-  "查找 定时任务 order_by 字段的最大值"
+  "查找定时任务 order_by 字段的最大值"
   findLastOrderByCronJob: Int!
 }
 type Mutation {
