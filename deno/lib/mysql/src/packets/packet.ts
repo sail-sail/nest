@@ -3,7 +3,7 @@ import { BufferReader, BufferWriter } from "../buffer.ts";
 import { WriteError } from "../constant/errors.ts";
 import { debug, log } from "../logger.ts";
 import { PacketType } from "../../src/constant/packet.ts";
-import type { Reader } from "std/io/types.ts";
+import type { Reader } from "@std/io/types";
 
 /** @ignore */
 interface PacketHeader {

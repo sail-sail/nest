@@ -1,6 +1,6 @@
 import {
   encodeBase64,
-} from "std/encoding/base64.ts";
+} from "@std/encoding/base64";
 
 import type {
   JWTPayload,

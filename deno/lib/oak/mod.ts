@@ -1,4 +1,4 @@
-import { Application } from "oak";
+import { Application } from "@oak/oak";
 
 import { createContext } from "./create_context.ts";
 import { timing } from "./timing.ts";
