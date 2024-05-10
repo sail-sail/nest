@@ -1,7 +1,7 @@
 import {
   crypto,
   type DigestAlgorithm,
-} from "std/crypto/mod.ts";
+} from "@std/crypto";
 
 export async function createHash(
   algorithm: DigestAlgorithm,

@@ -152,24 +152,37 @@ export const <#=fieldsName#> = [<#
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
     if (column_name === "org_id") continue;
-    let column_type = column.COLUMN_TYPE;
-    let data_type = column.DATA_TYPE;
-    let column_comment = column.COLUMN_COMMENT;
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_type = column.COLUMN_TYPE;
+    const data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT;
     const foreignKey = column.foreignKey;
     const isPassword = column.isPassword;
     if (isPassword) continue;
+    const modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      }
+    }
   #><#
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
-      || data_type === "datetime" || data_type === "date"
-    ) {
+    if (foreignKey) {
+  #>
+  // <#=column_comment#>
+  "<#=column_name#>",<#
+    if (foreignKey.lbl && !modelLabel) {
+  #>
+  "<#=column_name#>_lbl",<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  "<#=column_name#>_<#=cascade_field#>",<#
+    }
+  #><#
+    } else if (column.dict || column.dictbiz || data_type === "datetime" || data_type === "date") {
   #>
   // <#=column_comment#>
   "<#=column_name#>",

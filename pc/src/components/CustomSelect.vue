@@ -8,36 +8,26 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <el-tooltip
-    :disabled="true || (selectRef?.dropdownMenuVisible || props.multiple)
-      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
+  <el-dropdown
+    un-w="full"
+    trigger="contextmenu"
+    placement="top"
   >
-    <template
-      #content
-    >
-      <div
-        un-flex="~ gap-1 wrap"
-        un-items-center
+    <template #dropdown>
+      <el-dropdown-menu
+        un-min="w-22"
         un-box-border
-        un-rounded
-        un-w="full"
-        un-line-height="normal"
-        un-break-words
-        :class="{
-          custom_select_isShowModelLabel: isShowModelLabel,
-        }"
       >
-        <span
-          v-if="isShowModelLabel"
+        
+        <el-dropdown-item
+          un-flex="~"
+          un-justify="center"
+          @click="copyModelLabel"
         >
-          {{ props.modelLabel || "" }}
-        </span>
-        <span
-          v-else
-        >
-          {{ modelLabels[0] || "" }}
-        </span>
-      </div>
+          复制
+        </el-dropdown-item>
+        
+      </el-dropdown-menu>
     </template>
     <ElSelectV2
       ref="selectRef"
@@ -91,7 +81,7 @@
         <slot :name="key"></slot>
       </template>
     </ElSelectV2>
-  </el-tooltip>
+  </el-dropdown>
 </div>
 <template
   v-else
@@ -250,6 +240,10 @@ import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
+import {
+  copyText,
+} from "@/utils/common";
+
 const t = getCurrentInstance();
 
 const usrStore = useUsrStore();
@@ -317,6 +311,12 @@ const props = withDefaults(
     readonlyMaxCollapseTags: 1,
   },
 );
+
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
 
 let modelValue = $ref(props.modelValue);
 
@@ -526,14 +526,14 @@ function modelValueUpdate(value?: string | string[] | null) {
   }
 }
 
-const modelLabels = $computed(() => {
+const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
-    return "";
+    return [ "" ];
   }
   if (!props.multiple) {
     const model = data.find((item) => props.optionsMap(item).value === modelValue);
     if (!model) {
-      return "";
+      return [ "" ];
     }
     return [ props.optionsMap(model).label || "" ];
   }
