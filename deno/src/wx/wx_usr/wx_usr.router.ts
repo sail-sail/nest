@@ -5,7 +5,7 @@ import {
  
 import {
   Router,
-} from "oak";
+} from "@oak/oak";
 
 import * as wx_usrService from "./wx_usr.service.ts";
  

@@ -4,7 +4,7 @@ import {
 
 import {
   Router,
-} from "oak";
+} from "@oak/oak";
 
 import * as wx_pay_noticeService from "./wx_pay_notice.service.ts";
 

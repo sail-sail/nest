@@ -5,7 +5,7 @@ import * as x509_1 from '@fidm/x509';
 
 import { Buffer } from "node:buffer";
 
-import { encodeBase64 } from "std/encoding/base64.ts";
+import { encodeBase64 } from "@std/encoding/base64";
 
 import type {
   Ipay,
