@@ -166,7 +166,7 @@ type Query {
   findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据 id 查找租户"
   findByIdTenant(id: TenantId!): TenantModel
-  "查找 租户 order_by 字段的最大值"
+  "查找租户 order_by 字段的最大值"
   findLastOrderByTenant: Int!
 }
 type Mutation {

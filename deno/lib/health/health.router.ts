@@ -1,6 +1,6 @@
 import {
   Router,
-} from "oak";
+} from "@oak/oak";
 
 import {
   error,

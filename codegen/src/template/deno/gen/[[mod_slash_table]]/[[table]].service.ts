@@ -445,18 +445,14 @@ export async function deleteByIds(
   #>
   
   {
-    const ids2: <#=Table_Up#>Id[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: <#=Table_Up#>Id = ids[i];
-      const is_locked = await <#=table#>Dao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await <#=table#>Dao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "<#=table_comment#>");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }<#
   }
   #><#
@@ -464,19 +460,14 @@ export async function deleteByIds(
   #>
   
   {
-    const ids2: <#=Table_Up#>Id[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: <#=Table_Up#>Id = ids[i];
-      const model = await <#=table#>Dao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await <#=table#>Dao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }<#
   }
   #>
