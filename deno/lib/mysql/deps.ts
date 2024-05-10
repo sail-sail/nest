@@ -1,12 +1,6 @@
-// export {
-//   deferred,
-//   delay,
-//   type Deferred,
-// } from "std/async/mod.ts";
-
 export {
   decodeBase64 as base64Decode,
-} from "std/encoding/base64.ts";
+} from "@std/encoding/base64";
 
 export {
   format as byteFormat,
@@ -20,4 +14,4 @@ export {
   replaceParams,
 } from "./sql_builder.ts";
 
-export * as log from "std/log/mod.ts";
+export * as log from "@std/log";

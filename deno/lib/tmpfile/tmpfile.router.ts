@@ -1,7 +1,7 @@
 import {
   Router,
   type RouterContext,
-} from "oak";
+} from "@oak/oak";
 
 import {
   error,
