@@ -3,7 +3,9 @@ import {
   runInAsyncHooks,
 } from "/lib/context.ts";
 
-import { Cron } from "croner";
+import {
+  Cron,
+} from "@hexagon/croner";
 
 import {
   findAll as findAllCronJob,

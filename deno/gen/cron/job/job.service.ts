@@ -158,34 +158,25 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: JobId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: JobId = ids[i];
-      const is_locked = await jobDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await jobDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "任务");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   {
-    const ids2: JobId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: JobId = ids[i];
-      const model = await jobDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await jobDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await jobDao.deleteByIds(ids);

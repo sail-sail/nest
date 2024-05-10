@@ -145,7 +145,7 @@ type Query {
   findOneJob(search: JobSearch, sort: [SortInput!]): JobModel
   "根据 id 查找任务"
   findByIdJob(id: JobId!): JobModel
-  "查找 任务 order_by 字段的最大值"
+  "查找任务 order_by 字段的最大值"
   findLastOrderByJob: Int!
 }
 type Mutation {
