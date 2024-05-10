@@ -168,34 +168,25 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: OptionsId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OptionsId = ids[i];
-      const is_locked = await optionsDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await optionsDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "系统选项");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   {
-    const ids2: OptionsId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OptionsId = ids[i];
-      const model = await optionsDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await optionsDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await optionsDao.deleteByIds(ids);

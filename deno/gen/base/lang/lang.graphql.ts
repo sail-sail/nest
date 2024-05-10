@@ -131,7 +131,7 @@ type Query {
   findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
   "根据 id 查找语言"
   findByIdLang(id: LangId!): LangModel
-  "查找 语言 order_by 字段的最大值"
+  "查找语言 order_by 字段的最大值"
   findLastOrderByLang: Int!
 }
 type Mutation {

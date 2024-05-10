@@ -158,7 +158,7 @@ type Query {
   findOneOptions(search: OptionsSearch, sort: [SortInput!]): OptionsModel
   "根据 id 查找系统选项"
   findByIdOptions(id: OptionsId!): OptionsModel
-  "查找 系统选项 order_by 字段的最大值"
+  "查找系统选项 order_by 字段的最大值"
   findLastOrderByOptions: Int!
 }
 type Mutation {

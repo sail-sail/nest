@@ -8,37 +8,26 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <el-tooltip
-    :disabled="true || (selectRef?.dropdownMenuVisible || props.multiple)
-      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
+  <el-dropdown
+    un-w="full"
+    trigger="contextmenu"
+    placement="top"
   >
-    <template
-      #content
-    >
-      <div
-        un-flex="~ gap-1 wrap"
-        un-items-center
+    <template #dropdown>
+      <el-dropdown-menu
+        un-min="w-22"
         un-box-border
-        un-rounded
-        un-w="full"
-        un-line-height="normal"
-        un-break-words
-        :class="{
-          'custom_select_space_normal': true,
-          custom_select_isShowModelLabel: isShowModelLabel,
-        }"
       >
-        <span
-          v-if="isShowModelLabel"
+        
+        <el-dropdown-item
+          un-flex="~"
+          un-justify="center"
+          @click="copyModelLabel"
         >
-          {{ props.modelLabel || "" }}
-        </span>
-        <span
-          v-else
-        >
-          {{ modelLabels[0] || "" }}
-        </span>
-      </div>
+          复制
+        </el-dropdown-item>
+        
+      </el-dropdown-menu>
     </template>
     <ElSelectV2
       ref="selectRef"
@@ -91,7 +80,7 @@
         <slot :name="key"></slot>
       </template>
     </ElSelectV2>
-  </el-tooltip>
+  </el-dropdown>
 </div>
 <template
   v-else
@@ -250,6 +239,10 @@ import type {
   GetDict,
 } from "@/typings/types";
 
+import {
+  copyText,
+} from "@/utils/common";
+
 export type DictModel = GetDict;
 
 const t = getCurrentInstance();
@@ -309,6 +302,12 @@ const props = withDefaults(
     readonlyMaxCollapseTags: 1,
   },
 );
+
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
 
 let inited = $ref(false);
 
@@ -542,14 +541,14 @@ const {
   initSysI18ns,
 } = useI18n();
 
-const modelLabels = $computed(() => {
+const modelLabels: string[] = $computed(() => {
   if (modelValue == null) {
-    return "";
+    return [ "" ];
   }
   if (!props.multiple) {
     const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
     if (!model) {
-      return "";
+      return [ "" ];
     }
     return [ props.optionsMap(model).label ?? "" ];
   }
