@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -13,10 +13,8 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
-  delCache as delCacheCtx,
   query,
   queryOne,
   execute,
@@ -86,19 +84,19 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -122,51 +120,51 @@ async function getWhereQuery(
     whereQuery += ` and t.errcode in ${ args.push(search.errcode) }`;
   }
   if (search?.touser != null) {
-    whereQuery += ` and t.touser = ${ args.push(search.touser) }`;
+    whereQuery += ` and t.touser=${ args.push(search.touser) }`;
   }
   if (isNotEmpty(search?.touser_like)) {
     whereQuery += ` and t.touser like ${ args.push("%" + sqlLike(search?.touser_like) + "%") }`;
   }
   if (search?.title != null) {
-    whereQuery += ` and t.title = ${ args.push(search.title) }`;
+    whereQuery += ` and t.title=${ args.push(search.title) }`;
   }
   if (isNotEmpty(search?.title_like)) {
     whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
   }
   if (search?.description != null) {
-    whereQuery += ` and t.description = ${ args.push(search.description) }`;
+    whereQuery += ` and t.description=${ args.push(search.description) }`;
   }
   if (isNotEmpty(search?.description_like)) {
     whereQuery += ` and t.description like ${ args.push("%" + sqlLike(search?.description_like) + "%") }`;
   }
   if (search?.url != null) {
-    whereQuery += ` and t.url = ${ args.push(search.url) }`;
+    whereQuery += ` and t.url=${ args.push(search.url) }`;
   }
   if (isNotEmpty(search?.url_like)) {
     whereQuery += ` and t.url like ${ args.push("%" + sqlLike(search?.url_like) + "%") }`;
   }
   if (search?.btntxt != null) {
-    whereQuery += ` and t.btntxt = ${ args.push(search.btntxt) }`;
+    whereQuery += ` and t.btntxt=${ args.push(search.btntxt) }`;
   }
   if (isNotEmpty(search?.btntxt_like)) {
     whereQuery += ` and t.btntxt like ${ args.push("%" + sqlLike(search?.btntxt_like) + "%") }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.errmsg != null) {
-    whereQuery += ` and t.errmsg = ${ args.push(search.errmsg) }`;
+    whereQuery += ` and t.errmsg=${ args.push(search.errmsg) }`;
   }
   if (isNotEmpty(search?.errmsg_like)) {
     whereQuery += ` and t.errmsg like ${ args.push("%" + sqlLike(search?.errmsg_like) + "%") }`;
   }
   if (search?.msgid != null) {
-    whereQuery += ` and t.msgid = ${ args.push(search.msgid) }`;
+    whereQuery += ` and t.msgid=${ args.push(search.msgid) }`;
   }
   if (isNotEmpty(search?.msgid_like)) {
     whereQuery += ` and t.msgid like ${ args.push("%" + sqlLike(search?.msgid_like) + "%") }`;
@@ -191,15 +189,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: WxwMsgSearch,
@@ -207,12 +206,9 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wxwork_wxw_msg t
-    left join wxwork_wxw_app wxw_app_id_lbl
-      on wxw_app_id_lbl.id = t.wxw_app_id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -242,15 +238,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -277,6 +265,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<WxwMsgModel[]> {
   const table = "wxwork_wxw_msg";
@@ -311,8 +300,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.wxw_app_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.wxw_app_id.length > ${ ids_limit }`);
     }
   }
   // 发送状态
@@ -321,8 +311,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.errcode.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.errcode.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -331,8 +322,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
     }
   }
   // 更新人
@@ -341,8 +333,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   
@@ -1289,7 +1282,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update wxwork_wxw_msg set is_deleted=1,delete_time=${ args.push(reqDate()) } where id = ${ args.push(id) } limit 1`;
+    const sql = `update wxwork_wxw_msg set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

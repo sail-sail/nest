@@ -139,7 +139,7 @@ type Query {
   findOneWxwApp(search: WxwAppSearch, sort: [SortInput!]): WxwAppModel
   "根据 id 查找企微应用"
   findByIdWxwApp(id: WxwAppId!): WxwAppModel
-  "查找 企微应用 order_by 字段的最大值"
+  "查找企微应用 order_by 字段的最大值"
   findLastOrderByWxwApp: Int!
 }
 type Mutation {
