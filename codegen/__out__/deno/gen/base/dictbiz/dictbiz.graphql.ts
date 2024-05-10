@@ -178,7 +178,7 @@ type Query {
   findOneDictbiz(search: DictbizSearch, sort: [SortInput!]): DictbizModel
   "根据 id 查找业务字典"
   findByIdDictbiz(id: DictbizId!): DictbizModel
-  "查找 业务字典 order_by 字段的最大值"
+  "查找业务字典 order_by 字段的最大值"
   findLastOrderByDictbiz: Int!
 }
 type Mutation {

@@ -1,7 +1,7 @@
 import type {
   Middleware,
   Context as OakContext,
-} from "oak";
+} from "@oak/oak";
 
 export function timing(): Middleware {
   return async function timing(ctx: OakContext, next) {
