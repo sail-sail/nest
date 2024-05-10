@@ -1,7 +1,7 @@
 import type {
   Context as OakContext,
   Middleware,
-} from "oak";
+} from "@oak/oak";
 
 import {
   error,
