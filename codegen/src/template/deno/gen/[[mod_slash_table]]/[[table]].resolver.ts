@@ -364,8 +364,8 @@ export async function creates<#=Table_Up2#>(
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
     method: "creates",
-    method_lbl: "批量创建",
-    lbl: "批量创建",
+    method_lbl: "创建",
+    lbl: "创建",
     time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(new_data),
   });<#

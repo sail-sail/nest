@@ -218,7 +218,7 @@ type Query {
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据 id 查找用户"
   findByIdUsr(id: UsrId!): UsrModel
-  "查找 用户 order_by 字段的最大值"
+  "查找用户 order_by 字段的最大值"
   findLastOrderByUsr: Int!
 }
 type Mutation {

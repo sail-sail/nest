@@ -156,19 +156,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: FieldPermitId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: FieldPermitId = ids[i];
-      const model = await field_permitDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await field_permitDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await field_permitDao.deleteByIds(ids);
