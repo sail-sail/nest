@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -13,10 +13,8 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
-  delCache as delCacheCtx,
   query,
   queryOne,
   execute,
@@ -90,29 +88,29 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
-      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
+      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
     }
   } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -121,31 +119,31 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.appid != null) {
-    whereQuery += ` and t.appid = ${ args.push(search.appid) }`;
+    whereQuery += ` and t.appid=${ args.push(search.appid) }`;
   }
   if (isNotEmpty(search?.appid_like)) {
     whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
   }
   if (search?.mchid != null) {
-    whereQuery += ` and t.mchid = ${ args.push(search.mchid) }`;
+    whereQuery += ` and t.mchid=${ args.push(search.mchid) }`;
   }
   if (isNotEmpty(search?.mchid_like)) {
     whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
   if (search?.openid != null) {
-    whereQuery += ` and t.openid = ${ args.push(search.openid) }`;
+    whereQuery += ` and t.openid=${ args.push(search.openid) }`;
   }
   if (isNotEmpty(search?.openid_like)) {
     whereQuery += ` and t.openid like ${ args.push("%" + sqlLike(search?.openid_like) + "%") }`;
   }
   if (search?.out_trade_no != null) {
-    whereQuery += ` and t.out_trade_no = ${ args.push(search.out_trade_no) }`;
+    whereQuery += ` and t.out_trade_no=${ args.push(search.out_trade_no) }`;
   }
   if (isNotEmpty(search?.out_trade_no_like)) {
     whereQuery += ` and t.out_trade_no like ${ args.push("%" + sqlLike(search?.out_trade_no_like) + "%") }`;
   }
   if (search?.transaction_id != null) {
-    whereQuery += ` and t.transaction_id = ${ args.push(search.transaction_id) }`;
+    whereQuery += ` and t.transaction_id=${ args.push(search.transaction_id) }`;
   }
   if (isNotEmpty(search?.transaction_id_like)) {
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
@@ -163,45 +161,45 @@ async function getWhereQuery(
     whereQuery += ` and t.trade_state in ${ args.push(search.trade_state) }`;
   }
   if (search?.trade_state_desc != null) {
-    whereQuery += ` and t.trade_state_desc = ${ args.push(search.trade_state_desc) }`;
+    whereQuery += ` and t.trade_state_desc=${ args.push(search.trade_state_desc) }`;
   }
   if (isNotEmpty(search?.trade_state_desc_like)) {
     whereQuery += ` and t.trade_state_desc like ${ args.push("%" + sqlLike(search?.trade_state_desc_like) + "%") }`;
   }
   if (search?.bank_type != null) {
-    whereQuery += ` and t.bank_type = ${ args.push(search.bank_type) }`;
+    whereQuery += ` and t.bank_type=${ args.push(search.bank_type) }`;
   }
   if (isNotEmpty(search?.bank_type_like)) {
     whereQuery += ` and t.bank_type like ${ args.push("%" + sqlLike(search?.bank_type_like) + "%") }`;
   }
   if (search?.attach != null) {
-    whereQuery += ` and t.attach = ${ args.push(search.attach) }`;
+    whereQuery += ` and t.attach=${ args.push(search.attach) }`;
   }
   if (isNotEmpty(search?.attach_like)) {
     whereQuery += ` and t.attach like ${ args.push("%" + sqlLike(search?.attach_like) + "%") }`;
   }
   if (search?.success_time != null) {
     if (search.success_time[0] != null) {
-      whereQuery += ` and t.success_time >= ${ args.push(search.success_time[0]) }`;
+      whereQuery += ` and t.success_time>=${ args.push(search.success_time[0]) }`;
     }
     if (search.success_time[1] != null) {
-      whereQuery += ` and t.success_time <= ${ args.push(search.success_time[1]) }`;
+      whereQuery += ` and t.success_time<=${ args.push(search.success_time[1]) }`;
     }
   }
   if (search?.total != null) {
     if (search.total[0] != null) {
-      whereQuery += ` and t.total >= ${ args.push(search.total[0]) }`;
+      whereQuery += ` and t.total>=${ args.push(search.total[0]) }`;
     }
     if (search.total[1] != null) {
-      whereQuery += ` and t.total <= ${ args.push(search.total[1]) }`;
+      whereQuery += ` and t.total<=${ args.push(search.total[1]) }`;
     }
   }
   if (search?.payer_total != null) {
     if (search.payer_total[0] != null) {
-      whereQuery += ` and t.payer_total >= ${ args.push(search.payer_total[0]) }`;
+      whereQuery += ` and t.payer_total>=${ args.push(search.payer_total[0]) }`;
     }
     if (search.payer_total[1] != null) {
-      whereQuery += ` and t.payer_total <= ${ args.push(search.payer_total[1]) }`;
+      whereQuery += ` and t.payer_total<=${ args.push(search.payer_total[1]) }`;
     }
   }
   if (search?.currency != null && !Array.isArray(search?.currency)) {
@@ -217,19 +215,19 @@ async function getWhereQuery(
     whereQuery += ` and t.payer_currency in ${ args.push(search.payer_currency) }`;
   }
   if (search?.device_id != null) {
-    whereQuery += ` and t.device_id = ${ args.push(search.device_id) }`;
+    whereQuery += ` and t.device_id=${ args.push(search.device_id) }`;
   }
   if (isNotEmpty(search?.device_id_like)) {
     whereQuery += ` and t.device_id like ${ args.push("%" + sqlLike(search?.device_id_like) + "%") }`;
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.raw != null) {
-    whereQuery += ` and t.raw = ${ args.push(search.raw) }`;
+    whereQuery += ` and t.raw=${ args.push(search.raw) }`;
   }
   if (isNotEmpty(search?.raw_like)) {
     whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
@@ -245,10 +243,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -262,15 +260,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: WxPayNoticeSearch,
@@ -278,10 +277,8 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wx_pay_notice t
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -311,15 +308,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -346,6 +335,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<WxPayNoticeModel[]> {
   const table = "wx_wx_pay_notice";
@@ -380,8 +370,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.trade_type.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.trade_type.length > ${ ids_limit }`);
     }
   }
   // 交易状态
@@ -390,8 +381,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.trade_state.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.trade_state.length > ${ ids_limit }`);
     }
   }
   // 货币类型
@@ -400,8 +392,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.currency.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.currency.length > ${ ids_limit }`);
     }
   }
   // 用户支付币种
@@ -410,8 +403,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.payer_currency.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.payer_currency.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -420,8 +414,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
     }
   }
   // 更新人
@@ -430,8 +425,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   
@@ -1724,7 +1720,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update wx_wx_pay_notice set is_deleted=1,delete_time=${ args.push(reqDate()) } where id = ${ args.push(id) } limit 1`;
+    const sql = `update wx_wx_pay_notice set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
