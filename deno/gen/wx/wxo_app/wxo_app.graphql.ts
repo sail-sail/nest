@@ -187,7 +187,7 @@ type Query {
   findOneWxoApp(search: WxoAppSearch, sort: [SortInput!]): WxoAppModel
   "根据 id 查找公众号设置"
   findByIdWxoApp(id: WxoAppId!): WxoAppModel
-  "查找 公众号设置 order_by 字段的最大值"
+  "查找公众号设置 order_by 字段的最大值"
   findLastOrderByWxoApp: Int!
 }
 type Mutation {

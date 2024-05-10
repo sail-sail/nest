@@ -166,18 +166,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: WxPayId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: WxPayId = ids[i];
-      const is_locked = await wx_payDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await wx_payDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "微信支付设置");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await wx_payDao.deleteByIds(ids);

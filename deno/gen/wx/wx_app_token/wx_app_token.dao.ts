@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -13,7 +13,6 @@ import {
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -75,9 +74,9 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -95,25 +94,25 @@ async function getWhereQuery(
     whereQuery += ` and wx_app_id_lbl.id is null`;
   }
   if (search?.access_token != null) {
-    whereQuery += ` and t.access_token = ${ args.push(search.access_token) }`;
+    whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
   }
   if (isNotEmpty(search?.access_token_like)) {
     whereQuery += ` and t.access_token like ${ args.push("%" + sqlLike(search?.access_token_like) + "%") }`;
   }
   if (search?.token_time != null) {
     if (search.token_time[0] != null) {
-      whereQuery += ` and t.token_time >= ${ args.push(search.token_time[0]) }`;
+      whereQuery += ` and t.token_time>=${ args.push(search.token_time[0]) }`;
     }
     if (search.token_time[1] != null) {
-      whereQuery += ` and t.token_time <= ${ args.push(search.token_time[1]) }`;
+      whereQuery += ` and t.token_time<=${ args.push(search.token_time[1]) }`;
     }
   }
   if (search?.expires_in != null) {
     if (search.expires_in[0] != null) {
-      whereQuery += ` and t.expires_in >= ${ args.push(search.expires_in[0]) }`;
+      whereQuery += ` and t.expires_in>=${ args.push(search.expires_in[0]) }`;
     }
     if (search.expires_in[1] != null) {
-      whereQuery += ` and t.expires_in <= ${ args.push(search.expires_in[1]) }`;
+      whereQuery += ` and t.expires_in<=${ args.push(search.expires_in[1]) }`;
     }
   }
   if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
@@ -127,10 +126,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -144,15 +143,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: WxAppTokenSearch,
@@ -160,12 +160,9 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wx_app_token t
-    left join wx_wx_app wx_app_id_lbl
-      on wx_app_id_lbl.id = t.wx_app_id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join wx_wx_app wx_app_id_lbl on wx_app_id_lbl.id=t.wx_app_id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -195,15 +192,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -233,6 +222,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<WxAppTokenModel[]> {
   const table = "wx_wx_app_token";
@@ -267,8 +257,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.wx_app_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.wx_app_id.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -277,8 +268,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.create_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
     }
   }
   // 更新人
@@ -287,8 +279,9 @@ export async function findAll(
     if (len === 0) {
       return [ ];
     }
-    if (len > FIND_ALL_IDS_LIMIT) {
-      throw new Error(`search.update_usr_id.length > ${ FIND_ALL_IDS_LIMIT }`);
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   
@@ -1104,9 +1097,7 @@ export async function deleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1116,16 +1107,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        wx_wx_app_token
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update wx_wx_app_token set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1164,23 +1146,13 @@ export async function revertByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id: WxAppTokenId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        wx_wx_app_token
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update wx_wx_app_token set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1235,35 +1207,19 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          wx_wx_app_token
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from wx_wx_app_token where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        wx_wx_app_token
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from wx_wx_app_token where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
