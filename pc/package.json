@@ -70,7 +70,7 @@
     "stylus": "0.63.0",
     "typescript": "5.4.5",
     "unocss": "0.60.0",
-    "unplugin-auto-import": "0.17.5",
+    "unplugin-auto-import": "0.17.6",
     "unplugin-icons": "0.19.0",
     "unplugin-vue-components": "0.27.0",
     "unplugin-vue-define-options": "1.4.4",
@@ -81,6 +81,6 @@
     "vite-plugin-vue-inspector": "5.1.0",
     "vite-plugin-wasm": "3.3.0",
     "vitest": "1.6.0",
-    "vue-tsc": "2.0.16"
+    "vue-tsc": "2.0.17"
   }
 }
