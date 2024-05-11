@@ -146,21 +146,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<LangId> {
-  input = intoInput(input);
-  const data: {
-    createLang: Mutation["createLang"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: LangInput!, $unique_type: UniqueType) {
-        createLang(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createLang;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

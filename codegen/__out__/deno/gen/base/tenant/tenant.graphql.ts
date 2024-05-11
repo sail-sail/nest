@@ -166,12 +166,10 @@ type Query {
   findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据 id 查找租户"
   findByIdTenant(id: TenantId!): TenantModel
-  "查找 租户 order_by 字段的最大值"
+  "查找租户 order_by 字段的最大值"
   findLastOrderByTenant: Int!
 }
 type Mutation {
-  "创建租户"
-  createTenant(input: TenantInput!, unique_type: UniqueType): TenantId!
   "批量创建租户"
   createsTenant(inputs: [TenantInput!]!, unique_type: UniqueType): [TenantId!]!
   "根据 id 修改租户"

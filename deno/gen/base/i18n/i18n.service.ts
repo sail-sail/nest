@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建国际化
- * @param {I18nInput} input
- * @return {Promise<I18nId>} id
- */
-export async function create(
-  input: I18nInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<I18nId> {
-  const id = await i18nDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建国际化
  * @param {I18nInput[]} inputs
  * @return {Promise<I18nId[]>} ids

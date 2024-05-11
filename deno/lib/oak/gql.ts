@@ -1,7 +1,7 @@
 import {
   Router,
   Context as OakContext,
-} from "oak";
+} from "@oak/oak";
 
 import {
   commit,

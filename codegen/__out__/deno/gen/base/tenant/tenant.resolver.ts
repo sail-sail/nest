@@ -81,39 +81,6 @@ export async function findByIdTenant(
 }
 
 /**
- * 创建租户
- */
-export async function createTenant(
-  input: TenantInput,
-  unique_type?: UniqueType,
-): Promise<TenantId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./tenant.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/base/tenant",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建租户
  */
 export async function createsTenant(

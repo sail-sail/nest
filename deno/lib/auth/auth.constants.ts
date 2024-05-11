@@ -1,7 +1,9 @@
-import { encodeBase64 } from "std/encoding/base64.ts";
-
 import {
-  type JWTPayload,
+  encodeBase64,
+} from "@std/encoding/base64";
+
+import type {
+  JWTPayload,
 } from "jose/index.ts";
 
 import {
@@ -21,7 +23,7 @@ export interface AuthModel extends JWTPayload {
   org_id?: OrgId;
   lang: string;
 }
-export async function getPassword(str: string): Promise<string> {
+export async function getPassword(str?: string | null): Promise<string> {
   if (!str) return "";
   const textEncoder = new TextEncoder();
   let hash = await createHash("SHA-256", textEncoder.encode(str + SECRET_KEY));

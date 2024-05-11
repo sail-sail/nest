@@ -1,7 +1,7 @@
 import {
   encodeBase64,
   decodeBase64,
-} from "std/encoding/base64.ts";
+} from "@std/encoding/base64";
 
 let key = await crypto.subtle.generateKey(
   {
