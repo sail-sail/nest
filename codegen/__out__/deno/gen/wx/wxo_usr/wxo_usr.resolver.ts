@@ -81,39 +81,6 @@ export async function findByIdWxoUsr(
 }
 
 /**
- * 创建公众号用户
- */
-export async function createWxoUsr(
-  input: WxoUsrInput,
-  unique_type?: UniqueType,
-): Promise<WxoUsrId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxo_usr.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wx/wxo_usr",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建公众号用户
  */
 export async function createsWxoUsr(

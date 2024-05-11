@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建小程序设置
- * @param {WxAppInput} input
- * @return {Promise<WxAppId>} id
- */
-export async function create(
-  input: WxAppInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxAppId> {
-  const id = await wx_appDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建小程序设置
  * @param {WxAppInput[]} inputs
  * @return {Promise<WxAppId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: WxAppId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: WxAppId = ids[i];
-      const is_locked = await wx_appDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await wx_appDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "小程序设置");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await wx_appDao.deleteByIds(ids);

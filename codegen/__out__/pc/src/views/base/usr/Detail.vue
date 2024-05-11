@@ -445,11 +445,11 @@ watchEffect(async () => {
         message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 排序
-    order_by: [
+    // 所属角色
+    role_ids: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
+        message: `${ await nsAsync("请选择") } ${ n("所属角色") }`,
       },
     ],
     // 所属部门
@@ -459,11 +459,11 @@ watchEffect(async () => {
         message: `${ await nsAsync("请选择") } ${ n("所属部门") }`,
       },
     ],
-    // 拥有角色
-    role_ids: [
+    // 排序
+    order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("拥有角色") }`,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };

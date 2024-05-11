@@ -103,21 +103,6 @@ export async function validate(
 }
 
 /**
- * 创建微信JSAPI下单
- * @param {PayTransactionsJsapiInput} input
- * @return {Promise<PayTransactionsJsapiId>} id
- */
-export async function create(
-  input: PayTransactionsJsapiInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<PayTransactionsJsapiId> {
-  const id = await pay_transactions_jsapiDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建微信JSAPI下单
  * @param {PayTransactionsJsapiInput[]} inputs
  * @return {Promise<PayTransactionsJsapiId[]>} ids
