@@ -160,12 +160,10 @@ type Query {
   findOneWxApp(search: WxAppSearch, sort: [SortInput!]): WxAppModel
   "根据 id 查找小程序设置"
   findByIdWxApp(id: WxAppId!): WxAppModel
-  "查找 小程序设置 order_by 字段的最大值"
+  "查找小程序设置 order_by 字段的最大值"
   findLastOrderByWxApp: Int!
 }
 type Mutation {
-  "创建小程序设置"
-  createWxApp(input: WxAppInput!, unique_type: UniqueType): WxAppId!
   "批量创建小程序设置"
   createsWxApp(inputs: [WxAppInput!]!, unique_type: UniqueType): [WxAppId!]!
   "根据 id 修改小程序设置"

@@ -135,8 +135,6 @@ type Query {
   findByIdWxoUsr(id: WxoUsrId!): WxoUsrModel
 }
 type Mutation {
-  "创建公众号用户"
-  createWxoUsr(input: WxoUsrInput!, unique_type: UniqueType): WxoUsrId!
   "批量创建公众号用户"
   createsWxoUsr(inputs: [WxoUsrInput!]!, unique_type: UniqueType): [WxoUsrId!]!
   "根据 id 修改公众号用户"

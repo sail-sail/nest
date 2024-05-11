@@ -199,12 +199,10 @@ type Query {
   findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
   "根据 id 查找微信支付设置"
   findByIdWxPay(id: WxPayId!): WxPayModel
-  "查找 微信支付设置 order_by 字段的最大值"
+  "查找微信支付设置 order_by 字段的最大值"
   findLastOrderByWxPay: Int!
 }
 type Mutation {
-  "创建微信支付设置"
-  createWxPay(input: WxPayInput!, unique_type: UniqueType): WxPayId!
   "批量创建微信支付设置"
   createsWxPay(inputs: [WxPayInput!]!, unique_type: UniqueType): [WxPayId!]!
   "根据 id 修改微信支付设置"
