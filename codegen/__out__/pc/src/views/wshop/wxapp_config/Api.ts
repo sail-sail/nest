@@ -157,21 +157,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxappConfigId> {
-  input = intoInput(input);
-  const data: {
-    createWxappConfig: Mutation["createWxappConfig"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: WxappConfigInput!, $unique_type: UniqueType) {
-        createWxappConfig(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createWxappConfig;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

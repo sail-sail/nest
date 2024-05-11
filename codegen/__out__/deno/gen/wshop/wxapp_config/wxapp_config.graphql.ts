@@ -148,8 +148,6 @@ type Query {
   findByIdWxappConfig(id: WxappConfigId!): WxappConfigModel
 }
 type Mutation {
-  "创建小程序配置"
-  createWxappConfig(input: WxappConfigInput!, unique_type: UniqueType): WxappConfigId!
   "批量创建小程序配置"
   createsWxappConfig(inputs: [WxappConfigInput!]!, unique_type: UniqueType): [WxappConfigId!]!
   "根据 id 修改小程序配置"

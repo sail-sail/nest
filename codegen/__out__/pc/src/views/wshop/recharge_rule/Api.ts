@@ -175,21 +175,12 @@ export async function create(
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId> {
-  input = intoInput(input);
-  const data: {
-    createRechargeRule: Mutation["createRechargeRule"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($input: RechargeRuleInput!, $unique_type: UniqueType) {
-        createRechargeRule(input: $input, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      input,
-      unique_type,
-    },
-  }, opt);
-  const id = data.createRechargeRule;
+  const ids = await creates(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
   return id;
 }
 

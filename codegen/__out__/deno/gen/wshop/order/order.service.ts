@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建订单
- * @param {OrderInput} input
- * @return {Promise<OrderId>} id
- */
-export async function create(
-  input: OrderInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<OrderId> {
-  const id = await orderDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建订单
  * @param {OrderInput[]} inputs
  * @return {Promise<OrderId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: OrderId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: OrderId = ids[i];
-      const is_locked = await orderDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await orderDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "订单");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await orderDao.deleteByIds(ids);

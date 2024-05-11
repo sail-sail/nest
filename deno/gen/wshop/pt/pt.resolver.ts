@@ -83,49 +83,6 @@ export async function findByIdPt(
 }
 
 /**
- * 创建产品
- */
-export async function createPt(
-  input: PtInput,
-  unique_type?: UniqueType,
-): Promise<PtId> {
-  
-  input.id = undefined;
-  
-  // 价格
-  if (input.price != null) {
-    input.price = new Decimal(input.price);
-  }
-  
-  // 原价
-  if (input.original_price != null) {
-    input.original_price = new Decimal(input.original_price);
-  }
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./pt.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wshop/pt",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建产品
  */
 export async function createsPt(

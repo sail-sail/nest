@@ -173,12 +173,10 @@ type Query {
   findOnePtType(search: PtTypeSearch, sort: [SortInput!]): PtTypeModel
   "根据 id 查找产品类别"
   findByIdPtType(id: PtTypeId!): PtTypeModel
-  "查找 产品类别 order_by 字段的最大值"
+  "查找产品类别 order_by 字段的最大值"
   findLastOrderByPtType: Int!
 }
 type Mutation {
-  "创建产品类别"
-  createPtType(input: PtTypeInput!, unique_type: UniqueType): PtTypeId!
   "批量创建产品类别"
   createsPtType(inputs: [PtTypeInput!]!, unique_type: UniqueType): [PtTypeId!]!
   "根据 id 修改产品类别"

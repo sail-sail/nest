@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建充值赠送规则
- * @param {RechargeRuleInput} input
- * @return {Promise<RechargeRuleId>} id
- */
-export async function create(
-  input: RechargeRuleInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<RechargeRuleId> {
-  const id = await recharge_ruleDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建充值赠送规则
  * @param {RechargeRuleInput[]} inputs
  * @return {Promise<RechargeRuleId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: RechargeRuleId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: RechargeRuleId = ids[i];
-      const is_locked = await recharge_ruleDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await recharge_ruleDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "充值赠送规则");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await recharge_ruleDao.deleteByIds(ids);
