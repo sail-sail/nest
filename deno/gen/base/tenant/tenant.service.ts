@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建租户
- * @param {TenantInput} input
- * @return {Promise<TenantId>} id
- */
-export async function create(
-  input: TenantInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<TenantId> {
-  const id = await tenantDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建租户
  * @param {TenantInput[]} inputs
  * @return {Promise<TenantId[]>} ids
@@ -171,34 +156,25 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: TenantId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: TenantId = ids[i];
-      const is_locked = await tenantDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await tenantDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "租户");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   {
-    const ids2: TenantId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: TenantId = ids[i];
-      const model = await tenantDao.findById(id);
-      if (model && model.is_sys === 1) {
-        continue;
+    const models = await tenantDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
       }
-      ids2.push(id);
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除系统记录");
-    }
-    ids = ids2;
   }
   
   const data = await tenantDao.deleteByIds(ids);

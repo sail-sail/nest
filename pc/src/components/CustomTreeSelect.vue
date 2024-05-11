@@ -1,43 +1,65 @@
 <template>
-<el-tree-select
+<el-dropdown
   v-if="readonly !== true"
-  filterable
-  collapse-tags
-  collapse-tags-tooltip
-  default-first-option
-  :height="props.height"
-  class="custom_tree_select"
-  :class="{
-    hideDisabledCheckbox: props.hideDisabledCheckbox,
-  }"
-  node-key="id"
-  vaule-key="id"
-  :props="props.props"
-  :multiple="props.multiple"
-  :data="data"
-  :check-strictly="true"
-  :default-expand-all="true"
-  :show-checkbox="true"
-  :check-on-click-node="true"
   un-w="full"
-  v-bind="$attrs"
-  :loading="!inited"
-  v-model="modelValue"
-  @keyup.enter.stop
-  @clear="onClear"
-  @change="onChange"
-  @check="onCheck"
-  :clearable="!props.disabled"
-  @node-click="onNodeClick"
+  trigger="contextmenu"
+  placement="top"
 >
-  <template
-    v-for="(item, key, index) in $slots"
-    :key="index"
-    #[key]
-  >
-    <slot :name="key"></slot>
+  <template #dropdown>
+    <el-dropdown-menu
+      un-min="w-22"
+      un-box-border
+    >
+      
+      <el-dropdown-item
+        un-flex="~"
+        un-justify="center"
+        @click="copyModelLabel"
+      >
+        复制
+      </el-dropdown-item>
+      
+    </el-dropdown-menu>
   </template>
-</el-tree-select>
+  <el-tree-select
+    filterable
+    collapse-tags
+    collapse-tags-tooltip
+    default-first-option
+    :height="props.height"
+    class="custom_tree_select"
+    :class="{
+      hideDisabledCheckbox: props.hideDisabledCheckbox,
+    }"
+    node-key="id"
+    vaule-key="id"
+    :props="props.props"
+    :multiple="props.multiple"
+    :data="data"
+    :check-strictly="true"
+    :default-expand-all="true"
+    :show-checkbox="true"
+    :check-on-click-node="true"
+    un-w="full"
+    v-bind="$attrs"
+    :loading="!inited"
+    v-model="modelValue"
+    @keyup.enter.stop
+    @clear="onClear"
+    @change="onChange"
+    @check="onCheck"
+    :clearable="!props.disabled"
+    @node-click="onNodeClick"
+  >
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot :name="key"></slot>
+    </template>
+  </el-tree-select>
+</el-dropdown>
 <template
   v-else
 >
@@ -91,21 +113,19 @@ import type {
   TreeOptionProps,
 } from "element-plus/es/components/tree/src/tree.type";
 
-import {
-  type ExtractPropTypes,
+import type {
+  ExtractPropTypes,
 } from "vue";
 
-const usrStore = useUsrStore();
+import {
+  copyText,
+} from "@/utils/common";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
-
-let inited = $ref(false);
-
-let data = $ref<any[]>([ ]);
 
 const props = withDefaults(
   defineProps<{
@@ -138,6 +158,18 @@ const props = withDefaults(
   },
 );
 
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
+
+const usrStore = useUsrStore();
+
+let inited = $ref(false);
+
+let data = $ref<any[]>([ ]);
+
 let modelValue = $ref(props.modelValue);
 
 watch(
@@ -154,9 +186,9 @@ watch(
   },
 );
 
-const modelLabels = $computed(() => {
+const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
-    return [ ];
+    return [ "" ];
   }
   const label = props.props.label || "label";
   if (!props.multiple) {
@@ -169,7 +201,7 @@ const modelLabels = $computed(() => {
     }
     return [ label(data, model) || "" ];
   }
-  let models: any[] = [ ];
+  let models: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const id of modelValues) {
     const model = treeSelectFn(data, id);

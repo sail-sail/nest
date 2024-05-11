@@ -13,7 +13,7 @@ import {
 import {
   encodeBase64,
   decodeBase64,
-} from "std/encoding/base64.ts";
+} from "@std/encoding/base64";
 
 import { getEnv } from "/lib/env.ts";
 
@@ -302,6 +302,8 @@ export function getDebugSearch(
   }
   return JSON.stringify(search2);
 }
+
+export const FIND_ALL_IDS_LIMIT = 5000;
 
 export const SPLIT_SQL_INSERT_LEN = 1000;
 

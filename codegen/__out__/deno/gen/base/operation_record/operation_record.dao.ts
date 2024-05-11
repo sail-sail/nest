@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -8,14 +8,13 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
-  delCache as delCacheCtx,
   query,
   queryOne,
   execute,
@@ -77,19 +76,19 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -98,51 +97,51 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.module != null) {
-    whereQuery += ` and t.module = ${ args.push(search.module) }`;
+    whereQuery += ` and t.module=${ args.push(search.module) }`;
   }
   if (isNotEmpty(search?.module_like)) {
     whereQuery += ` and t.module like ${ args.push("%" + sqlLike(search?.module_like) + "%") }`;
   }
   if (search?.module_lbl != null) {
-    whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
+    whereQuery += ` and t.module_lbl=${ args.push(search.module_lbl) }`;
   }
   if (isNotEmpty(search?.module_lbl_like)) {
     whereQuery += ` and t.module_lbl like ${ args.push("%" + sqlLike(search?.module_lbl_like) + "%") }`;
   }
   if (search?.method != null) {
-    whereQuery += ` and t.method = ${ args.push(search.method) }`;
+    whereQuery += ` and t.method=${ args.push(search.method) }`;
   }
   if (isNotEmpty(search?.method_like)) {
     whereQuery += ` and t.method like ${ args.push("%" + sqlLike(search?.method_like) + "%") }`;
   }
   if (search?.method_lbl != null) {
-    whereQuery += ` and t.method_lbl = ${ args.push(search.method_lbl) }`;
+    whereQuery += ` and t.method_lbl=${ args.push(search.method_lbl) }`;
   }
   if (isNotEmpty(search?.method_lbl_like)) {
     whereQuery += ` and t.method_lbl like ${ args.push("%" + sqlLike(search?.method_lbl_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.time != null) {
     if (search.time[0] != null) {
-      whereQuery += ` and t.time >= ${ args.push(search.time[0]) }`;
+      whereQuery += ` and t.time>=${ args.push(search.time[0]) }`;
     }
     if (search.time[1] != null) {
-      whereQuery += ` and t.time <= ${ args.push(search.time[1]) }`;
+      whereQuery += ` and t.time<=${ args.push(search.time[1]) }`;
     }
   }
   if (search?.old_data != null) {
-    whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
+    whereQuery += ` and t.old_data=${ args.push(search.old_data) }`;
   }
   if (isNotEmpty(search?.old_data_like)) {
     whereQuery += ` and t.old_data like ${ args.push("%" + sqlLike(search?.old_data_like) + "%") }`;
   }
   if (search?.new_data != null) {
-    whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
+    whereQuery += ` and t.new_data=${ args.push(search.new_data) }`;
   }
   if (isNotEmpty(search?.new_data_like)) {
     whereQuery += ` and t.new_data like ${ args.push("%" + sqlLike(search?.new_data_like) + "%") }`;
@@ -158,10 +157,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -175,15 +174,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: OperationRecordSearch,
@@ -191,10 +191,8 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_operation_record t
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -224,15 +222,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -259,6 +249,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<OperationRecordModel[]> {
   const table = "base_operation_record";
@@ -288,18 +279,30 @@ export async function findAll(
     return [ ];
   }
   // 操作人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -1184,16 +1187,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_operation_record
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_operation_record set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1234,15 +1228,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: OperationRecordId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        base_operation_record
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update base_operation_record set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1300,26 +1286,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          base_operation_record
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from base_operation_record where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        base_operation_record
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from base_operation_record where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

@@ -1,9 +1,9 @@
 import {
   crypto,
   type DigestAlgorithmName,
-} from "std/crypto/mod.ts";
+} from "@std/crypto";
 
-import { encodeBase64 } from "std/encoding/base64.ts";
+import { encodeBase64 } from "@std/encoding/base64";
 
 import type {
   InputMaybe,
