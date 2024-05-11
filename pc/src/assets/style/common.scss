@@ -285,9 +285,19 @@ body .el-input-number.is-without-controls .el-input__inner {
     }
   }
 }
-// 弹出框下面的select_input样式
-.select_input_wrapper.dialog_visible {
-  box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+.select_input_wrapper.label_readonly_1 {
+  .el-input {
+    .el-input__inner {
+      @apply cursor-pointer;
+    }
+  }
+}
+.select_input_wrapper.label_readonly_0 {
+  .el-input {
+    .el-input__inner {
+      @apply cursor-auto;
+    }
+  }
 }
 
 .el-tree {
