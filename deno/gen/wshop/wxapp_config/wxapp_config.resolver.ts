@@ -81,39 +81,6 @@ export async function findByIdWxappConfig(
 }
 
 /**
- * 创建小程序配置
- */
-export async function createWxappConfig(
-  input: WxappConfigInput,
-  unique_type?: UniqueType,
-): Promise<WxappConfigId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxapp_config.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wshop/wxapp_config",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建小程序配置
  */
 export async function createsWxappConfig(

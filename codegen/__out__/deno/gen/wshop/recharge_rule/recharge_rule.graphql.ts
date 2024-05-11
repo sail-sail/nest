@@ -146,8 +146,6 @@ type Query {
   findByIdRechargeRule(id: RechargeRuleId!): RechargeRuleModel
 }
 type Mutation {
-  "创建充值赠送规则"
-  createRechargeRule(input: RechargeRuleInput!, unique_type: UniqueType): RechargeRuleId!
   "批量创建充值赠送规则"
   createsRechargeRule(inputs: [RechargeRuleInput!]!, unique_type: UniqueType): [RechargeRuleId!]!
   "根据 id 修改充值赠送规则"

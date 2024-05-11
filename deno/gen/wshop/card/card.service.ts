@@ -111,22 +111,6 @@ export async function validate(
 }
 
 /**
- * 创建会员卡
- * @param {CardInput} input
- * @return {Promise<CardId>} id
- */
-export async function create(
-  input: CardInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<CardId> {
-  const id = await cardDao.create(input, options);
-  await updateSeqLbl(id);
-  return id;
-}
-
-/**
  * 批量创建会员卡
  * @param {CardInput[]} inputs
  * @return {Promise<CardId[]>} ids

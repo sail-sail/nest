@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建会员卡
- * @param {CardInput} input
- * @return {Promise<CardId>} id
- */
-export async function create(
-  input: CardInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<CardId> {
-  const id = await cardDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建会员卡
  * @param {CardInput[]} inputs
  * @return {Promise<CardId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: CardId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: CardId = ids[i];
-      const is_locked = await cardDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await cardDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "会员卡");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await cardDao.deleteByIds(ids);

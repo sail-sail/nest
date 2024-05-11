@@ -107,21 +107,6 @@ export async function validate(
 }
 
 /**
- * 创建产品类别
- * @param {PtTypeInput} input
- * @return {Promise<PtTypeId>} id
- */
-export async function create(
-  input: PtTypeInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<PtTypeId> {
-  const id = await pt_typeDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建产品类别
  * @param {PtTypeInput[]} inputs
  * @return {Promise<PtTypeId[]>} ids
@@ -166,18 +151,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: PtTypeId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: PtTypeId = ids[i];
-      const is_locked = await pt_typeDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await pt_typeDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "产品类别");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await pt_typeDao.deleteByIds(ids);

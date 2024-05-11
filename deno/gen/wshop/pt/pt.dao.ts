@@ -1,4 +1,4 @@
-// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
   escapeId,
 } from "sqlstring";
@@ -8,13 +8,13 @@ import dayjs from "dayjs";
 import {
   getDebugSearch,
   splitCreateArr,
+  FIND_ALL_IDS_LIMIT,
 } from "/lib/util/dao_util.ts";
 
 import Decimal from "decimal.js";
 
 import {
   log,
-  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -92,29 +92,29 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   
   if (search?.org_id == null) {
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
-      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
+      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
     }
   } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
-    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+    whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null && !Array.isArray(search?.ids)) {
     search.ids = [ search.ids ];
@@ -123,13 +123,13 @@ async function getWhereQuery(
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.img != null) {
-    whereQuery += ` and t.img = ${ args.push(search.img) }`;
+    whereQuery += ` and t.img=${ args.push(search.img) }`;
   }
   if (isNotEmpty(search?.img_like)) {
     whereQuery += ` and t.img like ${ args.push("%" + sqlLike(search?.img_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
@@ -145,22 +145,22 @@ async function getWhereQuery(
   }
   if (search?.price != null) {
     if (search.price[0] != null) {
-      whereQuery += ` and t.price >= ${ args.push(search.price[0]) }`;
+      whereQuery += ` and t.price>=${ args.push(search.price[0]) }`;
     }
     if (search.price[1] != null) {
-      whereQuery += ` and t.price <= ${ args.push(search.price[1]) }`;
+      whereQuery += ` and t.price<=${ args.push(search.price[1]) }`;
     }
   }
   if (search?.original_price != null) {
     if (search.original_price[0] != null) {
-      whereQuery += ` and t.original_price >= ${ args.push(search.original_price[0]) }`;
+      whereQuery += ` and t.original_price>=${ args.push(search.original_price[0]) }`;
     }
     if (search.original_price[1] != null) {
-      whereQuery += ` and t.original_price <= ${ args.push(search.original_price[1]) }`;
+      whereQuery += ` and t.original_price<=${ args.push(search.original_price[1]) }`;
     }
   }
   if (search?.unit != null) {
-    whereQuery += ` and t.unit = ${ args.push(search.unit) }`;
+    whereQuery += ` and t.unit=${ args.push(search.unit) }`;
   }
   if (isNotEmpty(search?.unit_like)) {
     whereQuery += ` and t.unit like ${ args.push("%" + sqlLike(search?.unit_like) + "%") }`;
@@ -172,7 +172,7 @@ async function getWhereQuery(
     whereQuery += ` and t.is_new in ${ args.push(search.is_new) }`;
   }
   if (search?.introduct != null) {
-    whereQuery += ` and t.introduct = ${ args.push(search.introduct) }`;
+    whereQuery += ` and t.introduct=${ args.push(search.introduct) }`;
   }
   if (isNotEmpty(search?.introduct_like)) {
     whereQuery += ` and t.introduct like ${ args.push("%" + sqlLike(search?.introduct_like) + "%") }`;
@@ -191,32 +191,32 @@ async function getWhereQuery(
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.detail != null) {
-    whereQuery += ` and t.detail = ${ args.push(search.detail) }`;
+    whereQuery += ` and t.detail=${ args.push(search.detail) }`;
   }
   if (isNotEmpty(search?.detail_like)) {
     whereQuery += ` and t.detail like ${ args.push("%" + sqlLike(search?.detail_like) + "%") }`;
   }
   if (search?.detail_top_img != null) {
-    whereQuery += ` and t.detail_top_img = ${ args.push(search.detail_top_img) }`;
+    whereQuery += ` and t.detail_top_img=${ args.push(search.detail_top_img) }`;
   }
   if (isNotEmpty(search?.detail_top_img_like)) {
     whereQuery += ` and t.detail_top_img like ${ args.push("%" + sqlLike(search?.detail_top_img_like) + "%") }`;
   }
   if (search?.detail_bottom_img != null) {
-    whereQuery += ` and t.detail_bottom_img = ${ args.push(search.detail_bottom_img) }`;
+    whereQuery += ` and t.detail_bottom_img=${ args.push(search.detail_bottom_img) }`;
   }
   if (isNotEmpty(search?.detail_bottom_img_like)) {
     whereQuery += ` and t.detail_bottom_img like ${ args.push("%" + sqlLike(search?.detail_bottom_img_like) + "%") }`;
   }
   if (search?.rem != null) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
@@ -232,10 +232,10 @@ async function getWhereQuery(
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
     }
     if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
@@ -249,15 +249,16 @@ async function getWhereQuery(
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
     }
     if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: PtSearch,
@@ -267,30 +268,22 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `wshop_pt t
     left join wshop_pt_pt_type
-      on wshop_pt_pt_type.pt_id = t.id
-      and wshop_pt_pt_type.is_deleted = ${ args.push(is_deleted) }
+      on wshop_pt_pt_type.pt_id=t.id
+      and wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
     left join wshop_pt_type
-      on wshop_pt_pt_type.pt_type_id = wshop_pt_type.id
-      and wshop_pt_type.is_deleted = ${ args.push(is_deleted) }
-    left join (
-      select
-        json_objectagg(wshop_pt_pt_type.order_by, wshop_pt_type.id) pt_type_ids,
-        json_objectagg(wshop_pt_pt_type.order_by, wshop_pt_type.lbl) pt_type_ids_lbl,
-        wshop_pt.id pt_id
-      from wshop_pt_pt_type
-      inner join wshop_pt_type
-        on wshop_pt_type.id = wshop_pt_pt_type.pt_type_id
-      inner join wshop_pt
-        on wshop_pt.id = wshop_pt_pt_type.pt_id
-      where
-        wshop_pt_pt_type.is_deleted = ${ args.push(is_deleted) }
-      group by pt_id
-    ) _pt_type
-      on _pt_type.pt_id = t.id
-    left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id
-    left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id`;
+      on wshop_pt_pt_type.pt_type_id=wshop_pt_type.id
+      and wshop_pt_type.is_deleted=${ args.push(is_deleted) }
+    left join(select
+    json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.id) pt_type_ids,
+    json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.lbl) pt_type_ids_lbl,
+    wshop_pt.id pt_id
+    from wshop_pt_pt_type
+    inner join wshop_pt_type on wshop_pt_type.id=wshop_pt_pt_type.pt_type_id
+    inner join wshop_pt on wshop_pt.id=wshop_pt_pt_type.pt_id
+    where wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
+    group by pt_id) _pt_type on _pt_type.pt_id=t.id
+    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
@@ -320,15 +313,7 @@ export async function findCount(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          ${ await getFromQuery(args, search, options) }`;
+  let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
@@ -358,6 +343,7 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
     debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<PtModel[]> {
   const table = "wshop_pt";
@@ -387,34 +373,74 @@ export async function findAll(
     return [ ];
   }
   // 产品类别
-  if (search && search.pt_type_ids != null && search.pt_type_ids.length === 0) {
-    return [ ];
+  if (search && search.pt_type_ids != null) {
+    const len = search.pt_type_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.pt_type_ids.length > ${ ids_limit }`);
+    }
   }
   // 新品
-  if (search && search.is_new != null && search.is_new.length === 0) {
-    return [ ];
+  if (search && search.is_new != null) {
+    const len = search.is_new.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_new.length > ${ ids_limit }`);
+    }
   }
   // 锁定
-  if (search && search.is_locked != null && search.is_locked.length === 0) {
-    return [ ];
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
   }
   // 启用
-  if (search && search.is_enabled != null && search.is_enabled.length === 0) {
-    return [ ];
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
   }
   // 创建人
-  if (search && search.create_usr_id != null && search.create_usr_id.length === 0) {
-    return [ ];
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
   }
   // 更新人
-  if (search && search.update_usr_id != null && search.update_usr_id.length === 0) {
-    return [ ];
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
-  let sql = `
-    select f.* from (
-    select t.*
+  let sql = `select f.* from (select t.*
       ,max(pt_type_ids) pt_type_ids
       ,max(pt_type_ids_lbl) pt_type_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
@@ -1682,9 +1708,7 @@ export async function deleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1694,16 +1718,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `
-      update
-        wshop_pt
-      set
-        is_deleted = 1,
-        delete_time = ${ args.push(reqDate()) }
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update wshop_pt set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1771,24 +1786,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      wshop_pt
-    set
-      is_enabled = ${ args.push(is_enabled) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  const sql = `update wshop_pt set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1851,29 +1849,10 @@ export async function lockByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   const args = new QueryArgs();
-  let sql = `
-    update
-      wshop_pt
-    set
-      is_locked = ${ args.push(is_locked) }
-    
-  `;
-  {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }
-  sql += `
-  
-  where
-      id in ${ args.push(ids) }
-  `;
+  let sql = `update wshop_pt set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1911,23 +1890,13 @@ export async function revertByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id: PtId = ids[i];
     const args = new QueryArgs();
-    const sql = `
-      update
-        wshop_pt
-      set
-        is_deleted = 0
-      where
-        id = ${ args.push(id) }
-      limit 1
-    `;
+    const sql = `update wshop_pt set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1982,35 +1951,19 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
+  await delCache();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `
-        select
-          *
-        from
-          wshop_pt
-        where
-          id = ${ args.push(id) }
-      `;
+      const sql = `select * from wshop_pt where id = ${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `
-      delete from
-        wshop_pt
-      where
-        id = ${ args.push(id) }
-        and is_deleted = 1
-      limit 1
-    `;
+    const sql = `delete from wshop_pt where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

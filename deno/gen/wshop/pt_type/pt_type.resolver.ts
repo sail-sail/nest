@@ -81,39 +81,6 @@ export async function findByIdPtType(
 }
 
 /**
- * 创建产品类别
- */
-export async function createPtType(
-  input: PtTypeInput,
-  unique_type?: UniqueType,
-): Promise<PtTypeId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./pt_type.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wshop/pt_type",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建产品类别
  */
 export async function createsPtType(

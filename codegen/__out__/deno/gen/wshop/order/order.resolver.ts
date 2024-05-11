@@ -83,64 +83,6 @@ export async function findByIdOrder(
 }
 
 /**
- * 创建订单
- */
-export async function createOrder(
-  input: OrderInput,
-  unique_type?: UniqueType,
-): Promise<OrderId> {
-  
-  input.id = undefined;
-  
-  // 订单金额
-  if (input.price != null) {
-    input.price = new Decimal(input.price);
-  }
-  
-  // 消费充值金额
-  if (input.amt != null) {
-    input.amt = new Decimal(input.amt);
-  }
-  
-  // 消费赠送金额
-  if (input.give_amt != null) {
-    input.give_amt = new Decimal(input.give_amt);
-  }
-  
-  // 消费后充值余额
-  if (input.balance != null) {
-    input.balance = new Decimal(input.balance);
-  }
-  
-  // 消费后赠送余额
-  if (input.give_balance != null) {
-    input.give_balance = new Decimal(input.give_balance);
-  }
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./order.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wshop/order",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建订单
  */
 export async function createsOrder(
