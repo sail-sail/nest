@@ -357,22 +357,22 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         const buffer2 = await ejsexcel.renderExcel(buffer, { lbls, fields });
         let stats: Stats | undefined;
         try {
-          stats = await stat(`${out}/${dir2}`);
+          stats = await stat(`${projectPh}/${dir2}`);
         } catch (errTmp) { }
         // 如果文件大小不一样，或者md5不一样，就写入文件
         if (!stats || stats.size !== buffer2.length) {
           writeFnArr.push(async function() {
-            await writeFile(`${out}/${dir2}`, buffer2);
+            await writeFile(`${projectPh}/${dir2}`, buffer2);
           });
         } else {
           let buffer0: Buffer;
           try {
-            buffer0 = await readFile(`${out}/${dir2}`);
+            buffer0 = await readFile(`${projectPh}/${dir2}`);
           } catch (errTmp) {
           }
           if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
             writeFnArr.push(async function() {
-              await writeFile(`${out}/${dir2}`, buffer2);
+              await writeFile(`${projectPh}/${dir2}`, buffer2);
             });
           }
         }
@@ -573,7 +573,7 @@ export async function gitDiffOut() {
   await writeFile(`${ projectPh }/codegening.txt`, "");
   shelljs.cd(out);
   // 覆盖xlsx文件
-  await copyXlsx(out);
+  // await copyXlsx(out);
   const diffFile = "__test__.diff";
   const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
   console.log(diffStr);
@@ -611,24 +611,24 @@ export async function gitDiffOut() {
   }
 }
 
-async function copyXlsx(out: string = "") {
-  let str = shelljs.exec(`git status`, { silent: true }).stdout;
-  str = str.substring(str.lastIndexOf(`(use "git restore <file>..." to discard changes in working directory)`) + `(use "git restore <file>..." to discard changes in working directory)`.length);
-  const arr = str.split("\n");
-  for (let i = 0; i < arr.length; i++) {
-    let line = arr[i];
-    line = line.trim();
-    if (line.indexOf("modified:") === 0) {
-      const file = line.substring(line.indexOf("modified:") + "modified:".length).trim();
-      if (file.endsWith(".xlsx")) {
-        if (file.startsWith(".")) continue;
-        await copyFile(`${ out }/${ file }`, `${ projectPh }/${ file }`);
-        shelljs.exec(`git add ${ out }/${ file }`);
-        shelljs.exec(`git add ${ projectPh }/${ file }`);
-      }
-    }
-  };
-}
+// async function copyXlsx(out: string = "") {
+//   let str = shelljs.exec(`git status`, { silent: true }).stdout;
+//   str = str.substring(str.lastIndexOf(`(use "git restore <file>..." to discard changes in working directory)`) + `(use "git restore <file>..." to discard changes in working directory)`.length);
+//   const arr = str.split("\n");
+//   for (let i = 0; i < arr.length; i++) {
+//     let line = arr[i];
+//     line = line.trim();
+//     if (line.indexOf("modified:") === 0) {
+//       const file = line.substring(line.indexOf("modified:") + "modified:".length).trim();
+//       if (file.endsWith(".xlsx")) {
+//         if (file.startsWith(".")) continue;
+//         await copyFile(`${ out }/${ file }`, `${ projectPh }/${ file }`);
+//         shelljs.exec(`git add ${ out }/${ file }`);
+//         shelljs.exec(`git add ${ projectPh }/${ file }`);
+//       }
+//     }
+//   };
+// }
 
 // 新增加的文件
 async function treeDir(dir: string = "") {
