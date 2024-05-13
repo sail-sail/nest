@@ -5,6 +5,7 @@ import {
 } from "../lib/information_schema";
 import { Command } from "commander";
 import {
+  removeExcelTemplate,
   codegen,
   genRouter,
   // genMenu,
@@ -51,6 +52,7 @@ const options = program.opts();
       table = table.map((item: string) => item.trim());
     }
     console.log(`table:`, table);
+    await removeExcelTemplate();
     const context = await initContext();
     await exec(context, table);
     await gitDiffOut();
