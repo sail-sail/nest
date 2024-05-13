@@ -796,6 +796,8 @@ input <#=searchName#> {<#
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
         enumColumnName = Table_Up + Column_Up;
+      } else if (column.DATA_TYPE === 'int') {
+        enumColumnName = 'Int';
       }
   #>
   "<#=column_comment#>"
