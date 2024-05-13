@@ -437,7 +437,7 @@ export function error(...args: any[]) {
   if ((globalThis as any).process.env.NODE_ENV !== "production") {
     args.unshift(`\u001b[90m${ context.req_id }\u001b[39m\u001b[31m`);
     args.push(`\u001b[39m`);
-    console.log.apply(console, args);
+    console.error.apply(console, args);
   } else {
     let str = "";
     for (let i = 0; i < args.length; i++) {

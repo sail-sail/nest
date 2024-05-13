@@ -1,4 +1,4 @@
-import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile, type Stats } from "fs-extra";
+import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile, type Stats, rm } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
 import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
@@ -661,4 +661,24 @@ export async function denoGenTypes() {
   }
   shelljs.cd(`${ projectPh }/deno`);
   shelljs.exec("npm run gqlgen");
+}
+
+export async function removeExcelTemplate() {
+  console.log("removeExcelTemplate");
+  try {
+    await rm(`${ projectPh }/pc/public/import_template/`, { force: true, recursive: true });
+  } catch (err) {
+  }
+  try {
+    await rm(`${ projectPh }/pc/public/excel_template/`, { force: true, recursive: true });
+  } catch (err) {
+  }
+  try {
+    await rm(`${ out }/pc/public/import_template/`, { force: true, recursive: true });
+  } catch (err) {
+  }
+  try {
+    await rm(`${ out }/pc/public/excel_template/`, { force: true, recursive: true });
+  } catch (err) {
+  }
 }
