@@ -35,11 +35,11 @@ type DataPermitModel {
   "菜单"
   menu_id_lbl: String
   "范围"
-  scope: DataPermitScope
+  scope: DataPermitScope!
   "范围"
   scope_lbl: String!
   "类型"
-  type: DataPermitType
+  type: DataPermitType!
   "类型"
   type_lbl: String!
   "备注"
@@ -126,9 +126,9 @@ input DataPermitSearch {
   menu_id: [MenuId!]
   menu_id_is_null: Boolean
   "范围"
-  scope: [String!]
+  scope: [DataPermitScope!]
   "类型"
-  type: [String!]
+  type: [DataPermitType!]
   "备注"
   rem: String
   rem_like: String
