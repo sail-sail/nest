@@ -1,5 +1,9 @@
 
 
+import {
+  LoginLogType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -25,6 +29,9 @@ export function intoInput(
   const input: LoginLogInput = {
     // ID
     id: model?.id,
+    // 类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
     // 用户名
     username: model?.username,
     // 登录成功
@@ -249,11 +256,13 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsLoginLog {
+            type_lbl
             username
             is_succ_lbl
             ip
           }
           getDict(codes: [
+            "login_log_type",
             "yes_no",
           ]) {
             code
@@ -319,6 +328,7 @@ export function useExportExcel(routePath: string) {
               ${ loginLogQueryField }
             }
             getDict(codes: [
+              "login_log_type",
               "yes_no",
             ]) {
               code
@@ -364,6 +374,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: LoginLogInput = {
+    type: LoginLogType.Account,
     is_succ: 0,
   };
   return defaultInput;
