@@ -24,74 +24,82 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   v-if="!props.readonly"
   class="select_input_wrapper"
   :class="{
-    dialog_visible: dialog_visible,
+    label_readonly_1: props.labelReadonly,
+    label_readonly_0: !props.labelReadonly,
   }"
 >
-  <CustomInput
-    v-bind="$attrs"
-    ref="inputRef"
-    @click="onInput"
-    v-model="inputValue"
-    @clear="(onClear as any)"
-    readonly
-    :placeholder="props.placeholder"
-    @mouseenter="mouseEnter"
-    @mouseleave="mouseLeave"
-    @keydown.enter="onEnter"
+  <el-tooltip
+    :content="inputValue"
+    :disabled="!inputValue || !props.labelReadonly"
   >
-    <template
-      v-for="(item, key, index) in $slots"
-      :key="index"
-      #[key]
-    >
-      <slot
-        :name="key"
-      ></slot>
-    </template>
-    <template
-      #suffix
-      v-if="!$slots.suffix"
+    <CustomInput
+      v-bind="$attrs"
+      ref="inputRef"
+      @click="onInput('input')"
+      v-model="inputValue"
+      @clear="(onClear as any)"
+      :readonly="props.labelReadonly"
+      :clearable="false"
+      class="select_input"
+      :placeholder="props.placeholder"
+      @mouseenter="mouseEnter"
+      @mouseleave="mouseLeave"
+      @keydown.enter="onEnter"
     >
       <template
-        v-if="!props.disabled"
+        v-for="(item, key, index) in $slots"
+        :key="index"
+        #[key]
+      >
+        <slot
+          :name="key"
+        ></slot>
+      </template>
+      <template
+        #suffix
+        v-if="!$slots.suffix"
       >
         <template
-          v-if="modelValue && modelValue.length > 0"
+          v-if="!props.disabled"
         >
-          <el-icon
-            @click="onClear"
-            un-cursor-pointer
-            un-text="hover:red-500"
-            un-m="r-0.5"
-            size="14"
+          <template
+            v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
           >
-            <ElIconCircleClose
-              v-if="isHover"
-            />
-            <ElIconArrowDown
-              v-else
-            />
-          </el-icon>
-        </template>
-        <template
-          v-else
-        >
-          <el-icon
-            @click="onInput"
-            un-cursor-pointer
-            un-m="r-0.5"
-            size="14"
+            <el-icon
+              @click="onClear"
+              un-cursor-pointer
+              un-text="hover:red-500"
+              un-m="r-0.5"
+              size="14"
+            >
+              <ElIconCircleClose
+                v-if="isHover"
+              />
+              <ElIconArrowDown
+                v-else
+              />
+            </el-icon>
+          </template>
+          <template
+            v-else
           >
-            <ElIconArrowDown />
-          </el-icon>
+            <el-icon
+              @click="onInput('icon')"
+              un-cursor-pointer
+              un-text="hover:blue-500"
+              un-m="r-0.5"
+              size="14"
+            >
+              <ElIconArrowDown />
+            </el-icon>
+          </template>
         </template>
       </template>
-    </template>
-  </CustomInput>
+    </CustomInput>
+  </el-tooltip>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
-    @closed="dialog_visible = false;"
     @change="onSelectList"
   ></SelectList>
 </div>
@@ -124,6 +132,7 @@ import {
 
 let emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
+  (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
   (e: "clear"): void,
 }>();
@@ -142,6 +151,7 @@ const props = withDefaults(
     placeholder?: string;
     disabled?: boolean;
     readonly?: boolean;
+    labelReadonly?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -149,10 +159,18 @@ const props = withDefaults(
     placeholder: undefined,
     disabled: false,
     readonly: false,
+    labelReadonly: true,
   },
 );
 
 let inputValue = $ref("");
+
+watch(
+  () => inputValue,
+  (value) => {
+    emit("update:modelLabel", value);
+  },
+);
 
 let modelValue = $ref(props.modelValue);
 
@@ -190,7 +208,7 @@ async function onEnter(e: KeyboardEvent) {
   if (e.ctrlKey) {
     return;
   }
-  await onInput();
+  await onInput("icon");
 }
 
 function getModelValueArr() {
@@ -234,15 +252,21 @@ function onClear(e?: PointerEvent) {
   emit("clear");
 }
 
-let dialog_visible = $ref(false);
 
 let selectListRef = $ref<InstanceType<typeof SelectList>>();
 
-async function onInput() {
+async function onInput(
+  clickType: "input" | "icon",
+) {
   if (!selectListRef) {
     return;
   }
-  dialog_visible = true;
+  if (props.disabled) {
+    return;
+  }
+  if (!props.labelReadonly && clickType === "input") {
+    return;
+  }
   const modelValueArr = getModelValueArr();
   const {
     type,

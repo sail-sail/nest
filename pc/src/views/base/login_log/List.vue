@@ -26,6 +26,21 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="showBuildIn || builtInSearch?.type == null">
+        <el-form-item
+          :label="n('类型')"
+          prop="type"
+        >
+          <DictSelect
+            v-model="type_search"
+            code="login_log_type"
+            :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <template v-if="builtInSearch?.username == null && (showBuildIn || builtInSearch?.username_like == null)">
         <el-form-item
           :label="n('用户名')"
@@ -337,8 +352,17 @@
           :key="col.prop"
         >
           
+          <!-- 类型 -->
+          <template v-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 用户名 -->
-          <template v-if="'username' === col.prop && (showBuildIn || builtInSearch?.username == null)">
+          <template v-else-if="'username' === col.prop && (showBuildIn || builtInSearch?.username == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -478,6 +502,7 @@ const props = defineProps<{
   selectedIds?: LoginLogId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: LoginLogId; // ID
+  type?: string|string[]; // 类型
   username?: string; // 用户名
   username_like?: string; // 用户名
   is_succ?: string|string[]; // 登录成功
@@ -493,6 +518,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  type: "string[]",
+  type_lbl: "string[]",
   is_succ: "number[]",
   is_succ_lbl: "string[]",
 };
@@ -552,6 +579,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 类型
+const type_search = $computed({
+  get() {
+    return search.type || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.type = undefined;
+    } else {
+      search.type = val;
+    }
+  },
+});
 
 // 登录成功
 const is_succ_search = $computed({
@@ -727,6 +768,15 @@ let tableData = $ref<LoginLogModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
+    {
+      label: "类型",
+      prop: "type_lbl",
+      sortBy: "type",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
     {
       label: "用户名",
       prop: "username",
@@ -1081,6 +1131,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "类型",
     "用户名",
     "登录成功",
     "IP",
