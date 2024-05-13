@@ -54,6 +54,32 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
+const hasDictModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dict;
+});
+const hasDictbizModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dictbiz;
+});
 const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -1375,7 +1401,7 @@ export async function findAll(
   #><#
   }
   #><#
-  if (hasDict) {
+  if (hasDictModelLabel) {
   #>
   
   const [<#
@@ -1387,15 +1413,9 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dict) {
     #>
@@ -1413,15 +1433,9 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dict) {
     #>
@@ -1433,7 +1447,7 @@ export async function findAll(
   ]);<#
   }
   #><#
-  if (hasDictbiz) {
+  if (hasDictbizModelLabel) {
   #>
   
   const [<#
@@ -1444,15 +1458,9 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dictbiz) {
     #>
@@ -1469,15 +1477,9 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dictbiz) {
     #>
