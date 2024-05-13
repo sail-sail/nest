@@ -59,11 +59,11 @@ type WxPayNoticeModel {
   "微信支付订单号"
   transaction_id: String!
   "交易类型"
-  trade_type: WxPayNoticeTradeType
+  trade_type: WxPayNoticeTradeType!
   "交易类型"
   trade_type_lbl: String!
   "交易状态"
-  trade_state: WxPayNoticeTradeState
+  trade_state: WxPayNoticeTradeState!
   "交易状态"
   trade_state_lbl: String!
   "交易状态描述"
@@ -81,11 +81,11 @@ type WxPayNoticeModel {
   "用户支付金额"
   payer_total: Int!
   "货币类型"
-  currency: WxPayNoticeCurrency
+  currency: WxPayNoticeCurrency!
   "货币类型"
   currency_lbl: String!
   "用户支付币种"
-  payer_currency: WxPayNoticePayerCurrency
+  payer_currency: WxPayNoticePayerCurrency!
   "用户支付币种"
   payer_currency_lbl: String!
   "商户端设备号"
@@ -252,9 +252,9 @@ input WxPayNoticeSearch {
   transaction_id: String
   transaction_id_like: String
   "交易类型"
-  trade_type: [String!]
+  trade_type: [WxPayNoticeTradeType!]
   "交易状态"
-  trade_state: [String!]
+  trade_state: [WxPayNoticeTradeState!]
   "交易状态描述"
   trade_state_desc: String
   trade_state_desc_like: String
@@ -271,9 +271,9 @@ input WxPayNoticeSearch {
   "用户支付金额"
   payer_total: [Int]
   "货币类型"
-  currency: [String!]
+  currency: [WxPayNoticeCurrency!]
   "用户支付币种"
-  payer_currency: [String!]
+  payer_currency: [WxPayNoticePayerCurrency!]
   "商户端设备号"
   device_id: String
   device_id_like: String
