@@ -69,6 +69,7 @@ import {
 import type {
   PageInput,
   SortInput,
+  LoginLogType,
 } from "/gen/types.ts";
 
 const route_path = "/base/login_log";
@@ -99,6 +100,12 @@ async function getWhereQuery(
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.type != null && !Array.isArray(search?.type)) {
+    search.type = [ search.type ];
+  }
+  if (search?.type != null) {
+    whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
   if (search?.username != null) {
     whereQuery += ` and t.username=${ args.push(search.username) }`;
@@ -250,6 +257,17 @@ export async function findAll(
   if (search?.ids?.length === 0) {
     return [ ];
   }
+  // 类型
+  if (search && search.type != null) {
+    const len = search.type.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.type.length > ${ ids_limit }`);
+    }
+  }
   // 登录成功
   if (search && search.is_succ != null) {
     const len = search.is_succ.length;
@@ -340,13 +358,25 @@ export async function findAll(
   );
   
   const [
+    typeDict, // 类型
     is_succDict, // 登录成功
   ] = await getDict([
+    "login_log_type",
     "yes_no",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 类型
+    let type_lbl = model.type as string;
+    if (!isEmpty(model.type)) {
+      const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
+      if (dictItem) {
+        type_lbl = dictItem.lbl;
+      }
+    }
+    model.type_lbl = type_lbl;
     
     // 登录成功
     let is_succ_lbl = model.is_succ?.toString() || "";
@@ -380,10 +410,20 @@ export async function setIdByLbl(
 ) {
   
   const [
+    typeDict, // 类型
     is_succDict, // 登录成功
   ] = await getDict([
+    "login_log_type",
     "yes_no",
   ]);
+  
+  // 类型
+  if (isNotEmpty(input.type_lbl) && input.type == null) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
+    if (val != null) {
+      input.type = val as LoginLogType;
+    }
+  }
   
   // 登录成功
   if (isNotEmpty(input.is_succ_lbl) && input.is_succ == null) {
@@ -401,6 +441,8 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
   const n = initN(route_path);
   const fieldComments: LoginLogFieldComment = {
     id: await n("ID"),
+    type: await n("类型"),
+    type_lbl: await n("类型"),
     username: await n("用户名"),
     is_succ: await n("登录成功"),
     is_succ_lbl: await n("登录成功"),
@@ -673,6 +715,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 类型
+  await validators.chars_max_length(
+    input.type,
+    20,
+    fieldComments.type,
+  );
+  
   // 用户名
   await validators.chars_max_length(
     input.username,
@@ -830,7 +879,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_login_log(id,create_time,tenant_id,create_usr_id,username,is_succ,ip)values`;
+  let sql = `insert into base_login_log(id,create_time,tenant_id,create_usr_id,type,username,is_succ,ip)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -862,6 +911,11 @@ async function _creates(
         } else {
           sql += ",default";
         }
+      }
+      if (input.type != null) {
+        sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
       }
       if (input.username != null) {
         sql += `,${ args.push(input.username) }`;
@@ -1027,6 +1081,12 @@ export async function updateById(
     update base_login_log set
   `;
   let updateFldNum = 0;
+  if (input.type != null) {
+    if (input.type != oldModel.type) {
+      sql += `type = ${ args.push(input.type) },`;
+      updateFldNum++;
+    }
+  }
   if (input.username != null) {
     if (input.username != oldModel.username) {
       sql += `username = ${ args.push(input.username) },`;

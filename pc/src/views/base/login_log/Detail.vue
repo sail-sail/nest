@@ -68,6 +68,21 @@
         :validate-on-rule-change="false"
       >
         
+        <template v-if="(showBuildIn || builtInModel?.type == null)">
+          <el-form-item
+            :label="n('类型')"
+            prop="type"
+          >
+            <DictSelect
+              :set="dialogModel.type = dialogModel.type ?? undefined"
+              v-model="dialogModel.type"
+              code="login_log_type"
+              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.username == null)">
           <el-form-item
             :label="n('用户名')"
@@ -247,6 +262,13 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 类型
+    type: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+      },
+    ],
     // 用户名
     username: [
       {
@@ -599,6 +621,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "类型",
     "用户名",
     "登录成功",
     "IP",

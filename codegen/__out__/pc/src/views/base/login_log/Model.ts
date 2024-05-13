@@ -24,6 +24,9 @@ declare global {
 export const loginLogFields = [
   // ID
   "id",
+  // 类型
+  "type",
+  "type_lbl",
   // 用户名
   "username",
   // 登录成功
