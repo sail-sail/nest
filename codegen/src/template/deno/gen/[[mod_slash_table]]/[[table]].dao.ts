@@ -1486,8 +1486,7 @@ export async function findAll(
     #><#
     }
     #>
-  ]);
-  <#
+  ]);<#
   }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -1575,6 +1574,7 @@ export async function findAll(
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       const isVirtual = column.isVirtual;
@@ -1618,6 +1618,8 @@ export async function findAll(
     // <#=column_comment#>
     model.<#=column_name#> = Number(await decrypt(model.<#=column_name#>.toString()) || 0);<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #><#
+      if (!modelLabel) {
     #>
     
     // <#=column_comment#>
@@ -1629,7 +1631,11 @@ export async function findAll(
       }
     }
     model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+      }
+    #><#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #><#
+      if (!modelLabel) {
     #>
     
     // <#=column_comment#>
@@ -1641,6 +1647,8 @@ export async function findAll(
       }
     }
     model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+      }
+    #><#
       } else if (data_type === "datetime") {
     #>
     
