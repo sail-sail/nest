@@ -24,7 +24,7 @@ type CronJobLogModel {
   "定时任务"
   cron_job_id_lbl: String
   "执行状态"
-  exec_state: CronJobLogExecState
+  exec_state: CronJobLogExecState!
   "执行状态"
   exec_state_lbl: String!
   "执行结果"
@@ -109,7 +109,7 @@ input CronJobLogSearch {
   cron_job_id: [CronJobId!]
   cron_job_id_is_null: Boolean
   "执行状态"
-  exec_state: [String!]
+  exec_state: [CronJobLogExecState!]
   "执行结果"
   exec_result: String
   exec_result_like: String
