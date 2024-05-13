@@ -43,7 +43,7 @@ type PayTransactionsJsapiModel {
   "微信支付订单号"
   transaction_id: String!
   "交易状态"
-  trade_state: PayTransactionsJsapiTradeState
+  trade_state: PayTransactionsJsapiTradeState!
   "交易状态"
   trade_state_lbl: String!
   "交易状态描述"
@@ -67,7 +67,7 @@ type PayTransactionsJsapiModel {
   "订单金额(分)"
   total_fee: Int!
   "货币类型"
-  currency: PayTransactionsJsapiCurrency
+  currency: PayTransactionsJsapiCurrency!
   "货币类型"
   currency_lbl: String!
   "用户标识"
@@ -224,7 +224,7 @@ input PayTransactionsJsapiSearch {
   transaction_id: String
   transaction_id_like: String
   "交易状态"
-  trade_state: [String!]
+  trade_state: [PayTransactionsJsapiTradeState!]
   "交易状态描述"
   trade_state_desc: String
   trade_state_desc_like: String
@@ -247,7 +247,7 @@ input PayTransactionsJsapiSearch {
   "订单金额(分)"
   total_fee: [Int]
   "货币类型"
-  currency: [String!]
+  currency: [PayTransactionsJsapiCurrency!]
   "用户标识"
   openid: String
   openid_like: String
