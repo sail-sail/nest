@@ -362,6 +362,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         // 如果文件大小不一样，或者md5不一样，就写入文件
         if (!stats || stats.size !== buffer2.length) {
           writeFnArr.push(async function() {
+            await mkdir(dirname(`${projectPh}/${dir2}`), { recursive: true });
             await writeFile(`${projectPh}/${dir2}`, buffer2);
           });
         } else {
@@ -372,6 +373,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           }
           if (!buffer0 || createHash("md5").update(buffer2).digest("base64") !== createHash("md5").update(buffer0).digest("base64")) {
             writeFnArr.push(async function() {
+              await mkdir(dirname(`${projectPh}/${dir2}`), { recursive: true });
               await writeFile(`${projectPh}/${dir2}`, buffer2);
             });
           }

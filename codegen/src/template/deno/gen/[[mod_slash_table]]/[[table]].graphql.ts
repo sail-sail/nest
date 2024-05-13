@@ -224,6 +224,7 @@ type <#=modelName#> {<#
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
         enumColumnName = Table_Up + Column_Up;
+        enumColumnName = enumColumnName + "!";
       }
   #>
   "<#=column_comment#>"
@@ -773,13 +774,6 @@ input <#=searchName#> {<#
     if (column_name === 'id') {
       column_comment = 'ID';
     }
-    if (column.dict || column.dictbiz) {
-      if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
-        data_type = "[Int!]";
-      } else {
-        data_type = "[String!]";
-      }
-    }
   #><#
     if (foreignKey) {
   #>
@@ -787,9 +781,25 @@ input <#=searchName#> {<#
   <#=column_name#>: <#=data_type#>
   <#=column_name#>_is_null: Boolean<#
     } else if (column.dict || column.dictbiz) {
+      let enumColumnName = data_type;
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      }
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#><#
+  <#=column_name#>: [<#=enumColumnName#>!]<#
     } else if (column_name === "id") {
   #>
   "ID"
