@@ -289,6 +289,7 @@ async function handleGraphql(
     const errors = result.errors as GraphQLError[];
     if (errors && errors.length > 0) {
       result.errors = [ ];
+      const msgArr: string[] = [ ];
       for (let i = 0; i < errors.length; i++) {
         const err: GraphQLError = errors[i];
         if (err.originalError instanceof ServiceException) {
@@ -314,20 +315,20 @@ async function handleGraphql(
           log(message);
         } else {
           error(err);
-          let msg = "";
           const errLen = errors.length;
           for (let i = 0; i < errLen; i++) {
             const error: GraphQLError = errors[i];
-            msg += error.message || error.toString();
-            if (i < errLen - 1) {
-              msg += "\n";
+            const msg = error.message || error.toString();
+            if (msgArr.includes(msg)) {
+              continue;
             }
+            msgArr.push(msg);
           }
-          result.errors.push({
-            message: msg,
-          });
         }
       }
+      result.errors.push({
+        message: msgArr.join("\n"),
+      });
     }
   } catch (err) {
     error(err);
