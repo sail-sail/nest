@@ -1,13 +1,21 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const {
-  readFile,
-  writeFile,
-} = require("fs/promises");
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  unlinkSync,
+} = require("fs");
 
 const buildDir = `${ __dirname }/../../../build/`;
 
-(async function() {
-  const str = await readFile(`${ buildDir }/pc/index.html`, "utf8");
-  const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
-  await writeFile(`${ buildDir }/pc/index.html`, str2);
-})();
+// index.html
+const str = readFileSync(`${ buildDir }/pc/index.html`, "utf8");
+const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
+writeFileSync(`${ buildDir }/pc/index.html`, str2);
+
+// ejsexcel.min.js
+try {
+  unlinkSync(`${ __dirname }/../../public/ejsexcel.min.js`);
+} catch (e) {
+}
+copyFileSync(`${ __dirname }/../../node_modules/ejsexcel-browserify/dist/ejsexcel.min.js`, `${ __dirname }/../../public/ejsexcel.min.js`);
