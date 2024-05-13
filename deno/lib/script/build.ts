@@ -224,9 +224,14 @@ async function pc() {
   if (output.code == 1) {
     Deno.exit(1);
   }
-  const str = await Deno.readTextFile(`${ buildDir }/../pc/index.html`);
-  const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
-  await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
+  // index.html
+  {
+    const str = await Deno.readTextFile(`${ buildDir }/../pc/index.html`);
+    const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
+    await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
+  }
+  // ejsexcel.min.js
+  await Deno.copyFile(`${ pcDir }/node_modules/ejsexcel-browserify/dist/ejsexcel.min.js`, `${ buildDir }/../pc/ejsexcel.min.js`);
 }
 
 async function uni() {
