@@ -30,7 +30,7 @@ type DictModel {
   "名称"
   lbl: String!
   "数据类型"
-  type: DictType
+  type: DictType!
   "数据类型"
   type_lbl: String!
   "锁定"
@@ -146,7 +146,7 @@ input DictSearch {
   lbl: String
   lbl_like: String
   "数据类型"
-  type: [String!]
+  type: [DictType!]
   "锁定"
   is_locked: [Int!]
   "启用"
