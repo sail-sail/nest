@@ -28,7 +28,7 @@ type CardModel {
   "绑定用户"
   usr_id_lbl: String
   "会员等级"
-  grade: CardGrade
+  grade: CardGrade!
   "会员等级"
   grade_lbl: String!
   "姓名"
@@ -186,7 +186,7 @@ input CardSearch {
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
   "会员等级"
-  grade: [String!]
+  grade: [CardGrade!]
   "姓名"
   name: String
   name_like: String
