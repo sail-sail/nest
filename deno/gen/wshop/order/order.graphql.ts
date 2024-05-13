@@ -39,7 +39,7 @@ type OrderModel {
   "联系电话"
   phone: String!
   "订单状态"
-  status: OrderStatus
+  status: OrderStatus!
   "订单状态"
   status_lbl: String!
   "用户"
@@ -53,7 +53,7 @@ type OrderModel {
   "订单金额"
   price: Decimal!
   "订单类别"
-  type: OrderType
+  type: OrderType!
   "订单类别"
   type_lbl: String!
   "消费充值金额"
@@ -224,7 +224,7 @@ input OrderSearch {
   phone: String
   phone_like: String
   "订单状态"
-  status: [String!]
+  status: [OrderStatus!]
   "用户"
   usr_id: [UsrId!]
   usr_id_is_null: Boolean
@@ -234,7 +234,7 @@ input OrderSearch {
   "订单金额"
   price: [Decimal]
   "订单类别"
-  type: [String!]
+  type: [OrderType!]
   "消费充值金额"
   amt: [Decimal]
   "消费赠送金额"
