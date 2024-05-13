@@ -35,11 +35,11 @@ type BackgroundTaskModel {
   "名称"
   lbl: String!
   "状态"
-  state: BackgroundTaskState
+  state: BackgroundTaskState!
   "状态"
   state_lbl: String!
   "类型"
-  type: BackgroundTaskType
+  type: BackgroundTaskType!
   "类型"
   type_lbl: String!
   "执行结果"
@@ -158,9 +158,9 @@ input BackgroundTaskSearch {
   lbl: String
   lbl_like: String
   "状态"
-  state: [String!]
+  state: [BackgroundTaskState!]
   "类型"
-  type: [String!]
+  type: [BackgroundTaskType!]
   "执行结果"
   result: String
   result_like: String
