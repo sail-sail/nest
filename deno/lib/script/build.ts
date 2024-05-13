@@ -53,6 +53,23 @@ async function copyEnv() {
   await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 
+async function codegen() {
+  console.log("codegen");
+  const command = new Deno.Command(pnpmCmd, {
+    cwd: denoDir,
+    args: [
+      "run",
+      "codegen",
+    ],
+    stderr: "inherit",
+    stdout: "inherit",
+  });
+  const output = await command.output();
+  if (output.code == 1) {
+    Deno.exit(1);
+  }
+}
+
 async function gqlgen() {
   console.log("gqlgen");
   const command = new Deno.Command(pnpmCmd, {
@@ -323,6 +340,8 @@ for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
   if (command === "copyEnv") {
     await copyEnv();
+  } else if (command === "codegen") {
+    await codegen();
   } else if (command === "gqlgen") {
     await gqlgen();
   } else if (command === "compile") {
@@ -348,6 +367,7 @@ if (commands.length === 0) {
   }
   await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
   await copyEnv();
+  await codegen();
   await gqlgen();
   await compile();
   await pc();
