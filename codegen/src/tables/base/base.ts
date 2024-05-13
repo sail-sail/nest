@@ -315,6 +315,13 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "type",
+        align: "center",
+        require: true,
+        search: true,
+        width: 100,
+      },
+      {
         COLUMN_NAME: "username",
         align: "center",
         require: true,
