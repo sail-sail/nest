@@ -30,7 +30,7 @@ type DictbizModel {
   "名称"
   lbl: String!
   "数据类型"
-  type: DictbizType
+  type: DictbizType!
   "数据类型"
   type_lbl: String!
   "锁定"
@@ -146,7 +146,7 @@ input DictbizSearch {
   lbl: String
   lbl_like: String
   "数据类型"
-  type: [String!]
+  type: [DictbizType!]
   "锁定"
   is_locked: [Int!]
   "启用"
