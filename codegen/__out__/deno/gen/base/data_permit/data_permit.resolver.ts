@@ -75,8 +75,13 @@ export async function findOneDataPermit(
 export async function findByIdDataPermit(
   id: DataPermitId,
 ): Promise<DataPermitModel | undefined> {
-  const { findById } = await import("./data_permit.service.ts");
+  
+  const {
+    findById,
+  } = await import("./data_permit.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

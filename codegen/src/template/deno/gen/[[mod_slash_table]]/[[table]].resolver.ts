@@ -236,7 +236,11 @@ export async function findOne<#=Table_Up2#>(
 export async function findById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
-  const { findById } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findById,
+  } = await import("./<#=table#>.service.ts");
+  
   const res = await findById(id);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -265,6 +269,7 @@ export async function findById<#=Table_Up2#>(
   #><#
   }
   #>
+  
   return res;
 }<#
 if (opts.noAdd !== true) {
@@ -295,7 +300,9 @@ export async function creates<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -432,7 +439,9 @@ export async function updateById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findById<#=Table_Up2#>(id);<#
@@ -486,7 +495,9 @@ export async function deleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findAll<#=Table_Up2#>({
@@ -539,7 +550,9 @@ export async function defaultById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -593,7 +606,9 @@ export async function enableByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -654,7 +669,9 @@ export async function lockByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -704,7 +721,9 @@ export async function revertByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -753,7 +772,9 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findAll<#=Table_Up2#>({
