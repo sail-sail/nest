@@ -180,23 +180,12 @@ type <#=modelName#> {<#
       console.log(column);
       throw `错误: 表: ${mod}_${ table } 字段: ${ column_name } 无 comment`;
     }
-    let selectList = [ ];
-    if (column_comment.endsWith("multiple")) {
-      _data_type = "[String]";
-    }
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
     if (column_name === 'id') column_comment = 'ID';
     if (!is_nullable) {
       data_type += "!";
     }
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+    if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
     ) {
   #>
@@ -236,7 +225,7 @@ type <#=modelName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    if (!modelLabel) {
+    if (foreignKey.lbl) {
   #>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
@@ -533,13 +522,6 @@ input <#=inputName#> {<#
     let selectList = [ ];
     if (column_comment.endsWith("multiple")) {
       _data_type = "[String]";
-    }
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     if (column_name === 'id') column_comment = 'ID';
   #><#

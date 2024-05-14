@@ -171,7 +171,7 @@ export const <#=fieldsName#> = [<#
   #>
   // <#=column_comment#>
   "<#=column_name#>",<#
-    if (foreignKey.lbl && !modelLabel) {
+    if (foreignKey.lbl) {
   #>
   "<#=column_name#>_lbl",<#
     }
