@@ -8,7 +8,7 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <el-dropdown
+  <!-- <el-dropdown
     un-w="full"
     trigger="contextmenu"
     placement="top"
@@ -28,7 +28,7 @@
         </el-dropdown-item>
         
       </el-dropdown-menu>
-    </template>
+    </template> -->
     <ElSelectV2
       ref="selectRef"
       :options="options4SelectV2"
@@ -81,7 +81,7 @@
         <slot :name="key"></slot>
       </template>
     </ElSelectV2>
-  </el-dropdown>
+  <!-- </el-dropdown> -->
 </div>
 <template
   v-else
@@ -312,11 +312,11 @@ const props = withDefaults(
   },
 );
 
-function copyModelLabel() {
-  const text = modelLabels.join(",");
-  copyText(text);
-  ElMessage.success(`${ text } 复制成功!`);
-}
+// function copyModelLabel() {
+//   const text = modelLabels.join(",");
+//   copyText(text);
+//   ElMessage.success(`${ text } 复制成功!`);
+// }
 
 let modelValue = $ref(props.modelValue);
 
