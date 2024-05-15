@@ -74,8 +74,13 @@ export async function findOneLoginLog(
 export async function findByIdLoginLog(
   id: LoginLogId,
 ): Promise<LoginLogModel | undefined> {
-  const { findById } = await import("./login_log.service.ts");
+  
+  const {
+    findById,
+  } = await import("./login_log.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

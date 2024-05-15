@@ -400,15 +400,7 @@ type <#=fieldCommentName#> {<#
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    let column_comment = column.COLUMN_COMMENT;
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT;
     if (column_name === "is_sys") {
       continue;
     }
@@ -439,7 +431,7 @@ type <#=fieldCommentName#> {<#
   <#=column_name#>: String!
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
-    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+    } else if (column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!
@@ -519,7 +511,6 @@ input <#=inputName#> {<#
       data_type = 'Decimal';
     }
     let column_comment = column.COLUMN_COMMENT;
-    let selectList = [ ];
     if (column_comment.endsWith("multiple")) {
       _data_type = "[String]";
     }
@@ -531,7 +522,7 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
-    } else if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+    } else if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
   #>
@@ -543,7 +534,7 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
@@ -822,20 +813,8 @@ type <#=Table_Up2#>Summary {<#
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT;
-    let data_type = column.DATA_TYPE;
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (data_type === 'id') column_comment = '';
+    const column_comment = column.COLUMN_COMMENT || "";
+    const data_type = column.DATA_TYPE;
   #><#
     if (column.showSummary) {
   #>
