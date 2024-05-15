@@ -75,8 +75,13 @@ export async function findOneJob(
 export async function findByIdJob(
   id: JobId,
 ): Promise<JobModel | undefined> {
-  const { findById } = await import("./job.service.ts");
+  
+  const {
+    findById,
+  } = await import("./job.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -354,7 +354,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
-            findAllCronJobLogDetail(search: $search, sort: $sort) {
+            findAllCronJobLogDetail(search: $search, page: null, sort: $sort) {
               ${ cronJobLogDetailQueryField }
             }
           }

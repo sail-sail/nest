@@ -144,7 +144,7 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const id2: JobId = await jobDao.updateById(id, input);
+  const id2 = await jobDao.updateById(id, input);
   return id2;
 }
 
