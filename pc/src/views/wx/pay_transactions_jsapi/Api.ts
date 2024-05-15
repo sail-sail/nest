@@ -1,9 +1,5 @@
 
 
-import {
-  PayTransactionsJsapiTradeState,
-} from "#/types";
-
 import type {
   Query,
   Mutation,
@@ -291,7 +287,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
-            findAllPayTransactionsJsapi(search: $search, sort: $sort) {
+            findAllPayTransactionsJsapi(search: $search, page: null, sort: $sort) {
               ${ payTransactionsJsapiQueryField }
             }
             getDict(codes: [
@@ -342,7 +338,7 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PayTransactionsJsapiInput = {
-    trade_state: PayTransactionsJsapiTradeState.Notpay,
+    trade_state: "NOTPAY",
     trade_state_desc: "未支付",
     support_fapiao: 0,
     total_fee: 0,

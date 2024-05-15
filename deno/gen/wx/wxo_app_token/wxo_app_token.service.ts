@@ -143,7 +143,7 @@ export async function updateById(
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
   
-  const id2: WxoAppTokenId = await wxo_app_tokenDao.updateById(id, input);
+  const id2 = await wxo_app_tokenDao.updateById(id, input);
   return id2;
 }
 

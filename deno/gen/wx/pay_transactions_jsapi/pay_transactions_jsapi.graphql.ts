@@ -6,28 +6,6 @@ import * as resolver from "./pay_transactions_jsapi.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar PayTransactionsJsapiId
 
-"微信JSAPI下单交易状态"
-enum PayTransactionsJsapiTradeState {
-  "支付成功"
-  SUCCESS
-  "转入退款"
-  REFUND
-  "未支付"
-  NOTPAY
-  "已关闭"
-  CLOSED
-  "已撤销"
-  REVOKED
-  "用户支付中"
-  USERPAYING
-  "支付失败"
-  PAYERROR
-}
-"微信JSAPI下单货币类型"
-enum PayTransactionsJsapiCurrency {
-  "人民币"
-  CNY
-}
 
 type PayTransactionsJsapiModel {
   "ID"
@@ -43,7 +21,7 @@ type PayTransactionsJsapiModel {
   "微信支付订单号"
   transaction_id: String!
   "交易状态"
-  trade_state: PayTransactionsJsapiTradeState!
+  trade_state: String!
   "交易状态"
   trade_state_lbl: String!
   "交易状态描述"
@@ -67,7 +45,7 @@ type PayTransactionsJsapiModel {
   "订单金额(分)"
   total_fee: Int!
   "货币类型"
-  currency: PayTransactionsJsapiCurrency!
+  currency: String!
   "货币类型"
   currency_lbl: String!
   "用户标识"
@@ -169,7 +147,7 @@ input PayTransactionsJsapiInput {
   "微信支付订单号"
   transaction_id: String
   "交易状态"
-  trade_state: PayTransactionsJsapiTradeState
+  trade_state: String
   "交易状态"
   trade_state_lbl: String
   "交易状态描述"
@@ -193,7 +171,7 @@ input PayTransactionsJsapiInput {
   "订单金额(分)"
   total_fee: Int
   "货币类型"
-  currency: PayTransactionsJsapiCurrency
+  currency: String
   "货币类型"
   currency_lbl: String
   "用户标识"
@@ -224,7 +202,7 @@ input PayTransactionsJsapiSearch {
   transaction_id: String
   transaction_id_like: String
   "交易状态"
-  trade_state: [PayTransactionsJsapiTradeState!]
+  trade_state: [String!]
   "交易状态描述"
   trade_state_desc: String
   trade_state_desc_like: String
@@ -247,7 +225,7 @@ input PayTransactionsJsapiSearch {
   "订单金额(分)"
   total_fee: [Int]
   "货币类型"
-  currency: [PayTransactionsJsapiCurrency!]
+  currency: [String!]
   "用户标识"
   openid: String
   openid_like: String

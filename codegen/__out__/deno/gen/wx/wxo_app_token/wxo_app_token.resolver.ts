@@ -75,8 +75,13 @@ export async function findOneWxoAppToken(
 export async function findByIdWxoAppToken(
   id: WxoAppTokenId,
 ): Promise<WxoAppTokenModel | undefined> {
-  const { findById } = await import("./wxo_app_token.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wxo_app_token.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

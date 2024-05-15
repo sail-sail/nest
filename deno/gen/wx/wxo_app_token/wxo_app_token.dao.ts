@@ -67,6 +67,7 @@ import {
 
 const route_path = "/wx/wxo_app_token";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: WxoAppTokenSearch,

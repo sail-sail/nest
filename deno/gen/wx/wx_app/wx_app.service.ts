@@ -152,7 +152,7 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const id2: WxAppId = await wx_appDao.updateById(id, input);
+  const id2 = await wx_appDao.updateById(id, input);
   return id2;
 }
 
