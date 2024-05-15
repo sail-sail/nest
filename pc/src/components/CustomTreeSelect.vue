@@ -1,5 +1,5 @@
 <template>
-<el-dropdown
+<!-- <el-dropdown
   v-if="readonly !== true"
   un-w="full"
   trigger="contextmenu"
@@ -20,8 +20,9 @@
       </el-dropdown-item>
       
     </el-dropdown-menu>
-  </template>
+  </template> -->
   <el-tree-select
+    v-if="readonly !== true"
     filterable
     collapse-tags
     collapse-tags-tooltip
@@ -59,7 +60,7 @@
       <slot :name="key"></slot>
     </template>
   </el-tree-select>
-</el-dropdown>
+<!-- </el-dropdown> -->
 <template
   v-else
 >
@@ -158,11 +159,11 @@ const props = withDefaults(
   },
 );
 
-function copyModelLabel() {
-  const text = modelLabels.join(",");
-  copyText(text);
-  ElMessage.success(`${ text } 复制成功!`);
-}
+// function copyModelLabel() {
+//   const text = modelLabels.join(",");
+//   copyText(text);
+//   ElMessage.success(`${ text } 复制成功!`);
+// }
 
 const usrStore = useUsrStore();
 
