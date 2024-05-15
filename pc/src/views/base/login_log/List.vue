@@ -61,7 +61,7 @@
         >
           <DictSelect
             :model-value="is_succ_search[0]"
-            @update:model-value="$event != null ? is_succ_search = [ $event ] : is_succ_search = [ ]"
+            @update:model-value="($event != null && $event !== '') ? is_succ_search = [ $event ] : is_succ_search = [ ]"
             code="yes_no"
             :placeholder="`${ ns('请选择') } ${ n('登录成功') }`"
             @change="onSearch"
