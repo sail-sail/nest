@@ -205,15 +205,7 @@ export async function findOne<#=Table_Up2#>(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
   #><#
     if (isPassword) {
@@ -247,15 +239,7 @@ export async function findById<#=Table_Up2#>(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
   #><#
     if (isPassword) {
@@ -319,23 +303,15 @@ export async function creates<#=Table_Up2#>(
       if (column_name === "id") continue;
       if (column_name === "version") continue;
       const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
       if (!column_type) {
         continue;
       }
       if (!column_type.startsWith("decimal")) {
         continue;
       }
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #>
     
     // <#=column_comment#>
@@ -395,23 +371,15 @@ export async function updateById<#=Table_Up2#>(
     if (column_name === "id") continue;
     if (column_name === "version") continue;
     const foreignKey = column.foreignKey;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
     if (!column_type) {
       continue;
     }
     if (!column_type.startsWith("decimal")) {
       continue;
     }
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
   #>
   
   // <#=column_comment#>

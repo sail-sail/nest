@@ -444,20 +444,12 @@ export function intoInput(
       ) {
         continue;
       }
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
     #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      if (foreignKey || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
@@ -1415,17 +1407,9 @@ export function useDownloadImportTemplate(routePath: string) {
                 || column.readonly
                 || column.noAdd
               ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
+              const column_type = column.COLUMN_TYPE;
+              const data_type = column.DATA_TYPE;
+              const column_comment = column.COLUMN_COMMENT;
               const foreignKey = column.foreignKey;
               if (column_name === "id") {
                 continue;
@@ -1433,7 +1417,7 @@ export function useDownloadImportTemplate(routePath: string) {
               const isPassword = column.isPassword;
               if (isPassword) continue;
             #><#
-              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              if (foreignKey || column.dict || column.dictbiz
                 || data_type === "datetime" || data_type === "date"
               ) {
             #>
@@ -1463,17 +1447,9 @@ export function useDownloadImportTemplate(routePath: string) {
               || column.readonly
               || column.noAdd
             ) continue;
-            let column_type = column.COLUMN_TYPE;
-            let data_type = column.DATA_TYPE;
-            let column_comment = column.COLUMN_COMMENT;
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.includes("[")) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
+            const column_type = column.COLUMN_TYPE;
+            const data_type = column.DATA_TYPE;
+            const column_comment = column.COLUMN_COMMENT;
             if (column_name === "id") {
               continue;
             }
@@ -1543,17 +1519,9 @@ export function useDownloadImportTemplate(routePath: string) {
                 || column.readonly
                 || column.noAdd
               ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
+              const column_type = column.COLUMN_TYPE;
+              const data_type = column.DATA_TYPE;
+              const column_comment = column.COLUMN_COMMENT;
               const foreignKey = column.foreignKey;
               if (column_name === "id") {
                 continue;
@@ -1622,17 +1590,9 @@ export function useDownloadImportTemplate(routePath: string) {
                 || column.readonly
                 || column.noAdd
               ) continue;
-              let column_type = column.COLUMN_TYPE;
-              let data_type = column.DATA_TYPE;
-              let column_comment = column.COLUMN_COMMENT;
-              let selectList = [ ];
-              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-              if (selectStr) {
-                selectList = eval(`(${ selectStr })`);
-              }
-              if (column_comment.includes("[")) {
-                column_comment = column_comment.substring(0, column_comment.indexOf("["));
-              }
+              const column_type = column.COLUMN_TYPE;
+              const data_type = column.DATA_TYPE;
+              const column_comment = column.COLUMN_COMMENT;
               const foreignKey = column.foreignKey;
               if (column_name === "id") {
                 continue;
@@ -1786,17 +1746,9 @@ export function useExportExcel(routePath: string) {
                     "org_id", "org_id_lbl",
                   ].includes(column_name)
                 ) continue;
-                let column_type = column.COLUMN_TYPE;
-                let data_type = column.DATA_TYPE;
-                let column_comment = column.COLUMN_COMMENT;
-                let selectList = [ ];
-                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-                if (selectStr) {
-                  selectList = eval(`(${ selectStr })`);
-                }
-                if (column_comment.includes("[")) {
-                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
-                }
+                const column_type = column.COLUMN_TYPE;
+                const data_type = column.DATA_TYPE;
+                const column_comment = column.COLUMN_COMMENT;
                 const foreignKey = column.foreignKey;
                 if (column_name === "id") {
                   continue;
@@ -2047,15 +1999,7 @@ export async function getDefaultInput() {<#
       if (column_name === "is_deleted") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
       if (
         [
           "is_default",
@@ -2071,13 +2015,7 @@ export async function getDefaultInput() {<#
       if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
         continue;
       }
-      if (selectList.length > 0) {
-        if (typeof selectList[0].value === "string") {
-          defaultValue = `"${ defaultValue }"`;
-        } else {
-          defaultValue = defaultValue;
-        }
-      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
+      if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
         defaultValue = defaultValue;
       } else if (data_type === "datetime" || data_type === "date") {
         let valueFormat = "YYYY-MM-DD HH:mm:ss";

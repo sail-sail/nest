@@ -191,17 +191,9 @@ const old_table = table;
           if (column_name === "version") continue;
           if (column_name === "tenant_id") continue;
           if (column_name === "org_id") continue;
-          let data_type = column.DATA_TYPE;
-          let column_type = column.COLUMN_TYPE;
-          let column_comment = column.COLUMN_COMMENT || "";
-          let selectList = [ ];
-          let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-          if (selectStr) {
-            selectList = eval(`(${ selectStr })`);
-          }
-          if (column_comment.indexOf("[") !== -1) {
-            column_comment = column_comment.substring(0, column_comment.indexOf("["));
-          }
+          const data_type = column.DATA_TYPE;
+          const column_type = column.COLUMN_TYPE || "";
+          const column_comment = column.COLUMN_COMMENT || "";
           let require = column.require;
           const foreignKey = column.foreignKey;
           if (foreignKey && foreignKey.showType === "dialog") {
@@ -220,9 +212,6 @@ const old_table = table;
             vIf.push("dialogAction !== 'edit'");
           }
           const vIfStr = vIf.join(" && ");
-          if (column_type == null) {
-            column_type = "";
-          }
           let foreignSchema = undefined;
           if (foreignKey) {
             foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -478,35 +467,6 @@ const old_table = table;
               }
               #>
             ></CustomTreeSelect><#
-            } else if (selectList.length > 0) {
-            #>
-            <el-select
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              filterable
-              default-first-option
-              :clearable="true"
-              @keyup.enter.stop
-              :disabled="isLocked || isReadonly"
-            ><#
-              for (let item of selectList) {
-                let value = item.value;
-                let label = item.label;
-                if (typeof(value) === "string") {
-                  value = `'${ value }'`;
-                } else if (typeof(value) === "number") {
-                  value = value.toString();
-                }
-              #>
-              <el-option
-                :value="<#=value#>"
-                :label="n('<#=label#>')"
-              ></el-option><#
-              }
-              #>
-            </el-select><#
             } else if (column.dict) {
             #>
             <DictSelect
@@ -796,17 +756,9 @@ const old_table = table;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
                 if (column_name === "org_id") continue;
-                let data_type = column.DATA_TYPE;
-                let column_type = column.COLUMN_TYPE;
-                let column_comment = column.COLUMN_COMMENT || "";
-                let selectList = [ ];
-                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-                if (selectStr) {
-                  selectList = eval(`(${ selectStr })`);
-                }
-                if (column_comment.indexOf("[") !== -1) {
-                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
-                }
+                const data_type = column.DATA_TYPE;
+                const column_type = column.COLUMN_TYPE;
+                const column_comment = column.COLUMN_COMMENT || "";
                 let require = column.require;
                 const foreignKey = column.foreignKey;
                 if (foreignKey && foreignKey.showType === "dialog") {
@@ -1281,18 +1233,10 @@ const old_table = table;
                   if (column_name === "version") continue;
                   if (column_name === "tenant_id") continue;
                   if (column_name === "org_id") continue;
-                  let data_type = column.DATA_TYPE;
-                  let column_type = column.COLUMN_TYPE;
-                  let column_comment = column.COLUMN_COMMENT || "";
-                  let selectList = [ ];
-                  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-                  if (selectStr) {
-                    selectList = eval(`(${ selectStr })`);
-                  }
-                  if (column_comment.indexOf("[") !== -1) {
-                    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-                  }
-                  let require = column.require;
+                  const data_type = column.DATA_TYPE;
+                  const column_type = column.COLUMN_TYPE || "";
+                  const column_comment = column.COLUMN_COMMENT || "";
+                  const require = column.require;
                   const foreignKey = column.foreignKey;
                   if (foreignKey && foreignKey.showType === "dialog") {
                     continue;
@@ -1310,9 +1254,6 @@ const old_table = table;
                     vIf.push("dialogAction !== 'edit'");
                   }
                   const vIfStr = vIf.join(" && ");
-                  if (column_type == null) {
-                    column_type = "";
-                  }
                   let foreignSchema = undefined;
                   if (foreignKey) {
                     foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -1555,35 +1496,6 @@ const old_table = table;
                     }
                     #>
                   ></CustomTreeSelect><#
-                  } else if (selectList.length > 0) {
-                  #>
-                  <el-select
-                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
-                    un-w="full"
-                    :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-                    filterable
-                    default-first-option
-                    :clearable="true"
-                    @keyup.enter.stop
-                    :disabled="isLocked || isReadonly"
-                  ><#
-                    for (let item of selectList) {
-                      let value = item.value;
-                      let label = item.label;
-                      if (typeof(value) === "string") {
-                        value = `'${ value }'`;
-                      } else if (typeof(value) === "number") {
-                        value = value.toString();
-                      }
-                    #>
-                    <el-option
-                      :value="<#=value#>"
-                      :label="n('<#=label#>')"
-                    ></el-option><#
-                    }
-                    #>
-                  </el-select><#
                   } else if (column.dict) {
                   #>
                   <DictSelect
@@ -1904,18 +1816,10 @@ const old_table = table;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
                 if (column_name === "org_id") continue;
-                let data_type = column.DATA_TYPE;
-                let column_type = column.COLUMN_TYPE;
-                let column_comment = column.COLUMN_COMMENT || "";
-                let selectList = [ ];
-                let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-                if (selectStr) {
-                  selectList = eval(`(${ selectStr })`);
-                }
-                if (column_comment.indexOf("[") !== -1) {
-                  column_comment = column_comment.substring(0, column_comment.indexOf("["));
-                }
-                let require = column.require;
+                const data_type = column.DATA_TYPE;
+                const column_type = column.COLUMN_TYPE || "";
+                const column_comment = column.COLUMN_COMMENT || "";
+                const require = column.require;
                 const foreignKey = column.foreignKey;
                 if (foreignKey && foreignKey.showType === "dialog") {
                   continue;
@@ -1925,9 +1829,6 @@ const old_table = table;
                 const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
-                if (column_type == null) {
-                  column_type = "";
-                }
                 let foreignSchema = undefined;
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
@@ -5553,15 +5454,7 @@ async function onInitI18ns() {
     if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
   #>
     "<#=column_comment#>",<#
   }
