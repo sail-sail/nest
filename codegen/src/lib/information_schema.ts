@@ -302,6 +302,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.search == null) {
+        item.search = true;
+      }
     }
     if (column_name.startsWith("is_")
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint(1) unsigned"
@@ -619,7 +622,7 @@ export async function getSchema(
       if (record.COLUMN_NAME.endsWith("_ids")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_ids".length);
         const defaultSort = tables[table2]?.opts?.defaultSort;
-        record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: true, type: "json", defaultSort };
+        record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: true, type: "many2many", defaultSort };
         // record.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
       } else if (record.COLUMN_NAME.endsWith("_id")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_id".length);
