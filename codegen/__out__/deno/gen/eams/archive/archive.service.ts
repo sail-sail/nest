@@ -128,7 +128,7 @@ export async function updateById(
   input: ArchiveInput,
 ): Promise<ArchiveId> {
   
-  const id2: ArchiveId = await archiveDao.updateById(id, input);
+  const id2 = await archiveDao.updateById(id, input);
   return id2;
 }
 

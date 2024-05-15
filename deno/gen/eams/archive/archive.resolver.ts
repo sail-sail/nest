@@ -75,8 +75,13 @@ export async function findOneArchive(
 export async function findByIdArchive(
   id: ArchiveId,
 ): Promise<ArchiveModel | undefined> {
-  const { findById } = await import("./archive.service.ts");
+  
+  const {
+    findById,
+  } = await import("./archive.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
