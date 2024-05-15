@@ -128,7 +128,7 @@ export async function updateById(
   input: WxwAppTokenInput,
 ): Promise<WxwAppTokenId> {
   
-  const id2: WxwAppTokenId = await wxw_app_tokenDao.updateById(id, input);
+  const id2 = await wxw_app_tokenDao.updateById(id, input);
   return id2;
 }
 

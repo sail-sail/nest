@@ -74,8 +74,13 @@ export async function findOneWxwMsg(
 export async function findByIdWxwMsg(
   id: WxwMsgId,
 ): Promise<WxwMsgModel | undefined> {
-  const { findById } = await import("./wxw_msg.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wxw_msg.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
