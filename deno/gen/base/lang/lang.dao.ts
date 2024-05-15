@@ -67,6 +67,7 @@ import type {
 
 const route_path = "/base/lang";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: LangSearch,

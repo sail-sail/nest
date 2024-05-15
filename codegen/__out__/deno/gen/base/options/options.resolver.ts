@@ -75,8 +75,13 @@ export async function findOneOptions(
 export async function findByIdOptions(
   id: OptionsId,
 ): Promise<OptionsModel | undefined> {
-  const { findById } = await import("./options.service.ts");
+  
+  const {
+    findById,
+  } = await import("./options.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

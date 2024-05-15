@@ -94,13 +94,18 @@ export async function findOneUsr(
 export async function findByIdUsr(
   id: UsrId,
 ): Promise<UsrModel | undefined> {
-  const { findById } = await import("./usr.service.ts");
+  
+  const {
+    findById,
+  } = await import("./usr.service.ts");
+  
   const res = await findById(id);
   
   if (res) {
     // 密码
     res.password = "";
   }
+  
   return res;
 }
 

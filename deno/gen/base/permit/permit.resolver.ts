@@ -75,8 +75,13 @@ export async function findOnePermit(
 export async function findByIdPermit(
   id: PermitId,
 ): Promise<PermitModel | undefined> {
-  const { findById } = await import("./permit.service.ts");
+  
+  const {
+    findById,
+  } = await import("./permit.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -422,7 +422,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: LangSearch, $sort: [SortInput!]) {
-            findAllLang(search: $search, sort: $sort) {
+            findAllLang(search: $search, page: null, sort: $sort) {
               ${ langQueryField }
             }
             getDict(codes: [

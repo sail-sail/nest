@@ -565,7 +565,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: MenuSearch, $sort: [SortInput!]) {
-            findAllMenu(search: $search, sort: $sort) {
+            findAllMenu(search: $search, page: null, sort: $sort) {
               ${ menuQueryField }
             }
             getDict(codes: [

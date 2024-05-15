@@ -67,6 +67,7 @@ import type {
 
 const route_path = "/base/domain";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: DomainSearch,

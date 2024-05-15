@@ -128,11 +128,14 @@ export async function updateById(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  const id2: I18nId = await i18nDao.updateById(id, input);
+  const id2 = await i18nDao.updateById(id, input);
   
   {
-    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
-    await optionsDaoSrc.updateI18n_version();
+    const {
+      updateI18n_version,
+    } = await import("/src/base/options/options.dao.ts");
+    
+    await updateI18n_version();
   }
   return id2;
 }
