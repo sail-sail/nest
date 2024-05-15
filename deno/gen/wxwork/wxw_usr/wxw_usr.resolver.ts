@@ -75,8 +75,13 @@ export async function findOneWxwUsr(
 export async function findByIdWxwUsr(
   id: WxwUsrId,
 ): Promise<WxwUsrModel | undefined> {
-  const { findById } = await import("./wxw_usr.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wxw_usr.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
