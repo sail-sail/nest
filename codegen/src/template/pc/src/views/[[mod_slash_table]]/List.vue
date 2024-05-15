@@ -212,7 +212,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           <DictSelect
             :model-value="<#=column_name#>_search[0]"
-            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
+            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             @change="onSearch"
@@ -241,7 +241,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           <DictbizSelect
             :model-value="<#=column_name#>_search[0]"
-            @update:model-value="$event != null ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
+            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             @change="onSearch"

@@ -73,6 +73,21 @@
         </el-form-item>
       </template>
       
+      <template v-if="showBuildIn || builtInSearch?.is_enabled == null">
+        <el-form-item
+          :label="n('启用')"
+          prop="is_enabled"
+        >
+          <DictSelect
+            :model-value="is_enabled_search[0]"
+            @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
+            code="is_enabled"
+            :placeholder="`${ ns('请选择') } ${ n('启用') }`"
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -866,6 +881,20 @@ const dictbiz_id_search = $computed({
       search.dictbiz_id = undefined;
     } else {
       search.dictbiz_id = val;
+    }
+  },
+});
+
+// 启用
+const is_enabled_search = $computed({
+  get() {
+    return search.is_enabled || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.is_enabled = undefined;
+    } else {
+      search.is_enabled = val;
     }
   },
 });
