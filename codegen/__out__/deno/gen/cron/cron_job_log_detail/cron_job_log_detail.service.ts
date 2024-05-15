@@ -128,7 +128,7 @@ export async function updateById(
   input: CronJobLogDetailInput,
 ): Promise<CronJobLogDetailId> {
   
-  const id2: CronJobLogDetailId = await cron_job_log_detailDao.updateById(id, input);
+  const id2 = await cron_job_log_detailDao.updateById(id, input);
   return id2;
 }
 

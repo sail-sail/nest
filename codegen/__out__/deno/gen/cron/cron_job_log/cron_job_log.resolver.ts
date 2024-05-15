@@ -74,8 +74,13 @@ export async function findOneCronJobLog(
 export async function findByIdCronJobLog(
   id: CronJobLogId,
 ): Promise<CronJobLogModel | undefined> {
-  const { findById } = await import("./cron_job_log.service.ts");
+  
+  const {
+    findById,
+  } = await import("./cron_job_log.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

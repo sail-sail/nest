@@ -453,7 +453,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: JobSearch, $sort: [SortInput!]) {
-            findAllJob(search: $search, sort: $sort) {
+            findAllJob(search: $search, page: null, sort: $sort) {
               ${ jobQueryField }
             }
             getDict(codes: [
