@@ -75,8 +75,13 @@ export async function findOneI18n(
 export async function findByIdI18n(
   id: I18nId,
 ): Promise<I18nModel | undefined> {
-  const { findById } = await import("./i18n.service.ts");
+  
+  const {
+    findById,
+  } = await import("./i18n.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

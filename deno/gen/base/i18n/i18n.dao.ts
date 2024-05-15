@@ -71,6 +71,7 @@ import {
 
 const route_path = "/base/i18n";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: I18nSearch,
