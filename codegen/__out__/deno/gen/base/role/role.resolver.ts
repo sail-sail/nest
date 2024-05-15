@@ -75,8 +75,13 @@ export async function findOneRole(
 export async function findByIdRole(
   id: RoleId,
 ): Promise<RoleModel | undefined> {
-  const { findById } = await import("./role.service.ts");
+  
+  const {
+    findById,
+  } = await import("./role.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

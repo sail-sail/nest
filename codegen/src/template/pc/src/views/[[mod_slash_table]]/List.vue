@@ -95,15 +95,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (isEncrypt) continue;
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE;
-        let column_comment = column.COLUMN_COMMENT || "";
-        let selectList = [ ];
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const column_comment = column.COLUMN_COMMENT || "";
         const require = column.require;
         const search = column.search;
         const isSearchExpand = column.isSearchExpand;
@@ -969,17 +961,9 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column_name === "tenant_id") continue;
             if (column_name === "org_id") continue;
             const foreignKey = column.foreignKey;
-            let data_type = column.DATA_TYPE;
-            let column_type = column.COLUMN_TYPE;
-            let column_comment = column.COLUMN_COMMENT || "";
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.indexOf("[") !== -1) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
+            const data_type = column.DATA_TYPE;
+            const column_type = column.COLUMN_TYPE;
+            const column_comment = column.COLUMN_COMMENT || "";
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
@@ -1167,7 +1151,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0 || column.dict || column.dictbiz
+            } else if (column.dict || column.dictbiz
               || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
             ) {
           #>
@@ -1232,7 +1216,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
             </el-table-column>
           </template><#
-            } else if (!foreignKey && selectList.length === 0) {
+            } else if (!foreignKey) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1401,15 +1385,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     if (column_name === "tenant_id") continue;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const require = column.require;
     const search = column.search;
     const foreignKey = column.foreignKey;
@@ -1535,15 +1511,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
   const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const column_comment = column.COLUMN_COMMENT || "";
   const foreignKey = column.foreignKey;
   const many2many = column.many2many;
   const foreignTable = foreignKey && foreignKey.table;
@@ -1885,12 +1853,7 @@ const props = defineProps<{<#
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'string';
     }
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey || column.dict || column.dictbiz) {
       data_type = "string|string[]";
     }
     if (column_comment.includes("[")) {
@@ -1909,9 +1872,6 @@ const props = defineProps<{<#
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>
   <#=column_name#>_lbl?: <#=_data_type#>;<#=column_comment#><#
-    } else if (selectList && selectList.length > 0) {
-  #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (column.dict || column.dictbiz) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
@@ -1961,12 +1921,7 @@ const builtInSearchType: { [key: string]: string } = {<#
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (foreignKey || selectList.length > 0) {
+    if (foreignKey) {
       data_type = data_type+"[]";
     }
     if (column_comment.includes("[")) {
@@ -1980,11 +1935,11 @@ const builtInSearchType: { [key: string]: string } = {<#
   #>
   <#=column_name#>: "string[]",
   <#=column_name#>_lbl: "string[]",<#
-    } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "number[]",
   <#=column_name#>_lbl: "string[]",<#
-    } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
+    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "string[]",
   <#=column_name#>_lbl: "string[]",<#
@@ -2338,17 +2293,9 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
     const foreignKey = column.foreignKey;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) continue;
     if (column_type) {
@@ -2447,7 +2394,7 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz
+    } else if (foreignKey || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
     ) {
     #>
@@ -2926,15 +2873,7 @@ async function onImportExcel() {
     const data_type = column.DATA_TYPE;
     const isPassword = column.isPassword;
     if (isPassword) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     if (
       [
@@ -2946,7 +2885,7 @@ async function onImportExcel() {
       continue;
     }
     let column_name2 = column_name;
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+    if (foreignKey || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
     ) {
       column_name2 = `${column_name}_lbl`;
@@ -2989,15 +2928,7 @@ async function onImportExcel() {
             const data_type = column.DATA_TYPE;
             const isPassword = column.isPassword;
             if (isPassword) continue;
-            let column_comment = column.COLUMN_COMMENT || "";
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.indexOf("[") !== -1) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
+            const column_comment = column.COLUMN_COMMENT || "";
             const foreignKey = column.foreignKey;
             if (
               [
@@ -3009,13 +2940,13 @@ async function onImportExcel() {
               continue;
             }
             let column_name2 = column_name;
-            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+            if (foreignKey || column.dict || column.dictbiz
               || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
             ) {
               column_name2 = `${column_name}_lbl`;
             }
             let data_type2 = "string";
-            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+            if (foreignKey || column.dict || column.dictbiz) {
               data_type2 = "string";
             } else if ([ "datetime", "date" ].includes(data_type)) {
               data_type2 = "date";
@@ -3087,17 +3018,9 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "tenant_id") continue;
   const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
   if (!column.isSwitch) {
     continue;
   }
@@ -3630,15 +3553,7 @@ async function initI18nsEfc() {
     if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
   #>
     "<#=column_comment#>",<#
   }
@@ -3717,15 +3632,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "tenant_id") continue;
   const data_type = column.DATA_TYPE;
   const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const column_comment = column.COLUMN_COMMENT || "";
   const require = column.require;
   const search = column.search;
   const foreignKey = column.foreignKey;

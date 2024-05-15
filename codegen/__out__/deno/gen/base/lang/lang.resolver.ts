@@ -75,8 +75,13 @@ export async function findOneLang(
 export async function findByIdLang(
   id: LangId,
 ): Promise<LangModel | undefined> {
-  const { findById } = await import("./lang.service.ts");
+  
+  const {
+    findById,
+  } = await import("./lang.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -71,6 +71,7 @@ import type {
 
 const route_path = "/base/tenant";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: TenantSearch,

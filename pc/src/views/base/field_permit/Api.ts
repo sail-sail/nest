@@ -478,7 +478,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: FieldPermitSearch, $sort: [SortInput!]) {
-            findAllFieldPermit(search: $search, sort: $sort) {
+            findAllFieldPermit(search: $search, page: null, sort: $sort) {
               ${ fieldPermitQueryField }
             }
             findAllMenu {
