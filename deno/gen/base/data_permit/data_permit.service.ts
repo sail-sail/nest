@@ -143,7 +143,7 @@ export async function updateById(
     input.scope_lbl = "";
   }
   
-  const id2: DataPermitId = await data_permitDao.updateById(id, input);
+  const id2 = await data_permitDao.updateById(id, input);
   return id2;
 }
 

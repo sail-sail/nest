@@ -137,7 +137,7 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const id2: DomainId = await domainDao.updateById(id, input);
+  const id2 = await domainDao.updateById(id, input);
   return id2;
 }
 

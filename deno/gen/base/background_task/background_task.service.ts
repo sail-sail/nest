@@ -152,7 +152,7 @@ export async function updateById(
   input: BackgroundTaskInput,
 ): Promise<BackgroundTaskId> {
   
-  const id2: BackgroundTaskId = await background_taskDao.updateById(id, input);
+  const id2 = await background_taskDao.updateById(id, input);
   return id2;
 }
 

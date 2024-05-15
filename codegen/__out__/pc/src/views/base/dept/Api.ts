@@ -601,7 +601,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: DeptSearch, $sort: [SortInput!]) {
-            findAllDept(search: $search, sort: $sort) {
+            findAllDept(search: $search, page: null, sort: $sort) {
               ${ deptQueryField }
             }
             findAllUsr {
