@@ -445,7 +445,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: ArchiveSearch, $sort: [SortInput!]) {
-            findAllArchive(search: $search, sort: $sort) {
+            findAllArchive(search: $search, page: null, sort: $sort) {
               ${ archiveQueryField }
             }
             findAllCompany {

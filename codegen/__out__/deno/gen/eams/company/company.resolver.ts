@@ -75,8 +75,13 @@ export async function findOneCompany(
 export async function findByIdCompany(
   id: CompanyId,
 ): Promise<CompanyModel | undefined> {
-  const { findById } = await import("./company.service.ts");
+  
+  const {
+    findById,
+  } = await import("./company.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
