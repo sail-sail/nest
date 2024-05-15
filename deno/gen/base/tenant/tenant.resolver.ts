@@ -75,8 +75,13 @@ export async function findOneTenant(
 export async function findByIdTenant(
   id: TenantId,
 ): Promise<TenantModel | undefined> {
-  const { findById } = await import("./tenant.service.ts");
+  
+  const {
+    findById,
+  } = await import("./tenant.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

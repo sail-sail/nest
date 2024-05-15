@@ -75,8 +75,13 @@ export async function findOneDept(
 export async function findByIdDept(
   id: DeptId,
 ): Promise<DeptModel | undefined> {
-  const { findById } = await import("./dept.service.ts");
+  
+  const {
+    findById,
+  } = await import("./dept.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

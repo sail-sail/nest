@@ -154,7 +154,7 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const id2: OptbizId = await optbizDao.updateById(id, input);
+  const id2 = await optbizDao.updateById(id, input);
   return id2;
 }
 

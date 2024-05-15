@@ -198,17 +198,6 @@ declare global {
       if (!column_comment && column_name !== "id") {
         throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
       }
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
       let _data_type = "string";
       if (foreignKey && foreignKey.multiple) {
         data_type = 'string[]';
@@ -322,17 +311,6 @@ declare global {
       let column_comment = column.COLUMN_COMMENT;
       if (!column_comment && column_name !== "id") {
         throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
-      }
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
       let _data_type = "string";
       if (column_name === 'id') {
