@@ -652,7 +652,17 @@ import {<#
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
-
+<#
+if (
+  !(
+    (hasDataPermit() && hasCreateUsrId) ||
+    hasTenant_id || hasOrgId
+  )
+) {
+#>
+// deno-lint-ignore require-await<#
+}
+#>
 async function getWhereQuery(
   args: QueryArgs,
   search?: <#=searchName#>,

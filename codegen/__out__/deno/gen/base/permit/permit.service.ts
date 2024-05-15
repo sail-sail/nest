@@ -142,7 +142,7 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const id2: PermitId = await permitDao.updateById(id, input);
+  const id2 = await permitDao.updateById(id, input);
   return id2;
 }
 

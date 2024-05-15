@@ -71,6 +71,7 @@ import {
 
 const route_path = "/base/dict_detail";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: DictDetailSearch,

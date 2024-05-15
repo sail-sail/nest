@@ -128,7 +128,7 @@ export async function updateById(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  const id2: I18nId = await i18nDao.updateById(id, input);
+  const id2 = await i18nDao.updateById(id, input);
   
   {
     const {

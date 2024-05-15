@@ -399,7 +399,7 @@ export async function updateById(
   }
   #>
   
-  const id2: <#=Table_Up#>Id = await <#=table#>Dao.updateById(id, input<#
+  const id2 = await <#=table#>Dao.updateById(id, input<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
