@@ -414,8 +414,11 @@ export async function updateById(
   #>
   
   {
-    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
-    await optionsDaoSrc.updateI18n_version();
+    const {
+      updateI18n_version,
+    } = await import("/src/base/options/options.dao.ts");
+    
+    await updateI18n_version();
   }<#
   }
   #>
