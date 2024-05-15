@@ -75,8 +75,13 @@ export async function findOneDict(
 export async function findByIdDict(
   id: DictId,
 ): Promise<DictModel | undefined> {
-  const { findById } = await import("./dict.service.ts");
+  
+  const {
+    findById,
+  } = await import("./dict.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

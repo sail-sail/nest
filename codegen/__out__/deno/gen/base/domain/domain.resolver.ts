@@ -75,8 +75,13 @@ export async function findOneDomain(
 export async function findByIdDomain(
   id: DomainId,
 ): Promise<DomainModel | undefined> {
-  const { findById } = await import("./domain.service.ts");
+  
+  const {
+    findById,
+  } = await import("./domain.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

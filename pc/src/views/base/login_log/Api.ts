@@ -324,7 +324,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: LoginLogSearch, $sort: [SortInput!]) {
-            findAllLoginLog(search: $search, sort: $sort) {
+            findAllLoginLog(search: $search, page: null, sort: $sort) {
               ${ loginLogQueryField }
             }
             getDict(codes: [

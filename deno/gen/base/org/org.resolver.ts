@@ -75,8 +75,13 @@ export async function findOneOrg(
 export async function findByIdOrg(
   id: OrgId,
 ): Promise<OrgModel | undefined> {
-  const { findById } = await import("./org.service.ts");
+  
+  const {
+    findById,
+  } = await import("./org.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
