@@ -128,7 +128,7 @@ export async function updateById(
   input: PayTransactionsJsapiInput,
 ): Promise<PayTransactionsJsapiId> {
   
-  const id2: PayTransactionsJsapiId = await pay_transactions_jsapiDao.updateById(id, input);
+  const id2 = await pay_transactions_jsapiDao.updateById(id, input);
   return id2;
 }
 

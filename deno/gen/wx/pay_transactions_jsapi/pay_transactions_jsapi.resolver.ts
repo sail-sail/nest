@@ -74,8 +74,13 @@ export async function findOnePayTransactionsJsapi(
 export async function findByIdPayTransactionsJsapi(
   id: PayTransactionsJsapiId,
 ): Promise<PayTransactionsJsapiModel | undefined> {
-  const { findById } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const {
+    findById,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

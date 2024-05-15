@@ -73,8 +73,6 @@ import {
 import type {
   PageInput,
   SortInput,
-  PayTransactionsJsapiTradeState,
-  PayTransactionsJsapiCurrency,
 } from "/gen/types.ts";
 
 const route_path = "/wx/pay_transactions_jsapi";
@@ -585,7 +583,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.trade_state_lbl) && input.trade_state == null) {
     const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
     if (val != null) {
-      input.trade_state = val as PayTransactionsJsapiTradeState;
+      input.trade_state = val;
     }
   }
   
@@ -607,7 +605,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.currency_lbl) && input.currency == null) {
     const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
     if (val != null) {
-      input.currency = val as PayTransactionsJsapiCurrency;
+      input.currency = val;
     }
   }
 }

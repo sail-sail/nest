@@ -75,8 +75,13 @@ export async function findOneWxApp(
 export async function findByIdWxApp(
   id: WxAppId,
 ): Promise<WxAppModel | undefined> {
-  const { findById } = await import("./wx_app.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wx_app.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
