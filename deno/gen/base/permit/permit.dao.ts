@@ -67,6 +67,7 @@ import {
 
 const route_path = "/base/permit";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: PermitSearch,

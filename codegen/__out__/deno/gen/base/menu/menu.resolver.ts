@@ -75,8 +75,13 @@ export async function findOneMenu(
 export async function findByIdMenu(
   id: MenuId,
 ): Promise<MenuModel | undefined> {
-  const { findById } = await import("./menu.service.ts");
+  
+  const {
+    findById,
+  } = await import("./menu.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

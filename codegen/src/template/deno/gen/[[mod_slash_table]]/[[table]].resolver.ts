@@ -205,15 +205,7 @@ export async function findOne<#=Table_Up2#>(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
   #><#
     if (isPassword) {
@@ -236,22 +228,18 @@ export async function findOne<#=Table_Up2#>(
 export async function findById<#=Table_Up2#>(
   id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
-  const { findById } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findById,
+  } = await import("./<#=table#>.service.ts");
+  
   const res = await findById(id);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
   #><#
     if (isPassword) {
@@ -265,6 +253,7 @@ export async function findById<#=Table_Up2#>(
   #><#
   }
   #>
+  
   return res;
 }<#
 if (opts.noAdd !== true) {
@@ -295,7 +284,9 @@ export async function creates<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -312,23 +303,15 @@ export async function creates<#=Table_Up2#>(
       if (column_name === "id") continue;
       if (column_name === "version") continue;
       const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
       if (!column_type) {
         continue;
       }
       if (!column_type.startsWith("decimal")) {
         continue;
       }
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #>
     
     // <#=column_comment#>
@@ -388,23 +371,15 @@ export async function updateById<#=Table_Up2#>(
     if (column_name === "id") continue;
     if (column_name === "version") continue;
     const foreignKey = column.foreignKey;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
     if (!column_type) {
       continue;
     }
     if (!column_type.startsWith("decimal")) {
       continue;
     }
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
   #>
   
   // <#=column_comment#>
@@ -432,7 +407,9 @@ export async function updateById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findById<#=Table_Up2#>(id);<#
@@ -486,7 +463,9 @@ export async function deleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findAll<#=Table_Up2#>({
@@ -539,7 +518,9 @@ export async function defaultById<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -593,7 +574,9 @@ export async function enableByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -654,7 +637,9 @@ export async function lockByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -704,7 +689,9 @@ export async function revertByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();<#
   }
@@ -753,7 +740,9 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   if (log) {
   #>
   
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
   const old_data = await findAll<#=Table_Up2#>({

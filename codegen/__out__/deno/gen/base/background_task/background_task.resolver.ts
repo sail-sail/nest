@@ -74,8 +74,13 @@ export async function findOneBackgroundTask(
 export async function findByIdBackgroundTask(
   id: BackgroundTaskId,
 ): Promise<BackgroundTaskModel | undefined> {
-  const { findById } = await import("./background_task.service.ts");
+  
+  const {
+    findById,
+  } = await import("./background_task.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
