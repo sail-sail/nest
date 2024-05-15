@@ -75,8 +75,13 @@ export async function findOneSeo(
 export async function findByIdSeo(
   id: SeoId,
 ): Promise<SeoModel | undefined> {
-  const { findById } = await import("./seo.service.ts");
+  
+  const {
+    findById,
+  } = await import("./seo.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
