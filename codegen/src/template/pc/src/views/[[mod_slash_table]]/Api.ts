@@ -1709,7 +1709,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: <#=searchName#>, $sort: [SortInput!]) {
-            findAll<#=Table_Up2#>(search: $search, sort: $sort) {
+            findAll<#=Table_Up2#>(search: $search, page: null, sort: $sort) {
               ${ <#=table_Up#>QueryField }
             }<#
             const foreignTableArrTmp2 = [ table ];
