@@ -470,7 +470,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: SeoSearch, $sort: [SortInput!]) {
-            findAllSeo(search: $search, sort: $sort) {
+            findAllSeo(search: $search, page: null, sort: $sort) {
               ${ seoQueryField }
             }
             getDict(codes: [
