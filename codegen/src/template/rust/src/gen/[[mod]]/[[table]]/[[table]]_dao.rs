@@ -1021,10 +1021,26 @@ async fn get_from_query(
       const foreignTable = foreignKey.table;
       const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
-      const modelLabel = column.modelLabel;
-      let cascade_fields = foreignKey.cascade_fields || [ ];
-      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
       }
     #><#
       if (foreignKey.type === "many2many") {
@@ -1267,18 +1283,34 @@ pub async fn find_all(
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const many2many = column.many2many;
-        const modelLabel = column.modelLabel;
-        let cascade_fields = foreignKey.cascade_fields || [ ];
-        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+        let modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+          }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
         }
       #><#
         if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
-        if (!modelLabel) {
+        if (!column.modelLabel) {
       #>
-      ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
+      ,max(<#=modelLabel#>) <#=modelLabel#><#
         }
       #><#
         for (let j = 0; j < cascade_fields.length; j++) {
@@ -1289,9 +1321,9 @@ pub async fn find_all(
       #><#
       } else {
       #><#
-        if (foreignKey.lbl && !modelLabel) {
+        if (!column.modelLabel && foreignKey.lbl) {
       #>
-      ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
+      ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=modelLabel#><#
         }
       #><#
         for (let j = 0; j < cascade_fields.length; j++) {
@@ -1538,9 +1570,13 @@ pub async fn find_all(
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
       const isPassword = column.isPassword;
   #><#
     if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (modelLabel) {
+        continue;
+      }
     #>
     
     // <#=column_comment#>
@@ -1552,6 +1588,9 @@ pub async fn find_all(
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      if (modelLabel) {
+        continue;
+      }
     #>
     
     // <#=column_comment#>
@@ -1771,15 +1810,40 @@ pub async fn get_field_comments(
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
     #><#
       if (foreignKey || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
     "<#=column_comment#>".into(),<#
+      if (hasModelLabel) {
+    #><#
       if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
     #>
     "<#=column_comment#>".into(),<#
+      }
+    #><#
       }
     #><#
       } else {
@@ -1823,6 +1887,27 @@ pub async fn get_field_comments(
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
     #><#
       if (foreignKey || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"
@@ -1830,11 +1915,15 @@ pub async fn get_field_comments(
         num++;
     #>
     <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+      if (hasModelLabel) {
+    #><#
         if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
           num++;
     #>
-    <#=column_name#>_lbl: vec[<#=String(num)#>].to_owned(),<#
+    <#=modelLabel#>: vec[<#=String(num)#>].to_owned(),<#
         }
+    #><#
+      }
     #><#
       } else {
         num++;
@@ -2095,7 +2184,7 @@ pub async fn find_by_unique(
         const unique = uniques[k];
         const unique_rust = rustKeyEscape(unique);
       #>
-      <#=unique_rust#>: search.<#=unique_rust#>,<#
+      <#=unique_rust#>: search.<#=unique_rust#>.clone(),<#
       }
       #>
       ..Default::default()
@@ -3653,7 +3742,7 @@ pub async fn update_by_id(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<()> {
+  async fn get_not_permit_err_fn() -> Result<<#=Table_Up#>Id> {
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -3669,14 +3758,14 @@ pub async fn update_by_id(
   }
   
   if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
-    return Err(get_not_permit_err_fn().await?);
+    return get_not_permit_err_fn().await;
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_dept_ids().await?;
     let model_dept_ids = get_parents_dept_ids(
       old_model.create_usr_id.clone().into(),
     ).await?;
     if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?);
+      return get_not_permit_err_fn().await;
     }
   } else if !has_tenant_permit && has_dept_permit {
     let dept_ids = get_auth_dept_ids().await?;
@@ -3684,7 +3773,7 @@ pub async fn update_by_id(
       old_model.create_usr_id.clone(),
     ).await?;
     if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?);
+      return get_not_permit_err_fn().await;
     }
   }
   
@@ -3694,7 +3783,7 @@ pub async fn update_by_id(
       old_model.create_usr_id.clone(),
     ).await?;
     if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
-      return Err(get_not_permit_err_fn().await?);
+      return get_not_permit_err_fn().await;
     }
   }<#
   }
@@ -4453,7 +4542,7 @@ pub async fn delete_by_ids(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<()> {
+  async fn get_not_permit_err_fn() -> Result<u64> {
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -4469,7 +4558,7 @@ pub async fn delete_by_ids(
   }
   
   if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
-    return Err(get_not_permit_err_fn().await?);
+    return get_not_permit_err_fn().await;
   }<#
   }
   #>
@@ -4498,7 +4587,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone().into(),
       ).await?;
       if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?);
+        return get_not_permit_err_fn().await;
       }
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
@@ -4506,7 +4595,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone(),
       ).await?;
       if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?);
+        return get_not_permit_err_fn().await;
       }
     }
     
@@ -4516,7 +4605,7 @@ pub async fn delete_by_ids(
         old_model.create_usr_id.clone(),
       ).await?;
       if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
-        return Err(get_not_permit_err_fn().await?);
+        return get_not_permit_err_fn().await;
       }
     }<#
     }
