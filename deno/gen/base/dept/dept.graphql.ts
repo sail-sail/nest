@@ -13,13 +13,13 @@ type DeptModel {
   "父部门"
   parent_id: DeptId!
   "父部门"
-  parent_id_lbl: String
+  parent_id_lbl: String!
   "名称"
   lbl: String!
   "部门负责人"
-  usr_ids: [UsrId!]
+  usr_ids: [UsrId!]!
   "部门负责人"
-  usr_ids_lbl: [String!]
+  usr_ids_lbl: [String!]!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -35,7 +35,7 @@ type DeptModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -43,7 +43,7 @@ type DeptModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"

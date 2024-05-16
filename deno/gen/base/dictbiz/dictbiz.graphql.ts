@@ -48,7 +48,7 @@ type DictbizModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -56,7 +56,7 @@ type DictbizModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -64,7 +64,7 @@ type DictbizModel {
   "是否已删除"
   is_deleted: Int!
   "业务字典明细"
-  dictbiz_detail: [DictbizDetailModel!]
+  dictbiz_detail: [DictbizDetailModel!]!
 }
 type DictbizFieldComment {
   "ID"
