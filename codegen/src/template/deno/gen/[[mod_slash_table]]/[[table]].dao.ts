@@ -533,46 +533,6 @@ import {<#
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
 #><#
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  const comment = column.COLUMN_COMMENT;
-  let is_nullable = column.IS_NULLABLE === "YES";
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  let data_type = column.DATA_TYPE;
-  const many2many = column.many2many;
-  if (!many2many || !foreignKey) continue;
-  if (!column.inlineMany2manyTab) continue;
-  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-  const table = many2many.table;
-  const mod = many2many.mod;
-  if (!inlineMany2manySchema) {
-    throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
-    process.exit(1);
-  }
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const Table_Up = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-#>
-
-import type {
-  <#=Table_Up#>Id,
-  <#=Table_Up#>Model,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";
-
-import type {
-  <#=Table_Up#>Input,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";<#
-}
-#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
@@ -1588,7 +1548,7 @@ export async function findAll(
     #><#
       if (foreignKey && !foreignKey.multiple) {
     #><#
-      if (!modelLabel) {
+      if (foreignKey.lbl && !modelLabel) {
     #>
     
     // <#=column_comment#>
