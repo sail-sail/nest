@@ -144,7 +144,7 @@ export async function updateById(
     input.lbl = undefined;
   }
   
-  const id2: WxappConfigId = await wxapp_configDao.updateById(id, input);
+  const id2 = await wxapp_configDao.updateById(id, input);
   return id2;
 }
 

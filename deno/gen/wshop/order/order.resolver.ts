@@ -77,8 +77,13 @@ export async function findOneOrder(
 export async function findByIdOrder(
   id: OrderId,
 ): Promise<OrderModel | undefined> {
-  const { findById } = await import("./order.service.ts");
+  
+  const {
+    findById,
+  } = await import("./order.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

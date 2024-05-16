@@ -77,8 +77,13 @@ export async function findOnePt(
 export async function findByIdPt(
   id: PtId,
 ): Promise<PtModel | undefined> {
-  const { findById } = await import("./pt.service.ts");
+  
+  const {
+    findById,
+  } = await import("./pt.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -73,6 +73,10 @@ import {
 import type {
   PageInput,
   SortInput,
+  WxPayNoticeTradeType,
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
 } from "/gen/types.ts";
 
 const route_path = "/wx/wx_pay_notice";
@@ -622,7 +626,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.trade_type_lbl) && input.trade_type == null) {
     const val = trade_typeDict.find((itemTmp) => itemTmp.lbl === input.trade_type_lbl)?.val;
     if (val != null) {
-      input.trade_type = val;
+      input.trade_type = val as WxPayNoticeTradeType;
     }
   }
   
@@ -630,7 +634,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.trade_state_lbl) && input.trade_state == null) {
     const val = trade_stateDict.find((itemTmp) => itemTmp.lbl === input.trade_state_lbl)?.val;
     if (val != null) {
-      input.trade_state = val;
+      input.trade_state = val as WxPayNoticeTradeState;
     }
   }
   
@@ -644,7 +648,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.currency_lbl) && input.currency == null) {
     const val = currencyDict.find((itemTmp) => itemTmp.lbl === input.currency_lbl)?.val;
     if (val != null) {
-      input.currency = val;
+      input.currency = val as WxPayNoticeCurrency;
     }
   }
   
@@ -652,7 +656,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.payer_currency_lbl) && input.payer_currency == null) {
     const val = payer_currencyDict.find((itemTmp) => itemTmp.lbl === input.payer_currency_lbl)?.val;
     if (val != null) {
-      input.payer_currency = val;
+      input.payer_currency = val as WxPayNoticePayerCurrency;
     }
   }
 }

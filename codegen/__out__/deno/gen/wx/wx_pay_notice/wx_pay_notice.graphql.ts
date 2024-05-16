@@ -6,6 +6,44 @@ import * as resolver from "./wx_pay_notice.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxPayNoticeId
 
+"微信支付通知交易类型"
+enum WxPayNoticeTradeType {
+  "小程序支付"
+  JSAPI
+  "Native支付"
+  NATIVE
+  "app支付"
+  APP
+  "H5支付"
+  MWEB
+}
+"微信支付通知交易状态"
+enum WxPayNoticeTradeState {
+  "支付成功"
+  SUCCESS
+  "转入退款"
+  REFUND
+  "未支付"
+  NOTPAY
+  "已关闭"
+  CLOSED
+  "已撤销"
+  REVOKED
+  "用户支付中"
+  USERPAYING
+  "支付失败"
+  PAYERROR
+}
+"微信支付通知货币类型"
+enum WxPayNoticeCurrency {
+  "人民币"
+  CNY
+}
+"微信支付通知用户支付币种"
+enum WxPayNoticePayerCurrency {
+  "人民币"
+  CNY
+}
 
 type WxPayNoticeModel {
   "ID"
@@ -21,11 +59,11 @@ type WxPayNoticeModel {
   "微信支付订单号"
   transaction_id: String!
   "交易类型"
-  trade_type: String!
+  trade_type: WxPayNoticeTradeType!
   "交易类型"
   trade_type_lbl: String!
   "交易状态"
-  trade_state: String!
+  trade_state: WxPayNoticeTradeState!
   "交易状态"
   trade_state_lbl: String!
   "交易状态描述"
@@ -43,11 +81,11 @@ type WxPayNoticeModel {
   "用户支付金额"
   payer_total: Int!
   "货币类型"
-  currency: String!
+  currency: WxPayNoticeCurrency!
   "货币类型"
   currency_lbl: String!
   "用户支付币种"
-  payer_currency: String!
+  payer_currency: WxPayNoticePayerCurrency!
   "用户支付币种"
   payer_currency_lbl: String!
   "商户端设备号"
@@ -155,11 +193,11 @@ input WxPayNoticeInput {
   "微信支付订单号"
   transaction_id: String
   "交易类型"
-  trade_type: String
+  trade_type: WxPayNoticeTradeType
   "交易类型"
   trade_type_lbl: String
   "交易状态"
-  trade_state: String
+  trade_state: WxPayNoticeTradeState
   "交易状态"
   trade_state_lbl: String
   "交易状态描述"
@@ -177,11 +215,11 @@ input WxPayNoticeInput {
   "用户支付金额"
   payer_total: Int
   "货币类型"
-  currency: String
+  currency: WxPayNoticeCurrency
   "货币类型"
   currency_lbl: String
   "用户支付币种"
-  payer_currency: String
+  payer_currency: WxPayNoticePayerCurrency
   "用户支付币种"
   payer_currency_lbl: String
   "商户端设备号"
@@ -214,9 +252,9 @@ input WxPayNoticeSearch {
   transaction_id: String
   transaction_id_like: String
   "交易类型"
-  trade_type: [String!]
+  trade_type: [WxPayNoticeTradeType!]
   "交易状态"
-  trade_state: [String!]
+  trade_state: [WxPayNoticeTradeState!]
   "交易状态描述"
   trade_state_desc: String
   trade_state_desc_like: String
@@ -233,9 +271,9 @@ input WxPayNoticeSearch {
   "用户支付金额"
   payer_total: [Int]
   "货币类型"
-  currency: [String!]
+  currency: [WxPayNoticeCurrency!]
   "用户支付币种"
-  payer_currency: [String!]
+  payer_currency: [WxPayNoticePayerCurrency!]
   "商户端设备号"
   device_id: String
   device_id_like: String

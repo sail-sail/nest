@@ -77,8 +77,13 @@ export async function findOneCard(
 export async function findByIdCard(
   id: CardId,
 ): Promise<CardModel | undefined> {
-  const { findById } = await import("./card.service.ts");
+  
+  const {
+    findById,
+  } = await import("./card.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

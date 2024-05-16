@@ -479,7 +479,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: RechargeRuleSearch, $sort: [SortInput!]) {
-            findAllRechargeRule(search: $search, sort: $sort) {
+            findAllRechargeRule(search: $search, page: null, sort: $sort) {
               ${ rechargeRuleQueryField }
             }
             getDict(codes: [

@@ -128,7 +128,7 @@ export async function updateById(
   input: CardRechargeInput,
 ): Promise<CardRechargeId> {
   
-  const id2: CardRechargeId = await card_rechargeDao.updateById(id, input);
+  const id2 = await card_rechargeDao.updateById(id, input);
   return id2;
 }
 
