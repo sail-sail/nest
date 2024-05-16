@@ -17,7 +17,7 @@ type ArchiveModel {
   "关联单位"
   company_id: CompanyId!
   "关联单位"
-  company_id_lbl: String
+  company_id_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -25,7 +25,7 @@ type ArchiveModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -33,7 +33,7 @@ type ArchiveModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
