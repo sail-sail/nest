@@ -294,7 +294,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 可信域名
@@ -431,6 +434,9 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 可信域名
+    model.domain_id_lbl = model.domain_id_lbl || "";
     // 应用密钥
     model.corpsecret = await decrypt(model.corpsecret);
     // 通讯录密钥
@@ -444,7 +450,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -454,7 +460,7 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
   }
   
   return result;
@@ -700,7 +706,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -737,7 +743,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
