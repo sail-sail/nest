@@ -19,21 +19,21 @@ type UsrModel {
   "密码"
   password: String!
   "所属角色"
-  role_ids: [RoleId!]
+  role_ids: [RoleId!]!
   "所属角色"
-  role_ids_lbl: [String!]
+  role_ids_lbl: [String!]!
   "所属部门"
-  dept_ids: [DeptId!]
+  dept_ids: [DeptId!]!
   "所属部门"
-  dept_ids_lbl: [String!]
+  dept_ids_lbl: [String!]!
   "所属组织"
-  org_ids: [OrgId!]
+  org_ids: [OrgId!]!
   "所属组织"
-  org_ids_lbl: [String!]
+  org_ids_lbl: [String!]!
   "默认组织"
   default_org_id: OrgId!
   "默认组织"
-  default_org_id_lbl: String
+  default_org_id_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -49,7 +49,7 @@ type UsrModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -57,7 +57,7 @@ type UsrModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"

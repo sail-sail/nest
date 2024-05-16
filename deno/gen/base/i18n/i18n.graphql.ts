@@ -13,11 +13,11 @@ type I18nModel {
   "语言"
   lang_id: LangId!
   "语言"
-  lang_id_lbl: String
+  lang_id_lbl: String!
   "菜单"
   menu_id: MenuId!
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -27,7 +27,7 @@ type I18nModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -35,7 +35,7 @@ type I18nModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
