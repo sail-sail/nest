@@ -22,7 +22,7 @@ type CronJobLogModel {
   "定时任务"
   cron_job_id: CronJobId!
   "定时任务"
-  cron_job_id_lbl: String
+  cron_job_id_lbl: String!
   "执行状态"
   exec_state: CronJobLogExecState!
   "执行状态"

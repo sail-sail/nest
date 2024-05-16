@@ -275,7 +275,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 定时任务
@@ -388,6 +391,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 定时任务
+    model.cron_job_id_lbl = model.cron_job_id_lbl || "";
+    
     // 执行状态
     let exec_state_lbl = model.exec_state as string;
     if (!isEmpty(model.exec_state)) {
@@ -396,7 +402,7 @@ export async function findAll(
         exec_state_lbl = dictItem.lbl;
       }
     }
-    model.exec_state_lbl = exec_state_lbl;
+    model.exec_state_lbl = exec_state_lbl || "";
     
     // 开始时间
     if (model.begin_time) {
@@ -659,7 +665,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -696,7 +702,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
