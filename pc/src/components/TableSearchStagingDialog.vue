@@ -57,7 +57,7 @@
           un-gap="x-1"
           un-w="full"
           un-p="l-[60px]"
-          un-box-border
+          un-box="border"
         >
           <div>
             {{ i + 1 }}.

@@ -29,7 +29,7 @@ type OperationRecordModel {
   "操作人"
   create_usr_id: UsrId!
   "操作人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "操作时间"
   create_time: NaiveDateTime
   "操作时间"

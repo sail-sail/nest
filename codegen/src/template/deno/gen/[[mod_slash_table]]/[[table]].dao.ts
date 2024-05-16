@@ -1046,7 +1046,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1326,6 +1329,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#> = [ ];
     }<#
       if (foreignKey.lbl && !modelLabel) {
     #>
@@ -1337,6 +1342,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_lbl = [ ];
     }<#
       }
     #><#
@@ -1351,6 +1358,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_<#=cascade_field#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_<#=cascade_field#> = [ ];
     }<#
       }
     #><#
@@ -1559,8 +1568,8 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
       const column_default = column.COLUMN_DEFAULT;
       const foreignKey = column.foreignKey;
@@ -1577,7 +1586,16 @@ export async function findAll(
         precision = Number(arr[1]);
       }
     #><#
-      if (data_type === "decimal" && isVirtual) {
+      if (foreignKey && !foreignKey.multiple) {
+    #><#
+      if (!modelLabel) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl || "";<#
+      }
+    #><#
+      } else if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
@@ -1623,7 +1641,7 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
       }
     #><#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -1639,7 +1657,7 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
       }
     #><#
       } else if (data_type === "datetime") {
@@ -2560,7 +2578,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -2602,7 +2620,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
