@@ -168,17 +168,9 @@ for (let i = 0; i < columns.length; i++) {
   ) continue;
   const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
   if (column_name === 'id') continue;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+  const column_comment = column.COLUMN_COMMENT || "";
   const foreignKey = column.foreignKey;
   if (!foreignKey) {
     continue;
@@ -729,17 +721,9 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       column_name === "update_time"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1006,7 +990,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
-      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
         const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1036,7 +1020,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone();<#
       }
     #><#
-      } else if ((selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
@@ -1371,24 +1355,16 @@ pub struct <#=tableUP#>FieldComment {<#
       column_name === "is_hidden"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
     const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+    if (foreignKey || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime"
     ) {
   #>
@@ -1794,17 +1770,9 @@ pub struct <#=tableUP#>Input {
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -1843,7 +1811,7 @@ pub struct <#=tableUP#>Input {
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
   #><#
-    if (selectList.length > 0 || column.dict || column.dictbiz) {
+    if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -2096,17 +2064,9 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         ) continue;
         const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
         if (column_name === 'id') continue;
-        let data_type = column.DATA_TYPE;
-        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-        let column_comment = column.COLUMN_COMMENT || "";
-        let selectList = [ ];
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        const column_comment = column.COLUMN_COMMENT || "";
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -2116,7 +2076,7 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         }
       #><#
         if (
-          (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+          (foreignKey || column.dict || column.dictbiz)
           || (data_type === "date" || data_type === "datetime")
         ) {
       #>
@@ -2282,17 +2242,9 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
           column_name === "is_hidden"
         ) continue;
         if (column_name === 'id') continue;
-        let data_type = column.DATA_TYPE;
-        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-        let column_comment = column.COLUMN_COMMENT || "";
-        let selectList = [ ];
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        const column_comment = column.COLUMN_COMMENT || "";
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -2311,7 +2263,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
-        } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+        } else if (column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
@@ -2383,17 +2335,9 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
           column_name === "is_deleted"
         ) continue;
         const column_name_rust = rustKeyEscape(column_name);
-        let data_type = column.DATA_TYPE;
-        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-        let column_comment = column.COLUMN_COMMENT || "";
-        let selectList = [ ];
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        const column_comment = column.COLUMN_COMMENT || "";
         const isPassword = column.isPassword;
         const foreignKey = column.foreignKey;
         if (isPassword) {
@@ -2410,7 +2354,7 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       /// <#=column_comment#>
       <#=column_name#>: model.<#=column_name#>.into(),
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
-        } else if (selectList.length > 0 || column.dict || column.dictbiz
+        } else if (column.dict || column.dictbiz
           || data_type === "date" || data_type === "datetime"
         ) {
       #>
@@ -2551,15 +2495,7 @@ for (let i = 0; i < columns.length; i++) {
     column_name === "is_deleted" ||
     column_name === "is_hidden"
   ) continue;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const column_comment = column.COLUMN_COMMENT || "";
   const column_default = column.COLUMN_DEFAULT;
   if (!column.dict && !column.dictbiz) continue;
   const data_type = column.DATA_TYPE;

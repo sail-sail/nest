@@ -330,21 +330,13 @@ pub async fn update_by_id(
         if (!column) {
           throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
         }
-        let column_comment = column.COLUMN_COMMENT;
-        let selectList = [ ];
+        const column_comment = column.COLUMN_COMMENT;
         if (column_comment.endsWith("multiple")) {
           _data_type = "[String]";
         }
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.includes("[")) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
         const foreignKey = column.foreignKey;
       #><#
-        if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+        if (!foreignKey && !column.dict && !column.dictbiz
           && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
         ) {
       #>
@@ -355,7 +347,7 @@ pub async fn update_by_id(
       // <#=column_comment#>
       input.<#=rustKeyEscape(sys_field)#> = None;
       input.<#=sys_field#>_lbl = None;<#
-        } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+        } else if (foreignKey || column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>
       input.<#=rustKeyEscape(sys_field)#> = None;
