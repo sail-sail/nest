@@ -13,7 +13,7 @@ type WxAppTokenModel {
   "小程序设置"
   wx_app_id: WxAppId!
   "小程序设置"
-  wx_app_id_lbl: String
+  wx_app_id_lbl: String!
   "令牌"
   access_token: String!
   "令牌创建时间"

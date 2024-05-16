@@ -348,7 +348,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 交易状态
@@ -483,7 +486,7 @@ export async function findAll(
         trade_state_lbl = dictItem.lbl;
       }
     }
-    model.trade_state_lbl = trade_state_lbl;
+    model.trade_state_lbl = trade_state_lbl || "";
     
     // 支付完成时间
     if (model.success_time) {
@@ -505,7 +508,7 @@ export async function findAll(
         support_fapiao_lbl = dictItem.lbl;
       }
     }
-    model.support_fapiao_lbl = support_fapiao_lbl;
+    model.support_fapiao_lbl = support_fapiao_lbl || "";
     
     // 货币类型
     let currency_lbl = model.currency as string;
@@ -515,7 +518,10 @@ export async function findAll(
         currency_lbl = dictItem.lbl;
       }
     }
-    model.currency_lbl = currency_lbl;
+    model.currency_lbl = currency_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -528,6 +534,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -770,7 +779,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -807,7 +816,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
