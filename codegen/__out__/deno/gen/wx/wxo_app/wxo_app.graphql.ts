@@ -25,7 +25,7 @@ type WxoAppModel {
   "网页授权域名"
   domain_id: DomainId!
   "网页授权域名"
-  domain_id_lbl: String
+  domain_id_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -41,7 +41,7 @@ type WxoAppModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -49,7 +49,7 @@ type WxoAppModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
