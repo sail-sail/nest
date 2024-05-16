@@ -388,7 +388,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 订单状态
@@ -564,7 +567,13 @@ export async function findAll(
         status_lbl = dictItem.lbl;
       }
     }
-    model.status_lbl = status_lbl;
+    model.status_lbl = status_lbl || "";
+    
+    // 用户
+    model.usr_id_lbl = model.usr_id_lbl || "";
+    
+    // 会员卡
+    model.card_id_lbl = model.card_id_lbl || "";
     
     // 订单类别
     let type_lbl = model.type as string;
@@ -574,7 +583,7 @@ export async function findAll(
         type_lbl = dictItem.lbl;
       }
     }
-    model.type_lbl = type_lbl;
+    model.type_lbl = type_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -584,7 +593,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -594,7 +603,10 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -607,6 +619,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -873,7 +888,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -910,7 +925,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
