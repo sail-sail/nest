@@ -1,66 +1,44 @@
 <template>
-<!-- <el-dropdown
+<el-tree-select
   v-if="readonly !== true"
+  filterable
+  collapse-tags
+  collapse-tags-tooltip
+  default-first-option
+  :height="props.height"
+  class="custom_tree_select"
+  :class="{
+    hideDisabledCheckbox: props.hideDisabledCheckbox,
+  }"
+  node-key="id"
+  vaule-key="id"
+  :props="props.props"
+  :multiple="props.multiple"
+  :data="data"
+  :check-strictly="true"
+  :default-expand-all="true"
+  :show-checkbox="true"
+  :check-on-click-node="true"
   un-w="full"
-  trigger="contextmenu"
-  placement="top"
+  v-bind="$attrs"
+  :loading="!inited"
+  v-model="modelValue"
+  @keyup.enter.stop
+  @clear="onClear"
+  @change="onChange"
+  @check="onCheck"
+  :clearable="!props.disabled"
+  @node-click="onNodeClick"
+  @keydown.ctrl.c.stop="copyModelLabel"
 >
-  <template #dropdown>
-    <el-dropdown-menu
-      un-min="w-22"
-      un-box-border
-    >
-      
-      <el-dropdown-item
-        un-flex="~"
-        un-justify="center"
-        @click="copyModelLabel"
-      >
-        复制
-      </el-dropdown-item>
-      
-    </el-dropdown-menu>
-  </template> -->
-  <el-tree-select
-    v-if="readonly !== true"
-    filterable
-    collapse-tags
-    collapse-tags-tooltip
-    default-first-option
-    :height="props.height"
-    class="custom_tree_select"
-    :class="{
-      hideDisabledCheckbox: props.hideDisabledCheckbox,
-    }"
-    node-key="id"
-    vaule-key="id"
-    :props="props.props"
-    :multiple="props.multiple"
-    :data="data"
-    :check-strictly="true"
-    :default-expand-all="true"
-    :show-checkbox="true"
-    :check-on-click-node="true"
-    un-w="full"
-    v-bind="$attrs"
-    :loading="!inited"
-    v-model="modelValue"
-    @keyup.enter.stop
-    @clear="onClear"
-    @change="onChange"
-    @check="onCheck"
-    :clearable="!props.disabled"
-    @node-click="onNodeClick"
+  <template
+    v-for="(item, key, index) in $slots"
+    :key="index"
+    #[key]
   >
-    <template
-      v-for="(item, key, index) in $slots"
-      :key="index"
-      #[key]
-    >
-      <slot :name="key"></slot>
-    </template>
-  </el-tree-select>
-<!-- </el-dropdown> -->
+    <slot :name="key"></slot>
+  </template>
+</el-tree-select>
 <template
   v-else
 >
@@ -159,11 +137,14 @@ const props = withDefaults(
   },
 );
 
-// function copyModelLabel() {
-//   const text = modelLabels.join(",");
-//   copyText(text);
-//   ElMessage.success(`${ text } 复制成功!`);
-// }
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  if (!text) {
+    return;
+  }
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
 
 const usrStore = useUsrStore();
 
