@@ -75,8 +75,13 @@ export async function findOneOptbiz(
 export async function findByIdOptbiz(
   id: OptbizId,
 ): Promise<OptbizModel | undefined> {
-  const { findById } = await import("./optbiz.service.ts");
+  
+  const {
+    findById,
+  } = await import("./optbiz.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

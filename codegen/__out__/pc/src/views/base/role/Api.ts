@@ -631,7 +631,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: RoleSearch, $sort: [SortInput!]) {
-            findAllRole(search: $search, sort: $sort) {
+            findAllRole(search: $search, page: null, sort: $sort) {
               ${ roleQueryField }
             }
             findAllMenu {

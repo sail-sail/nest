@@ -154,7 +154,7 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const id2: OptionsId = await optionsDao.updateById(id, input);
+  const id2 = await optionsDao.updateById(id, input);
   return id2;
 }
 

@@ -73,6 +73,7 @@ import {
 
 const route_path = "/base/data_permit";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: DataPermitSearch,
@@ -250,7 +251,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 菜单
@@ -382,6 +383,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 菜单
+    model.menu_id_lbl = model.menu_id_lbl || "";
+    
     // 范围
     let scope_lbl = model.scope as string;
     if (!isEmpty(model.scope)) {
@@ -390,7 +394,7 @@ export async function findAll(
         scope_lbl = dictItem.lbl;
       }
     }
-    model.scope_lbl = scope_lbl;
+    model.scope_lbl = scope_lbl || "";
     
     // 类型
     let type_lbl = model.type as string;
@@ -400,7 +404,10 @@ export async function findAll(
         type_lbl = dictItem.lbl;
       }
     }
-    model.type_lbl = type_lbl;
+    model.type_lbl = type_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -413,6 +420,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -647,10 +657,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -686,10 +693,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -743,7 +759,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -874,7 +890,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -1287,7 +1305,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as DataPermitInput;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {

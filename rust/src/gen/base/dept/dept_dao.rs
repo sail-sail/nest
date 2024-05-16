@@ -506,7 +506,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.parent_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 部门负责人
@@ -523,7 +522,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.usr_ids.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 锁定
@@ -540,7 +538,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_locked.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 启用
@@ -557,7 +554,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_enabled.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 创建人
@@ -574,7 +570,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 更新人
@@ -591,7 +586,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   

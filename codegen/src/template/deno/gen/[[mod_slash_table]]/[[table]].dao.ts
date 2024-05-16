@@ -54,6 +54,32 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
+const hasDictModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dict;
+});
+const hasDictbizModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dictbiz;
+});
 const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -350,17 +376,9 @@ for (let i = 0; i < columns.length; i++) {
   ) {
     continue;
   }
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  let selectList = [ ];
-  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-  if (selectStr) {
-    selectList = eval(`(${ selectStr })`);
-  }
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -515,46 +533,6 @@ import {<#
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
 #><#
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  const comment = column.COLUMN_COMMENT;
-  let is_nullable = column.IS_NULLABLE === "YES";
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  let data_type = column.DATA_TYPE;
-  const many2many = column.many2many;
-  if (!many2many || !foreignKey) continue;
-  if (!column.inlineMany2manyTab) continue;
-  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-  const table = many2many.table;
-  const mod = many2many.mod;
-  if (!inlineMany2manySchema) {
-    throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
-    process.exit(1);
-  }
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const Table_Up = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-#>
-
-import type {
-  <#=Table_Up#>Id,
-  <#=Table_Up#>Model,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";
-
-import type {
-  <#=Table_Up#>Input,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";<#
-}
-#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
@@ -634,7 +612,17 @@ import {<#
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
-
+<#
+if (
+  !(
+    (hasDataPermit() && hasCreateUsrId) ||
+    hasTenant_id || hasOrgId
+  )
+) {
+#>
+// deno-lint-ignore require-await<#
+}
+#>
 async function getWhereQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
@@ -728,14 +716,6 @@ async function getWhereQuery(
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) {
       continue;
-    }
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -1029,7 +1009,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1309,6 +1289,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#> = [ ];
     }<#
       if (foreignKey.lbl && !modelLabel) {
     #>
@@ -1320,6 +1302,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_lbl = [ ];
     }<#
       }
     #><#
@@ -1334,6 +1318,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_<#=cascade_field#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_<#=cascade_field#> = [ ];
     }<#
       }
     #><#
@@ -1375,7 +1361,7 @@ export async function findAll(
   #><#
   }
   #><#
-  if (hasDict) {
+  if (hasDictModelLabel) {
   #>
   
   const [<#
@@ -1387,15 +1373,9 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dict) {
     #>
@@ -1413,15 +1393,9 @@ export async function findAll(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dict) {
     #>
@@ -1433,7 +1407,7 @@ export async function findAll(
   ]);<#
   }
   #><#
-  if (hasDictbiz) {
+  if (hasDictbizModelLabel) {
   #>
   
   const [<#
@@ -1444,15 +1418,9 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dictbiz) {
     #>
@@ -1469,15 +1437,9 @@ export async function findAll(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #><#
       if (column.dictbiz) {
     #>
@@ -1486,8 +1448,7 @@ export async function findAll(
     #><#
     }
     #>
-  ]);
-  <#
+  ]);<#
   }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -1567,14 +1528,15 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
       const column_default = column.COLUMN_DEFAULT;
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       const isVirtual = column.isVirtual;
@@ -1584,7 +1546,16 @@ export async function findAll(
         precision = Number(arr[1]);
       }
     #><#
-      if (data_type === "decimal" && isVirtual) {
+      if (foreignKey && !foreignKey.multiple) {
+    #><#
+      if (foreignKey.lbl && !modelLabel) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl || "";<#
+      }
+    #><#
+      } else if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
@@ -1618,6 +1589,8 @@ export async function findAll(
     // <#=column_comment#>
     model.<#=column_name#> = Number(await decrypt(model.<#=column_name#>.toString()) || 0);<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #><#
+      if (!modelLabel) {
     #>
     
     // <#=column_comment#>
@@ -1628,8 +1601,12 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
+      }
+    #><#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #><#
+      if (!modelLabel) {
     #>
     
     // <#=column_comment#>
@@ -1640,7 +1617,9 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
+      }
+    #><#
       } else if (data_type === "datetime") {
     #>
     
@@ -1861,15 +1840,7 @@ export async function setIdByLbl(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
     #>
@@ -1887,15 +1858,7 @@ export async function setIdByLbl(
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
     #>
@@ -1918,15 +1881,7 @@ export async function setIdByLbl(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
     #>
@@ -1943,15 +1898,7 @@ export async function setIdByLbl(
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
     #>
@@ -1978,17 +1925,9 @@ export async function setIdByLbl(
       "is_deleted",
       "is_hidden",
     ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -2000,28 +1939,7 @@ export async function setIdByLbl(
     const isVirtual = column.isVirtual;
     if (isVirtual) continue;
   #><#
-    if (selectList.length > 0) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        let value = item.value;
-        let label = item.label;
-        if (typeof(value) === "string") {
-          value = `"${ value }"`;
-        } else if (typeof(value) === "number") {
-          value = value.toString();
-        }
-    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
-      input.<#=column_name#> = <#=value#>;
-    }<#
-      }
-    #>
-  }<#
-    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+    if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
       let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
       Column_Up = Column_Up.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -2140,15 +2058,7 @@ export async function setIdByLbl(
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "is_hidden") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
       continue;
@@ -2205,15 +2115,7 @@ export async function setIdByLbl(
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "is_hidden") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
       continue;
@@ -2279,19 +2181,11 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
       if (column_name === "is_hidden") {
         continue;
       }
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
     #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      if (foreignKey || column.dict || column.dictbiz
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
@@ -2644,10 +2538,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -2688,10 +2579,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -2755,7 +2655,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -2840,23 +2740,15 @@ export async function validate(
     if (column_name === 'is_hidden') {
       continue;
     }
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const foreignKey = column.foreignKey;
     const validators = column.validators || [ ];
   #><#
-    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+    if ((foreignKey || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #><#
     for (let j = 0; j < validators.length; j++) {
       const validator = validators[j];
@@ -2891,7 +2783,7 @@ export async function validate(
   #><#
     }
   #><#
-    } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+    } else if ((foreignKey || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #><#
     for (let j = 0; j < validators.length; j++) {
       const validator = validators[j];
@@ -3033,7 +2925,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -3208,15 +3102,7 @@ async function _creates(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
       const redundLbl = column.redundLbl;
       if (!redundLbl) {
         continue;
@@ -3379,15 +3265,7 @@ async function _creates(
         if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
-        let column_comment = column.COLUMN_COMMENT || "";
-        let selectList = [ ];
-        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-        if (selectStr) {
-          selectList = eval(`(${ selectStr })`);
-        }
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const column_comment = column.COLUMN_COMMENT || "";
         const redundLbl = column.redundLbl;
         if (!redundLbl) {
           continue;
@@ -3622,19 +3500,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      <#=mod#>_<#=table#>
-    set<#
-      if (hasUpdateTime) {
-      #>
-      update_time = ${ args.push(reqDate()) },<#
-      }
-      #>
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update <#=mod#>_<#=table#> set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -3680,18 +3546,7 @@ export async function updateOrgById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      <#=mod#>_<#=table#>
-    set<#
-      if (hasUpdateTime) {
-      #>
-      update_time = ${ args.push(reqDate()) },<#
-      }
-      #>
-      org_id = ${ args.push(org_id) }
-    where
-      id = ${ args.push(id) }
+  const sql = `update <#=mod#>_<#=table#> set org_id=${ args.push(org_id) } where id=${ args.push(id) }
   `;<#
   if (cache) {
   #>
@@ -4088,15 +3943,7 @@ export async function updateById(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
       continue;
@@ -4865,7 +4712,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as <#=Table_Up#>Input;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
@@ -5109,20 +4956,16 @@ export async function findLastOrderBy(
     log(msg);
   }
   
-  let sql = `
-    select
-      t.order_by order_by
-    from
-      <#=mod#>_<#=table#> t`;
+  let sql = `select t.order_by order_by from <#=mod#>_<#=table#> t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
-  whereQuery.push(`t.is_deleted = 0`);<#
+  whereQuery.push(` t.is_deleted=0`);<#
   if (hasTenant_id) {
   #>
   {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
-    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
   }<#
   }
   #><#
@@ -5132,7 +4975,7 @@ export async function findLastOrderBy(
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
-      whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
+      whereQuery.push(` t.org_id=${ args.push(org_id) }`);
     }
   }<#
   }

@@ -37,6 +37,10 @@ pub struct LoginLogModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: LoginLogId,
+  /// 类型
+  pub r#type: LoginLogType,
+  /// 类型
+  pub type_lbl: String,
   /// 用户名
   pub username: String,
   /// 登录成功
@@ -77,6 +81,9 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: LoginLogId = row.try_get("id")?;
+    // 类型
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: LoginLogType = type_lbl.clone().try_into()?;
     // 用户名
     let username: String = row.try_get("username")?;
     // 登录成功
@@ -111,6 +118,8 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
       tenant_id,
       is_deleted,
       id,
+      r#type,
+      type_lbl,
       username,
       is_succ,
       is_succ_lbl,
@@ -134,6 +143,10 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
 pub struct LoginLogFieldComment {
   /// ID
   pub id: String,
+  /// 类型
+  pub r#type: String,
+  /// 类型
+  pub type_lbl: String,
   /// 用户名
   pub username: String,
   /// 登录成功
@@ -176,6 +189,8 @@ pub struct LoginLogSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  /// 类型
+  pub r#type: Option<Vec<LoginLogType>>,
   /// 用户名
   pub username: Option<String>,
   /// 用户名
@@ -221,6 +236,10 @@ impl std::fmt::Debug for LoginLogSearch {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
       }
+    }
+    // 类型
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
     }
     // 用户名
     if let Some(ref username) = self.username {
@@ -276,6 +295,10 @@ pub struct LoginLogInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
+  /// 类型
+  pub r#type: Option<LoginLogType>,
+  /// 类型
+  pub type_lbl: Option<String>,
   /// 用户名
   pub username: Option<String>,
   /// 登录成功
@@ -316,6 +339,9 @@ impl From<LoginLogModel> for LoginLogInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      // 类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
       // 用户名
       username: model.username.into(),
       // 登录成功
@@ -347,6 +373,8 @@ impl From<LoginLogInput> for LoginLogSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
+      // 类型
+      r#type: input.r#type.map(|x| vec![x]),
       // 用户名
       username: input.username,
       // 登录成功
@@ -470,5 +498,81 @@ impl<'r> sqlx::Decode<'r, MySql> for LoginLogId {
 impl PartialEq<str> for LoginLogId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
+  }
+}
+
+/// 登录日志类型
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum LoginLogType {
+  /// 账号
+  #[default]
+  #[graphql(name="account")]
+  Account,
+}
+
+impl fmt::Display for LoginLogType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Account => write!(f, "account"),
+    }
+  }
+}
+
+impl From<LoginLogType> for SmolStr {
+  fn from(value: LoginLogType) -> Self {
+    match value {
+      LoginLogType::Account => "account".into(),
+    }
+  }
+}
+
+impl From<LoginLogType> for String {
+  fn from(value: LoginLogType) -> Self {
+    match value {
+      LoginLogType::Account => "account".into(),
+    }
+  }
+}
+
+impl From<LoginLogType> for ArgType {
+  fn from(value: LoginLogType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for LoginLogType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "account" => Ok(Self::Account),
+      _ => Err(anyhow::anyhow!("LoginLogType can't convert from {s}")),
+    }
+  }
+}
+
+impl LoginLogType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Account => "account",
+    }
+  }
+}
+
+impl TryFrom<String> for LoginLogType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "account" => Ok(Self::Account),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "LoginLogType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
   }
 }

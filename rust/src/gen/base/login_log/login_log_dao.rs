@@ -54,7 +54,7 @@ async fn get_where_query(
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
-  let mut where_query = String::with_capacity(80 * 10 * 2);
+  let mut where_query = String::with_capacity(80 * 11 * 2);
   where_query.push_str(" t.is_deleted = ?");
   args.push(is_deleted.into());
   {
@@ -108,6 +108,30 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id = ?");
       args.push(tenant_id.into());
+    }
+  }
+  // 类型
+  {
+    let r#type: Option<Vec<LoginLogType>> = match search {
+      Some(item) => item.r#type.clone(),
+      None => None,
+    };
+    if let Some(r#type) = r#type {
+      let arg = {
+        if r#type.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(r#type.len());
+          for item in r#type {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.type in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 用户名
@@ -331,6 +355,22 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.type.length > {ids_limit}"));
+      }
+    }
+  }
   // 登录成功
   if let Some(search) = &search {
     if search.is_succ.is_some() {
@@ -345,7 +385,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_succ.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 创建人
@@ -362,7 +401,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 更新人
@@ -379,7 +417,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   
@@ -428,16 +465,27 @@ pub async fn find_all(
   ).await?;
   
   let dict_vec = get_dict(&[
+    "login_log_type",
     "yes_no",
   ]).await?;
   let [
+    type_dict,
     is_succ_dict,
-  ]: [Vec<_>; 1] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 类型
+    model.r#type_lbl = {
+      r#type_dict
+        .iter()
+        .find(|item| item.val == model.r#type.as_str())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.r#type.to_string())
+    };
     
     // 登录成功
     model.is_succ_lbl = {
@@ -547,6 +595,8 @@ pub async fn get_field_comments(
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
+    "类型".into(),
+    "类型".into(),
     "用户名".into(),
     "登录成功".into(),
     "登录成功".into(),
@@ -575,18 +625,20 @@ pub async fn get_field_comments(
   
   let field_comments = LoginLogFieldComment {
     id: vec[0].to_owned(),
-    username: vec[1].to_owned(),
-    is_succ: vec[2].to_owned(),
-    is_succ_lbl: vec[3].to_owned(),
-    ip: vec[4].to_owned(),
-    create_time: vec[5].to_owned(),
-    create_time_lbl: vec[6].to_owned(),
-    create_usr_id: vec[7].to_owned(),
-    create_usr_id_lbl: vec[8].to_owned(),
-    update_usr_id: vec[9].to_owned(),
-    update_usr_id_lbl: vec[10].to_owned(),
-    update_time: vec[11].to_owned(),
-    update_time_lbl: vec[12].to_owned(),
+    r#type: vec[1].to_owned(),
+    type_lbl: vec[2].to_owned(),
+    username: vec[3].to_owned(),
+    is_succ: vec[4].to_owned(),
+    is_succ_lbl: vec[5].to_owned(),
+    ip: vec[6].to_owned(),
+    create_time: vec[7].to_owned(),
+    create_time_lbl: vec[8].to_owned(),
+    create_usr_id: vec[9].to_owned(),
+    create_usr_id_lbl: vec[10].to_owned(),
+    update_usr_id: vec[11].to_owned(),
+    update_usr_id_lbl: vec[12].to_owned(),
+    update_time: vec[13].to_owned(),
+    update_time_lbl: vec[14].to_owned(),
   };
   Ok(field_comments)
 }
@@ -905,12 +957,28 @@ pub async fn set_id_by_lbl(
   let mut input = input;
   
   let dict_vec = get_dict(&[
+    "login_log_type",
     "yes_no",
   ]).await?;
   
+  // 类型
+  if input.r#type.is_none() {
+    let type_dict = &dict_vec[0];
+    if let Some(type_lbl) = input.type_lbl.clone() {
+      input.r#type = type_dict
+        .iter()
+        .find(|item| {
+          item.lbl == type_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 登录成功
   if input.is_succ.is_none() {
-    let is_succ_dict = &dict_vec[0];
+    let is_succ_dict = &dict_vec[1];
     if let Some(is_succ_lbl) = input.is_succ_lbl.clone() {
       input.is_succ = is_succ_dict
         .iter()
@@ -1031,12 +1099,14 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 10 + 20);
+  let mut sql_fields = String::with_capacity(80 * 11 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
   sql_fields += ",create_usr_id";
   sql_fields += ",tenant_id";
+  // 类型
+  sql_fields += ",type";
   // 用户名
   sql_fields += ",username";
   // 登录成功
@@ -1049,7 +1119,7 @@ async fn _creates(
   sql_fields += ",update_time";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 10 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 11 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1109,6 +1179,13 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 类型
+    if let Some(r#type) = input.r#type {
+      sql_values += ",?";
+      args.push(r#type.into());
     } else {
       sql_values += ",default";
     }
@@ -1371,7 +1448,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 10 + 20);
+  let mut sql_fields = String::with_capacity(80 * 11 + 20);
   
   let mut field_num: usize = 0;
   
@@ -1379,6 +1456,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
+  }
+  // 类型
+  if let Some(r#type) = input.r#type {
+    field_num += 1;
+    sql_fields += "type=?,";
+    args.push(r#type.into());
   }
   // 用户名
   if let Some(username) = input.username {

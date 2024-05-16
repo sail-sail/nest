@@ -22,8 +22,8 @@
       <Top></Top>
     </div>
     <LeftMenu
-      un-flex="[1_0_0]"
-      un-overflow-y-auto
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
     ></LeftMenu>
   </div>
   <div

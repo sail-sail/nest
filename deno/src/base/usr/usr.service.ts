@@ -22,10 +22,11 @@ import {
   findCount as findCountLoginLog,
 } from "/gen/base/login_log/login_log.dao.ts";
 
-import type {
-  MutationLoginArgs,
-  ChangePasswordInput,
-  LoginModel,
+import {
+  type MutationLoginArgs,
+  type ChangePasswordInput,
+  type LoginModel,
+  LoginLogType,
 } from "/gen/types.ts";
 
 import {
@@ -67,6 +68,7 @@ export async function login(
   const begin = now.subtract(10, "minute").format("YYYY-MM-DD HH:mm:ss");
   const end = now.format("YYYY-MM-DD HH:mm:ss");
   const loginLog1Count = await findCountLoginLog({
+    type: [ LoginLogType.Account ],
     username,
     ip,
     is_succ: [ 1 ],
@@ -75,6 +77,7 @@ export async function login(
   });
   if (loginLog1Count === 0) {
     const loginLog0Count = await findCountLoginLog({
+      type: [ LoginLogType.Account ],
       username,
       ip,
       is_succ: [ 0 ],
@@ -93,6 +96,7 @@ export async function login(
   );
   if (!model || !model.id) {
     await createLoginLog({
+      type: LoginLogType.Account,
       username,
       ip,
       is_succ: 0,
@@ -101,6 +105,7 @@ export async function login(
     throw new ServiceException(await ns("用户名或密码错误"), "username_or_password_error", false);
   }
   await createLoginLog({
+    type: LoginLogType.Account,
     username,
     ip,
     is_succ: 1,
