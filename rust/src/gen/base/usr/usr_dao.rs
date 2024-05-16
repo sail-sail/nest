@@ -657,7 +657,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.role_ids.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 所属部门
@@ -674,7 +673,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.dept_ids.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 所属组织
@@ -691,7 +689,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.org_ids.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 默认组织
@@ -708,7 +705,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.default_org_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 锁定
@@ -725,7 +721,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_locked.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 启用
@@ -742,7 +737,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_enabled.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 创建人
@@ -759,7 +753,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 更新人
@@ -776,7 +769,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 隐藏记录
@@ -793,7 +785,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.is_hidden.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   

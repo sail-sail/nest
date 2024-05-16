@@ -84,26 +84,33 @@
       </div>
     </div>
   </div>
-  <el-menu
-    class="AppMenu"
-    :class="{
-      AppMenuNotInited: !inited,
-    }"
-    un-w="full"
-    :default-active="defaultActive"
-    :collapse="menuStore.isCollapse"
-    :collapse-transition="false"
-    unique-opened
-    :router="false"
-    @open="menuOpen"
-    @close="menuClose"
-    @select="menuSelect"
+  <div
+    un-flex="~ [1_0_0] col"
+    un-overflow="auto"
+    un-p="b-2"
+    un-box-border
   >
-    <AppSubMenu
-      :children="(menuStore.menus as any[])"
-      :opened-index="openedIndex"
-    ></AppSubMenu>
-  </el-menu>
+    <el-menu
+      class="AppMenu"
+      :class="{
+        AppMenuNotInited: !inited,
+      }"
+      un-w="full"
+      :default-active="defaultActive"
+      :collapse="menuStore.isCollapse"
+      :collapse-transition="false"
+      unique-opened
+      :router="false"
+      @open="menuOpen"
+      @close="menuClose"
+      @select="menuSelect"
+    >
+      <AppSubMenu
+        :children="(menuStore.menus as any[])"
+        :opened-index="openedIndex"
+      ></AppSubMenu>
+    </el-menu>
+  </div>
 </div>
 </template>
 

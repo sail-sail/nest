@@ -30,7 +30,7 @@ type DictModel {
   "名称"
   lbl: String!
   "数据类型"
-  type: DictType
+  type: DictType!
   "数据类型"
   type_lbl: String!
   "锁定"
@@ -48,7 +48,7 @@ type DictModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -56,7 +56,7 @@ type DictModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -64,7 +64,7 @@ type DictModel {
   "是否已删除"
   is_deleted: Int!
   "系统字典明细"
-  dict_detail: [DictDetailModel!]
+  dict_detail: [DictDetailModel!]!
 }
 type DictFieldComment {
   "ID"
@@ -146,7 +146,7 @@ input DictSearch {
   lbl: String
   lbl_like: String
   "数据类型"
-  type: [String!]
+  type: [DictType!]
   "锁定"
   is_locked: [Int!]
   "启用"

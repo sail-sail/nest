@@ -339,7 +339,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
-            findAllBackgroundTask(search: $search, sort: $sort) {
+            findAllBackgroundTask(search: $search, page: null, sort: $sort) {
               ${ backgroundTaskQueryField }
             }
             getDict(codes: [

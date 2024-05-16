@@ -33,13 +33,13 @@ type DataPermitModel {
   "菜单"
   menu_id: MenuId!
   "菜单"
-  menu_id_lbl: String
+  menu_id_lbl: String!
   "范围"
-  scope: DataPermitScope
+  scope: DataPermitScope!
   "范围"
   scope_lbl: String!
   "类型"
-  type: DataPermitType
+  type: DataPermitType!
   "类型"
   type_lbl: String!
   "备注"
@@ -47,7 +47,7 @@ type DataPermitModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -55,7 +55,7 @@ type DataPermitModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
@@ -126,9 +126,9 @@ input DataPermitSearch {
   menu_id: [MenuId!]
   menu_id_is_null: Boolean
   "范围"
-  scope: [String!]
+  scope: [DataPermitScope!]
   "类型"
-  type: [String!]
+  type: [DataPermitType!]
   "备注"
   rem: String
   rem_like: String

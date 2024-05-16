@@ -481,7 +481,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: DomainSearch, $sort: [SortInput!]) {
-            findAllDomain(search: $search, sort: $sort) {
+            findAllDomain(search: $search, page: null, sort: $sort) {
               ${ domainQueryField }
             }
             getDict(codes: [

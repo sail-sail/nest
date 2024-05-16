@@ -74,8 +74,13 @@ export async function findOneOperationRecord(
 export async function findByIdOperationRecord(
   id: OperationRecordId,
 ): Promise<OperationRecordModel | undefined> {
-  const { findById } = await import("./operation_record.service.ts");
+  
+  const {
+    findById,
+  } = await import("./operation_record.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -137,7 +137,7 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const id2: MenuId = await menuDao.updateById(id, input);
+  const id2 = await menuDao.updateById(id, input);
   return id2;
 }
 

@@ -13,13 +13,13 @@ type TenantModel {
   "名称"
   lbl: String!
   "所属域名"
-  domain_ids: [DomainId!]
+  domain_ids: [DomainId!]!
   "所属域名"
-  domain_ids_lbl: [String!]
+  domain_ids_lbl: [String!]!
   "菜单权限"
-  menu_ids: [MenuId!]
+  menu_ids: [MenuId!]!
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [String!]!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -35,7 +35,7 @@ type TenantModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -43,7 +43,7 @@ type TenantModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
