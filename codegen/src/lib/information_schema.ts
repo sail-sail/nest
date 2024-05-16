@@ -774,8 +774,11 @@ export async function getSchema(
     if (column.foreignKey && !column.foreignKey.column) {
       column.foreignKey.column = "id";
     }
-    if (column.foreignKey && !column.foreignKey.lbl) {
-      column.foreignKey.lbl = "lbl";
+    if (column.foreignKey && column.foreignKey.lbl === undefined) {
+      const columnsTmp = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.columns || [ ];
+      if (columnsTmp.some((item) => item.COLUMN_NAME === "lbl")) {
+        column.foreignKey.lbl = "lbl";
+      }
     }
     if (column.foreignKey && column.foreignKey.multiple == null) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
@@ -786,7 +789,7 @@ export async function getSchema(
     }
     // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
-      column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+      column.foreignKey.defaultSort = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.opts?.defaultSort;
     }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {

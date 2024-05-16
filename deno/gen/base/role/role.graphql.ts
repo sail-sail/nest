@@ -24,8 +24,6 @@ type RoleModel {
   permit_ids_lbl: [String!]!
   "数据权限"
   data_permit_ids: [DataPermitId!]!
-  "数据权限"
-  data_permit_ids_lbl: [String!]!
   "锁定"
   is_locked: Int!
   "锁定"
