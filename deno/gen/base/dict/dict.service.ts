@@ -150,7 +150,7 @@ export async function updateById(
     input.is_enabled_lbl = "";
   }
   
-  const id2: DictId = await dictDao.updateById(id, input);
+  const id2 = await dictDao.updateById(id, input);
   return id2;
 }
 

@@ -128,7 +128,7 @@ export async function updateById(
   input: LoginLogInput,
 ): Promise<LoginLogId> {
   
-  const id2: LoginLogId = await login_logDao.updateById(id, input);
+  const id2 = await login_logDao.updateById(id, input);
   return id2;
 }
 

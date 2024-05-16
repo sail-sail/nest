@@ -142,7 +142,7 @@ export async function updateById(
   if (model && model.is_sys === 1) {
   }
   
-  const id2: DictbizDetailId = await dictbiz_detailDao.updateById(id, input);
+  const id2 = await dictbiz_detailDao.updateById(id, input);
   return id2;
 }
 
