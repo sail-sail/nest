@@ -42,7 +42,7 @@
           v-for="item in modelValue.slice(maxSize)"
           :key="item"
           type="info"
-          style="margin: 1px;"
+          :style="{ margin: '1px' }"
           :disable-transitions="true"
         >
           {{ item }}
@@ -55,7 +55,7 @@
       v-for="item in modelValue"
       :key="item"
       type="info"
-      style="margin: 1px;"
+      :style="{ margin: '1px' }"
       :disable-transitions="true"
     >
       {{ item }}

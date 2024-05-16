@@ -533,46 +533,6 @@ import {<#
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
 #><#
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  const comment = column.COLUMN_COMMENT;
-  let is_nullable = column.IS_NULLABLE === "YES";
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  let data_type = column.DATA_TYPE;
-  const many2many = column.many2many;
-  if (!many2many || !foreignKey) continue;
-  if (!column.inlineMany2manyTab) continue;
-  const inlineMany2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-  const table = many2many.table;
-  const mod = many2many.mod;
-  if (!inlineMany2manySchema) {
-    throw `inlineMany2manyTab 中的表: ${ mod }_${ table } 不存在`;
-    process.exit(1);
-  }
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const Table_Up = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-#>
-
-import type {
-  <#=Table_Up#>Id,
-  <#=Table_Up#>Model,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";
-
-import type {
-  <#=Table_Up#>Input,
-} from "/gen/<#=mod#>/<#=table#>/<#=table#>.model.ts";<#
-}
-#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
@@ -1046,7 +1006,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1326,6 +1289,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#> = [ ];
     }<#
       if (foreignKey.lbl && !modelLabel) {
     #>
@@ -1337,6 +1302,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_lbl = [ ];
     }<#
       }
     #><#
@@ -1351,6 +1318,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.<#=column_name#>_<#=cascade_field#> = keys.map((key) => obj[key]);
+    } else {
+      item.<#=column_name#>_<#=cascade_field#> = [ ];
     }<#
       }
     #><#
@@ -1559,8 +1528,8 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
       const column_default = column.COLUMN_DEFAULT;
       const foreignKey = column.foreignKey;
@@ -1577,7 +1546,16 @@ export async function findAll(
         precision = Number(arr[1]);
       }
     #><#
-      if (data_type === "decimal" && isVirtual) {
+      if (foreignKey && !foreignKey.multiple) {
+    #><#
+      if (foreignKey.lbl && !modelLabel) {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl || "";<#
+      }
+    #><#
+      } else if (data_type === "decimal" && isVirtual) {
     #>
     
     // <#=column_comment#>
@@ -1623,7 +1601,7 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
       }
     #><#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -1639,7 +1617,7 @@ export async function findAll(
         <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl || "";<#
       }
     #><#
       } else if (data_type === "datetime") {
@@ -2560,7 +2538,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -2602,7 +2580,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   

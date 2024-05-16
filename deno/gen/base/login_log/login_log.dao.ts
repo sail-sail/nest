@@ -251,7 +251,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 类型
@@ -373,7 +376,7 @@ export async function findAll(
         type_lbl = dictItem.lbl;
       }
     }
-    model.type_lbl = type_lbl;
+    model.type_lbl = type_lbl || "";
     
     // 登录成功
     let is_succ_lbl = model.is_succ?.toString() || "";
@@ -383,7 +386,7 @@ export async function findAll(
         is_succ_lbl = dictItem.lbl;
       }
     }
-    model.is_succ_lbl = is_succ_lbl;
+    model.is_succ_lbl = is_succ_lbl || "";
     
     // 登录时间
     if (model.create_time) {
@@ -571,7 +574,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -608,7 +611,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
