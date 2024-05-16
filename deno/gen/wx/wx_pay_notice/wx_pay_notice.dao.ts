@@ -354,9 +354,6 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.id === "") {
-    return [ ];
-  }
   if (search?.ids?.length === 0) {
     return [ ];
   }
@@ -820,9 +817,6 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
   if (search?.ids?.length === 0) {
     return;
   }
@@ -859,10 +853,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (id == null) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -916,7 +919,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -1114,7 +1117,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -1408,15 +1413,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      wx_wx_pay_notice
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update wx_wx_pay_notice set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   return num;
@@ -1446,14 +1443,7 @@ export async function updateOrgById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      wx_wx_pay_notice
-    set
-      update_time = ${ args.push(reqDate()) },
-      org_id = ${ args.push(org_id) }
-    where
-      id = ${ args.push(id) }
+  const sql = `update wx_wx_pay_notice set org_id=${ args.push(org_id) } where id=${ args.push(id) }
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
