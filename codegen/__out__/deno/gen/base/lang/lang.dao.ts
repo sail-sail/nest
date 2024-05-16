@@ -249,7 +249,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 启用
@@ -370,7 +370,10 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -383,6 +386,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -596,10 +602,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -635,10 +638,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -692,7 +704,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -825,7 +837,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -1401,14 +1415,10 @@ export async function findLastOrderBy(
     log(msg);
   }
   
-  let sql = `
-    select
-      t.order_by order_by
-    from
-      base_lang t`;
+  let sql = `select t.order_by order_by from base_lang t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
-  whereQuery.push(`t.is_deleted = 0`);
+  whereQuery.push(` t.is_deleted=0`);
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }

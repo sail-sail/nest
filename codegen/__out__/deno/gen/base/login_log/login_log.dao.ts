@@ -254,7 +254,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 类型
@@ -376,7 +376,7 @@ export async function findAll(
         type_lbl = dictItem.lbl;
       }
     }
-    model.type_lbl = type_lbl;
+    model.type_lbl = type_lbl || "";
     
     // 登录成功
     let is_succ_lbl = model.is_succ?.toString() || "";
@@ -386,7 +386,7 @@ export async function findAll(
         is_succ_lbl = dictItem.lbl;
       }
     }
-    model.is_succ_lbl = is_succ_lbl;
+    model.is_succ_lbl = is_succ_lbl || "";
     
     // 登录时间
     if (model.create_time) {
@@ -574,10 +574,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -613,10 +610,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -670,7 +676,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -777,7 +783,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -990,15 +998,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      base_login_log
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update base_login_log set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   return num;
