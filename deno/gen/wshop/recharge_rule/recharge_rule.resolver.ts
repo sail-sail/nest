@@ -77,8 +77,13 @@ export async function findOneRechargeRule(
 export async function findByIdRechargeRule(
   id: RechargeRuleId,
 ): Promise<RechargeRuleModel | undefined> {
-  const { findById } = await import("./recharge_rule.service.ts");
+  
+  const {
+    findById,
+  } = await import("./recharge_rule.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

@@ -76,8 +76,13 @@ export async function findOneCardConsume(
 export async function findByIdCardConsume(
   id: CardConsumeId,
 ): Promise<CardConsumeModel | undefined> {
-  const { findById } = await import("./card_consume.service.ts");
+  
+  const {
+    findById,
+  } = await import("./card_consume.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

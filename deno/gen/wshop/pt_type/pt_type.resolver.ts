@@ -75,8 +75,13 @@ export async function findOnePtType(
 export async function findByIdPtType(
   id: PtTypeId,
 ): Promise<PtTypeModel | undefined> {
-  const { findById } = await import("./pt_type.service.ts");
+  
+  const {
+    findById,
+  } = await import("./pt_type.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

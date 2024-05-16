@@ -137,7 +137,7 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
-  const id2: PtId = await ptDao.updateById(id, input);
+  const id2 = await ptDao.updateById(id, input);
   return id2;
 }
 

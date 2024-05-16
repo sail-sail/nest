@@ -477,7 +477,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: CardConsumeSearch, $sort: [SortInput!]) {
-            findAllCardConsume(search: $search, sort: $sort) {
+            findAllCardConsume(search: $search, page: null, sort: $sort) {
               ${ cardConsumeQueryField }
             }
             findAllCard {

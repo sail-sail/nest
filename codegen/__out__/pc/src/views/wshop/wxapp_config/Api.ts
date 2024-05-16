@@ -461,7 +461,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: WxappConfigSearch, $sort: [SortInput!]) {
-            findAllWxappConfig(search: $search, sort: $sort) {
+            findAllWxappConfig(search: $search, page: null, sort: $sort) {
               ${ wxappConfigQueryField }
             }
             getDict(codes: [

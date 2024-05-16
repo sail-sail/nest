@@ -75,8 +75,13 @@ export async function findOneWxappConfig(
 export async function findByIdWxappConfig(
   id: WxappConfigId,
 ): Promise<WxappConfigModel | undefined> {
-  const { findById } = await import("./wxapp_config.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wxapp_config.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
