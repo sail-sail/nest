@@ -15,7 +15,7 @@ type WxoUsrModel {
   "用户"
   usr_id: UsrId!
   "用户"
-  usr_id_lbl: String
+  usr_id_lbl: String!
   "公众号用户唯一标识"
   openid: String!
   "公众号用户统一标识"
@@ -25,7 +25,7 @@ type WxoUsrModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -33,7 +33,7 @@ type WxoUsrModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
