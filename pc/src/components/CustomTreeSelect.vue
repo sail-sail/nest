@@ -29,6 +29,7 @@
   @check="onCheck"
   :clearable="!props.disabled"
   @node-click="onNodeClick"
+  @keydown.ctrl.c.stop="copyModelLabel"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -91,21 +92,19 @@ import type {
   TreeOptionProps,
 } from "element-plus/es/components/tree/src/tree.type";
 
-import {
-  type ExtractPropTypes,
+import type {
+  ExtractPropTypes,
 } from "vue";
 
-const usrStore = useUsrStore();
+import {
+  copyText,
+} from "@/utils/common";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
-
-let inited = $ref(false);
-
-let data = $ref<any[]>([ ]);
 
 const props = withDefaults(
   defineProps<{
@@ -138,6 +137,21 @@ const props = withDefaults(
   },
 );
 
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  if (!text) {
+    return;
+  }
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
+
+const usrStore = useUsrStore();
+
+let inited = $ref(false);
+
+let data = $ref<any[]>([ ]);
+
 let modelValue = $ref(props.modelValue);
 
 watch(
@@ -154,9 +168,9 @@ watch(
   },
 );
 
-const modelLabels = $computed(() => {
+const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
-    return [ ];
+    return [ "" ];
   }
   const label = props.props.label || "label";
   if (!props.multiple) {
@@ -169,7 +183,7 @@ const modelLabels = $computed(() => {
     }
     return [ label(data, model) || "" ];
   }
-  let models: any[] = [ ];
+  let models: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const id of modelValues) {
     const model = treeSelectFn(data, id);

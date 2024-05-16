@@ -6,10 +6,19 @@ import * as resolver from "./login_log.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar LoginLogId
 
+"登录日志类型"
+enum LoginLogType {
+  "账号"
+  account
+}
 
 type LoginLogModel {
   "ID"
   id: LoginLogId!
+  "类型"
+  type: LoginLogType!
+  "类型"
+  type_lbl: String!
   "用户名"
   username: String!
   "登录成功"
@@ -28,6 +37,10 @@ type LoginLogModel {
 type LoginLogFieldComment {
   "ID"
   id: String!
+  "类型"
+  type: String!
+  "类型"
+  type_lbl: String!
   "用户名"
   username: String!
   "登录成功"
@@ -44,6 +57,10 @@ type LoginLogFieldComment {
 input LoginLogInput {
   "ID"
   id: LoginLogId
+  "类型"
+  type: LoginLogType
+  "类型"
+  type_lbl: String
   "用户名"
   username: String
   "登录成功"
@@ -60,6 +77,8 @@ input LoginLogSearch {
   ids: [LoginLogId!]
   "ID"
   id: LoginLogId
+  "类型"
+  type: [LoginLogType!]
   "用户名"
   username: String
   username_like: String

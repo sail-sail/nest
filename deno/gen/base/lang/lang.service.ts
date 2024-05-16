@@ -137,7 +137,7 @@ export async function updateById(
   if (model && model.is_sys === 1) {
   }
   
-  const id2: LangId = await langDao.updateById(id, input);
+  const id2 = await langDao.updateById(id, input);
   return id2;
 }
 

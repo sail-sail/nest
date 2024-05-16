@@ -71,6 +71,7 @@ import {
 
 const route_path = "/base/i18n";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: I18nSearch,
@@ -1255,7 +1256,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as I18nInput;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
