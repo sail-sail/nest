@@ -1046,9 +1046,6 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.id === "") {
-    return [ ];
-  }
   if (search?.ids?.length === 0) {
     return [ ];
   }<#
@@ -2563,9 +2560,6 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
   if (search?.ids?.length === 0) {
     return;
   }
@@ -2607,10 +2601,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (id == null) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -2674,7 +2677,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -2944,7 +2947,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -3517,19 +3522,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      <#=mod#>_<#=table#>
-    set<#
-      if (hasUpdateTime) {
-      #>
-      update_time = ${ args.push(reqDate()) },<#
-      }
-      #>
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update <#=mod#>_<#=table#> set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -3575,18 +3568,7 @@ export async function updateOrgById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      <#=mod#>_<#=table#>
-    set<#
-      if (hasUpdateTime) {
-      #>
-      update_time = ${ args.push(reqDate()) },<#
-      }
-      #>
-      org_id = ${ args.push(org_id) }
-    where
-      id = ${ args.push(id) }
+  const sql = `update <#=mod#>_<#=table#> set org_id=${ args.push(org_id) } where id=${ args.push(id) }
   `;<#
   if (cache) {
   #>
@@ -4996,20 +4978,16 @@ export async function findLastOrderBy(
     log(msg);
   }
   
-  let sql = `
-    select
-      t.order_by order_by
-    from
-      <#=mod#>_<#=table#> t`;
+  let sql = `select t.order_by order_by from <#=mod#>_<#=table#> t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
-  whereQuery.push(`t.is_deleted = 0`);<#
+  whereQuery.push(` t.is_deleted=0`);<#
   if (hasTenant_id) {
   #>
   {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
-    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
   }<#
   }
   #><#
@@ -5019,7 +4997,7 @@ export async function findLastOrderBy(
     const authModel = await getAuthModel();
     const org_id = authModel?.org_id;
     if (org_id) {
-      whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
+      whereQuery.push(` t.org_id=${ args.push(org_id) }`);
     }
   }<#
   }
