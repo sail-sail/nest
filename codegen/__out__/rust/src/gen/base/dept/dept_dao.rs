@@ -1069,8 +1069,8 @@ pub async fn find_by_unique(
     }
     
     let search = DeptSearch {
-      parent_id: search.parent_id,
-      lbl: search.lbl,
+      parent_id: search.parent_id.clone(),
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     

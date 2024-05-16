@@ -35,18 +35,25 @@ pub struct I18nModel {
   /// ID
   pub id: I18nId,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id: LangId,
   /// 语言
+  #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: String,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: MenuId,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: String,
   /// 编码
+  #[graphql(name = "code")]
   pub code: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -295,18 +302,25 @@ pub struct I18nInput {
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id_lbl: Option<String>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id_lbl: Option<String>,
   /// 编码
+  #[graphql(name = "code")]
   pub code: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

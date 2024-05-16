@@ -28,31 +28,42 @@ use crate::common::context::ArgType;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "MenuModel")]
 pub struct MenuModel {
   /// ID
   pub id: MenuId,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: MenuId,
   /// 父菜单
+  #[graphql(name = "parent_id_lbl")]
   pub parent_id_lbl: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 路由
+  #[graphql(name = "route_path")]
   pub route_path: String,
   /// 参数
+  #[graphql(name = "route_query")]
   pub route_query: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -330,33 +341,44 @@ impl std::fmt::Debug for MenuSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "MenuInput")]
 pub struct MenuInput {
   /// ID
   pub id: Option<MenuId>,
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id_lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 路由
+  #[graphql(name = "route_path")]
   pub route_path: Option<String>,
   /// 参数
+  #[graphql(name = "route_query")]
   pub route_query: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

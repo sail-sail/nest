@@ -1046,7 +1046,7 @@ pub async fn find_by_unique(
     }
     
     let search = TenantSearch {
-      lbl: search.lbl,
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     

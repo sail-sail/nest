@@ -28,7 +28,7 @@ use crate::common::context::ArgType;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OptionsModel")]
 pub struct OptionsModel {
   /// 系统字段
   #[graphql(skip)]
@@ -36,22 +36,31 @@ pub struct OptionsModel {
   /// ID
   pub id: OptionsId,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 键
+  #[graphql(name = "ky")]
   pub ky: String,
   /// 值
+  #[graphql(name = "val")]
   pub val: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -316,7 +325,7 @@ impl std::fmt::Debug for OptionsSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OptionsInput")]
 pub struct OptionsInput {
   /// ID
   pub id: Option<OptionsId>,
@@ -326,22 +335,31 @@ pub struct OptionsInput {
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 键
+  #[graphql(name = "ky")]
   pub ky: Option<String>,
   /// 值
+  #[graphql(name = "val")]
   pub val: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

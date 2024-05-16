@@ -906,7 +906,7 @@ pub async fn find_by_unique(
     }
     
     let search = OrgSearch {
-      lbl: search.lbl,
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     

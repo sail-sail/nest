@@ -33,7 +33,7 @@ use crate::gen::base::dict_detail::dict_detail_model::{
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DictModel")]
 pub struct DictModel {
   /// 系统字段
   #[graphql(skip)]
@@ -41,24 +41,34 @@ pub struct DictModel {
   /// ID
   pub id: DictId,
   /// 编码
+  #[graphql(name = "code")]
   pub code: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 数据类型
+  #[graphql(name = "type")]
   pub r#type: DictType,
   /// 数据类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -321,7 +331,7 @@ impl std::fmt::Debug for DictSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DictInput")]
 pub struct DictInput {
   /// ID
   pub id: Option<DictId>,
@@ -331,24 +341,34 @@ pub struct DictInput {
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 编码
+  #[graphql(name = "code")]
   pub code: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 数据类型
+  #[graphql(name = "type")]
   pub r#type: Option<DictType>,
   /// 数据类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

@@ -28,7 +28,7 @@ use crate::common::context::ArgType;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "LangModel")]
 pub struct LangModel {
   /// 系统字段
   #[graphql(skip)]
@@ -36,16 +36,22 @@ pub struct LangModel {
   /// ID
   pub id: LangId,
   /// 编码
+  #[graphql(name = "code")]
   pub code: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -274,7 +280,7 @@ impl std::fmt::Debug for LangSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "LangInput")]
 pub struct LangInput {
   /// ID
   pub id: Option<LangId>,
@@ -284,16 +290,22 @@ pub struct LangInput {
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 编码
+  #[graphql(name = "code")]
   pub code: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "LoginLogModel")]
 pub struct LoginLogModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,16 +38,22 @@ pub struct LoginLogModel {
   /// ID
   pub id: LoginLogId,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: LoginLogType,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: String,
   /// 登录成功
+  #[graphql(name = "is_succ")]
   pub is_succ: u8,
   /// 登录成功
+  #[graphql(name = "is_succ_lbl")]
   pub is_succ_lbl: String,
   /// IP
+  #[graphql(name = "ip")]
   pub ip: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -286,7 +292,7 @@ impl std::fmt::Debug for LoginLogSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "LoginLogInput")]
 pub struct LoginLogInput {
   /// ID
   pub id: Option<LoginLogId>,
@@ -296,16 +302,22 @@ pub struct LoginLogInput {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<LoginLogType>,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: Option<String>,
   /// 登录成功
+  #[graphql(name = "is_succ")]
   pub is_succ: Option<u8>,
   /// 登录成功
+  #[graphql(name = "is_succ_lbl")]
   pub is_succ_lbl: Option<String>,
   /// IP
+  #[graphql(name = "ip")]
   pub ip: Option<String>,
   /// 创建人
   #[graphql(skip)]

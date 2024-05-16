@@ -963,8 +963,8 @@ pub async fn find_by_unique(
     }
     
     let search = DictDetailSearch {
-      dict_id: search.dict_id,
-      lbl: search.lbl,
+      dict_id: search.dict_id.clone(),
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     

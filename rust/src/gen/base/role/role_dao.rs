@@ -497,7 +497,6 @@ async fn get_from_query(
       and base_data_permit.is_deleted=?
     left join (select
     json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
-    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
     base_role.id role_id
     from base_role_data_permit
     inner join base_data_permit
@@ -718,7 +717,7 @@ pub async fn find_all(
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
-      ,max(data_permit_ids_lbl) data_permit_ids_lbl
+      ,max() 
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
@@ -881,7 +880,6 @@ pub async fn get_field_comments(
     "按钮权限".into(),
     "按钮权限".into(),
     "数据权限".into(),
-    "数据权限".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -919,21 +917,20 @@ pub async fn get_field_comments(
     permit_ids: vec[5].to_owned(),
     permit_ids_lbl: vec[6].to_owned(),
     data_permit_ids: vec[7].to_owned(),
-    data_permit_ids_lbl: vec[8].to_owned(),
-    is_locked: vec[9].to_owned(),
-    is_locked_lbl: vec[10].to_owned(),
-    is_enabled: vec[11].to_owned(),
-    is_enabled_lbl: vec[12].to_owned(),
-    order_by: vec[13].to_owned(),
-    rem: vec[14].to_owned(),
-    create_usr_id: vec[15].to_owned(),
-    create_usr_id_lbl: vec[16].to_owned(),
-    create_time: vec[17].to_owned(),
-    create_time_lbl: vec[18].to_owned(),
-    update_usr_id: vec[19].to_owned(),
-    update_usr_id_lbl: vec[20].to_owned(),
-    update_time: vec[21].to_owned(),
-    update_time_lbl: vec[22].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    order_by: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1166,7 +1163,7 @@ pub async fn find_by_unique(
     }
     
     let search = RoleSearch {
-      lbl: search.lbl,
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     
