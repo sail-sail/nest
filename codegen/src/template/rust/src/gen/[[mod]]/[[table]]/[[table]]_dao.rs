@@ -67,6 +67,32 @@ const hasDictbiz = columns.some((column) => {
   if (!column.dictbiz) return false;
   return true;
 });
+const hasDictModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dict;
+});
+const hasDictbizModelLabel = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") return false;
+  if (column_name === "is_sys") return false;
+  if (column_name === "is_deleted") return false;
+  if (column_name === "is_hidden") return false;
+  const modelLabel = column.modelLabel;
+  if (modelLabel) return false;
+  return column.dictbiz;
+});
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -1298,7 +1324,7 @@ pub async fn find_all(
     args,
     options,
   ).await?;<#
-    if (hasDict) {
+    if (hasDictModelLabel) {
   #>
   
   let dict_vec = get_dict(&[<#
@@ -1316,6 +1342,8 @@ pub async fn find_all(
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
+    const modelLabel = column.modelLabel;
+    if (modelLabel) continue;
   #>
     "<#=column.dict#>",<#
   }
@@ -1337,6 +1365,8 @@ pub async fn find_all(
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dict) continue;
+      const modelLabel = column.modelLabel;
+    if (modelLabel) continue;
     #>
     <#=column_name#>_dict,<#
       dictNum++;
@@ -1347,7 +1377,7 @@ pub async fn find_all(
     .map_err(|err| anyhow!("{:#?}", err))?;<#
     }
   #><#
-    if (hasDictbiz) {
+    if (hasDictbizModelLabel) {
   #>
   
   let dictbiz_vec = get_dictbiz(&[<#
@@ -1365,6 +1395,8 @@ pub async fn find_all(
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dictbiz) continue;
+    const modelLabel = column.modelLabel;
+    if (modelLabel) continue;
   #>
     "<#=column.dictbiz#>",<#
   }
@@ -1386,6 +1418,8 @@ pub async fn find_all(
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dictbiz) continue;
+      const modelLabel = column.modelLabel;
+      if (modelLabel) continue;
     #>
     <#=column_name#>_dict,<#
     dictBizNum++;
