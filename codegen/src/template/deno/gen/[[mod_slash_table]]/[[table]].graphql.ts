@@ -141,12 +141,12 @@ type <#=modelName#> {<#
     }
     else if (foreignKey && foreignKey.multiple) {
       data_type = `[${ foreignTable_Up }Id!]`;
-      _data_type = '[String!]';
-      is_nullable = true;
+      _data_type = '[String!]!';
+      is_nullable = false;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = `${ foreignTable_Up }Id`;
-      _data_type = 'String';
+      _data_type = 'String!';
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
@@ -169,11 +169,11 @@ type <#=modelName#> {<#
     }
     else if (column.DATA_TYPE === 'tinyint') {
       data_type = 'Int';
-      _data_type = "Int";
+      _data_type = "Int!";
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Decimal';
-      _data_type = "String";
+      _data_type = "String!";
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -262,7 +262,7 @@ type <#=modelName#> {<#
         _data_type = 'Decimal';
       }
       if (foreignKey.multiple) {
-        _data_type = `[${ _data_type }!]`;
+        _data_type = `[${ _data_type }!]!`;
       }
   #>
   "<#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#>"
@@ -326,7 +326,7 @@ type <#=modelName#> {<#
     if (inline_foreign_type === "one2many") {
   #>
   "<#=inlineForeignTab.label#>"
-  <#=inline_column_name#>: [<#=modelName#>!]<#
+  <#=inline_column_name#>: [<#=modelName#>!]!<#
     } else {
   #>
   "<#=inlineForeignTab.label#>"
@@ -383,7 +383,7 @@ type <#=modelName#> {<#
     }
   #>
   "<#=comment#>"
-  <#=column_name#>_<#=table#>_models: [<#=modelName#>!]<#
+  <#=column_name#>_<#=table#>_models: [<#=modelName#>!]!<#
   }
   #>
 }
@@ -512,7 +512,7 @@ input <#=inputName#> {<#
     }
     let column_comment = column.COLUMN_COMMENT;
     if (column_comment.endsWith("multiple")) {
-      _data_type = "[String]";
+      _data_type = "[String!]";
     }
     if (column_name === 'id') column_comment = 'ID';
   #><#

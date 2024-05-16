@@ -280,7 +280,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 状态
@@ -408,7 +411,7 @@ export async function findAll(
         state_lbl = dictItem.lbl;
       }
     }
-    model.state_lbl = state_lbl;
+    model.state_lbl = state_lbl || "";
     
     // 类型
     let type_lbl = model.type as string;
@@ -418,7 +421,7 @@ export async function findAll(
         type_lbl = dictItem.lbl;
       }
     }
-    model.type_lbl = type_lbl;
+    model.type_lbl = type_lbl || "";
     
     // 开始时间
     if (model.begin_time) {
@@ -444,6 +447,9 @@ export async function findAll(
       model.end_time_lbl = "";
     }
     
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
+    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -455,6 +461,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -702,7 +711,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -739,7 +748,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
