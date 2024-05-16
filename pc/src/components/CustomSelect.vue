@@ -8,80 +8,59 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <!-- <el-dropdown
+  <ElSelectV2
+    ref="selectRef"
+    :options="options4SelectV2"
+    filterable
+    collapse-tags
+    collapse-tags-tooltip
+    default-first-option
+    :height="props.height"
+    @visible-change="handleVisibleChange"
+    @clear="onClear"
     un-w="full"
-    trigger="contextmenu"
-    placement="top"
+    v-bind="$attrs"
+    :model-value="modelValueComputed"
+    @update:model-value="modelValueUpdate"
+    :loading="!inited"
+    class="custom_select"
+    :class="{
+      'custom_select_space_normal': true,
+      dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
+    }"
+    @change="onValueChange"
+    :multiple="props.multiple"
+    :clearable="!props.disabled"
+    :disabled="props.disabled"
+    :readonly="props.readonly"
+    :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
+    @keyup.enter.stop
+    @keydown.ctrl.c.stop="copyModelLabel"
   >
-    <template #dropdown>
-      <el-dropdown-menu
-        un-min="w-22"
+    <template
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      #header
+    >
+      <el-checkbox
+        v-model="isSelectAll"
+        :indeterminate="isIndeterminate"
+        un-w="full"
+        un-p="l-3"
         un-box-border
       >
-        
-        <el-dropdown-item
-          un-flex="~"
-          un-justify="center"
-          @click="copyModelLabel"
-        >
-          复制
-        </el-dropdown-item>
-        
-      </el-dropdown-menu>
-    </template> -->
-    <ElSelectV2
-      ref="selectRef"
-      :options="options4SelectV2"
-      filterable
-      collapse-tags
-      collapse-tags-tooltip
-      default-first-option
-      :height="props.height"
-      @visible-change="handleVisibleChange"
-      @clear="onClear"
-      un-w="full"
-      v-bind="$attrs"
-      :model-value="modelValueComputed"
-      @update:model-value="modelValueUpdate"
-      :loading="!inited"
-      class="custom_select"
-      :class="{
-        'custom_select_space_normal': true,
-        dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
-      }"
-      @change="onValueChange"
-      :multiple="props.multiple"
-      :clearable="!props.disabled"
-      :disabled="props.disabled"
-      :readonly="props.readonly"
-      :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
-      @keyup.enter.stop
+        <span>
+          ({{ ns("全选") }})
+        </span>
+      </el-checkbox>
+    </template>
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
     >
-      <template
-        v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
-        #header
-      >
-        <el-checkbox
-          v-model="isSelectAll"
-          :indeterminate="isIndeterminate"
-          un-w="full"
-          un-p="l-3"
-          un-box-border
-        >
-          <span>
-            ({{ ns("全选") }})
-          </span>
-        </el-checkbox>
-      </template>
-      <template
-        v-for="(item, key, index) in $slots"
-        :key="index"
-        #[key]
-      >
-        <slot :name="key"></slot>
-      </template>
-    </ElSelectV2>
-  <!-- </el-dropdown> -->
+      <slot :name="key"></slot>
+    </template>
+  </ElSelectV2>
 </div>
 <template
   v-else
@@ -312,11 +291,14 @@ const props = withDefaults(
   },
 );
 
-// function copyModelLabel() {
-//   const text = modelLabels.join(",");
-//   copyText(text);
-//   ElMessage.success(`${ text } 复制成功!`);
-// }
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  if (!text) {
+    return;
+  }
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
 
 let modelValue = $ref(props.modelValue);
 
