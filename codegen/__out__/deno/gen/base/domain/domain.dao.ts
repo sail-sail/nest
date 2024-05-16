@@ -258,7 +258,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 锁定
@@ -405,7 +408,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 默认
     let is_default_lbl = model.is_default?.toString() || "";
@@ -415,7 +418,7 @@ export async function findAll(
         is_default_lbl = dictItem.lbl;
       }
     }
-    model.is_default_lbl = is_default_lbl;
+    model.is_default_lbl = is_default_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -425,7 +428,10 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -438,6 +444,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -660,7 +669,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -697,7 +706,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   
