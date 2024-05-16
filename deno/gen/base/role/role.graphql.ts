@@ -15,17 +15,17 @@ type RoleModel {
   "首页"
   home_url: String!
   "菜单权限"
-  menu_ids: [MenuId!]
+  menu_ids: [MenuId!]!
   "菜单权限"
-  menu_ids_lbl: [String!]
+  menu_ids_lbl: [String!]!
   "按钮权限"
-  permit_ids: [PermitId!]
+  permit_ids: [PermitId!]!
   "按钮权限"
-  permit_ids_lbl: [String!]
+  permit_ids_lbl: [String!]!
   "数据权限"
-  data_permit_ids: [DataPermitId!]
+  data_permit_ids: [DataPermitId!]!
   "数据权限"
-  data_permit_ids_lbl: [String!]
+  data_permit_ids_lbl: [String!]!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -41,7 +41,7 @@ type RoleModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -49,7 +49,7 @@ type RoleModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
