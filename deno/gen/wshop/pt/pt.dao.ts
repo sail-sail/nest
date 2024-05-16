@@ -366,7 +366,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 产品类别
@@ -515,6 +518,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.pt_type_ids = keys.map((key) => obj[key]);
+    } else {
+      item.pt_type_ids = [ ];
     }
     if (item.pt_type_ids_lbl) {
       const obj = item.pt_type_ids_lbl;
@@ -524,6 +529,8 @@ export async function findAll(
           return a - b ? 1 : -1;
         });
       item.pt_type_ids_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.pt_type_ids_lbl = [ ];
     }
   }
   
@@ -548,7 +555,7 @@ export async function findAll(
         is_new_lbl = dictItem.lbl;
       }
     }
-    model.is_new_lbl = is_new_lbl;
+    model.is_new_lbl = is_new_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -558,7 +565,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -568,7 +575,10 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -581,6 +591,9 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -839,7 +852,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -876,7 +889,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   

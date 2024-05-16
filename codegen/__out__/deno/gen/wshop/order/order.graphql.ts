@@ -45,11 +45,11 @@ type OrderModel {
   "用户"
   usr_id: UsrId!
   "用户"
-  usr_id_lbl: String
+  usr_id_lbl: String!
   "会员卡"
   card_id: CardId!
   "会员卡"
-  card_id_lbl: String
+  card_id_lbl: String!
   "订单金额"
   price: Decimal!
   "订单类别"
@@ -79,7 +79,7 @@ type OrderModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -87,7 +87,7 @@ type OrderModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"

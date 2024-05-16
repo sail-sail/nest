@@ -350,7 +350,10 @@ export async function findAll(
     log(msg);
   }
   
-  if (search?.ids?.length === 0) {
+  if (search?.id === "") {
+    return [ ];
+  }
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 绑定用户
@@ -507,6 +510,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 绑定用户
+    model.usr_id_lbl = model.usr_id_lbl || "";
+    
     // 会员等级
     let grade_lbl = model.grade as string;
     if (!isEmpty(model.grade)) {
@@ -515,7 +521,7 @@ export async function findAll(
         grade_lbl = dictItem.lbl;
       }
     }
-    model.grade_lbl = grade_lbl;
+    model.grade_lbl = grade_lbl || "";
     
     // 默认
     let is_default_card_lbl = model.is_default_card?.toString() || "";
@@ -525,7 +531,7 @@ export async function findAll(
         is_default_card_lbl = dictItem.lbl;
       }
     }
-    model.is_default_card_lbl = is_default_card_lbl;
+    model.is_default_card_lbl = is_default_card_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -535,7 +541,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -545,7 +551,10 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -560,7 +569,10 @@ export async function findAll(
     }
     
     // 组织
-    model.org_id = "";
+    model.org_id_lbl = model.org_id_lbl || "";
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -814,7 +826,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -851,7 +863,7 @@ export async function findById(
     options.debug = false;
   }
   
-  if (id == null) {
+  if (!id) {
     return;
   }
   

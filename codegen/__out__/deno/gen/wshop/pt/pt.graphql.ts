@@ -15,9 +15,9 @@ type PtModel {
   "名称"
   lbl: String!
   "产品类别"
-  pt_type_ids: [PtTypeId!]
+  pt_type_ids: [PtTypeId!]!
   "产品类别"
-  pt_type_ids_lbl: [String!]
+  pt_type_ids_lbl: [String!]!
   "价格"
   price: Decimal!
   "原价"
@@ -51,7 +51,7 @@ type PtModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -59,7 +59,7 @@ type PtModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"

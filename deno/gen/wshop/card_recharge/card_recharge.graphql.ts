@@ -13,11 +13,11 @@ type CardRechargeModel {
   "会员卡"
   card_id: CardId!
   "会员卡"
-  card_id_lbl: String
+  card_id_lbl: String!
   "用户"
   usr_id: UsrId!
   "用户"
-  usr_id_lbl: String
+  usr_id_lbl: String!
   "充值金额"
   amt: Decimal!
   "赠送金额"
@@ -33,7 +33,7 @@ type CardRechargeModel {
   "创建人"
   create_usr_id: UsrId!
   "创建人"
-  create_usr_id_lbl: String
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
@@ -41,7 +41,7 @@ type CardRechargeModel {
   "更新人"
   update_usr_id: UsrId!
   "更新人"
-  update_usr_id_lbl: String
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
