@@ -28,7 +28,7 @@ type FieldPermitModel {
   "名称"
   lbl: String!
   "类型"
-  type: FieldPermitType
+  type: FieldPermitType!
   "类型"
   type_lbl: String!
   "备注"
@@ -121,7 +121,7 @@ input FieldPermitSearch {
   lbl: String
   lbl_like: String
   "类型"
-  type: [String!]
+  type: [FieldPermitType!]
   "备注"
   rem: String
   rem_like: String

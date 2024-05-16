@@ -8,90 +8,59 @@
     custom_select_isShowModelLabel: isShowModelLabel && inited,
   }"
 >
-  <el-tooltip
-    :disabled="true || (selectRef?.dropdownMenuVisible || props.multiple)
-      || (isShowModelLabel && !props.modelLabel || !modelLabels[0])"
+  <ElSelectV2
+    ref="selectRef"
+    :options="options4SelectV2"
+    filterable
+    collapse-tags
+    collapse-tags-tooltip
+    default-first-option
+    :height="props.height"
+    @visible-change="handleVisibleChange"
+    @clear="onClear"
+    un-w="full"
+    v-bind="$attrs"
+    :model-value="modelValueComputed"
+    @update:model-value="modelValueUpdate"
+    :loading="!inited"
+    class="custom_select"
+    :class="{
+      'custom_select_space_normal': true,
+      dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
+    }"
+    @change="onValueChange"
+    :multiple="props.multiple"
+    :clearable="!props.disabled"
+    :disabled="props.disabled"
+    :readonly="props.readonly"
+    :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
+    @keyup.enter.stop
+    @keydown.ctrl.c.stop="copyModelLabel"
   >
     <template
-      #content
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      #header
     >
-      <div
-        un-flex="~ gap-1 wrap"
-        un-items-center
-        un-box-border
-        un-rounded
+      <el-checkbox
+        v-model="isSelectAll"
+        :indeterminate="isIndeterminate"
         un-w="full"
-        un-line-height="normal"
-        un-break-words
-        :class="{
-          custom_select_isShowModelLabel: isShowModelLabel,
-        }"
+        un-p="l-3"
+        un-box-border
       >
-        <span
-          v-if="isShowModelLabel"
-        >
-          {{ props.modelLabel || "" }}
+        <span>
+          ({{ ns("全选") }})
         </span>
-        <span
-          v-else
-        >
-          {{ modelLabels[0] || "" }}
-        </span>
-      </div>
+      </el-checkbox>
     </template>
-    <ElSelectV2
-      ref="selectRef"
-      :options="options4SelectV2"
-      filterable
-      collapse-tags
-      collapse-tags-tooltip
-      default-first-option
-      :height="props.height"
-      @visible-change="handleVisibleChange"
-      @clear="onClear"
-      un-w="full"
-      v-bind="$attrs"
-      :model-value="modelValueComputed"
-      @update:model-value="modelValueUpdate"
-      :loading="!inited"
-      class="custom_select"
-      :class="{
-        'custom_select_space_normal': true,
-        dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
-      }"
-      @change="onValueChange"
-      :multiple="props.multiple"
-      :clearable="!props.disabled"
-      :disabled="props.disabled"
-      :readonly="props.readonly"
-      :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
-      @keyup.enter.stop
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
     >
-      <template
-        v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
-        #header
-      >
-        <el-checkbox
-          v-model="isSelectAll"
-          :indeterminate="isIndeterminate"
-          un-w="full"
-          un-p="l-3"
-          un-box-border
-        >
-          <span>
-            ({{ ns("全选") }})
-          </span>
-        </el-checkbox>
-      </template>
-      <template
-        v-for="(item, key, index) in $slots"
-        :key="index"
-        #[key]
-      >
-        <slot :name="key"></slot>
-      </template>
-    </ElSelectV2>
-  </el-tooltip>
+      <slot :name="key"></slot>
+    </template>
+  </ElSelectV2>
 </div>
 <template
   v-else
@@ -250,6 +219,10 @@ import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
+import {
+  copyText,
+} from "@/utils/common";
+
 const t = getCurrentInstance();
 
 const usrStore = useUsrStore();
@@ -317,6 +290,15 @@ const props = withDefaults(
     readonlyMaxCollapseTags: 1,
   },
 );
+
+function copyModelLabel() {
+  const text = modelLabels.join(",");
+  if (!text) {
+    return;
+  }
+  copyText(text);
+  ElMessage.success(`${ text } 复制成功!`);
+}
 
 let modelValue = $ref(props.modelValue);
 
@@ -526,14 +508,14 @@ function modelValueUpdate(value?: string | string[] | null) {
   }
 }
 
-const modelLabels = $computed(() => {
+const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
-    return "";
+    return [ "" ];
   }
   if (!props.multiple) {
     const model = data.find((item) => props.optionsMap(item).value === modelValue);
     if (!model) {
-      return "";
+      return [ "" ];
     }
     return [ props.optionsMap(model).label || "" ];
   }
