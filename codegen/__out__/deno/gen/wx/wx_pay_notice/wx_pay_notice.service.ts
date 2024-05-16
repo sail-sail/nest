@@ -128,7 +128,7 @@ export async function updateById(
   input: WxPayNoticeInput,
 ): Promise<WxPayNoticeId> {
   
-  const id2: WxPayNoticeId = await wx_pay_noticeDao.updateById(id, input);
+  const id2 = await wx_pay_noticeDao.updateById(id, input);
   return id2;
 }
 

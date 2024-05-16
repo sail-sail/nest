@@ -1,11 +1,5 @@
 
 
-import {
-  WxPayNoticeTradeState,
-  WxPayNoticeCurrency,
-  WxPayNoticePayerCurrency,
-} from "#/types";
-
 import type {
   Query,
   Mutation,
@@ -298,7 +292,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
-            findAllWxPayNotice(search: $search, sort: $sort) {
+            findAllWxPayNotice(search: $search, page: null, sort: $sort) {
               ${ wxPayNoticeQueryField }
             }
             getDict(codes: [
@@ -350,12 +344,12 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
-    trade_state: WxPayNoticeTradeState.Notpay,
+    trade_state: "NOTPAY",
     trade_state_desc: "未支付",
     total: 0,
     payer_total: 0,
-    currency: WxPayNoticeCurrency.Cny,
-    payer_currency: WxPayNoticePayerCurrency.Cny,
+    currency: "CNY",
+    payer_currency: "CNY",
   };
   return defaultInput;
 }

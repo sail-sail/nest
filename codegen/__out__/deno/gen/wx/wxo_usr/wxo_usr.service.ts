@@ -128,7 +128,7 @@ export async function updateById(
   input: WxoUsrInput,
 ): Promise<WxoUsrId> {
   
-  const id2: WxoUsrId = await wxo_usrDao.updateById(id, input);
+  const id2 = await wxo_usrDao.updateById(id, input);
   return id2;
 }
 

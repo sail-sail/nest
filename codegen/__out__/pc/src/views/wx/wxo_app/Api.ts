@@ -519,7 +519,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: WxoAppSearch, $sort: [SortInput!]) {
-            findAllWxoApp(search: $search, sort: $sort) {
+            findAllWxoApp(search: $search, page: null, sort: $sort) {
               ${ wxoAppQueryField }
             }
             findAllDomain {
