@@ -340,9 +340,6 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 任务执行日志
-    model.cron_job_log_id_lbl = model.cron_job_log_id_lbl || "";
-    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
