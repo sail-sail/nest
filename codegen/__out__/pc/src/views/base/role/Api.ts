@@ -491,7 +491,7 @@ export async function findAllDataPermit(
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDataPermit(search: $search, page: $page, sort: $sort) {
           id
-          scope
+          
         }
       }
     `,
@@ -573,7 +573,7 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllDataPermit {
             id
-            scope
+            
           }
         }
       `,
@@ -639,9 +639,6 @@ export function useExportExcel(routePath: string) {
             }
             findAllPermit {
               lbl
-            }
-            findAllDataPermit {
-              scope
             }
             getDict(codes: [
               "is_locked",
