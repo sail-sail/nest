@@ -75,8 +75,13 @@ export async function findOneWxwAppToken(
 export async function findByIdWxwAppToken(
   id: WxwAppTokenId,
 ): Promise<WxwAppTokenModel | undefined> {
-  const { findById } = await import("./wxw_app_token.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wxw_app_token.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 
