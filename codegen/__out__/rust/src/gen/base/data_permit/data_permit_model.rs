@@ -29,7 +29,7 @@ use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
 pub struct DataPermitModel {
   /// 系统字段
   #[graphql(skip)]
@@ -37,18 +37,25 @@ pub struct DataPermitModel {
   /// ID
   pub id: DataPermitId,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: MenuId,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: String,
   /// 范围
+  #[graphql(name = "scope")]
   pub scope: DataPermitScope,
   /// 范围
+  #[graphql(name = "scope_lbl")]
   pub scope_lbl: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: DataPermitType,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -270,7 +277,7 @@ impl std::fmt::Debug for DataPermitSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitInput")]
 pub struct DataPermitInput {
   /// ID
   pub id: Option<DataPermitId>,
@@ -280,18 +287,25 @@ pub struct DataPermitInput {
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id_lbl: Option<String>,
   /// 范围
+  #[graphql(name = "scope")]
   pub scope: Option<DataPermitScope>,
   /// 范围
+  #[graphql(name = "scope_lbl")]
   pub scope_lbl: Option<String>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<DataPermitType>,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

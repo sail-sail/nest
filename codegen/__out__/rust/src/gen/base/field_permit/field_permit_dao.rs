@@ -881,8 +881,8 @@ pub async fn find_by_unique(
     }
     
     let search = FieldPermitSearch {
-      menu_id: search.menu_id,
-      code: search.code,
+      menu_id: search.menu_id.clone(),
+      code: search.code.clone(),
       ..Default::default()
     };
     

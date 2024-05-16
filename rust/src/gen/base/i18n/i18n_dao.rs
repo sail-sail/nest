@@ -875,9 +875,9 @@ pub async fn find_by_unique(
     }
     
     let search = I18nSearch {
-      lang_id: search.lang_id,
-      menu_id: search.menu_id,
-      code: search.code,
+      lang_id: search.lang_id.clone(),
+      menu_id: search.menu_id.clone(),
+      code: search.code.clone(),
       ..Default::default()
     };
     

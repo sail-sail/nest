@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OperationRecordModel")]
 pub struct OperationRecordModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,20 +38,28 @@ pub struct OperationRecordModel {
   /// ID
   pub id: OperationRecordId,
   /// 模块
+  #[graphql(name = "module")]
   pub module: String,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: String,
   /// 方法
+  #[graphql(name = "method")]
   pub method: String,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: String,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 耗时(毫秒)
+  #[graphql(name = "time")]
   pub time: u32,
   /// 操作前数据
+  #[graphql(name = "old_data")]
   pub old_data: Option<String>,
   /// 操作后数据
+  #[graphql(name = "new_data")]
   pub new_data: Option<String>,
   /// 是否已删除
   pub is_deleted: u8,
@@ -345,7 +353,7 @@ impl std::fmt::Debug for OperationRecordSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OperationRecordInput")]
 pub struct OperationRecordInput {
   /// ID
   pub id: Option<OperationRecordId>,
@@ -355,20 +363,28 @@ pub struct OperationRecordInput {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 模块
+  #[graphql(name = "module")]
   pub module: Option<String>,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: Option<String>,
   /// 方法
+  #[graphql(name = "method")]
   pub method: Option<String>,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: Option<String>,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 耗时(毫秒)
+  #[graphql(name = "time")]
   pub time: Option<u32>,
   /// 操作前数据
+  #[graphql(name = "old_data")]
   pub old_data: Option<String>,
   /// 操作后数据
+  #[graphql(name = "new_data")]
   pub new_data: Option<String>,
   /// 创建人
   #[graphql(skip)]

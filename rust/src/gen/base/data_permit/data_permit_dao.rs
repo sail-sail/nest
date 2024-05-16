@@ -894,8 +894,8 @@ pub async fn find_by_unique(
     }
     
     let search = DataPermitSearch {
-      menu_id: search.menu_id,
-      scope: search.scope,
+      menu_id: search.menu_id.clone(),
+      scope: search.scope.clone(),
       ..Default::default()
     };
     

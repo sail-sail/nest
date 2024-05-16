@@ -32,7 +32,7 @@ use crate::gen::base::org::org_model::OrgId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DeptModel")]
 pub struct DeptModel {
   /// 租户ID
   #[graphql(skip)]
@@ -43,26 +43,37 @@ pub struct DeptModel {
   /// ID
   pub id: DeptId,
   /// 父部门
+  #[graphql(name = "parent_id")]
   pub parent_id: DeptId,
   /// 父部门
+  #[graphql(name = "parent_id_lbl")]
   pub parent_id_lbl: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 部门负责人
+  #[graphql(name = "usr_ids")]
   pub usr_ids: Vec<UsrId>,
   /// 部门负责人
+  #[graphql(name = "usr_ids_lbl")]
   pub usr_ids_lbl: Vec<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -382,7 +393,7 @@ impl std::fmt::Debug for DeptSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DeptInput")]
 pub struct DeptInput {
   /// ID
   pub id: Option<DeptId>,
@@ -395,26 +406,37 @@ pub struct DeptInput {
   #[graphql(skip)]
   pub org_id: Option<OrgId>,
   /// 父部门
+  #[graphql(name = "parent_id")]
   pub parent_id: Option<DeptId>,
   /// 父部门
+  #[graphql(name = "parent_id")]
   pub parent_id_lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 部门负责人
+  #[graphql(name = "usr_ids")]
   pub usr_ids: Option<Vec<UsrId>>,
   /// 部门负责人
+  #[graphql(name = "usr_ids_lbl")]
   pub usr_ids_lbl: Option<Vec<String>>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

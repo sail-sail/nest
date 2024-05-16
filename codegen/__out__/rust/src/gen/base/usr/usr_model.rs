@@ -32,7 +32,7 @@ use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::org::org_model::OrgId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "UsrModel")]
 pub struct UsrModel {
   /// 租户ID
   #[graphql(skip)]
@@ -43,40 +43,58 @@ pub struct UsrModel {
   /// ID
   pub id: UsrId,
   /// 头像
+  #[graphql(name = "img")]
   pub img: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: String,
   /// 密码
+  #[graphql(name = "password")]
   pub password: String,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: Vec<RoleId>,
   /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: Vec<String>,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: Vec<DeptId>,
   /// 所属部门
+  #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: Vec<String>,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: Vec<OrgId>,
   /// 所属组织
+  #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: Vec<String>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: OrgId,
   /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -558,7 +576,7 @@ impl std::fmt::Debug for UsrSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "UsrInput")]
 pub struct UsrInput {
   /// ID
   pub id: Option<UsrId>,
@@ -571,40 +589,58 @@ pub struct UsrInput {
   #[graphql(skip)]
   pub is_hidden: Option<u8>,
   /// 头像
+  #[graphql(name = "img")]
   pub img: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: Option<String>,
   /// 密码
+  #[graphql(name = "password")]
   pub password: Option<String>,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: Option<Vec<String>>,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
+  #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: Option<Vec<String>>,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
+  #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: Option<Vec<String>>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: Option<OrgId>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id_lbl: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

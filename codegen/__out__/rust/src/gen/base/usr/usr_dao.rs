@@ -1284,7 +1284,7 @@ pub async fn find_by_unique(
     }
     
     let search = UsrSearch {
-      lbl: search.lbl,
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     
@@ -1305,7 +1305,7 @@ pub async fn find_by_unique(
     }
     
     let search = UsrSearch {
-      username: search.username,
+      username: search.username.clone(),
       ..Default::default()
     };
     

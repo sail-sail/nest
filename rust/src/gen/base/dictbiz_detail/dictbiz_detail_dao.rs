@@ -985,8 +985,8 @@ pub async fn find_by_unique(
     }
     
     let search = DictbizDetailSearch {
-      dictbiz_id: search.dictbiz_id,
-      lbl: search.lbl,
+      dictbiz_id: search.dictbiz_id.clone(),
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     

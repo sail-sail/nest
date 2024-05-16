@@ -927,8 +927,8 @@ pub async fn find_by_unique(
     }
     
     let search = OptionsSearch {
-      lbl: search.lbl,
-      ky: search.ky,
+      lbl: search.lbl.clone(),
+      ky: search.ky.clone(),
       ..Default::default()
     };
     

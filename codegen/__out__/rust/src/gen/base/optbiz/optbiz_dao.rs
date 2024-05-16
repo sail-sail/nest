@@ -949,8 +949,8 @@ pub async fn find_by_unique(
     }
     
     let search = OptbizSearch {
-      lbl: search.lbl,
-      ky: search.ky,
+      lbl: search.lbl.clone(),
+      ky: search.ky.clone(),
       ..Default::default()
     };
     

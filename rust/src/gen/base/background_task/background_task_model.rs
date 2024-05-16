@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "BackgroundTaskModel")]
 pub struct BackgroundTaskModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,28 +38,40 @@ pub struct BackgroundTaskModel {
   /// ID
   pub id: BackgroundTaskId,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 状态
+  #[graphql(name = "state")]
   pub state: BackgroundTaskState,
   /// 状态
+  #[graphql(name = "state_lbl")]
   pub state_lbl: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: BackgroundTaskType,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 执行结果
+  #[graphql(name = "result")]
   pub result: String,
   /// 错误信息
+  #[graphql(name = "err_msg")]
   pub err_msg: String,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
+  #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: String,
   /// 结束时间
+  #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
+  #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -349,7 +361,7 @@ impl std::fmt::Debug for BackgroundTaskSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "BackgroundTaskInput")]
 pub struct BackgroundTaskInput {
   /// ID
   pub id: Option<BackgroundTaskId>,
@@ -359,28 +371,40 @@ pub struct BackgroundTaskInput {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 状态
+  #[graphql(name = "state")]
   pub state: Option<BackgroundTaskState>,
   /// 状态
+  #[graphql(name = "state_lbl")]
   pub state_lbl: Option<String>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<BackgroundTaskType>,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 执行结果
+  #[graphql(name = "result")]
   pub result: Option<String>,
   /// 错误信息
+  #[graphql(name = "err_msg")]
   pub err_msg: Option<String>,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
+  #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: Option<String>,
   /// 结束时间
+  #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
+  #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]

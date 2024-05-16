@@ -998,7 +998,7 @@ pub async fn find_by_unique(
     }
     
     let search = DictSearch {
-      code: search.code,
+      code: search.code.clone(),
       ..Default::default()
     };
     
@@ -1019,7 +1019,7 @@ pub async fn find_by_unique(
     }
     
     let search = DictSearch {
-      lbl: search.lbl,
+      lbl: search.lbl.clone(),
       ..Default::default()
     };
     
