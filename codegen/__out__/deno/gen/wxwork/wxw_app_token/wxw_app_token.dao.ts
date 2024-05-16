@@ -272,7 +272,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 企微应用
@@ -373,6 +373,9 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 企微应用
+    model.wxw_app_id_lbl = model.wxw_app_id_lbl || "";
     
     // 令牌创建时间
     if (model.token_time) {
@@ -609,10 +612,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -648,10 +648,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -705,7 +714,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -815,7 +824,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -1044,15 +1055,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      wxwork_wxw_app_token
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update wxwork_wxw_app_token set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1298,7 +1301,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as WxwAppTokenInput;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {

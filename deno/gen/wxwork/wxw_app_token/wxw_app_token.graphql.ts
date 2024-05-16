@@ -13,7 +13,7 @@ type WxwAppTokenModel {
   "企微应用"
   wxw_app_id: WxwAppId!
   "企微应用"
-  wxw_app_id_lbl: String
+  wxw_app_id_lbl: String!
   "类型corp和contact"
   type: String!
   "令牌"

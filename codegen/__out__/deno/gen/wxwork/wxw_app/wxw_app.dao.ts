@@ -297,7 +297,7 @@ export async function findAll(
   if (search?.id === "") {
     return [ ];
   }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
   // 可信域名
@@ -434,6 +434,9 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 可信域名
+    model.domain_id_lbl = model.domain_id_lbl || "";
     // 应用密钥
     model.corpsecret = await decrypt(model.corpsecret);
     // 通讯录密钥
@@ -447,7 +450,7 @@ export async function findAll(
         is_locked_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl;
+    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -457,7 +460,7 @@ export async function findAll(
         is_enabled_lbl = dictItem.lbl;
       }
     }
-    model.is_enabled_lbl = is_enabled_lbl;
+    model.is_enabled_lbl = is_enabled_lbl || "";
   }
   
   return result;
@@ -703,10 +706,7 @@ export async function findOne(
     options.debug = false;
   }
   
-  if (search?.id === "") {
-    return;
-  }
-  if (search?.ids?.length === 0) {
+  if (search && search.ids && search.ids.length === 0) {
     return;
   }
   const page: PageInput = {
@@ -742,10 +742,19 @@ export async function findById(
     options = options || { };
     options.debug = false;
   }
-  if (isEmpty(id as unknown as string)) {
+  
+  if (!id) {
     return;
   }
-  const model = await findOne({ id }, undefined, options);
+  
+  const model = await findOne(
+    {
+      id,
+    },
+    undefined,
+    options,
+  );
+  
   return model;
 }
 
@@ -799,7 +808,7 @@ export async function existById(
     log(msg);
   }
   
-  if (isEmpty(id as unknown as string)) {
+  if (id == null) {
     return false;
   }
   
@@ -946,7 +955,9 @@ export async function create(
     throw new Error(`input is required in dao: ${ table }`);
   }
   
-  const [ id ] = await _creates([ input ], options);
+  const [
+    id,
+  ] = await _creates([ input ], options);
   
   return id;
 }
@@ -1200,15 +1211,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    update
-      wxwork_wxw_app
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
+  const sql = `update wxwork_wxw_app set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1617,7 +1620,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as WxwAppInput;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
@@ -1702,18 +1705,14 @@ export async function findLastOrderBy(
     log(msg);
   }
   
-  let sql = `
-    select
-      t.order_by order_by
-    from
-      wxwork_wxw_app t`;
+  let sql = `select t.order_by order_by from wxwork_wxw_app t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
-  whereQuery.push(`t.is_deleted = 0`);
+  whereQuery.push(` t.is_deleted=0`);
   {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
-    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
   }
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");

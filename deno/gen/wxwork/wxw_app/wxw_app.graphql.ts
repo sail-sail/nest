@@ -19,7 +19,7 @@ type WxwAppModel {
   "可信域名"
   domain_id: DomainId!
   "可信域名"
-  domain_id_lbl: String
+  domain_id_lbl: String!
   "应用密钥"
   corpsecret: String!
   "通讯录密钥"
