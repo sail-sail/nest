@@ -1195,7 +1195,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.<#=column_name#>.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }<#
     }
