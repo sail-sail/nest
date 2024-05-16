@@ -509,7 +509,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   // 更新人
@@ -526,7 +525,6 @@ pub async fn find_all(
       if len > ids_limit {
         return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
       }
-      return Ok(vec![]);
     }
   }
   
