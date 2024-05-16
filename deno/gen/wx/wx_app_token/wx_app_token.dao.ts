@@ -67,6 +67,7 @@ import {
 
 const route_path = "/wx/wx_app_token";
 
+// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: WxAppTokenSearch,
@@ -1164,7 +1165,7 @@ export async function revertByIds(
       const input = {
         ...old_model,
         id: undefined,
-      };
+      } as WxAppTokenInput;
       let models = await findByUnique(input);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {

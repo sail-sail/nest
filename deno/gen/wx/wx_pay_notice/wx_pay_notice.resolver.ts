@@ -74,8 +74,13 @@ export async function findOneWxPayNotice(
 export async function findByIdWxPayNotice(
   id: WxPayNoticeId,
 ): Promise<WxPayNoticeModel | undefined> {
-  const { findById } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    findById,
+  } = await import("./wx_pay_notice.service.ts");
+  
   const res = await findById(id);
+  
   return res;
 }
 

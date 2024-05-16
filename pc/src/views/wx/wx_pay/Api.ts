@@ -478,7 +478,7 @@ export function useExportExcel(routePath: string) {
       const data = await query({
         query: `
           query($search: WxPaySearch, $sort: [SortInput!]) {
-            findAllWxPay(search: $search, sort: $sort) {
+            findAllWxPay(search: $search, page: null, sort: $sort) {
               ${ wxPayQueryField }
             }
             getDict(codes: [
