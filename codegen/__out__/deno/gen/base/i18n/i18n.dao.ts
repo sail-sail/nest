@@ -977,15 +977,17 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
-      } else {
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lang_id != null) {
         sql += `,${ args.push(input.lang_id) }`;
@@ -1111,9 +1113,7 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update base_i18n set
-  `;
+  let sql = `update base_i18n set `;
   let updateFldNum = 0;
   if (input.lang_id != null) {
     if (input.lang_id != oldModel.lang_id) {
@@ -1129,31 +1129,31 @@ export async function updateById(
   }
   if (input.code != null) {
     if (input.code != oldModel.code) {
-      sql += `code = ${ args.push(input.code) },`;
+      sql += `code=${ args.push(input.code) },`;
       updateFldNum++;
     }
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
