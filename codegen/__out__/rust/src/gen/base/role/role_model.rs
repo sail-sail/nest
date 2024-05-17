@@ -292,6 +292,8 @@ pub struct RoleFieldComment {
   pub permit_ids_lbl: String,
   /// 数据权限
   pub data_permit_ids: String,
+  /// 数据权限
+  pub data_permit_ids_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定

@@ -1504,18 +1504,14 @@ pub struct <#=tableUP#>FieldComment {<#
   #[graphql(skip)]<#
   }
   #>
-  pub <#=column_name_rust#>: String,<#
-    if (hasModelLabel) {
-  #>
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
   }
   #>
-  pub <#=modelLabel#>: String,<#
-    }
-  #><#
+  pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#><#
