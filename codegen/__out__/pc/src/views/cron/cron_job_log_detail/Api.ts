@@ -27,7 +27,6 @@ export function intoInput(
     id: model?.id,
     // 任务执行日志
     cron_job_log_id: model?.cron_job_log_id,
-    cron_job_log_id_lbl: model?.cron_job_log_id_lbl,
     // 日志明细
     lbl: model?.lbl,
   };

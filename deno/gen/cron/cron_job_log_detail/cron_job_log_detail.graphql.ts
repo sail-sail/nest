@@ -40,8 +40,6 @@ input CronJobLogDetailInput {
   id: CronJobLogDetailId
   "任务执行日志"
   cron_job_log_id: CronJobLogId
-  "任务执行日志"
-  cron_job_log_id_lbl: String
   "日志明细"
   lbl: String
 }
