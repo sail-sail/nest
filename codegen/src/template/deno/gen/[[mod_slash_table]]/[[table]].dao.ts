@@ -1089,7 +1089,7 @@ export async function findAll(
         if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
-        if (!modelLabel) {
+        if (foreignKey.lbl && !modelLabel) {
       #>
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
         }
