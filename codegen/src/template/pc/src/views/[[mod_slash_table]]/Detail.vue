@@ -4689,19 +4689,48 @@ watch(
       if (isPassword) continue;
       if (column.readonly) continue;
       if (column.noEdit) continue;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
     #><#
-      if ((foreignKey && !foreignKey.multiple) || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
+      if ((foreignKey && !foreignKey.multiple) || column.dict || column.dictbiz) {
+    #><#
+      if (hasModelLabel) {
     #>
     if (!dialogModel.<#=column_name#>) {
-      dialogModel.<#=column_name#>_lbl = "";
+      dialogModel.<#=modelLabel#> = "";
     }<#
+      }
+    #><#
+      } else if (data_type === "datetime" || data_type === "date") {
+    #><#
       } else if (foreignKey && foreignKey.multiple) {
+    #><#
+      if (hasModelLabel) {
     #>
     if (!dialogModel.<#=column_name#> || dialogModel.<#=column_name#>.length === 0) {
       dialogModel.<#=column_name#>_lbl = [ ];
     }<#
+      }
+    #><#
       }
     #><#
     }
