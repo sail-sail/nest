@@ -43,7 +43,6 @@ export default defineConfig({
           mod: "base",
           table: "data_permit",
           column: "id",
-          lbl: "scope",
           multiple: true,
           notSetIdByLbl: true,
         },
