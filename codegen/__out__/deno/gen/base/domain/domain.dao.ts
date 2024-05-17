@@ -1020,15 +1020,17 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
-      } else {
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.protocol != null) {
         sql += `,${ args.push(input.protocol) }`;
@@ -1164,61 +1166,59 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update base_domain set
-  `;
+  let sql = `update base_domain set `;
   let updateFldNum = 0;
   if (input.protocol != null) {
     if (input.protocol != oldModel.protocol) {
-      sql += `protocol = ${ args.push(input.protocol) },`;
+      sql += `protocol=${ args.push(input.protocol) },`;
       updateFldNum++;
     }
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(input.is_locked) },`;
+      sql += `is_locked=${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
   if (input.is_default != null) {
     if (input.is_default != oldModel.is_default) {
-      sql += `is_default = ${ args.push(input.is_default) },`;
+      sql += `is_default=${ args.push(input.is_default) },`;
       updateFldNum++;
     }
   }
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
+      sql += `is_enabled=${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(input.order_by) },`;
+      sql += `order_by=${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
