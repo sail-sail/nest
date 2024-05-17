@@ -1308,7 +1308,7 @@ pub async fn find_all(
         if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
-        if (!column.modelLabel) {
+        if (!column.modelLabel && modelLabel) {
       #>
       ,max(<#=modelLabel#>) <#=modelLabel#><#
         }
@@ -1832,18 +1832,20 @@ pub async fn get_field_comments(
         hasModelLabel = true;
       }
     #><#
-      if (foreignKey || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
+      if (foreignKey || column.dict || column.dictbiz) {
     #>
     "<#=column_comment#>".into(),<#
-      if (hasModelLabel) {
-    #><#
       if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
     #>
     "<#=column_comment#>".into(),<#
       }
     #><#
+      } else if (data_type === "datetime" || data_type === "date") {
+    #>
+    "<#=column_comment#>".into(),<#
+      if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+    #>
+    "<#=column_comment#>".into(),<#
       }
     #><#
       } else {
@@ -1909,21 +1911,25 @@ pub async fn get_field_comments(
         hasModelLabel = true;
       }
     #><#
-      if (foreignKey || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
+      if (foreignKey || column.dict || column.dictbiz) {
         num++;
     #>
     <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
-      if (hasModelLabel) {
-    #><#
         if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
           num++;
     #>
-    <#=modelLabel#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=column_name#>_lbl: vec[<#=String(num)#>].to_owned(),<#
         }
     #><#
-      }
+      } else if (data_type === "datetime" || data_type === "date") {
+        num++;
+    #>
+    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+          num++;
+    #>
+    <#=column_name#>_lbl: vec[<#=String(num)#>].to_owned(),<#
+        }
     #><#
       } else {
         num++;
