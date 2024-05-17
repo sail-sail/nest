@@ -255,7 +255,6 @@ async function getFromQuery(
       and base_data_permit.is_deleted=${ args.push(is_deleted) }
     left join(select
     json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
-    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
     base_role.id role_id
     from base_role_data_permit
     inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
@@ -437,7 +436,6 @@ export async function findAll(
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
-      ,max(data_permit_ids_lbl) data_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -563,17 +561,6 @@ export async function findAll(
       item.data_permit_ids = keys.map((key) => obj[key]);
     } else {
       item.data_permit_ids = [ ];
-    }
-    if (item.data_permit_ids_lbl) {
-      const obj = item.data_permit_ids_lbl;
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.data_permit_ids_lbl = keys.map((key) => obj[key]);
-    } else {
-      item.data_permit_ids_lbl = [ ];
     }
   }
   

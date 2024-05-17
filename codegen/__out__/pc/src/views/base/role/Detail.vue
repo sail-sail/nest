@@ -673,9 +673,6 @@ watch(
     if (!dialogModel.permit_ids || dialogModel.permit_ids.length === 0) {
       dialogModel.permit_ids_lbl = [ ];
     }
-    if (!dialogModel.data_permit_ids || dialogModel.data_permit_ids.length === 0) {
-      dialogModel.data_permit_ids_lbl = [ ];
-    }
   },
 );
 

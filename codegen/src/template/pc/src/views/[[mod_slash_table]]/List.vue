@@ -1285,7 +1285,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row[column.sortBy]?.length || 0 }}
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
@@ -1296,7 +1296,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row[column.sortBy]?.length || 0 }}
                 </el-link>
               </template><#
               } else if (foreignKey.isLinkForeignTabs) {
