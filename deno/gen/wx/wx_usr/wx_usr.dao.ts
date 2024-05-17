@@ -1104,9 +1104,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1114,10 +1112,12 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.org_id != null) {
-        sql += `,${ args.push(input.org_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.org_id == null) {
         const authModel = await getAuthModel();
         const org_id = authModel?.org_id;
         if (org_id != null) {
@@ -1125,16 +1125,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.org_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.org_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1391,13 +1397,11 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wx_wx_usr set
-  `;
+  let sql = `update wx_wx_usr set `;
   let updateFldNum = 0;
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1409,79 +1413,79 @@ export async function updateById(
   }
   if (input.nick_name != null) {
     if (input.nick_name != oldModel.nick_name) {
-      sql += `nick_name = ${ args.push(input.nick_name) },`;
+      sql += `nick_name=${ args.push(input.nick_name) },`;
       updateFldNum++;
     }
   }
   if (input.avatar_url != null) {
     if (input.avatar_url != oldModel.avatar_url) {
-      sql += `avatar_url = ${ args.push(input.avatar_url) },`;
+      sql += `avatar_url=${ args.push(input.avatar_url) },`;
       updateFldNum++;
     }
   }
   if (input.mobile != null) {
     if (input.mobile != oldModel.mobile) {
-      sql += `mobile = ${ args.push(input.mobile) },`;
+      sql += `mobile=${ args.push(input.mobile) },`;
       updateFldNum++;
     }
   }
   if (input.openid != null) {
     if (input.openid != oldModel.openid) {
-      sql += `openid = ${ args.push(input.openid) },`;
+      sql += `openid=${ args.push(input.openid) },`;
       updateFldNum++;
     }
   }
   if (input.unionid != null) {
     if (input.unionid != oldModel.unionid) {
-      sql += `unionid = ${ args.push(input.unionid) },`;
+      sql += `unionid=${ args.push(input.unionid) },`;
       updateFldNum++;
     }
   }
   if (input.gender != null) {
     if (input.gender != oldModel.gender) {
-      sql += `gender = ${ args.push(input.gender) },`;
+      sql += `gender=${ args.push(input.gender) },`;
       updateFldNum++;
     }
   }
   if (input.city != null) {
     if (input.city != oldModel.city) {
-      sql += `city = ${ args.push(input.city) },`;
+      sql += `city=${ args.push(input.city) },`;
       updateFldNum++;
     }
   }
   if (input.province != null) {
     if (input.province != oldModel.province) {
-      sql += `province = ${ args.push(input.province) },`;
+      sql += `province=${ args.push(input.province) },`;
       updateFldNum++;
     }
   }
   if (input.country != null) {
     if (input.country != oldModel.country) {
-      sql += `country = ${ args.push(input.country) },`;
+      sql += `country=${ args.push(input.country) },`;
       updateFldNum++;
     }
   }
   if (input.language != null) {
     if (input.language != oldModel.language) {
-      sql += `language = ${ args.push(input.language) },`;
+      sql += `language=${ args.push(input.language) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;

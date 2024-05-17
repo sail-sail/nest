@@ -1095,9 +1095,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1105,16 +1103,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1326,91 +1330,89 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wx_wx_pay set
-  `;
+  let sql = `update wx_wx_pay set `;
   let updateFldNum = 0;
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.appid != null) {
     if (input.appid != oldModel.appid) {
-      sql += `appid = ${ args.push(input.appid) },`;
+      sql += `appid=${ args.push(input.appid) },`;
       updateFldNum++;
     }
   }
   if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
-      sql += `mchid = ${ args.push(input.mchid) },`;
+      sql += `mchid=${ args.push(input.mchid) },`;
       updateFldNum++;
     }
   }
   if (input.public_key != null) {
     if (input.public_key != oldModel.public_key) {
-      sql += `public_key = ${ args.push(input.public_key) },`;
+      sql += `public_key=${ args.push(input.public_key) },`;
       updateFldNum++;
     }
   }
   if (input.private_key != null) {
     if (input.private_key != oldModel.private_key) {
-      sql += `private_key = ${ args.push(input.private_key) },`;
+      sql += `private_key=${ args.push(input.private_key) },`;
       updateFldNum++;
     }
   }
   if (input.v3_key != null) {
     if (input.v3_key != oldModel.v3_key) {
-      sql += `v3_key = ${ args.push(input.v3_key) },`;
+      sql += `v3_key=${ args.push(input.v3_key) },`;
       updateFldNum++;
     }
   }
   if (input.payer_client_ip != null) {
     if (input.payer_client_ip != oldModel.payer_client_ip) {
-      sql += `payer_client_ip = ${ args.push(input.payer_client_ip) },`;
+      sql += `payer_client_ip=${ args.push(input.payer_client_ip) },`;
       updateFldNum++;
     }
   }
   if (input.notify_url != null) {
     if (input.notify_url != oldModel.notify_url) {
-      sql += `notify_url = ${ args.push(input.notify_url) },`;
+      sql += `notify_url=${ args.push(input.notify_url) },`;
       updateFldNum++;
     }
   }
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(input.is_locked) },`;
+      sql += `is_locked=${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
+      sql += `is_enabled=${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(input.order_by) },`;
+      sql += `order_by=${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
