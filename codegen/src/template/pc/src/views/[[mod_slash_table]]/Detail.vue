@@ -4678,6 +4678,7 @@ watch(
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
       if (column_name === "org_id") continue;
+      const is_nullable = column.IS_NULLABLE === "YES";
       const column_type = column.COLUMN_TYPE;
       const data_type = column.DATA_TYPE;
       const column_comment = column.COLUMN_COMMENT;
@@ -4720,7 +4721,12 @@ watch(
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     if (!dialogModel.<#=column_name#>) {
-      dialogModel.<#=modelLabel#> = "";
+      dialogModel.<#=modelLabel#> = "";<#
+        if (is_nullable) {
+      #>
+      dialogModel.<#=column_name#>_save_null = 1;<#
+        }
+      #>
     }<#
       } else if (foreignKey && foreignKey.multiple) {
     #><#

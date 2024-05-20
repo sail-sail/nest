@@ -29,7 +29,7 @@ declare global {
 
   interface DataPermitInput extends DataPermitInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
