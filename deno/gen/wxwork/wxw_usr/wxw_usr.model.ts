@@ -84,23 +84,23 @@ declare global {
 
   interface WxwUsrInput extends WxwUsrInputType {
     /** 手机号 */
-    mobile?: string;
+    mobile?: string | null;
     /** 性别 */
-    gender?: string;
+    gender?: string | null;
     /** 邮箱 */
-    email?: string;
+    email?: string | null;
     /** 企业邮箱 */
-    biz_email?: string;
+    biz_email?: string | null;
     /** 直属上级 */
-    direct_leader?: string;
+    direct_leader?: string | null;
     /** 职位 */
-    position?: string;
+    position?: string | null;
     /** 头像 */
-    avatar?: string;
+    avatar?: string | null;
     /** 头像缩略图 */
-    thumb_avatar?: string;
+    thumb_avatar?: string | null;
     /** 个人二维码 */
-    qr_code?: string;
+    qr_code?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

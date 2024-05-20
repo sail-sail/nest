@@ -47,9 +47,9 @@ declare global {
 
   interface WxwMsgInput extends WxwMsgInputType {
     /** 链接 */
-    url?: string;
+    url?: string | null;
     /** 消息ID */
-    msgid?: string;
+    msgid?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
