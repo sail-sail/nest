@@ -172,6 +172,8 @@ input WxPayNoticeInput {
   success_time: NaiveDateTime
   "支付完成时间"
   success_time_lbl: String
+  "支付完成时间"
+  success_time_save_null: Int
   "总金额"
   total: Int
   "用户支付金额"

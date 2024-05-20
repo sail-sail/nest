@@ -156,6 +156,8 @@ input PayTransactionsJsapiInput {
   success_time: NaiveDateTime
   "支付完成时间"
   success_time_lbl: String
+  "支付完成时间"
+  success_time_save_null: Int
   "交易限制时间"
   time_expire: String
   "附加数据"

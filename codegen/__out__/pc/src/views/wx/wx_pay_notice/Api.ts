@@ -50,6 +50,7 @@ export function intoInput(
     // 支付完成时间
     success_time: model?.success_time,
     success_time_lbl: model?.success_time_lbl,
+    success_time_save_null: model?.success_time_save_null,
     // 总金额
     total: model?.total,
     // 用户支付金额

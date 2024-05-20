@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   query,
@@ -1330,7 +1331,7 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.success_time != null) {
+      if (input.success_time != null || input.success_time_save_null) {
         sql += `,${ args.push(input.success_time) }`;
       } else {
         sql += ",default";
@@ -1605,7 +1606,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.success_time != null) {
+  if (input.success_time != null || input.success_time_save_null) {
     if (input.success_time != oldModel.success_time) {
       sql += `success_time=${ args.push(input.success_time) },`;
       updateFldNum++;
