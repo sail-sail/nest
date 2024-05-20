@@ -444,6 +444,7 @@ export function intoInput(
       ) {
         continue;
       }
+      const is_nullable = column.IS_NULLABLE === "YES";
       const column_type = column.COLUMN_TYPE;
       const data_type = column.DATA_TYPE;
       const column_comment = column.COLUMN_COMMENT;
@@ -470,8 +471,7 @@ export function intoInput(
         hasModelLabel = true;
       }
     #><#
-      if (foreignKey || column.dict || column.dictbiz
-      ) {
+      if (foreignKey || column.dict || column.dictbiz) {
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,<#
@@ -485,6 +485,11 @@ export function intoInput(
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,
     <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
+      if (is_nullable) {
+    #>
+    <#=column_name#>_save_null: model?.<#=column_name#>_save_null,<#
+      }
+    #><#
       } else {
     #>
     // <#=column_comment#>

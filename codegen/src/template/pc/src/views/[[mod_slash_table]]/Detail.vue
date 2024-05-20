@@ -4678,12 +4678,10 @@ watch(
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
       if (column_name === "org_id") continue;
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const is_nullable = column.IS_NULLABLE === "YES";
+      const column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
       const isPassword = column.isPassword;
       if (isPassword) continue;
@@ -4721,7 +4719,15 @@ watch(
       }
     #><#
       } else if (data_type === "datetime" || data_type === "date") {
-    #><#
+    #>
+    if (!dialogModel.<#=column_name#>) {
+      dialogModel.<#=modelLabel#> = "";<#
+        if (is_nullable) {
+      #>
+      dialogModel.<#=column_name#>_save_null = 1;<#
+        }
+      #>
+    }<#
       } else if (foreignKey && foreignKey.multiple) {
     #><#
       if (hasModelLabel) {
