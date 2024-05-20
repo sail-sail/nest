@@ -448,10 +448,39 @@ export function intoInput(
       const data_type = column.DATA_TYPE;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
     #><#
       if (foreignKey || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
       ) {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#>,<#
+      if (hasModelLabel) {
+    #>
+    <#=modelLabel#>: model?.<#=modelLabel#>,<#
+      }
+    #><#
+      } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,

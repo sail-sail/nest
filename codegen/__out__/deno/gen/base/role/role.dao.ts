@@ -255,7 +255,6 @@ async function getFromQuery(
       and base_data_permit.is_deleted=${ args.push(is_deleted) }
     left join(select
     json_objectagg(base_role_data_permit.order_by,base_data_permit.id) data_permit_ids,
-    json_objectagg(base_role_data_permit.order_by,base_data_permit.scope) data_permit_ids_lbl,
     base_role.id role_id
     from base_role_data_permit
     inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
@@ -437,7 +436,6 @@ export async function findAll(
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
-      ,max(data_permit_ids_lbl) data_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -563,17 +561,6 @@ export async function findAll(
       item.data_permit_ids = keys.map((key) => obj[key]);
     } else {
       item.data_permit_ids = [ ];
-    }
-    if (item.data_permit_ids_lbl) {
-      const obj = item.data_permit_ids_lbl;
-      const keys = Object.keys(obj)
-        .map((key) => Number(key))
-        .sort((a, b) => {
-          return a - b ? 1 : -1;
-        });
-      item.data_permit_ids_lbl = keys.map((key) => obj[key]);
-    } else {
-      item.data_permit_ids_lbl = [ ];
     }
   }
   
@@ -1254,9 +1241,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1264,16 +1249,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1500,43 +1491,41 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update base_role set
-  `;
+  let sql = `update base_role set `;
   let updateFldNum = 0;
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.home_url != null) {
     if (input.home_url != oldModel.home_url) {
-      sql += `home_url = ${ args.push(input.home_url) },`;
+      sql += `home_url=${ args.push(input.home_url) },`;
       updateFldNum++;
     }
   }
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(input.is_locked) },`;
+      sql += `is_locked=${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
+      sql += `is_enabled=${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(input.order_by) },`;
+      sql += `order_by=${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1593,13 +1582,13 @@ export async function updateById(
   );
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
