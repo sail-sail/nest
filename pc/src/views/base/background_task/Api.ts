@@ -45,9 +45,11 @@ export function intoInput(
     // 开始时间
     begin_time: model?.begin_time,
     begin_time_lbl: model?.begin_time_lbl,
+    begin_time_save_null: model?.begin_time_save_null,
     // 结束时间
     end_time: model?.end_time,
     end_time_lbl: model?.end_time_lbl,
+    end_time_save_null: model?.end_time_save_null,
     // 备注
     rem: model?.rem,
   };
