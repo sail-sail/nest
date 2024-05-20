@@ -453,6 +453,7 @@ input <#=inputName#> {<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     if (column_name === "version") continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -559,6 +560,12 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
+    if (is_nullable) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_save_null: Int<#
+    }
+  #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [
