@@ -46,7 +46,7 @@ lazy_static! {
     .unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
   static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
-  pub static ref IS_DEBUG: bool = init_debug();
+  static ref IS_DEBUG: bool = init_debug();
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
 
@@ -157,7 +157,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
       "{req_id} Not login! - validate_auth_model is none",
       req_id = ctx.req_id,
     );
-    Err(anyhow::anyhow!("Not login!"))
+    Err(anyhow!("Not login!"))
   })
 }
 
@@ -1714,7 +1714,10 @@ pub fn get_page_query(page: Option<PageInput>) -> String {
     let pg_size = page.pg_size;
     if let Some(pg_size) = pg_size {
       let pg_offset = page.pg_offset.unwrap_or(0);
-      page_query = format!(" limit {}, {} ", pg_offset, pg_size);
+      page_query.push_str(" limit ");
+      page_query.push_str(&pg_offset.to_string());
+      page_query.push(',');
+      page_query.push_str(&pg_size.to_string());
     }
   }
   page_query
@@ -1728,7 +1731,7 @@ pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
   if sort.is_none() {
-    return "".to_owned();
+    return String::new();
   }
   let sort = sort.unwrap().into_iter()
     .filter(|item| 
@@ -1768,6 +1771,17 @@ pub fn get_short_uuid() -> SmolStr {
   // 切割字符串22位
   let uuid = utf8_slice::from(&uuid, 22);
   uuid.into()
+}
+
+#[must_use]
+pub fn get_is_debug(
+  options: Option<&Options>,
+) -> bool {
+  let mut is_debug: bool = *IS_DEBUG;
+  if let Some(options) = options {
+    is_debug = options.get_is_debug();
+  }
+  is_debug
 }
 
 #[cfg(test)]

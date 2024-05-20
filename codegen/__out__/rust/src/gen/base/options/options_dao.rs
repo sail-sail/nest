@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 use anyhow::{Result,anyhow};
+#[allow(unused_imports)]
 use tracing::{info, error};
 #[allow(unused_imports)]
 use crate::common::util::string::*;
@@ -29,7 +30,7 @@ use crate::common::context::{
   get_order_by_query,
   get_page_query,
   del_caches,
-  IS_DEBUG,
+  get_is_debug,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -587,20 +588,7 @@ pub async fn find_count(
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  let sql = format!(r#"
-    select
-      count(1) total
-    from
-      (
-        select
-          1
-        from
-          {from_query}
-        where
-          {where_query}
-        group by t.id
-      ) t
-  "#);
+  let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
   let args = args.into();
   
@@ -800,6 +788,7 @@ pub async fn find_by_id(
 }
 
 /// 根据搜索条件判断系统选项是否存在
+#[allow(dead_code)]
 pub async fn exists(
   search: Option<OptionsSearch>,
   options: Option<Options>,
@@ -837,6 +826,7 @@ pub async fn exists(
 }
 
 /// 根据 id 判断系统选项是否存在
+#[allow(dead_code)]
 pub async fn exists_by_id(
   id: OptionsId,
   options: Option<Options>,
@@ -1081,16 +1071,6 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-pub fn get_is_debug(
-  options: Option<&Options>,
-) -> bool {
-  let mut is_debug: bool = *IS_DEBUG;
-  if let Some(options) = &options {
-    is_debug = options.get_is_debug();
-  }
-  is_debug
-}
-
 /// 批量创建系统选项
 pub async fn creates(
   inputs: Vec<OptionsInput>,
@@ -1188,9 +1168,7 @@ async fn _creates(
   let mut args = QueryArgs::new();
   let mut sql_fields = String::with_capacity(80 * 14 + 20);
   
-  sql_fields += "id";
-  sql_fields += ",create_time";
-  sql_fields += ",create_usr_id";
+  sql_fields += "id,create_time,create_usr_id";
   // 名称
   sql_fields += ",lbl";
   // 键
@@ -1222,22 +1200,22 @@ async fn _creates(
     .enumerate()
   {
     
-    let mut id: OptionsId = get_short_uuid().into();
-    loop {
-      let is_exist = exists_by_id(
-        id.clone(),
-        None,
-      ).await?;
-      if !is_exist {
-        break;
-      }
-      error!(
-        "{req_id} ID_COLLIDE: {table} {id}",
-        req_id = get_req_id(),
-      );
-      id = get_short_uuid().into();
-    }
-    let id = id;
+    let id: OptionsId = get_short_uuid().into();
+    // loop {
+    //   let is_exist = exists_by_id(
+    //     id.clone(),
+    //     None,
+    //   ).await?;
+    //   if !is_exist {
+    //     break;
+    //   }
+    //   error!(
+    //     "{req_id} ID_COLLIDE: {table} {id}",
+    //     req_id = get_req_id(),
+    //   );
+    //   id = get_short_uuid().into();
+    // }
+    // let id = id;
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -1253,10 +1231,13 @@ async fn _creates(
       args.push(get_now().into());
     }
     
-    if input.create_usr_id.is_some() && input.create_usr_id.as_ref().unwrap() != "-" {
-      let create_usr_id = input.create_usr_id.clone().unwrap();
-      sql_values += ",?";
-      args.push(create_usr_id.into());
+    if let Some(create_usr_id) = input.create_usr_id {
+      if create_usr_id.as_str() != "-" {
+        sql_values += ",?";
+        args.push(create_usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
     } else {
       let usr_id = get_auth_id();
       if let Some(usr_id) = usr_id {
@@ -1594,10 +1575,11 @@ pub async fn update_by_id(
       }
     }
     
-    if input.update_usr_id.is_some() && input.update_usr_id.as_ref().unwrap() != "-" {
-      let update_usr_id = input.update_usr_id.clone().unwrap();
-      sql_fields += "update_usr_id=?,";
-      args.push(update_usr_id.into());
+    if let Some(update_usr_id) = input.update_usr_id {
+      if update_usr_id.as_str() != "-" {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id.into());
+      }
     } else {
       let usr_id = get_auth_id();
       if let Some(usr_id) = usr_id {
@@ -2116,11 +2098,7 @@ pub async fn find_last_order_by(
   
   sql_where += "t.is_deleted = 0";
   
-  let sql = format!(
-    "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
-    table,
-    sql_where,
-  );
+  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
   
   let args = args.into();
   
