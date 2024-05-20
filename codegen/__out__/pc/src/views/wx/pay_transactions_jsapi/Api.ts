@@ -43,6 +43,7 @@ export function intoInput(
     // 支付完成时间
     success_time: model?.success_time,
     success_time_lbl: model?.success_time_lbl,
+    success_time_save_null: model?.success_time_save_null,
     // 交易限制时间
     time_expire: model?.time_expire,
     // 附加数据
