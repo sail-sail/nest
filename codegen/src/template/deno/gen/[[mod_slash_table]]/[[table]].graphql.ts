@@ -474,6 +474,27 @@ input <#=inputName#> {<#
     ) {
       continue;
     }
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+      }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
     let _data_type = "String";
     if (column_name === 'id') {
       data_type = `${ Table_Up }Id`;
@@ -519,9 +540,13 @@ input <#=inputName#> {<#
     if (foreignKey) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=data_type#><#
+    if (hasModelLabel) {
+  #>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: <#=_data_type#><#
+  <#=modelLabel#>: <#=_data_type#><#
+    }
+  #><#
     } else if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
@@ -553,9 +578,13 @@ input <#=inputName#> {<#
       }
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=enumColumnName#>
+  <#=column_name#>: <#=enumColumnName#><#
+    if (hasModelLabel) {
+  #>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: String<#
+  <#=modelLabel#>: String<#
+    }
+  #><#
     } else {
   #>
   "<#=column_comment#>"

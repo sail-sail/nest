@@ -548,7 +548,7 @@
                   un-min="w-7.5"
                   @click="onMenu_ids(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row[column.sortBy]?.length || 0 }}
                 </el-link>
               </template>
             </el-table-column>
@@ -566,7 +566,7 @@
                   un-min="w-7.5"
                   @click="onPermit_ids(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row[column.sortBy]?.length || 0 }}
                 </el-link>
               </template>
             </el-table-column>
@@ -584,7 +584,7 @@
                   un-min="w-7.5"
                   @click="onData_permit_ids(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row[column.sortBy]?.length || 0 }}
                 </el-link>
               </template>
             </el-table-column>
