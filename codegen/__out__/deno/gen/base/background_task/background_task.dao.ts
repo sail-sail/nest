@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   query,
@@ -1121,12 +1122,12 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.begin_time != null) {
+      if (input.begin_time != null || input.begin_time_save_null) {
         sql += `,${ args.push(input.begin_time) }`;
       } else {
         sql += ",default";
       }
-      if (input.end_time != null) {
+      if (input.end_time != null || input.end_time_save_null) {
         sql += `,${ args.push(input.end_time) }`;
       } else {
         sql += ",default";
@@ -1305,13 +1306,13 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.begin_time != null) {
+  if (input.begin_time != null || input.begin_time_save_null) {
     if (input.begin_time != oldModel.begin_time) {
       sql += `begin_time=${ args.push(input.begin_time) },`;
       updateFldNum++;
     }
   }
-  if (input.end_time != null) {
+  if (input.end_time != null || input.end_time_save_null) {
     if (input.end_time != oldModel.end_time) {
       sql += `end_time=${ args.push(input.end_time) },`;
       updateFldNum++;
