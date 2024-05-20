@@ -290,7 +290,7 @@ pub struct DataPermitInput {
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
-  #[graphql(name = "menu_id")]
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<String>,
   /// 范围
   #[graphql(name = "scope")]

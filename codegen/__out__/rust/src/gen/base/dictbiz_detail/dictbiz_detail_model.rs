@@ -358,7 +358,7 @@ pub struct DictbizDetailInput {
   #[graphql(name = "dictbiz_id")]
   pub dictbiz_id: Option<DictbizId>,
   /// 业务字典
-  #[graphql(name = "dictbiz_id")]
+  #[graphql(name = "dictbiz_id_lbl")]
   pub dictbiz_id_lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
