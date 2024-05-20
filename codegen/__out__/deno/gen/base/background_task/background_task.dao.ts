@@ -1071,9 +1071,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1081,16 +1079,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1269,67 +1273,65 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update base_background_task set
-  `;
+  let sql = `update base_background_task set `;
   let updateFldNum = 0;
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.state != null) {
     if (input.state != oldModel.state) {
-      sql += `state = ${ args.push(input.state) },`;
+      sql += `state=${ args.push(input.state) },`;
       updateFldNum++;
     }
   }
   if (input.type != null) {
     if (input.type != oldModel.type) {
-      sql += `type = ${ args.push(input.type) },`;
+      sql += `type=${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
   if (input.result != null) {
     if (input.result != oldModel.result) {
-      sql += `result = ${ args.push(input.result) },`;
+      sql += `result=${ args.push(input.result) },`;
       updateFldNum++;
     }
   }
   if (input.err_msg != null) {
     if (input.err_msg != oldModel.err_msg) {
-      sql += `err_msg = ${ args.push(input.err_msg) },`;
+      sql += `err_msg=${ args.push(input.err_msg) },`;
       updateFldNum++;
     }
   }
   if (input.begin_time != null) {
     if (input.begin_time != oldModel.begin_time) {
-      sql += `begin_time = ${ args.push(input.begin_time) },`;
+      sql += `begin_time=${ args.push(input.begin_time) },`;
       updateFldNum++;
     }
   }
   if (input.end_time != null) {
     if (input.end_time != oldModel.end_time) {
-      sql += `end_time = ${ args.push(input.end_time) },`;
+      sql += `end_time=${ args.push(input.end_time) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
