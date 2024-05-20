@@ -2037,7 +2037,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>")]<#
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
   pub <#=modelLabel#>: Option<String>,<#

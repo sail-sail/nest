@@ -351,7 +351,7 @@ pub struct MenuInput {
   #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
   /// 父菜单
-  #[graphql(name = "parent_id")]
+  #[graphql(name = "parent_id_lbl")]
   pub parent_id_lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]

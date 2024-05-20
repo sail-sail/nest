@@ -342,7 +342,7 @@ pub struct DictDetailInput {
   #[graphql(name = "dict_id")]
   pub dict_id: Option<DictId>,
   /// 系统字典
-  #[graphql(name = "dict_id")]
+  #[graphql(name = "dict_id_lbl")]
   pub dict_id_lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]

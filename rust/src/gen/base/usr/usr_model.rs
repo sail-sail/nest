@@ -622,7 +622,7 @@ pub struct UsrInput {
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<OrgId>,
   /// 默认组织
-  #[graphql(name = "default_org_id")]
+  #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
