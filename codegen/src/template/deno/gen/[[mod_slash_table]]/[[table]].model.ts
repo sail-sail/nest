@@ -301,16 +301,37 @@ declare global {
         "org_id",
         "is_hidden",
       ].includes(column_name)) continue;
+      let data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT;
+      if (!column_comment && column_name !== "id") {
+        throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+      }
       let is_nullable = column.IS_NULLABLE === "YES";
       const foreignKey = column.foreignKey;
       const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
       const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      if (!column_comment && column_name !== "id") {
-        throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
       }
       let _data_type = "string";
       if (column_name === 'id') {
@@ -351,14 +372,52 @@ declare global {
         _data_type = "string";
       }
     #><#
-      if (is_nullable) {
+      if (!foreignKey && !column.dict && !column.dictbiz
+        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+      ) {
     #>
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#> | null;<#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>?: <#=data_type#> | null;
+    <#=column_name#>_lbl?: String | null;<#
+      if (is_nullable) {
+    #>
+    <#=column_name#>_save_null?: number | null;<#
+      }
+    #><#
+      } else if (column.dict || column.dictbiz) {
+        let enumColumnName = data_type;
+        const columnDictModels = [
+          ...dictModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+          ...dictbizModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+        ];
+        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+          Column_Up = Column_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          enumColumnName = Table_Up + Column_Up;
+        }
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>?: <#=enumColumnName#> | null;<#
+      if (hasModelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>?: String | null;<#
+      }
+    #><#
       } else {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;<#
+    <#=column_name#>?: <#=data_type#> | null;<#
       }
     #><#
     }

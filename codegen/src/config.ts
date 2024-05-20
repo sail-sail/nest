@@ -100,7 +100,7 @@ export interface TableCloumn {
   /**
    * 列的为空性。如果列允许 NULL，那么该列返回 YES。否则，返回 NO
    */
-  IS_NULLABLE?: "NO"|"YEW",
+  IS_NULLABLE?: "NO"|"YES",
   
   /**
    * 系统提供的数据类型
