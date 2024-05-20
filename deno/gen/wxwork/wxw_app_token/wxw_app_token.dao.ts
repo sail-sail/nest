@@ -940,9 +940,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -950,16 +948,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.wxw_app_id != null) {
         sql += `,${ args.push(input.wxw_app_id) }`;
@@ -1136,9 +1140,7 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wxwork_wxw_app_token set
-  `;
+  let sql = `update wxwork_wxw_app_token set `;
   let updateFldNum = 0;
   if (input.wxw_app_id != null) {
     if (input.wxw_app_id != oldModel.wxw_app_id) {
@@ -1148,37 +1150,37 @@ export async function updateById(
   }
   if (input.type != null) {
     if (input.type != oldModel.type) {
-      sql += `type = ${ args.push(input.type) },`;
+      sql += `type=${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
   if (input.access_token != null) {
     if (input.access_token != oldModel.access_token) {
-      sql += `access_token = ${ args.push(input.access_token) },`;
+      sql += `access_token=${ args.push(input.access_token) },`;
       updateFldNum++;
     }
   }
   if (input.token_time != null) {
     if (input.token_time != oldModel.token_time) {
-      sql += `token_time = ${ args.push(input.token_time) },`;
+      sql += `token_time=${ args.push(input.token_time) },`;
       updateFldNum++;
     }
   }
   if (input.expires_in != null) {
     if (input.expires_in != oldModel.expires_in) {
-      sql += `expires_in = ${ args.push(input.expires_in) },`;
+      sql += `expires_in=${ args.push(input.expires_in) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;

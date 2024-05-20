@@ -895,9 +895,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -905,16 +903,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1126,91 +1130,89 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wxwork_wxw_usr set
-  `;
+  let sql = `update wxwork_wxw_usr set `;
   let updateFldNum = 0;
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.userid != null) {
     if (input.userid != oldModel.userid) {
-      sql += `userid = ${ args.push(input.userid) },`;
+      sql += `userid=${ args.push(input.userid) },`;
       updateFldNum++;
     }
   }
   if (input.mobile != null) {
     if (input.mobile != oldModel.mobile) {
-      sql += `mobile = ${ args.push(input.mobile) },`;
+      sql += `mobile=${ args.push(input.mobile) },`;
       updateFldNum++;
     }
   }
   if (input.gender != null) {
     if (input.gender != oldModel.gender) {
-      sql += `gender = ${ args.push(input.gender) },`;
+      sql += `gender=${ args.push(input.gender) },`;
       updateFldNum++;
     }
   }
   if (input.email != null) {
     if (input.email != oldModel.email) {
-      sql += `email = ${ args.push(input.email) },`;
+      sql += `email=${ args.push(input.email) },`;
       updateFldNum++;
     }
   }
   if (input.biz_email != null) {
     if (input.biz_email != oldModel.biz_email) {
-      sql += `biz_email = ${ args.push(input.biz_email) },`;
+      sql += `biz_email=${ args.push(input.biz_email) },`;
       updateFldNum++;
     }
   }
   if (input.direct_leader != null) {
     if (input.direct_leader != oldModel.direct_leader) {
-      sql += `direct_leader = ${ args.push(input.direct_leader) },`;
+      sql += `direct_leader=${ args.push(input.direct_leader) },`;
       updateFldNum++;
     }
   }
   if (input.position != null) {
     if (input.position != oldModel.position) {
-      sql += `position = ${ args.push(input.position) },`;
+      sql += `position=${ args.push(input.position) },`;
       updateFldNum++;
     }
   }
   if (input.avatar != null) {
     if (input.avatar != oldModel.avatar) {
-      sql += `avatar = ${ args.push(input.avatar) },`;
+      sql += `avatar=${ args.push(input.avatar) },`;
       updateFldNum++;
     }
   }
   if (input.thumb_avatar != null) {
     if (input.thumb_avatar != oldModel.thumb_avatar) {
-      sql += `thumb_avatar = ${ args.push(input.thumb_avatar) },`;
+      sql += `thumb_avatar=${ args.push(input.thumb_avatar) },`;
       updateFldNum++;
     }
   }
   if (input.qr_code != null) {
     if (input.qr_code != oldModel.qr_code) {
-      sql += `qr_code = ${ args.push(input.qr_code) },`;
+      sql += `qr_code=${ args.push(input.qr_code) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
