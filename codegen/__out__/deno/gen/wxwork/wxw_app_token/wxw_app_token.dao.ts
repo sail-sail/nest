@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -980,7 +981,7 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.token_time != null) {
+      if (input.token_time != null || input.token_time_save_null) {
         sql += `,${ args.push(input.token_time) }`;
       } else {
         sql += ",default";
@@ -1160,7 +1161,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.token_time != null) {
+  if (input.token_time != null || input.token_time_save_null) {
     if (input.token_time != oldModel.token_time) {
       sql += `token_time=${ args.push(input.token_time) },`;
       updateFldNum++;
