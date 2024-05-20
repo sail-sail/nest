@@ -180,6 +180,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,<#
   if (cache) {
@@ -1582,8 +1583,13 @@ export async function findAll(
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
     #>
     // <#=column_comment#>
-    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
-    model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));<#
+    try {
+      model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
+      model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));
+    } catch(err) {
+      error(err);
+      model.<#=column_name#> = new Decimal(0);
+    }<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
     #>
     // <#=column_comment#>
@@ -3194,12 +3200,10 @@ async function _creates(
         if (column_name === "create_time") continue;
         if (column_name === "update_usr_id") continue;
         if (column_name === "update_time") continue;
-        let data_type = column.DATA_TYPE;
-        let column_type = column.COLUMN_TYPE;
-        let column_comment = column.COLUMN_COMMENT || "";
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const is_nullable = column.IS_NULLABLE === "YES";
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE;
+        const column_comment = column.COLUMN_COMMENT || "";
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -3226,7 +3230,11 @@ async function _creates(
       #><#
         } else if (!foreignKey) {
       #>
-      if (input.<#=column_name#> != null) {<#
+      if (input.<#=column_name#> != null<#
+        if (is_nullable && [ "date", "datetime" ].includes(data_type)) {
+      #> || input.<#=column_name#>_save_null<#
+        }
+      #>) {<#
         if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
         #>
         sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
@@ -3827,12 +3835,10 @@ export async function updateById(
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const is_nullable = column.IS_NULLABLE === "YES";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -3871,7 +3877,11 @@ export async function updateById(
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null<#
+    if (is_nullable && [ "date", "datetime" ].includes(data_type)) {
+  #> || input.<#=column_name#>_save_null<#
+    }
+  #>) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
       if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
       #>
