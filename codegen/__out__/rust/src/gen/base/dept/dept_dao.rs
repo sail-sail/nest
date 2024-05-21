@@ -1378,10 +1378,6 @@ async fn _creates(
   sql_fields += ",order_by";
   // 备注
   sql_fields += ",rem";
-  // 更新人
-  sql_fields += ",update_usr_id";
-  // 更新时间
-  sql_fields += ",update_time";
   
   let inputs2_len = inputs2.len();
   let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
@@ -1499,20 +1495,6 @@ async fn _creates(
     if let Some(rem) = input.rem {
       sql_values += ",?";
       args.push(rem.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 更新人
-    if let Some(update_usr_id) = input.update_usr_id {
-      sql_values += ",?";
-      args.push(update_usr_id.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 更新时间
-    if let Some(update_time) = input.update_time {
-      sql_values += ",?";
-      args.push(update_time.into());
     } else {
       sql_values += ",default";
     }

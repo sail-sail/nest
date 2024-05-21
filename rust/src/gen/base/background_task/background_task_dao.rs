@@ -1233,10 +1233,6 @@ async fn _creates(
   sql_fields += ",end_time";
   // 备注
   sql_fields += ",rem";
-  // 更新人
-  sql_fields += ",update_usr_id";
-  // 更新时间
-  sql_fields += ",update_time";
   
   let inputs2_len = inputs2.len();
   let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
@@ -1344,6 +1340,8 @@ async fn _creates(
     if let Some(begin_time) = input.begin_time {
       sql_values += ",?";
       args.push(begin_time.into());
+    } else if input.begin_time_save_null == Some(1) {
+      sql_values += ",null";
     } else {
       sql_values += ",default";
     }
@@ -1351,6 +1349,8 @@ async fn _creates(
     if let Some(end_time) = input.end_time {
       sql_values += ",?";
       args.push(end_time.into());
+    } else if input.end_time_save_null == Some(1) {
+      sql_values += ",null";
     } else {
       sql_values += ",default";
     }
@@ -1358,20 +1358,6 @@ async fn _creates(
     if let Some(rem) = input.rem {
       sql_values += ",?";
       args.push(rem.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 更新人
-    if let Some(update_usr_id) = input.update_usr_id {
-      sql_values += ",?";
-      args.push(update_usr_id.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 更新时间
-    if let Some(update_time) = input.update_time {
-      sql_values += ",?";
-      args.push(update_time.into());
     } else {
       sql_values += ",default";
     }
@@ -1635,12 +1621,18 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "begin_time=?,";
     args.push(begin_time.into());
+  } else if input.begin_time_save_null == Some(1) {
+    field_num += 1;
+    sql_fields += "begin_time=null,";
   }
   // 结束时间
   if let Some(end_time) = input.end_time {
     field_num += 1;
     sql_fields += "end_time=?,";
     args.push(end_time.into());
+  } else if input.end_time_save_null == Some(1) {
+    field_num += 1;
+    sql_fields += "end_time=null,";
   }
   // 备注
   if let Some(rem) = input.rem {
