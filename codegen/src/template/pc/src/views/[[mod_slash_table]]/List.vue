@@ -391,7 +391,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <ElIconRemove />
             </el-icon>
           </div><#
-          if ((opts.noDelete !== true && opts.noRevert !== true) && hasIsDeleted) {
+          if (hasIsDeleted) {
           #>
           
           <el-checkbox
@@ -746,7 +746,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     </template>
     
     <template v-else><#
-      if (opts.noDelete !== true && opts.noRevert !== true) {
+      if (opts.noRevert !== true) {
       #>
       
       <el-button
@@ -762,7 +762,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
       }
       #><#
-      if (opts.noDelete !== true) {
+      if (opts.noForceDelete !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1555,14 +1555,18 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 import {
   findAll,
   findCount,<#
-    if (opts.noDelete !== true && opts.noRevert !== true) {
+    if (opts.noRevert !== true) {
   #>
   revertByIds,<#
     }
   #><#
     if (opts.noDelete !== true) {
   #>
-  deleteByIds,
+  deleteByIds,<#
+    }
+  #><#
+    if (opts.noForceDelete !== true && hasIsDeleted) {
+  #>
   forceDeleteByIds,<#
     }
   #><#
@@ -3295,7 +3299,11 @@ async function onDeleteByIds() {
     ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("remove", num);
   }
+}<#
 }
+#><#
+if (opts.noForceDelete !== true && hasIsDeleted) {
+#>
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
@@ -3417,7 +3425,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noDelete !== true && opts.noRevert !== true) {
+if (opts.noRevert !== true) {
 #>
 
 /** 点击还原 */
