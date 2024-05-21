@@ -676,6 +676,9 @@ export interface TablesConfigItem {
      */
     noRevert?: boolean;
     
+    /** 不允许彻底删除 */
+    noForceDelete?: boolean;
+    
     /**
      * 不允许修改
      */
