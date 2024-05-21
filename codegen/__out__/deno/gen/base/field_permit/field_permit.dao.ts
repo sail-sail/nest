@@ -677,6 +677,56 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找字段权限 */
+export async function findByIds(
+  ids: FieldPermitId[],
+  options?: {
+    debug?: boolean;
+  },
+): Promise<FieldPermitModel[]> {
+  const table = "base_field_permit";
+  const method = "findByIds";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断字段权限是否存在
  * @param {FieldPermitSearch} search?
