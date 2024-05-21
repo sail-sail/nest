@@ -397,12 +397,18 @@ pub struct BackgroundTaskInput {
   /// 开始时间
   #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: Option<String>,
+  /// 开始时间
+  #[graphql(name = "begin_time_save_null")]
+  pub begin_time_save_null: Option<u8>,
   /// 结束时间
   #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
   #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: Option<String>,
+  /// 结束时间
+  #[graphql(name = "end_time_save_null")]
+  pub end_time_save_null: Option<u8>,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
@@ -453,9 +459,11 @@ impl From<BackgroundTaskModel> for BackgroundTaskInput {
       // 开始时间
       begin_time: model.begin_time,
       begin_time_lbl: model.begin_time_lbl.into(),
+      begin_time_save_null: Some(1),
       // 结束时间
       end_time: model.end_time,
       end_time_lbl: model.end_time_lbl.into(),
+      end_time_save_null: Some(1),
       // 备注
       rem: model.rem.into(),
       // 创建人

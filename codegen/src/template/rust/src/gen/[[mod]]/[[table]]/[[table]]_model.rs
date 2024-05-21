@@ -100,7 +100,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
-  let is_nullable = column.IS_NULLABLE === "YES";
+  const is_nullable = column.IS_NULLABLE === "YES";
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -1896,6 +1896,7 @@ pub struct <#=tableUP#>Input {
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     const column_comment = column.COLUMN_COMMENT || "";
@@ -2054,8 +2055,18 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
-    if (hasModelLabel) {
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
+  }
+  #>
+  pub <#=column_name#>_lbl: Option<String>,<#
+  if (is_nullable) {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
@@ -2063,11 +2074,11 @@ pub struct <#=tableUP#>Input {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=modelLabel#>")]<#
+  #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
-  pub <#=modelLabel#>: Option<String>,<#
-    }
+  pub <#=column_name#>_save_null: Option<u8>,<#
+  }
   #><#
   } else {
   #>
@@ -2270,7 +2281,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #><#
         if (
           (foreignKey || column.dict || column.dictbiz)
-          || (data_type === "date" || data_type === "datetime")
         ) {
       #>
       // <#=column_comment#>
@@ -2282,6 +2292,20 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         if (hasModelLabel) {
       #>
       <#=modelLabel#>: model.<#=modelLabel#>.into(),<#
+        }
+      #><#
+        } else if (data_type === "date" || data_type === "datetime") {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        if (is_nullable) {
+      #>
+      <#=column_name#>_save_null: Some(1),<#
         }
       #><#
         } else {
@@ -2531,6 +2555,7 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
           column_name === "is_sys" ||
           column_name === "is_deleted"
         ) continue;
+        const is_nullable = column.IS_NULLABLE === "YES";
         const column_name_rust = rustKeyEscape(column_name);
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2551,13 +2576,18 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       /// <#=column_comment#>
       <#=column_name#>: model.<#=column_name#>.into(),
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
-        } else if (column.dict || column.dictbiz
-          || data_type === "date" || data_type === "datetime"
-        ) {
+        } else if (column.dict || column.dictbiz) {
+      #><#
+        } else if (data_type === "date" || data_type === "datetime") {
       #>
       /// <#=column_comment#>
       <#=column_name#>: model.<#=column_name#>.into(),
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        if (is_nullable) {
+      #>
+      <#=column_name#>_save_null: Some(1),<#
+        }
+      #><#
         } else {
       #>
       /// <#=column_comment#>
