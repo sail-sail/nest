@@ -767,6 +767,72 @@ pub async fn find_by_id(
   Ok(res)
 }
 
+/// 根据 ids 查找组织
+#[allow(dead_code)]
+pub async fn find_by_ids(
+  ids: Vec<OrgId>,
+  options: Option<Options>,
+) -> Result<Vec<OrgModel>> {
+  
+  let table = "base_org";
+  let method = "find_by_ids";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(false);
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  let search = OrgSearch {
+    ids: Some(ids.clone()),
+    ..Default::default()
+  }.into();
+  
+  let models = find_all(
+    search,
+    None,
+    None,
+    options,
+  ).await?;
+  
+  if models.len() != len {
+    return Err(anyhow!("find_by_ids: models.length !== ids.length"));
+  }
+  
+  let models = ids
+    .into_iter()
+    .map(|id| {
+      let model = models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      return Err(anyhow!("find_by_ids: id: {id} not found"));
+    })
+    .collect::<Result<Vec<OrgModel>>>()?;
+  
+  Ok(models)
+}
+
 /// 根据搜索条件判断组织是否存在
 #[allow(dead_code)]
 pub async fn exists(
