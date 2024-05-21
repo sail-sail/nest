@@ -1012,7 +1012,7 @@ export async function lockByIds(
 }<#
 }
 #><#
-if (opts.noDelete !== true && opts.noRevert !== true) {
+if (opts.noRevert !== true) {
 #>
 
 /**
@@ -1038,7 +1038,11 @@ export async function revertByIds(
   }, opt);
   const res = data.revertByIds<#=Table_Up2#>;
   return res;
+}<#
 }
+#><#
+if (opts.noForceDelete !== true && hasIsDeleted) {
+#>
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
