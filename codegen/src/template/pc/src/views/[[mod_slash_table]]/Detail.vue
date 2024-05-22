@@ -175,6 +175,8 @@ const old_table = table;
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       ><#
         let form_item_index = 0;
         const selectInputForeign_Table_Ups = [ ];
@@ -1218,6 +1220,8 @@ const old_table = table;
                 :model="dialogModel"
                 :rules="form_rules"
                 :validate-on-rule-change="false"
+                
+                @submit.prevent
               ><#
                 // const selectInputForeign_Table_Ups = [ ];
                 for (let i = 0; i < columns.length; i++) {

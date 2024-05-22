@@ -66,6 +66,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">

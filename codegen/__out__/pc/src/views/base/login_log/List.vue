@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.type == null">

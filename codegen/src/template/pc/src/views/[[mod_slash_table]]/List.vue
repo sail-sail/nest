@@ -75,7 +75,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     ><#
       let hasSearchExpand = false;
       const searchIntColumns = [ ];
