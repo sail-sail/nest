@@ -562,7 +562,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("组织")));
+    ElMessage.warning(await nsAsync("已经是第一{0} 了", await nsAsync("组织")));
   }
 }
 
