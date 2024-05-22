@@ -263,6 +263,10 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  * 发送 GraphQL 修改请求 
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  const indexStore = useIndexStore(cfg.pinia);
+  if (!opt?.notLoading && indexStore.loading > 0) {
+    throw "mutation loading";
+  }
   opt = opt || { };
   opt.isMutation = true;
   return await gqlQuery(gqlArg, opt);
