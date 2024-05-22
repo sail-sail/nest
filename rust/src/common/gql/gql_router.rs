@@ -17,6 +17,8 @@ use crate::common::auth::auth_model::{AUTHORIZATION, AuthToken};
 
 use crate::common::gql::query_root::QuerySchema;
 
+use super::request_id::handle_request_id;
+
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct AuthTokenParam {
@@ -37,6 +39,12 @@ pub async fn graphql_handler_get(
   Query(gql_params): Query<GglParams>,
   req: &poem::Request,
 ) -> Response {
+  // x-request-id
+  let request_id = req.header("x-request-id")
+    .map(ToString::to_string);
+  if let Some(res) = handle_request_id(request_id).await {
+    return res;
+  }
   // IP地址
   let ip = match req.header("x-real-ip") {
     Some(ip) => ip.to_string(),
@@ -110,6 +118,12 @@ pub async fn graphql_handler(
   data: Json<Request>,
   req: &poem::Request,
 ) -> Response {
+  // x-request-id
+  let request_id = req.header("x-request-id")
+    .map(ToString::to_string);
+  if let Some(res) = handle_request_id(request_id).await {
+    return res;
+  }
   // IP地址
   let ip = match req.header("x-real-ip") {
     Some(ip) => ip.to_string(),
