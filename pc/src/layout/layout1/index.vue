@@ -236,6 +236,7 @@
                 </el-dropdown-item>
                 
                 <el-dropdown-item
+                  v-if="!config.indexIsEmpty"
                   divided
                   @click="goIndex"
                 >
@@ -331,6 +332,8 @@ import {
 import {
   getLoginLangs,
 } from "../Api";
+
+import config from "@/utils/config";
 
 const router = useRouter();
 
@@ -457,8 +460,10 @@ function refreshTab_active_line() {
   }
   const tab_activeEl = tabs_divRef?.getElementsByClassName("tab_active")[0] as HTMLDivElement | undefined;
   if (!tab_activeEl) {
+    tab_active_lineRef.style.display = "none";
     return;
   }
+  tab_active_lineRef.style.display = "block";
   if ((tab_activeEl as any).scrollIntoViewIfNeeded) {
     (tab_activeEl as any).scrollIntoViewIfNeeded(true);
   } else {
