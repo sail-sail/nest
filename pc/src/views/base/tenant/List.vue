@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
@@ -1714,7 +1715,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("租户")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("租户")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1728,7 +1729,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("租户")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("租户")));
     emit("remove", num);
   }
 }
@@ -1748,7 +1749,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("租户")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("租户")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1759,7 +1760,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("租户")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("租户")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1789,9 +1790,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("租户"));
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("租户"));
     } else {
-      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("租户"));
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("租户"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1823,9 +1824,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("租户"));
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("租户"));
     } else {
-      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("租户"));
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("租户"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1848,7 +1849,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("租户")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("租户")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1861,7 +1862,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("租户")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("租户")));
     emit("revert", num);
   }
 }

@@ -25,18 +25,14 @@
           {{ item.lbl }}
         </span>
         <div
-          v-else
+          v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
           class="tab_icon"
           :title="item.lbl"
         >
           <el-icon
             size="20"
           >
-            <template
-              v-if="item?.icon === 'iconfont-home-fill'"
-            >
-              <i un-i="iconfont-home-fill"></i>
-            </template>
+            <i un-i="iconfont-home-fill"></i>
           </el-icon>
         </div>
       </template>
@@ -89,6 +85,8 @@ import type {
 } from "sortablejs";
 
 import Sortable from "sortablejs";
+
+import config from "@/utils/config";
 
 const router = useRouter();
 const tabsStore = useTabsStore();
