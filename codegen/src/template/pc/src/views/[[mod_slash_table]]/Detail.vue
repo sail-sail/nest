@@ -175,6 +175,8 @@ const old_table = table;
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       ><#
         let form_item_index = 0;
         const selectInputForeign_Table_Ups = [ ];
@@ -1218,6 +1220,8 @@ const old_table = table;
                 :model="dialogModel"
                 :rules="form_rules"
                 :validate-on-rule-change="false"
+                
+                @submit.prevent
               ><#
                 // const selectInputForeign_Table_Ups = [ ];
                 for (let i = 0; i < columns.length; i++) {
@@ -4551,7 +4555,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("<#=table_comment#>")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
