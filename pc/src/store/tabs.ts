@@ -2,6 +2,8 @@ import type {
   RouteLocationNormalizedLoaded,
 } from "vue-router";
 
+import config from "@/utils/config";
+
 export interface TabInf {
   name: string,
   lbl?: string,
@@ -23,6 +25,22 @@ export default defineStore("tabs", function() {
   const actTab = $computed(() => tabs.find((item) => item.active));
   
   let keepAliveNames = $ref<string[]>([ ]);
+  
+  if (config.indexIsEmpty) {
+    watch(
+      () => tabs.length,
+      async () => {
+        if (tabs.length === 0) {
+          setIndexTab(true);
+          return;
+        }
+        await removeTab({
+          name: "首页",
+          path: "/index",
+        });
+      },
+    );
+  }
   
   function clearKeepAliveNames() {
     keepAliveNames = [ ];
@@ -219,6 +237,9 @@ export default defineStore("tabs", function() {
   }
   
   function setIndexTab(active = false) {
+    if (config.indexIsEmpty) {
+      return;
+    }
     const tab = findTab({
       path: "/index",
       query: { },

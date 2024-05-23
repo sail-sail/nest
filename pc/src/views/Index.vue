@@ -4,7 +4,7 @@
   un-overflow-hidden
 >
   <template v-if="!inited">
-    <div
+    <!-- <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-justify-center
@@ -12,7 +12,7 @@
       un-text="gray 5"
     >
       {{ errMsg }}
-    </div>
+    </div> -->
   </template>
   <template v-else>
     <template v-if="inited && myComponents.length === 0">
@@ -24,7 +24,7 @@
         un-text="gray"
         un-gap="x-4"
       >
-        <span>(暂未设置首页)</span>
+        <!-- <span>(暂未设置首页)</span>
         <el-button
           v-if="tabLen > 1"
           plain
@@ -32,7 +32,7 @@
           @click="closeCurrentTab"
         >
           关闭
-        </el-button>
+        </el-button> -->
       </div>
     </template>
     <template v-else-if="myComponents.length === 1">
@@ -101,7 +101,9 @@ let myComponents = $shallowRef<Component[]>([ ]);
 let homeUrls = $shallowRef<string[]>([ ]);
 
 async function onGetHomeUrls() {
-  const homeUrls = await getHomeUrls() || [ ];
+  const homeUrls = await getHomeUrls({
+    notLoading: true,
+  }) || [ ];
   myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
 }
 
