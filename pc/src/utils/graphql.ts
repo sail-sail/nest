@@ -37,7 +37,7 @@ declare global {
     timeout?: number;
     notLoading?: boolean;
     isMutation?: boolean;
-    "Request-ID"?: string;
+    "x-request-id"?: string;
   }
   
 }
@@ -279,7 +279,7 @@ export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization?: string
   }
   let request_id: string | undefined;
   if (opt && opt.isMutation) {
-    request_id = opt["Request-ID"] || uuid();
+    request_id = opt["x-request-id"] || uuid();
   }
   let url = `/graphql?query=${ encodeURIComponent(gqlArg.query) }&variables=${ encodeURIComponent(JSON.stringify(gqlArg.variables)) }`;
   if (request_id) {
@@ -297,15 +297,13 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     duration = opt.duration;
   }
   // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
-  const headers: {
-    "Request-ID"?: string;
-  } = { };
+  const headers = new Headers();
   if (opt && opt.isMutation) {
-    let requestId = opt["Request-ID"];
+    let requestId = opt["x-request-id"];
     if (!requestId) {
       requestId = uuid();
     }
-    headers["Request-ID"] = requestId;
+    headers.set("x-request-id", requestId);
   }
   let rvData: any = undefined;
   try {
