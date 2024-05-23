@@ -338,7 +338,7 @@ async function handleGraphql(
 
 gqlRouter.post("/graphql", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("Request-ID"));
+  handleRequestId(request.headers.get("x-request-id"));
   const response = ctx.response;
   if (!request.hasBody || request.body.type() !== "json") {
     response.body = {
@@ -365,7 +365,7 @@ gqlRouter.post("/graphql", async function(ctx) {
 
 gqlRouter.get("/graphql", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("Request-ID"));
+  handleRequestId(request.headers.get("x-request-id"));
   const response = ctx.response;
   const query = request.url.searchParams.get("query");
   if (!query) {

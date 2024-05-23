@@ -17,7 +17,7 @@ const router = new Router({
 
 router.post("upload", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("Request-ID"));
+  handleRequestId(request.headers.get("x-request-id"));
   const body = request.body;
   const contentType = body.type().toLocaleLowerCase();
   const response = ctx.response;
