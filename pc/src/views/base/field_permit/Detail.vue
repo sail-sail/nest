@@ -577,7 +577,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一{0} 了", await nsAsync("字段权限")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
