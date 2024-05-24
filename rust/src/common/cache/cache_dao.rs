@@ -52,6 +52,50 @@ pub async fn get_cache(
   Ok(value)
 }
 
+pub async fn exists(
+  cache_key1: &str,
+) -> Result<bool> {
+  if CACHE_POOL.is_none() {
+    return Ok(false);
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
+  let value: bool = redis::cmd("EXISTS")
+    .arg(&[cache_key1])
+    .query_async(&mut conn).await?;
+  Ok(value)
+}
+
+#[allow(dead_code)]
+pub async fn get(
+  cache_key1: &str,
+) -> Result<Option<String>> {
+  if CACHE_POOL.is_none() {
+    return Ok(None);
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
+  let value: Option<String> = redis::cmd("GET")
+    .arg(&[cache_key1])
+    .query_async(&mut conn).await?;
+  Ok(value)
+}
+
+pub async fn set(
+  cache_key1: &str,
+  cache_value: &str,
+) -> Result<()> {
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
+  redis::cmd("SET")
+    .arg(&[cache_key1, cache_value])
+    .query_async(&mut conn).await?;
+  Ok(())
+}
+
 pub async fn set_cache(
   cache_key1: &str,
   cache_key2: &str,
@@ -64,6 +108,21 @@ pub async fn set_cache(
   let mut conn = cache_pool.get().await?;
   redis::cmd("HSET")
     .arg(&[cache_key1, cache_key2, cache_value])
+    .query_async(&mut conn).await?;
+  Ok(())
+}
+
+pub async fn expire(
+  cache_key1: &str,
+  expire: u32,
+) -> Result<()> {
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
+  redis::cmd("EXPIRE")
+    .arg(&[cache_key1, &expire.to_string()])
     .query_async(&mut conn).await?;
   Ok(())
 }
