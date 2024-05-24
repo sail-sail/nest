@@ -338,8 +338,13 @@ async function handleGraphql(
 
 gqlRouter.post("/graphql", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("x-request-id"));
   const response = ctx.response;
+  if (await handleRequestId(
+    response,
+    request.headers.get("x-request-id"),
+  )) {
+    return;
+  }
   if (!request.hasBody || request.body.type() !== "json") {
     response.body = {
       code: 1,
@@ -365,8 +370,11 @@ gqlRouter.post("/graphql", async function(ctx) {
 
 gqlRouter.get("/graphql", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("x-request-id"));
   const response = ctx.response;
+  await handleRequestId(
+    response,
+    request.headers.get("x-request-id"),
+  );
   const query = request.url.searchParams.get("query");
   if (!query) {
     throw new ServiceException("graphql query can not be empty", "invalid_request_query");
