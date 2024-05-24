@@ -61,11 +61,8 @@ export async function request<T>(
       body,
     });
     if (resFt.status !== 200) {
-      let errMsg = resFt.statusText || resFt.status.toString();
-      if (errMsg === "Internal Server Error") {
-        errMsg = "系统正在维护，请稍后再试";
-      }
-      throw errMsg;
+      const errMsg = await resFt.text();
+      throw new Error(errMsg);
     }
     const data = await resFt.json();
     res = {
