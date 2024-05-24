@@ -940,7 +940,7 @@ pub async fn find_by_ids(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      return Err(anyhow!("find_by_ids: id: {id} not found"));
+      Err(anyhow!("find_by_ids: id: {id} not found"))
     })
     .collect::<Result<Vec<DictbizModel>>>()?;
   
