@@ -111,6 +111,7 @@ input CronJobLogSearch {
   id: CronJobLogId
   "定时任务"
   cron_job_id: [CronJobId!]
+  "定时任务"
   cron_job_id_is_null: Boolean
   "执行状态"
   exec_state: [CronJobLogExecState!]
