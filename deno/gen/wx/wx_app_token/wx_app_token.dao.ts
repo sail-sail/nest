@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -89,10 +90,10 @@ async function getWhereQuery(
     search.wx_app_id = [ search.wx_app_id ];
   }
   if (search?.wx_app_id != null) {
-    whereQuery += ` and wx_app_id_lbl.id in ${ args.push(search.wx_app_id) }`;
+    whereQuery += ` and t.wx_app_id in ${ args.push(search.wx_app_id) }`;
   }
   if (search?.wx_app_id_is_null) {
-    whereQuery += ` and wx_app_id_lbl.id is null`;
+    whereQuery += ` and t.wx_app_id is null`;
   }
   if (search?.access_token != null) {
     whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
@@ -120,10 +121,10 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -137,10 +138,10 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -619,6 +620,56 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找小程序接口凭据 */
+export async function findByIds(
+  ids: WxAppTokenId[],
+  options?: {
+    debug?: boolean;
+  },
+): Promise<WxAppTokenModel[]> {
+  const table = "wx_wx_app_token";
+  const method = "findByIds";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断小程序接口凭据是否存在
  * @param {WxAppTokenSearch} search?
@@ -888,15 +939,17 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
-      } else {
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.wx_app_id != null) {
         sql += `,${ args.push(input.wx_app_id) }`;
@@ -908,7 +961,7 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.token_time != null) {
+      if (input.token_time != null || input.token_time_save_null) {
         sql += `,${ args.push(input.token_time) }`;
       } else {
         sql += ",default";
@@ -1017,9 +1070,7 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wx_wx_app_token set
-  `;
+  let sql = `update wx_wx_app_token set `;
   let updateFldNum = 0;
   if (input.wx_app_id != null) {
     if (input.wx_app_id != oldModel.wx_app_id) {
@@ -1029,31 +1080,31 @@ export async function updateById(
   }
   if (input.access_token != null) {
     if (input.access_token != oldModel.access_token) {
-      sql += `access_token = ${ args.push(input.access_token) },`;
+      sql += `access_token=${ args.push(input.access_token) },`;
       updateFldNum++;
     }
   }
-  if (input.token_time != null) {
+  if (input.token_time != null || input.token_time_save_null) {
     if (input.token_time != oldModel.token_time) {
-      sql += `token_time = ${ args.push(input.token_time) },`;
+      sql += `token_time=${ args.push(input.token_time) },`;
       updateFldNum++;
     }
   }
   if (input.expires_in != null) {
     if (input.expires_in != oldModel.expires_in) {
-      sql += `expires_in = ${ args.push(input.expires_in) },`;
+      sql += `expires_in=${ args.push(input.expires_in) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;

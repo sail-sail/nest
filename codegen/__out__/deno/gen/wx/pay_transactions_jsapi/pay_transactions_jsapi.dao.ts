@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   query,
@@ -226,10 +227,10 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -243,10 +244,10 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -831,6 +832,56 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找微信JSAPI下单 */
+export async function findByIds(
+  ids: PayTransactionsJsapiId[],
+  options?: {
+    debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel[]> {
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findByIds";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断微信JSAPI下单是否存在
  * @param {PayTransactionsJsapiSearch} search?
@@ -1195,9 +1246,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1205,10 +1254,12 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.org_id != null) {
-        sql += `,${ args.push(input.org_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.org_id == null) {
         const authModel = await getAuthModel();
         const org_id = authModel?.org_id;
         if (org_id != null) {
@@ -1216,16 +1267,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.org_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.org_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.appid != null) {
         sql += `,${ args.push(input.appid) }`;
@@ -1262,7 +1319,7 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.success_time != null) {
+      if (input.success_time != null || input.success_time_save_null) {
         sql += `,${ args.push(input.success_time) }`;
       } else {
         sql += ",default";
@@ -1485,121 +1542,119 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wx_pay_transactions_jsapi set
-  `;
+  let sql = `update wx_pay_transactions_jsapi set `;
   let updateFldNum = 0;
   if (input.appid != null) {
     if (input.appid != oldModel.appid) {
-      sql += `appid = ${ args.push(input.appid) },`;
+      sql += `appid=${ args.push(input.appid) },`;
       updateFldNum++;
     }
   }
   if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
-      sql += `mchid = ${ args.push(input.mchid) },`;
+      sql += `mchid=${ args.push(input.mchid) },`;
       updateFldNum++;
     }
   }
   if (input.description != null) {
     if (input.description != oldModel.description) {
-      sql += `description = ${ args.push(input.description) },`;
+      sql += `description=${ args.push(input.description) },`;
       updateFldNum++;
     }
   }
   if (input.out_trade_no != null) {
     if (input.out_trade_no != oldModel.out_trade_no) {
-      sql += `out_trade_no = ${ args.push(input.out_trade_no) },`;
+      sql += `out_trade_no=${ args.push(input.out_trade_no) },`;
       updateFldNum++;
     }
   }
   if (input.transaction_id != null) {
     if (input.transaction_id != oldModel.transaction_id) {
-      sql += `transaction_id = ${ args.push(input.transaction_id) },`;
+      sql += `transaction_id=${ args.push(input.transaction_id) },`;
       updateFldNum++;
     }
   }
   if (input.trade_state != null) {
     if (input.trade_state != oldModel.trade_state) {
-      sql += `trade_state = ${ args.push(input.trade_state) },`;
+      sql += `trade_state=${ args.push(input.trade_state) },`;
       updateFldNum++;
     }
   }
   if (input.trade_state_desc != null) {
     if (input.trade_state_desc != oldModel.trade_state_desc) {
-      sql += `trade_state_desc = ${ args.push(input.trade_state_desc) },`;
+      sql += `trade_state_desc=${ args.push(input.trade_state_desc) },`;
       updateFldNum++;
     }
   }
-  if (input.success_time != null) {
+  if (input.success_time != null || input.success_time_save_null) {
     if (input.success_time != oldModel.success_time) {
-      sql += `success_time = ${ args.push(input.success_time) },`;
+      sql += `success_time=${ args.push(input.success_time) },`;
       updateFldNum++;
     }
   }
   if (input.time_expire != null) {
     if (input.time_expire != oldModel.time_expire) {
-      sql += `time_expire = ${ args.push(input.time_expire) },`;
+      sql += `time_expire=${ args.push(input.time_expire) },`;
       updateFldNum++;
     }
   }
   if (input.attach != null) {
     if (input.attach != oldModel.attach) {
-      sql += `attach = ${ args.push(input.attach) },`;
+      sql += `attach=${ args.push(input.attach) },`;
       updateFldNum++;
     }
   }
   if (input.attach2 != null) {
     if (input.attach2 != oldModel.attach2) {
-      sql += `attach2 = ${ args.push(input.attach2) },`;
+      sql += `attach2=${ args.push(input.attach2) },`;
       updateFldNum++;
     }
   }
   if (input.notify_url != null) {
     if (input.notify_url != oldModel.notify_url) {
-      sql += `notify_url = ${ args.push(input.notify_url) },`;
+      sql += `notify_url=${ args.push(input.notify_url) },`;
       updateFldNum++;
     }
   }
   if (input.support_fapiao != null) {
     if (input.support_fapiao != oldModel.support_fapiao) {
-      sql += `support_fapiao = ${ args.push(input.support_fapiao) },`;
+      sql += `support_fapiao=${ args.push(input.support_fapiao) },`;
       updateFldNum++;
     }
   }
   if (input.total_fee != null) {
     if (input.total_fee != oldModel.total_fee) {
-      sql += `total_fee = ${ args.push(input.total_fee) },`;
+      sql += `total_fee=${ args.push(input.total_fee) },`;
       updateFldNum++;
     }
   }
   if (input.currency != null) {
     if (input.currency != oldModel.currency) {
-      sql += `currency = ${ args.push(input.currency) },`;
+      sql += `currency=${ args.push(input.currency) },`;
       updateFldNum++;
     }
   }
   if (input.openid != null) {
     if (input.openid != oldModel.openid) {
-      sql += `openid = ${ args.push(input.openid) },`;
+      sql += `openid=${ args.push(input.openid) },`;
       updateFldNum++;
     }
   }
   if (input.prepay_id != null) {
     if (input.prepay_id != oldModel.prepay_id) {
-      sql += `prepay_id = ${ args.push(input.prepay_id) },`;
+      sql += `prepay_id=${ args.push(input.prepay_id) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
