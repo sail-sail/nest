@@ -116,6 +116,7 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+const findByIdTableUps = [ ];
 const findOneTableUps = [ ];
 const findAllTableUps = [ ];
 const createTableUps = [ ];
@@ -610,6 +611,28 @@ import {<#
   #>
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
+#><#
+if (
+  (
+    (hasCreateUsrId && hasCreateUsrIdLbl)
+    || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  )
+  && !findByIdTableUps.includes(Table_Up)
+) {
+  const hasFindByIdTableUps = findByIdTableUps.includes(Table_Up);
+  if (!hasFindByIdTableUps) {
+    findByIdTableUps.push(Table_Up);
+  }
+#>
+
+import {<#
+  if (!hasFindByIdTableUps) {  
+  #>
+  findById as findByIdUsr,<#
+  }
+  #>
+} from "/gen/base/usr/usr.dao.ts";<#
+}
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
@@ -721,6 +744,7 @@ async function getWhereQuery(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const modelLabel = column.modelLabel;
   #><#
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
@@ -729,11 +753,21 @@ async function getWhereQuery(
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and <#=column_name#>_lbl.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#>_is_null) {
-    whereQuery += ` and <#=column_name#>_lbl.id is null`;
+    whereQuery += ` and t.<#=column_name#> is null`;
   }<#
+    if (modelLabel) {
+  #>
+  if (search?.<#=modelLabel#> != null && !Array.isArray(search?.<#=modelLabel#>)) {
+    search.<#=modelLabel#> = [ search.<#=modelLabel#> ];
+  }
+  if (search?.<#=modelLabel#> != null) {
+    whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+  }<#
+    }
+  #><#
       } else if (foreignKey.type === "many2many") {
   #>
   if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
@@ -891,6 +925,9 @@ async function getFromQuery(
     #>
     group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
       } else if (foreignKey && !foreignKey.multiple) {
+        if (modelLabel) {
+          continue;
+        }
     #>
     left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
       }
@@ -3119,6 +3156,10 @@ async function _creates(
     #>,create_usr_id<#
     }
     #><#
+    if (hasCreateUsrIdLbl) {
+    #>,create_usr_id_lbl<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -3229,7 +3270,7 @@ async function _creates(
       }<#
       }
       #><#
-      if (hasCreateUsrId) {
+      if (hasCreateUsrId && !hasCreateUsrIdLbl) {
       #>
       if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
@@ -3242,6 +3283,45 @@ async function _creates(
         sql += ",default";
       } else {
         sql += `,${ args.push(input.create_usr_id) }`;
+      }<#
+      } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
+      #>
+      if (input.create_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `,${ args.push(usr_id) }`;
+        } else {
+          sql += ",default";
+        }
+        sql += `,${ args.push(usr_lbl) }`;
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        let usr_id: UsrId | undefined = input.create_usr_id;
+        let usr_lbl = "";
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+          usr_lbl = "";
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+        if (usr_id) {
+          sql += `,${ args.push(usr_id) }`;
+        } else {
+          sql += ",default";
+        }
+        sql += `,${ args.push(usr_lbl) }`;
       }<#
       }
       #><#
@@ -4224,7 +4304,7 @@ export async function updateById(
   #>
   
   if (updateFldNum > 0) {<#
-    if (hasUpdateUsrId) {
+    if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
     if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
@@ -4233,6 +4313,42 @@ export async function updateById(
       }
     } else if (input.update_usr_id as unknown as string !== "-") {
       sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+    }<#
+    } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+    #>
+    if (input.update_usr_id == null) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id != null) {
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
+      }
+      if (usr_lbl) {
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+      }
+    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      let usr_id: UsrId | undefined = input.update_usr_id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id) {
+        sql += `update_usr_id=${ args.push(usr_id) },`;
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+      }
     }<#
     }
     #><#
