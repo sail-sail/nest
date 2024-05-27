@@ -727,6 +727,7 @@ input <#=searchName#> {<#
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const isEncrypt = column.isEncrypt;
@@ -788,7 +789,14 @@ input <#=searchName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
   <#=column_name#>_is_null: Boolean<#
+    if (modelLabel) {
+  #>
+  "<#=column_comment#>"
+  <#=modelLabel#>: [String!]<#
+    }
+  #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [

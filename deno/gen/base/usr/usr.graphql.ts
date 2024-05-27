@@ -177,15 +177,19 @@ input UsrSearch {
   username_like: String
   "所属角色"
   role_ids: [RoleId!]
+  "所属角色"
   role_ids_is_null: Boolean
   "所属部门"
   dept_ids: [DeptId!]
+  "所属部门"
   dept_ids_is_null: Boolean
   "所属组织"
   org_ids: [OrgId!]
+  "所属组织"
   org_ids_is_null: Boolean
   "默认组织"
   default_org_id: [OrgId!]
+  "默认组织"
   default_org_id_is_null: Boolean
   "锁定"
   is_locked: [Int!]
@@ -198,12 +202,18 @@ input UsrSearch {
   rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
   "更新时间"
   update_time: [NaiveDateTime]
 }
