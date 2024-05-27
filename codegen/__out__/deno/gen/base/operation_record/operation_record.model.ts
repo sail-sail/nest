@@ -15,6 +15,7 @@ declare global {
     /** 更新人 */
     update_usr_id?: UsrId[];
     update_usr_id_is_null?: boolean;
+    update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
     tenant_id?: string | null;
