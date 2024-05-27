@@ -53,8 +53,8 @@ declare global {
       // if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -123,7 +123,19 @@ declare global {
         }
       }
     #><#
-      if (foreignKey) {
+      if (hasCreateUsrId && column_name === "create_usr_id") {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>?: <#=data_type#>;
+    <#=column_name#>_is_null?: boolean;
+    <#=column_name#>_lbl?: string[];<#
+      } else if (hasCreateUsrId && column_name === "update_usr_id") {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>?: <#=data_type#>;
+    <#=column_name#>_is_null?: boolean;
+    <#=column_name#>_lbl?: string[];<#
+      } else if (foreignKey) {
     #>
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
