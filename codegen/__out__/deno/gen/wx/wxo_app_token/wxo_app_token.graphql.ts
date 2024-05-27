@@ -68,6 +68,7 @@ input WxoAppTokenSearch {
   id: WxoAppTokenId
   "小程序设置"
   wxo_app_id: [WxoAppId!]
+  "小程序设置"
   wxo_app_id_is_null: Boolean
   "令牌"
   access_token: String
