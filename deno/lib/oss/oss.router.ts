@@ -21,10 +21,15 @@ const router = new Router({
 
 router.post("upload", async function(ctx) {
   const request = ctx.request;
-  handleRequestId(request.headers.get("x-request-id"));
+  const response = ctx.response;
+  if (await handleRequestId(
+    response,
+    request.headers.get("x-request-id"),
+  )) {
+    return;
+  }
   const body = request.body;
   const contentType = body.type().toLocaleLowerCase();
-  const response = ctx.response;
   if (!request.hasBody || contentType !== "form-data") {
     response.status = 415;
     return;

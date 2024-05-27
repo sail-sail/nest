@@ -70,6 +70,10 @@ import {
   findOne as findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 const route_path = "/base/i18n";
 
 // deno-lint-ignore require-await
@@ -94,19 +98,19 @@ async function getWhereQuery(
     search.lang_id = [ search.lang_id ];
   }
   if (search?.lang_id != null) {
-    whereQuery += ` and lang_id_lbl.id in ${ args.push(search.lang_id) }`;
+    whereQuery += ` and t.lang_id in ${ args.push(search.lang_id) }`;
   }
   if (search?.lang_id_is_null) {
-    whereQuery += ` and lang_id_lbl.id is null`;
+    whereQuery += ` and t.lang_id is null`;
   }
   if (search?.menu_id != null && !Array.isArray(search?.menu_id)) {
     search.menu_id = [ search.menu_id ];
   }
   if (search?.menu_id != null) {
-    whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
+    whereQuery += ` and t.menu_id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id_is_null) {
-    whereQuery += ` and menu_id_lbl.id is null`;
+    whereQuery += ` and t.menu_id is null`;
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
@@ -130,10 +134,16 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
+  }
+  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
+    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
+  }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -147,10 +157,16 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
+    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -172,9 +188,7 @@ async function getFromQuery(
 ) {
   let fromQuery = `base_i18n t
     left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
@@ -312,8 +326,6 @@ export async function findAll(
   let sql = `select f.* from (select t.*
       ,lang_id_lbl.lbl lang_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -380,9 +392,6 @@ export async function findAll(
     // 菜单
     model.menu_id_lbl = model.menu_id_lbl || "";
     
-    // 创建人
-    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
-    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -394,9 +403,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 更新人
-    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -1016,7 +1022,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_i18n(id,create_time,create_usr_id,lang_id,menu_id,code,lbl,rem)values`;
+  let sql = `insert into base_i18n(id,create_time,create_usr_id,create_usr_id_lbl,lang_id,menu_id,code,lbl,rem)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1030,15 +1036,40 @@ async function _creates(
       }
       if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `,${ args.push(usr_id) }`;
         } else {
           sql += ",default";
         }
+        sql += `,${ args.push(usr_lbl) }`;
       } else if (input.create_usr_id as unknown as string === "-") {
         sql += ",default";
       } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
+        let usr_id: UsrId | undefined = input.create_usr_id;
+        let usr_lbl = "";
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+          usr_lbl = "";
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+        if (usr_id) {
+          sql += `,${ args.push(usr_id) }`;
+        } else {
+          sql += ",default";
+        }
+        sql += `,${ args.push(usr_lbl) }`;
       }
       if (input.lang_id != null) {
         sql += `,${ args.push(input.lang_id) }`;
@@ -1200,11 +1231,37 @@ export async function updateById(
   if (updateFldNum > 0) {
     if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
-      if (authModel?.id != null) {
+      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id != null) {
         sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      if (usr_lbl) {
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+      }
+    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      let usr_id: UsrId | undefined = input.update_usr_id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id) {
+        sql += `update_usr_id=${ args.push(usr_id) },`;
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+      }
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
