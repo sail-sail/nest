@@ -155,6 +155,7 @@ input WxoAppSearch {
   appid_like: String
   "网页授权域名"
   domain_id: [DomainId!]
+  "网页授权域名"
   domain_id_is_null: Boolean
   "锁定"
   is_locked: [Int!]
@@ -167,11 +168,13 @@ input WxoAppSearch {
   rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime]

@@ -236,11 +236,13 @@ input PayTransactionsJsapiSearch {
   prepay_id_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime]
