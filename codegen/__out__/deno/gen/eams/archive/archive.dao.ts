@@ -119,10 +119,10 @@ async function getWhereQuery(
     search.company_id = [ search.company_id ];
   }
   if (search?.company_id != null) {
-    whereQuery += ` and company_id_lbl.id in ${ args.push(search.company_id) }`;
+    whereQuery += ` and t.company_id in ${ args.push(search.company_id) }`;
   }
   if (search?.company_id_is_null) {
-    whereQuery += ` and company_id_lbl.id is null`;
+    whereQuery += ` and t.company_id is null`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -142,10 +142,10 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -159,10 +159,10 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
