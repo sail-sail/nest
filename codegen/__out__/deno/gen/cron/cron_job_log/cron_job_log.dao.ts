@@ -110,10 +110,10 @@ async function getWhereQuery(
     search.cron_job_id = [ search.cron_job_id ];
   }
   if (search?.cron_job_id != null) {
-    whereQuery += ` and cron_job_id_lbl.id in ${ args.push(search.cron_job_id) }`;
+    whereQuery += ` and t.cron_job_id in ${ args.push(search.cron_job_id) }`;
   }
   if (search?.cron_job_id_is_null) {
-    whereQuery += ` and cron_job_id_lbl.id is null`;
+    whereQuery += ` and t.cron_job_id is null`;
   }
   if (search?.exec_state != null && !Array.isArray(search?.exec_state)) {
     search.exec_state = [ search.exec_state ];
@@ -161,19 +161,19 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
