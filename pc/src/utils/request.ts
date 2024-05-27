@@ -13,7 +13,7 @@ export async function request<T>(
     reqType?: string;
     notLoading?: boolean;
     showErrMsg?: boolean;
-    header?: Headers;
+    headers?: Headers;
     notLogin?: boolean;
     method?: string;
     data?: any;
@@ -39,11 +39,11 @@ export async function request<T>(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    config.header = config.header || new Headers();
+    config.headers = config.headers || new Headers();
     
     const authorization = usrStore.authorization;
     if (authorization) {
-      config.header.set("authorization", authorization);
+      config.headers.set("authorization", authorization);
     }
     
     let body = config.data;
@@ -52,20 +52,17 @@ export async function request<T>(
       !(body instanceof FormData) &&
       typeof body === "object"
     ) {
-      config.header.set("content-type", "application/json; charset=utf-8");
+      config.headers.set("content-type", "application/json; charset=utf-8");
       body = JSON.stringify(config.data);
     }
     const resFt = await fetch(config.url!, {
-      headers: config.header,
+      headers: config.headers,
       method: config.method || "post",
       body,
     });
     if (resFt.status !== 200) {
-      let errMsg = resFt.statusText || resFt.status.toString();
-      if (errMsg === "Internal Server Error") {
-        errMsg = "系统正在维护，请稍后再试";
-      }
-      throw errMsg;
+      const errMsg = await resFt.text();
+      throw new Error(errMsg);
     }
     const data = await resFt.json();
     res = {

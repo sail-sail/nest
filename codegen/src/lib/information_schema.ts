@@ -95,8 +95,10 @@ async function getSchema0(
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrIdLbl = records.some((item: TableCloumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
   const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
   const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrIdLbl = records.some((item: TableCloumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
   const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
@@ -218,6 +220,11 @@ async function getSchema0(
       }
       if (item.align == null) {
         item.align = "center";
+      }
+      if (hasCreateUsrIdLbl && column_name === "create_usr_id") {
+        item.modelLabel = "create_usr_id_lbl";
+      } else if (hasUpdateUsrIdLbl && column_name === "update_usr_id") {
+        item.modelLabel = "update_usr_id_lbl";
       }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
@@ -512,6 +519,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateUsrId = true;
   }
+  if (hasCreateUsrIdLbl && tables[table_name]?.opts?.hasCreateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasCreateUsrIdLbl = true;
+  }
   if (hasUpdateTime && tables[table_name]?.opts?.hasUpdateTime == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateTime = true;
@@ -519,6 +530,10 @@ async function getSchema0(
   if (hasUpdateUsrId && tables[table_name]?.opts?.hasUpdateUsrId == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateUsrId = true;
+  }
+  if (hasCreateUsrIdLbl && tables[table_name]?.opts?.hasUpdateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasUpdateUsrIdLbl = true;
   }
   if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
     tables[table_name].opts = tables[table_name].opts || { };
@@ -774,8 +789,11 @@ export async function getSchema(
     if (column.foreignKey && !column.foreignKey.column) {
       column.foreignKey.column = "id";
     }
-    if (column.foreignKey && !column.foreignKey.lbl) {
-      column.foreignKey.lbl = "lbl";
+    if (column.foreignKey && column.foreignKey.lbl === undefined) {
+      const columnsTmp = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.columns || [ ];
+      if (columnsTmp.some((item) => item.COLUMN_NAME === "lbl")) {
+        column.foreignKey.lbl = "lbl";
+      }
     }
     if (column.foreignKey && column.foreignKey.multiple == null) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
@@ -786,7 +804,7 @@ export async function getSchema(
     }
     // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
-      column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+      column.foreignKey.defaultSort = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.opts?.defaultSort;
     }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {

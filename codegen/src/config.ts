@@ -100,7 +100,7 @@ export interface TableCloumn {
   /**
    * 列的为空性。如果列允许 NULL，那么该列返回 YES。否则，返回 NO
    */
-  IS_NULLABLE?: "NO"|"YEW",
+  IS_NULLABLE?: "NO"|"YES",
   
   /**
    * 系统提供的数据类型
@@ -649,11 +649,17 @@ export interface TablesConfigItem {
     /** 是否有 create_usr_id 字段 */
     hasCreateUsrId?: boolean;
     
+    /** 是否有 create_usr_id_lbl 字段 */
+    hasCreateUsrIdLbl?: boolean;
+    
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
     
     /** 是否有 update_usr_id 字段 */
     hasUpdateUsrId?: boolean;
+    
+    /** 是否有 update_usr_id_lbl 字段 */
+    hasUpdateUsrIdLbl?: boolean;
     
     /** 是否有 update_time 字段 */
     hasUpdateTime?: boolean;
@@ -675,6 +681,9 @@ export interface TablesConfigItem {
      * 不允许还原
      */
     noRevert?: boolean;
+    
+    /** 不允许彻底删除 */
+    noForceDelete?: boolean;
     
     /**
      * 不允许修改
