@@ -35,7 +35,7 @@ declare global {
 
   interface CardInput extends CardInputType {
     /** 卡号-序列号 */
-    lbl_seq?: number;
+    lbl_seq?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

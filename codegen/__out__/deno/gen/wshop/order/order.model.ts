@@ -39,9 +39,11 @@ declare global {
 
   interface OrderInput extends OrderInputType {
     /** 订单号-序列号 */
-    lbl_seq?: number;
+    lbl_seq?: number | null;
     /** 订单号-日期 */
     lbl_date_seq?: string | null;
+    lbl_date_seq_lbl?: String | null;
+    lbl_date_seq_save_null?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

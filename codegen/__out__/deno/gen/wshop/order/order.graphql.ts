@@ -227,9 +227,11 @@ input OrderSearch {
   status: [OrderStatus!]
   "用户"
   usr_id: [UsrId!]
+  "用户"
   usr_id_is_null: Boolean
   "会员卡"
   card_id: [CardId!]
+  "会员卡"
   card_id_is_null: Boolean
   "订单金额"
   price: [Decimal]
@@ -254,11 +256,13 @@ input OrderSearch {
   rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime]

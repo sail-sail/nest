@@ -36,7 +36,7 @@ declare global {
 
   interface CardConsumeInput extends CardConsumeInputType {
     /** 微信支付订单号 */
-    transaction_id?: string;
+    transaction_id?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
