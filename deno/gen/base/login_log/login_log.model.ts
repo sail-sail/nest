@@ -15,9 +15,11 @@ declare global {
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;
+    create_usr_id_lbl?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
     update_usr_id_is_null?: boolean;
+    update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
     tenant_id?: string | null;
