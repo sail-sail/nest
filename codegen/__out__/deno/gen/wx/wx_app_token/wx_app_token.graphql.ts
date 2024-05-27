@@ -54,6 +54,8 @@ input WxAppTokenInput {
   token_time: NaiveDateTime
   "令牌创建时间"
   token_time_lbl: String
+  "令牌创建时间"
+  token_time_save_null: Int
   "令牌超时时间"
   expires_in: Int
 }
@@ -66,6 +68,7 @@ input WxAppTokenSearch {
   id: WxAppTokenId
   "小程序设置"
   wx_app_id: [WxAppId!]
+  "小程序设置"
   wx_app_id_is_null: Boolean
   "令牌"
   access_token: String

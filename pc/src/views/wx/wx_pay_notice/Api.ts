@@ -56,6 +56,7 @@ export function intoInput(
     // 支付完成时间
     success_time: model?.success_time,
     success_time_lbl: model?.success_time_lbl,
+    success_time_save_null: model?.success_time_save_null,
     // 总金额
     total: model?.total,
     // 用户支付金额
@@ -195,6 +196,56 @@ export async function findById(
   const model = data.findByIdWxPayNotice;
   await setLblById(model);
   return model;
+}
+
+/**
+ * 根据 ids 还原微信支付通知
+ * @param {WxPayNoticeId[]} ids
+ * @param {GqlOpt} opt?
+ */
+export async function revertByIds(
+  ids: WxPayNoticeId[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    revertByIdsWxPayNotice: Mutation["revertByIdsWxPayNotice"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [WxPayNoticeId!]!) {
+        revertByIdsWxPayNotice(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.revertByIdsWxPayNotice;
+  return res;
+}
+
+/**
+ * 根据 ids 彻底删除微信支付通知
+ * @param {WxPayNoticeId[]} ids
+ * @param {GqlOpt} opt?
+ */
+export async function forceDeleteByIds(
+  ids: WxPayNoticeId[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    forceDeleteByIdsWxPayNotice: Mutation["forceDeleteByIdsWxPayNotice"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [WxPayNoticeId!]!) {
+        forceDeleteByIdsWxPayNotice(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.forceDeleteByIdsWxPayNotice;
+  return res;
 }
 
 /**
