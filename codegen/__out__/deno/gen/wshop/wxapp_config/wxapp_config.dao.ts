@@ -13,6 +13,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -156,10 +157,10 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -173,10 +174,10 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -703,6 +704,56 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找小程序配置 */
+export async function findByIds(
+  ids: WxappConfigId[],
+  options?: {
+    debug?: boolean;
+  },
+): Promise<WxappConfigModel[]> {
+  const table = "wshop_wxapp_config";
+  const method = "findByIds";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断小程序配置是否存在
  * @param {WxappConfigSearch} search?
@@ -1009,9 +1060,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(reqDate()) }`;
       }
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -1019,10 +1068,12 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.org_id != null) {
-        sql += `,${ args.push(input.org_id) }`;
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (input.org_id == null) {
         const authModel = await getAuthModel();
         const org_id = authModel?.org_id;
         if (org_id != null) {
@@ -1030,16 +1081,22 @@ async function _creates(
         } else {
           sql += ",default";
         }
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      } else if (input.org_id as unknown as string === "-") {
+        sql += ",default";
       } else {
+        sql += `,${ args.push(input.org_id) }`;
+      }
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.img != null) {
         sql += `,${ args.push(input.img) }`;
@@ -1266,61 +1323,59 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update wshop_wxapp_config set
-  `;
+  let sql = `update wshop_wxapp_config set `;
   let updateFldNum = 0;
   if (input.img != null) {
     if (input.img != oldModel.img) {
-      sql += `img = ${ args.push(input.img) },`;
+      sql += `img=${ args.push(input.img) },`;
       updateFldNum++;
     }
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.val != null) {
     if (input.val != oldModel.val) {
-      sql += `val = ${ args.push(input.val) },`;
+      sql += `val=${ args.push(input.val) },`;
       updateFldNum++;
     }
   }
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(input.is_locked) },`;
+      sql += `is_locked=${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
+      sql += `is_enabled=${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (input.is_sys != null) {
     if (input.is_sys != oldModel.is_sys) {
-      sql += `is_sys = ${ args.push(input.is_sys) },`;
+      sql += `is_sys=${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
       }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (input.update_time) {
       sql += `update_time = ${ args.push(input.update_time) }`;
