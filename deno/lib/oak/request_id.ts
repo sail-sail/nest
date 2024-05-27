@@ -10,11 +10,29 @@ import {
   getEnv,
 } from "/lib/env.ts";
 
+import type {
+  Response,
+} from "@oak/oak";
+
 const requestIdMap = new Map<string, number>();
 const requestTimeoutSec = 60;
 const requestTimeout = requestTimeoutSec * 1000;
 
-export async function handleRequestId(requestId?: string | null) {
+export async function handleRequestId(
+  response: Response,
+  requestId?: string | null,
+) {
+  try {
+    await _handleRequestId(requestId);
+    return false;
+  } catch (err) {
+    response.status = 500;
+    response.body = err.message;
+    return true;
+  }
+}
+
+async function _handleRequestId(requestId?: string | null) {
   if (!requestId) {
     return;
   }
@@ -40,13 +58,15 @@ export async function handleRequestId(requestId?: string | null) {
   if (!client) {
     return;
   }
-  const isExists = await client.hexists(cache_x_request_id, requestId);
-  if (isExists) {
+  
+  const cache_key1 = `${ cache_x_request_id }:${ requestId }`;
+  const is_exists = await client.exists(cache_key1);
+  if (is_exists) {
     throw new ServiceException(`x-request-id is duplicated: ${ requestId }`, "request_id_duplicated");
   }
   await client.set(
-    cache_x_request_id,
-    requestId,
+    cache_key1,
+    "1",
     {
       ex: requestTimeoutSec,
     },
