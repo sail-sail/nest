@@ -74,6 +74,7 @@ input WxwAppTokenSearch {
   id: WxwAppTokenId
   "企微应用"
   wxw_app_id: [WxwAppId!]
+  "企微应用"
   wxw_app_id_is_null: Boolean
   "类型corp和contact"
   type: String

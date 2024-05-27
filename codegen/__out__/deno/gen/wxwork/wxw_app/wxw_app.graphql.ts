@@ -117,6 +117,7 @@ input WxwAppSearch {
   agentid_like: String
   "可信域名"
   domain_id: [DomainId!]
+  "可信域名"
   domain_id_is_null: Boolean
   "锁定"
   is_locked: [Int!]

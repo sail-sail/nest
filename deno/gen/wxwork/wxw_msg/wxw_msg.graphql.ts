@@ -92,6 +92,7 @@ input WxwMsgSearch {
   id: WxwMsgId
   "企微应用"
   wxw_app_id: [WxwAppId!]
+  "企微应用"
   wxw_app_id_is_null: Boolean
   "发送状态"
   errcode: [String!]
