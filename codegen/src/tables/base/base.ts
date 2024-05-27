@@ -47,13 +47,6 @@ export default defineConfig({
           notSetIdByLbl: true,
         },
       },
-      // {
-      //   COLUMN_NAME: "field_permit_ids",
-      //   COLUMN_COMMENT: "字段权限",
-      //   foreignKey: {
-      //     showType: "dialog",
-      //   },
-      // },
       {
         COLUMN_NAME: "is_locked",
       },
@@ -677,68 +670,6 @@ export default defineConfig({
         COLUMN_NAME: "type",
         require: true,
         width: 140,
-        align: "center",
-      },
-      {
-        COLUMN_NAME: "rem",
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
-        COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
-      },
-    ],
-  },
-  // 字段权限
-  base_field_permit: {
-    opts: {
-      cache: true,
-      uniques: [
-        [ "menu_id", "code" ],
-      ],
-      sys_fields: [
-        "menu_id",
-        "code",
-      ],
-      list_tree: "menu_id",
-    },
-    columns: [
-      {
-        COLUMN_NAME: "menu_id",
-        require: true,
-        search: true,
-        foreignKey: {
-          mod: "base",
-          table: "menu",
-        },
-      },
-      {
-        COLUMN_NAME: "code",
-        require: true,
-        search: true,
-        width: 160,
-        align: "left",
-        fixed: false,
-      },
-      {
-        COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 160,
-        align: "left",
-        fixed: false,
-      },
-      {
-        COLUMN_NAME: "type",
-        require: true,
-        width: 100,
         align: "center",
       },
       {
