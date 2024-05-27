@@ -49,12 +49,6 @@ export function getScalars() {
       "output": "DomainId",
     },
     
-    // 字段权限
-    "FieldPermitId": {
-      "input": "FieldPermitId",
-      "output": "FieldPermitId",
-    },
-    
     // 国际化
     "I18nId": {
       "input": "I18nId",

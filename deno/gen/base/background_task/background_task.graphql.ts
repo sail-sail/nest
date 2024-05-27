@@ -140,10 +140,14 @@ input BackgroundTaskInput {
   begin_time: NaiveDateTime
   "开始时间"
   begin_time_lbl: String
+  "开始时间"
+  begin_time_save_null: Int
   "结束时间"
   end_time: NaiveDateTime
   "结束时间"
   end_time_lbl: String
+  "结束时间"
+  end_time_save_null: Int
   "备注"
   rem: String
 }
@@ -176,12 +180,18 @@ input BackgroundTaskSearch {
   rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
   "更新时间"
   update_time: [NaiveDateTime]
 }

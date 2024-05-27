@@ -70,7 +70,7 @@ let _redisClient: Redis | undefined = undefined;
 let cache_ECONNREFUSED = false;
 
 /** 获取redis缓存连接 */
-async function redisClient() {
+export async function redisClient() {
   if (cache_ECONNREFUSED) {
     return;
   }

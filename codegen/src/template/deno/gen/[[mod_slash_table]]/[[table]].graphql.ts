@@ -453,6 +453,7 @@ input <#=inputName#> {<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     if (column_name === "version") continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -473,6 +474,27 @@ input <#=inputName#> {<#
       ].includes(column_name)
     ) {
       continue;
+    }
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+      }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
     }
     let _data_type = "String";
     if (column_name === 'id') {
@@ -519,9 +541,13 @@ input <#=inputName#> {<#
     if (foreignKey) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=data_type#><#
+    if (hasModelLabel) {
+  #>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: <#=_data_type#><#
+  <#=modelLabel#>: <#=_data_type#><#
+    }
+  #><#
     } else if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
@@ -534,6 +560,12 @@ input <#=inputName#> {<#
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
+    if (is_nullable) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_save_null: Int<#
+    }
+  #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [
@@ -553,9 +585,13 @@ input <#=inputName#> {<#
       }
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=enumColumnName#>
+  <#=column_name#>: <#=enumColumnName#><#
+    if (hasModelLabel) {
+  #>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: String<#
+  <#=modelLabel#>: String<#
+    }
+  #><#
     } else {
   #>
   "<#=column_comment#>"
@@ -691,6 +727,7 @@ input <#=searchName#> {<#
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const isEncrypt = column.isEncrypt;
@@ -752,7 +789,14 @@ input <#=searchName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
   <#=column_name#>_is_null: Boolean<#
+    if (modelLabel) {
+  #>
+  "<#=column_comment#>"
+  <#=modelLabel#>: [String!]<#
+    }
+  #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [

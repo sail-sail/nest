@@ -116,6 +116,7 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+const findByIdTableUps = [ ];
 const findOneTableUps = [ ];
 const findAllTableUps = [ ];
 const createTableUps = [ ];
@@ -180,6 +181,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,<#
   if (cache) {
@@ -609,6 +611,28 @@ import {<#
   #>
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
+#><#
+if (
+  (
+    (hasCreateUsrId && hasCreateUsrIdLbl)
+    || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  )
+  && !findByIdTableUps.includes(Table_Up)
+) {
+  const hasFindByIdTableUps = findByIdTableUps.includes(Table_Up);
+  if (!hasFindByIdTableUps) {
+    findByIdTableUps.push(Table_Up);
+  }
+#>
+
+import {<#
+  if (!hasFindByIdTableUps) {  
+  #>
+  findById as findByIdUsr,<#
+  }
+  #>
+} from "/gen/base/usr/usr.dao.ts";<#
+}
 #>
 
 const route_path = "/<#=mod#>/<#=table#>";
@@ -720,6 +744,7 @@ async function getWhereQuery(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const modelLabel = column.modelLabel;
   #><#
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
@@ -728,11 +753,21 @@ async function getWhereQuery(
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and <#=column_name#>_lbl.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#>_is_null) {
-    whereQuery += ` and <#=column_name#>_lbl.id is null`;
+    whereQuery += ` and t.<#=column_name#> is null`;
   }<#
+    if (modelLabel) {
+  #>
+  if (search?.<#=modelLabel#> != null && !Array.isArray(search?.<#=modelLabel#>)) {
+    search.<#=modelLabel#> = [ search.<#=modelLabel#> ];
+  }
+  if (search?.<#=modelLabel#> != null) {
+    whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+  }<#
+    }
+  #><#
       } else if (foreignKey.type === "many2many") {
   #>
   if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
@@ -890,6 +925,9 @@ async function getFromQuery(
     #>
     group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
       } else if (foreignKey && !foreignKey.multiple) {
+        if (modelLabel) {
+          continue;
+        }
     #>
     left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
       }
@@ -1089,7 +1127,7 @@ export async function findAll(
         if (foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#><#
-        if (!modelLabel) {
+        if (foreignKey.lbl && !modelLabel) {
       #>
       ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
         }
@@ -1582,8 +1620,13 @@ export async function findAll(
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
     #>
     // <#=column_comment#>
-    model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
-    model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));<#
+    try {
+      model.<#=column_name#> = new Decimal(await decrypt(model.<#=column_name#>.toString()) || 0);
+      model.<#=column_name#> = new Decimal(model.<#=column_name#>.toFixed(<#=precision#>));
+    } catch(err) {
+      error(err);
+      model.<#=column_name#> = new Decimal(0);
+    }<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
     #>
     // <#=column_comment#>
@@ -2595,6 +2638,61 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找<#=table_comment#> */
+export async function findByIds(
+  ids: <#=Table_Up#>Id[],
+  options?: {
+    debug?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=modelName#>[]> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findByIds";
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options || { };
+    options.debug = false;
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断<#=table_comment#>是否存在
  * @param {<#=searchName#>} search?
@@ -3058,6 +3156,10 @@ async function _creates(
     #>,create_usr_id<#
     }
     #><#
+    if (hasCreateUsrIdLbl) {
+    #>,create_usr_id_lbl<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -3136,9 +3238,7 @@ async function _creates(
       #><#
       if (hasTenant_id) {
       #>
-      if (input.tenant_id != null) {
-        sql += `,${ args.push(input.tenant_id) }`;
-      } else {
+      if (input.tenant_id == null) {
         const authModel = await getAuthModel();
         const tenant_id = await getTenant_id(authModel?.id);
         if (tenant_id) {
@@ -3146,14 +3246,16 @@ async function _creates(
         } else {
           sql += ",default";
         }
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.tenant_id) }`;
       }<#
       }
       #><#
       if (hasOrgId) {
       #>
-      if (input.org_id != null) {
-        sql += `,${ args.push(input.org_id) }`;
-      } else {
+      if (input.org_id == null) {
         const authModel = await getAuthModel();
         const org_id = authModel?.org_id;
         if (org_id != null) {
@@ -3161,20 +3263,65 @@ async function _creates(
         } else {
           sql += ",default";
         }
+      } else if (input.org_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.org_id) }`;
       }<#
       }
       #><#
-      if (hasCreateUsrId) {
+      if (hasCreateUsrId && !hasCreateUsrIdLbl) {
       #>
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
-      } else {
+      if (input.create_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
           sql += `,${ args.push(authModel.id) }`;
         } else {
           sql += ",default";
         }
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.create_usr_id) }`;
+      }<#
+      } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
+      #>
+      if (input.create_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `,${ args.push(usr_id) }`;
+        } else {
+          sql += ",default";
+        }
+        sql += `,${ args.push(usr_lbl) }`;
+      } else if (input.create_usr_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        let usr_id: UsrId | undefined = input.create_usr_id;
+        let usr_lbl = "";
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+          usr_lbl = "";
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+        if (usr_id) {
+          sql += `,${ args.push(usr_id) }`;
+        } else {
+          sql += ",default";
+        }
+        sql += `,${ args.push(usr_lbl) }`;
       }<#
       }
       #><#
@@ -3188,12 +3335,10 @@ async function _creates(
         if (column_name === "create_time") continue;
         if (column_name === "update_usr_id") continue;
         if (column_name === "update_time") continue;
-        let data_type = column.DATA_TYPE;
-        let column_type = column.COLUMN_TYPE;
-        let column_comment = column.COLUMN_COMMENT || "";
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
+        const is_nullable = column.IS_NULLABLE === "YES";
+        const data_type = column.DATA_TYPE;
+        const column_type = column.COLUMN_TYPE;
+        const column_comment = column.COLUMN_COMMENT || "";
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -3220,7 +3365,11 @@ async function _creates(
       #><#
         } else if (!foreignKey) {
       #>
-      if (input.<#=column_name#> != null) {<#
+      if (input.<#=column_name#> != null<#
+        if (is_nullable && [ "date", "datetime" ].includes(data_type)) {
+      #> || input.<#=column_name#>_save_null<#
+        }
+      #>) {<#
         if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
         #>
         sql += `,${ args.push(await encrypt(input.<#=column_name#>)) }`;<#
@@ -3813,9 +3962,7 @@ export async function updateById(
   #>
   
   const args = new QueryArgs();
-  let sql = `
-    update <#=mod#>_<#=table#> set
-  `;
+  let sql = `update <#=mod#>_<#=table#> set `;
   let updateFldNum = 0;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -3823,12 +3970,10 @@ export async function updateById(
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const is_nullable = column.IS_NULLABLE === "YES";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -3850,7 +3995,7 @@ export async function updateById(
     if (modelLabel) {
   #>
   if (isNotEmpty(input.<#=modelLabel#>)) {
-    sql += `<#=modelLabel#> = ?,`;
+    sql += `<#=modelLabel#>=?,`;
     args.push(input.<#=modelLabel#>);
     updateFldNum++;
   }<#
@@ -3859,54 +4004,33 @@ export async function updateById(
     if (column.isPassword) {
   #>
   if (isNotEmpty(input.<#=column_name#>)) {
-    sql += `<#=column_name_mysql#> = ?,`;
+    sql += `<#=column_name_mysql#>=?,`;
     args.push(await getPassword(input.<#=column_name#>));
     updateFldNum++;
-  }<#
-    } else if (foreignKey && foreignKey.type === "json") {
-  #>
-  if (input.<#=column_name#> != null) {
-    if (isEmpty(input.<#=column_name#>)) {
-      input.<#=column_name#> = null;
-    }
-    if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
-      if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
-      #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
-      } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
-      #>
-      input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
-      } else if (isEncrypt && [ "int" ].includes(data_type)) {
-      #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
-      } else {
-      #>
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
-      }
-      #>
-      updateFldNum++;
-    }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (input.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null<#
+    if (is_nullable && [ "date", "datetime" ].includes(data_type)) {
+  #> || input.<#=column_name#>_save_null<#
+    }
+  #>) {
     if (input.<#=column_name#> != oldModel.<#=column_name#>) {<#
       if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>)) },`;<#
       } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
       #>
       input.<#=column_name#> = new Decimal(input.<#=column_name#>.toFixed(<#=precision#>));
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
       }
       #>
       updateFldNum++;
@@ -4180,14 +4304,50 @@ export async function updateById(
   #>
   
   if (updateFldNum > 0) {<#
-    if (hasUpdateUsrId) {
+    if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
-    } else {
+    if (input.update_usr_id == null) {
       const authModel = await getAuthModel();
       if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
+      }
+    } else if (input.update_usr_id as unknown as string !== "-") {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+    }<#
+    } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+    #>
+    if (input.update_usr_id == null) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id != null) {
+        sql += `update_usr_id=${ args.push(authModel.id) },`;
+      }
+      if (usr_lbl) {
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+      }
+    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+      let usr_id: UsrId | undefined = input.update_usr_id;
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_id) {
+        sql += `update_usr_id=${ args.push(usr_id) },`;
+        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
       }
     }<#
     }

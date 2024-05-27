@@ -17,27 +17,25 @@
       ref="dropdownRef"
     >
       <template #default>
-        <span
-          v-if="!item?.icon"
+        <div
           class="tab_label"
           :title="item.lbl"
         >
-          {{ item.lbl }}
-        </span>
-        <div
-          v-else
-          class="tab_icon"
-          :title="item.lbl"
-        >
-          <el-icon
-            size="20"
+          <span
+            v-if="!item?.icon"
           >
-            <template
-              v-if="item?.icon === 'iconfont-home-fill'"
+            {{ item.lbl }}
+          </span>
+          <div
+            v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
+            class="tab_icon"
+          >
+            <el-icon
+              size="20"
             >
               <i un-i="iconfont-home-fill"></i>
-            </template>
-          </el-icon>
+            </el-icon>
+          </div>
         </div>
       </template>
       <template #dropdown>
@@ -58,7 +56,6 @@
           
           <el-dropdown-item
             command="closeAll"
-            :disabled="tabs.length <= 1"
           >
             全部关闭
           </el-dropdown-item>
@@ -89,6 +86,8 @@ import type {
 } from "sortablejs";
 
 import Sortable from "sortablejs";
+
+import config from "@/utils/config";
 
 const router = useRouter();
 const tabsStore = useTabsStore();

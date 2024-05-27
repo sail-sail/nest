@@ -122,6 +122,7 @@ input DictbizDetailSearch {
   id: DictbizDetailId
   "业务字典"
   dictbiz_id: [DictbizId!]
+  "业务字典"
   dictbiz_id_is_null: Boolean
   "名称"
   lbl: String
@@ -140,12 +141,18 @@ input DictbizDetailSearch {
   rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
   "创建时间"
   create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
   "更新时间"
   update_time: [NaiveDateTime]
 }
