@@ -1149,7 +1149,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单权限",
       prop: "menu_ids_lbl",
-      sortBy: "menu_ids",
+      sortBy: "menu_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1158,7 +1158,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "按钮权限",
       prop: "permit_ids_lbl",
-      sortBy: "permit_ids",
+      sortBy: "permit_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1167,7 +1167,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "数据权限",
       prop: "data_permit_ids_lbl",
-      sortBy: "data_permit_ids",
+      sortBy: "data_permit_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1211,7 +1211,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1230,7 +1230,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
