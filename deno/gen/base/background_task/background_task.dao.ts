@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -82,9 +86,9 @@ const route_path = "/base/background_task";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: BackgroundTaskSearch,
-  options?: {
-  },
+  search?: Readonly<BackgroundTaskSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -101,9 +105,6 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -113,14 +114,8 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.state != null && !Array.isArray(search?.state)) {
-    search.state = [ search.state ];
-  }
   if (search?.state != null) {
     whereQuery += ` and t.state in ${ args.push(search.state) }`;
-  }
-  if (search?.type != null && !Array.isArray(search?.type)) {
-    search.type = [ search.type ];
   }
   if (search?.type != null) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
@@ -159,17 +154,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
@@ -182,17 +171,11 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
@@ -211,9 +194,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: BackgroundTaskSearch,
-  options?: {
-  },
+  search?: Readonly<BackgroundTaskSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `base_background_task t`;
   return fromQuery;
@@ -225,10 +208,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: BackgroundTaskSearch,
-  options?: {
+  search?: Readonly<BackgroundTaskSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_background_task";
   const method = "findCount";
@@ -267,13 +250,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: BackgroundTaskSearch,
-  page?: PageInput,
+  search?: Readonly<BackgroundTaskSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<BackgroundTaskModel[]> {
   const table = "base_background_task";
   const method = "findAll";
@@ -602,10 +585,10 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
  * @param {BackgroundTaskInput} search0
  */
 export async function findByUnique(
-  search0: BackgroundTaskInput,
-  options?: {
+  search0: Readonly<BackgroundTaskInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
@@ -642,8 +625,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: BackgroundTaskModel,
-  input: BackgroundTaskInput,
+  oldModel: Readonly<BackgroundTaskModel>,
+  input: Readonly<BackgroundTaskInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -659,11 +642,11 @@ export function equalsByUnique(
  * @return {Promise<BackgroundTaskId | undefined>}
  */
 export async function checkByUnique(
-  input: BackgroundTaskInput,
-  oldModel: BackgroundTaskModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<BackgroundTaskInput>,
+  oldModel: Readonly<BackgroundTaskModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<BackgroundTaskId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -693,12 +676,13 @@ export async function checkByUnique(
  * @param {BackgroundTaskSearch} search?
  */
 export async function findOne(
-  search?: BackgroundTaskSearch,
+  search?: Readonly<BackgroundTaskSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<BackgroundTaskModel | undefined> {
+  
   const table = "base_background_task";
   const method = "findOne";
   
@@ -714,8 +698,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -736,12 +722,14 @@ export async function findOne(
  */
 export async function findById(
   id?: BackgroundTaskId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<BackgroundTaskModel | undefined> {
+  
   const table = "base_background_task";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -751,8 +739,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -773,12 +763,14 @@ export async function findById(
 /** 根据 ids 查找后台任务 */
 export async function findByIds(
   ids: BackgroundTaskId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<BackgroundTaskModel[]> {
+  
   const table = "base_background_task";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -788,8 +780,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -825,13 +819,15 @@ export async function findByIds(
  * @param {BackgroundTaskSearch} search?
  */
 export async function exist(
-  search?: BackgroundTaskSearch,
-  options?: {
+  search?: Readonly<BackgroundTaskSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_background_task";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -841,8 +837,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -854,11 +852,12 @@ export async function exist(
  * @param {BackgroundTaskId} id
  */
 export async function existById(
-  id?: BackgroundTaskId | null,
-  options?: {
+  id?: Readonly<BackgroundTaskId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_background_task";
   const method = "existById";
   
@@ -875,7 +874,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_background_task t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_background_task t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
@@ -891,7 +890,7 @@ export async function existById(
 
 /** 校验后台任务是否存在 */
 export async function validateOption(
-  model?: BackgroundTaskModel,
+  model?: Readonly<BackgroundTaskModel>,
 ) {
   if (!model) {
     throw `${ await ns("后台任务") } ${ await ns("不存在") }`;
@@ -904,7 +903,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: BackgroundTaskInput,
+  input: Readonly<BackgroundTaskInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -985,13 +984,15 @@ export async function validate(
  * @return {Promise<BackgroundTaskId>} 
  */
 export async function create(
-  input: BackgroundTaskInput,
-  options?: {
+  input: Readonly<BackgroundTaskInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<BackgroundTaskId> {
+  
   const table = "base_background_task";
   const method = "create";
   
@@ -1004,8 +1005,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -1032,12 +1035,14 @@ export async function create(
  */
 export async function creates(
   inputs: BackgroundTaskInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<BackgroundTaskId[]> {
+  
   const table = "base_background_task";
   const method = "creates";
   
@@ -1050,8 +1055,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -1061,11 +1068,12 @@ export async function creates(
 
 async function _creates(
   inputs: BackgroundTaskInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<BackgroundTaskId[]> {
   
   if (inputs.length === 0) {
@@ -1073,6 +1081,9 @@ async function _creates(
   }
   
   const table = "base_background_task";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: BackgroundTaskId[] = [ ];
   const inputs2: BackgroundTaskInput[] = [ ];
@@ -1116,17 +1127,38 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_background_task(id,create_time,tenant_id,create_usr_id,create_usr_id_lbl,lbl,state,type,result,err_msg,begin_time,end_time,rem)values`;
+  let sql = `insert into base_background_task(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  sql += ",tenant_id";
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }
+  sql += ",lbl";
+  sql += ",state";
+  sql += ",type";
+  sql += ",result";
+  sql += ",err_msg";
+  sql += ",begin_time";
+  sql += ",end_time";
+  sql += ",rem";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1141,42 +1173,45 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
-        let usr_lbl = "";
-        if (usr_id) {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
           const usr_model = await findByIdUsr(usr_id);
           if (!usr_model) {
             usr_id = undefined;
+            usr_lbl = "";
           } else {
             usr_lbl = usr_model.lbl;
           }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
-        if (usr_id != null) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        let usr_id: UsrId | undefined = input.create_usr_id;
-        let usr_lbl = "";
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-          usr_lbl = "";
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-        if (usr_id) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1248,10 +1283,10 @@ async function _creates(
  */
 export async function updateTenantById(
   id: BackgroundTaskId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_background_task";
   const method = "updateTenantById";
@@ -1297,14 +1332,18 @@ export async function updateTenantById(
 export async function updateById(
   id: BackgroundTaskId,
   input: BackgroundTaskInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<BackgroundTaskId> {
   
   const table = "base_background_task";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1407,54 +1446,60 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
-      if (usr_id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
-      }
-      if (usr_lbl) {
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-      }
-    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      let usr_id: UsrId | undefined = input.update_usr_id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-      }
-      if (usr_id) {
-        sql += `update_usr_id=${ args.push(usr_id) },`;
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+    }
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
       }
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
-    }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await execute(sql, args);
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1467,12 +1512,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: BackgroundTaskId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_background_task";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1497,7 +1547,28 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_background_task set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_background_task set is_deleted=1`;
+    if (!silentMode) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1512,10 +1583,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: BackgroundTaskId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_background_task";
   const method = "revertByIds";
   
@@ -1538,7 +1610,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: BackgroundTaskId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_background_task set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_background_task set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1569,10 +1641,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_background_task";
   const method = "forceDeleteByIds";
   
@@ -1596,12 +1669,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_background_task where id = ${ args.push(id) }`;
+      const sql = `select * from base_background_task where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_background_task where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_background_task where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
