@@ -1046,7 +1046,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "系统字典",
       prop: "dict_id_lbl",
-      sortBy: "dict_id",
+      sortBy: "dict_id_lbl",
       width: 240,
       align: "left",
       headerAlign: "center",
@@ -1108,7 +1108,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1127,7 +1127,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
