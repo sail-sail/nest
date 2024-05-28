@@ -1220,7 +1220,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属角色",
       prop: "role_ids_lbl",
-      sortBy: "role_ids",
+      sortBy: "role_ids_lbl",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1229,7 +1229,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属部门",
       prop: "dept_ids_lbl",
-      sortBy: "dept_ids",
+      sortBy: "dept_ids_lbl",
       width: 240,
       align: "left",
       headerAlign: "center",
@@ -1238,7 +1238,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属组织",
       prop: "org_ids_lbl",
-      sortBy: "org_ids",
+      sortBy: "org_ids_lbl",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1247,7 +1247,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "默认组织",
       prop: "default_org_id_lbl",
-      sortBy: "default_org_id",
+      sortBy: "default_org_id_lbl",
       width: 140,
       align: "left",
       headerAlign: "center",
@@ -1291,7 +1291,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1310,7 +1310,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

@@ -920,7 +920,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单",
       prop: "menu_id_lbl",
-      sortBy: "menu_id",
+      sortBy: "menu_id_lbl",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -953,7 +953,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -972,7 +972,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
