@@ -1093,7 +1093,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属域名",
       prop: "domain_ids_lbl",
-      sortBy: "domain_ids",
+      sortBy: "domain_ids_lbl",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1102,7 +1102,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单权限",
       prop: "menu_ids_lbl",
-      sortBy: "menu_ids",
+      sortBy: "menu_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1146,7 +1146,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1165,7 +1165,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
