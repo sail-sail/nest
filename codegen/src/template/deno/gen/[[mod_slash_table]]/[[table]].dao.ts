@@ -346,7 +346,7 @@ import type {
     }
     const columnDictModels = [
       ...dictModels.filter(function(item) {
-        return item.code === column.dict || item.code === column.dictbiz;
+        return item.code === column.dict || item.code === column.dict;
       }),
       ...dictbizModels.filter(function(item) {
         return item.code === column.dict || item.code === column.dictbiz;
