@@ -2399,7 +2399,49 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (foreignKey || column.dict || column.dictbiz
+    } else if (foreignKey) {
+    #>
+    {
+      label: "<#=column_comment#>",
+      prop: "<#=column_name#>_lbl",
+      sortBy: "<#=column_name#>_lbl",<#
+      if (column.width) {
+      #>
+      width: <#=column.width#>,<#
+      }
+      #><#
+      if (column.minWidth) {
+      #>
+      minWidth: <#=column.minWidth#>,<#
+      }
+      #><#
+      if (column.sortable) {
+      #>
+      sortable: "custom",<#
+      }
+      #><#
+      if (column.align) {
+      #>
+      align: "<#=column.align#>",<#
+      }
+      #><#
+      if (column.headerAlign) {
+      #>
+      headerAlign: "<#=column.headerAlign#>",<#
+      }
+      #><#
+      if (column.showOverflowTooltip != null) {
+      #>
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
+      }
+      #><#
+      if (fixed) {
+      #>
+      fixed: "<#=fixed#>",<#
+      }
+      #>
+    },<#
+    } else if (column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
     ) {
     #>
