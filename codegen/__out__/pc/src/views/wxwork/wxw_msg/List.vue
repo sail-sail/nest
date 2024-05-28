@@ -900,7 +900,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "企微应用",
       prop: "wxw_app_id_lbl",
-      sortBy: "wxw_app_id",
+      sortBy: "wxw_app_id_lbl",
       width: 160,
       align: "left",
       headerAlign: "center",
