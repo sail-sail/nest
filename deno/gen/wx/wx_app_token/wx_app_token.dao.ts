@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -66,28 +70,26 @@ import {
   findOne as findOneWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 const route_path = "/wx/wx_app_token";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
-  search?: WxAppTokenSearch,
-  options?: {
-  },
+  search?: Readonly<WxAppTokenSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.wx_app_id != null && !Array.isArray(search?.wx_app_id)) {
-    search.wx_app_id = [ search.wx_app_id ];
   }
   if (search?.wx_app_id != null) {
     whereQuery += ` and t.wx_app_id in ${ args.push(search.wx_app_id) }`;
@@ -117,14 +119,14 @@ async function getWhereQuery(
       whereQuery += ` and t.expires_in<=${ args.push(search.expires_in[1]) }`;
     }
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
+  }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -134,14 +136,14 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -157,14 +159,12 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: WxAppTokenSearch,
-  options?: {
-  },
+  search?: Readonly<WxAppTokenSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `wx_wx_app_token t
-    left join wx_wx_app wx_app_id_lbl on wx_app_id_lbl.id=t.wx_app_id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+    left join wx_wx_app wx_app_id_lbl on wx_app_id_lbl.id=t.wx_app_id`;
   return fromQuery;
 }
 
@@ -174,10 +174,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: WxAppTokenSearch,
-  options?: {
+  search?: Readonly<WxAppTokenSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "wx_wx_app_token";
   const method = "findCount";
@@ -219,13 +219,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: WxAppTokenSearch,
-  page?: PageInput,
+  search?: Readonly<WxAppTokenSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<WxAppTokenModel[]> {
   const table = "wx_wx_app_token";
   const method = "findAll";
@@ -290,8 +290,6 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,wx_app_id_lbl.lbl wx_app_id_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -432,10 +430,10 @@ export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
  * @param {WxAppTokenInput} search0
  */
 export async function findByUnique(
-  search0: WxAppTokenInput,
-  options?: {
+  search0: Readonly<WxAppTokenInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<WxAppTokenModel[]> {
   
   const table = "wx_wx_app_token";
@@ -487,8 +485,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: WxAppTokenModel,
-  input: WxAppTokenInput,
+  oldModel: Readonly<WxAppTokenModel>,
+  input: Readonly<WxAppTokenInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -509,11 +507,11 @@ export function equalsByUnique(
  * @return {Promise<WxAppTokenId | undefined>}
  */
 export async function checkByUnique(
-  input: WxAppTokenInput,
-  oldModel: WxAppTokenModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<WxAppTokenInput>,
+  oldModel: Readonly<WxAppTokenModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<WxAppTokenId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -543,12 +541,13 @@ export async function checkByUnique(
  * @param {WxAppTokenSearch} search?
  */
 export async function findOne(
-  search?: WxAppTokenSearch,
+  search?: Readonly<WxAppTokenSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<WxAppTokenModel | undefined> {
+  
   const table = "wx_wx_app_token";
   const method = "findOne";
   
@@ -564,8 +563,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -586,12 +587,14 @@ export async function findOne(
  */
 export async function findById(
   id?: WxAppTokenId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<WxAppTokenModel | undefined> {
+  
   const table = "wx_wx_app_token";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -601,8 +604,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -623,12 +628,14 @@ export async function findById(
 /** 根据 ids 查找小程序接口凭据 */
 export async function findByIds(
   ids: WxAppTokenId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<WxAppTokenModel[]> {
+  
   const table = "wx_wx_app_token";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -638,8 +645,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -675,13 +684,15 @@ export async function findByIds(
  * @param {WxAppTokenSearch} search?
  */
 export async function exist(
-  search?: WxAppTokenSearch,
-  options?: {
+  search?: Readonly<WxAppTokenSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "wx_wx_app_token";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -691,8 +702,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -704,11 +717,12 @@ export async function exist(
  * @param {WxAppTokenId} id
  */
 export async function existById(
-  id?: WxAppTokenId | null,
-  options?: {
+  id?: Readonly<WxAppTokenId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "wx_wx_app_token";
   const method = "existById";
   
@@ -725,7 +739,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from wx_wx_app_token t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from wx_wx_app_token t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -744,7 +758,7 @@ export async function existById(
 
 /** 校验小程序接口凭据是否存在 */
 export async function validateOption(
-  model?: WxAppTokenModel,
+  model?: Readonly<WxAppTokenModel>,
 ) {
   if (!model) {
     throw `${ await ns("小程序接口凭据") } ${ await ns("不存在") }`;
@@ -757,7 +771,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: WxAppTokenInput,
+  input: Readonly<WxAppTokenInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -796,13 +810,15 @@ export async function validate(
  * @return {Promise<WxAppTokenId>} 
  */
 export async function create(
-  input: WxAppTokenInput,
-  options?: {
+  input: Readonly<WxAppTokenInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<WxAppTokenId> {
+  
   const table = "wx_wx_app_token";
   const method = "create";
   
@@ -815,8 +831,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -843,12 +861,14 @@ export async function create(
  */
 export async function creates(
   inputs: WxAppTokenInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<WxAppTokenId[]> {
+  
   const table = "wx_wx_app_token";
   const method = "creates";
   
@@ -861,8 +881,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -872,11 +894,12 @@ export async function creates(
 
 async function _creates(
   inputs: WxAppTokenInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<WxAppTokenId[]> {
   
   if (inputs.length === 0) {
@@ -884,6 +907,9 @@ async function _creates(
   }
   
   const table = "wx_wx_app_token";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: WxAppTokenId[] = [ ];
   const inputs2: WxAppTokenInput[] = [ ];
@@ -927,29 +953,73 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wx_wx_app_token(id,create_time,create_usr_id,wx_app_id,access_token,token_time,expires_in)values`;
+  let sql = `insert into wx_wx_app_token(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }
+  sql += ",wx_app_id";
+  sql += ",access_token";
+  sql += ",token_time";
+  sql += ",expires_in";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
-      }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
         } else {
-          sql += ",default";
+          sql += `,${ args.push(reqDate()) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
+      }
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+            usr_lbl = "";
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        }
       }
       if (input.wx_app_id != null) {
         sql += `,${ args.push(input.wx_app_id) }`;
@@ -1017,14 +1087,18 @@ export async function delCache() {
 export async function updateById(
   id: WxAppTokenId,
   input: WxAppTokenInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<WxAppTokenId> {
   
   const table = "wx_wx_app_token";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1098,20 +1172,50 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1122,10 +1226,12 @@ export async function updateById(
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1138,12 +1244,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: WxAppTokenId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "wx_wx_app_token";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1170,7 +1281,28 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update wx_wx_app_token set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update wx_wx_app_token set is_deleted=1`;
+    if (!silentMode) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1187,10 +1319,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: WxAppTokenId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wx_wx_app_token";
   const method = "revertByIds";
   
@@ -1215,7 +1348,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: WxAppTokenId = ids[i];
     const args = new QueryArgs();
-    const sql = `update wx_wx_app_token set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update wx_wx_app_token set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1248,10 +1381,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: WxAppTokenId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wx_wx_app_token";
   const method = "forceDeleteByIds";
   
@@ -1277,12 +1411,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from wx_wx_app_token where id = ${ args.push(id) }`;
+      const sql = `select * from wx_wx_app_token where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from wx_wx_app_token where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from wx_wx_app_token where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
