@@ -69,7 +69,7 @@ for (let i = 0; i < columns.length; i++) {
     const enumColumnName = Table_Up + Column_Up;
     const columnDictModels = [
       ...dictModels.filter(function(item) {
-        return item.code === column.dict || item.code === column.dictbiz;
+        return item.code === column.dict || item.code === column.dict;
       }),
       ...dictbizModels.filter(function(item) {
         return item.code === column.dict || item.code === column.dictbiz;
