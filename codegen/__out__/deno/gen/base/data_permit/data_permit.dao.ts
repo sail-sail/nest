@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -925,8 +929,10 @@ export async function create(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<DataPermitId> {
+  
   const table = "base_data_permit";
   const method = "create";
   
@@ -971,8 +977,10 @@ export async function creates(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<DataPermitId[]> {
+  
   const table = "base_data_permit";
   const method = "creates";
   
@@ -1000,6 +1008,7 @@ async function _creates(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<DataPermitId[]> {
   
@@ -1008,6 +1017,9 @@ async function _creates(
   }
   
   const table = "base_data_permit";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: DataPermitId[] = [ ];
   const inputs2: DataPermitInput[] = [ ];
@@ -1051,54 +1063,73 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_data_permit(id,create_time,create_usr_id,create_usr_id_lbl,menu_id,scope,type,rem,is_sys)values`;
+  let sql = `insert into base_data_permit(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }
+  sql += ",menu_id";
+  sql += ",scope";
+  sql += ",type";
+  sql += ",rem";
+  sql += ",is_sys";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
-        let usr_lbl = "";
-        if (usr_id) {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
           const usr_model = await findByIdUsr(usr_id);
           if (!usr_model) {
             usr_id = undefined;
+            usr_lbl = "";
           } else {
             usr_lbl = usr_model.lbl;
           }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
-        if (usr_id != null) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        let usr_id: UsrId | undefined = input.create_usr_id;
-        let usr_lbl = "";
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-          usr_lbl = "";
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-        if (usr_id) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
       }
       if (input.menu_id != null) {
         sql += `,${ args.push(input.menu_id) }`;
@@ -1174,11 +1205,15 @@ export async function updateById(
   options?: {
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
+    silentMode?: boolean;
   },
 ): Promise<DataPermitId> {
   
   const table = "base_data_permit";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1258,44 +1293,48 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
         }
-      }
-      if (usr_id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
-      }
-      if (usr_lbl) {
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-      }
-    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      let usr_id: UsrId | undefined = input.update_usr_id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
         }
-      }
-      if (usr_id) {
-        sql += `update_usr_id=${ args.push(usr_id) },`;
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
       }
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
     sql += ` where id = ${ args.push(id) } limit 1`;
     
@@ -1308,10 +1347,12 @@ export async function updateById(
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;

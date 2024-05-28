@@ -132,6 +132,10 @@ const inputTableUps = [ ];
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -3001,8 +3005,10 @@ export async function create(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<<#=Table_Up#>Id> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
@@ -3047,8 +3053,10 @@ export async function creates(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<<#=Table_Up#>Id[]> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "creates";
   
@@ -3076,6 +3084,7 @@ async function _creates(
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
+    silentMode?: boolean;
   },
 ): Promise<<#=Table_Up#>Id[]> {
   
@@ -3084,6 +3093,9 @@ async function _creates(
   }
   
   const table = "<#=mod#>_<#=table#>";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: <#=Table_Up#>Id[] = [ ];
   const inputs2: <#=inputName#>[] = [ ];
@@ -3139,88 +3151,104 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into <#=mod#>_<#=table#>(id<#
-    if (hasCreateTime) {
-    #>,create_time<#
+  let sql = `insert into <#=mod#>_<#=table#>(id`;<#
+  if (hasCreateTime) {
+  #>
+  if (!silentMode) {
+    sql += ",create_time";
+  }<#
+  }
+  #><#
+  if (hasTenant_id) {
+  #>
+  sql += ",tenant_id";<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+  sql += ",org_id";<#
+  }
+  #><#
+  if (hasCreateUsrId) {
+  #>
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }<#
+  }
+  #><#
+  if (hasCreateUsrIdLbl) {
+  #>
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    #><#
-    if (hasTenant_id) {
-    #>,tenant_id<#
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    const column_name_mysql = mysqlKeyEscape(column_name);
+    const modelLabel = column.modelLabel;
+  #><#
+    if (modelLabel) {
+  #>
+  sql += ",<#=modelLabel#>"<#
     }
-    #><#
-    if (hasOrgId) {
-    #>,org_id<#
+  #><#
+    if (column.isPassword) {
+  #>
+  sql += ",<#=column_name_mysql#>";<#
+    } else if (foreignKey && foreignKey.type === "many2many") {
+  #><#
+    } else if (!foreignKey) {
+  #>
+  sql += ",<#=column_name_mysql#>";<#
+    } else {
+  #>
+  sql += ",<#=column_name_mysql#>";<#
     }
-    #><#
-    if (hasCreateUsrId) {
-    #>,create_usr_id<#
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
     }
-    #><#
-    if (hasCreateUsrIdLbl) {
-    #>,create_usr_id_lbl<#
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
     }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.isVirtual) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "create_usr_id") continue;
-      if (column_name === "create_time") continue;
-      if (column_name === "update_usr_id") continue;
-      if (column_name === "update_time") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const many2many = column.many2many;
-      const column_name_mysql = mysqlKeyEscape(column_name);
-      const modelLabel = column.modelLabel;
-    #><#
-      if (modelLabel) {
-    #>,<#=modelLabel#><#
-      }
-    #><#
-      if (column.isPassword) {
-    #>,<#=column_name_mysql#><#
-      } else if (foreignKey && foreignKey.type === "many2many") {
-    #><#
-      } else if (!foreignKey) {
-    #>,<#=column_name_mysql#><#
-      } else {
-    #>,<#=column_name_mysql#><#
-      }
-    #><#
-    }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const column_comment = column.COLUMN_COMMENT || "";
-      const redundLbl = column.redundLbl;
-      if (!redundLbl) {
-        continue;
-      }
-      const redundLblKeys = Object.keys(redundLbl);
-      if (redundLblKeys.length === 0) {
-        continue;
-      }
-    #><#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>,<#=val#><#
-    }
-    #><#
-    }
-    #>)values`;
+  #><#
+  for (const key of redundLblKeys) {
+    const val = redundLbl[key];
+  #>sql += ",<#=val#>";<#
+  }
+  #><#
+  }
+  #>
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -3229,10 +3257,12 @@ async function _creates(
       sql += `(${ args.push(input.id) }`;<#
       if (hasCreateTime) {
       #>
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }<#
       }
       #><#
@@ -3272,56 +3302,60 @@ async function _creates(
       #><#
       if (hasCreateUsrId && !hasCreateUsrIdLbl) {
       #>
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
-        } else {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          if (authModel?.id != null) {
+            sql += `,${ args.push(authModel.id) }`;
+          } else {
+            sql += ",default";
+          }
+        } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
       }<#
       } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
       #>
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
-        let usr_lbl = "";
-        if (usr_id) {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
           const usr_model = await findByIdUsr(usr_id);
           if (!usr_model) {
             usr_id = undefined;
+            usr_lbl = "";
           } else {
             usr_lbl = usr_model.lbl;
           }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
-        if (usr_id != null) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        let usr_id: UsrId | undefined = input.create_usr_id;
-        let usr_lbl = "";
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-          usr_lbl = "";
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-        if (usr_id) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
       }<#
       }
       #><#
@@ -3834,7 +3868,8 @@ export async function updateById(
   input: <#=inputName#>,
   options?: {
     debug?: boolean;
-    uniqueType?: "ignore" | "throw";<#
+    uniqueType?: "ignore" | "throw";
+    silentMode?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -3845,6 +3880,9 @@ export async function updateById(
   
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4306,48 +4344,52 @@ export async function updateById(
   if (updateFldNum > 0) {<#
     if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+      } else if (input.update_usr_id as unknown as string !== "-") {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
         }
-      }
-      if (usr_id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
-      }
-      if (usr_lbl) {
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-      }
-    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      let usr_id: UsrId | undefined = input.update_usr_id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
         }
-      }
-      if (usr_id) {
-        sql += `update_usr_id=${ args.push(usr_id) },`;
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
       }
     }<#
     }
@@ -4365,10 +4407,12 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }<#
     } else {
     #>
@@ -4396,24 +4440,26 @@ export async function updateById(
   }
   #>
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));<#
-    if (opts?.history_table) {
-    #>
+  if (!silentMode) {
+    const newModel = await findById(id);
     
-    const {
-      create: createHistory,
-    } = await import("/gen/<#=mod#>/<#=opts.history_table#>/<#=opts.history_table#>.dao.ts");
-    
-    await createHistory({
-      ...oldModel,
-      <#=table#>_id: id,
-      id: undefined,
-    });<#
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));<#
+      if (opts?.history_table) {
+      #>
+      
+      const {
+        create: createHistory,
+      } = await import("/gen/<#=mod#>/<#=opts.history_table#>/<#=opts.history_table#>.dao.ts");
+      
+      await createHistory({
+        ...oldModel,
+        <#=table#>_id: id,
+        id: undefined,
+      });<#
+      }
+      #>
     }
-    #>
   }<#
   if (mod === "cron" && table === "cron_job") {
   #>
