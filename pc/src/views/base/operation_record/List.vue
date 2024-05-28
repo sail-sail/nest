@@ -942,7 +942,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "操作人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
