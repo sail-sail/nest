@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -84,9 +88,9 @@ const route_path = "/wshop/recharge_rule";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: RechargeRuleSearch,
-  options?: {
-  },
+  search?: Readonly<RechargeRuleSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -113,9 +117,6 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -141,14 +142,8 @@ async function getWhereQuery(
       whereQuery += ` and t.give_amt<=${ args.push(search.give_amt[1]) }`;
     }
   }
-  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
@@ -158,9 +153,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-  }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
@@ -175,9 +167,6 @@ async function getWhereQuery(
     if (search.create_time[1] != null) {
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
-  }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
@@ -199,9 +188,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: RechargeRuleSearch,
-  options?: {
-  },
+  search?: Readonly<RechargeRuleSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `wshop_recharge_rule t
     left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
@@ -215,10 +204,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: RechargeRuleSearch,
-  options?: {
+  search?: Readonly<RechargeRuleSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "wshop_recharge_rule";
   const method = "findCount";
@@ -260,13 +249,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: RechargeRuleSearch,
-  page?: PageInput,
+  search?: Readonly<RechargeRuleSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<RechargeRuleModel[]> {
   const table = "wshop_recharge_rule";
   const method = "findAll";
@@ -533,10 +522,10 @@ export async function getFieldComments(): Promise<RechargeRuleFieldComment> {
  * @param {RechargeRuleInput} search0
  */
 export async function findByUnique(
-  search0: RechargeRuleInput,
-  options?: {
+  search0: Readonly<RechargeRuleInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RechargeRuleModel[]> {
   
   const table = "wshop_recharge_rule";
@@ -583,8 +572,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: RechargeRuleModel,
-  input: RechargeRuleInput,
+  oldModel: Readonly<RechargeRuleModel>,
+  input: Readonly<RechargeRuleInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -605,11 +594,11 @@ export function equalsByUnique(
  * @return {Promise<RechargeRuleId | undefined>}
  */
 export async function checkByUnique(
-  input: RechargeRuleInput,
-  oldModel: RechargeRuleModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<RechargeRuleInput>,
+  oldModel: Readonly<RechargeRuleModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<RechargeRuleId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -639,12 +628,13 @@ export async function checkByUnique(
  * @param {RechargeRuleSearch} search?
  */
 export async function findOne(
-  search?: RechargeRuleSearch,
+  search?: Readonly<RechargeRuleSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RechargeRuleModel | undefined> {
+  
   const table = "wshop_recharge_rule";
   const method = "findOne";
   
@@ -660,8 +650,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -682,12 +674,14 @@ export async function findOne(
  */
 export async function findById(
   id?: RechargeRuleId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RechargeRuleModel | undefined> {
+  
   const table = "wshop_recharge_rule";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -697,8 +691,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -719,12 +715,14 @@ export async function findById(
 /** 根据 ids 查找充值赠送规则 */
 export async function findByIds(
   ids: RechargeRuleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RechargeRuleModel[]> {
+  
   const table = "wshop_recharge_rule";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -734,8 +732,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -771,13 +771,15 @@ export async function findByIds(
  * @param {RechargeRuleSearch} search?
  */
 export async function exist(
-  search?: RechargeRuleSearch,
-  options?: {
+  search?: Readonly<RechargeRuleSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "wshop_recharge_rule";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -787,8 +789,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -800,11 +804,12 @@ export async function exist(
  * @param {RechargeRuleId} id
  */
 export async function existById(
-  id?: RechargeRuleId | null,
-  options?: {
+  id?: Readonly<RechargeRuleId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "wshop_recharge_rule";
   const method = "existById";
   
@@ -821,7 +826,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from wshop_recharge_rule t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from wshop_recharge_rule t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -840,7 +845,7 @@ export async function existById(
 
 /** 校验充值赠送规则是否启用 */
 export async function validateIsEnabled(
-  model: RechargeRuleModel,
+  model: Readonly<RechargeRuleModel>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("充值赠送规则") } ${ await ns("已禁用") }`;
@@ -849,7 +854,7 @@ export async function validateIsEnabled(
 
 /** 校验充值赠送规则是否存在 */
 export async function validateOption(
-  model?: RechargeRuleModel,
+  model?: Readonly<RechargeRuleModel>,
 ) {
   if (!model) {
     throw `${ await ns("充值赠送规则") } ${ await ns("不存在") }`;
@@ -862,7 +867,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: RechargeRuleInput,
+  input: Readonly<RechargeRuleInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -915,13 +920,15 @@ export async function validate(
  * @return {Promise<RechargeRuleId>} 
  */
 export async function create(
-  input: RechargeRuleInput,
-  options?: {
+  input: Readonly<RechargeRuleInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RechargeRuleId> {
+  
   const table = "wshop_recharge_rule";
   const method = "create";
   
@@ -934,8 +941,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -962,12 +971,14 @@ export async function create(
  */
 export async function creates(
   inputs: RechargeRuleInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RechargeRuleId[]> {
+  
   const table = "wshop_recharge_rule";
   const method = "creates";
   
@@ -980,8 +991,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -991,11 +1004,12 @@ export async function creates(
 
 async function _creates(
   inputs: RechargeRuleInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RechargeRuleId[]> {
   
   if (inputs.length === 0) {
@@ -1003,6 +1017,9 @@ async function _creates(
   }
   
   const table = "wshop_recharge_rule";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: RechargeRuleId[] = [ ];
   const inputs2: RechargeRuleInput[] = [ ];
@@ -1046,17 +1063,34 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_recharge_rule(id,create_time,tenant_id,org_id,create_usr_id,lbl,amt,give_amt,is_locked,is_enabled,rem)values`;
+  let sql = `insert into wshop_recharge_rule(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  sql += ",tenant_id";
+  sql += ",org_id";
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  sql += ",lbl";
+  sql += ",amt";
+  sql += ",give_amt";
+  sql += ",is_locked";
+  sql += ",is_enabled";
+  sql += ",rem";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1084,17 +1118,19 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.org_id) }`;
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
-        } else {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          if (authModel?.id != null) {
+            sql += `,${ args.push(authModel.id) }`;
+          } else {
+            sql += ",default";
+          }
+        } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1167,10 +1203,10 @@ export async function delCache() {
  */
 export async function updateTenantById(
   id: RechargeRuleId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "wshop_recharge_rule";
   const method = "updateTenantById";
@@ -1214,9 +1250,9 @@ export async function updateTenantById(
  */
 export async function updateOrgById(
   id: RechargeRuleId,
-  org_id: OrgId,
-  options?: {
-  },
+  org_id: Readonly<OrgId>,
+  options?: Readonly<{
+  }>,
 ): Promise<number> {
   const table = "wshop_recharge_rule";
   const method = "updateOrgById";
@@ -1253,14 +1289,18 @@ export async function updateOrgById(
 export async function updateById(
   id: RechargeRuleId,
   input: RechargeRuleInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RechargeRuleId> {
   
   const table = "wshop_recharge_rule";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1356,20 +1396,24 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+      } else if (input.update_usr_id as unknown as string !== "-") {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1380,10 +1424,12 @@ export async function updateById(
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1396,12 +1442,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: RechargeRuleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_recharge_rule";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1428,7 +1479,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update wshop_recharge_rule set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update wshop_recharge_rule set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1446,8 +1501,8 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: RechargeRuleId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1465,11 +1520,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: RechargeRuleId[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_recharge_rule";
   const method = "enableByIds";
   
@@ -1514,8 +1570,8 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: RechargeRuleId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1533,11 +1589,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: RechargeRuleId[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_recharge_rule";
   const method = "lockByIds";
   
@@ -1578,10 +1635,11 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: RechargeRuleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_recharge_rule";
   const method = "revertByIds";
   
@@ -1606,7 +1664,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: RechargeRuleId = ids[i];
     const args = new QueryArgs();
-    const sql = `update wshop_recharge_rule set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update wshop_recharge_rule set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1639,10 +1697,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: RechargeRuleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_recharge_rule";
   const method = "forceDeleteByIds";
   
@@ -1668,12 +1727,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from wshop_recharge_rule where id = ${ args.push(id) }`;
+      const sql = `select * from wshop_recharge_rule where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from wshop_recharge_rule where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from wshop_recharge_rule where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
