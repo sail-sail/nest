@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -86,9 +90,9 @@ const route_path = "/wshop/card_recharge";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: CardRechargeSearch,
-  options?: {
-  },
+  search?: Readonly<CardRechargeSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -115,9 +119,6 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -127,17 +128,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.transaction_id_like)) {
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
-  if (search?.card_id != null && !Array.isArray(search?.card_id)) {
-    search.card_id = [ search.card_id ];
-  }
   if (search?.card_id != null) {
     whereQuery += ` and t.card_id in ${ args.push(search.card_id) }`;
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and t.card_id is null`;
-  }
-  if (search?.usr_id != null && !Array.isArray(search?.usr_id)) {
-    search.usr_id = [ search.usr_id ];
   }
   if (search?.usr_id != null) {
     whereQuery += ` and t.usr_id in ${ args.push(search.usr_id) }`;
@@ -191,9 +186,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
@@ -207,9 +199,6 @@ async function getWhereQuery(
     if (search.create_time[1] != null) {
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
-  }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
@@ -231,9 +220,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: CardRechargeSearch,
-  options?: {
-  },
+  search?: Readonly<CardRechargeSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `wshop_card_recharge t
     left join wshop_card card_id_lbl on card_id_lbl.id=t.card_id
@@ -249,10 +238,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: CardRechargeSearch,
-  options?: {
+  search?: Readonly<CardRechargeSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "wshop_card_recharge";
   const method = "findCount";
@@ -291,13 +280,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: CardRechargeSearch,
-  page?: PageInput,
+  search?: Readonly<CardRechargeSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<CardRechargeModel[]> {
   const table = "wshop_card_recharge";
   const method = "findAll";
@@ -528,10 +517,10 @@ export async function getFieldComments(): Promise<CardRechargeFieldComment> {
  * @param {CardRechargeInput} search0
  */
 export async function findByUnique(
-  search0: CardRechargeInput,
-  options?: {
+  search0: Readonly<CardRechargeInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CardRechargeModel[]> {
   
   const table = "wshop_card_recharge";
@@ -568,8 +557,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: CardRechargeModel,
-  input: CardRechargeInput,
+  oldModel: Readonly<CardRechargeModel>,
+  input: Readonly<CardRechargeInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -585,11 +574,11 @@ export function equalsByUnique(
  * @return {Promise<CardRechargeId | undefined>}
  */
 export async function checkByUnique(
-  input: CardRechargeInput,
-  oldModel: CardRechargeModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<CardRechargeInput>,
+  oldModel: Readonly<CardRechargeModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<CardRechargeId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -619,12 +608,13 @@ export async function checkByUnique(
  * @param {CardRechargeSearch} search?
  */
 export async function findOne(
-  search?: CardRechargeSearch,
+  search?: Readonly<CardRechargeSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CardRechargeModel | undefined> {
+  
   const table = "wshop_card_recharge";
   const method = "findOne";
   
@@ -640,8 +630,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -662,12 +654,14 @@ export async function findOne(
  */
 export async function findById(
   id?: CardRechargeId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CardRechargeModel | undefined> {
+  
   const table = "wshop_card_recharge";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -677,8 +671,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -699,12 +695,14 @@ export async function findById(
 /** 根据 ids 查找会员卡充值记录 */
 export async function findByIds(
   ids: CardRechargeId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CardRechargeModel[]> {
+  
   const table = "wshop_card_recharge";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -714,8 +712,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -751,13 +751,15 @@ export async function findByIds(
  * @param {CardRechargeSearch} search?
  */
 export async function exist(
-  search?: CardRechargeSearch,
-  options?: {
+  search?: Readonly<CardRechargeSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "wshop_card_recharge";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -767,8 +769,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -780,11 +784,12 @@ export async function exist(
  * @param {CardRechargeId} id
  */
 export async function existById(
-  id?: CardRechargeId | null,
-  options?: {
+  id?: Readonly<CardRechargeId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "wshop_card_recharge";
   const method = "existById";
   
@@ -801,7 +806,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from wshop_card_recharge t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from wshop_card_recharge t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
@@ -817,7 +822,7 @@ export async function existById(
 
 /** 校验会员卡充值记录是否存在 */
 export async function validateOption(
-  model?: CardRechargeModel,
+  model?: Readonly<CardRechargeModel>,
 ) {
   if (!model) {
     throw `${ await ns("会员卡充值记录") } ${ await ns("不存在") }`;
@@ -830,7 +835,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: CardRechargeInput,
+  input: Readonly<CardRechargeInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -890,13 +895,15 @@ export async function validate(
  * @return {Promise<CardRechargeId>} 
  */
 export async function create(
-  input: CardRechargeInput,
-  options?: {
+  input: Readonly<CardRechargeInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CardRechargeId> {
+  
   const table = "wshop_card_recharge";
   const method = "create";
   
@@ -909,8 +916,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -937,12 +946,14 @@ export async function create(
  */
 export async function creates(
   inputs: CardRechargeInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CardRechargeId[]> {
+  
   const table = "wshop_card_recharge";
   const method = "creates";
   
@@ -955,8 +966,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -966,11 +979,12 @@ export async function creates(
 
 async function _creates(
   inputs: CardRechargeInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CardRechargeId[]> {
   
   if (inputs.length === 0) {
@@ -978,6 +992,9 @@ async function _creates(
   }
   
   const table = "wshop_card_recharge";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: CardRechargeId[] = [ ];
   const inputs2: CardRechargeInput[] = [ ];
@@ -1021,17 +1038,37 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_card_recharge(id,create_time,tenant_id,org_id,create_usr_id,transaction_id,card_id,usr_id,amt,give_amt,balance,give_balance,integral,rem)values`;
+  let sql = `insert into wshop_card_recharge(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  sql += ",tenant_id";
+  sql += ",org_id";
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  sql += ",transaction_id";
+  sql += ",card_id";
+  sql += ",usr_id";
+  sql += ",amt";
+  sql += ",give_amt";
+  sql += ",balance";
+  sql += ",give_balance";
+  sql += ",integral";
+  sql += ",rem";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1059,17 +1096,19 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.org_id) }`;
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
-        } else {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          if (authModel?.id != null) {
+            sql += `,${ args.push(authModel.id) }`;
+          } else {
+            sql += ",default";
+          }
+        } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.transaction_id != null) {
         sql += `,${ args.push(input.transaction_id) }`;
@@ -1146,10 +1185,10 @@ async function _creates(
  */
 export async function updateTenantById(
   id: CardRechargeId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "wshop_card_recharge";
   const method = "updateTenantById";
@@ -1191,9 +1230,9 @@ export async function updateTenantById(
  */
 export async function updateOrgById(
   id: CardRechargeId,
-  org_id: OrgId,
-  options?: {
-  },
+  org_id: Readonly<OrgId>,
+  options?: Readonly<{
+  }>,
 ): Promise<number> {
   const table = "wshop_card_recharge";
   const method = "updateOrgById";
@@ -1226,14 +1265,18 @@ export async function updateOrgById(
 export async function updateById(
   id: CardRechargeId,
   input: CardRechargeInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CardRechargeId> {
   
   const table = "wshop_card_recharge";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1347,28 +1390,34 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+      } else if (input.update_usr_id as unknown as string !== "-") {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await execute(sql, args);
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1381,12 +1430,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: CardRechargeId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_card_recharge";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1411,7 +1465,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update wshop_card_recharge set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update wshop_card_recharge set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1426,10 +1484,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: CardRechargeId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_card_recharge";
   const method = "revertByIds";
   
@@ -1452,7 +1511,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: CardRechargeId = ids[i];
     const args = new QueryArgs();
-    const sql = `update wshop_card_recharge set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update wshop_card_recharge set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1483,10 +1542,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: CardRechargeId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "wshop_card_recharge";
   const method = "forceDeleteByIds";
   
@@ -1510,12 +1570,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from wshop_card_recharge where id = ${ args.push(id) }`;
+      const sql = `select * from wshop_card_recharge where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from wshop_card_recharge where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from wshop_card_recharge where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
