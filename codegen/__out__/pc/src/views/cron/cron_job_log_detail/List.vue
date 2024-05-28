@@ -789,7 +789,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "任务执行日志",
       prop: "cron_job_log_id_lbl",
-      sortBy: "cron_job_log_id",
+      sortBy: "cron_job_log_id_lbl",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

@@ -901,7 +901,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "定时任务",
       prop: "cron_job_id_lbl",
-      sortBy: "cron_job_id",
+      sortBy: "cron_job_id_lbl",
       width: 320,
       align: "left",
       headerAlign: "center",
