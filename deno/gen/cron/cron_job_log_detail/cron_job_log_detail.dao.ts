@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -76,9 +80,9 @@ const route_path = "/cron/cron_job_log_detail";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: CronJobLogDetailSearch,
-  options?: {
-  },
+  search?: Readonly<CronJobLogDetailSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -95,14 +99,8 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.cron_job_log_id != null && !Array.isArray(search?.cron_job_log_id)) {
-    search.cron_job_log_id = [ search.cron_job_log_id ];
   }
   if (search?.cron_job_log_id != null) {
     whereQuery += ` and t.cron_job_log_id in ${ args.push(search.cron_job_log_id) }`;
@@ -124,17 +122,11 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
@@ -156,9 +148,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: CronJobLogDetailSearch,
-  options?: {
-  },
+  search?: Readonly<CronJobLogDetailSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `cron_cron_job_log_detail t
     left join cron_cron_job_log cron_job_log_id_lbl on cron_job_log_id_lbl.id=t.cron_job_log_id
@@ -173,10 +165,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: CronJobLogDetailSearch,
-  options?: {
+  search?: Readonly<CronJobLogDetailSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "cron_cron_job_log_detail";
   const method = "findCount";
@@ -215,13 +207,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: CronJobLogDetailSearch,
-  page?: PageInput,
+  search?: Readonly<CronJobLogDetailSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<CronJobLogDetailModel[]> {
   const table = "cron_cron_job_log_detail";
   const method = "findAll";
@@ -384,10 +376,10 @@ export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> 
  * @param {CronJobLogDetailInput} search0
  */
 export async function findByUnique(
-  search0: CronJobLogDetailInput,
-  options?: {
+  search0: Readonly<CronJobLogDetailInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CronJobLogDetailModel[]> {
   
   const table = "cron_cron_job_log_detail";
@@ -424,8 +416,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: CronJobLogDetailModel,
-  input: CronJobLogDetailInput,
+  oldModel: Readonly<CronJobLogDetailModel>,
+  input: Readonly<CronJobLogDetailInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -441,11 +433,11 @@ export function equalsByUnique(
  * @return {Promise<CronJobLogDetailId | undefined>}
  */
 export async function checkByUnique(
-  input: CronJobLogDetailInput,
-  oldModel: CronJobLogDetailModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<CronJobLogDetailInput>,
+  oldModel: Readonly<CronJobLogDetailModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<CronJobLogDetailId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -475,12 +467,13 @@ export async function checkByUnique(
  * @param {CronJobLogDetailSearch} search?
  */
 export async function findOne(
-  search?: CronJobLogDetailSearch,
+  search?: Readonly<CronJobLogDetailSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CronJobLogDetailModel | undefined> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "findOne";
   
@@ -496,8 +489,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -518,12 +513,14 @@ export async function findOne(
  */
 export async function findById(
   id?: CronJobLogDetailId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CronJobLogDetailModel | undefined> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -533,8 +530,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -555,12 +554,14 @@ export async function findById(
 /** 根据 ids 查找任务执行日志明细 */
 export async function findByIds(
   ids: CronJobLogDetailId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<CronJobLogDetailModel[]> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -570,8 +571,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -607,13 +610,15 @@ export async function findByIds(
  * @param {CronJobLogDetailSearch} search?
  */
 export async function exist(
-  search?: CronJobLogDetailSearch,
-  options?: {
+  search?: Readonly<CronJobLogDetailSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -623,8 +628,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -636,11 +643,12 @@ export async function exist(
  * @param {CronJobLogDetailId} id
  */
 export async function existById(
-  id?: CronJobLogDetailId | null,
-  options?: {
+  id?: Readonly<CronJobLogDetailId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "cron_cron_job_log_detail";
   const method = "existById";
   
@@ -657,7 +665,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from cron_cron_job_log_detail t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from cron_cron_job_log_detail t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
@@ -673,7 +681,7 @@ export async function existById(
 
 /** 校验任务执行日志明细是否存在 */
 export async function validateOption(
-  model?: CronJobLogDetailModel,
+  model?: Readonly<CronJobLogDetailModel>,
 ) {
   if (!model) {
     throw `${ await ns("任务执行日志明细") } ${ await ns("不存在") }`;
@@ -686,7 +694,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: CronJobLogDetailInput,
+  input: Readonly<CronJobLogDetailInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -718,13 +726,15 @@ export async function validate(
  * @return {Promise<CronJobLogDetailId>} 
  */
 export async function create(
-  input: CronJobLogDetailInput,
-  options?: {
+  input: Readonly<CronJobLogDetailInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CronJobLogDetailId> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "create";
   
@@ -737,8 +747,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -765,12 +777,14 @@ export async function create(
  */
 export async function creates(
   inputs: CronJobLogDetailInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CronJobLogDetailId[]> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "creates";
   
@@ -783,8 +797,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -794,11 +810,12 @@ export async function creates(
 
 async function _creates(
   inputs: CronJobLogDetailInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CronJobLogDetailId[]> {
   
   if (inputs.length === 0) {
@@ -806,6 +823,9 @@ async function _creates(
   }
   
   const table = "cron_cron_job_log_detail";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: CronJobLogDetailId[] = [ ];
   const inputs2: CronJobLogDetailInput[] = [ ];
@@ -849,17 +869,29 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into cron_cron_job_log_detail(id,create_time,tenant_id,create_usr_id,cron_job_log_id,lbl)values`;
+  let sql = `insert into cron_cron_job_log_detail(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  sql += ",tenant_id";
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  sql += ",cron_job_log_id";
+  sql += ",lbl";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -874,17 +906,19 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
-        } else {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          if (authModel?.id != null) {
+            sql += `,${ args.push(authModel.id) }`;
+          } else {
+            sql += ",default";
+          }
+        } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.cron_job_log_id != null) {
         sql += `,${ args.push(input.cron_job_log_id) }`;
@@ -926,10 +960,10 @@ async function _creates(
  */
 export async function updateTenantById(
   id: CronJobLogDetailId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "cron_cron_job_log_detail";
   const method = "updateTenantById";
@@ -975,14 +1009,18 @@ export async function updateTenantById(
 export async function updateById(
   id: CronJobLogDetailId,
   input: CronJobLogDetailInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<CronJobLogDetailId> {
   
   const table = "cron_cron_job_log_detail";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1049,28 +1087,34 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        if (authModel?.id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+      } else if (input.update_usr_id as unknown as string !== "-") {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await execute(sql, args);
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1083,12 +1127,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: CronJobLogDetailId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1113,7 +1162,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update cron_cron_job_log_detail set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update cron_cron_job_log_detail set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1128,10 +1181,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: CronJobLogDetailId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "revertByIds";
   
@@ -1154,7 +1208,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: CronJobLogDetailId = ids[i];
     const args = new QueryArgs();
-    const sql = `update cron_cron_job_log_detail set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update cron_cron_job_log_detail set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1185,10 +1239,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: CronJobLogDetailId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "cron_cron_job_log_detail";
   const method = "forceDeleteByIds";
   
@@ -1212,12 +1267,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from cron_cron_job_log_detail where id = ${ args.push(id) }`;
+      const sql = `select * from cron_cron_job_log_detail where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from cron_cron_job_log_detail where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from cron_cron_job_log_detail where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
