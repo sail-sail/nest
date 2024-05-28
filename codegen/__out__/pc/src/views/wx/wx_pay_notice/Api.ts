@@ -1,5 +1,11 @@
 
 
+import {
+  WxPayNoticeTradeState,
+  WxPayNoticeCurrency,
+  WxPayNoticePayerCurrency,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -395,12 +401,12 @@ export function useExportExcel(routePath: string) {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
-    trade_state: "NOTPAY",
+    trade_state: WxPayNoticeTradeState.Notpay,
     trade_state_desc: "未支付",
     total: 0,
     payer_total: 0,
-    currency: "CNY",
-    payer_currency: "CNY",
+    currency: WxPayNoticeCurrency.Cny,
+    payer_currency: WxPayNoticePayerCurrency.Cny,
   };
   return defaultInput;
 }
