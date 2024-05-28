@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -85,17 +89,14 @@ const route_path = "/base/dict";
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
-  search?: DictSearch,
-  options?: {
-  },
+  search?: Readonly<DictSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
-  }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
@@ -112,20 +113,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.type != null && !Array.isArray(search?.type)) {
-    search.type = [ search.type ];
-  }
   if (search?.type != null) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
-  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
@@ -144,17 +136,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
@@ -167,17 +153,11 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
@@ -196,9 +176,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: DictSearch,
-  options?: {
-  },
+  search?: Readonly<DictSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `base_dict t`;
   return fromQuery;
@@ -210,10 +190,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: DictSearch,
-  options?: {
+  search?: Readonly<DictSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_dict";
   const method = "findCount";
@@ -255,13 +235,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: DictSearch,
-  page?: PageInput,
+  search?: Readonly<DictSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<DictModel[]> {
   const table = "base_dict";
   const method = "findAll";
@@ -565,10 +545,10 @@ export async function getFieldComments(): Promise<DictFieldComment> {
  * @param {DictInput} search0
  */
 export async function findByUnique(
-  search0: DictInput,
-  options?: {
+  search0: Readonly<DictInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictModel[]> {
   
   const table = "base_dict";
@@ -625,8 +605,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: DictModel,
-  input: DictInput,
+  oldModel: Readonly<DictModel>,
+  input: Readonly<DictInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -652,11 +632,11 @@ export function equalsByUnique(
  * @return {Promise<DictId | undefined>}
  */
 export async function checkByUnique(
-  input: DictInput,
-  oldModel: DictModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<DictInput>,
+  oldModel: Readonly<DictModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<DictId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -686,12 +666,13 @@ export async function checkByUnique(
  * @param {DictSearch} search?
  */
 export async function findOne(
-  search?: DictSearch,
+  search?: Readonly<DictSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictModel | undefined> {
+  
   const table = "base_dict";
   const method = "findOne";
   
@@ -707,8 +688,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -729,12 +712,14 @@ export async function findOne(
  */
 export async function findById(
   id?: DictId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictModel | undefined> {
+  
   const table = "base_dict";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -744,8 +729,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -766,12 +753,14 @@ export async function findById(
 /** 根据 ids 查找系统字典 */
 export async function findByIds(
   ids: DictId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictModel[]> {
+  
   const table = "base_dict";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -781,8 +770,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -818,13 +809,15 @@ export async function findByIds(
  * @param {DictSearch} search?
  */
 export async function exist(
-  search?: DictSearch,
-  options?: {
+  search?: Readonly<DictSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_dict";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -834,8 +827,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -847,11 +842,12 @@ export async function exist(
  * @param {DictId} id
  */
 export async function existById(
-  id?: DictId | null,
-  options?: {
+  id?: Readonly<DictId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_dict";
   const method = "existById";
   
@@ -868,7 +864,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_dict t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_dict t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -887,7 +883,7 @@ export async function existById(
 
 /** 校验系统字典是否启用 */
 export async function validateIsEnabled(
-  model: DictModel,
+  model: Readonly<DictModel>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("系统字典") } ${ await ns("已禁用") }`;
@@ -896,7 +892,7 @@ export async function validateIsEnabled(
 
 /** 校验系统字典是否存在 */
 export async function validateOption(
-  model?: DictModel,
+  model?: Readonly<DictModel>,
 ) {
   if (!model) {
     throw `${ await ns("系统字典") } ${ await ns("不存在") }`;
@@ -909,7 +905,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: DictInput,
+  input: Readonly<DictInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -976,13 +972,15 @@ export async function validate(
  * @return {Promise<DictId>} 
  */
 export async function create(
-  input: DictInput,
-  options?: {
+  input: Readonly<DictInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<DictId> {
+  
   const table = "base_dict";
   const method = "create";
   
@@ -995,8 +993,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -1023,12 +1023,14 @@ export async function create(
  */
 export async function creates(
   inputs: DictInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<DictId[]> {
+  
   const table = "base_dict";
   const method = "creates";
   
@@ -1041,8 +1043,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -1052,11 +1056,12 @@ export async function creates(
 
 async function _creates(
   inputs: DictInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<DictId[]> {
   
   if (inputs.length === 0) {
@@ -1064,6 +1069,9 @@ async function _creates(
   }
   
   const table = "base_dict";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: DictId[] = [ ];
   const inputs2: DictInput[] = [ ];
@@ -1107,54 +1115,77 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_dict(id,create_time,create_usr_id,create_usr_id_lbl,code,lbl,type,is_locked,is_enabled,order_by,rem,is_sys)values`;
+  let sql = `insert into base_dict(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }
+  sql += ",code";
+  sql += ",lbl";
+  sql += ",type";
+  sql += ",is_locked";
+  sql += ",is_enabled";
+  sql += ",order_by";
+  sql += ",rem";
+  sql += ",is_sys";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
-        let usr_lbl = "";
-        if (usr_id) {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
           const usr_model = await findByIdUsr(usr_id);
           if (!usr_model) {
             usr_id = undefined;
+            usr_lbl = "";
           } else {
             usr_lbl = usr_model.lbl;
           }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
-        if (usr_id != null) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        let usr_id: UsrId | undefined = input.create_usr_id;
-        let usr_lbl = "";
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-          usr_lbl = "";
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-        if (usr_id) {
-          sql += `,${ args.push(usr_id) }`;
-        } else {
-          sql += ",default";
-        }
-        sql += `,${ args.push(usr_lbl) }`;
       }
       if (input.code != null) {
         sql += `,${ args.push(input.code) }`;
@@ -1252,14 +1283,18 @@ export async function delCache() {
 export async function updateById(
   id: DictId,
   input: DictInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<DictId> {
   
   const table = "base_dict";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1387,46 +1422,50 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
-      if (usr_id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
-      }
-      if (usr_lbl) {
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-      }
-    } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      let usr_id: UsrId | undefined = input.update_usr_id;
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-      }
-      if (usr_id) {
-        sql += `update_usr_id=${ args.push(usr_id) },`;
-        sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+    }
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
       }
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
-    }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1437,10 +1476,12 @@ export async function updateById(
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1453,12 +1494,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: DictId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1485,7 +1531,28 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_dict set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_dict set is_deleted=1`;
+    if (!silentMode) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1509,8 +1576,8 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: DictId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1528,11 +1595,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: DictId[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "enableByIds";
   
@@ -1577,8 +1645,8 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: DictId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1596,11 +1664,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: DictId[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "lockByIds";
   
@@ -1641,10 +1710,11 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: DictId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "revertByIds";
   
@@ -1669,7 +1739,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: DictId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_dict set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_dict set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1709,10 +1779,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: DictId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "forceDeleteByIds";
   
@@ -1738,12 +1809,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_dict where id = ${ args.push(id) }`;
+      const sql = `select * from base_dict where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_dict where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_dict where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1765,10 +1836,11 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dict";
   const method = "findLastOrderBy";
   
